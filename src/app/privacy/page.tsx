@@ -151,8 +151,8 @@ export default function PrivacyPolicy() {
               If you have any questions, comments, or requests regarding this Privacy Policy, please contact us:
             </p>
             <ul className="list-none space-y-2 ml-4">
-              <li>Email: privacy@aivoiceslabs.com</li>
-              <li>Address: [Your Company Address]</li>
+              <li>Email: privacy@ai-voice-labs.com</li>
+              <li>Address: 30 N Gould St, STE R, Sheridan, WY 82801, USA</li>
             </ul>
           </section>
 

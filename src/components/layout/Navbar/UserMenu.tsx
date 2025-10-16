@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
-import { useLanguage } from '@/contexts/LanguageContext';
+import Image from 'next/image';
 
 /**
  * 用户菜单组件
@@ -15,7 +15,6 @@ export default function UserMenu() {
   const dropdownRef = useRef<HTMLDivElement>(null);
   const { user, signOut } = useAuth();
   const router = useRouter();
-  const { t } = useLanguage();
 
   // 点击外部关闭下拉菜单
   useEffect(() => {
@@ -53,9 +52,11 @@ export default function UserMenu() {
         aria-label="User menu"
       >
         {user.photoURL ? (
-          <img
+          <Image
             src={user.photoURL}
             alt={user.displayName || 'User'}
+            width={40}
+            height={40}
             className="w-10 h-10 rounded-full border-2 border-gray-200"
           />
         ) : (
@@ -72,9 +73,11 @@ export default function UserMenu() {
           <div className="px-4 py-3 border-b border-gray-100">
             <div className="flex items-center gap-3">
               {user.photoURL ? (
-                <img
+                <Image
                   src={user.photoURL}
                   alt={user.displayName || 'User'}
+                  width={48}
+                  height={48}
                   className="w-12 h-12 rounded-full"
                 />
               ) : (

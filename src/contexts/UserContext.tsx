@@ -79,6 +79,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
       setProfile(null);
       setError(null);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
   return (

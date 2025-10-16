@@ -69,14 +69,15 @@ export function useLogin() {
 
       console.log('✅ useLogin: 登录流程完成');
       // 登录成功后会通过 useEffect 自动重定向
-    } catch (err: any) {
+    } catch (err) {
+      const error = err as { code?: string; message?: string };
       console.error('❌ useLogin: 登录失败', {
         provider,
-        code: err.code,
-        message: err.message,
+        code: error.code,
+        message: error.message,
         error: err,
       });
-      setError(err.message || '登录失败，请重试');
+      setError(error.message || '登录失败，请重试');
     } finally {
       setLoading(false);
     }

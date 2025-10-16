@@ -77,12 +77,12 @@ class APIClient {
     return response.data;
   }
 
-  async post<T>(url: string, data?: any, config?: AxiosRequestConfig): Promise<T> {
+  async post<T>(url: string, data?: unknown, config?: AxiosRequestConfig): Promise<T> {
     const response = await this.client.post<T>(url, data, config);
     return response.data;
   }
 
-  async put<T>(url: string, data?: any, config?: AxiosRequestConfig): Promise<T> {
+  async put<T>(url: string, data?: unknown, config?: AxiosRequestConfig): Promise<T> {
     const response = await this.client.put<T>(url, data, config);
     return response.data;
   }
@@ -92,7 +92,7 @@ class APIClient {
     return response.data;
   }
 
-  async patch<T>(url: string, data?: any, config?: AxiosRequestConfig): Promise<T> {
+  async patch<T>(url: string, data?: unknown, config?: AxiosRequestConfig): Promise<T> {
     const response = await this.client.patch<T>(url, data, config);
     return response.data;
   }
@@ -132,7 +132,7 @@ export const voiceAPI = {
   },
 
   // 创建语音模型
-  createVoice: (data: any) => {
+  createVoice: (data: unknown) => {
     return apiClient.post('/api/v1/voices', data);
   },
 };
@@ -145,7 +145,7 @@ export const subscriptionAPI = {
   },
 
   // 创建订阅
-  createSubscription: (data: any) => {
+  createSubscription: (data: unknown) => {
     return apiClient.post('/api/v1/subscriptions', data);
   },
 };

@@ -12,9 +12,11 @@ interface LanguageContextType {
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
+type MessageValue = string | Record<string, unknown>;
+
 export function LanguageProvider({ children }: { children: ReactNode }) {
   const [locale, setLocaleState] = useState<Locale>('en');
-  const [messages, setMessages] = useState<Record<string, any>>({});
+  const [messages, setMessages] = useState<Record<string, MessageValue>>({});
 
   // 从 localStorage 加载语言设置
   useEffect(() => {
@@ -45,11 +47,11 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   // 简单的翻译函数
   const t = (key: string): string => {
     const keys = key.split('.');
-    let value: any = messages;
+    let value: MessageValue | undefined = messages;
 
     for (const k of keys) {
-      if (value && typeof value === 'object') {
-        value = value[k];
+      if (value && typeof value === 'object' && !Array.isArray(value)) {
+        value = (value as Record<string, MessageValue>)[k];
       } else {
         return key; // 如果找不到，返回 key 本身
       }

@@ -118,7 +118,26 @@ export default function PrivacyPolicy() {
 
           <section>
             <h2 className="text-xl sm:text-2xl font-semibold mb-3">
-              7. Cookies and Tracking Technologies
+              7. Account Deletion
+            </h2>
+            <p className="mb-3">
+              If you wish to delete your account and associated data, please send an email to{" "}
+              <a
+                href="mailto:support@ai-voice-labs.com"
+                className="text-blue-600 dark:text-blue-400 hover:underline"
+              >
+                support@ai-voice-labs.com
+              </a>
+              {" "}with your account deletion request. We will process your request within 7 business days.
+            </p>
+            <p className="text-sm text-gray-600 dark:text-gray-400">
+              Note: Once your account is deleted, all associated data will be permanently removed and cannot be recovered.
+            </p>
+          </section>
+
+          <section>
+            <h2 className="text-xl sm:text-2xl font-semibold mb-3">
+              8. Cookies and Tracking Technologies
             </h2>
             <p>
               We use cookies and similar tracking technologies to collect and use information about your use of our services. You can manage cookie preferences through your browser settings, but disabling cookies may affect the functionality of certain features.
@@ -127,7 +146,7 @@ export default function PrivacyPolicy() {
 
           <section>
             <h2 className="text-xl sm:text-2xl font-semibold mb-3">
-              8. Children&apos;s Privacy
+              9. Children&apos;s Privacy
             </h2>
             <p>
               Our services are not directed to children under 18 years of age. We do not knowingly collect personal information from children. If you become aware that a child has provided us with personal information, please contact us and we will take steps to delete such information.
@@ -136,7 +155,7 @@ export default function PrivacyPolicy() {
 
           <section>
             <h2 className="text-xl sm:text-2xl font-semibold mb-3">
-              9. Changes to This Privacy Policy
+              10. Changes to This Privacy Policy
             </h2>
             <p>
               We may update this Privacy Policy from time to time. When we make significant changes, we will notify you by posting a notice on our service or by sending you a direct notification. We recommend that you review this Privacy Policy periodically for the latest information.
@@ -145,7 +164,7 @@ export default function PrivacyPolicy() {
 
           <section>
             <h2 className="text-xl sm:text-2xl font-semibold mb-3">
-              10. Contact Us
+              11. Contact Us
             </h2>
             <p className="mb-3">
               If you have any questions, comments, or requests regarding this Privacy Policy, please contact us:

@@ -1,0 +1,155 @@
+'use client';
+
+import { useState, useRef, useEffect } from 'react';
+
+interface AudioPlayerProps {
+  audioUrl: string;
+  duration: number;
+  isPlaying: boolean;
+  onPlay: () => void;
+  onDownload: () => void;
+}
+
+export default function AudioPlayer({ 
+  audioUrl, 
+  duration, 
+  isPlaying, 
+  onPlay, 
+  onDownload 
+}: AudioPlayerProps) {
+  const audioRef = useRef<HTMLAudioElement>(null);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [progress, setProgress] = useState(0);
+
+  // Generate mock waveform data
+  const generateWaveform = () => {
+    const bars = 50;
+    const waveform = [];
+    for (let i = 0; i < bars; i++) {
+      waveform.push(Math.random() * 0.8 + 0.2);
+    }
+    return waveform;
+  };
+
+  const [waveform] = useState(generateWaveform());
+
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    const updateTime = () => {
+      setCurrentTime(audio.currentTime);
+      setProgress((audio.currentTime / duration) * 100);
+    };
+
+    const handleEnded = () => {
+      setCurrentTime(0);
+      setProgress(0);
+      onPlay(); // Toggle to stop
+    };
+
+    audio.addEventListener('timeupdate', updateTime);
+    audio.addEventListener('ended', handleEnded);
+
+    return () => {
+      audio.removeEventListener('timeupdate', updateTime);
+      audio.removeEventListener('ended', handleEnded);
+    };
+  }, [duration, onPlay]);
+
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    if (isPlaying) {
+      audio.play().catch(console.error);
+    } else {
+      audio.pause();
+    }
+  }, [isPlaying]);
+
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
+
+  const handleWaveformClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    const rect = e.currentTarget.getBoundingClientRect();
+    const clickX = e.clientX - rect.left;
+    const percentage = clickX / rect.width;
+    const newTime = percentage * duration;
+    
+    audio.currentTime = newTime;
+    setCurrentTime(newTime);
+    setProgress(percentage * 100);
+  };
+
+  return (
+    <div className="flex items-center gap-4">
+      {/* Hidden audio element */}
+      <audio ref={audioRef} src={audioUrl} preload="metadata" />
+      
+      {/* Play/Pause Button */}
+      <button
+        onClick={onPlay}
+        className="flex items-center justify-center w-12 h-12 bg-gray-900 text-white rounded-full hover:bg-gray-800 transition-colors"
+      >
+        {isPlaying ? (
+          <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z"/>
+          </svg>
+        ) : (
+          <svg className="w-5 h-5 ml-0.5" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M8 5v14l11-7z"/>
+          </svg>
+        )}
+      </button>
+
+      {/* Waveform */}
+      <div className="flex-1">
+        <div className="flex items-center gap-2 mb-1">
+          <span className="text-xs text-gray-500 min-w-[2rem]">
+            {formatTime(currentTime)}
+          </span>
+          
+          <div 
+            className="flex-1 h-8 flex items-center gap-0.5 cursor-pointer"
+            onClick={handleWaveformClick}
+          >
+            {waveform.map((height, index) => (
+              <div
+                key={index}
+                className="flex-1 bg-gray-300 rounded-sm transition-colors hover:bg-gray-400"
+                style={{
+                  height: `${height * 100}%`,
+                  backgroundColor: index < (progress / 100) * waveform.length 
+                    ? '#1f2937' 
+                    : '#d1d5db'
+                }}
+              />
+            ))}
+          </div>
+          
+          <span className="text-xs text-gray-500 min-w-[2rem] text-right">
+            {formatTime(duration)}
+          </span>
+        </div>
+      </div>
+
+      {/* Download Button */}
+      <button
+        onClick={onDownload}
+        className="flex items-center justify-center w-10 h-10 bg-gray-900 text-white rounded-full hover:bg-gray-800 transition-colors"
+        title="Download"
+      >
+        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+        </svg>
+      </button>
+    </div>
+  );
+}

@@ -1,5 +1,7 @@
 import axios, { AxiosInstance, AxiosRequestConfig } from 'axios';
 import { auth } from '@/lib/firebase';
+import type { CreemVerifyRequest, CreemVerifyResponse } from '@/types/subscription';
+import type { UserProfile, UserUpdateRequest } from '@/types/user';
 
 /**
  * API 客户端配置
@@ -109,18 +111,18 @@ export const apiClient = new APIClient();
 // 用户相关 API
 export const userAPI = {
   // 获取当前用户资料
-  getCurrentUser: () => {
-    return apiClient.get('/api/v1/users/me');
+  getCurrentUser: (): Promise<UserProfile> => {
+    return apiClient.get<UserProfile>('/api/v1/users/me');
   },
 
   // 更新用户资料
-  updateProfile: (data: { name?: string; photo_url?: string }) => {
-    return apiClient.put('/api/v1/users/me', data);
+  updateProfile: (data: UserUpdateRequest): Promise<UserProfile> => {
+    return apiClient.put<UserProfile>('/api/v1/users/me', data);
   },
 
   // 获取用户积分
-  getCredits: () => {
-    return apiClient.get('/api/v1/users/me/credits');
+  getCredits: (): Promise<{ credits: number }> => {
+    return apiClient.get<{ credits: number }>('/api/v1/users/me/credits');
   },
 };
 
@@ -162,6 +164,22 @@ export const subscriptionAPI = {
     active_only?: boolean;
   }) => {
     return apiClient.get('/api/v1/subscriptions/plans', { params });
+  },
+
+  // 创建 Creem Checkout 会话
+  createCreemCheckout: (data: {
+    product_id: string;
+    success_url: string;
+  }) => {
+    return apiClient.post<{ checkout_url: string; checkout_id: string }>(
+      '/api/v1/subscriptions/checkout/creem',
+      data
+    );
+  },
+
+  // 验证 Creem 支付 (POST 请求，包含签名验证)
+  verifyCreemPayment: (data: CreemVerifyRequest) => {
+    return apiClient.post<CreemVerifyResponse>('/api/v1/subscriptions/verify/creem', data);
   },
 };
 

@@ -1,6 +1,9 @@
 'use client';
 
+import { useState } from 'react';
 import { SubscriptionPlanWithPrice } from '@/types/subscription';
+import { useAuth } from '@/contexts/AuthContext';
+import { subscriptionAPI } from '@/services/api';
 
 interface PricingCardProps {
   plan: SubscriptionPlanWithPrice;
@@ -20,6 +23,9 @@ const Feature = ({ children }: { children: React.ReactNode }) => (
 );
 
 export default function PricingCard({ plan, isRecommended = false, cycle }: PricingCardProps) {
+  const { user } = useAuth();
+  const [isLoading, setIsLoading] = useState(false);
+
   // 格式化价格显示
   const formatPrice = () => {
     if (!plan.price || !plan.currency) return null;
@@ -68,10 +74,48 @@ export default function PricingCard({ plan, isRecommended = false, cycle }: Pric
   };
 
   // 处理升级按钮点击
-  const handleUpgrade = () => {
-    if (plan.payment_link) {
-      window.open(plan.payment_link, '_blank');
+  const handleUpgrade = async () => {
+    // 检查是否有 product_id
+    if (!plan.product_id) {
+      console.error('❌ Product ID not found');
+      alert('Product information is not available. Please try again later.');
+      return;
     }
+
+    // 如果用户未登录，提示登录
+    if (!user) {
+      alert('Please login to upgrade your plan');
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      console.log('📡 Creating checkout session for product:', plan.product_id);
+
+      // 获取成功回调 URL
+      const successUrl = process.env.NEXT_PUBLIC_PAYMENT_SUCCESS_URL || `${window.location.origin}/payment/success`;
+
+      // 调用封装好的 API
+      const data = await subscriptionAPI.createCreemCheckout({
+        product_id: plan.product_id,
+        success_url: successUrl,
+      });
+
+      console.log('✅ Checkout session created:', data);
+
+      // 跳转到 Creem checkout 页面
+      if (data.checkout_url) {
+        window.location.href = data.checkout_url;
+      } else {
+        throw new Error('Checkout URL not returned');
+      }
+    } catch (error) {
+      console.error('❌ Error creating checkout:', error);
+      alert(error instanceof Error ? error.message : 'Failed to start checkout process. Please try again.');
+      setIsLoading(false);
+    }
+    // 注意：跳转成功后页面会离开，所以不需要 setIsLoading(false)
   };
 
   return (
@@ -122,14 +166,22 @@ export default function PricingCard({ plan, isRecommended = false, cycle }: Pric
       {/* CTA Button */}
       <button
         onClick={handleUpgrade}
-        disabled={!plan.payment_link}
+        disabled={!plan.product_id || isLoading}
         className={`w-full flex items-center justify-center gap-2 rounded-xl font-semibold py-3 transition-colors ${
           isRecommended
-            ? 'bg-purple-600 text-white hover:bg-purple-700 disabled:bg-gray-400'
-            : 'border-2 border-gray-300 text-gray-600 hover:border-purple-400 hover:text-purple-600 disabled:opacity-50'
+            ? 'bg-purple-600 text-white hover:bg-purple-700 disabled:bg-gray-400 disabled:cursor-not-allowed'
+            : 'border-2 border-gray-300 text-gray-600 hover:border-purple-400 hover:text-purple-600 disabled:opacity-50 disabled:cursor-not-allowed'
         }`}
       >
-        {plan.payment_link ? (
+        {isLoading ? (
+          <>
+            <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24" fill="none">
+              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+            </svg>
+            Processing...
+          </>
+        ) : plan.product_id ? (
           <>
             Upgrade Now
             <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">

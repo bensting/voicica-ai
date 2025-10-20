@@ -9,7 +9,8 @@
     "blog": "部落格",
     "myVoiceModels": "我的語音模型",
     "generationHistory": "生成歷史",
-    "login": "登入"
+    "login": "登入",
+    "logout": "登出"
   },
   "login": {
     "title": "AI 語音實驗室",
@@ -41,5 +42,26 @@
     "en": "English",
     "zhCN": "简体中文",
     "zhTW": "繁體中文"
+  },
+  "settings": {
+    "title": "設定",
+    "basicInfo": {
+      "title": "基本資訊",
+      "nameSurname": "姓名",
+      "email": "電子郵件地址",
+      "phone": "電話"
+    },
+    "actions": {
+      "saveChanges": "儲存變更",
+      "cancel": "取消"
+    }
+  },
+  "generationHistory": {
+    "title": "生成歷史",
+    "subtitle": "查看和管理您的語音生成記錄。",
+    "generatedSpeech": "生成的語音",
+    "clearAll": "清空全部",
+    "noGenerations": "暫無生成記錄",
+    "noGenerationsDescription": "開始創建後，您的語音生成記錄將顯示在這裡。"
   }
 }

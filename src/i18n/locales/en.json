@@ -9,7 +9,8 @@
     "blog": "Blog",
     "myVoiceModels": "My Voice Models",
     "generationHistory": "Generation History",
-    "login": "Login"
+    "login": "Login",
+    "logout": "Logout"
   },
   "login": {
     "title": "AI Voice Labs",
@@ -41,5 +42,26 @@
     "en": "English",
     "zhCN": "简体中文",
     "zhTW": "繁體中文"
+  },
+  "settings": {
+    "title": "Settings",
+    "basicInfo": {
+      "title": "Basic Info",
+      "nameSurname": "Name & Surname",
+      "email": "Email Address",
+      "phone": "Phone"
+    },
+    "actions": {
+      "saveChanges": "Save Changes",
+      "cancel": "Cancel"
+    }
+  },
+  "generationHistory": {
+    "title": "Generation History",
+    "subtitle": "View and manage your speech generations.",
+    "generatedSpeech": "Generated Speech",
+    "clearAll": "Clear All",
+    "noGenerations": "No generations yet",
+    "noGenerationsDescription": "Your speech generations will appear here once you start creating."
   }
 }

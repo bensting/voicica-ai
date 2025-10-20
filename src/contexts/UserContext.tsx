@@ -3,24 +3,7 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { useAuth } from './AuthContext';
 import { userAPI } from '@/services/api';
-
-/**
- * 后端用户数据接口
- */
-interface UserProfile {
-  id: string;
-  email: string | null;
-  name: string | null;
-  photo_url: string | null;
-  credits: number;
-  total_credits_used: number;
-  subscription_status: string;
-  product_id: string | null;
-  base_plan_id: string | null;
-  purchase_token: string | null;
-  expiry_time: string | null;
-  next_billing_date: string | null;
-}
+import type { UserProfile } from '@/types/user';
 
 interface UserContextType {
   profile: UserProfile | null;
@@ -61,7 +44,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
       const userData = await userAPI.getCurrentUser();
 
       console.log('✅ UserContext: 后端用户数据获取成功', userData);
-      setProfile(userData as UserProfile);
+      setProfile(userData);
     } catch (err) {
       const error = err as Error;
       console.error('❌ UserContext: 后端 API 调用失败', error);

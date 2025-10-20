@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 
@@ -14,6 +15,7 @@ export default function UserMenu() {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const { user, signOut } = useAuth();
+  const { t } = useLanguage();
   const router = useRouter();
 
   // 点击外部关闭下拉菜单
@@ -117,7 +119,7 @@ export default function UserMenu() {
                   d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
                 />
               </svg>
-              Account Settings
+{t('settings.title')}
             </button>
 
             <button
@@ -132,7 +134,7 @@ export default function UserMenu() {
                   d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
                 />
               </svg>
-              Logout
+{t('navbar.logout')}
             </button>
           </div>
         </div>

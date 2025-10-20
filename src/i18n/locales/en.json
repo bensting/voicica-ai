@@ -9,6 +9,7 @@
     "blog": "Blog",
     "myVoiceModels": "My Voice Models",
     "generationHistory": "Generation History",
+    "subscription": "Subscription",
     "login": "Login",
     "logout": "Logout"
   },
@@ -62,6 +63,48 @@
     "generatedSpeech": "Generated Speech",
     "clearAll": "Clear All",
     "noGenerations": "No generations yet",
-    "noGenerationsDescription": "Your speech generations will appear here once you start creating."
+    "noGenerationsDescription": "Your speech generations will appear here once you start creating.",
+    "filters": {
+      "status": "Filter by Status",
+      "dateRange": "Filter by Date Range",
+      "allStatus": "All Status",
+      "success": "Success",
+      "processing": "Processing",
+      "pending": "Pending",
+      "failed": "Failed",
+      "from": "From",
+      "to": "To",
+      "apply": "Apply",
+      "clear": "Clear"
+    }
+  },
+  "subscription": {
+    "title": "Your Plan",
+    "changePlan": "Change Your Plan",
+    "selectPlan": "Choose a plan that suits you best.",
+    "monthly": "Monthly",
+    "yearly": "Yearly",
+    "yearlyDiscount": "33% OFF",
+    "free": {
+      "name": "Free",
+      "badge": "Active",
+      "feature1": "Up to 120 characters per generation",
+      "feature2": "900 seconds audio generation per month",
+      "feature3": "Create up to 5 voice clone models"
+    },
+    "pro": {
+      "name": "Professional",
+      "badge": "Recommended",
+      "tagline": "Unlock full potential",
+      "priceMonthly": "$14.99",
+      "priceYearly": "$9.99",
+      "perMonth": "/1 month",
+      "feature1": "Up to 1000 characters per generation",
+      "feature2": "Commercial use allowed",
+      "feature3": "Unlimited generation",
+      "feature4": "Priority generation",
+      "feature5": "Create unlimited voice clone models",
+      "upgradeNow": "Upgrade Now"
+    }
   }
 }

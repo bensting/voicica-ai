@@ -1,5 +1,4 @@
-import axios from 'axios';
-import { getAuth } from 'firebase/auth';
+import { apiClient } from './client';
 import {
   TtsRecordsQueryParams,
   TtsRecordsQueryResponse,
@@ -8,72 +7,28 @@ import {
   TaskStatus
 } from '@/types/tts';
 
-// API 基础 URL - 从环境变量读取
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000';
-
-/**
- * 获取认证 token
- */
-async function getAuthToken(): Promise<string | null> {
-  const auth = getAuth();
-  const user = auth.currentUser;
-  if (!user) {
-    return null;
-  }
-  return await user.getIdToken();
-}
-
 /**
  * 查询 TTS 记录
  */
 export async function queryTtsRecords(
   params: TtsRecordsQueryParams = {}
 ): Promise<TtsRecordsQueryResponse> {
-  try {
-    const token = await getAuthToken();
-    if (!token) {
-      throw new Error('User not authenticated');
-    }
-
-    const response = await axios.get(`${API_BASE_URL}/api/v1/tts/records/query`, {
-      headers: {
-        'Authorization': `Bearer ${token}`,
-      },
-      params: {
-        status: params.status,
-        start_date: params.start_date,
-        end_date: params.end_date,
-        page: params.page || 1,
-        page_size: params.page_size || 20,
-      },
-    });
-
-    return response.data;
-  } catch (error) {
-    console.error('Error querying TTS records:', error);
-    throw error;
-  }
+  return apiClient.get<TtsRecordsQueryResponse>('/api/v1/tts/records/query', {
+    params: {
+      status: params.status,
+      start_date: params.start_date,
+      end_date: params.end_date,
+      page: params.page || 1,
+      page_size: params.page_size || 20,
+    },
+  });
 }
 
 /**
  * 删除 TTS 记录
  */
 export async function deleteTtsRecord(recordId: string): Promise<void> {
-  try {
-    const token = await getAuthToken();
-    if (!token) {
-      throw new Error('User not authenticated');
-    }
-
-    await axios.delete(`${API_BASE_URL}/api/v1/tts/records/${recordId}`, {
-      headers: {
-        'Authorization': `Bearer ${token}`,
-      },
-    });
-  } catch (error) {
-    console.error('Error deleting TTS record:', error);
-    throw error;
-  }
+  return apiClient.delete<void>(`/api/v1/tts/records/${recordId}`);
 }
 
 /**
@@ -86,25 +41,9 @@ export async function batchDeleteTtsRecords(recordIds?: string[] | null): Promis
   deleted: number;
   failed: number;
 }> {
-  try {
-    const token = await getAuthToken();
-    if (!token) {
-      throw new Error('User not authenticated');
-    }
-
-    const response = await axios.post(`${API_BASE_URL}/api/v1/tts/records/batch-delete`, {
-      record_ids: recordIds || null,
-    }, {
-      headers: {
-        'Authorization': `Bearer ${token}`,
-      },
-    });
-
-    return response.data;
-  } catch (error) {
-    console.error('Error batch deleting TTS records:', error);
-    throw error;
-  }
+  return apiClient.post('/api/v1/tts/records/batch-delete', {
+    record_ids: recordIds || null,
+  });
 }
 
 /**
@@ -112,12 +51,12 @@ export async function batchDeleteTtsRecords(recordIds?: string[] | null): Promis
  */
 export async function downloadAudio(audioUrl: string, filename: string): Promise<void> {
   try {
-    const response = await axios.get(audioUrl, {
-      responseType: 'blob',
-    });
+    // Note: Direct file download doesn't need authentication
+    const response = await fetch(audioUrl);
+    const blob = await response.blob();
 
     // 创建下载链接
-    const url = window.URL.createObjectURL(new Blob([response.data]));
+    const url = window.URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
     link.setAttribute('download', filename);

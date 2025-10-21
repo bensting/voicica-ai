@@ -8,6 +8,7 @@ import { apiClient } from './client';
 export const getVoices = (params?: {
   provider?: string;
   country?: string;
+  language?: string;
   role?: string;
   gender?: string;
   is_active?: boolean;

@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import Image from 'next/image';
 import type { VoiceModel } from '@/hooks/useTTSGenerator';
-import { voiceAPI } from '@/lib/api';
+import { voiceAPI, enumsAPI } from '@/lib/api';
 import { useLanguage } from '@/contexts/LanguageContext';
 import CustomSelect, { type SelectOption } from '@/components/ui/CustomSelect';
 import * as CountryFlags from 'country-flag-icons/react/3x2';
@@ -22,7 +22,7 @@ export default function VoiceSelector({
   onSelect,
   disabled = false,
 }: VoiceSelectorProps) {
-  const { t } = useLanguage();
+  const { t, locale } = useLanguage();
   const [searchQuery, setSearchQuery] = useState('');
   const [voices, setVoices] = useState<VoiceModel[]>([]);
   const [loading, setLoading] = useState(true);
@@ -32,6 +32,24 @@ export default function VoiceSelector({
   const [selectedCountry, setSelectedCountry] = useState<string>('all');
   const [selectedLanguage, setSelectedLanguage] = useState<string>('all');
   const [selectedGender, setSelectedGender] = useState<string>('all');
+
+  // 可用语言列表（根据选择的国家动态变化）
+  const [availableLanguages, setAvailableLanguages] = useState<string[]>([]);
+
+  // 从 locale 提取语言代码（例如：en-US -> en）
+  const getLanguageFromLocale = (locale: string): string => {
+    return locale.split('-')[0].toLowerCase();
+  };
+
+  // 从 locale 提取国家代码（例如：en-US -> US）
+  const getCountryFromLocale = (locale: string): string => {
+    const parts = locale.split('-');
+    if (parts.length >= 2) {
+      // 处理特殊格式如 zh-CN-sichuan
+      return parts[1].toUpperCase();
+    }
+    return '';
+  };
 
   // 从 API 获取语音列表
   useEffect(() => {
@@ -55,21 +73,6 @@ export default function VoiceSelector({
     void fetchData();
   }, []);
 
-  // 从 locale 提取语言代码（例如：en-US -> en）
-  const getLanguageFromLocale = (locale: string): string => {
-    return locale.split('-')[0].toLowerCase();
-  };
-
-  // 从 locale 提取国家代码（例如：en-US -> US）
-  const getCountryFromLocale = (locale: string): string => {
-    const parts = locale.split('-');
-    if (parts.length >= 2) {
-      // 处理特殊格式如 zh-CN-sichuan
-      return parts[1].toUpperCase();
-    }
-    return '';
-  };
-
   // 计算唯一的国家、语言和性别列表
   const { countries, languages, genders } = useMemo(() => {
     const countrySet = new Set<string>();
@@ -91,6 +94,29 @@ export default function VoiceSelector({
       genders: Array.from(genderSet).sort(),
     };
   }, [voices]);
+
+  // 当选择的国家改变时，获取该国家支持的语言列表
+  useEffect(() => {
+    const fetchLanguages = async () => {
+      try {
+        const languageList = await enumsAPI.getVoiceLanguagesByCountry(
+          selectedCountry === 'all' ? undefined : selectedCountry
+        );
+        setAvailableLanguages(languageList);
+
+        // 重置语言选择为 'all'
+        setSelectedLanguage('all');
+
+        console.log(`✅ 国家 ${selectedCountry} 支持的语言:`, languageList);
+      } catch (err) {
+        console.error('❌ 获取语言列表失败:', err);
+        // 如果获取失败，回退到从当前语音列表中提取
+        setAvailableLanguages(languages || []);
+      }
+    };
+
+    void fetchLanguages();
+  }, [selectedCountry, languages]);
 
   // 过滤语音列表
   const filteredVoices = voices.filter((voice) => {
@@ -130,27 +156,56 @@ export default function VoiceSelector({
     return null;
   };
 
+  // 根据当前语言对国家列表进行排序
+  const sortCountriesByLanguage = (countryList: string[], currentLang: string): string[] => {
+    // 定义每种语言的优先国家列表
+    const priorityCountries: Record<string, string[]> = {
+      'en': ['US', 'GB'],
+      'zh-CN': ['CN', 'HK', 'TW', 'US', 'GB'],
+      'zh-TW': ['TW', 'CN', 'HK', 'US', 'GB'],
+    };
+
+    const priority = priorityCountries[currentLang] || [];
+
+    // 将国家分为优先和其他两组
+    const priorityList = priority.filter(country => countryList.includes(country));
+    const otherList = countryList.filter(country => !priority.includes(country)).sort();
+
+    return [...priorityList, ...otherList];
+  };
+
   // 准备自定义选择器的选项
   const countryOptions: SelectOption[] = useMemo(() => {
+    const sortedCountries = sortCountriesByLanguage(countries, locale);
+
     return [
       { value: 'all', label: 'All Countries' },
-      ...countries.map((country) => ({
+      ...sortedCountries.map((country) => ({
         value: country,
         label: getCountryDisplayName(country),
         icon: getCountryFlagComponent(country),
       })),
     ];
-  }, [countries, t]);
+  }, [countries, locale, t]);
+
+  // 获取语言显示名称（国际化）
+  const getLanguageDisplayName = (languageCode: string): string => {
+    const translatedName = t(`languages.${languageCode}`);
+    return translatedName !== `languages.${languageCode}` ? translatedName : languageCode;
+  };
 
   const languageOptions: SelectOption[] = useMemo(() => {
+    // 使用 availableLanguages（基于选择的国家动态变化）
+    const languagesToShow = availableLanguages.length > 0 ? availableLanguages : (languages || []);
+
     return [
       { value: 'all', label: 'All Languages' },
-      ...languages.map((lang) => ({
+      ...languagesToShow.map((lang) => ({
         value: lang,
-        label: lang.toUpperCase(),
+        label: getLanguageDisplayName(lang),
       })),
     ];
-  }, [languages]);
+  }, [availableLanguages, languages, t]);
 
   const genderOptions: SelectOption[] = useMemo(() => {
     return [

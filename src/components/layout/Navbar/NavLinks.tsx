@@ -18,7 +18,12 @@ const navLinks: NavLink[] = [
   { href: '/generation-history', label: 'Generation History' },
 ];
 
-export default function NavLinks() {
+interface NavLinksProps {
+  mobile?: boolean;
+  onLinkClick?: () => void;
+}
+
+export default function NavLinks({ mobile = false, onLinkClick }: NavLinksProps = {}) {
   const pathname = usePathname();
 
   const handlePricingClick = (e: MouseEvent<HTMLAnchorElement>) => {
@@ -29,7 +34,29 @@ export default function NavLinks() {
         el.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
     }
+    onLinkClick?.();
   };
+
+  const handleClick = () => {
+    onLinkClick?.();
+  };
+
+  if (mobile) {
+    return (
+      <div className="flex flex-col space-y-3">
+        {navLinks.map((link) => (
+          <Link
+            key={link.href}
+            href={link.href}
+            onClick={link.label === 'Pricing' ? handlePricingClick : handleClick}
+            className="text-gray-700 hover:text-purple-600 transition-colors font-medium py-2"
+          >
+            {link.label}
+          </Link>
+        ))}
+      </div>
+    );
+  }
 
   return (
     <div className="hidden md:flex items-center space-x-8">

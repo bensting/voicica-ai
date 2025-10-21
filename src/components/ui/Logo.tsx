@@ -3,7 +3,7 @@ import Image from 'next/image';
 
 export default function Logo() {
   return (
-    <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
+    <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
       <div className="w-12 h-12 relative">
         <Image
           src="/logo.svg"
@@ -13,7 +13,7 @@ export default function Logo() {
           priority
         />
       </div>
-      <span className="text-xl font-semibold text-gray-900">AI Voice Labs</span>
+      <span className="text-lg md:text-xl font-semibold text-gray-900">AI Voice Labs</span>
     </Link>
   );
 }

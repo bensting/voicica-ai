@@ -1,6 +1,7 @@
 import Hero from '@/components/sections/Hero';
 import TTSGenerator from '@/components/features/tts/TTSGenerator';
 import Pricing from '@/components/sections/Pricing';
+import FAQ from '@/components/sections/FAQ';
 
 export default function Home() {
   return (
@@ -24,7 +25,10 @@ export default function Home() {
         <Pricing />
       </section>
 
-      {/* CTA Section - Placeholder */}
+      {/* FAQ Section */}
+      <FAQ />
+
+      {/* CTA Section */}
       <section className="py-20 px-4 bg-gradient-to-r from-purple-600 to-purple-800">
         <div className="max-w-4xl mx-auto text-center text-white">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
@@ -36,13 +40,6 @@ export default function Home() {
           <button className="px-8 py-3 bg-white text-purple-600 rounded-full font-medium hover:bg-gray-100 transition-colors shadow-lg">
             Start Free Trial
           </button>
-        </div>
-      </section>
-
-      {/* Spacer for scroll effect demonstration */}
-      <section className="py-20 px-4 bg-white">
-        <div className="max-w-7xl mx-auto text-center text-gray-500">
-          <p>Scroll up to see the navbar effect</p>
         </div>
       </section>
     </div>

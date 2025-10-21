@@ -1,7 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import Image from 'next/image';
 import type { VoiceModel } from '@/hooks/useTTSGenerator';
-import { voiceAPI, enumsAPI } from '@/lib/api';
+import { voiceAPI } from '@/lib/api';
+import { useLanguage } from '@/contexts/LanguageContext';
+import CustomSelect, { type SelectOption } from '@/components/ui/CustomSelect';
+import * as CountryFlags from 'country-flag-icons/react/3x2';
 
 interface VoiceSelectorProps {
   selectedVoice: VoiceModel | null;
@@ -19,29 +22,27 @@ export default function VoiceSelector({
   onSelect,
   disabled = false,
 }: VoiceSelectorProps) {
+  const { t } = useLanguage();
   const [searchQuery, setSearchQuery] = useState('');
   const [voices, setVoices] = useState<VoiceModel[]>([]);
-  const [countries, setCountries] = useState<Array<{ value: string; label: string }>>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [selectedCountry, setSelectedCountry] = useState<string>('all');
 
-  // 从 API 获取语音列表和国家列表
+  // 筛选状态
+  const [selectedCountry, setSelectedCountry] = useState<string>('all');
+  const [selectedLanguage, setSelectedLanguage] = useState<string>('all');
+  const [selectedGender, setSelectedGender] = useState<string>('all');
+
+  // 从 API 获取语音列表
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
         setError(null);
 
-        // 并行获取语音列表和国家列表
-        const [voicesData, countriesData] = await Promise.all([
-          voiceAPI.getVoices({ is_active: true, limit: 1000 }),
-          enumsAPI.getCountries(),
-        ]);
-
+        const voicesData = await voiceAPI.getVoices({ is_active: true, limit: 1000 });
         setVoices(voicesData as VoiceModel[]);
-        setCountries(countriesData);
-        console.log('✅ 成功获取语音列表和国家列表:', { voicesData, countriesData });
+        console.log('✅ 成功获取语音列表:', voicesData);
       } catch (err) {
         const error = err as Error;
         console.error('❌ 获取数据失败:', error);
@@ -51,20 +52,115 @@ export default function VoiceSelector({
       }
     };
 
-    fetchData();
+    void fetchData();
   }, []);
+
+  // 从 locale 提取语言代码（例如：en-US -> en）
+  const getLanguageFromLocale = (locale: string): string => {
+    return locale.split('-')[0].toLowerCase();
+  };
+
+  // 从 locale 提取国家代码（例如：en-US -> US）
+  const getCountryFromLocale = (locale: string): string => {
+    const parts = locale.split('-');
+    if (parts.length >= 2) {
+      // 处理特殊格式如 zh-CN-sichuan
+      return parts[1].toUpperCase();
+    }
+    return '';
+  };
+
+  // 计算唯一的国家、语言和性别列表
+  const { countries, languages, genders } = useMemo(() => {
+    const countrySet = new Set<string>();
+    const languageSet = new Set<string>();
+    const genderSet = new Set<string>();
+
+    voices.forEach((voice) => {
+      const country = getCountryFromLocale(voice.locale);
+      const language = getLanguageFromLocale(voice.locale);
+
+      if (country) countrySet.add(country);
+      if (language) languageSet.add(language);
+      if (voice.gender) genderSet.add(voice.gender);
+    });
+
+    return {
+      countries: Array.from(countrySet).sort(),
+      languages: Array.from(languageSet).sort(),
+      genders: Array.from(genderSet).sort(),
+    };
+  }, [voices]);
 
   // 过滤语音列表
   const filteredVoices = voices.filter((voice) => {
+    const voiceCountry = getCountryFromLocale(voice.locale);
+    const voiceLanguage = getLanguageFromLocale(voice.locale);
+
     // 搜索过滤
     const matchesSearch = voice.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                          voice.display_name?.en?.toLowerCase().includes(searchQuery.toLowerCase());
 
     // 国家过滤
-    const matchesCountry = selectedCountry === 'all' || voice.country === selectedCountry;
+    const matchesCountry = selectedCountry === 'all' || voiceCountry === selectedCountry;
 
-    return matchesSearch && matchesCountry;
+    // 语言过滤
+    const matchesLanguage = selectedLanguage === 'all' || voiceLanguage === selectedLanguage;
+
+    // 性别过滤
+    const matchesGender = selectedGender === 'all' || voice.gender === selectedGender;
+
+    return matchesSearch && matchesCountry && matchesLanguage && matchesGender;
   });
+
+  // 获取国家名称（带国旗）
+  const getCountryDisplayName = (countryCode: string): string => {
+    const translatedName = t(`countries.${countryCode}`);
+    return translatedName !== `countries.${countryCode}` ? translatedName : countryCode;
+  };
+
+  // 获取国旗 SVG 组件
+  const getCountryFlagComponent = (countryCode: string) => {
+    // 使用 UK 映射到 GB
+    const code = countryCode === 'UK' ? 'GB' : countryCode;
+    const FlagComponent = (CountryFlags as any)[code];
+    if (FlagComponent) {
+      return <FlagComponent className="w-5 h-4" />;
+    }
+    return null;
+  };
+
+  // 准备自定义选择器的选项
+  const countryOptions: SelectOption[] = useMemo(() => {
+    return [
+      { value: 'all', label: 'All Countries' },
+      ...countries.map((country) => ({
+        value: country,
+        label: getCountryDisplayName(country),
+        icon: getCountryFlagComponent(country),
+      })),
+    ];
+  }, [countries, t]);
+
+  const languageOptions: SelectOption[] = useMemo(() => {
+    return [
+      { value: 'all', label: 'All Languages' },
+      ...languages.map((lang) => ({
+        value: lang,
+        label: lang.toUpperCase(),
+      })),
+    ];
+  }, [languages]);
+
+  const genderOptions: SelectOption[] = useMemo(() => {
+    return [
+      { value: 'all', label: 'All Genders' },
+      ...genders.map((gender) => ({
+        value: gender,
+        label: gender,
+      })),
+    ];
+  }, [genders]);
 
   return (
     <div className="space-y-4">
@@ -75,49 +171,59 @@ export default function VoiceSelector({
         </h2>
       </div>
 
-      {/* 第二行：国家筛选和搜索框 */}
-      <div className="grid grid-cols-2 gap-3">
+      {/* 第二行：三个筛选器 */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
         {/* 国家选择 */}
-        <div>
-          <select
-            value={selectedCountry}
-            onChange={(e) => setSelectedCountry(e.target.value)}
-            disabled={disabled || loading}
-            className="w-full px-4 py-2.5 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none disabled:bg-gray-50 disabled:cursor-not-allowed transition-colors text-sm"
-          >
-            <option value="all">All Countries</option>
-            {countries.map((country) => (
-              <option key={country.value} value={country.value}>
-                {country.value} - {country.label}
-              </option>
-            ))}
-          </select>
-        </div>
+        <CustomSelect
+          value={selectedCountry}
+          onChange={setSelectedCountry}
+          options={countryOptions}
+          placeholder="Select Country"
+          disabled={disabled || loading}
+        />
 
-        {/* 搜索框 */}
-        <div className="relative">
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search voices"
-            disabled={disabled || loading}
-            className="w-full px-4 py-2.5 pr-10 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none disabled:bg-gray-50 disabled:cursor-not-allowed transition-colors text-sm"
+        {/* 语言选择 */}
+        <CustomSelect
+          value={selectedLanguage}
+          onChange={setSelectedLanguage}
+          options={languageOptions}
+          placeholder="Select Language"
+          disabled={disabled || loading}
+        />
+
+        {/* 性别选择 */}
+        <CustomSelect
+          value={selectedGender}
+          onChange={setSelectedGender}
+          options={genderOptions}
+          placeholder="Select Gender"
+          disabled={disabled || loading}
+        />
+      </div>
+
+      {/* 第三行：搜索框 */}
+      <div className="relative">
+        <input
+          type="text"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          placeholder="Search voices by name..."
+          disabled={disabled || loading}
+          className="w-full px-4 py-2.5 pr-10 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none disabled:bg-gray-50 disabled:cursor-not-allowed transition-colors text-sm"
+        />
+        <svg
+          className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
           />
-          <svg
-            className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-            />
-          </svg>
-        </div>
+        </svg>
       </div>
 
       {/* 语音列表 */}
@@ -143,7 +249,7 @@ export default function VoiceSelector({
 
         {!loading && !error && filteredVoices.length === 0 && (
           <div className="text-center py-8 text-gray-500">
-            No voices found matching &quot;{searchQuery}&quot;
+            No voices found matching your criteria
           </div>
         )}
 
@@ -203,8 +309,9 @@ export default function VoiceSelector({
 
                 {/* 标签 */}
                 <div className="flex items-center gap-1 flex-wrap">
-                  <span className="px-2 py-0.5 bg-gray-200 text-gray-700 text-xs rounded">
-                    {voice.country}
+                  <span className="px-2 py-0.5 bg-gray-200 text-gray-700 text-xs rounded flex items-center gap-1">
+                    <span className="w-4 h-3 inline-flex">{getCountryFlagComponent(getCountryFromLocale(voice.locale))}</span>
+                    <span>{getCountryFromLocale(voice.locale)}</span>
                   </span>
                   {voice.gender && (
                     <span className="px-2 py-0.5 bg-blue-100 text-blue-700 text-xs rounded">

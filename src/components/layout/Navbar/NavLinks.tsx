@@ -12,8 +12,7 @@ interface NavLink {
 const navLinks: NavLink[] = [
   { href: '/explore', label: 'Explore' },
   { href: '/#pricing', label: 'Pricing' },
-  { href: '/faq', label: 'FAQ' },
-  { href: '/blog', label: 'Blog' },
+  { href: '/#faq', label: 'FAQ' },
   { href: '/my-voice-models', label: 'My Voice Models' },
   { href: '/generation-history', label: 'Generation History' },
 ];
@@ -26,10 +25,10 @@ interface NavLinksProps {
 export default function NavLinks({ mobile = false, onLinkClick }: NavLinksProps = {}) {
   const pathname = usePathname();
 
-  const handlePricingClick = (e: MouseEvent<HTMLAnchorElement>) => {
+  const handleSectionClick = (sectionId: string) => (e: MouseEvent<HTMLAnchorElement>) => {
     if (pathname === '/') {
       e.preventDefault();
-      const el = document.getElementById('pricing');
+      const el = document.getElementById(sectionId);
       if (el) {
         el.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
@@ -41,6 +40,12 @@ export default function NavLinks({ mobile = false, onLinkClick }: NavLinksProps 
     onLinkClick?.();
   };
 
+  const getClickHandler = (label: string) => {
+    if (label === 'Pricing') return handleSectionClick('pricing');
+    if (label === 'FAQ') return handleSectionClick('faq');
+    return handleClick;
+  };
+
   if (mobile) {
     return (
       <div className="flex flex-col space-y-3">
@@ -48,7 +53,7 @@ export default function NavLinks({ mobile = false, onLinkClick }: NavLinksProps 
           <Link
             key={link.href}
             href={link.href}
-            onClick={link.label === 'Pricing' ? handlePricingClick : handleClick}
+            onClick={getClickHandler(link.label)}
             className="text-gray-700 hover:text-purple-600 transition-colors font-medium py-2"
           >
             {link.label}
@@ -64,7 +69,7 @@ export default function NavLinks({ mobile = false, onLinkClick }: NavLinksProps 
         <Link
           key={link.href}
           href={link.href}
-          onClick={link.label === 'Pricing' ? handlePricingClick : undefined}
+          onClick={getClickHandler(link.label)}
           className="text-gray-700 hover:text-purple-600 transition-colors font-medium"
         >
           {link.label}

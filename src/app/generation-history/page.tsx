@@ -1,181 +1,42 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import LoginForm from '@/components/features/auth/LoginForm';
 import ConfirmDialog from '@/components/ui/ConfirmDialog';
 import GenerationHistory from '@/components/features/generation-history/GenerationHistory';
-import {
-  queryTtsRecords,
-  deleteTtsRecord,
-  batchDeleteTtsRecords,
-  downloadAudio,
-  convertTtsRecordToGeneration
-} from '@/lib/api/tts';
-import { TaskStatus } from '@/types/tts';
-import type { Generation } from '@/types/tts';
+import { useGenerationHistory } from '@/components/features/generation-history/hooks/useGenerationHistory';
 
+/**
+ * Generation History Page
+ *
+ * Displays user's TTS generation history with filtering and pagination
+ * Requires authentication
+ */
 export default function GenerationHistoryPage() {
   const { user, loading: authLoading } = useAuth();
-  const [loading, setLoading] = useState(true);
-  const [generations, setGenerations] = useState<Generation[]>([]);
-  const [total, setTotal] = useState(0);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize] = useState(20);
-  const [totalPages, setTotalPages] = useState(0);
-  const [selectedStatus, setSelectedStatus] = useState<TaskStatus | null>(null);
-  const [startDate, setStartDate] = useState<string | null>(null);
-  const [endDate, setEndDate] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
 
-  // Confirmation dialog state
-  const [confirmDialog, setConfirmDialog] = useState<{
-    isOpen: boolean;
-    title: string;
-    message: string;
-    onConfirm: () => void;
-  }>({
-    isOpen: false,
-    title: '',
-    message: '',
-    onConfirm: () => {},
-  });
-
-  // Fetch records from API
-  const fetchRecords = useCallback(async () => {
-    try {
-      setLoading(true);
-      setError(null);
-
-      const response = await queryTtsRecords({
-        status: selectedStatus || undefined,
-        start_date: startDate || undefined,
-        end_date: endDate || undefined,
-        page: currentPage,
-        page_size: pageSize,
-      });
-
-      // Convert TtsRecord to Generation format
-      const convertedGenerations = response.records.map(convertTtsRecordToGeneration);
-
-      setGenerations(convertedGenerations);
-      setTotal(response.total);
-      setTotalPages(response.total_pages);
-    } catch (err) {
-      console.error('Error fetching TTS records:', err);
-      setError('Failed to load generation history. Please try again later.');
-      setGenerations([]);
-      setTotal(0);
-      setTotalPages(0);
-    } finally {
-      setLoading(false);
-    }
-  }, [selectedStatus, startDate, endDate, currentPage, pageSize]);
-
-  // Fetch records on mount and when filters/pagination change (only if user is logged in)
-  useEffect(() => {
-    if (user) {
-      void fetchRecords();
-    }
-  }, [user, fetchRecords]);
-
-  // Handle clear all records
-  const handleClearAll = async () => {
-    try {
-      // First, fetch all records that match current filters (without pagination limit)
-      const response = await queryTtsRecords({
-        status: selectedStatus || undefined,
-        start_date: startDate || undefined,
-        end_date: endDate || undefined,
-        page: 1,
-        page_size: 10000, // Get all matching records
-      });
-
-      const allMatchingIds = response.records.map(record => record.id);
-
-      if (allMatchingIds.length === 0) {
-        window.alert('No records to delete.');
-        return;
-      }
-
-      setConfirmDialog({
-        isOpen: true,
-        title: 'Delete All Records',
-        message: `Are you sure you want to delete all ${allMatchingIds.length} record(s)? This action cannot be undone and all audio files will be permanently removed.`,
-        onConfirm: async () => {
-          setConfirmDialog(prev => ({ ...prev, isOpen: false }));
-          try {
-            // Pass all matching record IDs to delete
-            const result = await batchDeleteTtsRecords(allMatchingIds);
-            console.log(`Batch delete completed: ${result.deleted} deleted, ${result.failed} failed`);
-            // Refresh the list (fetchRecords will handle loading state)
-            await fetchRecords();
-          } catch (err) {
-            console.error('Error clearing all records:', err);
-            window.alert('Failed to clear all records. Please try again.');
-          }
-        },
-      });
-    } catch (err) {
-      console.error('Error fetching records for deletion:', err);
-      window.alert('Failed to fetch records. Please try again.');
-    }
-  };
-
-  // Handle delete single generation
-  const handleDeleteGeneration = (id: string) => {
-    setConfirmDialog({
-      isOpen: true,
-      title: 'Delete Speech Generation',
-      message: 'Are you sure you want to delete this speech generation? This action cannot be undone and the audio file will be permanently removed.',
-      onConfirm: async () => {
-        setConfirmDialog(prev => ({ ...prev, isOpen: false }));
-        try {
-          await deleteTtsRecord(id);
-          // Refresh the list
-          await fetchRecords();
-        } catch (err) {
-          console.error('Error deleting record:', err);
-          window.alert('Failed to delete record. Please try again.');
-        }
-      },
-    });
-  };
-
-  // Handle download generation
-  const handleDownloadGeneration = async (id: string) => {
-    try {
-      const generation = generations.find(gen => gen.id === id);
-      if (!generation || !generation.audioUrl) {
-        window.alert('Audio file not available for download.');
-        return;
-      }
-
-      const filename = `tts-${id}.mp3`;
-      await downloadAudio(generation.audioUrl, filename);
-    } catch (err) {
-      console.error('Error downloading audio:', err);
-      window.alert('Failed to download audio. Please try again.');
-    }
-  };
-
-  // Handle page change
-  const handlePageChange = (page: number) => {
-    setCurrentPage(page);
-  };
-
-  // Handle status filter change
-  const handleStatusChange = (status: TaskStatus | null) => {
-    setSelectedStatus(status);
-    setCurrentPage(1); // Reset to first page when filter changes
-  };
-
-  // Handle date range change
-  const handleDateRangeChange = (start: string | null, end: string | null) => {
-    setStartDate(start);
-    setEndDate(end);
-    setCurrentPage(1); // Reset to first page when filter changes
-  };
+  // Use custom hook for all business logic
+  const {
+    loading,
+    error,
+    generations,
+    total,
+    currentPage,
+    pageSize,
+    totalPages,
+    selectedStatus,
+    startDate,
+    endDate,
+    confirmDialog,
+    handleClearAll,
+    handleDeleteGeneration,
+    handleDownloadGeneration,
+    handlePageChange,
+    handleStatusChange,
+    handleDateRangeChange,
+    closeConfirmDialog,
+    fetchRecords,
+  } = useGenerationHistory({ user });
 
   // Show loading while checking auth
   if (authLoading) {
@@ -295,7 +156,7 @@ export default function GenerationHistoryPage() {
         title={confirmDialog.title}
         message={confirmDialog.message}
         onConfirm={confirmDialog.onConfirm}
-        onCancel={() => setConfirmDialog(prev => ({ ...prev, isOpen: false }))}
+        onCancel={closeConfirmDialog}
         variant="danger"
       />
     </>

@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import { generateTTS } from '@/lib/api/tts';
+import { TaskStatus } from '@/types/tts';
 
 /**
  * 语音模型接口 - 匹配后端 Voice Schema
@@ -65,7 +67,7 @@ export function useTTSGenerator(maxCharacters: number = 120) {
 
   // 生成音频
   const handleGenerate = async () => {
-    if (!canGenerate) {
+    if (!canGenerate || !selectedVoice) {
       setError('Please enter text and select a voice');
       return;
     }
@@ -73,29 +75,67 @@ export function useTTSGenerator(maxCharacters: number = 120) {
     try {
       setIsGenerating(true);
       setError(null);
+      setAudioUrl(null);
 
       console.log('🎤 开始生成音频', {
         text,
-        voice: selectedVoice?.name,
+        voice: selectedVoice.name,
+        voiceId: selectedVoice.id,
+        language: selectedVoice.locale,
+        speed,
       });
 
-      // TODO: 调用后端 API 生成音频
-      // const result = await voiceAPI.generate({
-      //   text,
-      //   voiceId: selectedVoice.id,
-      // });
+      // 调用后端 API 生成音频
+      const result = await generateTTS({
+        text,
+        voiceId: selectedVoice.id,
+        language: selectedVoice.locale,
+        speed,
+      });
 
-      // 模拟 API 调用
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      console.log('📦 收到 API 响应', result);
 
-      // 模拟返回的音频 URL
-      setAudioUrl('https://example.com/audio.mp3');
+      // 检查生成结果
+      if (result.status === TaskStatus.SUCCESS && result.result?.audio_url) {
+        setAudioUrl(result.result.audio_url);
+        console.log('✅ 音频生成成功', {
+          audioUrl: result.result.audio_url,
+          duration: result.result.duration,
+          creditsCost: result.result.credits_cost,
+        });
+      } else if (result.status === TaskStatus.FAILURE) {
+        const errorMsg = result.error || '生成失败，请重试';
+        setError(errorMsg);
+        console.error('❌ 音频生成失败', errorMsg);
+      } else {
+        setError('生成状态异常，请重试');
+        console.error('❌ 意外的生成状态', result);
+      }
+    } catch (err: unknown) {
+      console.error('❌ 音频生成异常', err);
 
-      console.log('✅ 音频生成成功');
-    } catch (err) {
-      const error = err as Error;
-      console.error('❌ 音频生成失败', error);
-      setError(error.message || '生成失败，请重试');
+      // 处理不同类型的错误
+      if (err && typeof err === 'object' && 'response' in err) {
+        const axiosError = err as { response?: { status?: number; data?: { detail?: string } } };
+        const status = axiosError.response?.status;
+        const detail = axiosError.response?.data?.detail;
+
+        if (status === 400) {
+          setError(detail || '请求参数错误，请检查输入');
+        } else if (status === 402 || (detail && detail.includes('Insufficient credits'))) {
+          setError('积分不足，请升级套餐或充值');
+        } else if (status === 504) {
+          setError('生成超时，请尝试缩短文本或稍后重试');
+        } else if (status === 401) {
+          setError('未登录或登录已过期，请重新登录');
+        } else {
+          setError(detail || '生成失败，请重试');
+        }
+      } else if (err instanceof Error) {
+        setError(err.message || '生成失败，请重试');
+      } else {
+        setError('生成失败，请重试');
+      }
     } finally {
       setIsGenerating(false);
     }

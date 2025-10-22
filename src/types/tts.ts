@@ -51,3 +51,30 @@ export interface Generation {
   errorMessage?: string;
   voiceName?: string;
 }
+
+// TTS 生成请求参数
+export interface TtsGenerateRequest {
+  text: string;
+  voiceId: string;
+  language: string;
+  speed?: number;
+  pitch?: number;
+  volume?: number;
+}
+
+// TTS 生成响应 - 任务状态
+export interface TtsTaskStatus {
+  task_id: string;
+  status: TaskStatus;
+  progress: number;
+  result?: {
+    audio_url: string;
+    duration: number;
+    format: string;
+    task_id: string;
+    user_id: string;
+    record_id: string;
+    credits_cost: number;
+  };
+  error?: string;
+}

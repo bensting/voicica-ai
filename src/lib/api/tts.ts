@@ -4,8 +4,30 @@ import {
   TtsRecordsQueryResponse,
   TtsRecord,
   Generation,
-  TaskStatus
+  TaskStatus,
+  TtsGenerateRequest,
+  TtsTaskStatus
 } from '@/types/tts';
+
+/**
+ * 生成 TTS 语音
+ *
+ * 支持正式用户和匿名用户
+ * - 正式用户：自动通过 Authorization header 传递 token
+ * - 匿名用户：需要通过 X-Device-Fingerprint header 传递设备指纹
+ */
+export async function generateTTS(
+  request: TtsGenerateRequest
+): Promise<TtsTaskStatus> {
+  return apiClient.post<TtsTaskStatus>('/api/v1/tts/generate', {
+    text: request.text,
+    voice_id: request.voiceId,
+    language: request.language,
+    speed: request.speed,
+    pitch: request.pitch,
+    volume: request.volume,
+  });
+}
 
 /**
  * 查询 TTS 记录

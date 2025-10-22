@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { generateTTS } from '@/lib/api/tts';
 import { TaskStatus } from '@/types/tts';
+import { useCredits } from '@/contexts/CreditsContext';
 
 /**
  * 语音模型接口 - 匹配后端 Voice Schema
@@ -34,6 +35,7 @@ export interface VoiceModel {
  * - 字符限制校验
  */
 export function useTTSGenerator(maxCharacters: number = 120) {
+  const { refreshCredits, deductCredits } = useCredits();
   const [text, setText] = useState('');
   const [selectedVoice, setSelectedVoice] = useState<VoiceModel | null>(null);
   const [speed, setSpeed] = useState(1.0);
@@ -103,6 +105,14 @@ export function useTTSGenerator(maxCharacters: number = 120) {
           duration: result.result.duration,
           creditsCost: result.result.credits_cost,
         });
+
+        // 生成成功后刷新积分
+        if (result.result.credits_cost) {
+          // 先乐观更新（立即扣减）
+          deductCredits(result.result.credits_cost);
+          // 然后从服务器刷新准确值
+          void refreshCredits();
+        }
       } else if (result.status === TaskStatus.FAILURE) {
         const errorMsg = result.error || '生成失败，请重试';
         setError(errorMsg);

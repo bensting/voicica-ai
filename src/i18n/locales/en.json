@@ -144,6 +144,11 @@
       }
     }
   },
+  "studio": {
+    "tts": "Text to Speech",
+    "upgrade": "Upgrade",
+    "credits": "Credits"
+  },
   "voiceFilters": {
     "selectCountry": "Select Country",
     "selectLanguage": "Select Language",

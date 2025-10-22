@@ -228,6 +228,11 @@
     "zh": "中文",
     "zu": "祖鲁语"
   },
+  "studio": {
+    "tts": "文字转语音",
+    "upgrade": "购买/升级",
+    "credits": "积分"
+  },
   "voiceFilters": {
     "selectCountry": "选择国家",
     "selectLanguage": "选择语言",

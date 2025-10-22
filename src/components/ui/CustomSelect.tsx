@@ -15,6 +15,7 @@ interface CustomSelectProps {
   placeholder?: string;
   disabled?: boolean;
   className?: string;
+  prefixIcon?: ReactNode; // 左侧固定图标
 }
 
 export default function CustomSelect({
@@ -24,6 +25,7 @@ export default function CustomSelect({
   placeholder = 'Select...',
   disabled = false,
   className = '',
+  prefixIcon,
 }: CustomSelectProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
@@ -84,6 +86,11 @@ export default function CustomSelect({
         }`}
       >
         <span className="flex items-center gap-2">
+          {/* 固定的前缀图标 */}
+          {prefixIcon && (
+            <span className="text-gray-500 flex-shrink-0">{prefixIcon}</span>
+          )}
+          {/* 选中的选项或占位符 */}
           {selectedOption ? (
             <>
               {selectedOption.icon && <span className="w-5 h-4 inline-flex items-center justify-center flex-shrink-0">{selectedOption.icon}</span>}

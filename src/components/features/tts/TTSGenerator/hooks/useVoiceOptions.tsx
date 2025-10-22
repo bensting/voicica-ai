@@ -3,6 +3,7 @@ import type { VoiceModel } from '@/hooks/useTTSGenerator';
 import type { SelectOption } from '@/components/ui/CustomSelect';
 import { getLanguageFromLocale, getCountryFromLocale } from '../utils/localeUtils';
 import { getCountryFlagComponent, sortCountriesByLanguage } from '../utils/countryUtils';
+import { SUPPORTED_COUNTRIES, SUPPORTED_LANGUAGES } from '../utils/localeConfig';
 
 interface UseVoiceOptionsProps {
   voices: VoiceModel[];
@@ -15,37 +16,32 @@ interface UseVoiceOptionsProps {
  * 语音选项生成 Hook
  */
 export function useVoiceOptions({ voices, availableLanguages, locale, t }: UseVoiceOptionsProps) {
-  // 计算唯一的国家、语言和性别列表
+  // 从本地配置获取国家和语言列表，从 voices 获取性别列表
   const { countries, languages, genders } = useMemo(() => {
-    const countrySet = new Set<string>();
-    const languageSet = new Set<string>();
     const genderSet = new Set<string>();
 
     voices.forEach((voice) => {
-      const country = getCountryFromLocale(voice.locale);
-      const language = getLanguageFromLocale(voice.locale);
-
-      if (country) countrySet.add(country);
-      if (language) languageSet.add(language);
       if (voice.gender) genderSet.add(voice.gender);
     });
 
     return {
-      countries: Array.from(countrySet).sort(),
-      languages: Array.from(languageSet).sort(),
+      countries: [...SUPPORTED_COUNTRIES],
+      languages: [...SUPPORTED_LANGUAGES],
       genders: Array.from(genderSet).sort(),
     };
   }, [voices]);
 
-  // 获取国家显示名称
+  // 获取国家显示名称（使用国际化翻译）
   const getCountryDisplayName = (countryCode: string): string => {
     const translatedName = t(`countries.${countryCode}`);
+    // 如果翻译不存在，返回国家代码
     return translatedName !== `countries.${countryCode}` ? translatedName : countryCode;
   };
 
-  // 获取语言显示名称
+  // 获取语言显示名称（使用国际化翻译）
   const getLanguageDisplayName = (languageCode: string): string => {
     const translatedName = t(`languages.${languageCode}`);
+    // 如果翻译不存在，返回语言代码
     return translatedName !== `languages.${languageCode}` ? translatedName : languageCode;
   };
 

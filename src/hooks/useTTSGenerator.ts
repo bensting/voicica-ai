@@ -34,6 +34,7 @@ export interface VoiceModel {
 export function useTTSGenerator(maxCharacters: number = 120) {
   const [text, setText] = useState('');
   const [selectedVoice, setSelectedVoice] = useState<VoiceModel | null>(null);
+  const [speed, setSpeed] = useState(1.0);
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [audioUrl, setAudioUrl] = useState<string | null>(null);
@@ -55,6 +56,11 @@ export function useTTSGenerator(maxCharacters: number = 120) {
   const handleVoiceSelect = (voice: VoiceModel) => {
     setSelectedVoice(voice);
     setError(null);
+  };
+
+  // 处理速度变化
+  const handleSpeedChange = (newSpeed: number) => {
+    setSpeed(newSpeed);
   };
 
   // 生成音频
@@ -99,6 +105,7 @@ export function useTTSGenerator(maxCharacters: number = 120) {
   const reset = () => {
     setText('');
     setSelectedVoice(null);
+    setSpeed(1.0);
     setAudioUrl(null);
     setError(null);
   };
@@ -107,6 +114,7 @@ export function useTTSGenerator(maxCharacters: number = 120) {
     // 状态
     text,
     selectedVoice,
+    speed,
     isGenerating,
     error,
     audioUrl,
@@ -116,6 +124,7 @@ export function useTTSGenerator(maxCharacters: number = 120) {
     // 方法
     handleTextChange,
     handleVoiceSelect,
+    handleSpeedChange,
     handleGenerate,
     reset,
   };

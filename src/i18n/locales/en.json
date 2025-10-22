@@ -144,6 +144,12 @@
       }
     }
   },
+  "voiceFilters": {
+    "selectCountry": "Select Country",
+    "selectLanguage": "Select Language",
+    "selectGender": "Select Gender",
+    "searchPlaceholder": "Search voices by name..."
+  },
   "languages": {
     "af": "Afrikaans",
     "am": "Amharic",

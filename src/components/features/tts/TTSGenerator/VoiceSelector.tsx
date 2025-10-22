@@ -84,6 +84,7 @@ export default function VoiceSelector({
         languageOptions={updatedOptions.languageOptions}
         genderOptions={updatedOptions.genderOptions}
         disabled={disabled || loading}
+        t={t}
       />
 
       {/* 语音列表 */}

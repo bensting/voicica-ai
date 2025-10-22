@@ -10,7 +10,7 @@ interface NavLink {
 }
 
 const navLinks: NavLink[] = [
-  { href: '/explore', label: 'Explore' },
+  { href: '/studio', label: 'Studio' },
   { href: '/#pricing', label: 'Pricing' },
   { href: '/#faq', label: 'FAQ' },
   { href: '/my-voice-models', label: 'My Voice Models' },

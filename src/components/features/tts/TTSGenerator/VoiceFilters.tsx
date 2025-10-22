@@ -1,4 +1,6 @@
 import CustomSelect, { type SelectOption } from '@/components/ui/CustomSelect';
+import SearchInput from '@/components/ui/SearchInput';
+import { Globe, Users, Flag } from 'lucide-react';
 
 interface VoiceFiltersProps {
   searchQuery: string;
@@ -13,6 +15,7 @@ interface VoiceFiltersProps {
   languageOptions: SelectOption[];
   genderOptions: SelectOption[];
   disabled?: boolean;
+  t: (key: string) => string;
 }
 
 /**
@@ -31,9 +34,17 @@ export default function VoiceFilters({
   languageOptions,
   genderOptions,
   disabled = false,
+  t,
 }: VoiceFiltersProps) {
   return (
     <>
+      {/* 搜索框 */}
+      <SearchInput
+        value={searchQuery}
+        onChange={onSearchChange}
+        placeholder={t('voiceFilters.searchPlaceholder')}
+        disabled={disabled}
+      />
       {/* 三个筛选器 */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
         {/* 国家选择 */}
@@ -41,8 +52,9 @@ export default function VoiceFilters({
           value={selectedCountry}
           onChange={onCountryChange}
           options={countryOptions}
-          placeholder="Select Country"
+          placeholder={t('voiceFilters.selectCountry')}
           disabled={disabled}
+          prefixIcon={<Flag className="w-4 h-4" />}
         />
 
         {/* 语言选择 */}
@@ -50,8 +62,9 @@ export default function VoiceFilters({
           value={selectedLanguage}
           onChange={onLanguageChange}
           options={languageOptions}
-          placeholder="Select Language"
+          placeholder={t('voiceFilters.selectLanguage')}
           disabled={disabled}
+          prefixIcon={<Globe className="w-4 h-4" />}
         />
 
         {/* 性别选择 */}
@@ -59,35 +72,13 @@ export default function VoiceFilters({
           value={selectedGender}
           onChange={onGenderChange}
           options={genderOptions}
-          placeholder="Select Gender"
+          placeholder={t('voiceFilters.selectGender')}
           disabled={disabled}
+          prefixIcon={<Users className="w-4 h-4" />}
         />
       </div>
 
-      {/* 搜索框 */}
-      <div className="relative">
-        <input
-          type="text"
-          value={searchQuery}
-          onChange={(e) => onSearchChange(e.target.value)}
-          placeholder="Search voices by name..."
-          disabled={disabled}
-          className="w-full px-4 py-2.5 pr-10 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none disabled:bg-gray-50 disabled:cursor-not-allowed transition-colors text-sm"
-        />
-        <svg
-          className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-          />
-        </svg>
-      </div>
+
     </>
   );
 }

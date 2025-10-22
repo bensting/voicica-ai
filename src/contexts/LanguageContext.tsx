@@ -14,8 +14,35 @@ const LanguageContext = createContext<LanguageContextType | undefined>(undefined
 
 type MessageValue = string | Record<string, unknown>;
 
+// 检测浏览器语言
+const detectBrowserLanguage = (): Locale => {
+  if (typeof window === 'undefined') return 'en';
+
+  const browserLang = navigator.language.toLowerCase();
+
+  // 匹配浏览器语言到支持的语言
+  if (browserLang.startsWith('zh')) {
+    if (browserLang.includes('tw') || browserLang.includes('hk') || browserLang.includes('hant')) {
+      return 'zh-TW';
+    }
+    return 'zh-CN';
+  }
+
+  return 'en';
+};
+
 export function LanguageProvider({ children }: { children: ReactNode }) {
-  const [locale, setLocaleState] = useState<Locale>('en');
+  const [locale, setLocaleState] = useState<Locale>(() => {
+    if (typeof window === 'undefined') return 'en';
+
+    const savedLocale = localStorage.getItem('locale') as Locale;
+    if (savedLocale && ['en', 'zh-CN', 'zh-TW'].includes(savedLocale)) {
+      return savedLocale;
+    }
+
+    // 如果没有保存的语言设置，检测浏览器语言
+    return detectBrowserLanguage();
+  });
   const [messages, setMessages] = useState<Record<string, MessageValue>>({});
 
   // 从 localStorage 加载语言设置

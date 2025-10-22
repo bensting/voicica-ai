@@ -1,7 +1,7 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import type { VoiceModel } from '@/hooks/useTTSGenerator';
-import { enumsAPI } from '@/lib/api';
 import { getLanguageFromLocale, getCountryFromLocale } from '../utils/localeUtils';
+import { getLanguagesByCountry } from '../utils/localeConfig';
 
 interface UseVoiceFiltersProps {
   voices: VoiceModel[];
@@ -16,26 +16,22 @@ export function useVoiceFilters({ voices, languages }: UseVoiceFiltersProps) {
   const [selectedCountry, setSelectedCountry] = useState<string>('all');
   const [selectedLanguage, setSelectedLanguage] = useState<string>('all');
   const [selectedGender, setSelectedGender] = useState<string>('all');
-  const [availableLanguages, setAvailableLanguages] = useState<string[]>([]);
 
-  // 当选择的国家改变时，获取该国家支持的语言列表
-  useEffect(() => {
-    const fetchLanguages = async () => {
-      try {
-        const languageList = await enumsAPI.getVoiceLanguagesByCountry(
-          selectedCountry === 'all' ? undefined : selectedCountry
-        );
-        setAvailableLanguages(languageList);
-        setSelectedLanguage('all');
-        console.log(`✅ 国家 ${selectedCountry} 支持的语言:`, languageList);
-      } catch (err) {
-        console.error('❌ 获取语言列表失败:', err);
-        setAvailableLanguages(languages || []);
-      }
-    };
-
-    void fetchLanguages();
+  // 根据选择的国家，从本地配置获取该国家支持的语言列表
+  const availableLanguages = useMemo(() => {
+    if (selectedCountry === 'all') {
+      return languages;
+    }
+    const countryLanguages = getLanguagesByCountry(selectedCountry);
+    console.log(`✅ 国家 ${selectedCountry} 支持的语言:`, countryLanguages);
+    return countryLanguages.length > 0 ? countryLanguages : languages;
   }, [selectedCountry, languages]);
+
+  // 当国家改变时，重置语言选择
+  const handleCountryChange = (country: string) => {
+    setSelectedCountry(country);
+    setSelectedLanguage('all');
+  };
 
   // 过滤语音列表
   const filteredVoices = useMemo(() => {
@@ -57,7 +53,7 @@ export function useVoiceFilters({ voices, languages }: UseVoiceFiltersProps) {
     searchQuery,
     setSearchQuery,
     selectedCountry,
-    setSelectedCountry,
+    setSelectedCountry: handleCountryChange,
     selectedLanguage,
     setSelectedLanguage,
     selectedGender,

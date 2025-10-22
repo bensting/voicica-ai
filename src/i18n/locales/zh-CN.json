@@ -228,6 +228,12 @@
     "zh": "中文",
     "zu": "祖鲁语"
   },
+  "voiceFilters": {
+    "selectCountry": "选择国家",
+    "selectLanguage": "选择语言",
+    "selectGender": "选择性别",
+    "searchPlaceholder": "按名称搜索语音..."
+  },
   "countries": {
     "CN": "中国",
     "TW": "台湾",

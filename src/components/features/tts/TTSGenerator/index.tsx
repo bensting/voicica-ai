@@ -23,6 +23,7 @@ export default function TTSGenerator({
   const {
     text,
     selectedVoice,
+    speed,
     isGenerating,
     error,
     audioUrl,
@@ -30,6 +31,7 @@ export default function TTSGenerator({
     canGenerate,
     handleTextChange,
     handleVoiceSelect,
+    handleSpeedChange,
     handleGenerate,
   } = useTTSGenerator(maxCharacters);
 
@@ -61,6 +63,9 @@ export default function TTSGenerator({
             maxCharacters={maxCharacters}
             availableCharacters={availableCharacters}
             disabled={isGenerating}
+            selectedVoice={selectedVoice}
+            speed={speed}
+            onSpeedChange={handleSpeedChange}
           />
         </div>
 

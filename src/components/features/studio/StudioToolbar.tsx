@@ -6,6 +6,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 interface StudioToolbarProps {
   title: string;
   credits: number;
+  creditsLoading?: boolean;
   onUpgradeClick?: () => void;
 }
 
@@ -20,6 +21,7 @@ interface StudioToolbarProps {
 export default function StudioToolbar({
   title,
   credits,
+  creditsLoading = false,
   onUpgradeClick,
 }: StudioToolbarProps) {
   const { t } = useLanguage();
@@ -42,7 +44,13 @@ export default function StudioToolbar({
             <div className="w-5 h-5 bg-blue-600 rounded-full flex items-center justify-center">
               <Coins className="w-3 h-3 text-white" />
             </div>
-            <span className="text-sm font-semibold text-blue-900">{credits}</span>
+            {creditsLoading ? (
+              <div className="w-12 h-4 bg-blue-200 rounded animate-pulse" />
+            ) : (
+              <span className="text-sm font-semibold text-blue-900">
+                {credits}
+              </span>
+            )}
           </div>
 
           {/* Divider */}

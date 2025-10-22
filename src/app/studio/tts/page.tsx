@@ -21,7 +21,7 @@ import GenerateButton from '@/components/features/studio/tts/GenerateButton';
 export default function StudioTTSPage() {
   const router = useRouter();
   const { t } = useLanguage();
-  const { credits } = useUserCredits();
+  const { credits, loading: creditsLoading } = useUserCredits();
 
   // TTS Generator logic
   const maxCharacters = 500;
@@ -50,6 +50,7 @@ export default function StudioTTSPage() {
       <StudioToolbar
         title={t('studio.tts')}
         credits={credits}
+        creditsLoading={creditsLoading}
         onUpgradeClick={handleUpgradeClick}
       />
 

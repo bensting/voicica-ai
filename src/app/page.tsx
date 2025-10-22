@@ -1,5 +1,4 @@
 import Hero from '@/components/sections/Hero';
-import TTSGenerator from '@/components/features/studio/TTSGenerator';
 import Pricing from '@/components/sections/Pricing';
 import FAQ from '@/components/sections/FAQ';
 

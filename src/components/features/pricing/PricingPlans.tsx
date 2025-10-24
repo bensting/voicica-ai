@@ -54,9 +54,6 @@ export default function PricingPlans({
 
   return (
     <div>
-      {/* Billing Cycle Toggle */}
-      <BillingCycleToggle cycle={cycle} onCycleChange={onCycleChange} />
-
       {/* Plans Grid */}
       <PlansGrid plans={plans} cycle={cycle} onCycleChange={onCycleChange} />
     </div>

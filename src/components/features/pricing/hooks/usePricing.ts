@@ -73,26 +73,15 @@ export function usePricing() {
     fetchPlans();
   }, []);
 
-  // Filter plans by billing cycle
+  // Return all plans sorted by sort_order (不按周期过滤)
   const currentPlans = useMemo(() => {
     if (!plans || plans.length === 0) return [];
 
     console.log('All plans:', plans);
-    console.log('Current cycle:', cycle);
-
-    const filtered = plans.filter(p => {
-      if (cycle === 'monthly') {
-        return p.billing_period === 'every-month' || p.cycle_days === 30;
-      } else {
-        return p.billing_period === 'every-year' || p.cycle_days === 365;
-      }
-    });
-
-    console.log('Filtered plans:', filtered);
 
     // Sort by sort_order
-    return filtered.sort((a, b) => a.sort_order - b.sort_order);
-  }, [plans, cycle]);
+    return [...plans].sort((a, b) => a.sort_order - b.sort_order);
+  }, [plans]);
 
   const handleCycleChange = (newCycle: BillingCycle) => {
     setCycle(newCycle);

@@ -29,13 +29,13 @@ export function usePricing() {
         const data = await subscriptionAPI.getPlans({
           platform: paymentProvider,
           active_only: true
-        });
+        }) as SubscriptionPlanWithPrice[];
         console.log('Fetched plans:', data);
 
         // 如果是 Stripe，需要额外查询价格信息
         if (paymentProvider === 'stripe') {
           const plansWithPrices = await Promise.all(
-            data.map(async (plan) => {
+            data.map(async (plan: SubscriptionPlanWithPrice) => {
               try {
                 const prices = await subscriptionAPI.getStripePrices(plan.product_id);
                 console.log(`Prices for ${plan.product_id}:`, prices);

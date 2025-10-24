@@ -4,11 +4,12 @@ import { useState } from 'react';
 import { SubscriptionPlanWithPrice } from '@/types/subscription';
 import { useAuth } from '@/contexts/AuthContext';
 import { subscriptionAPI } from '@/lib/api';
+import { BillingCycle } from '../hooks/usePricing';
 
 interface PricingCardProps {
   plan: SubscriptionPlanWithPrice;
   isRecommended?: boolean;
-  cycle: 'monthly' | 'yearly';
+  cycle: BillingCycle;
 }
 
 const Feature = ({ children }: { children: React.ReactNode }) => (

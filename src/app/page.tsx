@@ -4,7 +4,6 @@ import { useRouter } from 'next/navigation';
 import { Video, Music, Mic } from 'lucide-react';
 import Hero from '@/components/sections/Hero';
 import TTSSamples from '@/components/sections/TTSSamples';
-import Pricing from '@/components/sections/Pricing';
 import FAQ from '@/components/sections/FAQ';
 
 // Hero Action Buttons Configuration
@@ -44,11 +43,6 @@ export default function Home() {
 
       {/* TTS Samples Section */}
       <TTSSamples />
-
-      {/* Pricing Section */}
-      <section id="pricing" className="py-20 px-4 bg-white">
-        <Pricing />
-      </section>
 
       {/* FAQ Section */}
       <FAQ />

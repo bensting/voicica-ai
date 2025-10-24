@@ -50,16 +50,20 @@ export default function PricingCard({ plan, isRecommended = false, cycle }: Pric
 
   // 获取计划名称
   const getPlanName = () => {
-    return plan.display_name?.en || plan.display_name?.['zh-Hans'] || 'Plan';
+    return plan.display_name?.en || plan.display_name?.['zh-CN'] || 'Plan';
   };
 
   // 获取功能列表
   const getFeatures = () => {
-    return plan.features?.en || plan.features?.['zh-Hans'] || [];
+    return plan.features?.en || plan.features?.['zh-CN'] || [];
   };
 
   // 处理升级按钮点击
   const handleUpgrade = async () => {
+    console.log('🔵 [handleUpgrade] Start - Plan:', plan.plan_name);
+    console.log('🔵 [handleUpgrade] Product ID:', plan.product_id);
+    console.log('🔵 [handleUpgrade] User:', user?.uid || 'Not logged in');
+
     // 检查是否有 product_id
     if (!plan.product_id) {
       console.error('❌ Product ID not found');
@@ -78,43 +82,97 @@ export default function PricingCard({ plan, isRecommended = false, cycle }: Pric
     try {
       // 获取支付平台配置
       const paymentProvider = process.env.NEXT_PUBLIC_PAYMENT_PROVIDER || 'creem';
-      console.log(`📡 Creating ${paymentProvider} checkout session for product:`, plan.product_id);
+      console.log(`📡 [handleUpgrade] Payment provider: ${paymentProvider}`);
 
       // 获取回调 URL
       const successUrl = process.env.NEXT_PUBLIC_PAYMENT_SUCCESS_URL || `${window.location.origin}/payment/success`;
       const cancelUrl = process.env.NEXT_PUBLIC_PAYMENT_CANCEL_URL || `${window.location.origin}/pricing`;
+      console.log('📡 [handleUpgrade] Success URL:', successUrl);
+      console.log('📡 [handleUpgrade] Cancel URL:', cancelUrl);
 
       let data: { checkout_url: string };
 
       // 根据配置的支付平台调用不同的 API
       if (paymentProvider === 'stripe') {
-        data = await subscriptionAPI.createStripeCheckout({
+        console.log('📡 [handleUpgrade] Calling Stripe API...');
+
+        // 获取当前计划的货币（如果有价格信息）
+        const currency = plan.priceInfo?.currency?.toLowerCase() || 'usd';
+        console.log('📡 [handleUpgrade] Currency:', currency);
+
+        const requestData = {
           product_id: plan.product_id,
+          currency: currency,
           success_url: successUrl,
           cancel_url: cancelUrl,
-        });
+        };
+        console.log('📡 [handleUpgrade] Request data:', JSON.stringify(requestData, null, 2));
+
+        data = await subscriptionAPI.createStripeCheckout(requestData);
+
+        console.log('✅ [handleUpgrade] Stripe API response:', JSON.stringify(data, null, 2));
       } else {
         // 默认使用 Creem
-        data = await subscriptionAPI.createCreemCheckout({
+        console.log('📡 [handleUpgrade] Calling Creem API...');
+        const requestData = {
           product_id: plan.product_id,
           success_url: successUrl,
-        });
+        };
+        console.log('📡 [handleUpgrade] Request data:', JSON.stringify(requestData, null, 2));
+
+        data = await subscriptionAPI.createCreemCheckout(requestData);
+
+        console.log('✅ [handleUpgrade] Creem API response:', JSON.stringify(data, null, 2));
       }
 
-      console.log('✅ Checkout session created:', data);
+      // 检查响应数据
+      if (!data || typeof data !== 'object') {
+        console.error('❌ [handleUpgrade] Invalid response data:', data);
+        throw new Error('Invalid response from payment provider');
+      }
+
+      console.log('✅ [handleUpgrade] Checkout session created successfully');
+      console.log('✅ [handleUpgrade] Checkout URL:', data.checkout_url);
 
       // 跳转到支付页面
       if (data.checkout_url) {
-        window.location.href = data.checkout_url;
+        // 检测设备类型
+        const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+        console.log('📱 [handleUpgrade] Device type:', isMobile ? 'Mobile' : 'Desktop');
+
+        if (isMobile) {
+          // 移动端：同窗口跳转（避免多标签混乱）
+          console.log('🔄 [handleUpgrade] Redirecting in same window (mobile)');
+          window.location.href = data.checkout_url;
+        } else {
+          // 桌面端：新标签页打开（保留原页面）
+          console.log('🔄 [handleUpgrade] Opening in new tab (desktop)');
+          const newWindow = window.open(data.checkout_url, '_blank');
+
+          // 检查是否被浏览器拦截
+          if (!newWindow || newWindow.closed || typeof newWindow.closed === 'undefined') {
+            console.warn('⚠️ [handleUpgrade] Popup blocked, falling back to same window');
+            // 如果被拦截，降级为同窗口跳转
+            window.location.href = data.checkout_url;
+          } else {
+            console.log('✅ [handleUpgrade] New tab opened successfully');
+            // 新标签页打开成功，重置加载状态
+            setIsLoading(false);
+          }
+        }
       } else {
+        console.error('❌ [handleUpgrade] Checkout URL missing in response');
         throw new Error('Checkout URL not returned');
       }
     } catch (error) {
-      console.error('❌ Error creating checkout:', error);
+      console.error('❌ [handleUpgrade] Error:', error);
+      if (error instanceof Error) {
+        console.error('❌ [handleUpgrade] Error message:', error.message);
+        console.error('❌ [handleUpgrade] Error stack:', error.stack);
+      }
       alert(error instanceof Error ? error.message : 'Failed to start checkout process. Please try again.');
       setIsLoading(false);
     }
-    // 注意：跳转成功后页面会离开，所以不需要 setIsLoading(false)
   };
 
   return (

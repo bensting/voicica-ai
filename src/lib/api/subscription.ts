@@ -1,5 +1,10 @@
 import { apiClient } from './client';
-import type { CreemVerifyRequest, CreemVerifyResponse } from '@/types/subscription';
+import type {
+  CreemVerifyRequest,
+  CreemVerifyResponse,
+  StripeVerifyRequest,
+  StripeVerifyResponse
+} from '@/types/subscription';
 
 /**
  * 订阅相关 API
@@ -42,13 +47,19 @@ export const verifyCreemPayment = (data: CreemVerifyRequest) => {
 // 创建 Stripe Checkout 会话
 export const createStripeCheckout = (data: {
   product_id: string;
+  currency: string;
   success_url: string;
-  cancel_url?: string;
+  cancel_url: string;
 }) => {
   return apiClient.post<{ checkout_url: string; session_id: string }>(
     '/api/v1/subscriptions/checkout/stripe',
     data
   );
+};
+
+// 验证 Stripe 支付 (POST 请求)
+export const verifyStripePayment = (data: StripeVerifyRequest) => {
+  return apiClient.post<StripeVerifyResponse>('/api/v1/subscriptions/verify/stripe', data);
 };
 
 // 获取 Stripe 产品价格

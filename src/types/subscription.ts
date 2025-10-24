@@ -78,3 +78,16 @@ export interface CreemVerifyResponse {
   activated_at?: string;
   verified: boolean;       // 签名验证结果
 }
+
+// Stripe 支付验证请求
+export interface StripeVerifyRequest {
+  request_id: string;      // Stripe Checkout Request ID（必填）
+}
+
+// Stripe 支付验证响应
+export interface StripeVerifyResponse {
+  success: boolean;        // 验证是否成功
+  payment_status: string;  // 支付状态 (paid, unpaid, pending, no_payment_required)
+  subscription_id?: string; // 订阅记录 ID（如果已创建）
+  message: string;         // 验证消息
+}

@@ -57,11 +57,26 @@ class APIClient {
 
     // 响应拦截器：统一错误处理
     this.client.interceptors.response.use(
-      (response) => response,
+      (response) => {
+        console.log('✅ [API Response]', {
+          url: response.config.url,
+          status: response.status,
+          data: response.data,
+        });
+        return response;
+      },
       (error) => {
         if (error.response) {
           // 服务器返回错误
           const { status, data } = error.response;
+
+          console.error('❌ [API Error] Server returned error:', {
+            status,
+            url: error.config?.url,
+            method: error.config?.method,
+            requestData: error.config?.data,
+            responseData: data,
+          });
 
           if (status === 401) {
             // 未授权：检查是否为已登录用户的 token 过期
@@ -77,18 +92,16 @@ class APIClient {
               console.warn('📱 匿名用户认证失败（可能是设备指纹问题）');
             }
           }
-
-          console.error('❌ API Error:', {
-            status,
-            url: error.config?.url,
-            data,
-          });
         } else if (error.request) {
           // 请求已发出但未收到响应
-          console.error('❌ Network Error:', error.request);
+          console.error('❌ [API Error] Network error - no response received:', {
+            url: error.config?.url,
+            method: error.config?.method,
+            request: error.request,
+          });
         } else {
           // 其他错误
-          console.error('❌ Error:', error.message);
+          console.error('❌ [API Error] Request setup error:', error.message);
         }
 
         return Promise.reject(error);

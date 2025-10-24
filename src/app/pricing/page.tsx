@@ -12,9 +12,9 @@ export default function PricingPage() {
   const { cycle, plans, loading, error, onCycleChange } = usePricing();
 
   return (
-    <div className="min-h-screen bg-gray-50 pt-20">
+    <div className="min-h-screen bg-gray-50">
       {/* Header Section */}
-      <div className="bg-white border-b border-gray-200">
+      <div className="bg-gray-100 border-b border-gray-200 pt-20">
         <div className="max-w-6xl mx-auto px-4 py-12 text-center">
           <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
             Plans & Pricing of TopMediai

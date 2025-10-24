@@ -11,9 +11,8 @@ interface NavLink {
 
 const navLinks: NavLink[] = [
   { href: '/studio/tts', label: 'Studio' },
-  { href: '/#pricing', label: 'Pricing' },
+  { href: '/pricing', label: 'Pricing' },
   { href: '/#faq', label: 'FAQ' },
-  { href: '/my-voice-models', label: 'My Voice Models' },
   { href: '/generation-history', label: 'Generation History' },
 ];
 

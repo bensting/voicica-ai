@@ -38,3 +38,15 @@ export const createCreemCheckout = (data: {
 export const verifyCreemPayment = (data: CreemVerifyRequest) => {
   return apiClient.post<CreemVerifyResponse>('/api/v1/subscriptions/verify/creem', data);
 };
+
+// 创建 Stripe Checkout 会话
+export const createStripeCheckout = (data: {
+  product_id: string;
+  success_url: string;
+  cancel_url?: string;
+}) => {
+  return apiClient.post<{ checkout_url: string; session_id: string }>(
+    '/api/v1/subscriptions/checkout/stripe',
+    data
+  );
+};

@@ -92,20 +92,34 @@ export default function PricingCard({ plan, isRecommended = false, cycle }: Pric
     setIsLoading(true);
 
     try {
-      console.log('📡 Creating checkout session for product:', plan.product_id);
+      // 获取支付平台配置
+      const paymentProvider = process.env.NEXT_PUBLIC_PAYMENT_PROVIDER || 'creem';
+      console.log(`📡 Creating ${paymentProvider} checkout session for product:`, plan.product_id);
 
-      // 获取成功回调 URL
+      // 获取回调 URL
       const successUrl = process.env.NEXT_PUBLIC_PAYMENT_SUCCESS_URL || `${window.location.origin}/payment/success`;
+      const cancelUrl = process.env.NEXT_PUBLIC_PAYMENT_CANCEL_URL || `${window.location.origin}/pricing`;
 
-      // 调用封装好的 API
-      const data = await subscriptionAPI.createCreemCheckout({
-        product_id: plan.product_id,
-        success_url: successUrl,
-      });
+      let data: { checkout_url: string };
+
+      // 根据配置的支付平台调用不同的 API
+      if (paymentProvider === 'stripe') {
+        data = await subscriptionAPI.createStripeCheckout({
+          product_id: plan.product_id,
+          success_url: successUrl,
+          cancel_url: cancelUrl,
+        });
+      } else {
+        // 默认使用 Creem
+        data = await subscriptionAPI.createCreemCheckout({
+          product_id: plan.product_id,
+          success_url: successUrl,
+        });
+      }
 
       console.log('✅ Checkout session created:', data);
 
-      // 跳转到 Creem checkout 页面
+      // 跳转到支付页面
       if (data.checkout_url) {
         window.location.href = data.checkout_url;
       } else {

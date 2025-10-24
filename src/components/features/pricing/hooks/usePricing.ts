@@ -21,8 +21,13 @@ export function usePricing() {
       try {
         setLoading(true);
         setError(null);
+
+        // 获取配置的支付平台
+        const paymentProvider = (process.env.NEXT_PUBLIC_PAYMENT_PROVIDER || 'creem') as 'creem' | 'stripe';
+        console.log(`Fetching plans for payment provider: ${paymentProvider}`);
+
         const data = await subscriptionAPI.getPlans({
-          platform: 'creem',
+          platform: paymentProvider,
           active_only: true
         });
         console.log('Fetched plans:', data);

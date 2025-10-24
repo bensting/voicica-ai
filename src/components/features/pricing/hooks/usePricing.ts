@@ -40,15 +40,15 @@ export function usePricing() {
               // 尝试从浏览器获取用户的地区和货币偏好
               const userLocale = navigator.language || 'en-US';
               const regionCurrencyMap: Record<string, string> = {
-                'zh-CN': 'cny',
-                'zh-TW': 'cny',
-                'zh-HK': 'cny',
-                'en-US': 'usd',
-                'en-GB': 'gbp',
-                'de': 'eur',
-                'fr': 'eur',
-                'es': 'eur',
-                'it': 'eur',
+                'zh-CN': 'CNY',
+                'zh-TW': 'CNY',
+                'zh-HK': 'CNY',
+                'en-US': 'USD',
+                'en-GB': 'GBP',
+                'de': 'EUR',
+                'fr': 'EUR',
+                'es': 'EUR',
+                'it': 'EUR',
               };
 
               // 检查完整匹配
@@ -65,10 +65,10 @@ export function usePricing() {
               }
 
               // 默认使用 USD
-              return 'usd';
+              return 'USD';
             } catch (err) {
               console.warn('Failed to detect user currency, defaulting to USD:', err);
-              return 'usd';
+              return 'USD';
             }
           };
 
@@ -81,9 +81,9 @@ export function usePricing() {
                 const prices = await subscriptionAPI.getStripePrices(plan.product_id);
                 console.log(`Prices for ${plan.product_id}:`, prices);
 
-                // 先尝试找到匹配用户偏好货币的激活价格
+                // 先尝试找到匹配用户偏好货币的激活价格（后端返回的是大写）
                 let selectedPrice = prices.find(
-                  p => p.active && p.currency.toLowerCase() === preferredCurrency
+                  p => p.active && p.currency === preferredCurrency
                 );
 
                 // 如果没有找到匹配的货币，使用第一个激活的价格

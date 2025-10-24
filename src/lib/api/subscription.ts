@@ -50,3 +50,17 @@ export const createStripeCheckout = (data: {
     data
   );
 };
+
+// 获取 Stripe 产品价格
+export const getStripePrices = (productId: string) => {
+  return apiClient.get<Array<{
+    id: string;
+    product: string;
+    unit_amount: number;
+    currency: string;
+    active: boolean;
+    billing_type: 'recurring' | 'one_time';
+    billing_period: string | null;
+    metadata?: Record<string, string>;
+  }>>(`/api/v1/subscriptions/products/stripe/${productId}/prices`);
+};

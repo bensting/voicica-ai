@@ -15,13 +15,10 @@ export default function PricingPage() {
     <div className="min-h-screen bg-gray-50">
       {/* Header Section */}
       <div className="bg-gray-100 border-b border-gray-200 pt-20">
-        <div className="max-w-6xl mx-auto px-4 py-12 text-center">
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-            Plans & Pricing of TopMediai
+        <div className="max-w-7xl mx-auto px-4 py-8">
+          <h1 className="text-3xl md:text-4xl font-bold text-gray-900">
+            Pick Your Plan of Text to Speech
           </h1>
-          <p className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto">
-            TopMediai offers a variety of purchase plans to better meet your needs.
-          </p>
         </div>
       </div>
 

@@ -31,7 +31,37 @@ export function usePricing() {
           active_only: true
         });
         console.log('Fetched plans:', data);
-        setPlans(data as SubscriptionPlanWithPrice[]);
+
+        // 如果是 Stripe，需要额外查询价格信息
+        if (paymentProvider === 'stripe') {
+          const plansWithPrices = await Promise.all(
+            data.map(async (plan) => {
+              try {
+                const prices = await subscriptionAPI.getStripePrices(plan.product_id);
+                console.log(`Prices for ${plan.product_id}:`, prices);
+
+                // 找到匹配当前周期的价格
+                const activePrice = prices.find(p => p.active);
+                if (activePrice) {
+                  return {
+                    ...plan,
+                    price: activePrice.unit_amount,
+                    currency: activePrice.currency,
+                    billing_type: activePrice.billing_type,
+                    billing_period: activePrice.billing_period === 'month' ? 'every-month' : 'every-year',
+                  } as SubscriptionPlanWithPrice;
+                }
+                return plan as SubscriptionPlanWithPrice;
+              } catch (err) {
+                console.error(`Failed to fetch prices for ${plan.product_id}:`, err);
+                return plan as SubscriptionPlanWithPrice;
+              }
+            })
+          );
+          setPlans(plansWithPrices);
+        } else {
+          setPlans(data as SubscriptionPlanWithPrice[]);
+        }
       } catch (err) {
         console.error('Failed to fetch subscription plans:', err);
         setError('Failed to load pricing plans. Please try again later.');

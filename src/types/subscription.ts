@@ -11,6 +11,7 @@ export interface SubscriptionPlan {
   platform: Platform;
   product_id: string;
   base_plan_id?: string;
+  plan_name: string; // 计划名称 (Free, Basic, Premium, Plus)
   payment_link?: string;
   display_name: Record<string, string>;
   features: Record<string, string[]>;

@@ -32,13 +32,13 @@ export default function PlansGrid({ plans, cycle, onCycleChange }: PlansGridProp
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
       {plans.map((plan, index) => (
         <PricingCard
           key={plan.id || index}
           plan={plan}
           cycle={cycle}
-          isRecommended={plan.sort_order === 0 || index === 1}
+          isRecommended={plan.plan_name === 'Premium'}
         />
       ))}
     </div>

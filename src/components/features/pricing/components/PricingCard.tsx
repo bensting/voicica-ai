@@ -53,14 +53,6 @@ export default function PricingCard({ plan, isRecommended = false, cycle }: Pric
     return plan.display_name?.en || plan.display_name?.['zh-Hans'] || 'Plan';
   };
 
-  // 获取计划描述
-  const getPlanDescription = () => {
-    if (plan.credits_per_cycle > 0) {
-      return `${plan.credits_per_cycle} credits per ${cycle === 'monthly' ? 'month' : 'year'}`;
-    }
-    return 'Limited features';
-  };
-
   // 获取功能列表
   const getFeatures = () => {
     return plan.features?.en || plan.features?.['zh-Hans'] || [];

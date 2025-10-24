@@ -1,7 +1,6 @@
-import { useMemo } from 'react';
+import { useMemo, useCallback } from 'react';
 import type { VoiceModel } from '@/hooks/useTTSGenerator';
 import type { SelectOption } from '@/components/ui/CustomSelect';
-import { getLanguageFromLocale, getCountryFromLocale } from '../utils/localeUtils';
 import { getCountryFlagComponent, sortCountriesByLanguage } from '../utils/countryUtils';
 import { SUPPORTED_COUNTRIES, SUPPORTED_LANGUAGES } from '../utils/localeConfig';
 
@@ -32,18 +31,18 @@ export function useVoiceOptions({ voices, availableLanguages, locale, t }: UseVo
   }, [voices]);
 
   // 获取国家显示名称（使用国际化翻译）
-  const getCountryDisplayName = (countryCode: string): string => {
+  const getCountryDisplayName = useCallback((countryCode: string): string => {
     const translatedName = t(`countries.${countryCode}`);
     // 如果翻译不存在，返回国家代码
     return translatedName !== `countries.${countryCode}` ? translatedName : countryCode;
-  };
+  }, [t]);
 
   // 获取语言显示名称（使用国际化翻译）
-  const getLanguageDisplayName = (languageCode: string): string => {
+  const getLanguageDisplayName = useCallback((languageCode: string): string => {
     const translatedName = t(`languages.${languageCode}`);
     // 如果翻译不存在，返回语言代码
     return translatedName !== `languages.${languageCode}` ? translatedName : languageCode;
-  };
+  }, [t]);
 
   // 国家选项
   const countryOptions: SelectOption[] = useMemo(() => {
@@ -60,7 +59,7 @@ export function useVoiceOptions({ voices, availableLanguages, locale, t }: UseVo
         };
       }),
     ];
-  }, [countries, locale, t]);
+  }, [countries, locale, getCountryDisplayName]);
 
   // 语言选项
   const languageOptions: SelectOption[] = useMemo(() => {
@@ -73,7 +72,7 @@ export function useVoiceOptions({ voices, availableLanguages, locale, t }: UseVo
         label: getLanguageDisplayName(lang),
       })),
     ];
-  }, [availableLanguages, languages, t]);
+  }, [availableLanguages, languages, getLanguageDisplayName]);
 
   // 性别选项
   const genderOptions: SelectOption[] = useMemo(() => {

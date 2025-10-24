@@ -7,7 +7,7 @@ import type { ComponentType, SVGProps } from 'react';
  */
 export function getCountryFlagComponent(countryCode: string): ComponentType<SVGProps<SVGSVGElement>> | null {
   const code = COUNTRY_CODE_MAP[countryCode] || countryCode;
-  const FlagComponent = (CountryFlags as any)[code];
+  const FlagComponent = (CountryFlags as Record<string, ComponentType<SVGProps<SVGSVGElement>>>)[code];
   return FlagComponent || null;
 }
 

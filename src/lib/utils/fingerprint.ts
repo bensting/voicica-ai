@@ -6,7 +6,8 @@ import FingerprintJS from '@fingerprintjs/fingerprintjs';
  * 用于生成和管理设备唯一标识，支持匿名用户访问后端 API
  */
 
-let fpPromise: Promise<any> | null = null;
+type FingerprintAgent = Awaited<ReturnType<typeof FingerprintJS.load>>;
+let fpPromise: Promise<FingerprintAgent> | null = null;
 const FINGERPRINT_STORAGE_KEY = 'device_fingerprint';
 
 /**

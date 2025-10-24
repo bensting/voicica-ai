@@ -10,7 +10,7 @@ import { TaskStatus } from '@/types/tts';
 import type { Generation } from '@/types/tts';
 
 interface UseGenerationHistoryProps {
-  user: any;
+  user: { uid: string } | null;
   pageSize?: number;
 }
 

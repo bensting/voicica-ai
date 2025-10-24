@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { Video, Music, Mic } from 'lucide-react';
+import { Mic } from 'lucide-react';
 import Hero from '@/components/sections/Hero';
 import TTSSamples from '@/components/sections/TTSSamples';
 import FAQ from '@/components/sections/FAQ';

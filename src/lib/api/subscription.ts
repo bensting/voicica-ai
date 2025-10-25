@@ -1,5 +1,6 @@
 import { apiClient } from './client';
 import type {
+  BillingPeriod,
   CreemVerifyRequest,
   CreemVerifyResponse,
   StripeVerifyRequest,
@@ -23,6 +24,7 @@ export const createSubscription = (data: unknown) => {
 // 获取订阅计划列表
 export const getPlans = (params?: {
   platform?: 'google' | 'apple' | 'stripe' | 'creem';
+  product_type?: 'voice_cloning' | 'text_to_speech';
   active_only?: boolean;
 }) => {
   return apiClient.get('/api/v1/subscriptions/plans', { params });
@@ -71,7 +73,7 @@ export const getStripePrices = (productId: string) => {
     currency: string;
     active: boolean;
     billing_type: 'recurring' | 'one_time';
-    billing_period: string | null;
+    billing_period: BillingPeriod | null;
     metadata?: Record<string, string>;
   }>>(`/api/v1/subscriptions/products/stripe/${productId}/prices`);
 };

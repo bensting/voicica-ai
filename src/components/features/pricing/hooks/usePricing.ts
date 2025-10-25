@@ -2,8 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { subscriptionAPI } from '@/lib/api';
-import { PricingPlan, SubscriptionPlan } from '@/types/subscription';
-import { getCurrencyFromLocale } from '@/config/currency';
+import { PricingPlan } from '@/types/subscription';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 export type BillingCycle = 'monthly' | 'yearly';
@@ -33,62 +32,18 @@ export function usePricing() {
         const paymentProvider = (process.env.NEXT_PUBLIC_PAYMENT_PROVIDER || 'creem') as 'creem' | 'stripe';
         console.log(`Fetching plans for payment provider: ${paymentProvider}`);
 
+        // 使用 product_type 参数直接获取 text_to_speech 类型的计划
+        // 后端会返回包含所有必要信息（包括价格）的完整计划数据
         const data = await subscriptionAPI.getPlans({
           platform: paymentProvider,
+          product_type: 'text_to_speech',
           active_only: true
-        }) as SubscriptionPlan[];
-        console.log('Fetched plans:', data);
+        }) as PricingPlan[];
 
-        // 如果是 Stripe，需要额外查询价格信息
-        if (paymentProvider === 'stripe') {
-          // 根据当前语言设置获取货币偏好
-          const preferredCurrency = getCurrencyFromLocale(locale);
-          console.log('Preferred currency:', preferredCurrency);
+        console.log('Fetched text_to_speech plans:', data);
 
-          const pricingPlans = await Promise.all(
-            data.map(async (plan: SubscriptionPlan): Promise<PricingPlan> => {
-              try {
-                const prices = await subscriptionAPI.getStripePrices(plan.product_id);
-                console.log(`Prices for ${plan.product_id}:`, prices);
-
-                // 先尝试找到匹配用户偏好货币的激活价格（后端返回的是小写）
-                let selectedPrice = prices.find(
-                  p => p.active && p.currency.toUpperCase() === preferredCurrency
-                );
-
-                // 如果没有找到匹配的货币，优先使用 USD
-                if (!selectedPrice) {
-                  selectedPrice = prices.find(p => p.active && p.currency.toUpperCase() === 'USD');
-                }
-
-                // 如果还是没有找到，使用第一个激活的价格
-                if (!selectedPrice) {
-                  selectedPrice = prices.find(p => p.active);
-                }
-
-                if (selectedPrice) {
-                  return {
-                    ...plan,
-                    priceInfo: {
-                      price: selectedPrice.unit_amount,
-                      currency: selectedPrice.currency,
-                      billing_type: selectedPrice.billing_type,
-                      billing_period: selectedPrice.billing_period === 'month' ? 'every-month' : 'every-year',
-                    }
-                  };
-                }
-                return plan; // Free 计划没有价格信息
-              } catch (err) {
-                console.error(`Failed to fetch prices for ${plan.product_id}:`, err);
-                return plan;
-              }
-            })
-          );
-          setPlans(pricingPlans);
-        } else {
-          // Creem 的价格信息需要从计划中提取（如果有）
-          setPlans(data.map(plan => ({ ...plan })));
-        }
+        // 直接使用后端返回的完整数据，无需额外查询价格信息
+        setPlans(data);
       } catch (err) {
         console.error('Failed to fetch subscription plans:', err);
         setError('Failed to load pricing plans. Please try again later.');

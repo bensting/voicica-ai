@@ -21,14 +21,21 @@ export interface SubscriptionPlan {
   sort_order: number;
   created_at?: string;
   updated_at?: string;
+  // 价格字段（后端直接返回，key 为货币代码，value 为价格）
+  price?: Record<string, number>; // 例如: { "CNY": 34, "TWD": 149, "USD": 4.99 }
+  discounted_price?: Record<string, number>; // 折扣价格
+  billing_period?: BillingPeriod; // 计费周期
 }
+
+// 计费周期枚举（与后端保持一致）
+export type BillingPeriod = 'month' | 'year' | 'one_time';
 
 // 价格信息
 export interface PriceInfo {
   price: number; // 价格（分）
   currency: string; // 货币代码 (USD, CNY, EUR, GBP)
   billing_type: string; // 计费类型 (recurring, one-time)
-  billing_period: string; // 计费周期 (every-month, every-year)
+  billing_period: BillingPeriod; // 计费周期 (month, year, one_time)
 }
 
 // 前端使用的计划展示类型（包含价格信息）

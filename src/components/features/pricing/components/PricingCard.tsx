@@ -5,7 +5,8 @@ import { PricingPlan } from '@/types/subscription';
 import { useAuth } from '@/contexts/AuthContext';
 import { subscriptionAPI } from '@/lib/api';
 import { BillingCycle } from '../hooks/usePricing';
-import { getCurrencySymbol } from '@/config/currency';
+import { getCurrencySymbol, getCurrencyFromLocale } from '@/config/currency';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface PricingCardProps {
   plan: PricingPlan;
@@ -30,19 +31,47 @@ const Feature = ({ children, isNegative = false }: { children: React.ReactNode; 
 
 export default function PricingCard({ plan, isRecommended = false, cycle }: PricingCardProps) {
   const { user } = useAuth();
+  const { locale } = useLanguage();
   const [isLoading, setIsLoading] = useState(false);
   const isFree = plan.plan_name === 'Free';
 
   // 格式化价格显示
   const formatPrice = () => {
-    if (!plan.priceInfo?.price || !plan.priceInfo?.currency) return null;
+    // 如果没有价格信息，返回 null
+    if (!plan.price && !plan.discounted_price) return null;
 
-    const price = plan.priceInfo.price / 100; // 从分转换为元
-    const formattedPrice = price.toFixed(2);
+    // 获取用户偏好的货币
+    const preferredCurrency = getCurrencyFromLocale(locale);
+
+    // 确定要使用的货币（先从 discounted_price 或 price 中找到可用的货币）
+    const availableCurrencies = Object.keys(plan.discounted_price || plan.price || {});
+    let selectedCurrency = preferredCurrency;
+
+    // 如果用户偏好货币不可用，尝试 USD
+    if (!availableCurrencies.includes(selectedCurrency)) {
+      selectedCurrency = 'USD';
+    }
+
+    // 如果 USD 也不可用，使用第一个可用货币
+    if (!availableCurrencies.includes(selectedCurrency) && availableCurrencies.length > 0) {
+      selectedCurrency = availableCurrencies[0];
+    }
+
+    // 获取原价和折扣价
+    const originalPrice = plan.price?.[selectedCurrency];
+    const discountedPrice = plan.discounted_price?.[selectedCurrency];
+
+    // 优先显示折扣价，如果没有折扣价则显示原价
+    const displayPrice = discountedPrice ?? originalPrice;
+
+    // 如果最终还是没有价格，返回 null
+    if (displayPrice === undefined) return null;
 
     return {
-      display: formattedPrice,
-      currency: plan.priceInfo.currency,
+      display: displayPrice.toFixed(2),
+      currency: selectedCurrency,
+      originalPrice: originalPrice,
+      discountedPrice: discountedPrice,
     };
   };
 
@@ -97,7 +126,7 @@ export default function PricingCard({ plan, isRecommended = false, cycle }: Pric
         console.log('📡 [handleUpgrade] Calling Stripe API...');
 
         // 获取当前计划的货币（如果有价格信息）
-        const currency = plan.priceInfo?.currency?.toLowerCase() || 'usd';
+        const currency = priceInfo?.currency?.toLowerCase() || 'usd';
         console.log('📡 [handleUpgrade] Currency:', currency);
 
         const requestData = {
@@ -204,12 +233,19 @@ export default function PricingCard({ plan, isRecommended = false, cycle }: Pric
             <div className="text-3xl font-bold text-gray-900">
               {getCurrencySymbol(priceInfo.currency)}
               {priceInfo.display}
-              <span className="text-lg font-normal text-gray-600">/Month</span>
+              <span className="text-lg font-normal text-gray-600">
+                /{plan.billing_period === 'year' ? 'Year' : 'Month'}
+              </span>
             </div>
-            {plan.priceInfo && (
+            {priceInfo.originalPrice && priceInfo.discountedPrice && priceInfo.originalPrice !== priceInfo.discountedPrice ? (
               <div className="text-sm text-gray-500 mt-1">
                 Renewal at {getCurrencySymbol(priceInfo.currency)}
-                {priceInfo.display}
+                {priceInfo.originalPrice.toFixed(2)}
+              </div>
+            ) : priceInfo.originalPrice && (
+              <div className="text-sm text-gray-500 mt-1">
+                Renewal at {getCurrencySymbol(priceInfo.currency)}
+                {priceInfo.originalPrice.toFixed(2)}
               </div>
             )}
           </>

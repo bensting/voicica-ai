@@ -7,6 +7,7 @@ import { subscriptionAPI } from '@/lib/api';
 import { BillingCycle } from '../hooks/usePricing';
 import { getCurrencySymbol, getCurrencyFromLocale } from '@/config/currency';
 import { useLanguage } from '@/contexts/LanguageContext';
+import LoginPrompt from './LoginPrompt';
 
 interface PaidPlanCardProps {
   plan: PricingPlan;
@@ -33,6 +34,7 @@ export default function PaidPlanCard({ plan, isRecommended = false, cycle }: Pai
   const { user } = useAuth();
   const { locale } = useLanguage();
   const [isLoading, setIsLoading] = useState(false);
+  const [showLoginPrompt, setShowLoginPrompt] = useState(false);
 
   // 格式化价格显示
   const formatPrice = () => {
@@ -99,9 +101,9 @@ export default function PaidPlanCard({ plan, isRecommended = false, cycle }: Pai
       return;
     }
 
-    // 如果用户未登录，提示登录
+    // 如果用户未登录，显示登录提示
     if (!user) {
-      alert('Please login to upgrade your plan');
+      setShowLoginPrompt(true);
       return;
     }
 
@@ -202,13 +204,20 @@ export default function PaidPlanCard({ plan, isRecommended = false, cycle }: Pai
   };
 
   return (
-    <div
-      className={`relative rounded-2xl border-2 p-6 flex flex-col ${
-        isRecommended
-          ? 'border-purple-400 bg-purple-50 shadow-lg'
-          : 'border-gray-200 bg-white hover:border-purple-200 transition-colors'
-      }`}
-    >
+    <>
+      {/* 登录提示模态框 */}
+      <LoginPrompt
+        isOpen={showLoginPrompt}
+        onClose={() => setShowLoginPrompt(false)}
+      />
+
+      <div
+        className={`relative rounded-2xl border-2 p-6 flex flex-col ${
+          isRecommended
+            ? 'border-purple-400 bg-purple-50 shadow-lg'
+            : 'border-gray-200 bg-white hover:border-purple-200 transition-colors'
+        }`}
+      >
       {/* Most Popular Badge */}
       {isRecommended && (
         <div className="absolute -top-3 -right-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white text-xs font-bold px-4 py-1.5 rounded-full shadow-md transform rotate-12">
@@ -291,6 +300,7 @@ export default function PaidPlanCard({ plan, isRecommended = false, cycle }: Pai
       <div className="text-xs text-gray-500 text-center mt-6 pt-4 border-t border-gray-200">
         Auto-renew. Cancel at any time.
       </div>
-    </div>
+      </div>
+    </>
   );
 }

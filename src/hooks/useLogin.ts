@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 
 /**
@@ -18,6 +18,7 @@ export function useLogin() {
 
   const { user, signInWithGoogle, signInWithApple, signInWithTwitter } = useAuth();
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   // 检测回访用户
   useEffect(() => {
@@ -32,9 +33,14 @@ export function useLogin() {
   // 已登录用户自动重定向
   useEffect(() => {
     if (user) {
-      router.push('/');
+      // 检查是否有 returnUrl 参数
+      const returnUrl = searchParams?.get('returnUrl');
+      const redirectPath = returnUrl || '/';
+
+      console.log('🔄 useLogin: 用户已登录，重定向到:', redirectPath);
+      router.push(redirectPath);
     }
-  }, [user, router]);
+  }, [user, router, searchParams]);
 
   // 统一的登录处理函数
   const handleLogin = async (provider: 'google' | 'apple' | 'twitter') => {

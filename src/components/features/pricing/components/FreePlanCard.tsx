@@ -26,7 +26,7 @@ const Feature = ({ children, isNegative = false }: { children: React.ReactNode; 
 );
 
 export default function FreePlanCard({ plan }: FreePlanCardProps) {
-  const { locale } = useLanguage();
+  const { locale, t } = useLanguage();
   const router = useRouter();
 
   // 处理 Try it Free 按钮点击
@@ -67,14 +67,24 @@ export default function FreePlanCard({ plan }: FreePlanCardProps) {
 
   const priceInfo = formatPrice();
 
-  // 获取计划名称
+  // 获取计划名称（根据当前语言）
   const getPlanName = () => {
-    return plan.display_name?.en || plan.display_name?.['zh-CN'] || 'Free';
+    // 优先使用当前语言，然后回退到英文，最后使用任何可用的语言
+    return plan.display_name?.[locale] ||
+           plan.display_name?.en ||
+           plan.display_name?.['zh-CN'] ||
+           Object.values(plan.display_name || {})[0] ||
+           'Free';
   };
 
-  // 获取功能列表
+  // 获取功能列表（根据当前语言）
   const getFeatures = () => {
-    return plan.features?.en || plan.features?.['zh-CN'] || [];
+    // 优先使用当前语言，然后回退到英文
+    return plan.features?.[locale] ||
+           plan.features?.en ||
+           plan.features?.['zh-CN'] ||
+           Object.values(plan.features || {})[0] ||
+           [];
   };
 
   return (
@@ -98,7 +108,7 @@ export default function FreePlanCard({ plan }: FreePlanCardProps) {
           <div className="text-3xl font-bold text-gray-900 mb-1">$0</div>
         )}
         {/* Free for everyone 提示（参考 PaidPlanCard 的 Renewal 样式） */}
-        <div className="text-sm text-gray-500">Free for everyone</div>
+        <div className="text-sm text-gray-500">{t('pricing.freeForEveryone')}</div>
       </div>
 
       {/* CTA Button */}
@@ -106,7 +116,7 @@ export default function FreePlanCard({ plan }: FreePlanCardProps) {
         onClick={handleTryFree}
         className="w-full rounded-xl font-semibold py-3 mb-6 transition-colors bg-white border-2 border-gray-300 text-gray-700 hover:border-gray-400"
       >
-        Try it Free
+        {t('pricing.tryItFree')}
       </button>
 
       {/* Features */}

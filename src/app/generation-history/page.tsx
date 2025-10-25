@@ -1,7 +1,6 @@
 'use client';
 
 import { useAuth } from '@/contexts/AuthContext';
-import LoginForm from '@/components/features/auth/LoginForm';
 import ConfirmDialog from '@/components/ui/ConfirmDialog';
 import GenerationHistory from '@/components/features/generation-history/GenerationHistory';
 import { useGenerationHistory } from '@/components/features/generation-history/hooks/useGenerationHistory';
@@ -10,7 +9,7 @@ import { useGenerationHistory } from '@/components/features/generation-history/h
  * Generation History Page
  *
  * Displays user's TTS generation history with filtering and pagination
- * Requires authentication
+ * Supports both authenticated and anonymous users
  */
 export default function GenerationHistoryPage() {
   const { user, loading: authLoading } = useAuth();
@@ -38,64 +37,12 @@ export default function GenerationHistoryPage() {
     fetchRecords,
   } = useGenerationHistory({ user });
 
-  // Show loading while checking auth
+  // Show loading while checking auth (optional, can be removed if not needed)
+  // Note: Anonymous users can also view their generation history
   if (authLoading) {
     return (
       <div className="min-h-screen bg-gray-50 pt-20 flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
-      </div>
-    );
-  }
-
-  // Show login modal if not authenticated
-  if (!user) {
-    const handleOverlayClick = () => {
-      // Go back to previous page when clicking outside the modal
-      window.history.back();
-    };
-
-    const handleModalClick = (e: React.MouseEvent) => {
-      // Prevent closing when clicking inside the modal
-      e.stopPropagation();
-    };
-
-    return (
-      <div className="min-h-screen bg-gray-50 pt-20 relative">
-        {/* Blurred background content */}
-        <div className="blur-sm pointer-events-none select-none">
-          <div className="max-w-6xl mx-auto px-4 py-8">
-            <div className="space-y-6">
-              <div>
-                <h1 className="text-3xl font-bold text-gray-900 mb-2">Generation History</h1>
-                <p className="text-gray-600">View and manage your TTS generation history</p>
-              </div>
-              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 h-96"></div>
-            </div>
-          </div>
-        </div>
-
-        {/* Login Modal Overlay - Click to close */}
-        <div
-          className="fixed inset-0 bg-white/30 backdrop-blur-md flex items-center justify-center z-50 pt-20 cursor-pointer"
-          onClick={handleOverlayClick}
-        >
-          <div
-            className="bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl p-8 max-w-md w-full mx-4 transform transition-all cursor-default border border-white/20"
-            onClick={handleModalClick}
-          >
-            <div className="text-center mb-6">
-              <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-purple-700 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                </svg>
-              </div>
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">Login Required</h2>
-              <p className="text-gray-600">Please sign in to view your generation history</p>
-            </div>
-            <LoginForm />
-            <p className="text-center text-xs text-gray-400 mt-4">Click outside to go back</p>
-          </div>
-        </div>
       </div>
     );
   }
@@ -125,7 +72,7 @@ export default function GenerationHistoryPage() {
     );
   }
 
-  // Show main content for authenticated users
+  // Show main content (supports both authenticated and anonymous users)
   return (
     <>
       <div className="min-h-screen bg-gray-50 pt-20">

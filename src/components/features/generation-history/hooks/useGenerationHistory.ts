@@ -115,12 +115,11 @@ export function useGenerationHistory({
     }
   }, [selectedStatus, startDate, endDate, currentPage, pageSize]);
 
-  // Fetch records when user logs in or filters change
+  // Fetch records when filters change (supports both authenticated and anonymous users)
+  // The backend uses unified_user which handles both logged-in and anonymous users
   useEffect(() => {
-    if (user) {
-      void fetchRecords();
-    }
-  }, [user, fetchRecords]);
+    void fetchRecords();
+  }, [fetchRecords]);
 
   // Handle clear all records
   const handleClearAll = useCallback(async () => {

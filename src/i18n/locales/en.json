@@ -22,7 +22,16 @@
   "pricing": {
     "loading": "Loading pricing plans...",
     "error": "Failed to load pricing plans. Please try again later.",
-    "retry": "Retry"
+    "retry": "Retry",
+    "month": "Month",
+    "year": "Year",
+    "buyNow": "Buy Now",
+    "tryItFree": "Try it Free",
+    "processing": "Processing...",
+    "renewalAt": "Renewal at",
+    "freeForEveryone": "Free for everyone",
+    "mostPopular": "Most Popular",
+    "autoRenew": "Auto-renew. Cancel at any time."
   },
   "login": {
     "title": "AI Voice Labs",

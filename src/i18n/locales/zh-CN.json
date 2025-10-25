@@ -22,7 +22,16 @@
   "pricing": {
     "loading": "正在加载价格方案...",
     "error": "加载价格方案失败，请稍后重试。",
-    "retry": "重试"
+    "retry": "重试",
+    "month": "月",
+    "year": "年",
+    "buyNow": "立即购买",
+    "tryItFree": "免费试用",
+    "processing": "处理中...",
+    "renewalAt": "续费价格",
+    "freeForEveryone": "永久免费",
+    "mostPopular": "最受欢迎",
+    "autoRenew": "自动续费，随时可取消。"
   },
   "login": {
     "title": "AI 语音实验室",

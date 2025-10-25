@@ -32,7 +32,7 @@ const Feature = ({ children, isNegative = false }: { children: React.ReactNode; 
 
 export default function PaidPlanCard({ plan, isRecommended = false, cycle }: PaidPlanCardProps) {
   const { user } = useAuth();
-  const { locale } = useLanguage();
+  const { locale, t } = useLanguage();
   const [isLoading, setIsLoading] = useState(false);
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
 
@@ -78,14 +78,24 @@ export default function PaidPlanCard({ plan, isRecommended = false, cycle }: Pai
 
   const priceInfo = formatPrice();
 
-  // 获取计划名称
+  // 获取计划名称（根据当前语言）
   const getPlanName = () => {
-    return plan.display_name?.en || plan.display_name?.['zh-CN'] || 'Plan';
+    // 优先使用当前语言，然后回退到英文，最后使用任何可用的语言
+    return plan.display_name?.[locale] ||
+           plan.display_name?.en ||
+           plan.display_name?.['zh-CN'] ||
+           Object.values(plan.display_name || {})[0] ||
+           'Plan';
   };
 
-  // 获取功能列表
+  // 获取功能列表（根据当前语言）
   const getFeatures = () => {
-    return plan.features?.en || plan.features?.['zh-CN'] || [];
+    // 优先使用当前语言，然后回退到英文
+    return plan.features?.[locale] ||
+           plan.features?.en ||
+           plan.features?.['zh-CN'] ||
+           Object.values(plan.features || {})[0] ||
+           [];
   };
 
   // 处理升级按钮点击
@@ -221,7 +231,7 @@ export default function PaidPlanCard({ plan, isRecommended = false, cycle }: Pai
       {/* Most Popular Badge */}
       {isRecommended && (
         <div className="absolute -top-3 -right-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white text-xs font-bold px-4 py-1.5 rounded-full shadow-md transform rotate-12">
-          Most Popular
+          {t('pricing.mostPopular')}
         </div>
       )}
 
@@ -246,14 +256,14 @@ export default function PaidPlanCard({ plan, isRecommended = false, cycle }: Pai
                 {getCurrencySymbol(priceInfo.currency)}
                 {priceInfo.display}
                 <span className="text-lg font-normal text-gray-600">
-                  /{plan.billing_period === 'year' ? 'Year' : 'Month'}
+                  /{plan.billing_period === 'year' ? t('pricing.year') : t('pricing.month')}
                 </span>
               </div>
             </div>
             {/* Renewal 提示 */}
             {priceInfo.originalPrice && (
               <div className="text-sm text-gray-500">
-                Renewal at {getCurrencySymbol(priceInfo.currency)}
+                {t('pricing.renewalAt')} {getCurrencySymbol(priceInfo.currency)}
                 {priceInfo.originalPrice.toFixed(2)}
               </div>
             )}
@@ -279,10 +289,10 @@ export default function PaidPlanCard({ plan, isRecommended = false, cycle }: Pai
               <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
               <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
             </svg>
-            Processing...
+            {t('pricing.processing')}
           </span>
         ) : (
-          'Buy Now'
+          t('pricing.buyNow')
         )}
       </button>
 
@@ -298,7 +308,7 @@ export default function PaidPlanCard({ plan, isRecommended = false, cycle }: Pai
 
       {/* Auto-renew notice */}
       <div className="text-xs text-gray-500 text-center mt-6 pt-4 border-t border-gray-200">
-        Auto-renew. Cancel at any time.
+        {t('pricing.autoRenew')}
       </div>
       </div>
     </>

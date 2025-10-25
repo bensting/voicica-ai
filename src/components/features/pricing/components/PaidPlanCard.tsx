@@ -245,14 +245,14 @@ export default function PaidPlanCard({ plan, isRecommended = false, cycle }: Pai
         {priceInfo ? (
           <>
             {/* 主价格行：划掉的原价（如果有折扣）+ 当前价格 */}
-            <div className="flex items-center justify-center gap-2 mb-1">
+            <div className="flex items-center justify-center gap-2 mb-1 flex-wrap">
               {priceInfo.originalPrice && priceInfo.discountedPrice && priceInfo.originalPrice !== priceInfo.discountedPrice && (
-                <span className="text-lg text-gray-400 line-through">
+                <span className="text-lg text-gray-400 line-through whitespace-nowrap">
                   {getCurrencySymbol(priceInfo.currency)}
                   {priceInfo.originalPrice.toFixed(2)}
                 </span>
               )}
-              <div className="text-3xl font-bold text-gray-900">
+              <div className="text-3xl font-bold text-gray-900 whitespace-nowrap">
                 {getCurrencySymbol(priceInfo.currency)}
                 {priceInfo.display}
                 <span className="text-lg font-normal text-gray-600">

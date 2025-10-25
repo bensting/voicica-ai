@@ -1,8 +1,10 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import { PricingPlan } from '@/types/subscription';
 import { getCurrencySymbol, getCurrencyFromLocale } from '@/config/currency';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { getProductRoute } from '@/config/productRoutes';
 
 interface FreePlanCardProps {
   plan: PricingPlan;
@@ -25,6 +27,15 @@ const Feature = ({ children, isNegative = false }: { children: React.ReactNode; 
 
 export default function FreePlanCard({ plan }: FreePlanCardProps) {
   const { locale } = useLanguage();
+  const router = useRouter();
+
+  // 处理 Try it Free 按钮点击
+  const handleTryFree = () => {
+    // 从 plan 数据中获取 product_type，使用配置文件获取对应路由
+    const productType = (plan as any).product_type;
+    const route = getProductRoute(productType);
+    router.push(route);
+  };
 
   // 格式化价格显示（即使是免费计划也可能有价格信息）
   const formatPrice = () => {
@@ -92,6 +103,7 @@ export default function FreePlanCard({ plan }: FreePlanCardProps) {
 
       {/* CTA Button */}
       <button
+        onClick={handleTryFree}
         className="w-full rounded-xl font-semibold py-3 mb-6 transition-colors bg-white border-2 border-gray-300 text-gray-700 hover:border-gray-400"
       >
         Try it Free

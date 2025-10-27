@@ -4,7 +4,7 @@ import { useTTSDemo } from './hooks';
 import { TTSProductInfo, TTSDemoPanel } from './components';
 
 /**
- * TTS Samples Section - TopMediai Style
+ * TTS Samples Section - AI Voice Labs Style
  *
  * 展示 TTS 功能，采用深色主题设计：
  * - 左侧：产品介绍、功能列表、CTA 按钮
@@ -48,7 +48,7 @@ export default function TTSSamples() {
   } = useTTSDemo();
 
   return (
-    <section className="py-20 px-4 bg-gradient-to-b from-gray-900 to-black">
+    <section className="py-20 px-4 bg-black">
       <div className="max-w-7xl mx-auto">
         {/* Section Header */}
         <div className="text-center mb-12">
@@ -61,8 +61,8 @@ export default function TTSSamples() {
           </h2>
         </div>
 
-        {/* Main Content Card */}
-        <div className="bg-gradient-to-br from-gray-800/80 to-gray-900/80 rounded-3xl p-8 md:p-12 border border-gray-700/50 backdrop-blur-sm">
+        {/* Main Content Card - 增强发光效果 */}
+        <div className="bg-gradient-to-br from-gray-900/95 to-black/95 rounded-3xl p-8 md:p-12 border border-gray-700 shadow-2xl shadow-purple-500/10 backdrop-blur-sm">
           {isLoadingConfig ? (
             <div className="flex items-center justify-center py-20">
               <div className="text-white text-lg">Loading configuration...</div>

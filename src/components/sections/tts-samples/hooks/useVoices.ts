@@ -46,7 +46,7 @@ export function useVoices({ locale, enabled = true }: UseVoicesOptions = {}): Us
 
       const params: Record<string, unknown> = {
         is_active: true,
-        limit: 100,
+        limit: 3, // 只获取 3 条数据用于 TTS 演示
       };
 
       if (locale) {

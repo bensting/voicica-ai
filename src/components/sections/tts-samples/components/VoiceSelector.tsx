@@ -1,5 +1,6 @@
-import { useEffect, useRef } from 'react';
-import { ChevronDown, Play } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { ChevronDown, Play, Pause } from 'lucide-react';
 import type { Voice } from '@/types/voice';
 import { getLocalizedVoiceName } from '@/types/voice';
 
@@ -43,7 +44,10 @@ export default function VoiceSelector({
   onToggle,
   currentLanguage = 'en',
 }: VoiceSelectorProps) {
+  const router = useRouter();
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const [playingVoiceId, setPlayingVoiceId] = useState<string | null>(null);
 
   // 点击外部关闭下拉菜单
   useEffect(() => {
@@ -76,6 +80,56 @@ export default function VoiceSelector({
     return parts.join(' - ');
   };
 
+  // 播放语音样本
+  const handlePlaySample = (voice: Voice, event: React.MouseEvent) => {
+    event.stopPropagation();
+
+    if (!voice.voice_sample_url) return;
+
+    // 如果正在播放同一个语音，则暂停
+    if (playingVoiceId === voice.id) {
+      audioRef.current?.pause();
+      setPlayingVoiceId(null);
+      return;
+    }
+
+    // 停止之前的播放
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current = null;
+    }
+
+    // 创建新的音频对象并播放
+    const audio = new Audio(voice.voice_sample_url);
+    audioRef.current = audio;
+    setPlayingVoiceId(voice.id || null);
+
+    audio.play().catch((error) => {
+      console.error('播放失败:', error);
+      setPlayingVoiceId(null);
+    });
+
+    // 播放结束后重置状态
+    audio.onended = () => {
+      setPlayingVoiceId(null);
+    };
+  };
+
+  // 处理解锁 CTA 点击
+  const handleUnlockClick = () => {
+    router.push('/studio/tts');
+  };
+
+  // 组件卸载时停止播放
+  useEffect(() => {
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current = null;
+      }
+    };
+  }, []);
+
   // 渲染头像
   const renderAvatar = (voice: Voice) => {
     if (voice.avatar_url) {
@@ -97,7 +151,7 @@ export default function VoiceSelector({
       {/* 选择按钮 */}
       <button
         onClick={onToggle}
-        className="w-full h-[66px] flex items-center justify-between px-4 bg-gray-800/80 border border-gray-700 rounded-xl hover:bg-gray-800 transition-colors"
+        className="w-full h-[66px] flex items-center justify-between px-4 bg-gray-900/90 border border-gray-700 rounded-xl hover:bg-gray-800 transition-colors"
         disabled={isLoading}
       >
         {selectedVoice ? (
@@ -160,17 +214,26 @@ export default function VoiceSelector({
                 {voice.voice_sample_url && (
                   <button
                     className="w-8 h-8 flex items-center justify-center bg-gray-600 hover:bg-purple-600 rounded-full transition-colors flex-shrink-0"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      // TODO: 播放语音样本
-                      console.log('🎵 播放语音样本:', voice.voice_sample_url);
-                    }}
+                    onClick={(e) => handlePlaySample(voice, e)}
                   >
-                    <Play className="w-4 h-4 text-white" fill="currentColor" />
+                    {playingVoiceId === voice.id ? (
+                      <Pause className="w-4 h-4 text-white" fill="currentColor" />
+                    ) : (
+                      <Play className="w-4 h-4 text-white" fill="currentColor" />
+                    )}
                   </button>
                 )}
               </div>
             ))}
+          </div>
+
+          {/* 解锁更多语音 CTA */}
+          <div
+            onClick={handleUnlockClick}
+            className="bg-gradient-to-r from-purple-600 to-purple-700 p-4 text-center cursor-pointer hover:from-purple-500 hover:to-purple-600 transition-all"
+          >
+            <div className="text-white font-bold text-sm mb-1">Try more voices for free</div>
+            <div className="text-purple-100 text-xs">3200+ AI Voices</div>
           </div>
         </div>
       )}

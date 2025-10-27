@@ -1,4 +1,5 @@
 import { Mic, Star } from 'lucide-react';
+import { GradientButton } from '@/components/ui';
 
 /**
  * TTS Product Info Component
@@ -53,9 +54,7 @@ export default function TTSProductInfo() {
       <div>
         <div className="flex items-center gap-4 mb-3">
           {/* 按钮 */}
-          <button className="px-10 py-4 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-bold text-lg rounded-xl shadow-lg hover:shadow-xl transition-all hover:scale-105">
-            Try It Now
-          </button>
+          <GradientButton size="lg">Try It Now</GradientButton>
 
           {/* 星星和统计数据 */}
           <div className="flex flex-col gap-1">

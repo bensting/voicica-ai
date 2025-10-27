@@ -1,6 +1,7 @@
 import { ChevronDown } from 'lucide-react';
 import { LocaleOption } from '@/types/config';
 import type { Voice } from '@/types/voice';
+import { GradientButton } from '@/components/ui';
 import LanguageSelector from './LanguageSelector';
 import VoiceSelector from './VoiceSelector';
 
@@ -65,7 +66,7 @@ export default function TTSDemoPanel({
   onPlay,
 }: TTSDemoPanelProps) {
   return (
-    <div className="bg-gradient-to-br from-gray-900/90 to-black/90 rounded-2xl p-6 border border-gray-700/50">
+    <div className="bg-gradient-to-br from-gray-950 to-black rounded-2xl p-6 border border-gray-800">
       {/* Voice & Language Selection */}
       <div className="flex items-center gap-4 mb-4">
         {/* Voice Selection - 使用 VoiceSelector 组件 */}
@@ -89,16 +90,16 @@ export default function TTSDemoPanel({
         />
       </div>
 
-      {/* Text Input */}
+      {/* Text Input - 增加高度和对比度 */}
       <div className="relative mb-4">
         <textarea
           value={textInput}
           onChange={(e) => onTextChange(e.target.value)}
           maxLength={maxTextLength}
-          className="w-full h-32 px-4 py-3 bg-gray-800/80 border border-gray-700 rounded-xl text-white resize-none focus:outline-none focus:ring-2 focus:ring-purple-500"
+          className="w-full h-48 px-4 py-3 bg-gray-900/90 border border-gray-700 rounded-xl text-white resize-none focus:outline-none focus:ring-2 focus:ring-purple-500 placeholder:text-gray-500"
           placeholder="Enter text to convert to speech..."
         />
-        <div className="absolute bottom-3 right-3 text-xs text-gray-500">
+        <div className="absolute bottom-3 right-3 text-xs text-gray-400">
           {textInput.length}/{maxTextLength}
         </div>
       </div>
@@ -124,15 +125,9 @@ export default function TTSDemoPanel({
       </div>
 
       {/* Listen Button */}
-      <button
-        onClick={onPlay}
-        disabled={isPlaying || !textInput.trim()}
-        className={`w-full py-4 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-bold rounded-xl shadow-lg hover:shadow-xl transition-all hover:scale-[1.02] ${
-          isPlaying || !textInput.trim() ? 'opacity-70 cursor-not-allowed' : ''
-        }`}
-      >
+      <GradientButton onClick={onPlay} disabled={isPlaying || !textInput.trim()} fullWidth size="lg">
         {isPlaying ? 'Playing...' : 'Listen'}
-      </button>
+      </GradientButton>
     </div>
   );
 }

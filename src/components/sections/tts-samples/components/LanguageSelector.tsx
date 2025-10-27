@@ -65,7 +65,7 @@ export default function LanguageSelector({
       {/* 选择按钮 - 与 VoiceSelector 相同高度 */}
       <button
         onClick={onToggle}
-        className="h-[66px] flex items-center gap-2 px-4 bg-gray-800/80 border border-gray-700 rounded-xl hover:bg-gray-800 transition-colors"
+        className="h-[66px] flex items-center gap-2 px-4 bg-gray-900/90 border border-gray-700 rounded-xl hover:bg-gray-800 transition-colors"
       >
         {selectedLocale ? (
           <>

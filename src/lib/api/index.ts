@@ -2,7 +2,7 @@
  * API 统一导出
  *
  * 使用方式：
- * import { userAPI, voiceAPI, subscriptionAPI, ttsAPI, enumsAPI } from '@/lib/api'
+ * import { userAPI, voiceAPI, subscriptionAPI, ttsAPI, enumsAPI, configAPI } from '@/lib/api'
  */
 
 // 导出 API 客户端
@@ -22,3 +22,6 @@ export * as ttsAPI from './tts';
 
 // 导出枚举值 API
 export * as enumsAPI from './enums';
+
+// 导出配置相关 API
+export * as configAPI from './config';

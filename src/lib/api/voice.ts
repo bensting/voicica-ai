@@ -9,6 +9,7 @@ export const getVoices = (params?: {
   provider?: string;
   country?: string;
   language?: string;
+  locale?: string;
   role?: string;
   gender?: string;
   is_active?: boolean;

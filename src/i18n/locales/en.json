@@ -175,7 +175,21 @@
   "studio": {
     "tts": "Text to Speech",
     "upgrade": "Upgrade",
-    "credits": "Credits"
+    "credits": "Credits",
+    "menu": {
+      "home": "Home",
+      "creationHub": "Creation Hub",
+      "project": "Project",
+      "shortVideo": "Short Video",
+      "aiVideoGenerator": "AI Video Generator",
+      "textToSpeech": "Text to Speech",
+      "speechToSpeech": "Speech to Speech",
+      "voiceCloning": "Voice Cloning",
+      "voiceoverStudio": "Voiceover Studio",
+      "aiMusic": "AI Music",
+      "aiCover": "AI Cover",
+      "musicTools": "Music Tools"
+    }
   },
   "voiceFilters": {
     "selectCountry": "Select Country",

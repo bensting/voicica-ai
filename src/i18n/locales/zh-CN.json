@@ -259,7 +259,21 @@
   "studio": {
     "tts": "文字转语音",
     "upgrade": "购买/升级",
-    "credits": "积分"
+    "credits": "积分",
+    "menu": {
+      "home": "首页",
+      "creationHub": "创作中心",
+      "project": "项目",
+      "shortVideo": "短视频",
+      "aiVideoGenerator": "AI 视频生成器",
+      "textToSpeech": "文字转语音",
+      "speechToSpeech": "语音转语音",
+      "voiceCloning": "语音克隆",
+      "voiceoverStudio": "配音工作室",
+      "aiMusic": "AI 音乐",
+      "aiCover": "AI 翻唱",
+      "musicTools": "音乐工具"
+    }
   },
   "voiceFilters": {
     "selectCountry": "选择国家",

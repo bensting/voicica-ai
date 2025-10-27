@@ -256,6 +256,31 @@
     "zh": "中文",
     "zu": "祖魯語"
   },
+  "studio": {
+    "tts": "文字轉語音",
+    "upgrade": "購買/升級",
+    "credits": "積分",
+    "menu": {
+      "home": "首頁",
+      "creationHub": "創作中心",
+      "project": "專案",
+      "shortVideo": "短影片",
+      "aiVideoGenerator": "AI 影片產生器",
+      "textToSpeech": "文字轉語音",
+      "speechToSpeech": "語音轉語音",
+      "voiceCloning": "語音複製",
+      "voiceoverStudio": "配音工作室",
+      "aiMusic": "AI 音樂",
+      "aiCover": "AI 翻唱",
+      "musicTools": "音樂工具"
+    }
+  },
+  "voiceFilters": {
+    "selectCountry": "選擇國家",
+    "selectLanguage": "選擇語言",
+    "selectGender": "選擇性別",
+    "searchPlaceholder": "按名稱搜尋語音..."
+  },
   "countries": {
     "CN": "中國",
     "TW": "台灣",

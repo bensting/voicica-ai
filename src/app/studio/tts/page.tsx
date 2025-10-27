@@ -1,10 +1,10 @@
 'use client';
 
+import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useUserCredits } from '@/hooks/useUserCredits';
+import { useStudio } from '@/contexts/StudioContext';
 import { useTTSGenerator } from '@/hooks/useTTSGenerator';
-import StudioToolbar from '@/components/features/studio/StudioToolbar';
 import TextInput from '@/components/features/studio/tts/TextInput';
 import VoiceSelector from '@/components/features/studio/tts/VoiceSelector';
 import GenerateButton from '@/components/features/studio/tts/GenerateButton';
@@ -21,7 +21,12 @@ import GenerateButton from '@/components/features/studio/tts/GenerateButton';
 export default function StudioTTSPage() {
   const router = useRouter();
   const { t } = useLanguage();
-  const { credits, loading: creditsLoading } = useUserCredits();
+  const { setTitle } = useStudio();
+
+  // Set page title
+  useEffect(() => {
+    setTitle(t('studio.tts'));
+  }, [t, setTitle]);
 
   // TTS Generator logic
   const maxCharacters = 500;
@@ -45,15 +50,7 @@ export default function StudioTTSPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-white to-purple-50 pt-16">
-      {/* Studio Toolbar */}
-      <StudioToolbar
-        title={t('studio.tts')}
-        credits={credits}
-        creditsLoading={creditsLoading}
-        onUpgradeClick={handleUpgradeClick}
-      />
-
+    <div className="bg-gradient-to-b from-white to-purple-50">
       {/* TTS Generator Section */}
       <section className="pb-12">
         <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">

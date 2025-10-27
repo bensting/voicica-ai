@@ -26,7 +26,7 @@ export default function LanguageSwitcher() {
     <div className="relative" ref={dropdownRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 text-gray-700 hover:text-purple-600 transition-colors"
+        className="flex items-center gap-2 text-white hover:text-purple-400 transition-colors"
         aria-label="Switch language"
       >
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

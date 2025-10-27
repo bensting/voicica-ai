@@ -45,7 +45,7 @@ export default function NavLinks({ mobile = false, onLinkClick }: NavLinksProps 
             key={link.href}
             href={link.href}
             onClick={getClickHandler(link.type, link.sectionId)}
-            className="text-gray-700 hover:text-purple-600 transition-colors font-medium py-2"
+            className="text-white hover:text-purple-400 transition-colors font-medium py-2"
           >
             {t(link.labelKey)}
           </Link>
@@ -61,7 +61,7 @@ export default function NavLinks({ mobile = false, onLinkClick }: NavLinksProps 
           key={link.href}
           href={link.href}
           onClick={getClickHandler(link.type, link.sectionId)}
-          className="text-gray-700 hover:text-purple-600 transition-colors font-medium"
+          className="text-white hover:text-purple-400 transition-colors font-medium"
         >
           {t(link.labelKey)}
         </Link>

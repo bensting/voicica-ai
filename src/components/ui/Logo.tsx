@@ -13,7 +13,7 @@ export default function Logo() {
           priority
         />
       </div>
-      <span className="text-lg md:text-xl font-semibold text-gray-900">AI Voice Labs</span>
+      <span className="text-lg md:text-xl font-semibold text-white">AI Voice Labs</span>
     </Link>
   );
 }

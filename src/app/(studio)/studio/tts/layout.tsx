@@ -22,10 +22,12 @@ export default function TTSLayout({
       </div>
 
       {/* ========== 移动端布局 (<lg) ========== */}
-      <div className="lg:hidden">
-        {/* Content with bottom padding to prevent overlap with BottomNav */}
-        <div className="pb-20">
-          {children}
+      <div className="lg:hidden h-[calc(100vh-60px)] flex flex-col">
+        {/* Content area */}
+        <div className="flex-1 min-h-0">
+          <div className="h-full">
+            {children}
+          </div>
         </div>
 
         {/* Mobile Bottom Navigation */}

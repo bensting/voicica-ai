@@ -67,7 +67,7 @@ export default function StudioTTSPage() {
       </div>
 
       {/* Mobile View */}
-      <div className="lg:hidden">
+      <div className="lg:hidden h-full">
         <MobileTTSPage {...sharedProps} />
       </div>
     </>

@@ -60,11 +60,9 @@ function StudioLayoutContent({
         />
 
         {/* 移动端主内容 */}
-        <div className="pt-[60px]">
-          <main>
-            {children}
-          </main>
-        </div>
+        <main className="pt-[60px]">
+          {children}
+        </main>
       </div>
     </div>
   );

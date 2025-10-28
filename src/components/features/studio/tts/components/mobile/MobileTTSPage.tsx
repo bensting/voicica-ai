@@ -6,7 +6,6 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { voiceAPI } from '@/lib/api';
 import type { VoiceModel } from '@/hooks/useTTSGenerator';
 import MobileTextInput from './MobileTextInput';
-import ExampleButtons from './ExampleButtons';
 import MobileVoiceSelector from './MobileVoiceSelector';
 import MobileActionButtons from './MobileActionButtons';
 import AudioPlayerModal from './AudioPlayerModal';
@@ -85,10 +84,6 @@ export default function MobileTTSPage({
     }
   }, [audioUrl]);
 
-  const handleSelectExample = (exampleText: string) => {
-    handleTextChange(exampleText);
-  };
-
   const handleOpenVoiceModal = () => {
     // TODO: Open voice selection modal
     router.push('/studio/voices');
@@ -118,47 +113,47 @@ export default function MobileTTSPage({
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
-      <div className="px-4 py-6 space-y-6">
+    <>
+      <div className="h-full flex flex-col px-4 pt-3 pb-20 gap-2 bg-gradient-to-b from-gray-50 to-white">
         {/* Error Message */}
         {error && (
-          <div className="p-4 bg-red-50 border-2 border-red-200 rounded-xl">
+          <div className="flex-shrink-0 p-3 bg-red-50 border border-red-200 rounded-xl">
             <p className="text-red-600 font-medium text-sm">{error}</p>
           </div>
         )}
 
-        {/* Text Input */}
-        <MobileTextInput
-          value={text}
-          onChange={handleTextChange}
-          maxCharacters={maxCharacters}
-          availableCharacters={availableCharacters}
-          disabled={isGenerating}
-        />
-
-        {/* Example Buttons */}
-        <ExampleButtons
-          onSelectExample={handleSelectExample}
-          disabled={isGenerating}
-        />
+        {/* Text Input - 占据大部分空间 */}
+        <div className="flex-1 min-h-0">
+          <MobileTextInput
+            value={text}
+            onChange={handleTextChange}
+            maxCharacters={maxCharacters}
+            availableCharacters={availableCharacters}
+            disabled={isGenerating}
+          />
+        </div>
 
         {/* Voice Selector */}
-        <MobileVoiceSelector
-          selectedVoice={selectedVoice}
-          onOpenVoiceModal={handleOpenVoiceModal}
-          disabled={isGenerating}
-        />
+        <div className="flex-shrink-0">
+          <MobileVoiceSelector
+            selectedVoice={selectedVoice}
+            onOpenVoiceModal={handleOpenVoiceModal}
+            disabled={isGenerating}
+          />
+        </div>
 
         {/* Action Buttons */}
-        <MobileActionButtons
-          onGenerate={handleGenerate}
-          onOpenSettings={handleOpenSettings}
-          isGenerating={isGenerating}
-          canGenerate={canGenerate}
-        />
+        <div className="flex-shrink-0">
+          <MobileActionButtons
+            onGenerate={handleGenerate}
+            onOpenSettings={handleOpenSettings}
+            isGenerating={isGenerating}
+            canGenerate={canGenerate}
+          />
+        </div>
       </div>
 
-      {/* 底部弹出音频播放器 */}
+      {/* 底部弹出音频播放器 - fixed 定位，不占据布局空间 */}
       {audioUrl && (
         <AudioPlayerModal
           isOpen={isAudioModalOpen}
@@ -168,6 +163,6 @@ export default function MobileTTSPage({
           voiceAvatar={selectedVoice?.avatar_url}
         />
       )}
-    </div>
+    </>
   );
 }

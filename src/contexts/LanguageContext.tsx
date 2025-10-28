@@ -53,12 +53,23 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     setIsReady(true);
   }, []);
 
-  // 加载语言文件
+  // 加载语言文件（主文件 + FAQ 文件）
   useEffect(() => {
     const loadMessages = async () => {
       try {
+        // 加载主语言文件
         const messagesModule = await import(`@/i18n/locales/${locale}.json`);
-        setMessages(messagesModule.default);
+        const mainMessages = messagesModule.default;
+
+        // 加载 FAQ 语言文件
+        const faqModule = await import(`@/i18n/locales/${locale}/faq.json`);
+        const faqMessages = faqModule.default;
+
+        // 合并消息
+        setMessages({
+          ...mainMessages,
+          faq: faqMessages
+        });
       } catch (error) {
         console.error(`Failed to load locale ${locale}`, error);
       }

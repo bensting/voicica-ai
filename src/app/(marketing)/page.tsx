@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation';
 import { Mic } from 'lucide-react';
 import Hero from '@/components/sections/Hero';
 import TTSSamples from '@/components/sections/tts-samples';
-import FAQ from '@/components/sections/FAQ';
+import FAQ from '@/components/sections/faq';
 import CTA from '@/components/sections/CTA';
 
 // Hero Action Buttons Configuration

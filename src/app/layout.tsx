@@ -19,6 +19,26 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "AI Voice Labs - Create Stunning AI Voices",
   description: "Transform your content with natural-sounding AI voice generation. Create custom voice models with cutting-edge technology.",
+  manifest: "/manifest.json",
+  themeColor: "#9333ea",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "AI Voice Labs",
+  },
+  formatDetection: {
+    telephone: false,
+  },
+  icons: {
+    icon: "/icon.svg",
+    apple: "/icon.svg",
+  },
+  viewport: {
+    width: "device-width",
+    initialScale: 1,
+    maximumScale: 1,
+    userScalable: false,
+  },
 };
 
 export default function RootLayout({

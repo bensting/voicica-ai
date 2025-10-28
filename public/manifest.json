@@ -1,0 +1,35 @@
+{
+  "name": "AI Voice Labs",
+  "short_name": "AI Voice Labs",
+  "description": "One Stop AI Voice Solution for Speech & Cloned Voice",
+  "theme_color": "#9333ea",
+  "background_color": "#ffffff",
+  "display": "standalone",
+  "orientation": "portrait",
+  "scope": "/",
+  "start_url": "/",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "splash_pages": null,
+  "categories": ["productivity", "utilities"],
+  "shortcuts": [
+    {
+      "name": "Text to Speech",
+      "short_name": "TTS",
+      "description": "Open Text to Speech Studio",
+      "url": "/studio/tts",
+      "icons": [
+        {
+          "src": "/icon.svg",
+          "sizes": "any"
+        }
+      ]
+    }
+  ]
+}

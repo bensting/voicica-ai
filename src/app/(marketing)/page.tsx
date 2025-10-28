@@ -5,6 +5,7 @@ import { Mic } from 'lucide-react';
 import Hero from '@/components/sections/Hero';
 import TTSSamples from '@/components/sections/tts-samples';
 import FAQ from '@/components/sections/FAQ';
+import CTA from '@/components/sections/CTA';
 
 // Hero Action Buttons Configuration
 const HERO_ACTIONS = [
@@ -43,24 +44,11 @@ export default function Home() {
 
       {/* TTS Samples Section */}
       <TTSSamples />
+      {/* CTA Section */}
+      <CTA titleKey="cta.title" />
 
       {/* FAQ Section */}
       <FAQ />
-
-      {/* CTA Section */}
-      <section className="py-20 px-4 bg-gradient-to-r from-purple-600 to-purple-800">
-        <div className="max-w-4xl mx-auto text-center text-white">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            Ready to Get Started?
-          </h2>
-          <p className="text-xl mb-8 opacity-90">
-            Join thousands of creators using AI Voice Labs today.
-          </p>
-          <button className="px-8 py-3 bg-white text-purple-600 rounded-full font-medium hover:bg-gray-100 transition-colors shadow-lg">
-            Start Free Trial
-          </button>
-        </div>
-      </section>
     </div>
   );
 }

@@ -8,6 +8,7 @@ export interface NavLink {
   labelKey: string; // i18n key for translation
   type?: 'page' | 'section'; // 'page' for route navigation, 'section' for scroll to section
   sectionId?: string; // section id for scroll behavior (only when type is 'section')
+  openInNewWindow?: boolean; // if true, opens link in a new window/tab
 }
 
 /**
@@ -19,6 +20,7 @@ export const NAV_LINKS: NavLink[] = [
     href: '/studio/tts',
     labelKey: 'nav.studio',
     type: 'page',
+    openInNewWindow: true,
   },
   {
     href: '/pricing',

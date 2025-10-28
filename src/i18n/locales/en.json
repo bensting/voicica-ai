@@ -281,6 +281,48 @@
     "zh": "Chinese",
     "zu": "Zulu"
   },
+  "footer": {
+    "tagline": "Embrace AI, Embrace Simplicity",
+    "followUs": "Follow Us",
+    "changeLanguage": "Change Language",
+    "copyright": "All rights reserved.",
+    "info": {
+      "title": "Info",
+      "terms": "Terms & Conditions",
+      "cookie": "Cookie Policy",
+      "privacy": "Privacy Policy",
+      "refund": "Refund Policy",
+      "partner": "Become Our Partner"
+    },
+    "about": {
+      "title": "About",
+      "aboutUs": "About us",
+      "contact": "Contact Us",
+      "faqs": "FAQs",
+      "blogs": "Blogs",
+      "dmca": "DMCA"
+    },
+    "products": {
+      "title": "Star Products",
+      "tts": "AI Text to Speech",
+      "songCover": "AI Song Cover Generator",
+      "musicGenerator": "AI Music Generator",
+      "voiceCloning": "AI Voice Cloning",
+      "voiceChanger": "Free Voice Changer",
+      "api": "API (For Developers)"
+    }
+  },
+  "cta": {
+    "title": "All-in-One AI Platform for Video, Voiceover & Music Creation.",
+    "getStarted": "Get started, it's free!",
+    "viewPricing": "View Our Plans and Pricing",
+    "features": {
+      "moneyBack": "30 Days Money Back Guarantee",
+      "support": "Free Technical Support",
+      "secure": "100% Secure",
+      "updates": "Regular Updates"
+    }
+  },
   "countries": {
     "CN": "China",
     "TW": "Taiwan",

@@ -281,6 +281,48 @@
     "selectGender": "選擇性別",
     "searchPlaceholder": "按名稱搜尋語音..."
   },
+  "footer": {
+    "tagline": "擁抱 AI，擁抱簡單",
+    "followUs": "關注我們",
+    "changeLanguage": "切換語言",
+    "copyright": "版權所有。",
+    "info": {
+      "title": "資訊",
+      "terms": "條款與條件",
+      "cookie": "Cookie 政策",
+      "privacy": "隱私政策",
+      "refund": "退款政策",
+      "partner": "成為我們的合作夥伴"
+    },
+    "about": {
+      "title": "關於",
+      "aboutUs": "關於我們",
+      "contact": "聯絡我們",
+      "faqs": "常見問題",
+      "blogs": "部落格",
+      "dmca": "DMCA"
+    },
+    "products": {
+      "title": "明星產品",
+      "tts": "AI 文字轉語音",
+      "songCover": "AI 歌曲翻唱產生器",
+      "musicGenerator": "AI 音樂產生器",
+      "voiceCloning": "AI 語音複製",
+      "voiceChanger": "免費變聲器",
+      "api": "API（開發者）"
+    }
+  },
+  "cta": {
+    "title": "視頻、配音和音樂創作的一站式 AI 平台",
+    "getStarted": "免費開始使用！",
+    "viewPricing": "查看我們的計劃和價格",
+    "features": {
+      "moneyBack": "30 天退款保證",
+      "support": "免費技術支持",
+      "secure": "100% 安全",
+      "updates": "定期更新"
+    }
+  },
   "countries": {
     "CN": "中國",
     "TW": "台灣",

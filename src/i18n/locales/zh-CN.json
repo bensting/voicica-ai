@@ -281,6 +281,48 @@
     "selectGender": "选择性别",
     "searchPlaceholder": "按名称搜索语音..."
   },
+  "footer": {
+    "tagline": "拥抱 AI，拥抱简单",
+    "followUs": "关注我们",
+    "changeLanguage": "切换语言",
+    "copyright": "版权所有。",
+    "info": {
+      "title": "信息",
+      "terms": "条款与条件",
+      "cookie": "Cookie 政策",
+      "privacy": "隐私政策",
+      "refund": "退款政策",
+      "partner": "成为我们的合作伙伴"
+    },
+    "about": {
+      "title": "关于",
+      "aboutUs": "关于我们",
+      "contact": "联系我们",
+      "faqs": "常见问题",
+      "blogs": "博客",
+      "dmca": "DMCA"
+    },
+    "products": {
+      "title": "明星产品",
+      "tts": "AI 文字转语音",
+      "songCover": "AI 歌曲翻唱生成器",
+      "musicGenerator": "AI 音乐生成器",
+      "voiceCloning": "AI 语音克隆",
+      "voiceChanger": "免费变声器",
+      "api": "API（开发者）"
+    }
+  },
+  "cta": {
+    "title": "视频、配音和音乐创作的一站式 AI 平台",
+    "getStarted": "免费开始使用！",
+    "viewPricing": "查看我们的计划和价格",
+    "features": {
+      "moneyBack": "30 天退款保证",
+      "support": "免费技术支持",
+      "secure": "100% 安全",
+      "updates": "定期更新"
+    }
+  },
   "countries": {
     "CN": "中国",
     "TW": "台湾",

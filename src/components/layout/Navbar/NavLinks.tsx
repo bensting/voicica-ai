@@ -28,11 +28,18 @@ export default function NavLinks({ mobile = false, onLinkClick }: NavLinksProps 
     onLinkClick?.();
   };
 
+  const handleNewWindowClick = (href: string) => (e: MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    window.open(href, '_blank', 'noopener,noreferrer');
+    onLinkClick?.();
+  };
+
   const handleClick = () => {
     onLinkClick?.();
   };
 
-  const getClickHandler = (type?: string, sectionId?: string) => {
+  const getClickHandler = (type?: string, sectionId?: string, openInNewWindow?: boolean, href?: string) => {
+    if (openInNewWindow && href) return handleNewWindowClick(href);
     if (type === 'section') return handleSectionClick(sectionId);
     return handleClick;
   };
@@ -44,7 +51,7 @@ export default function NavLinks({ mobile = false, onLinkClick }: NavLinksProps 
           <Link
             key={link.href}
             href={link.href}
-            onClick={getClickHandler(link.type, link.sectionId)}
+            onClick={getClickHandler(link.type, link.sectionId, link.openInNewWindow, link.href)}
             className="text-white hover:text-purple-400 transition-colors font-medium py-2"
           >
             {t(link.labelKey)}
@@ -60,7 +67,7 @@ export default function NavLinks({ mobile = false, onLinkClick }: NavLinksProps 
         <Link
           key={link.href}
           href={link.href}
-          onClick={getClickHandler(link.type, link.sectionId)}
+          onClick={getClickHandler(link.type, link.sectionId, link.openInNewWindow, link.href)}
           className="text-white hover:text-purple-400 transition-colors font-medium"
         >
           {t(link.labelKey)}

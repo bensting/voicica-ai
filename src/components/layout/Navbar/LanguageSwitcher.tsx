@@ -3,7 +3,15 @@
 import { useState, useRef, useEffect } from 'react';
 import { useLanguage, locales } from '@/contexts/LanguageContext';
 
-export default function LanguageSwitcher() {
+interface LanguageSwitcherProps {
+  theme?: 'light' | 'dark';
+  variant?: 'full' | 'compact';
+}
+
+export default function LanguageSwitcher({
+  theme = 'light',
+  variant = 'full'
+}: LanguageSwitcherProps = {}) {
   const { locale, setLocale } = useLanguage();
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -22,11 +30,32 @@ export default function LanguageSwitcher() {
 
   const currentLocale = locales.find((l) => l.code === locale) || locales[0];
 
+  // Theme-based styles
+  const buttonStyles = theme === 'dark'
+    ? 'text-gray-300 hover:text-white'
+    : 'text-white hover:text-purple-400';
+
+  const dropdownStyles = theme === 'dark'
+    ? 'bg-gray-800 border-gray-700'
+    : 'bg-white border-gray-200';
+
+  const itemStyles = theme === 'dark'
+    ? 'hover:bg-gray-700 text-gray-300'
+    : 'hover:bg-purple-50 text-gray-700';
+
+  const activeItemStyles = theme === 'dark'
+    ? 'bg-gray-700 text-white font-medium'
+    : 'bg-purple-50 text-purple-600 font-medium';
+
+  const subTextStyles = theme === 'dark'
+    ? 'text-gray-500'
+    : 'text-gray-500';
+
   return (
     <div className="relative" ref={dropdownRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 text-white hover:text-purple-400 transition-colors"
+        className={`flex items-center gap-2 transition-colors ${buttonStyles}`}
         aria-label="Switch language"
       >
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -34,12 +63,14 @@ export default function LanguageSwitcher() {
             strokeLinecap="round"
             strokeLinejoin="round"
             strokeWidth={2}
-            d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"
+            d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
           />
         </svg>
-        <span className="hidden sm:inline text-sm font-medium">
-          {currentLocale.nativeName}
-        </span>
+        {variant === 'full' && (
+          <span className="hidden sm:inline text-sm font-medium">
+            {currentLocale.nativeName}
+          </span>
+        )}
         <svg
           className={`w-4 h-4 transition-transform ${isOpen ? 'rotate-180' : ''}`}
           fill="none"
@@ -52,7 +83,7 @@ export default function LanguageSwitcher() {
 
       {/* 下拉菜单 */}
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-50">
+        <div className={`absolute right-0 mt-2 w-48 rounded-lg shadow-lg border py-1 z-50 ${dropdownStyles}`}>
           {locales.map((loc) => (
             <button
               key={loc.code}
@@ -60,8 +91,8 @@ export default function LanguageSwitcher() {
                 setLocale(loc.code);
                 setIsOpen(false);
               }}
-              className={`w-full text-left px-4 py-2 hover:bg-purple-50 transition-colors ${
-                locale === loc.code ? 'bg-purple-50 text-purple-600 font-medium' : 'text-gray-700'
+              className={`w-full text-left px-4 py-2 transition-colors ${
+                locale === loc.code ? activeItemStyles : itemStyles
               }`}
             >
               <div className="flex items-center justify-between">
@@ -76,7 +107,7 @@ export default function LanguageSwitcher() {
                   </svg>
                 )}
               </div>
-              <span className="text-xs text-gray-500">{loc.name}</span>
+              <span className={`text-xs ${subTextStyles}`}>{loc.name}</span>
             </button>
           ))}
         </div>

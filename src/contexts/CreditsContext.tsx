@@ -36,7 +36,7 @@ const CreditsContext = createContext<CreditsContextState | undefined>(undefined)
  * - 本地乐观更新（生成后立即扣减）
  */
 export function CreditsProvider({ children }: { children: React.ReactNode }) {
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const [credits, setCredits] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -76,10 +76,14 @@ export function CreditsProvider({ children }: { children: React.ReactNode }) {
     console.log(`💰 本地扣减积分: -${amount}`);
   }, []);
 
-  // 初始加载和用户变化时重新获取
+  // 等待认证完成后再获取积分
   useEffect(() => {
-    void fetchCredits();
-  }, [fetchCredits, user]);
+    // 只在认证状态确定后（authLoading = false）才获取积分
+    if (!authLoading) {
+      console.log('💳 认证完成，获取积分...', { isLoggedIn: !!user });
+      void fetchCredits();
+    }
+  }, [fetchCredits, user, authLoading]);
 
   const value: CreditsContextState = {
     credits,

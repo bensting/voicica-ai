@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { generateTTS } from '@/lib/api/tts';
 import { TaskStatus } from '@/types/tts';
 import { useCredits } from '@/contexts/CreditsContext';
@@ -34,26 +34,29 @@ export function useTTSGenerator(maxCharacters: number = 120) {
   const canGenerate = isTextValid && selectedVoice !== null && !isGenerating;
 
   // 处理文本变化
-  const handleTextChange = (newText: string) => {
-    if (newText.length <= maxCharacters) {
-      setText(newText);
-      setError(null);
-    }
-  };
+  const handleTextChange = useCallback(
+    (newText: string) => {
+      if (newText.length <= maxCharacters) {
+        setText(newText);
+        setError(null);
+      }
+    },
+    [maxCharacters]
+  );
 
   // 处理语音选择
-  const handleVoiceSelect = (voice: VoiceModel) => {
+  const handleVoiceSelect = useCallback((voice: VoiceModel) => {
     setSelectedVoice(voice);
     setError(null);
-  };
+  }, []);
 
   // 处理速度变化
-  const handleSpeedChange = (newSpeed: number) => {
+  const handleSpeedChange = useCallback((newSpeed: number) => {
     setSpeed(newSpeed);
-  };
+  }, []);
 
   // 生成音频
-  const handleGenerate = async () => {
+  const handleGenerate = useCallback(async () => {
     if (!canGenerate || !selectedVoice) {
       setError('Please enter text and select a voice');
       return;
@@ -134,16 +137,16 @@ export function useTTSGenerator(maxCharacters: number = 120) {
     } finally {
       setIsGenerating(false);
     }
-  };
+  }, [canGenerate, selectedVoice, text, speed, deductCredits, refreshCredits]);
 
   // 重置
-  const reset = () => {
+  const reset = useCallback(() => {
     setText('');
     setSelectedVoice(null);
     setSpeed(1.0);
     setAudioUrl(null);
     setError(null);
-  };
+  }, []);
 
   return {
     // 状态

@@ -38,34 +38,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       });
 
       setUser(user);
-
-      // 如果用户登录，调用后端 API 获取/创建用户信息
-      if (user) {
-        try {
-          console.log('📡 AuthContext: 调用后端 API /api/v1/users/me');
-          const token = await user.getIdToken();
-
-          const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/users/me`, {
-            headers: {
-              'Authorization': `Bearer ${token}`,
-            },
-          });
-
-          if (response.ok) {
-            const userData = await response.json();
-            console.log('✅ AuthContext: 后端用户数据获取成功', userData);
-            // 这里可以保存到额外的状态或 Context 中
-          } else {
-            console.error('❌ AuthContext: 后端 API 调用失败', {
-              status: response.status,
-              statusText: response.statusText,
-            });
-          }
-        } catch (error) {
-          console.error('❌ AuthContext: 后端 API 调用出错', error);
-        }
-      }
-
       setLoading(false);
     });
 

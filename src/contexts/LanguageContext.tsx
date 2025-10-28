@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect, useMemo, ReactNode } from 'react';
 
 type Locale = 'en-US' | 'zh-CN' | 'zh-TW';
 
@@ -32,24 +32,26 @@ const detectBrowserLanguage = (): Locale => {
   return 'en-US';
 };
 
+// 获取初始 locale（在组件外部，只执行一次）
+const getInitialLocale = (): Locale => {
+  if (typeof window === 'undefined') return 'en-US';
+
+  const savedLocale = localStorage.getItem('locale') as Locale;
+  if (savedLocale && ['en-US', 'zh-CN', 'zh-TW'].includes(savedLocale)) {
+    return savedLocale;
+  }
+
+  return detectBrowserLanguage();
+};
+
 export function LanguageProvider({ children }: { children: ReactNode }) {
-  // 初始状态始终为 'en-US'，避免 hydration 不匹配
-  const [locale, setLocaleState] = useState<Locale>('en-US');
+  // 使用函数式初始化，避免后续状态变化
+  const [locale, setLocaleState] = useState<Locale>(() => getInitialLocale());
   const [messages, setMessages] = useState<Record<string, MessageValue>>({});
   const [isReady, setIsReady] = useState(false);
 
-  // 在客户端检测语言设置
+  // 标记为已就绪
   useEffect(() => {
-    const savedLocale = localStorage.getItem('locale') as Locale;
-    if (savedLocale && ['en-US', 'zh-CN', 'zh-TW'].includes(savedLocale)) {
-      // 优先使用保存的语言
-      setLocaleState(savedLocale);
-    } else {
-      // 如果没有保存的语言，检测浏览器语言
-      const detectedLocale = detectBrowserLanguage();
-      setLocaleState(detectedLocale);
-    }
-    // 标记为已就绪
     setIsReady(true);
   }, []);
 
@@ -77,32 +79,39 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     loadMessages();
   }, [locale]);
 
-  const setLocale = (newLocale: Locale) => {
-    setLocaleState(newLocale);
-    localStorage.setItem('locale', newLocale);
-  };
+  const setLocale = useMemo(
+    () => (newLocale: Locale) => {
+      setLocaleState(newLocale);
+      localStorage.setItem('locale', newLocale);
+    },
+    []
+  );
 
   // 简单的翻译函数
-  const t = (key: string): string => {
-    const keys = key.split('.');
-    let value: MessageValue | undefined = messages;
+  const t = useMemo(
+    () => (key: string): string => {
+      const keys = key.split('.');
+      let value: MessageValue | undefined = messages;
 
-    for (const k of keys) {
-      if (value && typeof value === 'object' && !Array.isArray(value)) {
-        value = (value as Record<string, MessageValue>)[k];
-      } else {
-        return key; // 如果找不到，返回 key 本身
+      for (const k of keys) {
+        if (value && typeof value === 'object' && !Array.isArray(value)) {
+          value = (value as Record<string, MessageValue>)[k];
+        } else {
+          return key; // 如果找不到，返回 key 本身
+        }
       }
-    }
 
-    return typeof value === 'string' ? value : key;
-  };
-
-  return (
-    <LanguageContext.Provider value={{ locale, setLocale, t, isReady }}>
-      {children}
-    </LanguageContext.Provider>
+      return typeof value === 'string' ? value : key;
+    },
+    [messages]
   );
+
+  const value = useMemo(
+    () => ({ locale, setLocale, t, isReady }),
+    [locale, setLocale, t, isReady]
+  );
+
+  return <LanguageContext.Provider value={value}>{children}</LanguageContext.Provider>;
 }
 
 export function useLanguage() {

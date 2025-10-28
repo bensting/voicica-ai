@@ -26,7 +26,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
 
   // 获取用户资料
   const fetchProfile = async () => {
@@ -54,16 +54,21 @@ export function UserProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  // 当 Firebase 用户状态变化时，自动获取后端用户数据
+  // 等待认证完成后再获取用户数据
   useEffect(() => {
-    if (user) {
-      fetchProfile();
-    } else {
-      setProfile(null);
-      setError(null);
+    // 只在认证状态确定后才执行
+    if (!authLoading) {
+      if (user) {
+        console.log('👤 认证完成，获取用户数据...');
+        fetchProfile();
+      } else {
+        console.log('👤 认证完成，用户未登录');
+        setProfile(null);
+        setError(null);
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user]);
+  }, [user, authLoading]);
 
   return (
     <UserContext.Provider

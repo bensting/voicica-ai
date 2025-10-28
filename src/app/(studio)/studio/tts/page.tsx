@@ -8,6 +8,7 @@ import { useTTSGenerator } from '@/hooks/useTTSGenerator';
 import TextInput from '@/components/features/studio/tts/TextInput';
 import VoiceSelector from '@/components/features/studio/tts/VoiceSelector';
 import GenerateButton from '@/components/features/studio/tts/GenerateButton';
+import BottomNav from '@/components/features/studio/tts/BottomNav';
 
 /**
  * Studio TTS Page
@@ -50,9 +51,10 @@ export default function StudioTTSPage() {
   };
 
   return (
-    <div className="bg-gradient-to-b from-white to-purple-50">
-      {/* TTS Generator Section */}
-      <section className="pb-12">
+    <>
+      <div className="bg-gradient-to-b from-white to-purple-50">
+        {/* TTS Generator Section */}
+        <section className="pb-12 lg:pb-12 pb-24">
         <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
           {/* Error Message */}
           {error && (
@@ -177,5 +179,9 @@ export default function StudioTTSPage() {
         </div>
       </section>
     </div>
+
+    {/* Mobile Bottom Navigation */}
+    <BottomNav />
+    </>
   );
 }

@@ -3,7 +3,7 @@
 import { useLanguage } from '@/contexts/LanguageContext';
 import FooterBrand from './FooterBrand';
 import FooterLinks from './FooterLinks';
-import { FOOTER_SECTIONS } from './footerConfig';
+import { FOOTER_SECTIONS } from '@/config/footerConfig';
 
 /**
  * Footer Component

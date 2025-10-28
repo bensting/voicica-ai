@@ -2,11 +2,7 @@
 
 import Link from 'next/link';
 import { useLanguage } from '@/contexts/LanguageContext';
-
-interface FooterLink {
-  labelKey: string;
-  href: string;
-}
+import type { FooterLink } from '@/config/footerConfig';
 
 interface FooterLinksProps {
   titleKey: string;

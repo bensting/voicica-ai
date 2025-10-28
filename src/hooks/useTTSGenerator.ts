@@ -2,28 +2,13 @@ import { useState } from 'react';
 import { generateTTS } from '@/lib/api/tts';
 import { TaskStatus } from '@/types/tts';
 import { useCredits } from '@/contexts/CreditsContext';
+import type { Voice } from '@/types/voice';
 
 /**
- * 语音模型接口 - 匹配后端 Voice Schema
+ * @deprecated Use Voice from '@/types/voice' instead
+ * Kept for backward compatibility
  */
-export interface VoiceModel {
-  id: string;
-  name: string;
-  display_name: Record<string, string>;
-  provider: string;
-  locale: string;
-  country: string;
-  role: string;
-  avatar_url: string;
-  voice_sample_url: string;
-  gender: string;
-  tags: string[];
-  style_list: string[];
-  is_active: boolean;
-  sort_order: number;
-  created_at?: string;
-  updated_at?: string;
-}
+export type VoiceModel = Voice;
 
 /**
  * TTS 生成器业务逻辑 Hook

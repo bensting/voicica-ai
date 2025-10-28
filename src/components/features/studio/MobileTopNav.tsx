@@ -3,8 +3,8 @@
 import { useState } from 'react';
 import { Menu, X } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { useAuth } from '@/contexts/AuthContext';
 import LanguageSwitcher from '@/components/layout/Navbar/LanguageSwitcher';
+import UserMenu from '@/components/layout/Navbar/UserMenu';
 import Link from 'next/link';
 
 interface MobileTopNavProps {
@@ -23,7 +23,6 @@ interface MobileTopNavProps {
  */
 export default function MobileTopNav({ onMenuToggle }: MobileTopNavProps) {
   const router = useRouter();
-  const { user } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const toggleMenu = () => {
@@ -78,15 +77,8 @@ export default function MobileTopNav({ onMenuToggle }: MobileTopNavProps) {
             <LanguageSwitcher theme="light" variant="compact" />
           </div>
 
-          {/* User Avatar */}
-          {user && (
-            <button
-              onClick={() => router.push('/settings/my-account')}
-              className="w-9 h-9 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center text-white font-medium text-sm hover:scale-105 transition-transform"
-            >
-              {user.displayName?.charAt(0).toUpperCase() || user.email?.charAt(0).toUpperCase() || 'U'}
-            </button>
-          )}
+          {/* User Menu */}
+          <UserMenu />
         </div>
       </div>
     </div>

@@ -1,9 +1,9 @@
 import type { VoiceModel } from '@/hooks/useTTSGenerator';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useVoices } from './hooks/useVoices';
-import { useVoiceFilters } from './hooks/useVoiceFilters';
-import { useVoiceOptions } from './hooks/useVoiceOptions';
-import { useAudioPlayer } from './hooks/useAudioPlayer';
+import { useVoices } from '../hooks/useVoices';
+import { useVoiceFilters } from '../hooks/useVoiceFilters';
+import { useVoiceOptions } from '../hooks/useVoiceOptions';
+import { useAudioPlayer } from '../hooks/useAudioPlayer';
 import VoiceFilters from './VoiceFilters';
 import VoiceCard from './VoiceCard';
 

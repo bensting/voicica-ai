@@ -7,7 +7,7 @@
  * 语音信息（匹配后端 Voice 模型）
  */
 export interface Voice {
-  id?: string;
+  id: string;
   name: string;
   display_name: Record<string, string>;
   provider: string;

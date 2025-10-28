@@ -1,7 +1,7 @@
 import Image from 'next/image';
 import type { VoiceModel } from '@/hooks/useTTSGenerator';
-import { getCountryFromLocale } from './utils/localeUtils';
-import { getCountryFlagComponent } from './utils/countryUtils';
+import { getCountryFromLocale } from '../utils/localeUtils';
+import { getCountryFlagComponent } from '../utils/countryUtils';
 
 interface VoiceCardProps {
   voice: VoiceModel;

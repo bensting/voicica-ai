@@ -2,7 +2,6 @@
 
 import { useRouter, usePathname } from 'next/navigation';
 import { Mic, Users, Copy, Wrench, Sparkles } from 'lucide-react';
-import { useLanguage } from '@/contexts/LanguageContext';
 
 interface NavItem {
   id: string;
@@ -22,7 +21,7 @@ const NAV_ITEMS: NavItem[] = [
     id: 'voices',
     icon: <Users className="w-5 h-5" />,
     labelKey: 'Voices',
-    href: '/voices',
+    href: '/studio/voices',
   },
   {
     id: 'clone',
@@ -39,16 +38,17 @@ const NAV_ITEMS: NavItem[] = [
 ];
 
 /**
- * Bottom Navigation for Mobile TTS
+ * Bottom Navigation for Mobile Studio
  *
- * Fixed bottom navigation bar with:
+ * Fixed bottom navigation bar for mobile devices with:
  * - TTS, Voices, Clone, More Tools tabs
  * - 70% OFF promotion button
+ *
+ * Used across multiple Studio pages (TTS, Voices, etc.)
  */
-export default function BottomNav() {
+export default function StudioBottomNav() {
   const router = useRouter();
   const pathname = usePathname();
-  const { t } = useLanguage();
 
   const handleNavClick = (href: string) => {
     router.push(href);

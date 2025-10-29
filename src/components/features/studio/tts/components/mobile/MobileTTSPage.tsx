@@ -58,6 +58,9 @@ export default function MobileTTSPage({
   const [isAudioModalOpen, setIsAudioModalOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
+  // 使用 ref 来记住是否从 gallery 选择了语音（不会因为重渲染而重置）
+  const hasGallerySelectionRef = useRef(false);
+
   // 检测是否为移动端（只在客户端执行一次）
   useEffect(() => {
     const checkMobile = () => {
@@ -66,43 +69,86 @@ export default function MobileTTSPage({
     checkMobile();
   }, []);
 
+  // 检测是否从 gallery 预选了语音（只执行一次）
+  useEffect(() => {
+    const flag = sessionStorage.getItem('voicePreSelectedFromGallery');
+    if (flag) {
+      console.log('🚩 [MobileTTSPage] 检测到 gallery 预选标志，标记为已选择');
+      hasGallerySelectionRef.current = true;
+      // 清除 sessionStorage 标志（已经记录到 ref 中了）
+      sessionStorage.removeItem('voicePreSelectedFromGallery');
+      sessionStorage.removeItem('gallerySelectedVoiceId');
+    }
+  }, []);
+
   // Initialize default voice based on current locale
   useEffect(() => {
+    console.log('🔄 [MobileTTSPage] useEffect 触发', {
+      authLoading,
+      isMobile,
+      isLocaleReady,
+      hasSelectedVoice: !!selectedVoice,
+      selectedVoiceName: selectedVoice?.name,
+      locale,
+    });
+
     // 等待认证完成
     if (authLoading) {
+      console.log('⏸️ [MobileTTSPage] 等待认证完成');
       return;
     }
 
     // Early return if conditions not met yet
     if (!isMobile || !isLocaleReady) {
+      console.log('⏸️ [MobileTTSPage] 等待条件满足', { isMobile, isLocaleReady });
       return;
     }
 
     // Skip if already selected
     if (selectedVoice) {
+      console.log('✅ [MobileTTSPage] 已有选中语音，跳过默认加载', selectedVoice.name);
       return;
     }
 
     const fetchDefaultVoice = async () => {
+      console.log('🚀 [MobileTTSPage] fetchDefaultVoice 开始执行', {
+        hasGallerySelection: hasGallerySelectionRef.current,
+      });
+
+      // 如果从 gallery 选择了语音，永远不加载默认语音
+      if (hasGallerySelectionRef.current) {
+        console.log('⏭️ [MobileTTSPage] 跳过默认语音加载 - 已从 Voices Gallery 选择（ref 标记）');
+        return;
+      }
+
+      // 检查是否需要清除缓存
+      const shouldClearCache = sessionStorage.getItem('clearVoiceCache');
+      if (shouldClearCache) {
+        console.log('🗑️ [MobileTTSPage] 清除语音缓存');
+        loadedVoiceCache = null;
+        sessionStorage.removeItem('clearVoiceCache');
+      }
+
       // 如果已经有缓存，直接使用
       if (loadedVoiceCache) {
-        console.log('✅ 使用缓存的默认语音:', loadedVoiceCache.name);
+        console.log('✅ [MobileTTSPage] 使用缓存的默认语音:', loadedVoiceCache.name);
         handleVoiceSelect(loadedVoiceCache);
         return;
       }
 
       // 如果正在加载，等待现有的 Promise
       if (voiceLoadingPromise) {
-        console.log('⏳ 等待现有的语音加载请求...');
+        console.log('⏳ [MobileTTSPage] 等待现有的语音加载请求...');
         const voice = await voiceLoadingPromise;
         if (voice) {
+          console.log('✅ [MobileTTSPage] 加载请求完成，选择语音:', voice.name);
           handleVoiceSelect(voice);
         }
         return;
       }
 
       // 创建新的加载 Promise
-      console.log('🎤 加载默认语音，locale:', locale);
+      console.log('🎤 [MobileTTSPage] 加载默认语音，locale:', locale);
       voiceLoadingPromise = (async () => {
         try {
           const voices = await voiceAPI.getVoices({
@@ -113,12 +159,12 @@ export default function MobileTTSPage({
 
           if (voices && voices.length > 0) {
             loadedVoiceCache = voices[0];
-            console.log('✅ 默认语音加载成功:', voices[0].name);
+            console.log('✅ [MobileTTSPage] 默认语音加载成功:', voices[0].name);
             return voices[0];
           }
           return null;
         } catch (err) {
-          console.error('Failed to load default voice:', err);
+          console.error('[MobileTTSPage] Failed to load default voice:', err);
           return null;
         } finally {
           // 清除 Promise，但保留缓存
@@ -128,6 +174,7 @@ export default function MobileTTSPage({
 
       const voice = await voiceLoadingPromise;
       if (voice) {
+        console.log('✅ [MobileTTSPage] 应用默认语音:', voice.name);
         handleVoiceSelect(voice);
       }
     };

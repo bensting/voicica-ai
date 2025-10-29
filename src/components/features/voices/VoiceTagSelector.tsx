@@ -56,7 +56,7 @@ export default function VoiceTagSelector({
   const normalTags = VOICE_TAGS.filter((tag) => !tag.isSpecial);
 
   return (
-    <div className="w-full h-full overflow-y-auto bg-gray-50">
+    <div className="h-full overflow-y-auto bg-gray-50 w-[140px]">
       <div className="py-3 space-y-1.5">
         {/* 特殊标签区域 */}
         {specialTags.length > 0 && (

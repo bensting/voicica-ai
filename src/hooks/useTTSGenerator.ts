@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { generateTTS } from '@/lib/api/tts';
 import { TaskStatus } from '@/types/tts';
 import { useCredits } from '@/contexts/CreditsContext';
@@ -27,6 +27,37 @@ export function useTTSGenerator(maxCharacters: number = 120) {
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [audioUrl, setAudioUrl] = useState<string | null>(null);
+
+  // Check for pre-selected voice from sessionStorage (from Voices Gallery page)
+  useEffect(() => {
+    const preSelectedVoiceStr = sessionStorage.getItem('ttsPreSelectedVoice');
+    if (preSelectedVoiceStr) {
+      try {
+        const preSelectedVoice = JSON.parse(preSelectedVoiceStr) as Voice;
+
+        // Clear the module-level cache in MobileTTSPage to prevent it from using old default voice
+        // We need to do this BEFORE setting the voice to ensure the cache is cleared
+        if (typeof window !== 'undefined') {
+          // Signal to MobileTTSPage to clear its cache
+          sessionStorage.setItem('clearVoiceCache', 'true');
+          // Store the selected voice ID to verify later
+          sessionStorage.setItem('gallerySelectedVoiceId', preSelectedVoice.id);
+        }
+
+        setSelectedVoice(preSelectedVoice);
+        sessionStorage.removeItem('ttsPreSelectedVoice'); // Clean up after use
+
+        // Also set a flag to indicate voice was pre-selected from gallery
+        // This prevents mobile page from overriding with default voice
+        sessionStorage.setItem('voicePreSelectedFromGallery', 'true');
+
+        console.log('✅ Loaded pre-selected voice from Voices Gallery:', preSelectedVoice.name);
+      } catch (err) {
+        console.error('❌ Failed to parse pre-selected voice:', err);
+        sessionStorage.removeItem('ttsPreSelectedVoice');
+      }
+    }
+  }, []);
 
   // 可用字符数
   const availableCharacters = maxCharacters - text.length;

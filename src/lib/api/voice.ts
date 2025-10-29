@@ -13,6 +13,7 @@ export const getVoices = async (params?: {
   locale?: string;
   role?: string;
   gender?: string;
+  tag?: string;
   is_active?: boolean;
   limit?: number;
 }): Promise<Voice[]> => {

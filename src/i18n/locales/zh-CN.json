@@ -244,6 +244,25 @@
     "selectGender": "选择性别",
     "searchPlaceholder": "按名称搜索语音..."
   },
+  "voices": {
+    "tags": {
+      "all": "全部",
+      "myClone": "我的克隆",
+      "used": "已使用",
+      "socialMedia": "社交媒体",
+      "celebrities": "名人",
+      "animation": "动画",
+      "moviesTV": "影视",
+      "games": "游戏",
+      "festivals": "节日",
+      "narration": "旁白",
+      "new": "最新",
+      "commercial": "商业",
+      "audiobook": "有声书",
+      "podcast": "播客",
+      "education": "教育"
+    }
+  },
   "footer": {
     "tagline": "拥抱 AI，拥抱简单",
     "followUs": "关注我们",

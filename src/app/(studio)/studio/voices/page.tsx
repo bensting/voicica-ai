@@ -2,199 +2,112 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { Search } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useStudio } from '@/contexts/StudioContext';
-import { useVoices } from '@/components/features/studio/tts/hooks/useVoices';
-import { useVoiceFilters } from '@/components/features/studio/tts/hooks/useVoiceFilters';
-import { useVoiceOptions } from '@/components/features/studio/tts/hooks/useVoiceOptions';
-import { useAudioPlayer } from '@/components/features/studio/tts/hooks/useAudioPlayer';
-import VoiceFilters from '@/components/features/studio/tts/components/VoiceFilters';
-import VoiceCard from '@/components/features/studio/tts/components/VoiceCard';
-import type { VoiceModel } from '@/hooks/useTTSGenerator';
+import LanguageSelector from '@/components/common/LanguageSelector';
+import LanguageSelectorModal from '@/components/common/LanguageSelectorModal';
+import VoiceTagSelector from '@/components/features/voices/VoiceTagSelector';
+import { getAllLocaleOptions } from '@/utils/localeMapper';
+import type { LocaleOption } from '@/types/config';
 
 /**
- * Voices Gallery Page
+ * Voices Gallery Page (Mobile-First Design)
  *
- * Browse and preview all available voice models with:
- * - Search and filter functionality
- * - Voice preview playback
- * - Voice details and metadata
+ * Features:
+ * - Search bar with language selector
+ * - Left panel: Voice filters and categories
+ * - Right panel: Voice cards grid
  */
 export default function VoicesPage() {
   const router = useRouter();
   const { t, locale } = useLanguage();
   const { setTitle } = useStudio();
-  const [selectedVoice, setSelectedVoice] = useState<VoiceModel | null>(null);
+
+  // Search state
+  const [searchQuery, setSearchQuery] = useState('');
+
+  // Language selector state
+  const [isLanguageDropdownOpen, setIsLanguageDropdownOpen] = useState(false);
+  const [isLanguageModalOpen, setIsLanguageModalOpen] = useState(false);
+  const [selectedLanguage, setSelectedLanguage] = useState<LocaleOption | null>(null);
+
+  // Tag selector state
+  const [selectedTagId, setSelectedTagId] = useState('all');
 
   // Set page title
   useEffect(() => {
     setTitle('Voice Gallery');
   }, [setTitle]);
 
-  // 获取语音数据
-  const { voices, loading, error } = useVoices();
+  // Get all available language options from localeMapper
+  const availableLanguages = getAllLocaleOptions();
 
-  // 音频播放控制
-  const { playingVoiceId, handlePlayPause } = useAudioPlayer();
-
-  // 生成选项
-  const { languages } = useVoiceOptions({
-    voices,
-    availableLanguages: [],
-    locale,
-    t,
-  });
-
-  // 筛选逻辑
-  const {
-    searchQuery,
-    setSearchQuery,
-    selectedCountry,
-    setSelectedCountry,
-    selectedLanguage,
-    setSelectedLanguage,
-    selectedGender,
-    setSelectedGender,
-    availableLanguages,
-    filteredVoices,
-  } = useVoiceFilters({ voices, languages });
-
-  // 更新选项（使用实际的 availableLanguages）
-  const updatedOptions = useVoiceOptions({
-    voices,
-    availableLanguages,
-    locale,
-    t,
-  });
-
-  const handleVoiceSelect = (voice: VoiceModel) => {
-    setSelectedVoice(voice);
-  };
-
-  const handleUseTTS = () => {
-    if (selectedVoice) {
-      // 跳转到 TTS 页面，并将选中的 voice 通过 state 传递
-      router.push(`/studio/tts?voiceId=${selectedVoice.id}`);
-    }
+  const handleLanguageSelect = (language: LocaleOption) => {
+    setSelectedLanguage(language);
   };
 
   return (
-    <div className="bg-gradient-to-b from-white to-purple-50 min-h-screen">
-      <section className="pb-12">
-        <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
-          {/* Header */}
-          <div className="mb-8">
-            <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
-              Voice Gallery
-            </h1>
-            <p className="text-gray-600">
-              Browse and preview all available voice models. Select a voice to use it in text-to-speech generation.
-            </p>
-          </div>
-
-          {/* Selected Voice Banner */}
-          {selectedVoice && (
-            <div className="mb-6 p-4 bg-purple-50 border-2 border-purple-200 rounded-xl flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white font-bold text-lg">
-                  {selectedVoice.name.charAt(0)}
-                </div>
-                <div>
-                  <h3 className="font-semibold text-gray-900">{selectedVoice.name}</h3>
-                  <p className="text-sm text-gray-600">
-                    {selectedVoice.locale} • {selectedVoice.gender}
-                  </p>
-                </div>
-              </div>
-              <button
-                onClick={handleUseTTS}
-                className="px-6 py-2 bg-purple-600 text-white rounded-lg font-semibold hover:bg-purple-700 transition-colors"
-              >
-                Use in TTS
-              </button>
-            </div>
-          )}
-
-          {/* Filters */}
-          <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200 mb-6">
-            <VoiceFilters
-              searchQuery={searchQuery}
-              onSearchChange={setSearchQuery}
-              selectedCountry={selectedCountry}
-              onCountryChange={setSelectedCountry}
-              selectedLanguage={selectedLanguage}
-              onLanguageChange={setSelectedLanguage}
-              selectedGender={selectedGender}
-              onGenderChange={setSelectedGender}
-              countryOptions={updatedOptions.countryOptions}
-              languageOptions={updatedOptions.languageOptions}
-              genderOptions={updatedOptions.genderOptions}
-              disabled={loading}
-              t={t}
+    <div className="h-screen flex flex-col bg-white overflow-hidden">
+      {/* ========== 顶部区域：搜索框 + 语言选择器 ========== */}
+      <div className="flex-shrink-0 px-4 py-3 bg-white border-b border-gray-200">
+        <div className="flex items-center gap-3">
+          {/* 搜索框 */}
+          <div className="flex-1 relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search..."
+              className="w-full h-[48px] pl-10 pr-4 bg-white border border-gray-200 rounded-xl text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
             />
           </div>
 
-          {/* Voice Grid */}
-          <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
-            {loading && (
-              <div className="text-center py-16">
-                <div className="inline-block w-12 h-12 border-4 border-purple-500 border-t-transparent rounded-full animate-spin"></div>
-                <p className="mt-4 text-gray-600 font-medium">Loading voices...</p>
-              </div>
-            )}
-
-            {error && (
-              <div className="text-center py-16">
-                <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-red-50 flex items-center justify-center">
-                  <svg className="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                </div>
-                <p className="text-red-600 font-medium mb-3">{error}</p>
-                <button
-                  onClick={() => window.location.reload()}
-                  className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
-                >
-                  Retry
-                </button>
-              </div>
-            )}
-
-            {!loading && !error && filteredVoices.length === 0 && (
-              <div className="text-center py-16">
-                <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gray-100 flex items-center justify-center">
-                  <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                  </svg>
-                </div>
-                <p className="text-gray-500 font-medium">No voices found matching your criteria</p>
-                <p className="text-sm text-gray-400 mt-1">Try adjusting your filters</p>
-              </div>
-            )}
-
-            {!loading && !error && filteredVoices.length > 0 && (
-              <>
-                <div className="mb-4 text-sm text-gray-600">
-                  Showing <span className="font-semibold text-gray-900">{filteredVoices.length}</span> voice{filteredVoices.length !== 1 ? 's' : ''}
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                  {filteredVoices.map((voice) => (
-                    <VoiceCard
-                      key={voice.id}
-                      voice={voice}
-                      isSelected={selectedVoice?.id === voice.id}
-                      isPlaying={playingVoiceId === voice.id}
-                      disabled={false}
-                      onSelect={handleVoiceSelect}
-                      onPlayPause={handlePlayPause}
-                    />
-                  ))}
-                </div>
-              </>
-            )}
+          {/* 语言选择器 - 点击打开模态框 */}
+          <div className="w-[160px]">
+            <button
+              onClick={() => setIsLanguageModalOpen(true)}
+              className="w-full h-[48px] flex items-center justify-between gap-2 px-4 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors"
+            >
+              <span className="text-sm text-gray-900 truncate">
+                {selectedLanguage ? selectedLanguage.name : 'English (US)'}
+              </span>
+              <svg className="w-4 h-4 text-gray-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
           </div>
         </div>
-      </section>
+      </div>
+
+      {/* 语言选择器模态框 */}
+      <LanguageSelectorModal
+        isOpen={isLanguageModalOpen}
+        onClose={() => setIsLanguageModalOpen(false)}
+        selectedLocale={selectedLanguage}
+        availableLocales={availableLanguages}
+        onSelect={handleLanguageSelect}
+      />
+
+      {/* ========== 内容区域：左侧筛选器 + 右侧语音卡片 ========== */}
+      <div className="flex-1 flex overflow-hidden">
+        {/* 左侧标签选择器 */}
+        <div className="w-[180px] border-r border-gray-200">
+          <VoiceTagSelector
+            selectedTagId={selectedTagId}
+            onTagSelect={setSelectedTagId}
+          />
+        </div>
+
+        {/* 右侧语音卡片网格 */}
+        <div className="flex-1 bg-white p-4 overflow-y-auto">
+          <div className="text-center text-gray-400 py-8">
+            <p className="text-sm">Voice Cards Grid</p>
+            <p className="text-xs mt-1">Selected Tag: {selectedTagId}</p>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

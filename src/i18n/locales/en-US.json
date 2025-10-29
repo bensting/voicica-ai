@@ -160,6 +160,25 @@
     "selectGender": "Select Gender",
     "searchPlaceholder": "Search voices by name..."
   },
+  "voices": {
+    "tags": {
+      "all": "All",
+      "myClone": "My Clone",
+      "used": "Used",
+      "socialMedia": "Social Media",
+      "celebrities": "Celebrities",
+      "animation": "Animation",
+      "moviesTV": "Movies & TV",
+      "games": "Games",
+      "festivals": "Festivals",
+      "narration": "Narration",
+      "new": "New",
+      "commercial": "Commercial",
+      "audiobook": "Audiobook",
+      "podcast": "Podcast",
+      "education": "Education"
+    }
+  },
   "languages": {
     "af": "Afrikaans",
     "am": "Amharic",

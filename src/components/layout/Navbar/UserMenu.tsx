@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import UserMenuItem from './UserMenuItem';
 import { userMenuItems } from '@/config/userMenuConfig';
+import LoginModal from '@/components/features/auth/LoginModal';
 
 /**
  * 用户菜单组件
@@ -15,6 +16,7 @@ import { userMenuItems } from '@/config/userMenuConfig';
  */
 export default function UserMenu() {
   const [isOpen, setIsOpen] = useState(false);
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const { user, signOut } = useAuth();
   const { t } = useLanguage();
@@ -39,7 +41,8 @@ export default function UserMenu() {
     if (item.action === 'signout') {
       try {
         await signOut();
-        router.push('/');
+        // 退出后留在当前页面，由页面自己决定是否需要登录
+        // 不再跳转到首页
       } catch (error) {
         console.error('Sign out error:', error);
       }
@@ -48,8 +51,39 @@ export default function UserMenu() {
     }
   };
 
+  // 未登录状态：显示登录按钮，点击弹出模态框
   if (!user) {
-    return null;
+    return (
+      <>
+        <button
+          onClick={() => setIsLoginModalOpen(true)}
+          className="flex items-center gap-2 hover:opacity-80 transition-opacity"
+          aria-label="Sign in"
+        >
+          <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
+            <svg
+              className="w-6 h-6 text-gray-600"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+              />
+            </svg>
+          </div>
+        </button>
+
+        {/* 登录模态框 */}
+        <LoginModal
+          isOpen={isLoginModalOpen}
+          onClose={() => setIsLoginModalOpen(false)}
+        />
+      </>
+    );
   }
 
   return (

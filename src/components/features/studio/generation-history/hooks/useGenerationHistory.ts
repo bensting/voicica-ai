@@ -115,11 +115,10 @@ export function useGenerationHistory({
     } finally {
       setLoading(false);
     }
-  }, [selectedStatus, startDate, endDate, currentPage, pageSize, user]);
+  }, [selectedStatus, startDate, endDate, currentPage, pageSize]);
 
   // Fetch records when filters change (supports both authenticated and anonymous users)
   // The backend uses unified_user which handles both logged-in and anonymous users
-  // Re-fetch when user changes (e.g., login/logout)
   // Wait for auth to complete before fetching to avoid duplicate queries
   useEffect(() => {
     // Don't fetch if still checking authentication status

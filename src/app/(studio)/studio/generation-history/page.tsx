@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useMemo } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import ConfirmDialog from '@/components/ui/ConfirmDialog';
 import DesktopView from '@/components/features/studio/generation-history/DesktopView';
@@ -12,23 +12,15 @@ import { useGenerationHistory } from '@/components/features/studio/generation-hi
  *
  * Displays user's TTS generation history with filtering and pagination
  * Supports both authenticated and anonymous users
- * Conditionally renders Desktop or Mobile view based on screen size
+ * Uses CSS media query to determine which view to render (avoids state updates)
  */
 export default function GenerationHistoryPage() {
   const { user, loading: authLoading } = useAuth();
-  const [isMobile, setIsMobile] = useState(false);
-  const [isClient, setIsClient] = useState(false);
 
-  // Detect screen size on client-side only
-  useEffect(() => {
-    setIsClient(true);
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 1024); // lg breakpoint
-    };
-
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
+  // Use CSS media query to determine if mobile (no state, no re-renders)
+  const isMobile = useMemo(() => {
+    if (typeof window === 'undefined') return false;
+    return window.matchMedia('(max-width: 1023px)').matches;
   }, []);
 
   // Use custom hook for all business logic
@@ -89,15 +81,6 @@ export default function GenerationHistoryPage() {
     );
   }
 
-  // Wait for client-side hydration
-  if (!isClient) {
-    return (
-      <div className="min-h-screen bg-gray-50 pt-20 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
-      </div>
-    );
-  }
-
   // Common props for both views
   const viewProps = {
     generations,
@@ -118,17 +101,18 @@ export default function GenerationHistoryPage() {
   };
 
   // Show main content (supports both authenticated and anonymous users)
+  // Only render ONE view based on screen size (no duplication)
   return (
     <>
       {isMobile ? (
-        // Mobile Layout - only render if mobile
+        // Mobile Layout
         <div className="fixed inset-0 bg-gray-50 pt-16 overflow-hidden">
           <div className="h-full px-4">
             <MobileView {...viewProps} />
           </div>
         </div>
       ) : (
-        // Desktop Layout - only render if desktop
+        // Desktop Layout
         <div className="min-h-screen bg-gray-50 pt-20 overflow-x-hidden">
           <div className="max-w-6xl mx-auto px-4 py-8">
             <DesktopView {...viewProps} />

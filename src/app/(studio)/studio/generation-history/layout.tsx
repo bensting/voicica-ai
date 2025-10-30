@@ -16,19 +16,11 @@ export default function GenerationHistoryLayout({
 }) {
   return (
     <>
-      {/* ========== 桌面端布局 (lg+) ========== */}
-      <div className="hidden lg:block">
-        {children}
-      </div>
+      {/* Unified layout - children rendered once */}
+      {children}
 
-      {/* ========== 移动端布局 (<lg) ========== */}
+      {/* Mobile Bottom Navigation - only shown on mobile */}
       <div className="lg:hidden">
-        {/* Content with bottom padding to prevent overlap with BottomNav */}
-        <div className="pb-20">
-          {children}
-        </div>
-
-        {/* Mobile Bottom Navigation */}
         <MobileBottomNav />
       </div>
     </>

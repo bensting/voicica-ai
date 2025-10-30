@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
+import { Plus, Minus } from 'lucide-react';
 import AudioPlayer from './AudioPlayer';
 import { TaskStatus, Generation } from '@/types/tts';
 import { getStatusLabel, getStatusColor } from '@/lib/api/tts';
@@ -61,20 +62,45 @@ export default function SpeechEntry({ generation, onDelete, onDownload }: Speech
 
       {/* Generated Text */}
       <div className="mb-4">
-        <p
-          ref={textRef}
-          className={`text-gray-900 text-lg leading-relaxed ${!isTextExpanded ? 'line-clamp-2' : ''}`}
-        >
-          &ldquo;{generation.text}&rdquo;
-        </p>
-        {showExpandButton && (
-          <button
-            onClick={() => setIsTextExpanded(!isTextExpanded)}
-            className="mt-2 text-sm text-blue-600 hover:text-blue-700 font-medium transition-colors"
+        {/* 移动端：单行文本 + 右侧图标按钮 */}
+        <div className="lg:hidden flex items-start gap-2">
+          <p
+            ref={textRef}
+            className={`flex-1 text-gray-900 text-base ${!isTextExpanded ? 'line-clamp-1' : ''}`}
           >
-            {isTextExpanded ? 'Show less' : 'Show more'}
-          </button>
-        )}
+            {generation.text}
+          </p>
+          {showExpandButton && (
+            <button
+              onClick={() => setIsTextExpanded(!isTextExpanded)}
+              className="flex-shrink-0 p-1 text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded transition-colors"
+              title={isTextExpanded ? 'Show less' : 'Show more'}
+            >
+              {isTextExpanded ? (
+                <Minus className="w-4 h-4" />
+              ) : (
+                <Plus className="w-4 h-4" />
+              )}
+            </button>
+          )}
+        </div>
+
+        {/* 桌面端：两行文本 + 下方按钮 */}
+        <div className="hidden lg:block">
+          <p
+            className={`text-gray-900 text-lg leading-relaxed ${!isTextExpanded ? 'line-clamp-2' : ''}`}
+          >
+            {generation.text}
+          </p>
+          {showExpandButton && (
+            <button
+              onClick={() => setIsTextExpanded(!isTextExpanded)}
+              className="mt-2 text-sm text-blue-600 hover:text-blue-700 font-medium transition-colors"
+            >
+              {isTextExpanded ? 'Show less' : 'Show more'}
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Error Message */}

@@ -16,19 +16,13 @@ export default function VoicesLayout({
 }) {
   return (
     <>
-      {/* ========== 桌面端布局 (lg+) ========== */}
-      <div className="hidden lg:block">
+      {/* Children rendered once with responsive padding */}
+      <div className="pb-0 lg:pb-0">
         {children}
       </div>
 
-      {/* ========== 移动端布局 (<lg) ========== */}
+      {/* Mobile Bottom Navigation - only shown on mobile */}
       <div className="lg:hidden">
-        {/* Content with bottom padding to prevent overlap with BottomNav */}
-        <div className="pb-20">
-          {children}
-        </div>
-
-        {/* Mobile Bottom Navigation */}
         <MobileBottomNav />
       </div>
     </>

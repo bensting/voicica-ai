@@ -62,7 +62,9 @@ export default function VoicesPage() {
 
   // Handle voice selection (return to TTS page)
   const handleSelectVoice = (voice: Voice) => {
+    console.log('🎯 [Voices] 选中语音:', voice.name, voice.id);
     sessionStorage.setItem('ttsPreSelectedVoice', JSON.stringify(voice));
+    console.log('💾 [Voices] 已保存到 sessionStorage');
     router.push('/studio/tts');
   };
 

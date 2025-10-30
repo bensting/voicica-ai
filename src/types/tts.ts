@@ -19,6 +19,13 @@ export interface TtsRecord {
   error_message?: string;
   voice_id?: string;
   voice_name?: string;
+  voice?: {
+    id: string;
+    name: string;
+    display_name: Record<string, string>;
+    avatar_url: string;
+    [key: string]: any;
+  }; // 关联的语音信息（仅在查询时填充）
 }
 
 // 查询 TTS 记录的请求参数
@@ -50,6 +57,8 @@ export interface Generation {
   status?: TaskStatus;
   errorMessage?: string;
   voiceName?: string;
+  voiceDisplayName?: Record<string, string>; // 语音多语言显示名称
+  voiceAvatar?: string; // 语音头像 URL
 }
 
 // TTS 生成请求参数

@@ -35,7 +35,7 @@ export default function GenerationHistoryPage() {
     handleDateRangeChange,
     closeConfirmDialog,
     fetchRecords,
-  } = useGenerationHistory({ user });
+  } = useGenerationHistory({ user, authLoading });
 
   // Show loading while checking auth (optional, can be removed if not needed)
   // Note: Anonymous users can also view their generation history

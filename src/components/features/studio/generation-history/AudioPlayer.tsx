@@ -1,6 +1,8 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
+import Image from 'next/image';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface AudioPlayerProps {
   audioUrl: string;
@@ -8,18 +10,28 @@ interface AudioPlayerProps {
   isPlaying: boolean;
   onPlay: () => void;
   onDownload: () => void;
+  voiceAvatar?: string;
+  voiceName?: string;
+  voiceDisplayName?: Record<string, string>;
 }
 
-export default function AudioPlayer({ 
-  audioUrl, 
-  duration, 
-  isPlaying, 
-  onPlay, 
-  onDownload 
+export default function AudioPlayer({
+  audioUrl,
+  duration,
+  isPlaying,
+  onPlay,
+  onDownload,
+  voiceAvatar,
+  voiceName,
+  voiceDisplayName
 }: AudioPlayerProps) {
+  const { locale } = useLanguage();
   const audioRef = useRef<HTMLAudioElement>(null);
   const [currentTime, setCurrentTime] = useState(0);
   const [progress, setProgress] = useState(0);
+
+  // Get display name based on current locale
+  const displayName = voiceDisplayName?.[locale] || voiceName || 'Voice';
 
   // Generate mock waveform data
   const generateWaveform = () => {
@@ -92,22 +104,50 @@ export default function AudioPlayer({
     <div className="flex items-center gap-4">
       {/* Hidden audio element */}
       <audio ref={audioRef} src={audioUrl} preload="metadata" />
-      
-      {/* Play/Pause Button */}
-      <button
-        onClick={onPlay}
-        className="flex items-center justify-center w-12 h-12 bg-gray-900 text-white rounded-full hover:bg-gray-800 transition-colors"
-      >
-        {isPlaying ? (
-          <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-            <path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z"/>
-          </svg>
-        ) : (
-          <svg className="w-5 h-5 ml-0.5" fill="currentColor" viewBox="0 0 24 24">
-            <path d="M8 5v14l11-7z"/>
-          </svg>
-        )}
-      </button>
+
+      {/* Voice Avatar and Name */}
+      <div className="flex flex-col items-center gap-1 flex-shrink-0">
+        {/* Play/Pause Button with Avatar */}
+        <button
+          onClick={onPlay}
+          className="relative w-12 h-12 rounded-full overflow-hidden group"
+        >
+          {/* Avatar or Gradient Background */}
+          <div className="absolute inset-0 bg-gradient-to-br from-purple-400 to-purple-600">
+            {voiceAvatar ? (
+              <Image
+                src={voiceAvatar}
+                alt={displayName}
+                width={48}
+                height={48}
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center">
+                <span className="text-2xl">🎤</span>
+              </div>
+            )}
+          </div>
+
+          {/* Play/Pause Icon Overlay */}
+          <div className="absolute inset-0 bg-black/40 group-hover:bg-black/50 transition-colors flex items-center justify-center">
+            {isPlaying ? (
+              <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z"/>
+              </svg>
+            ) : (
+              <svg className="w-5 h-5 text-white ml-0.5" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M8 5v14l11-7z"/>
+              </svg>
+            )}
+          </div>
+        </button>
+
+        {/* Voice Name */}
+        <span className="text-xs text-gray-600 font-medium max-w-[4rem] truncate text-center">
+          {displayName}
+        </span>
+      </div>
 
       {/* Waveform */}
       <div className="flex-1">
@@ -115,8 +155,8 @@ export default function AudioPlayer({
           <span className="text-xs text-gray-500 min-w-[2rem]">
             {formatTime(currentTime)}
           </span>
-          
-          <div 
+
+          <div
             className="flex-1 h-8 flex items-center gap-0.5 cursor-pointer"
             onClick={handleWaveformClick}
           >
@@ -126,14 +166,14 @@ export default function AudioPlayer({
                 className="flex-1 bg-gray-300 rounded-sm transition-colors hover:bg-gray-400"
                 style={{
                   height: `${height * 100}%`,
-                  backgroundColor: index < (progress / 100) * waveform.length 
-                    ? '#1f2937' 
+                  backgroundColor: index < (progress / 100) * waveform.length
+                    ? '#1f2937'
                     : '#d1d5db'
                 }}
               />
             ))}
           </div>
-          
+
           <span className="text-xs text-gray-500 min-w-[2rem] text-right">
             {formatTime(duration)}
           </span>

@@ -105,32 +105,29 @@ export function convertTtsRecordToGeneration(record: TtsRecord): Generation {
     audioUrl: record.audio_url || '',
     status: record.status,
     errorMessage: record.error_message,
-    voiceName: record.voice_name,
+    // 优先使用 voice 对象中的名称，回退到 voice_name
+    voiceName: record.voice?.name || record.voice_name,
+    // 提取 voice 对象中的多语言显示名称
+    voiceDisplayName: record.voice?.display_name,
+    // 提取 voice 对象中的头像 URL
+    voiceAvatar: record.voice?.avatar_url,
   };
 }
 
 /**
- * 格式化时间戳为相对时间
+ * 格式化时间戳为具体日期时间
+ * 格式: YYYY-MM-DD HH:mm
  */
 function formatTimestamp(isoString: string): string {
   const date = new Date(isoString);
-  const now = new Date();
-  const diffMs = now.getTime() - date.getTime();
-  const diffMins = Math.floor(diffMs / 60000);
-  const diffHours = Math.floor(diffMs / 3600000);
-  const diffDays = Math.floor(diffMs / 86400000);
 
-  if (diffMins < 1) {
-    return 'Just now';
-  } else if (diffMins < 60) {
-    return `${diffMins} minute${diffMins > 1 ? 's' : ''} ago`;
-  } else if (diffHours < 24) {
-    return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
-  } else if (diffDays < 30) {
-    return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
-  } else {
-    return date.toLocaleDateString();
-  }
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  const hours = String(date.getHours()).padStart(2, '0');
+  const minutes = String(date.getMinutes()).padStart(2, '0');
+
+  return `${year}-${month}-${day} ${hours}:${minutes}`;
 }
 
 /**

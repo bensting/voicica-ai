@@ -2,20 +2,8 @@
 
 import { useState, useRef, useEffect } from 'react';
 import AudioPlayer from './AudioPlayer';
-import { TaskStatus } from '@/types/tts';
+import { TaskStatus, Generation } from '@/types/tts';
 import { getStatusLabel, getStatusColor } from '@/lib/api/tts';
-
-interface Generation {
-  id: string;
-  text: string;
-  timestamp: string;
-  duration: number;
-  characterCount: number;
-  audioUrl: string;
-  status?: TaskStatus;
-  errorMessage?: string;
-  voiceName?: string;
-}
 
 interface SpeechEntryProps {
   generation: Generation;
@@ -52,11 +40,6 @@ export default function SpeechEntry({ generation, onDelete, onDownload }: Speech
           {generation.status && (
             <span className={`px-3 py-1 text-xs font-medium rounded-full ${getStatusColor(generation.status)}`}>
               {getStatusLabel(generation.status)}
-            </span>
-          )}
-          {generation.voiceName && (
-            <span className="px-3 py-1 text-xs font-medium text-blue-600 bg-blue-50 rounded-full">
-              {generation.voiceName}
             </span>
           )}
         </div>
@@ -111,6 +94,9 @@ export default function SpeechEntry({ generation, onDelete, onDownload }: Speech
           isPlaying={isPlaying}
           onPlay={handlePlay}
           onDownload={onDownload}
+          voiceAvatar={generation.voiceAvatar}
+          voiceName={generation.voiceName}
+          voiceDisplayName={generation.voiceDisplayName}
         />
       )}
 

@@ -1,8 +1,10 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import ConfirmDialog from '@/components/ui/ConfirmDialog';
-import GenerationHistory from '@/components/features/studio/generation-history/GenerationHistory';
+import DesktopView from '@/components/features/studio/generation-history/DesktopView';
+import MobileView from '@/components/features/studio/generation-history/MobileView';
 import { useGenerationHistory } from '@/components/features/studio/generation-history/hooks/useGenerationHistory';
 
 /**
@@ -10,9 +12,24 @@ import { useGenerationHistory } from '@/components/features/studio/generation-hi
  *
  * Displays user's TTS generation history with filtering and pagination
  * Supports both authenticated and anonymous users
+ * Conditionally renders Desktop or Mobile view based on screen size
  */
 export default function GenerationHistoryPage() {
   const { user, loading: authLoading } = useAuth();
+  const [isMobile, setIsMobile] = useState(false);
+  const [isClient, setIsClient] = useState(false);
+
+  // Detect screen size on client-side only
+  useEffect(() => {
+    setIsClient(true);
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 1024); // lg breakpoint
+    };
+
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   // Use custom hook for all business logic
   const {
@@ -72,54 +89,52 @@ export default function GenerationHistoryPage() {
     );
   }
 
+  // Wait for client-side hydration
+  if (!isClient) {
+    return (
+      <div className="min-h-screen bg-gray-50 pt-20 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
+      </div>
+    );
+  }
+
+  // Common props for both views
+  const viewProps = {
+    generations,
+    total,
+    currentPage,
+    pageSize,
+    totalPages,
+    loading,
+    selectedStatus,
+    startDate,
+    endDate,
+    onClearAll: handleClearAll,
+    onDeleteGeneration: handleDeleteGeneration,
+    onDownloadGeneration: handleDownloadGeneration,
+    onPageChange: handlePageChange,
+    onStatusChange: handleStatusChange,
+    onDateRangeChange: handleDateRangeChange,
+  };
+
   // Show main content (supports both authenticated and anonymous users)
   return (
     <>
-      {/* Desktop Layout */}
-      <div className="hidden lg:block min-h-screen bg-gray-50 pt-20 overflow-x-hidden">
-        <div className="max-w-6xl mx-auto px-4 py-8">
-          <GenerationHistory
-            generations={generations}
-            total={total}
-            currentPage={currentPage}
-            pageSize={pageSize}
-            totalPages={totalPages}
-            loading={loading}
-            selectedStatus={selectedStatus}
-            startDate={startDate}
-            endDate={endDate}
-            onClearAll={handleClearAll}
-            onDeleteGeneration={handleDeleteGeneration}
-            onDownloadGeneration={handleDownloadGeneration}
-            onPageChange={handlePageChange}
-            onStatusChange={handleStatusChange}
-            onDateRangeChange={handleDateRangeChange}
-          />
+      {isMobile ? (
+        // Mobile Layout - only render if mobile
+        <div className="fixed inset-0 bg-gray-50 pt-16 overflow-hidden">
+          <div className="h-full px-4">
+            <MobileView {...viewProps} />
+          </div>
         </div>
-      </div>
-
-      {/* Mobile Layout */}
-      <div className="lg:hidden fixed inset-0 bg-gray-50 pt-16 overflow-hidden">
-        <div className="h-full px-4">
-          <GenerationHistory
-            generations={generations}
-            total={total}
-            currentPage={currentPage}
-            pageSize={pageSize}
-            totalPages={totalPages}
-            loading={loading}
-            selectedStatus={selectedStatus}
-            startDate={startDate}
-            endDate={endDate}
-            onClearAll={handleClearAll}
-            onDeleteGeneration={handleDeleteGeneration}
-            onDownloadGeneration={handleDownloadGeneration}
-            onPageChange={handlePageChange}
-            onStatusChange={handleStatusChange}
-            onDateRangeChange={handleDateRangeChange}
-          />
+      ) : (
+        // Desktop Layout - only render if desktop
+        <div className="min-h-screen bg-gray-50 pt-20 overflow-x-hidden">
+          <div className="max-w-6xl mx-auto px-4 py-8">
+            <DesktopView {...viewProps} />
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Confirmation Dialog */}
       <ConfirmDialog

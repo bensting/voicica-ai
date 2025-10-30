@@ -32,7 +32,7 @@ export const userMenuItems: UserMenuItemConfig[] = [
   {
     id: 'settings',
     labelKey: 'settings.title',
-    href: '/settings/my-account',
+    href: '/studio/settings/my-account',
     icon: (
       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path

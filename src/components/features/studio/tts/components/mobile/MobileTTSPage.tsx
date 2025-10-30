@@ -35,7 +35,7 @@ interface MobileTTSPageProps {
  * Mobile TTS Page Component
  *
  * Simplified mobile-optimized layout for TTS generation
- * Based on TopMediAi mobile design
+ * Based on Voice-Labs.Ai mobile design
  */
 export default function MobileTTSPage({
   text,

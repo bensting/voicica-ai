@@ -41,7 +41,7 @@ export default function Home() {
         brandName="AI Voice Labs"
         title="One Stop AI Voice Solution for"
         highlight="Speech & Cloned Voice"
-        description="Everything you need to create high-quality videos with music and voiceovers in one place. No technical skills required. Bring your best ideas to life in TopMediAi now."
+        description="Everything you need to create high-quality videos with music and voiceovers in one place. No technical skills required. Bring your best ideas to life in VoiceLabsAI now."
         actionButtons={actionButtons}
         backgroundVideo={HERO_CONFIG.backgroundVideo}
       />

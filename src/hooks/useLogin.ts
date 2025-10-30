@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 
 /**
@@ -10,6 +10,9 @@ import { useAuth } from '@/contexts/AuthContext';
  * - 处理登录逻辑
  * - 处理已登录用户重定向
  * - 检测是否为回访用户
+ *
+ * Note: Removed useSearchParams to avoid SSR issues.
+ * Use window.location.search for client-side params.
  */
 export function useLogin() {
   const [loading, setLoading] = useState(false);
@@ -18,7 +21,6 @@ export function useLogin() {
 
   const { user, signInWithGoogle, signInWithApple, signInWithTwitter } = useAuth();
   const router = useRouter();
-  const searchParams = useSearchParams();
 
   // 检测回访用户
   useEffect(() => {
@@ -33,14 +35,17 @@ export function useLogin() {
   // 已登录用户自动重定向
   useEffect(() => {
     if (user) {
-      // 检查是否有 returnUrl 参数
-      const returnUrl = searchParams?.get('returnUrl');
-      const redirectPath = returnUrl || '/';
+      // 检查是否有 returnUrl 参数（使用 window.location.search）
+      let returnUrl = '/';
+      if (typeof window !== 'undefined') {
+        const params = new URLSearchParams(window.location.search);
+        returnUrl = params.get('returnUrl') || '/';
+      }
 
-      console.log('🔄 useLogin: 用户已登录，重定向到:', redirectPath);
-      router.push(redirectPath);
+      console.log('🔄 useLogin: 用户已登录，重定向到:', returnUrl);
+      router.push(returnUrl);
     }
-  }, [user, router, searchParams]);
+  }, [user, router]);
 
   // 统一的登录处理函数
   const handleLogin = async (provider: 'google' | 'apple' | 'twitter') => {

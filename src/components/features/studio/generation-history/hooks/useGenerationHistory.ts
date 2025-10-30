@@ -55,7 +55,6 @@ interface UseGenerationHistoryReturn {
  * - Error handling
  */
 export function useGenerationHistory({
-  user,
   authLoading = false,
   pageSize: initialPageSize = 20,
 }: UseGenerationHistoryProps): UseGenerationHistoryReturn {

@@ -40,7 +40,6 @@ interface MobileTTSPageProps {
 export default function MobileTTSPage({
   text,
   selectedVoice,
-  speed,
   isGenerating,
   error,
   audioUrl,
@@ -49,7 +48,6 @@ export default function MobileTTSPage({
   canGenerate,
   handleTextChange,
   handleVoiceSelect,
-  handleSpeedChange,
   handleGenerate,
 }: MobileTTSPageProps) {
   const router = useRouter();

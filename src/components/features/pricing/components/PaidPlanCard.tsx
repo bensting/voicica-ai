@@ -30,7 +30,7 @@ const Feature = ({ children, isNegative = false }: { children: React.ReactNode; 
   </li>
 );
 
-export default function PaidPlanCard({ plan, isRecommended = false, cycle }: PaidPlanCardProps) {
+export default function PaidPlanCard({ plan, isRecommended = false }: PaidPlanCardProps) {
   const { user } = useAuth();
   const { locale, t } = useLanguage();
   const [isLoading, setIsLoading] = useState(false);

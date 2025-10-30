@@ -32,7 +32,7 @@ export default function VoiceSelector({
   const { playingVoiceId, handlePlayPause } = useAudioPlayer();
 
   // 生成选项
-  const { languages, countryOptions, languageOptions, genderOptions } = useVoiceOptions({
+  const { languages } = useVoiceOptions({
     voices,
     availableLanguages: [],
     locale,

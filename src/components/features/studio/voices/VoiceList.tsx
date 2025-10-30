@@ -20,7 +20,6 @@ export default function VoiceList({
   loading,
   error,
   playingVoiceId,
-  locale,
   getVoiceName,
   onPlayVoice,
   onSelectVoice,

@@ -44,7 +44,6 @@ export default function MobileTextInput({
   value,
   onChange,
   maxCharacters,
-  availableCharacters,
   disabled = false,
   placeholder = '在此输入入您要转换的文件，我们将辨别您的文字并自动替换为相应语言。',
 }: MobileTextInputProps) {

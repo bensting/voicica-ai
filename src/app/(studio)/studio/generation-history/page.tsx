@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import ConfirmDialog from '@/components/ui/ConfirmDialog';
 import DesktopView from '@/components/features/studio/generation-history/DesktopView';
@@ -16,11 +16,20 @@ import { useGenerationHistory } from '@/components/features/studio/generation-hi
  */
 export default function GenerationHistoryPage() {
   const { user, loading: authLoading } = useAuth();
+  const [isMobile, setIsMobile] = useState(false);
 
-  // Use CSS media query to determine if mobile (no state, no re-renders)
-  const isMobile = useMemo(() => {
-    if (typeof window === 'undefined') return false;
-    return window.matchMedia('(max-width: 1023px)').matches;
+  // Detect mobile on client-side only
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.matchMedia('(max-width: 1023px)').matches);
+    };
+    checkMobile();
+
+    // Optional: listen for resize
+    const mediaQuery = window.matchMedia('(max-width: 1023px)');
+    const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches);
+    mediaQuery.addEventListener('change', handler);
+    return () => mediaQuery.removeEventListener('change', handler);
   }, []);
 
   // Use custom hook for all business logic

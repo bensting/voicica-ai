@@ -74,7 +74,7 @@ export default function MyVoicesSection() {
           </div>
 
           <p className="text-gray-500 text-sm mb-6 text-center">
-            You haven't cloned any voices yet. Create your first one now!
+            You haven&apos;t cloned any voices yet. Create your first one now!
           </p>
 
           <button

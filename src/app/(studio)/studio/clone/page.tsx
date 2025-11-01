@@ -28,7 +28,7 @@ export default function ClonePage() {
         {/* Header */}
         <div className="mb-8 lg:mb-12">
           <PageHeader
-            title="AI Voice Cloning:"
+            title="AI Voice Cloning"
             subtitle="Create Realistic Voices in Seconds"
             description="Try AI voice cloning online for free — clone your own voice naturally in multiple languages."
           />

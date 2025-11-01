@@ -39,7 +39,8 @@ export default function NavLinks({ mobile = false, onLinkClick }: NavLinksProps 
   };
 
   const getClickHandler = (type?: string, sectionId?: string, openInNewWindow?: boolean, href?: string) => {
-    if (openInNewWindow && href) return handleNewWindowClick(href);
+    // openInNewWindow only applies to desktop (non-mobile) view
+    if (openInNewWindow && href && !mobile) return handleNewWindowClick(href);
     if (type === 'section') return handleSectionClick(sectionId);
     return handleClick;
   };

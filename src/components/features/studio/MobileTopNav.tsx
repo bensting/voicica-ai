@@ -52,7 +52,7 @@ export default function MobileTopNav({ isMenuOpen = false, onMenuToggle }: Mobil
 
           <Link href="/" className="flex items-center min-w-0">
             <Image
-              src="/logo/voice-labs-logo-web.svg"
+              src="/logo/voice-labs-logo-light.svg"
               alt="Voice-Labs.AI"
               width={180}
               height={28}

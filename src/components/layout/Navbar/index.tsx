@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import Logo from '@/components/ui/Logo';
+import Logo from './Logo';
 import NavLinks from './NavLinks';
 import LanguageSwitcher from './LanguageSwitcher';
 import LoginButton from './LoginButton';

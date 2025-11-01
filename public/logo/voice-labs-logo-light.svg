@@ -18,7 +18,7 @@
 
   <style>
     .word {
-      fill: currentColor;
+      fill: #1f2937;
       font-family: 'Poppins', sans-serif;
       font-weight: 500;
       font-size: 26px;
@@ -32,10 +32,6 @@
       fill: url(#gradAI);
       font-weight: 700;
       filter: url(#glow);
-    }
-    @media (prefers-color-scheme: dark) {
-      #gradAI stop:first-child { stop-color: #d8b4fe; }
-      #gradAI stop:last-child { stop-color: #a78bfa; }
     }
   </style>
 

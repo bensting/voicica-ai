@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import SampleTextList from './SampleTextList';
+import SampleTextList from '../components/SampleTextList';
 
 interface AudioRecorderProps {
   isOpen: boolean;

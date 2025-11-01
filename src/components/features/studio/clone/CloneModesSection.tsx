@@ -2,9 +2,9 @@
 
 import { useState } from 'react';
 import { Copy } from 'lucide-react';
-import UploadModal from './UploadModal';
-import AudioRecorder from './AudioRecorder';
-import LocalUploadModal from './LocalUploadModal';
+import UploadModal from './modals/UploadModal';
+import AudioRecorder from './modals/AudioRecorder';
+import LocalUploadModal from './modals/LocalUploadModal';
 
 /**
  * Clone Modes Section Component

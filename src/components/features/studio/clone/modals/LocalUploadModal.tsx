@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState, useRef } from 'react';
-import FileCard from './FileCard';
+import FileCard from '../components/FileCard';
 
 interface LocalUploadModalProps {
   isOpen: boolean;

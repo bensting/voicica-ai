@@ -13,6 +13,20 @@ interface AudioRecorderProps {
  *
  * Records audio from the user's microphone
  */
+// Sample texts for different languages
+const sampleTexts = {
+  'en-US': [
+    'In the tranquil hours of the morning, the world is bathed in a gentle light. The horizon blooms with hues of lavender and soft pink as the night retreats. There\'s a hush over the land, a sacred stillness that whispers of new beginnings and the promise of a fresh day.',
+    'An artisan\'s hands move with a grace born of years. Each deliberate motion speaks of dedication, patience, and a profound respect for the craft.',
+    'The city thrums with a life of its own. Streets buzz with voices, laughter, and the hum of traffic. Every corner is a story, every face a chapter.',
+  ],
+  'zh-CN': [
+    '清晨的宁静时刻，世界沐浴在柔和的光线中。地平线上绽放出薰衣草色和柔粉色的光晕，夜色渐渐退去。大地上笼罩着一片静谧，这种神圣的宁静低语着新的开始和全新一天的承诺。',
+    '工匠的双手带着多年磨练出的优雅移动。每一个精心的动作都诉说着奉献、耐心和对工艺的深深敬意。',
+    '城市随着自己的生命律动而跳动。街道上充满了声音、笑声和车流的嗡鸣声。每个角落都是一个故事，每张面孔都是一个章节。',
+  ],
+};
+
 export default function AudioRecorder({
   isOpen,
   onClose,
@@ -21,6 +35,8 @@ export default function AudioRecorder({
   const [isRecording, setIsRecording] = useState(false);
   const [recordingTime, setRecordingTime] = useState(0);
   const [audioURL, setAudioURL] = useState<string>('');
+  const [selectedLanguage, setSelectedLanguage] = useState<'en-US' | 'zh-CN'>('en-US');
+  const [expandedIndex, setExpandedIndex] = useState<number | null>(0);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
@@ -150,19 +166,82 @@ export default function AudioRecorder({
           </div>
 
           {/* Content */}
-          <div className="px-6 py-8">
-            {/* Recording visualizer */}
-            <div className="flex flex-col items-center gap-6 mb-8">
+          <div className="px-6 py-6">
+            {/* Language Selection - Always visible, disabled during recording */}
+            <div className="mb-6">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Language Selection
+              </label>
+              <div className="relative">
+                <select
+                  value={selectedLanguage}
+                  onChange={(e) => setSelectedLanguage(e.target.value as 'en-US' | 'zh-CN')}
+                  disabled={isRecording || !!audioURL}
+                  className={`w-full px-4 py-3 bg-white border border-gray-200 rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent ${
+                    isRecording || audioURL ? 'opacity-60 cursor-not-allowed' : 'cursor-pointer'
+                  }`}
+                >
+                  <option value="en-US">🇺🇸 English (US)</option>
+                  <option value="zh-CN">🇨🇳 中文 (简体)</option>
+                </select>
+                <div className="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none">
+                  <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </div>
+              </div>
+            </div>
+
+            {/* Sample Texts - Always visible */}
+            <div className="mb-6">
+              <p className="text-sm font-medium text-gray-700 mb-3">You can say this</p>
+              <div className="space-y-2 max-h-80 overflow-y-auto">
+                {sampleTexts[selectedLanguage].map((text, index) => (
+                  <button
+                    key={index}
+                    onClick={() => setExpandedIndex(expandedIndex === index ? null : index)}
+                    className="w-full flex items-start gap-3 p-4 bg-purple-50 hover:bg-purple-100 rounded-lg border border-purple-100 transition-colors"
+                  >
+                    <p className={`text-sm text-gray-700 flex-1 text-left ${expandedIndex === index ? '' : 'line-clamp-1'}`}>
+                      {text}
+                    </p>
+                    <svg
+                      className={`w-4 h-4 text-gray-400 flex-shrink-0 transition-transform mt-0.5 ${expandedIndex === index ? 'rotate-180' : ''}`}
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Audio Player (if recording exists) */}
+            {audioURL && !isRecording && (
+              <div className="mb-6">
+                <audio
+                  src={audioURL}
+                  controls
+                  className="w-full"
+                  style={{ height: '40px' }}
+                />
+              </div>
+            )}
+
+            {/* Recording visualizer - Fixed position */}
+            <div className="flex items-center justify-center gap-3 mb-6 p-4 bg-gray-50 rounded-xl border border-gray-200">
               {/* Microphone Icon / Recording Indicator */}
               <div
-                className={`w-24 h-24 rounded-full flex items-center justify-center transition-all ${
+                className={`w-12 h-12 rounded-full flex items-center justify-center transition-all ${
                   isRecording
                     ? 'bg-red-100 animate-pulse'
                     : 'bg-purple-100'
                 }`}
               >
                 <svg
-                  className={`w-12 h-12 ${
+                  className={`w-6 h-6 ${
                     isRecording ? 'text-red-600' : 'text-purple-600'
                   }`}
                   fill="none"
@@ -178,28 +257,16 @@ export default function AudioRecorder({
                 </svg>
               </div>
 
-              {/* Timer */}
-              <div className="text-center">
-                <p className="text-3xl font-bold text-gray-900 font-mono">
+              {/* Timer and Status */}
+              <div className="text-left">
+                <p className="text-xl font-bold text-gray-900 font-mono leading-none">
                   {formatTime(recordingTime)}
                 </p>
-                <p className="text-sm text-gray-500 mt-1">
+                <p className="text-xs text-gray-500 mt-1">
                   {isRecording ? 'Recording...' : audioURL ? 'Recording complete' : 'Ready to record'}
                 </p>
               </div>
             </div>
-
-            {/* Audio Player (if recording exists) */}
-            {audioURL && !isRecording && (
-              <div className="mb-6">
-                <audio
-                  src={audioURL}
-                  controls
-                  className="w-full"
-                  style={{ height: '40px' }}
-                />
-              </div>
-            )}
 
             {/* Control Buttons */}
             <div className="flex gap-3">

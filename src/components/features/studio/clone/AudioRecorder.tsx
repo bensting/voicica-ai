@@ -192,8 +192,8 @@ export default function AudioRecorder({
               </div>
             </div>
 
-            {/* Sample Texts - Scrollable area */}
-            <SampleTextList texts={sampleTexts[selectedLanguage]} />
+            {/* Sample Texts - Only show when not recorded yet */}
+            {!audioURL && <SampleTextList texts={sampleTexts[selectedLanguage]} />}
           </div>
 
           {/* Fixed Bottom Section */}

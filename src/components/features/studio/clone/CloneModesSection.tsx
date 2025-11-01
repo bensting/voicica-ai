@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { Copy } from 'lucide-react';
 import UploadModal from './UploadModal';
 import AudioRecorder from './AudioRecorder';
 import LocalUploadModal from './LocalUploadModal';
@@ -16,6 +17,7 @@ export default function CloneModesSection() {
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [isLocalUploadModalOpen, setIsLocalUploadModalOpen] = useState(false);
   const [isRecorderOpen, setIsRecorderOpen] = useState(false);
+  const [recordedFile, setRecordedFile] = useState<File | null>(null);
 
   const handleStartCloneMode = () => {
     setIsUploadModalOpen(true);
@@ -43,44 +45,36 @@ export default function CloneModesSection() {
 
   const handleRecordingComplete = (audioBlob: Blob) => {
     console.log('Recording complete:', audioBlob.size, 'bytes');
-    // TODO: Handle audio upload to backend
+    // Convert blob to file
+    const file = new File([audioBlob], `recording_${Date.now()}.webm`, {
+      type: 'audio/webm',
+    });
+    setRecordedFile(file);
+    setIsLocalUploadModalOpen(true);
   };
 
   return (
     <>
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 lg:p-8 mb-6">
-      {/* Header with badge */}
+      {/* Section Header */}
       <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
-            <svg
-              className="w-6 h-6 text-purple-600"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"
-              />
-            </svg>
+        <div className="flex items-center gap-2">
+          <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center flex-shrink-0">
+            <Copy className="w-4 h-4 text-purple-600" />
           </div>
-          <h2 className="text-xl font-semibold text-gray-900">Clone Mode</h2>
+          <h2 className="text-lg font-bold text-gray-900">Clone Mode</h2>
         </div>
-        <span className="text-sm font-medium text-purple-600 bg-purple-50 px-3 py-1 rounded-full">
+        <span className="text-sm font-medium text-purple-600 bg-purple-50 px-3 py-1 rounded-full whitespace-nowrap">
           5 clone remaining
         </span>
       </div>
 
       {/* Clone Mode Card */}
-      <div className="mb-4">
-        <div className="flex items-center justify-between p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-gradient-to-br from-blue-400 to-blue-600 rounded-xl flex items-center justify-center flex-shrink-0">
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-4 lg:p-6 mb-4 hover:shadow-md transition-shadow">
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex items-center gap-3 flex-1 min-w-0">
+            <div className="w-10 h-10 bg-gradient-to-br from-purple-400 to-purple-600 rounded-xl flex items-center justify-center flex-shrink-0">
               <svg
-                className="w-7 h-7 text-white"
+                className="w-5 h-5 text-white"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -94,15 +88,15 @@ export default function CloneModesSection() {
               </svg>
             </div>
             <div className="flex-1 min-w-0">
-              <h3 className="font-semibold text-gray-900 mb-1">Upload video or audio files</h3>
-              <p className="text-sm text-gray-600">
+              <h3 className="text-sm font-semibold text-gray-900 mb-0.5 line-clamp-2">Upload video or audio files</h3>
+              <p className="text-xs text-gray-600 line-clamp-2">
                 Clone your voice by uploading a local audio sample
               </p>
             </div>
           </div>
           <button
             onClick={handleStartCloneMode}
-            className="bg-purple-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-purple-700 transition-colors flex-shrink-0 ml-4"
+            className="bg-purple-600 text-white px-5 py-2 rounded-lg text-sm font-medium hover:bg-purple-700 transition-colors flex-shrink-0"
           >
             Start
           </button>
@@ -110,12 +104,12 @@ export default function CloneModesSection() {
       </div>
 
       {/* Custom Parameter Cloning Card */}
-      <div>
-        <div className="flex items-center justify-between p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-gradient-to-br from-purple-400 to-purple-600 rounded-xl flex items-center justify-center flex-shrink-0">
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-4 lg:p-6 hover:shadow-md transition-shadow">
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex items-center gap-3 flex-1 min-w-0">
+            <div className="w-10 h-10 bg-gradient-to-br from-purple-400 to-purple-600 rounded-xl flex items-center justify-center flex-shrink-0">
               <svg
-                className="w-7 h-7 text-white"
+                className="w-5 h-5 text-white"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -129,21 +123,20 @@ export default function CloneModesSection() {
               </svg>
             </div>
             <div className="flex-1 min-w-0">
-              <h3 className="font-semibold text-gray-900 mb-1">Custom Parameter Cloning</h3>
-              <p className="text-sm text-gray-600">
-                Create unique characters using simple prompts and let your imagination run wild!
+              <h3 className="text-sm font-semibold text-gray-900 mb-0.5 line-clamp-2">Custom Parameter Cloning</h3>
+              <p className="text-xs text-gray-600 line-clamp-2">
+                Create unique characters with simple prompts
               </p>
             </div>
           </div>
           <button
             onClick={handleStartCustomCloning}
-            className="bg-purple-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-purple-700 transition-colors flex-shrink-0 ml-4"
+            className="bg-purple-600 text-white px-5 py-2 rounded-lg text-sm font-medium hover:bg-purple-700 transition-colors flex-shrink-0"
           >
             Start
           </button>
         </div>
       </div>
-    </div>
 
       {/* Upload Modal */}
       <UploadModal
@@ -156,8 +149,12 @@ export default function CloneModesSection() {
       {/* Local Upload Modal */}
       <LocalUploadModal
         isOpen={isLocalUploadModalOpen}
-        onClose={() => setIsLocalUploadModalOpen(false)}
+        onClose={() => {
+          setIsLocalUploadModalOpen(false);
+          setRecordedFile(null);
+        }}
         onGenerate={handleFileGenerate}
+        initialFile={recordedFile}
       />
 
       {/* Audio Recorder */}

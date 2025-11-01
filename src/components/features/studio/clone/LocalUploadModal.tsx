@@ -7,6 +7,7 @@ interface LocalUploadModalProps {
   isOpen: boolean;
   onClose: () => void;
   onGenerate: (file: File) => void;
+  initialFile?: File | null;
 }
 
 /**
@@ -18,11 +19,19 @@ export default function LocalUploadModal({
   isOpen,
   onClose,
   onGenerate,
+  initialFile = null,
 }: LocalUploadModalProps) {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  // Set initial file if provided
+  useEffect(() => {
+    if (initialFile) {
+      setSelectedFile(initialFile);
+    }
+  }, [initialFile]);
 
   // Prevent body scroll when modal is open
   useEffect(() => {

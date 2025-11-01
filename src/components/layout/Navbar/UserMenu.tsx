@@ -9,12 +9,16 @@ import UserMenuItem from './UserMenuItem';
 import { userMenuItems } from '@/config/userMenuConfig';
 import LoginModal from '@/components/features/auth/LoginModal';
 
+interface UserMenuProps {
+  size?: 'sm' | 'md';
+}
+
 /**
  * 用户菜单组件
  *
  * 显示用户头像和下拉菜单
  */
-export default function UserMenu() {
+export default function UserMenu({ size = 'md' }: UserMenuProps = {}) {
   const [isOpen, setIsOpen] = useState(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -51,6 +55,10 @@ export default function UserMenu() {
     }
   };
 
+  // 头像尺寸
+  const avatarSize = size === 'sm' ? 'w-8 h-8' : 'w-10 h-10';
+  const iconSize = size === 'sm' ? 'w-5 h-5' : 'w-6 h-6';
+
   // 未登录状态：显示登录按钮，点击弹出模态框
   if (!user) {
     return (
@@ -60,9 +68,9 @@ export default function UserMenu() {
           className="flex items-center gap-2 hover:opacity-80 transition-opacity"
           aria-label="Sign in"
         >
-          <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
+          <div className={`${avatarSize} rounded-full bg-gray-200 flex items-center justify-center`}>
             <svg
-              className="w-6 h-6 text-gray-600"
+              className={`${iconSize} text-gray-600`}
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -86,6 +94,8 @@ export default function UserMenu() {
     );
   }
 
+  const imageSize = size === 'sm' ? 32 : 40;
+
   return (
     <div className="relative" ref={dropdownRef}>
       {/* 用户头像按钮 */}
@@ -98,12 +108,12 @@ export default function UserMenu() {
           <Image
             src={user.photoURL}
             alt={user.displayName || 'User'}
-            width={40}
-            height={40}
-            className="w-10 h-10 rounded-full border-2 border-gray-200"
+            width={imageSize}
+            height={imageSize}
+            className={`${avatarSize} rounded-full border-2 border-gray-200`}
           />
         ) : (
-          <div className="w-10 h-10 rounded-full bg-purple-600 flex items-center justify-center text-white font-semibold">
+          <div className={`${avatarSize} rounded-full bg-purple-600 flex items-center justify-center text-white font-semibold ${size === 'sm' ? 'text-sm' : ''}`}>
             {user.email?.charAt(0).toUpperCase()}
           </div>
         )}

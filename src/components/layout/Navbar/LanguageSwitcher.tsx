@@ -6,11 +6,13 @@ import { useLanguage, locales } from '@/contexts/LanguageContext';
 interface LanguageSwitcherProps {
   theme?: 'light' | 'dark';
   variant?: 'full' | 'compact';
+  showArrow?: boolean;
 }
 
 export default function LanguageSwitcher({
   theme = 'light',
-  variant = 'full'
+  variant = 'full',
+  showArrow = true
 }: LanguageSwitcherProps = {}) {
   const { locale, setLocale } = useLanguage();
   const [isOpen, setIsOpen] = useState(false);
@@ -64,14 +66,16 @@ export default function LanguageSwitcher({
             {currentLocale.nativeName}
           </span>
         )}
-        <svg
-          className={`w-4 h-4 transition-transform ${isOpen ? 'rotate-180' : ''}`}
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-        </svg>
+        {showArrow && (
+          <svg
+            className={`w-4 h-4 transition-transform ${isOpen ? 'rotate-180' : ''}`}
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+          </svg>
+        )}
       </button>
 
       {/* 下拉菜单 */}

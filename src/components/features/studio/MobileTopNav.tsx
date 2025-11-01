@@ -74,11 +74,11 @@ export default function MobileTopNav({ isMenuOpen = false, onMenuToggle }: Mobil
 
           {/* Language Switcher */}
           <div className="flex items-center">
-            <LanguageSwitcher theme="dark" variant="compact" />
+            <LanguageSwitcher theme="dark" variant="compact" showArrow={false} />
           </div>
 
           {/* User Menu */}
-          <UserMenu />
+          <UserMenu size="sm" />
         </div>
       </div>
     </div>

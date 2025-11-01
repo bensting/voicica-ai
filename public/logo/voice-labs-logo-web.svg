@@ -21,7 +21,12 @@
       fill: currentColor;
       font-family: 'Poppins', sans-serif;
       font-weight: 500;
-      font-size: 24px;
+      font-size: 26px;
+    }
+    .dot {
+      fill: url(#gradAI);
+      font-weight: 700;
+      font-size: 32px;
     }
     .highlight {
       fill: url(#gradAI);
@@ -34,17 +39,23 @@
     }
   </style>
 
-  <!-- 左侧波形图标 -->
-  <g transform="translate(0,6)">
-    <rect x="0" y="8" width="3" height="10" rx="1.5" fill="url(#gradAI)" />
-    <rect x="6" y="3" width="3" height="20" rx="1.5" fill="url(#gradAI)" />
-    <rect x="12" y="0" width="3" height="26" rx="1.5" fill="url(#gradAI)" />
-    <rect x="18" y="3" width="3" height="20" rx="1.5" fill="url(#gradAI)" />
-    <rect x="24" y="8" width="3" height="10" rx="1.5" fill="url(#gradAI)" />
+  <!-- 左侧麦克风图标 -->
+  <g transform="translate(15, 20)">
+    <!-- 麦克风主体 -->
+    <rect x="-5" y="-14" width="10" height="18" rx="5" fill="url(#gradAI)" />
+
+    <!-- 麦克风支架 -->
+    <path d="M -8 6 Q -8 10, 0 10 Q 8 10, 8 6" stroke="url(#gradAI)" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <line x1="0" y1="10" x2="0" y2="16" stroke="url(#gradAI)" stroke-width="2" stroke-linecap="round"/>
+    <line x1="-6" y1="16" x2="6" y2="16" stroke="url(#gradAI)" stroke-width="2" stroke-linecap="round"/>
+
+    <!-- 声波 -->
+    <path d="M -13 -5 Q -15 0, -13 5" stroke="url(#gradAI)" stroke-width="1.5" fill="none" stroke-linecap="round" opacity="0.7"/>
+    <path d="M 13 -5 Q 15 0, 13 5" stroke="url(#gradAI)" stroke-width="1.5" fill="none" stroke-linecap="round" opacity="0.7"/>
   </g>
 
   <!-- 品牌文字 -->
-  <text x="38" y="28" class="word">
-    Voice-Labs.<tspan class="highlight">AI</tspan>
+  <text x="38" y="29" class="word">
+    Voice-Labs<tspan class="dot">.</tspan><tspan class="highlight">AI</tspan>
   </text>
 </svg>

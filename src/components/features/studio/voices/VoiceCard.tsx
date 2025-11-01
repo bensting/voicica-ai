@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import { Play, Pause, ArrowRight } from 'lucide-react';
 import type { Voice } from '@/types/voice';
 
@@ -24,9 +25,11 @@ export default function VoiceCard({
       {/* Avatar + Play button */}
       <div className="relative w-12 h-12 flex-shrink-0">
         {voice.avatar_url ? (
-          <img
+          <Image
             src={voice.avatar_url}
             alt={voiceName}
+            width={48}
+            height={48}
             className="w-12 h-12 rounded-full object-cover"
           />
         ) : (

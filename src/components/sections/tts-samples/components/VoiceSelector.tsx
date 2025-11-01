@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import { ChevronDown, Play, Pause } from 'lucide-react';
 import type { Voice } from '@/types/voice';
 import { getLocalizedVoiceName } from '@/types/voice';
@@ -143,9 +144,11 @@ export default function VoiceSelector({
   const renderAvatar = (voice: Voice) => {
     if (voice.avatar_url) {
       return (
-        <img
+        <Image
           src={voice.avatar_url}
           alt={getDisplayName(voice)}
+          width={40}
+          height={40}
           className="w-10 h-10 rounded-full object-cover"
         />
       );

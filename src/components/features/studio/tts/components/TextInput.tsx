@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import { Eraser, Zap } from 'lucide-react';
 
 interface VoiceModel {
@@ -52,9 +53,11 @@ export default function TextInput({
         <div className="flex items-center gap-2">
           {selectedVoice ? (
             <>
-              <img
+              <Image
                 src={selectedVoice.avatar_url}
                 alt={selectedVoice.name}
+                width={40}
+                height={40}
                 className="w-10 h-10 rounded-full object-cover border-2 border-purple-200"
               />
               <div className="text-sm">

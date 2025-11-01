@@ -56,7 +56,7 @@ export default function AudioRecorder({
       document.body.style.overflow = 'unset';
       if (timerRef.current) clearInterval(timerRef.current);
     };
-  }, [isOpen]);
+  }, [isOpen, stopRecording]);
 
   const startRecording = async () => {
     try {

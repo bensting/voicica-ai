@@ -3,6 +3,12 @@
 import { useEffect, useState } from 'react';
 import { Download, X, Share } from 'lucide-react';
 
+// 定义 beforeinstallprompt 事件类型
+interface BeforeInstallPromptEvent extends Event {
+  prompt: () => Promise<void>;
+  userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>;
+}
+
 /**
  * PWA 安装提示组件
  *
@@ -13,7 +19,7 @@ import { Download, X, Share } from 'lucide-react';
  * - 记住用户选择（关闭后不再显示）
  */
 export default function InstallPrompt() {
-  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
+  const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [showPrompt, setShowPrompt] = useState(false);
   const [isIOS, setIsIOS] = useState(false);
 
@@ -31,8 +37,11 @@ export default function InstallPrompt() {
     }
 
     // 检测 iOS
-    const isIOSDevice = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
-    const isInStandaloneMode = ('standalone' in window.navigator) && (window.navigator as any).standalone;
+    const windowWithMSStream = window as Window & { MSStream?: unknown };
+    const isIOSDevice = /iPad|iPhone|iPod/.test(navigator.userAgent) && !windowWithMSStream.MSStream;
+
+    const navigatorWithStandalone = window.navigator as Navigator & { standalone?: boolean };
+    const isInStandaloneMode = ('standalone' in window.navigator) && navigatorWithStandalone.standalone;
 
     setIsIOS(isIOSDevice);
 
@@ -43,7 +52,7 @@ export default function InstallPrompt() {
       // Android: 监听 beforeinstallprompt 事件
       const handler = (e: Event) => {
         e.preventDefault();
-        setDeferredPrompt(e);
+        setDeferredPrompt(e as BeforeInstallPromptEvent);
         setShowPrompt(true);
       };
 
@@ -114,7 +123,7 @@ export default function InstallPrompt() {
                 </p>
                 <p className="flex items-center gap-2">
                   <span className="flex-shrink-0 w-4 h-4 bg-white/30 rounded-full flex items-center justify-center text-[10px] font-bold">2</span>
-                  <span>选择"添加到主屏幕"</span>
+                  <span>选择&ldquo;添加到主屏幕&rdquo;</span>
                 </p>
               </div>
             </div>

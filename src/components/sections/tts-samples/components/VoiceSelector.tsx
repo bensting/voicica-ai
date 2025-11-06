@@ -4,6 +4,7 @@ import Image from 'next/image';
 import { ChevronDown, Play, Pause } from 'lucide-react';
 import type { Voice } from '@/types/voice';
 import { getLocalizedVoiceName } from '@/types/voice';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface VoiceSelectorProps {
   /** 当前选中的语音 */
@@ -46,6 +47,7 @@ export default function VoiceSelector({
   currentLanguage = 'en',
 }: VoiceSelectorProps) {
   const router = useRouter();
+  const { t } = useLanguage();
   const dropdownRef = useRef<HTMLDivElement>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [playingVoiceId, setPlayingVoiceId] = useState<string | null>(null);
@@ -178,7 +180,7 @@ export default function VoiceSelector({
           </div>
         ) : (
           <span className="text-gray-400 text-sm">
-            {isLoading ? 'Loading voices...' : 'Select a voice'}
+            {isLoading ? t('ttsSamples.voiceSelector.loading') : t('ttsSamples.voiceSelector.placeholder')}
           </span>
         )}
         <ChevronDown
@@ -244,8 +246,8 @@ export default function VoiceSelector({
             onClick={handleUnlockClick}
             className="bg-gradient-to-r from-purple-600 to-purple-700 p-4 text-center cursor-pointer hover:from-purple-500 hover:to-purple-600 transition-all"
           >
-            <div className="text-white font-bold text-sm mb-1">Try more voices for free</div>
-            <div className="text-purple-100 text-xs">3200+ AI Voices</div>
+            <div className="text-white font-bold text-sm mb-1">{t('ttsSamples.voiceSelector.unlockTitle')}</div>
+            <div className="text-purple-100 text-xs">{t('ttsSamples.voiceSelector.unlockSubtitle')}</div>
           </div>
         </div>
       )}
@@ -253,7 +255,7 @@ export default function VoiceSelector({
       {/* 空状态 */}
       {isOpen && !isLoading && availableVoices.length === 0 && (
         <div className="absolute left-0 right-0 mt-2 bg-gray-800 border border-gray-700 rounded-xl shadow-lg z-10 p-6 text-center">
-          <div className="text-gray-400 text-sm">No voices available for this language</div>
+          <div className="text-gray-400 text-sm">{t('ttsSamples.voiceSelector.noVoices')}</div>
         </div>
       )}
     </div>

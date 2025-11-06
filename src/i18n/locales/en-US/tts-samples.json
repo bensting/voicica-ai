@@ -24,6 +24,18 @@
         "conversions": "TTS conversions made",
         "usersCount": "10K+ people are using..."
       }
+    },
+    "languageSelector": {
+      "placeholder": "Select Language",
+      "unlockTitle": "Unlock More Free Voices",
+      "unlockSubtitle": "190+ languages & accents"
+    },
+    "voiceSelector": {
+      "loading": "Loading voices...",
+      "placeholder": "Select a voice",
+      "unlockTitle": "Try more voices for free",
+      "unlockSubtitle": "3200+ AI Voices",
+      "noVoices": "No voices available for this language"
     }
   }
 }

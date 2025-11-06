@@ -24,6 +24,18 @@
         "conversions": "次語音轉換",
         "usersCount": "10K+ 人正在使用..."
       }
+    },
+    "languageSelector": {
+      "placeholder": "選擇語言",
+      "unlockTitle": "解鎖更多免費聲音",
+      "unlockSubtitle": "190+ 種語言和口音"
+    },
+    "voiceSelector": {
+      "loading": "正在載入語音...",
+      "placeholder": "選擇語音",
+      "unlockTitle": "免費試用更多語音",
+      "unlockSubtitle": "3200+ AI 語音",
+      "noVoices": "該語言暫無可用語音"
     }
   }
 }

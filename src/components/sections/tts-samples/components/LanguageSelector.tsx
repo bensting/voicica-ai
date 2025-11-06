@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { ChevronDown } from 'lucide-react';
 import { LocaleOption } from '@/types/config';
+import { useLanguage } from '@/contexts/LanguageContext';
 import FlagIcon from './FlagIcon';
 
 interface LanguageSelectorProps {
@@ -39,6 +40,7 @@ export default function LanguageSelector({
   onToggle,
 }: LanguageSelectorProps) {
   const router = useRouter();
+  const { t } = useLanguage();
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   // 点击外部关闭下拉菜单
@@ -73,7 +75,7 @@ export default function LanguageSelector({
             <span className="text-white text-sm whitespace-nowrap">{selectedLocale.name}</span>
           </>
         ) : (
-          <span className="text-gray-400 text-sm">Select Language</span>
+          <span className="text-gray-400 text-sm">{t('ttsSamples.languageSelector.placeholder')}</span>
         )}
         <ChevronDown
           className={`w-4 h-4 text-gray-400 transition-transform ${isOpen ? 'rotate-180' : ''}`}
@@ -118,8 +120,8 @@ export default function LanguageSelector({
             onClick={handleUnlockClick}
             className="bg-gradient-to-r from-purple-600 to-purple-700 p-4 text-center cursor-pointer hover:from-purple-500 hover:to-purple-600 transition-all"
           >
-            <div className="text-white font-bold text-sm mb-1">解鎖更多免費聲音</div>
-            <div className="text-purple-100 text-xs">190+種語言和口音</div>
+            <div className="text-white font-bold text-sm mb-1">{t('ttsSamples.languageSelector.unlockTitle')}</div>
+            <div className="text-purple-100 text-xs">{t('ttsSamples.languageSelector.unlockSubtitle')}</div>
           </div>
         </div>
       )}

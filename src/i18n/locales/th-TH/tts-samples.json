@@ -24,6 +24,18 @@
         "conversions": "ครั้งการแปลงเสียง",
         "usersCount": "10K+ คนกำลังใช้งาน..."
       }
+    },
+    "languageSelector": {
+      "placeholder": "เลือกภาษา",
+      "unlockTitle": "ปลดล็อกเสียงฟรีเพิ่มเติม",
+      "unlockSubtitle": "รองรับ 190+ ภาษาและสำเนียง"
+    },
+    "voiceSelector": {
+      "loading": "กำลังโหลดเสียง...",
+      "placeholder": "เลือกเสียง",
+      "unlockTitle": "ทดลองใช้เสียงเพิ่มเติมฟรี",
+      "unlockSubtitle": "เสียง AI กว่า 3200+",
+      "noVoices": "ไม่มีเสียงสำหรับภาษานี้"
     }
   }
 }

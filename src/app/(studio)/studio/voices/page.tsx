@@ -73,8 +73,53 @@ export default function VoicesPage() {
   // Get all available language options
   const availableLanguages = getAllLocaleOptions();
 
+  // Initialize language selection based on localStorage or current locale
+  useEffect(() => {
+    // 1. Try to get from localStorage (user's previous selection)
+    const savedLanguageCode = localStorage.getItem('voiceLanguageFilter');
+    if (savedLanguageCode) {
+      // Special case: user selected "All Languages"
+      if (savedLanguageCode === 'all') {
+        if (selectedLanguage !== null) {
+          setSelectedLanguage(null);
+        }
+        return;
+      }
+
+      // Find saved language
+      const savedLanguage = availableLanguages.find(lang => lang.code === savedLanguageCode);
+      if (savedLanguage && selectedLanguage?.code !== savedLanguageCode) {
+        setSelectedLanguage(savedLanguage);
+        return;
+      }
+    }
+
+    // 2. Only set default if no localStorage and no selection yet
+    if (!savedLanguageCode && selectedLanguage === null) {
+      // Try to match current website locale
+      const currentLanguage = availableLanguages.find(lang => lang.code === locale);
+      if (currentLanguage) {
+        setSelectedLanguage(currentLanguage);
+        return;
+      }
+
+      // Default to en-US
+      const defaultLanguage = availableLanguages.find(lang => lang.code === 'en-US');
+      if (defaultLanguage) {
+        setSelectedLanguage(defaultLanguage);
+      }
+    }
+  }, [availableLanguages, locale, selectedLanguage, setSelectedLanguage]);
+
   const handleLanguageSelect = (language: LocaleOption | null) => {
     setSelectedLanguage(language);
+    // Save to localStorage
+    if (language) {
+      localStorage.setItem('voiceLanguageFilter', language.code);
+    } else {
+      // Save 'all' to indicate user selected "All Languages"
+      localStorage.setItem('voiceLanguageFilter', 'all');
+    }
   };
 
   // Handle voice selection (return to TTS page)

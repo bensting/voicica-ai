@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import type { VoiceModel } from '@/hooks/useTTSGenerator';
@@ -67,6 +67,44 @@ export default function VoiceSelector({
   // Get all locale options for language modal
   const allLocaleOptions = getAllLocaleOptions();
 
+  // Initialize language selection based on localStorage or current locale
+  useEffect(() => {
+    // 1. Try to get from localStorage (user's previous selection)
+    const savedLanguageCode = localStorage.getItem('voiceLanguageFilter');
+    if (savedLanguageCode) {
+      // Special case: user selected "All Languages"
+      if (savedLanguageCode === 'all') {
+        if (selectedLanguage !== null) {
+          setSelectedLanguage(null);
+        }
+        return;
+      }
+
+      // Find saved language
+      const savedLanguage = allLocaleOptions.find(lang => lang.code === savedLanguageCode);
+      if (savedLanguage && selectedLanguage?.code !== savedLanguageCode) {
+        setSelectedLanguage(savedLanguage);
+        return;
+      }
+    }
+
+    // 2. Only set default if no localStorage and no selection yet
+    if (!savedLanguageCode && selectedLanguage === null) {
+      // Try to match current website locale
+      const currentLanguage = allLocaleOptions.find(lang => lang.code === locale);
+      if (currentLanguage) {
+        setSelectedLanguage(currentLanguage);
+        return;
+      }
+
+      // Default to en-US
+      const defaultLanguage = allLocaleOptions.find(lang => lang.code === 'en-US');
+      if (defaultLanguage) {
+        setSelectedLanguage(defaultLanguage);
+      }
+    }
+  }, [allLocaleOptions, locale, selectedLanguage, setSelectedLanguage]);
+
   // Handle language selection modal
   const handleLanguageClick = () => {
     setIsLanguageModalOpen(true);
@@ -74,6 +112,13 @@ export default function VoiceSelector({
 
   const handleSelectLanguage = (language: LocaleOption | null) => {
     setSelectedLanguage(language);
+    // Save to localStorage
+    if (language) {
+      localStorage.setItem('voiceLanguageFilter', language.code);
+    } else {
+      // Save 'all' to indicate user selected "All Languages"
+      localStorage.setItem('voiceLanguageFilter', 'all');
+    }
   };
 
   return (

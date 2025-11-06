@@ -1,6 +1,6 @@
 'use client';
 
-import MobileBottomNav from '@/components/features/studio/MobileBottomNav';
+import MobileBottomNav from '@/components/layout/studio/MobileBottomNav';
 
 /**
  * Generation History Layout

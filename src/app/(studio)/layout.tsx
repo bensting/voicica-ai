@@ -2,12 +2,11 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import StudioSidebar from '@/components/features/studio/StudioSidebar';
-import StudioTopbar from '@/components/features/studio/StudioTopbar';
-import MobileTopNav from '@/components/features/studio/MobileTopNav';
-import MobileSideMenu from '@/components/features/studio/MobileSideMenu';
+import StudioSidebar from '@/components/layout/studio/StudioSidebar';
+import StudioTopbar from '@/components/layout/studio/StudioTopbar';
+import MobileTopNav from '@/components/layout/studio/MobileTopNav';
+import MobileSideMenu from '@/components/layout/studio/MobileSideMenu';
 import { StudioProvider, useStudio } from '@/contexts/StudioContext';
-import { useUserCredits } from '@/hooks/useUserCredits';
 
 function StudioLayoutContent({
   children,
@@ -16,7 +15,6 @@ function StudioLayoutContent({
 }) {
   const router = useRouter();
   const { title } = useStudio();
-  const { credits, loading: creditsLoading } = useUserCredits();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const handleUpgradeClick = () => {
@@ -29,8 +27,6 @@ function StudioLayoutContent({
       <div className="hidden lg:block fixed top-0 left-0 right-0 z-30">
         <StudioTopbar
           title={title}
-          credits={credits}
-          creditsLoading={creditsLoading}
           onUpgradeClick={handleUpgradeClick}
         />
       </div>

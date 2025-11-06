@@ -19,8 +19,6 @@ interface VoiceSelectorProps {
   isOpen: boolean;
   /** 切换下拉菜单 */
   onToggle: () => void;
-  /** 当前语言代码（用于显示本地化名称） */
-  currentLanguage?: string;
 }
 
 /**
@@ -44,10 +42,9 @@ export default function VoiceSelector({
   onSelect,
   isOpen,
   onToggle,
-  currentLanguage = 'en',
 }: VoiceSelectorProps) {
   const router = useRouter();
-  const { t } = useLanguage();
+  const { t, locale } = useLanguage();
   const dropdownRef = useRef<HTMLDivElement>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [playingVoiceId, setPlayingVoiceId] = useState<string | null>(null);
@@ -66,9 +63,9 @@ export default function VoiceSelector({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [isOpen, onToggle]);
 
-  // 获取语音的显示名称
+  // 获取语音的显示名称（使用当前页面语言）
   const getDisplayName = (voice: Voice) => {
-    return getLocalizedVoiceName(voice, currentLanguage);
+    return getLocalizedVoiceName(voice, locale);
   };
 
   // 获取语音描述（角色 - 性别）

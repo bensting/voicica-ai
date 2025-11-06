@@ -56,11 +56,11 @@ export function useVoices({ locale, enabled = true }: UseVoicesOptions = {}): Us
       console.log('🎤 获取语音列表:', params);
       const response = await voiceAPI.getVoices(params);
 
-      // API 返回的数据结构可能是 { data: Voice[] } 或直接是 Voice[]
-      const voiceList = Array.isArray(response) ? response : (response as { data?: Voice[] }).data || [];
+      // API 返回的数据结构是 { voices: Voice[], total, page, ... }
+      const voiceList = response.voices || [];
 
       setVoices(voiceList);
-      console.log(`✅ 成功加载 ${voiceList.length} 个语音`);
+      console.log(`✅ 成功加载 ${voiceList.length} 个语音`, voiceList);
     } catch (err) {
       const error = err instanceof Error ? err : new Error('Failed to fetch voices');
       setError(error);

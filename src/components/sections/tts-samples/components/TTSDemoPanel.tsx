@@ -77,7 +77,6 @@ export default function TTSDemoPanel({
             onSelect={onVoiceSelect}
             isOpen={isVoiceDropdownOpen}
             onToggle={onToggleVoiceDropdown}
-            currentLanguage={selectedLocale?.code.split('-')[0] || 'en'}
           />
         </div>
         <div className="w-full md:w-auto md:flex-shrink-0">

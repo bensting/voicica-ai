@@ -55,7 +55,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     setIsReady(true);
   }, []);
 
-  // 加载语言文件（主文件 + FAQ 文件）
+  // 加载语言文件（主文件 + FAQ 文件 + TTS Samples 文件）
   useEffect(() => {
     const loadMessages = async () => {
       try {
@@ -67,10 +67,15 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
         const faqModule = await import(`@/i18n/locales/${locale}/faq.json`);
         const faqMessages = faqModule.default;
 
+        // 加载 TTS Samples 语言文件
+        const ttsSamplesModule = await import(`@/i18n/locales/${locale}/tts-samples.json`);
+        const ttsSamplesMessages = ttsSamplesModule.default;
+
         // 合并消息
         setMessages({
           ...mainMessages,
-          faq: faqMessages
+          faq: faqMessages,
+          ...ttsSamplesMessages
         });
       } catch (error) {
         console.error(`Failed to load locale ${locale}`, error);

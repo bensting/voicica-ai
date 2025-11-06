@@ -55,11 +55,11 @@ export default function TTSSamples() {
         {/* Section Header */}
         <div className="text-center mb-12">
           <h2 className="text-2xl md:text-5xl font-bold text-white mb-4">
-            {t('ttsSamples.titlePrefix')}{' '}
+            {t('ttsSamples.sectionTitle.prefix')}{' '}
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">
-              {t('ttsSamples.titleHighlight')}
+              {t('ttsSamples.sectionTitle.highlight')}
             </span>{' '}
-            {t('ttsSamples.titleSuffix')}
+            {t('ttsSamples.sectionTitle.suffix')}
           </h2>
         </div>
 

@@ -1,0 +1,29 @@
+{
+  "ttsSamples": {
+    "sectionTitle": {
+      "prefix": "Voice-Labs.AI's",
+      "highlight": "Star Product",
+      "suffix": "You Can't Miss 👍"
+    },
+    "productInfo": {
+      "title": "Text to Speech",
+      "headline": {
+        "prefix": "Free",
+        "highlight": "Text to Speech",
+        "suffix": "Online with Realistic AI Voices"
+      },
+      "features": {
+        "voices": "3200+ voices with 190+ languages & accents",
+        "natural": "Convert text into natural-sounding AI voice",
+        "parameters": "Parameters adjustment for best result",
+        "download": "Download audio in WAV/MP3",
+        "voiceover": "Perfect for making voiceover for videos"
+      },
+      "cta": {
+        "button": "Try It Now",
+        "conversions": "TTS conversions made",
+        "usersCount": "10K+ people are using..."
+      }
+    }
+  }
+}

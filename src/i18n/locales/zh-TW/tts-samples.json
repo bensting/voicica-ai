@@ -1,0 +1,29 @@
+{
+  "ttsSamples": {
+    "sectionTitle": {
+      "prefix": "Voice-Labs.AI 的",
+      "highlight": "明星產品",
+      "suffix": "不容錯過 👍"
+    },
+    "productInfo": {
+      "title": "文字轉語音",
+      "headline": {
+        "prefix": "免費",
+        "highlight": "文字轉語音",
+        "suffix": "線上使用逼真的 AI 語音"
+      },
+      "features": {
+        "voices": "3200+ 種語音，支援 190+ 種語言和口音",
+        "natural": "將文字轉換為自然流暢的 AI 語音",
+        "parameters": "參數調整以獲得最佳效果",
+        "download": "下載 WAV/MP3 格式音訊",
+        "voiceover": "非常適合為影片製作配音"
+      },
+      "cta": {
+        "button": "立即試用",
+        "conversions": "次語音轉換",
+        "usersCount": "10K+ 人正在使用..."
+      }
+    }
+  }
+}

@@ -7,7 +7,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { voiceAPI } from '@/lib/api';
 import type { Voice } from '@/types/voice';
 import { getLocalizedVoiceName } from '@/types/voice';
-import MobileTextInput from './mobile/MobileTextInput';
+import TextInput from './TextInput';
 import VoiceSelector from './VoiceSelector';
 import VoiceSelectorButton from './VoiceSelectorButton';
 import ActionButtons from './ActionButtons';
@@ -241,7 +241,7 @@ export default function TTSPage({
 
         {/* Text Input - 占据大部分空间 */}
         <div className="flex-1 min-h-0">
-          <MobileTextInput
+          <TextInput
             value={text}
             onChange={handleTextChange}
             maxCharacters={maxCharacters}
@@ -297,7 +297,7 @@ export default function TTSPage({
 
               {/* Text Input Card */}
               <div className="bg-white rounded-2xl shadow-sm border border-gray-200 flex-shrink-0 overflow-hidden h-[300px]">
-                <MobileTextInput
+                <TextInput
                   value={text}
                   onChange={handleTextChange}
                   maxCharacters={maxCharacters}

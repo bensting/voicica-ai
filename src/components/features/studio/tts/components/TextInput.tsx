@@ -26,7 +26,7 @@ const EXAMPLE_BUTTONS: ExampleButton[] = [
   },
 ];
 
-interface MobileTextInputProps {
+interface TextInputProps {
   value: string;
   onChange: (value: string) => void;
   maxCharacters: number;
@@ -36,17 +36,17 @@ interface MobileTextInputProps {
 }
 
 /**
- * Mobile Text Input Component
+ * Text Input Component
  *
- * Large textarea for mobile TTS with character counter at bottom
+ * Large textarea for TTS with character counter at bottom
  */
-export default function MobileTextInput({
+export default function TextInput({
   value,
   onChange,
   maxCharacters,
   disabled = false,
   placeholder = '在此输入入您要转换的文件，我们将辨别您的文字并自动替换为相应语言。',
-}: MobileTextInputProps) {
+}: TextInputProps) {
   const [showExamples, setShowExamples] = useState(true);
 
   const handleSelectExample = (text: string) => {

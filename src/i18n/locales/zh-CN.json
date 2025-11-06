@@ -311,6 +311,11 @@
       "updates": "定期更新"
     }
   },
+  "ttsSamples": {
+    "titlePrefix": "Voice-Labs.AI 的",
+    "titleHighlight": "明星产品",
+    "titleSuffix": "不容错过 👍"
+  },
   "countries": {
     "CN": "中国",
     "TW": "台湾",

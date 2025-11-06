@@ -317,6 +317,11 @@
       "updates": "Regular Updates"
     }
   },
+  "ttsSamples": {
+    "titlePrefix": "Voice-Labs.AI's",
+    "titleHighlight": "Star Product",
+    "titleSuffix": "You Can't Miss 👍"
+  },
   "countries": {
     "CN": "China",
     "TW": "Taiwan",

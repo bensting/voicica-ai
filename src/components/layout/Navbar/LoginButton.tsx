@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import UserMenu from './UserMenu';
 import LoginModal from '@/components/features/auth/LoginModal';
 
@@ -17,6 +18,7 @@ import LoginModal from '@/components/features/auth/LoginModal';
  */
 export default function LoginButton() {
   const { user, loading } = useAuth();
+  const { t } = useLanguage();
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
@@ -84,7 +86,7 @@ export default function LoginButton() {
           d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
         />
       </svg>
-      <span className="hidden sm:inline">Login</span>
+      <span className="hidden sm:inline">{t('navbar.login')}</span>
     </Link>
   );
 }

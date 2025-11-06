@@ -311,6 +311,11 @@
       "updates": "อัปเดตสม่ำเสมอ"
     }
   },
+  "ttsSamples": {
+    "titlePrefix": "Voice-Labs.AI",
+    "titleHighlight": "ผลิตภัณฑ์ยอดนิยม",
+    "titleSuffix": "ที่คุณไม่ควรพลาด 👍"
+  },
   "countries": {
     "CN": "จีน",
     "TW": "ไต้หวัน",

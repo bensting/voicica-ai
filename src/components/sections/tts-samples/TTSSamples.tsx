@@ -2,6 +2,7 @@
 
 import { useTTSDemo } from './hooks';
 import { TTSProductInfo, TTSDemoPanel } from './components';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 /**
  * TTS Samples Section - AI Voice Labs Style
@@ -16,6 +17,7 @@ import { TTSProductInfo, TTSDemoPanel } from './components';
  * - 主组件只负责布局和数据传递
  */
 export default function TTSSamples() {
+  const { t } = useLanguage();
   const {
     // 配置状态
     availableLocales,
@@ -52,12 +54,12 @@ export default function TTSSamples() {
       <div className="max-w-7xl mx-auto">
         {/* Section Header */}
         <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-5xl font-bold text-white mb-4">
-            AI Voice Labs&apos;s{' '}
+          <h2 className="text-2xl md:text-5xl font-bold text-white mb-4">
+            {t('ttsSamples.titlePrefix')}{' '}
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">
-              Star Product
+              {t('ttsSamples.titleHighlight')}
             </span>{' '}
-            You Can&apos;t Miss 👍
+            {t('ttsSamples.titleSuffix')}
           </h2>
         </div>
 

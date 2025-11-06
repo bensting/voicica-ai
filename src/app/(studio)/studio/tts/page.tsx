@@ -239,7 +239,7 @@ export default function StudioTTSPage() {
       </div>
 
       {/* Desktop Layout - Two Column */}
-      <div className="hidden lg:flex flex-col bg-gradient-to-b from-white to-purple-50 h-full overflow-hidden">
+      <div className="hidden lg:flex flex-col bg-gradient-to-b from-white to-purple-50 lg:h-[calc(100vh-60px)] overflow-hidden">
         <div className="w-full max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 py-4 flex-1 flex flex-col min-h-0">
           {/* Error Message */}
           {error && (

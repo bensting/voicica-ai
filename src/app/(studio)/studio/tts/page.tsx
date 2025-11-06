@@ -264,7 +264,7 @@ export default function StudioTTSPage() {
               />
 
               {/* Text Input Card */}
-              <div className="bg-white rounded-2xl shadow-sm border border-gray-200 flex-shrink-0 overflow-hidden h-[300px]">
+              <div className="bg-white rounded-2xl shadow-sm border border-gray-200 flex-shrink-0 overflow-hidden h-[450px]">
                 <TextInput
                   value={text}
                   onChange={handleTextChange}

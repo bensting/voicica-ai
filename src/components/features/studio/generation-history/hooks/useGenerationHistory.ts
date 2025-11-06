@@ -55,6 +55,7 @@ interface UseGenerationHistoryReturn {
  * - Error handling
  */
 export function useGenerationHistory({
+  user,
   authLoading = false,
   pageSize: initialPageSize = 20,
 }: UseGenerationHistoryProps): UseGenerationHistoryReturn {
@@ -115,6 +116,23 @@ export function useGenerationHistory({
       setLoading(false);
     }
   }, [selectedStatus, startDate, endDate, currentPage, pageSize]);
+
+  // Handle user login/logout
+  useEffect(() => {
+    if (authLoading) return;
+
+    if (!user) {
+      // User logged out, clear all data
+      setGenerations([]);
+      setTotal(0);
+      setTotalPages(0);
+      setCurrentPage(1);
+      setError(null);
+    } else {
+      // User logged in, fetch records
+      void fetchRecords();
+    }
+  }, [user, authLoading, fetchRecords]);
 
   // Fetch records when filters change (supports both authenticated and anonymous users)
   // The backend uses unified_user which handles both logged-in and anonymous users

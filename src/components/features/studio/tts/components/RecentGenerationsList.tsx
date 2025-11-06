@@ -2,7 +2,8 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
-import { Download, Trash2, Play } from 'lucide-react';
+import Link from 'next/link';
+import { Download, Trash2, Play, ChevronRight } from 'lucide-react';
 import type { Generation } from '@/types/tts';
 
 interface RecentGenerationsListProps {
@@ -22,7 +23,6 @@ export default function RecentGenerationsList({
   onDelete,
   onDownload,
 }: RecentGenerationsListProps) {
-  const [activeTab, setActiveTab] = useState<'recent' | 'all'>('recent');
   const [playingId, setPlayingId] = useState<string | null>(null);
 
   const handlePlay = (id: string, audioUrl: string) => {
@@ -40,28 +40,16 @@ export default function RecentGenerationsList({
 
   return (
     <div className="bg-white rounded-2xl shadow-sm border border-gray-200 h-full flex flex-col overflow-hidden">
-      {/* Tabs */}
-      <div className="flex gap-4 px-4 pt-4 pb-0 border-b border-gray-200 flex-shrink-0">
-        <button
-          onClick={() => setActiveTab('recent')}
-          className={`pb-3 px-2 text-sm font-medium border-b-2 transition-colors ${
-            activeTab === 'recent'
-              ? 'border-purple-600 text-purple-600'
-              : 'border-transparent text-gray-500 hover:text-gray-700'
-          }`}
-        >
-          Recent auditions
-        </button>
-        <button
-          onClick={() => setActiveTab('all')}
-          className={`pb-3 px-2 text-sm font-medium border-b-2 transition-colors ${
-            activeTab === 'all'
-              ? 'border-purple-600 text-purple-600'
-              : 'border-transparent text-gray-500 hover:text-gray-700'
-          }`}
+      {/* Header */}
+      <div className="flex items-center justify-between px-4 py-4 border-b border-gray-200 flex-shrink-0">
+        <h3 className="text-base font-semibold text-gray-900">Recent auditions</h3>
+        <Link
+          href="/studio/generation-history"
+          className="flex items-center gap-1 text-sm text-purple-600 hover:text-purple-700 transition-colors"
         >
           All records
-        </button>
+          <ChevronRight className="w-4 h-4" />
+        </Link>
       </div>
 
       {/* List */}
@@ -95,8 +83,8 @@ export default function RecentGenerationsList({
                 />
               </svg>
             </div>
-            <h3 className="text-base font-medium text-gray-900 mb-1">无播报记录</h3>
-            <p className="text-sm text-gray-500">暂无播报记录</p>
+            <h3 className="text-base font-medium text-gray-900 mb-1">无语音记录</h3>
+            <p className="text-sm text-gray-500">暂无语音记录</p>
           </div>
         ) : (
           <div className="space-y-2">

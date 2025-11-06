@@ -2,6 +2,7 @@
 
 import { useState, useRef } from 'react';
 import { Volume2, VolumeX } from 'lucide-react';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface ActionButton {
   text: string;
@@ -35,6 +36,10 @@ export default function Hero({
 }: HeroProps) {
   const [isMuted, setIsMuted] = useState(true);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const { locale } = useLanguage();
+
+  // 泰语需要较小的字体
+  const isThaiLang = locale === 'th-TH';
 
   const toggleMute = () => {
     if (videoRef.current) {
@@ -89,10 +94,10 @@ export default function Hero({
         {/* Brand Name */}
         <div className="mb-8">
           <h2 className="text-2xl md:text-3xl font-bold text-white">
-            {brandName}{' '}
+            {brandName}{''}
             <span className="inline-flex items-center">
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">
-                AI
+                .AI
               </span>
               <sup className="text-xs text-white/70 ml-1">®</sup>
             </span>
@@ -100,17 +105,29 @@ export default function Hero({
         </div>
 
         {/* Main Title */}
-        <h1 className="text-4xl md:text-5xl lg:text-7xl font-bold text-white mb-6 leading-tight">
-          {title}{' '}
-          <span className="inline-block relative overflow-hidden">
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-400 to-purple-500 animate-text-reveal">
+        <h1 className={`font-bold text-white mb-6 ${
+          isThaiLang
+            ? 'text-3xl sm:text-4xl md:text-5xl lg:text-6xl leading-snug'
+            : 'text-4xl md:text-5xl lg:text-7xl leading-tight'
+        }`}>
+          <span className="block">{title}</span>
+          <span className={`block relative ${isThaiLang ? 'break-all px-2' : 'overflow-hidden'}`}>
+            <span className={`text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-400 to-purple-500 ${
+              isThaiLang
+                ? ''
+                : 'animate-text-reveal text-3xl md:text-4xl lg:text-6xl'
+            }`}>
               {highlight}
             </span>
           </span>
         </h1>
 
         {/* Description */}
-        <p className="text-lg md:text-xl lg:text-2xl text-white/90 max-w-4xl mx-auto mb-12 leading-relaxed">
+        <p className={`text-white/90 max-w-4xl mx-auto mb-12 leading-relaxed ${
+          isThaiLang
+            ? 'text-base sm:text-lg md:text-xl lg:text-xl'
+            : 'text-lg md:text-xl lg:text-2xl'
+        }`}>
           {description}
         </p>
 

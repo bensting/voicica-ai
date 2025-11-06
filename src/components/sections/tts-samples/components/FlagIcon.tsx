@@ -1,5 +1,3 @@
-import Image from 'next/image';
-
 interface FlagIconProps {
   /** ISO 3166-1 alpha-2 国家代码 */
   countryCode: string;
@@ -33,14 +31,13 @@ export default function FlagIcon({ countryCode, size = 'md' }: FlagIconProps) {
       className="rounded-full overflow-hidden flex-shrink-0 bg-gray-700"
       style={{ width: dimension, height: dimension }}
     >
-      <Image
+      <img
         src={`https://flagcdn.com/w40/${countryCode.toLowerCase()}.png`}
         alt={`${countryCode} flag`}
         width={dimension}
         height={dimension}
         className="w-full h-full object-cover"
         loading="lazy"
-        unoptimized
       />
     </div>
   );

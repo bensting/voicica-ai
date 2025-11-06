@@ -34,24 +34,5 @@ export const NAV_LINKS: NavLink[] = [
     type: 'section',
     sectionId: 'faq',
   },
-  {
-    href: '/generation-history',
-    labelKey: 'nav.generationHistory',
-    type: 'page',
-  },
 ];
 
-/**
- * Footer navigation sections
- * Can be extended for footer links organization
- */
-export const FOOTER_LINKS = {
-  product: [
-    { href: '/studio/tts', labelKey: 'nav.studio' },
-    { href: '/pricing', labelKey: 'nav.pricing' },
-  ],
-  resources: [
-    { href: '/#faq', labelKey: 'nav.faq' },
-    { href: '/generation-history', labelKey: 'nav.generationHistory' },
-  ],
-};

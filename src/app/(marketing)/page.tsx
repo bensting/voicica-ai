@@ -7,6 +7,7 @@ import Hero from '@/components/sections/index-hero';
 import TTSSamples from '@/components/sections/tts-samples';
 import FAQ from '@/components/sections/faq';
 import CTA from '@/components/sections/CTA';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 // Hero Configuration
 const HERO_CONFIG = {
@@ -16,7 +17,7 @@ const HERO_CONFIG = {
 // Hero Action Buttons Configuration
 const HERO_ACTIONS = [
   {
-    text: 'Text to Speech',
+    textKey: 'studio.tts',
     route: '/studio/tts',
     icon: Mic
   }
@@ -24,6 +25,7 @@ const HERO_ACTIONS = [
 
 export default function Home() {
   const router = useRouter();
+  const { t } = useLanguage();
 
   // 打印当前环境信息
   useEffect(() => {
@@ -38,7 +40,7 @@ export default function Home() {
   const actionButtons = HERO_ACTIONS.map(action => {
     const Icon = action.icon;
     return {
-      text: action.text,
+      text: t(action.textKey),
       icon: <Icon className="w-6 h-6" />,
       onClick: () => router.push(action.route)
     };
@@ -48,10 +50,10 @@ export default function Home() {
     <div className="min-h-screen">
       {/* Hero Section */}
       <Hero
-        brandName="AI Voice Labs"
-        title="One Stop AI Voice Solution for"
-        highlight="Speech & Cloned Voice"
-        description="Everything you need to create high-quality videos with music and voiceovers in one place. No technical skills required. Bring your best ideas to life in VoiceLabsAI now."
+        brandName="Voice-Labs"
+        title={t('home.heroTitle')}
+        highlight={t('home.heroTitleHighlight')}
+        description={t('home.heroDescription')}
         actionButtons={actionButtons}
         backgroundVideo={HERO_CONFIG.backgroundVideo}
       />

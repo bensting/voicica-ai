@@ -23,6 +23,11 @@ const nextConfig: NextConfig = {
         hostname: 'firebasestorage.googleapis.com',
         pathname: '/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'flagcdn.com',
+        pathname: '/**',
+      },
     ],
     // 允许 SVG 图片（用于 DiceBear 头像）
     dangerouslyAllowSVG: true,

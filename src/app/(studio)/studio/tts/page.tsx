@@ -1,16 +1,25 @@
 'use client';
 
-import { useEffect } from 'react';
-import dynamic from 'next/dynamic';
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useAuth } from '@/contexts/AuthContext';
 import { useStudio } from '@/contexts/StudioContext';
 import { useTTSGenerator } from '@/hooks/useTTSGenerator';
+import { voiceAPI } from '@/lib/api';
+import type { Voice } from '@/types/voice';
+import { getLocalizedVoiceName } from '@/types/voice';
+import TextInput from '@/components/features/studio/tts/components/TextInput';
+import VoiceSelector from '@/components/features/studio/tts/components/VoiceSelector';
+import VoiceSelectorButton from '@/components/features/studio/tts/components/VoiceSelectorButton';
+import ActionButtons from '@/components/features/studio/tts/components/ActionButtons';
+import AudioPlayerModal from '@/components/features/studio/tts/components/mobile/AudioPlayerModal';
+import { useGenerationHistory } from '@/components/features/studio/generation-history/hooks/useGenerationHistory';
+import RecentGenerationsList from '@/components/features/studio/tts/components/RecentGenerationsList';
 
-// 动态导入组件，禁用 SSR
-const TTSPage = dynamic(
-  () => import('@/components/features/studio/tts/components/TTSPage'),
-  { ssr: false }
-);
+// 模块级别的缓存，防止 React Strict Mode 导致的重复加载
+let voiceLoadingPromise: Promise<Voice | null> | null = null;
+let loadedVoiceCache: Voice | null = null;
 
 /**
  * Studio TTS Page
@@ -23,8 +32,12 @@ const TTSPage = dynamic(
  * - Responsive layout (mobile-first)
  */
 export default function StudioTTSPage() {
-  const { t } = useLanguage();
+  const router = useRouter();
+  const { locale, isReady: isLocaleReady, t } = useLanguage();
+  const { user, loading: authLoading } = useAuth();
   const { setTitle } = useStudio();
+  const [isAudioModalOpen, setIsAudioModalOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
 
   // Set page title
   useEffect(() => {
@@ -48,23 +61,261 @@ export default function StudioTTSPage() {
     handleGenerate,
   } = useTTSGenerator(maxCharacters);
 
+  // Generation history hook (显示最近6条)
+  const {
+    loading: historyLoading,
+    generations,
+    handleDeleteGeneration,
+    handleDownloadGeneration,
+    fetchRecords,
+  } = useGenerationHistory({
+    user,
+    authLoading,
+    pageSize: 6,
+  });
+
+  // 检测是否为移动端（只在客户端执行一次）
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 1024);
+    };
+    checkMobile();
+  }, []);
+
+  // Initialize default voice based on current locale (mobile only)
+  useEffect(() => {
+    // 只在移动端加载默认语音
+    if (!isMobile) return;
+
+    // 等待认证完成
+    if (authLoading) return;
+
+    // Early return if conditions not met yet
+    if (!isMobile || !isLocaleReady) return;
+
+    // Skip if already selected
+    if (selectedVoice) return;
+
+    const fetchDefaultVoice = async () => {
+      // 检查是否从 gallery 预选了语音
+      const hasGallerySelection = sessionStorage.getItem('voicePreSelectedFromGallery');
+
+      // 如果从 gallery 选择了语音，永远不加载默认语音
+      if (hasGallerySelection) {
+        // 清除所有 gallery 相关标志，避免影响下次使用
+        sessionStorage.removeItem('voicePreSelectedFromGallery');
+        sessionStorage.removeItem('gallerySelectedVoiceId');
+        sessionStorage.removeItem('ttsPreSelectedVoice');
+        sessionStorage.removeItem('clearVoiceCache');
+        return;
+      }
+
+      // 检查是否需要清除缓存
+      const shouldClearCache = sessionStorage.getItem('clearVoiceCache');
+      if (shouldClearCache) {
+        loadedVoiceCache = null;
+        sessionStorage.removeItem('clearVoiceCache');
+      }
+
+      // 如果已经有缓存，直接使用
+      if (loadedVoiceCache) {
+        handleVoiceSelect(loadedVoiceCache);
+        return;
+      }
+
+      // 如果正在加载，等待现有的 Promise
+      if (voiceLoadingPromise) {
+        const voice = await voiceLoadingPromise;
+        if (voice) {
+          handleVoiceSelect(voice);
+        }
+        return;
+      }
+
+      // 创建新的加载 Promise
+      voiceLoadingPromise = (async () => {
+        try {
+          const response = await voiceAPI.getVoices({
+            locale,
+            is_active: true,
+            page: 1,
+            page_size: 1,
+          });
+
+          if (response.voices && response.voices.length > 0) {
+            loadedVoiceCache = response.voices[0];
+            return response.voices[0];
+          }
+          return null;
+        } catch (err) {
+          console.error('[TTSPage] Failed to load default voice:', err);
+          return null;
+        } finally {
+          // 清除 Promise，但保留缓存
+          voiceLoadingPromise = null;
+        }
+      })();
+
+      const voice = await voiceLoadingPromise;
+      if (voice) {
+        handleVoiceSelect(voice);
+      }
+    };
+
+    void fetchDefaultVoice();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [locale, isMobile, isLocaleReady, authLoading, selectedVoice]);
+
+  // 当音频生成成功时，移动端自动打开弹窗
+  useEffect(() => {
+    if (audioUrl && isMobile) {
+      setIsAudioModalOpen(true);
+    }
+  }, [audioUrl, isMobile]);
+
+  // 生成完成后刷新历史记录
+  useEffect(() => {
+    if (audioUrl) {
+      // 等待一小段时间确保后端已保存记录
+      const timer = setTimeout(() => {
+        void fetchRecords();
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+  }, [audioUrl, fetchRecords]);
+
+  const handleUpgradeClick = () => {
+    router.push('/subscription');
+  };
+
+  const handleOpenSettings = () => {
+    // TODO: Open settings modal
+    console.log('Open settings');
+  };
+
+  // 获取当前语言的显示名称
+  const voiceDisplayName = selectedVoice ? getLocalizedVoiceName(selectedVoice, locale) : '晓臻';
+
   return (
-    <div className="h-full">
-      <TTSPage
-        text={text}
-        selectedVoice={selectedVoice}
-        speed={speed}
-        isGenerating={isGenerating}
-        error={error}
-        audioUrl={audioUrl}
-        maxCharacters={maxCharacters}
-        availableCharacters={availableCharacters}
-        canGenerate={canGenerate}
-        handleTextChange={handleTextChange}
-        handleVoiceSelect={handleVoiceSelect}
-        handleSpeedChange={handleSpeedChange}
-        handleGenerate={handleGenerate}
-      />
-    </div>
+    <>
+      {/* Mobile Layout */}
+      <div className="lg:hidden h-full flex flex-col px-4 pt-3 pb-20 gap-2 bg-gradient-to-b from-gray-50 to-white">
+        {/* Error Message */}
+        {error && (
+          <div className="flex-shrink-0 p-3 bg-red-50 border border-red-200 rounded-xl">
+            <p className="text-red-600 font-medium text-sm">{error}</p>
+          </div>
+        )}
+
+        {/* Text Input - 占据大部分空间 */}
+        <div className="flex-1 min-h-0">
+          <TextInput
+            value={text}
+            onChange={handleTextChange}
+            maxCharacters={maxCharacters}
+            availableCharacters={availableCharacters}
+            disabled={isGenerating}
+          />
+        </div>
+
+        {/* Voice Selector */}
+        <div className="flex-shrink-0">
+          <VoiceSelector
+            selectedVoice={selectedVoice}
+            onSelect={handleVoiceSelect}
+            disabled={isGenerating}
+          />
+        </div>
+
+        {/* Action Buttons */}
+        <div className="flex-shrink-0">
+          <ActionButtons
+            onGenerate={handleGenerate}
+            onOpenSettings={handleOpenSettings}
+            isGenerating={isGenerating}
+            canGenerate={canGenerate}
+          />
+        </div>
+      </div>
+
+      {/* Desktop Layout - Two Column */}
+      <div className="hidden lg:flex flex-col bg-gradient-to-b from-white to-purple-50 h-full overflow-hidden">
+        <div className="w-full max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 py-4 flex-1 flex flex-col min-h-0">
+          {/* Error Message */}
+          {error && (
+            <div className="mb-4 p-4 bg-red-50 border-2 border-red-200 rounded-xl flex-shrink-0">
+              <p className="text-red-600 font-medium">{error}</p>
+            </div>
+          )}
+
+          {/* Two Column Layout */}
+          <div className="grid grid-cols-12 gap-4 flex-1 min-h-0">
+            {/* Left Column: Voice Button, Text Input & Generation History (67%) */}
+            <div className="col-span-8 flex flex-col gap-3 overflow-hidden">
+              {/* Voice Selector Button */}
+              <VoiceSelectorButton
+                voiceName={voiceDisplayName}
+                voiceAvatar={selectedVoice?.avatar_url}
+                disabled={isGenerating}
+                onClick={() => {
+                  // TODO: 可以滚动到右侧或打开模态框
+                  console.log('Open voice selector');
+                }}
+              />
+
+              {/* Text Input Card */}
+              <div className="bg-white rounded-2xl shadow-sm border border-gray-200 flex-shrink-0 overflow-hidden h-[300px]">
+                <TextInput
+                  value={text}
+                  onChange={handleTextChange}
+                  maxCharacters={maxCharacters}
+                  availableCharacters={availableCharacters}
+                  disabled={isGenerating}
+                />
+              </div>
+
+              {/* Generate Button */}
+              <div className="flex-shrink-0">
+                <ActionButtons
+                  onGenerate={handleGenerate}
+                  isGenerating={isGenerating}
+                  canGenerate={canGenerate}
+                />
+              </div>
+
+              {/* Generation History List */}
+              <div className="flex-1 min-h-0 overflow-hidden">
+                <RecentGenerationsList
+                  generations={generations}
+                  loading={historyLoading}
+                  onDelete={handleDeleteGeneration}
+                  onDownload={handleDownloadGeneration}
+                />
+              </div>
+            </div>
+
+            {/* Right Column: Voice Selector (33%) */}
+            <div className="col-span-4 h-full min-h-0 flex flex-col overflow-hidden">
+              <VoiceSelector
+                selectedVoice={selectedVoice}
+                onSelect={handleVoiceSelect}
+                disabled={isGenerating}
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Audio Player Modal (Mobile) - fixed 定位，不占据布局空间 */}
+      {audioUrl && (
+        <AudioPlayerModal
+          isOpen={isAudioModalOpen}
+          onClose={() => setIsAudioModalOpen(false)}
+          audioUrl={audioUrl}
+          voiceName={voiceDisplayName}
+          voiceAvatar={selectedVoice?.avatar_url}
+        />
+      )}
+    </>
   );
 }

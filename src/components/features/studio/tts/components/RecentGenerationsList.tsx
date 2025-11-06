@@ -146,7 +146,10 @@ export default function RecentGenerationsList({
 
                 {/* Delete Button */}
                 <button
-                  onClick={() => onDelete(gen.id)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onDelete(gen.id);
+                  }}
                   className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors flex-shrink-0"
                   title="Delete"
                 >

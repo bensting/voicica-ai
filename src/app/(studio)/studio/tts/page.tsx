@@ -16,6 +16,7 @@ import ActionButtons from '@/components/features/studio/tts/components/ActionBut
 import AudioPlayerModal from '@/components/features/studio/tts/components/mobile/AudioPlayerModal';
 import { useGenerationHistory } from '@/components/features/studio/generation-history/hooks/useGenerationHistory';
 import RecentGenerationsList from '@/components/features/studio/tts/components/RecentGenerationsList';
+import ConfirmDialog from '@/components/ui/ConfirmDialog';
 
 // 模块级别的缓存，防止 React Strict Mode 导致的重复加载
 let voiceLoadingPromise: Promise<Voice | null> | null = null;
@@ -68,6 +69,8 @@ export default function StudioTTSPage() {
     handleDeleteGeneration,
     handleDownloadGeneration,
     fetchRecords,
+    confirmDialog,
+    closeConfirmDialog,
   } = useGenerationHistory({
     user,
     authLoading,
@@ -316,6 +319,16 @@ export default function StudioTTSPage() {
           voiceAvatar={selectedVoice?.avatar_url}
         />
       )}
+
+      {/* Confirmation Dialog */}
+      <ConfirmDialog
+        isOpen={confirmDialog.isOpen}
+        title={confirmDialog.title}
+        message={confirmDialog.message}
+        onConfirm={confirmDialog.onConfirm}
+        onCancel={closeConfirmDialog}
+        variant="danger"
+      />
     </>
   );
 }

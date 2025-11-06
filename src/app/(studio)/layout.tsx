@@ -3,8 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import StudioSidebar from '@/components/layout/studio/StudioSidebar';
-import StudioTopbar from '@/components/layout/studio/StudioTopbar';
-import MobileTopNav from '@/components/layout/studio/MobileTopNav';
+import StudioTopNav from '@/components/layout/studio/StudioTopNav';
 import MobileSideMenu from '@/components/layout/studio/MobileSideMenu';
 import { StudioProvider, useStudio } from '@/contexts/StudioContext';
 
@@ -14,7 +13,6 @@ function StudioLayoutContent({
   children: React.ReactNode;
 }) {
   const router = useRouter();
-  const { title } = useStudio();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const handleUpgradeClick = () => {
@@ -23,32 +21,27 @@ function StudioLayoutContent({
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* ========== 桌面端组件 (lg+) ========== */}
-      <div className="hidden lg:block fixed top-0 left-0 right-0 z-30">
-        <StudioTopbar
-          title={title}
-          onUpgradeClick={handleUpgradeClick}
-        />
-      </div>
+      {/* ========== 顶部导航 (响应式，移动端和桌面端统一) ========== */}
+      <StudioTopNav
+        onUpgradeClick={handleUpgradeClick}
+        isMenuOpen={isMobileMenuOpen}
+        onMenuToggle={setIsMobileMenuOpen}
+      />
 
+      {/* ========== 桌面端侧边栏 (lg+) ========== */}
       <div className="hidden lg:block">
         <StudioSidebar variant="desktop" />
       </div>
 
-      {/* ========== 移动端组件 (<lg) ========== */}
+      {/* ========== 移动端侧边菜单 (<lg) ========== */}
       <div className="lg:hidden">
-        <MobileTopNav
-          isMenuOpen={isMobileMenuOpen}
-          onMenuToggle={setIsMobileMenuOpen}
-        />
-
         <MobileSideMenu
           isOpen={isMobileMenuOpen}
           onClose={() => setIsMobileMenuOpen(false)}
         />
       </div>
 
-      {/* ========== 主内容区域 (统一渲染 children 一次) ========== */}
+      {/* ========== 主内容区域 ========== */}
       <main className="pt-[60px] lg:ml-16">
         {children}
       </main>

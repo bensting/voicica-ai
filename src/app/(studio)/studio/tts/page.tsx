@@ -1,18 +1,14 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useStudio } from '@/contexts/StudioContext';
 import { useTTSGenerator } from '@/hooks/useTTSGenerator';
 
 // 动态导入组件，禁用 SSR
-const DesktopTTSPage = dynamic(
-  () => import('@/components/features/studio/tts/components/desktop/DesktopTTSPage'),
-  { ssr: false }
-);
-const MobileTTSPage = dynamic(
-  () => import('@/components/features/studio/tts/components/mobile/MobileTTSPage'),
+const TTSPage = dynamic(
+  () => import('@/components/features/studio/tts/components/TTSPage'),
   { ssr: false }
 );
 
@@ -24,26 +20,11 @@ const MobileTTSPage = dynamic(
  * - Internationalization support
  * - Upgrade navigation
  * - Complete TTS generation workflow
- * - 响应式布局：只挂载当前设备需要的组件
+ * - Responsive layout (mobile-first)
  */
 export default function StudioTTSPage() {
   const { t } = useLanguage();
   const { setTitle } = useStudio();
-  const [isMobile, setIsMobile] = useState<boolean | null>(null);
-
-  // 检测设备类型
-  useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 1024);
-    };
-
-    // 初始检测
-    checkMobile();
-
-    // 监听窗口大小变化
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
 
   // Set page title
   useEffect(() => {
@@ -67,38 +48,23 @@ export default function StudioTTSPage() {
     handleGenerate,
   } = useTTSGenerator(maxCharacters);
 
-  // Shared props for both desktop and mobile
-  const sharedProps = {
-    text,
-    selectedVoice,
-    speed,
-    isGenerating,
-    error,
-    audioUrl,
-    maxCharacters,
-    availableCharacters,
-    canGenerate,
-    handleTextChange,
-    handleVoiceSelect,
-    handleSpeedChange,
-    handleGenerate,
-  };
-
-  // 等待设备类型检测完成
-  if (isMobile === null) {
-    return (
-      <div className="flex items-center justify-center h-full">
-        <div className="text-gray-500">Loading...</div>
-      </div>
-    );
-  }
-
-  // 只渲染需要的组件
-  return isMobile ? (
+  return (
     <div className="h-full">
-      <MobileTTSPage {...sharedProps} />
+      <TTSPage
+        text={text}
+        selectedVoice={selectedVoice}
+        speed={speed}
+        isGenerating={isGenerating}
+        error={error}
+        audioUrl={audioUrl}
+        maxCharacters={maxCharacters}
+        availableCharacters={availableCharacters}
+        canGenerate={canGenerate}
+        handleTextChange={handleTextChange}
+        handleVoiceSelect={handleVoiceSelect}
+        handleSpeedChange={handleSpeedChange}
+        handleGenerate={handleGenerate}
+      />
     </div>
-  ) : (
-    <DesktopTTSPage {...sharedProps} />
   );
 }

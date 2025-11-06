@@ -4,74 +4,54 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { studioMenuItems, studioMenuCategories } from '@/config/studioMenuConfig';
+import { studioMenuCategories } from '@/config/studioMenuConfig';
 
 interface StudioSidebarProps {
-  variant?: 'desktop' | 'mobile';
+  /** 桌面端不需要，移动端需要控制打开/关闭 */
+  isOpen?: boolean;
+  /** 桌面端不需要，移动端需要关闭回调 */
+  onClose?: () => void;
 }
 
 /**
- * Studio 侧边栏组件
+ * Studio 侧边栏组件（响应式）
  *
- * 桌面端：可折叠侧边栏（悬停展开）
- * 移动端：横向滚动菜单
+ * 桌面端（>= lg）：
+ * - 固定侧边栏（悬停展开）
+ * - 位置：左侧，top-[60px]
+ *
+ * 移动端（< lg）：
+ * - 抽屉式菜单（从左侧滑入）
+ * - 需要 isOpen 和 onClose props
+ * - 带遮罩层
  */
-export default function StudioSidebar({ variant = 'desktop' }: StudioSidebarProps) {
+export default function StudioSidebar({ isOpen = false, onClose }: StudioSidebarProps) {
   const { t } = useLanguage();
   const pathname = usePathname();
   const [isExpanded, setIsExpanded] = useState(false);
 
-  // 移动端横向菜单
-  if (variant === 'mobile') {
-    return (
-      <nav className="flex gap-2 pb-2">
-        {studioMenuItems.map((item) => {
-          const isActive = pathname === item.href;
-          return (
-            <Link
-              key={item.id}
-              href={item.href}
-              className={`
-                flex items-center gap-2 px-4 py-2 rounded-lg transition-colors whitespace-nowrap
-                ${isActive
-                  ? 'bg-purple-600 text-white'
-                  : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-200'
-                }
-              `}
-            >
-              <span className="flex-shrink-0">{item.icon}</span>
-              <span className="text-sm font-medium">{t(item.labelKey)}</span>
-            </Link>
-          );
-        })}
-      </nav>
-    );
-  }
-
-  // 桌面端可折叠侧边栏
-  return (
-    <nav
-      className={`
-        fixed left-0 top-[60px] h-[calc(100vh-60px)] bg-white border-r border-gray-200
-        transition-all duration-300 ease-in-out overflow-y-auto z-20
-        ${isExpanded ? 'w-64' : 'w-16'}
-      `}
-      onMouseEnter={() => setIsExpanded(true)}
-      onMouseLeave={() => setIsExpanded(false)}
-    >
-      <div className="py-4">
+  // 渲染菜单内容（移动端和桌面端共用）
+  const renderMenuContent = () => (
+    <div className="py-4">
         {/* 主要功能 */}
         <div className="mb-6">
+          {/* 移动端标题 */}
+          <div className="px-4 py-2 lg:hidden">
+            <span className="text-xs font-semibold text-gray-400 uppercase">
+              {t('studio.menu.home')}
+            </span>
+          </div>
           {studioMenuCategories.main.map((item) => {
             const isActive = pathname === item.href;
             return (
               <Link
                 key={item.id}
                 href={item.href}
+                onClick={onClose}
                 className={`
                   flex items-center gap-3 px-4 py-3 transition-colors
                   ${isActive
-                    ? 'bg-purple-50 text-purple-600 border-r-2 border-purple-600'
+                    ? 'bg-purple-50 text-purple-600 border-r-4 lg:border-r-2 border-purple-600'
                     : 'text-gray-700 hover:bg-gray-50'
                   }
                 `}
@@ -79,8 +59,9 @@ export default function StudioSidebar({ variant = 'desktop' }: StudioSidebarProp
                 <span className="flex-shrink-0">{item.icon}</span>
                 <span
                   className={`
-                    text-sm font-medium whitespace-nowrap transition-opacity duration-300
-                    ${isExpanded ? 'opacity-100' : 'opacity-0 w-0'}
+                    text-sm font-medium whitespace-nowrap
+                    lg:transition-opacity lg:duration-300
+                    ${isExpanded ? 'lg:opacity-100' : 'lg:opacity-0 lg:w-0'}
                   `}
                 >
                   {t(item.labelKey)}
@@ -93,23 +74,23 @@ export default function StudioSidebar({ variant = 'desktop' }: StudioSidebarProp
         {/* Video AI */}
         {studioMenuCategories.video.length > 0 && (
           <div className="mb-6">
-            {isExpanded && (
-              <div className="px-4 py-2">
-                <span className="text-xs font-semibold text-gray-400 uppercase">
-                  Video AI
-                </span>
-              </div>
-            )}
+            {/* 桌面端展开时显示，移动端始终显示 */}
+            <div className={`px-4 py-2 ${isExpanded ? 'lg:block' : 'lg:hidden'}`}>
+              <span className="text-xs font-semibold text-gray-400 uppercase">
+                Video AI
+              </span>
+            </div>
             {studioMenuCategories.video.map((item) => {
               const isActive = pathname === item.href;
               return (
                 <Link
                   key={item.id}
                   href={item.href}
+                  onClick={onClose}
                   className={`
                     flex items-center gap-3 px-4 py-3 transition-colors
                     ${isActive
-                      ? 'bg-purple-50 text-purple-600 border-r-2 border-purple-600'
+                      ? 'bg-purple-50 text-purple-600 border-r-4 lg:border-r-2 border-purple-600'
                       : 'text-gray-700 hover:bg-gray-50'
                     }
                   `}
@@ -117,8 +98,9 @@ export default function StudioSidebar({ variant = 'desktop' }: StudioSidebarProp
                   <span className="flex-shrink-0">{item.icon}</span>
                   <span
                     className={`
-                      text-sm font-medium whitespace-nowrap transition-opacity duration-300
-                      ${isExpanded ? 'opacity-100' : 'opacity-0 w-0'}
+                      text-sm font-medium whitespace-nowrap
+                      lg:transition-opacity lg:duration-300
+                      ${isExpanded ? 'lg:opacity-100' : 'lg:opacity-0 lg:w-0'}
                     `}
                   >
                     {t(item.labelKey)}
@@ -132,23 +114,23 @@ export default function StudioSidebar({ variant = 'desktop' }: StudioSidebarProp
         {/* Voiceover AI */}
         {studioMenuCategories.voiceover.length > 0 && (
           <div className="mb-6">
-            {isExpanded && (
-              <div className="px-4 py-2">
-                <span className="text-xs font-semibold text-gray-400 uppercase">
-                  Voiceover AI
-                </span>
-              </div>
-            )}
+            {/* 桌面端展开时显示，移动端始终显示 */}
+            <div className={`px-4 py-2 ${isExpanded ? 'lg:block' : 'lg:hidden'}`}>
+              <span className="text-xs font-semibold text-gray-400 uppercase">
+                Voiceover AI
+              </span>
+            </div>
             {studioMenuCategories.voiceover.map((item) => {
               const isActive = pathname === item.href;
               return (
                 <Link
                   key={item.id}
                   href={item.href}
+                  onClick={onClose}
                   className={`
                     flex items-center gap-3 px-4 py-3 transition-colors
                     ${isActive
-                      ? 'bg-purple-50 text-purple-600 border-r-2 border-purple-600'
+                      ? 'bg-purple-50 text-purple-600 border-r-4 lg:border-r-2 border-purple-600'
                       : 'text-gray-700 hover:bg-gray-50'
                     }
                   `}
@@ -156,8 +138,9 @@ export default function StudioSidebar({ variant = 'desktop' }: StudioSidebarProp
                   <span className="flex-shrink-0">{item.icon}</span>
                   <span
                     className={`
-                      text-sm font-medium whitespace-nowrap transition-opacity duration-300
-                      ${isExpanded ? 'opacity-100' : 'opacity-0 w-0'}
+                      text-sm font-medium whitespace-nowrap
+                      lg:transition-opacity lg:duration-300
+                      ${isExpanded ? 'lg:opacity-100' : 'lg:opacity-0 lg:w-0'}
                     `}
                   >
                     {t(item.labelKey)}
@@ -171,23 +154,23 @@ export default function StudioSidebar({ variant = 'desktop' }: StudioSidebarProp
         {/* Music AI */}
         {studioMenuCategories.music.length > 0 && (
           <div className="mb-6">
-            {isExpanded && (
-              <div className="px-4 py-2">
-                <span className="text-xs font-semibold text-gray-400 uppercase">
-                  Music AI
-                </span>
-              </div>
-            )}
+            {/* 桌面端展开时显示，移动端始终显示 */}
+            <div className={`px-4 py-2 ${isExpanded ? 'lg:block' : 'lg:hidden'}`}>
+              <span className="text-xs font-semibold text-gray-400 uppercase">
+                Music AI
+              </span>
+            </div>
             {studioMenuCategories.music.map((item) => {
               const isActive = pathname === item.href;
               return (
                 <Link
                   key={item.id}
                   href={item.href}
+                  onClick={onClose}
                   className={`
                     flex items-center gap-3 px-4 py-3 transition-colors
                     ${isActive
-                      ? 'bg-purple-50 text-purple-600 border-r-2 border-purple-600'
+                      ? 'bg-purple-50 text-purple-600 border-r-4 lg:border-r-2 border-purple-600'
                       : 'text-gray-700 hover:bg-gray-50'
                     }
                   `}
@@ -195,8 +178,9 @@ export default function StudioSidebar({ variant = 'desktop' }: StudioSidebarProp
                   <span className="flex-shrink-0">{item.icon}</span>
                   <span
                     className={`
-                      text-sm font-medium whitespace-nowrap transition-opacity duration-300
-                      ${isExpanded ? 'opacity-100' : 'opacity-0 w-0'}
+                      text-sm font-medium whitespace-nowrap
+                      lg:transition-opacity lg:duration-300
+                      ${isExpanded ? 'lg:opacity-100' : 'lg:opacity-0 lg:w-0'}
                     `}
                   >
                     {t(item.labelKey)}
@@ -207,6 +191,39 @@ export default function StudioSidebar({ variant = 'desktop' }: StudioSidebarProp
           </div>
         )}
       </div>
-    </nav>
+    );
+
+  return (
+    <>
+      {/* 移动端遮罩层 */}
+      {isOpen && (
+        <div
+          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+          onClick={onClose}
+        />
+      )}
+
+      {/* 侧边栏 */}
+      <nav
+        className={`
+          fixed left-0 bg-white border-r border-gray-200 overflow-y-auto
+
+          // 移动端样式：抽屉式，从左侧滑入
+          top-[60px] bottom-0 w-72 shadow-xl z-50
+          transform transition-transform duration-300 ease-in-out
+          ${isOpen ? 'translate-x-0' : '-translate-x-full'}
+
+          // 桌面端样式：固定侧边栏，悬停展开
+          lg:translate-x-0
+          lg:top-[60px] lg:h-[calc(100vh-60px)] lg:z-20
+          lg:transition-all lg:duration-300 lg:ease-in-out
+          ${isExpanded ? 'lg:w-64' : 'lg:w-16'}
+        `}
+        onMouseEnter={() => setIsExpanded(true)}
+        onMouseLeave={() => setIsExpanded(false)}
+      >
+        {renderMenuContent()}
+      </nav>
+    </>
   );
 }

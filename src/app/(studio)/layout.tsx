@@ -4,8 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import StudioSidebar from '@/components/layout/studio/StudioSidebar';
 import StudioTopNav from '@/components/layout/studio/StudioTopNav';
-import MobileSideMenu from '@/components/layout/studio/MobileSideMenu';
-import { StudioProvider, useStudio } from '@/contexts/StudioContext';
+import { StudioProvider } from '@/contexts/StudioContext';
 
 function StudioLayoutContent({
   children,
@@ -28,18 +27,11 @@ function StudioLayoutContent({
         onMenuToggle={setIsMobileMenuOpen}
       />
 
-      {/* ========== 桌面端侧边栏 (lg+) ========== */}
-      <div className="hidden lg:block">
-        <StudioSidebar variant="desktop" />
-      </div>
-
-      {/* ========== 移动端侧边菜单 (<lg) ========== */}
-      <div className="lg:hidden">
-        <MobileSideMenu
-          isOpen={isMobileMenuOpen}
-          onClose={() => setIsMobileMenuOpen(false)}
-        />
-      </div>
+      {/* ========== 侧边栏（响应式，移动端和桌面端统一） ========== */}
+      <StudioSidebar
+        isOpen={isMobileMenuOpen}
+        onClose={() => setIsMobileMenuOpen(false)}
+      />
 
       {/* ========== 主内容区域 ========== */}
       <main className="pt-[60px] lg:ml-16">

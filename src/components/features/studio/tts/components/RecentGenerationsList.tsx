@@ -65,20 +65,18 @@ export default function RecentGenerationsList({
       </div>
 
       {/* List */}
-      <div className="flex-1 min-h-0 overflow-y-auto">
+      <div className="flex-1 min-h-0 overflow-y-auto p-3">
         {loading ? (
-          <div className="p-8">
-            <div className="space-y-3">
-              {[1, 2, 3].map((i) => (
-                <div key={i} className="animate-pulse flex items-center gap-3 p-3">
-                  <div className="w-8 h-8 bg-gray-200 rounded-full" />
-                  <div className="flex-1">
-                    <div className="h-4 bg-gray-200 rounded w-3/4 mb-2" />
-                    <div className="h-3 bg-gray-200 rounded w-1/2" />
-                  </div>
+          <div className="space-y-2">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="animate-pulse flex items-center gap-3 p-3 bg-white border border-gray-200 rounded-lg">
+                <div className="w-8 h-8 bg-gray-200 rounded-full" />
+                <div className="flex-1">
+                  <div className="h-4 bg-gray-200 rounded w-3/4 mb-2" />
+                  <div className="h-3 bg-gray-200 rounded w-1/2" />
                 </div>
-              ))}
-            </div>
+              </div>
+            ))}
           </div>
         ) : generations.length === 0 ? (
           <div className="flex flex-col items-center justify-center p-12 text-center">
@@ -101,11 +99,11 @@ export default function RecentGenerationsList({
             <p className="text-sm text-gray-500">暂无播报记录</p>
           </div>
         ) : (
-          <div className="divide-y divide-gray-100">
+          <div className="space-y-2">
             {generations.map((gen) => (
               <div
                 key={gen.id}
-                className="flex items-center gap-3 p-3 hover:bg-gray-50 transition-colors"
+                className="flex items-center gap-3 p-3 bg-white border border-gray-200 rounded-lg hover:border-purple-300 hover:shadow-sm transition-all"
               >
                 {/* Play Button */}
                 <button

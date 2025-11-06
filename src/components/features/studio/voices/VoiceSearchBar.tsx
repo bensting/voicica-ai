@@ -39,7 +39,7 @@ export default function VoiceSearchBar({
             className="w-full h-[48px] flex items-center justify-between gap-2 px-4 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors"
           >
             <span className="text-sm text-gray-900 truncate">
-              {selectedLanguage ? selectedLanguage.name : 'English (US)'}
+              {selectedLanguage ? selectedLanguage.name : 'All Languages'}
             </span>
             <svg className="w-4 h-4 text-gray-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />

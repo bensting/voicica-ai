@@ -73,64 +73,7 @@ export default function TextInput({
   };
 
   return (
-    <div className="relative h-full lg:h-auto flex flex-col lg:space-y-2">
-      {/* Desktop Toolbar - Hidden on mobile */}
-      <div className="hidden lg:flex items-center justify-between bg-white rounded-xl px-4 py-3 border border-gray-200">
-        {/* Left: Clear Button */}
-        <button
-          onClick={() => onChange('')}
-          disabled={!value || disabled}
-          title="清除所有内容"
-          className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          <Eraser className="w-5 h-5" />
-        </button>
-
-        {/* Center: Voice Avatar */}
-        <div className="flex items-center gap-2">
-          {selectedVoice ? (
-            <>
-              <Image
-                src={selectedVoice.avatar_url}
-                alt={selectedVoice.name}
-                width={40}
-                height={40}
-                className="w-10 h-10 rounded-full object-cover border-2 border-purple-200"
-              />
-              <div className="text-sm">
-                <p className="font-medium text-gray-900">{selectedVoice.display_name?.en || selectedVoice.name}</p>
-                <p className="text-xs text-gray-500">{selectedVoice.gender}</p>
-              </div>
-            </>
-          ) : (
-            <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
-              <svg className="w-5 h-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
-              </svg>
-            </div>
-          )}
-        </div>
-
-        {/* Right: Speed Control */}
-        <div className="flex items-center gap-2">
-          <Zap className="w-5 h-5 text-gray-600" />
-          <span className="text-sm font-medium text-gray-700">速度</span>
-          <select
-            value={speed}
-            onChange={(e) => onSpeedChange?.(parseFloat(e.target.value))}
-            disabled={disabled}
-            className="px-2 py-1 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            <option value="0.5">0.5x</option>
-            <option value="0.75">0.75x</option>
-            <option value="1.0">1.0x</option>
-            <option value="1.25">1.25x</option>
-            <option value="1.5">1.5x</option>
-            <option value="2.0">2.0x</option>
-          </select>
-        </div>
-      </div>
-
+    <div className="relative h-full lg:h-auto flex flex-col">
       {/* Text Area Container */}
       <div className="relative flex-1 lg:flex-none flex flex-col bg-white rounded-2xl lg:rounded-xl overflow-visible shadow-sm border border-gray-200">
         {/* Text Area */}
@@ -240,14 +183,6 @@ export default function TextInput({
               </div>
             </div>
           )}
-        </div>
-
-        {/* Desktop: Additional hint text */}
-        <div className="hidden lg:block px-4 py-2 text-sm text-gray-600">
-          Limit {maxCharacters} characters per generation.{' '}
-          <span className="font-medium">
-            Available: {availableCharacters} characters.
-          </span>
         </div>
       </div>
     </div>

@@ -39,9 +39,9 @@ export default function RecentGenerationsList({
   };
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden h-full flex flex-col">
+    <div className="bg-white rounded-2xl shadow-sm border border-gray-200 h-full flex flex-col overflow-hidden">
       {/* Tabs */}
-      <div className="flex gap-4 px-4 pt-4 border-b border-gray-200 flex-shrink-0">
+      <div className="flex gap-4 px-4 pt-4 pb-0 border-b border-gray-200 flex-shrink-0">
         <button
           onClick={() => setActiveTab('recent')}
           className={`pb-3 px-2 text-sm font-medium border-b-2 transition-colors ${
@@ -65,7 +65,7 @@ export default function RecentGenerationsList({
       </div>
 
       {/* List */}
-      <div className="flex-1 min-h-0 overflow-y-auto p-3">
+      <div className="flex-1 min-h-0 overflow-y-auto p-3 bg-gray-50">
         {loading ? (
           <div className="space-y-2">
             {[1, 2, 3].map((i) => (

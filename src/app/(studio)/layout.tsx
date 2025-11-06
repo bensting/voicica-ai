@@ -34,7 +34,7 @@ function StudioLayoutContent({
       />
 
       {/* ========== 主内容区域 ========== */}
-      <main className="pt-[60px] lg:ml-16 lg:h-[calc(100vh-60px)]">
+      <main className="pt-[60px] lg:ml-16 lg:h-[calc(100vh-60px)] lg:overflow-hidden">
         {children}
       </main>
     </div>

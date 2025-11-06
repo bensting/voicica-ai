@@ -7,8 +7,9 @@ import { useAuth } from '@/contexts/AuthContext';
 import { voiceAPI } from '@/lib/api';
 import type { Voice } from '@/types/voice';
 import { getLocalizedVoiceName } from '@/types/voice';
-import TextInput from './TextInput';
+import MobileTextInput from './mobile/MobileTextInput';
 import VoiceSelector from './VoiceSelector';
+import VoiceSelectorButton from './VoiceSelectorButton';
 import ActionButtons from './ActionButtons';
 import AudioPlayerModal from './mobile/AudioPlayerModal';
 import { useGenerationHistory } from '@/components/features/studio/generation-history/hooks/useGenerationHistory';
@@ -240,15 +241,12 @@ export default function TTSPage({
 
         {/* Text Input - 占据大部分空间 */}
         <div className="flex-1 min-h-0">
-          <TextInput
+          <MobileTextInput
             value={text}
             onChange={handleTextChange}
             maxCharacters={maxCharacters}
             availableCharacters={availableCharacters}
             disabled={isGenerating}
-            selectedVoice={selectedVoice}
-            speed={speed}
-            onSpeedChange={handleSpeedChange}
           />
         </div>
 
@@ -283,20 +281,28 @@ export default function TTSPage({
           )}
 
           {/* Two Column Layout */}
-          <div className="grid grid-cols-12 gap-4 flex-1 min-h-0 overflow-hidden">
-            {/* Left Column: Text Input & Generation History (67%) */}
-            <div className="col-span-8 h-full flex flex-col gap-3 min-h-0">
+          <div className="grid grid-cols-12 gap-4 flex-1 min-h-0">
+            {/* Left Column: Voice Button, Text Input & Generation History (67%) */}
+            <div className="col-span-8 flex flex-col gap-3 overflow-hidden">
+              {/* Voice Selector Button */}
+              <VoiceSelectorButton
+                voiceName={voiceDisplayName}
+                voiceAvatar={selectedVoice?.avatar_url}
+                disabled={isGenerating}
+                onClick={() => {
+                  // TODO: 可以滚动到右侧或打开模态框
+                  console.log('Open voice selector');
+                }}
+              />
+
               {/* Text Input Card */}
-              <div className="bg-gradient-to-br from-gray-50 to-purple-50 rounded-3xl p-4 shadow-lg flex-shrink-0">
-                <TextInput
+              <div className="bg-white rounded-2xl shadow-sm border border-gray-200 flex-shrink-0 overflow-hidden h-[300px]">
+                <MobileTextInput
                   value={text}
                   onChange={handleTextChange}
                   maxCharacters={maxCharacters}
                   availableCharacters={availableCharacters}
                   disabled={isGenerating}
-                  selectedVoice={selectedVoice}
-                  speed={speed}
-                  onSpeedChange={handleSpeedChange}
                 />
               </div>
 

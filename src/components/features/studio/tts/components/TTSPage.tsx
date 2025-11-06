@@ -11,6 +11,8 @@ import TextInput from './TextInput';
 import VoiceSelector from './VoiceSelector';
 import ActionButtons from './ActionButtons';
 import AudioPlayerModal from './mobile/AudioPlayerModal';
+import { useGenerationHistory } from '@/components/features/studio/generation-history/hooks/useGenerationHistory';
+import RecentGenerationsList from './RecentGenerationsList';
 
 // 模块级别的缓存，防止 React Strict Mode 导致的重复加载
 let voiceLoadingPromise: Promise<Voice | null> | null = null;
@@ -54,10 +56,23 @@ export default function TTSPage({
   handleGenerate,
 }: TTSPageProps) {
   const router = useRouter();
-  const { locale, isReady: isLocaleReady } = useLanguage();
-  const { loading: authLoading } = useAuth();
+  const { locale, isReady: isLocaleReady, t } = useLanguage();
+  const { user, loading: authLoading } = useAuth();
   const [isAudioModalOpen, setIsAudioModalOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+
+  // Generation history hook (显示最近6条)
+  const {
+    loading: historyLoading,
+    generations,
+    handleDeleteGeneration,
+    handleDownloadGeneration,
+    fetchRecords,
+  } = useGenerationHistory({
+    user,
+    authLoading,
+    pageSize: 6,
+  });
 
   // 检测是否为移动端（只在客户端执行一次）
   useEffect(() => {
@@ -189,6 +204,17 @@ export default function TTSPage({
     }
   }, [audioUrl, isMobile]);
 
+  // 生成完成后刷新历史记录
+  useEffect(() => {
+    if (audioUrl) {
+      // 等待一小段时间确保后端已保存记录
+      const timer = setTimeout(() => {
+        void fetchRecords();
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+  }, [audioUrl, fetchRecords]);
+
   const handleUpgradeClick = () => {
     router.push('/subscription');
   };
@@ -247,21 +273,21 @@ export default function TTSPage({
       </div>
 
       {/* Desktop Layout - Two Column */}
-      <div className="hidden lg:block bg-gradient-to-b from-white to-purple-50 h-full overflow-hidden">
-        <div className="w-full max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 py-8 h-full flex flex-col">
+      <div className="hidden lg:flex flex-col bg-gradient-to-b from-white to-purple-50 h-full overflow-hidden">
+        <div className="w-full max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 py-4 flex-1 flex flex-col min-h-0">
           {/* Error Message */}
           {error && (
-            <div className="mb-6 p-4 bg-red-50 border-2 border-red-200 rounded-xl flex-shrink-0">
+            <div className="mb-4 p-4 bg-red-50 border-2 border-red-200 rounded-xl flex-shrink-0">
               <p className="text-red-600 font-medium">{error}</p>
             </div>
           )}
 
           {/* Two Column Layout */}
-          <div className="grid grid-cols-12 gap-6 flex-1 min-h-0">
-            {/* Left Column: Text Input & Generation (67%) */}
-            <div className="col-span-8 flex flex-col gap-6 min-h-0">
+          <div className="grid grid-cols-12 gap-4 flex-1 min-h-0 overflow-hidden">
+            {/* Left Column: Text Input & Generation History (67%) */}
+            <div className="col-span-8 h-full flex flex-col gap-3 min-h-0">
               {/* Text Input Card */}
-              <div className="bg-gradient-to-br from-gray-50 to-purple-50 rounded-3xl p-6 md:p-8 shadow-lg flex-shrink-0">
+              <div className="bg-gradient-to-br from-gray-50 to-purple-50 rounded-3xl p-4 shadow-lg flex-shrink-0">
                 <TextInput
                   value={text}
                   onChange={handleTextChange}
@@ -274,99 +300,28 @@ export default function TTSPage({
                 />
               </div>
 
-              {/* Generate Button & Results Card */}
-              <div className="bg-gradient-to-br from-gray-50 to-purple-50 rounded-3xl p-6 md:p-8 shadow-lg flex-1 min-h-0 flex flex-col overflow-hidden">
-                <div className="space-y-6 flex-1 min-h-0 overflow-y-auto">
-                  <ActionButtons
-                    onGenerate={handleGenerate}
-                    isGenerating={isGenerating}
-                    canGenerate={canGenerate}
-                  />
+              {/* Generate Button */}
+              <div className="flex-shrink-0">
+                <ActionButtons
+                  onGenerate={handleGenerate}
+                  isGenerating={isGenerating}
+                  canGenerate={canGenerate}
+                />
+              </div>
 
-                  {/* Audio Player */}
-                  {audioUrl && (
-                    <div className="space-y-4">
-                      <h3 className="text-lg font-semibold text-gray-900">
-                        Generated Audio
-                      </h3>
-                      <div className="p-6 bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl border-2 border-purple-200">
-                        <audio
-                          controls
-                          src={audioUrl}
-                          className="w-full"
-                          style={{
-                            filter: 'sepia(20%) saturate(70%) hue-rotate(220deg)',
-                          }}
-                        >
-                          Your browser does not support the audio element.
-                        </audio>
-
-                        {/* Download Button */}
-                        <a
-                          href={audioUrl}
-                          download="ai-voice-output.mp3"
-                          className="mt-4 w-full flex items-center justify-center gap-2 px-4 py-3 bg-purple-600 text-white rounded-xl font-semibold hover:bg-purple-700 transition-colors"
-                        >
-                          <svg
-                            className="w-5 h-5"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
-                            />
-                          </svg>
-                          Download Audio
-                        </a>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Upgrade Pro CTA */}
-                  <div className="p-6 bg-gradient-to-br from-yellow-50 to-yellow-100 rounded-xl border-2 border-yellow-200">
-                    <div className="flex items-start gap-3">
-                      <div className="w-10 h-10 rounded-full bg-yellow-400 flex items-center justify-center flex-shrink-0">
-                        <svg
-                          className="w-6 h-6 text-yellow-900"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
-                          />
-                        </svg>
-                      </div>
-                      <div className="flex-1">
-                        <h4 className="font-semibold text-gray-900 mb-1">
-                          Upgrade to Pro
-                        </h4>
-                        <p className="text-sm text-gray-700 mb-3">
-                          Get unlimited characters, premium voices, and faster
-                          generation!
-                        </p>
-                        <button
-                          onClick={handleUpgradeClick}
-                          className="px-4 py-2 bg-yellow-400 hover:bg-yellow-500 text-gray-900 font-semibold rounded-lg transition-colors"
-                        >
-                          Upgrade Now
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+              {/* Generation History List */}
+              <div className="flex-1 min-h-0 overflow-hidden">
+                <RecentGenerationsList
+                  generations={generations}
+                  loading={historyLoading}
+                  onDelete={handleDeleteGeneration}
+                  onDownload={handleDownloadGeneration}
+                />
               </div>
             </div>
 
             {/* Right Column: Voice Selector (33%) */}
-            <div className="col-span-4 h-full min-h-0">
+            <div className="col-span-4 h-full min-h-0 flex flex-col overflow-hidden">
               <VoiceSelector
                 selectedVoice={selectedVoice}
                 onSelect={handleVoiceSelect}

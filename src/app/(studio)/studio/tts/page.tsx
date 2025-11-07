@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { useStudio } from '@/contexts/StudioContext';
@@ -33,7 +32,6 @@ let loadedVoiceCache: Voice | null = null;
  * - Responsive layout (mobile-first)
  */
 export default function StudioTTSPage() {
-  const router = useRouter();
   const { locale, isReady: isLocaleReady, t } = useLanguage();
   const { user, loading: authLoading } = useAuth();
   const { setTitle } = useStudio();
@@ -50,7 +48,6 @@ export default function StudioTTSPage() {
   const {
     text,
     selectedVoice,
-    speed,
     isGenerating,
     error,
     audioUrl,
@@ -58,7 +55,6 @@ export default function StudioTTSPage() {
     canGenerate,
     handleTextChange,
     handleVoiceSelect,
-    handleSpeedChange,
     handleGenerate,
   } = useTTSGenerator(maxCharacters);
 
@@ -186,10 +182,6 @@ export default function StudioTTSPage() {
       return () => clearTimeout(timer);
     }
   }, [audioUrl, fetchRecords]);
-
-  const handleUpgradeClick = () => {
-    router.push('/subscription');
-  };
 
   const handleOpenSettings = () => {
     // TODO: Open settings modal

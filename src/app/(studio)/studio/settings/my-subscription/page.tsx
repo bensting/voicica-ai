@@ -146,7 +146,7 @@ export default function MySubscriptionPage() {
           </div>
           <h3 className="text-lg font-semibold text-gray-900 mb-2">No Subscriptions</h3>
           <p className="text-gray-600">
-            You don't have any subscriptions yet.
+            You don&apos;t have any subscriptions yet.
           </p>
         </div>
       ) : (

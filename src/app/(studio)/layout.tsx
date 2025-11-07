@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import StudioSidebar from '@/components/layout/studio/StudioSidebar';
 import StudioTopNav from '@/components/layout/studio/StudioTopNav';
 import UpgradeModal from '@/components/features/pricing/UpgradeModal';
@@ -12,7 +11,6 @@ function StudioLayoutContent({
 }: {
   children: React.ReactNode;
 }) {
-  const router = useRouter();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isUpgradeModalOpen, setIsUpgradeModalOpen] = useState(false);
 

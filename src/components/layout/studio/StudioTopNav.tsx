@@ -85,7 +85,7 @@ export default function StudioTopNav({
           {/* Upgrade Button - 只显示皇冠图标 */}
           <button
             onClick={onUpgradeClick}
-            className="p-2 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-lg hover:from-orange-600 hover:to-orange-700 transition-all shadow-sm"
+            className="p-2 bg-gradient-to-r from-slate-800 to-slate-900 text-yellow-400 border-2 border-yellow-400/30 rounded-lg hover:border-yellow-400/50 hover:shadow-lg hover:shadow-yellow-400/20 transition-all"
             aria-label="Upgrade"
           >
             <Crown className="w-4 h-4" />
@@ -122,7 +122,7 @@ export default function StudioTopNav({
           {/* Upgrade Button - 始终显示 */}
           <button
             onClick={onUpgradeClick}
-            className="flex items-center gap-2 px-4 py-1.5 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-lg font-medium hover:from-orange-600 hover:to-orange-700 transition-all shadow-sm"
+            className="flex items-center gap-2 px-4 py-1.5 bg-gradient-to-r from-slate-800 to-slate-900 text-yellow-400 border-2 border-yellow-400/30 rounded-lg font-medium hover:border-yellow-400/50 hover:shadow-lg hover:shadow-yellow-400/20 transition-all"
           >
             <Crown className="w-4 h-4" />
             <span className="text-sm hidden xl:inline">{t('studio.upgrade') || '购买/升级'}</span>

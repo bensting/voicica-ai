@@ -1,7 +1,6 @@
 'use client';
 
 import { Menu, X, Coins, Crown } from 'lucide-react';
-import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useUser } from '@/contexts/UserContext';
@@ -12,7 +11,7 @@ import LoginButton from '@/components/layout/Navbar/LoginButton';
 import Link from 'next/link';
 
 interface StudioTopNavProps {
-  /** 升级按钮回调（桌面端显示） */
+  /** 升级按钮回调（移动端和桌面端都显示） */
   onUpgradeClick?: () => void;
   /** 菜单是否打开（移动端） */
   isMenuOpen?: boolean;
@@ -25,7 +24,7 @@ interface StudioTopNavProps {
  *
  * 移动端样式：
  * - Hamburger menu button + Logo
- * - Pricing button
+ * - Upgrade button (皇冠图标)
  * - Language switcher
  * - User menu
  *
@@ -38,7 +37,6 @@ export default function StudioTopNav({
   isMenuOpen = false,
   onMenuToggle
 }: StudioTopNavProps) {
-  const router = useRouter();
   const { t } = useLanguage();
   const { user } = useAuth();
   const { profile, loading: profileLoading } = useUser();
@@ -49,10 +47,6 @@ export default function StudioTopNav({
 
   const toggleMenu = () => {
     onMenuToggle?.(!isMenuOpen);
-  };
-
-  const handlePricingClick = () => {
-    router.push('/pricing');
   };
 
   return (
@@ -88,12 +82,13 @@ export default function StudioTopNav({
 
         {/* ========== 移动端右侧 (< lg) ========== */}
         <div className="flex items-center gap-1 flex-shrink-0 lg:hidden">
-          {/* Pricing Button */}
+          {/* Upgrade Button - 只显示皇冠图标 */}
           <button
-            onClick={handlePricingClick}
-            className="px-2.5 py-1.5 text-xs font-medium text-purple-600 border border-purple-200 rounded-full hover:bg-purple-50 transition-colors"
+            onClick={onUpgradeClick}
+            className="p-2 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-lg hover:from-orange-600 hover:to-orange-700 transition-all shadow-sm"
+            aria-label="Upgrade"
           >
-            Pricing
+            <Crown className="w-4 h-4" />
           </button>
 
           {/* Language Switcher */}
@@ -126,7 +121,7 @@ export default function StudioTopNav({
 
           {/* Upgrade Button - 始终显示 */}
           <button
-            onClick={() => router.push('/studio/upgrade')}
+            onClick={onUpgradeClick}
             className="flex items-center gap-2 px-4 py-1.5 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-lg font-medium hover:from-orange-600 hover:to-orange-700 transition-all shadow-sm"
           >
             <Crown className="w-4 h-4" />

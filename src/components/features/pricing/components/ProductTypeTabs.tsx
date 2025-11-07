@@ -2,7 +2,7 @@
 
 import { useLanguage } from '@/contexts/LanguageContext';
 
-export type ProductType = 'text_to_speech' | 'voice_clone';
+export type ProductType = 'text_to_speech' | 'voice_cloning';
 
 interface ProductTypeTabsProps {
   activeType: ProductType;
@@ -18,7 +18,7 @@ export default function ProductTypeTabs({ activeType, onChange }: ProductTypeTab
 
   const tabs: { type: ProductType; labelKey: string }[] = [
     { type: 'text_to_speech', labelKey: 'upgrade.tabs.textToVoice' },
-    { type: 'voice_clone', labelKey: 'upgrade.tabs.voiceClone' },
+    { type: 'voice_cloning', labelKey: 'upgrade.tabs.voiceClone' },
   ];
 
   return (

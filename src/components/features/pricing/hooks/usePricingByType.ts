@@ -6,7 +6,7 @@ import { PricingPlan } from '@/types/subscription';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 export type BillingCycle = 'monthly' | 'yearly';
-export type ProductType = 'text_to_speech' | 'voice_clone';
+export type ProductType = 'text_to_speech' | 'voice_cloning';
 
 interface UsePricingByTypeOptions {
   productType: ProductType;

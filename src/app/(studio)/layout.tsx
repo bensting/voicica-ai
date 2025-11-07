@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import StudioSidebar from '@/components/layout/studio/StudioSidebar';
 import StudioTopNav from '@/components/layout/studio/StudioTopNav';
+import UpgradeModal from '@/components/features/pricing/UpgradeModal';
 import { StudioProvider } from '@/contexts/StudioContext';
 
 function StudioLayoutContent({
@@ -13,9 +14,10 @@ function StudioLayoutContent({
 }) {
   const router = useRouter();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isUpgradeModalOpen, setIsUpgradeModalOpen] = useState(false);
 
   const handleUpgradeClick = () => {
-    router.push('/subscription');
+    setIsUpgradeModalOpen(true);
   };
 
   return (
@@ -37,6 +39,12 @@ function StudioLayoutContent({
       <main className="pt-[60px] lg:ml-16 lg:h-screen lg:overflow-hidden">
         {children}
       </main>
+
+      {/* ========== Upgrade Modal ========== */}
+      <UpgradeModal
+        isOpen={isUpgradeModalOpen}
+        onClose={() => setIsUpgradeModalOpen(false)}
+      />
     </div>
   );
 }

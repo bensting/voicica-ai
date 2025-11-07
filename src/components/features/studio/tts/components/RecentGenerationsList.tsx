@@ -1,9 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Download, Trash2, Play, ChevronRight } from 'lucide-react';
+import { Download, Trash2, Play, Pause, ChevronRight } from 'lucide-react';
 import type { Generation } from '@/types/tts';
 
 interface RecentGenerationsListProps {
@@ -24,18 +24,38 @@ export default function RecentGenerationsList({
   onDownload,
 }: RecentGenerationsListProps) {
   const [playingId, setPlayingId] = useState<string | null>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   const handlePlay = (id: string, audioUrl: string) => {
-    if (playingId === id) {
+    // 如果点击的是当前正在播放的音频
+    if (playingId === id && audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current = null;
       setPlayingId(null);
-      // Stop audio
-    } else {
-      setPlayingId(id);
-      // Play audio
-      const audio = new Audio(audioUrl);
-      audio.play().catch(console.error);
-      audio.onended = () => setPlayingId(null);
+      return;
     }
+
+    // 停止当前播放的音频（如果有）
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current = null;
+    }
+
+    // 播放新的音频
+    const audio = new Audio(audioUrl);
+    audioRef.current = audio;
+    setPlayingId(id);
+
+    audio.play().catch((error) => {
+      console.error('Failed to play audio:', error);
+      setPlayingId(null);
+      audioRef.current = null;
+    });
+
+    audio.onended = () => {
+      setPlayingId(null);
+      audioRef.current = null;
+    };
   };
 
   return (
@@ -93,13 +113,21 @@ export default function RecentGenerationsList({
                 key={gen.id}
                 className="flex items-center gap-3 p-3 bg-white border border-gray-200 rounded-lg hover:border-purple-300 hover:shadow-sm transition-all"
               >
-                {/* Play Button */}
+                {/* Play/Pause Button */}
                 <button
                   onClick={() => handlePlay(gen.id, gen.audioUrl || '')}
-                  className="w-8 h-8 flex items-center justify-center rounded-full bg-purple-100 text-purple-600 hover:bg-purple-200 transition-colors flex-shrink-0"
+                  className={`w-8 h-8 flex items-center justify-center rounded-full transition-colors flex-shrink-0 ${
+                    playingId === gen.id
+                      ? 'bg-purple-600 text-white hover:bg-purple-700'
+                      : 'bg-purple-100 text-purple-600 hover:bg-purple-200'
+                  }`}
                   disabled={!gen.audioUrl}
                 >
-                  <Play className="w-4 h-4" fill="currentColor" />
+                  {playingId === gen.id ? (
+                    <Pause className="w-4 h-4" fill="currentColor" />
+                  ) : (
+                    <Play className="w-4 h-4" fill="currentColor" />
+                  )}
                 </button>
 
                 {/* Text Content */}

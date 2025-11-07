@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { useStudio } from '@/contexts/StudioContext';
+import { useCredits } from '@/contexts/CreditsContext';
 import { useTTSGenerator } from '@/hooks/useTTSGenerator';
 import { voiceAPI } from '@/lib/api';
 import type { Voice } from '@/types/voice';
@@ -35,6 +36,7 @@ export default function StudioTTSPage() {
   const { locale, isReady: isLocaleReady, t } = useLanguage();
   const { user, loading: authLoading } = useAuth();
   const { setTitle } = useStudio();
+  const { credits } = useCredits();
   const [isAudioModalOpen, setIsAudioModalOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
@@ -210,6 +212,7 @@ export default function StudioTTSPage() {
             maxCharacters={maxCharacters}
             availableCharacters={availableCharacters}
             disabled={isGenerating}
+            remainingCredits={credits}
           />
         </div>
 
@@ -269,6 +272,7 @@ export default function StudioTTSPage() {
                   onGenerate={handleGenerate}
                   isGenerating={isGenerating}
                   canGenerate={canGenerate}
+                  remainingCredits={credits}
                 />
               </div>
 

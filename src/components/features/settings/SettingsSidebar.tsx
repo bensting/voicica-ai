@@ -64,7 +64,7 @@ export default function SettingsSidebar({ variant = 'vertical' }: SettingsSideba
 
   if (variant === 'horizontal') {
     return (
-      <nav className="flex gap-2">
+      <nav className="flex gap-2 py-1">
         {menuItems.map((item) => {
           const isActive = pathname === item.href;
           return (
@@ -72,7 +72,7 @@ export default function SettingsSidebar({ variant = 'vertical' }: SettingsSideba
               key={item.id}
               href={item.href}
               className={`
-                flex items-center gap-2 px-4 py-2 rounded-lg transition-colors whitespace-nowrap
+                flex items-center gap-2 px-3 py-1.5 rounded-lg transition-colors whitespace-nowrap
                 ${
                   isActive
                     ? 'bg-purple-50 text-purple-600 font-medium'

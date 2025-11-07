@@ -98,3 +98,30 @@ export interface StripeVerifyResponse {
   subscription_id?: string; // 订阅记录 ID（如果已创建）
   message: string;         // 验证消息
 }
+
+// 用户订阅信息
+export interface UserSubscription {
+  id: string;
+  user_id: string;
+  subscription_plan_id?: string;
+  product_id: string;
+  product_type: 'text_to_speech' | 'voice_cloning';
+  platform: Platform;
+  status: 'TRIAL' | 'ACTIVE' | 'EXPIRED' | 'CANCELLED' | 'SUSPENDED';
+  start_date: string;
+  end_date?: string;
+  credits_allocated: number;
+  amount?: number;
+  currency?: string;
+  auto_renew: boolean;
+  created_at: string;
+  is_active: boolean;
+  days_remaining?: number;
+}
+
+// 用户订阅列表响应
+export interface UserSubscriptionListResponse {
+  subscriptions: UserSubscription[];
+  total: number;
+  active_subscription?: UserSubscription;
+}

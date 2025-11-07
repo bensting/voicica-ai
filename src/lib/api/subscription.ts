@@ -4,7 +4,8 @@ import type {
   CreemVerifyRequest,
   CreemVerifyResponse,
   StripeVerifyRequest,
-  StripeVerifyResponse
+  StripeVerifyResponse,
+  UserSubscriptionListResponse
 } from '@/types/subscription';
 
 /**
@@ -76,4 +77,13 @@ export const getStripePrices = (productId: string) => {
     billing_period: BillingPeriod | null;
     metadata?: Record<string, string>;
   }>>(`/api/v1/subscriptions/products/stripe/${productId}/prices`);
+};
+
+// 获取用户订阅列表
+export const getMySubscriptions = (params?: {
+  status?: 'TRIAL' | 'ACTIVE' | 'EXPIRED' | 'CANCELLED' | 'SUSPENDED';
+  product_type?: 'text_to_speech' | 'voice_cloning';
+  platform?: 'stripe' | 'creem' | 'google_play' | 'apple';
+}): Promise<UserSubscriptionListResponse> => {
+  return apiClient.get<UserSubscriptionListResponse>('/api/v1/subscriptions/my-subscriptions', { params });
 };

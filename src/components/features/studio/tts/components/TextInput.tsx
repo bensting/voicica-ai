@@ -33,6 +33,9 @@ interface TextInputProps {
   availableCharacters: number;
   disabled?: boolean;
   placeholder?: string;
+  onGenerate?: () => void;
+  isGenerating?: boolean;
+  canGenerate?: boolean;
 }
 
 /**
@@ -46,6 +49,9 @@ export default function TextInput({
   maxCharacters,
   disabled = false,
   placeholder = '在此输入入您要转换的文件，我们将辨别您的文字并自动替换为相应语言。',
+  onGenerate,
+  isGenerating = false,
+  canGenerate = false,
 }: TextInputProps) {
   const [showExamples, setShowExamples] = useState(true);
 
@@ -69,41 +75,39 @@ export default function TextInput({
       {/* Bottom Bar with Character Counter and Example Buttons */}
       <div className="relative bg-purple-50 border-t border-purple-100 rounded-b-2xl">
         <div className="flex items-center justify-between px-4 py-3">
-          {/* Left: Document icon and character info */}
-          <div className="flex items-center gap-2 text-sm">
-            <svg className="w-5 h-5 text-blue-500" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+          {/* Left: Character count */}
+          <div className="flex items-center gap-2">
+            <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
             </svg>
-            <span className="text-gray-700 font-medium">
-              {value.length}字元剩餘
+            <span className="text-gray-600 text-base font-medium">
+              {value.length} / {maxCharacters}
             </span>
           </div>
 
-          {/* Right: Character count and refresh button */}
-          <div className="flex items-center gap-3">
-            {/* Character count badge */}
-            <div className="flex items-center gap-1">
-              <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-              </svg>
-              <span className="text-gray-600 text-sm">
-                {value.length} / {maxCharacters}
-              </span>
-            </div>
-
-            {/* Refresh icon */}
+          {/* Right: Generate button (Desktop only) */}
+          {onGenerate && (
             <button
               type="button"
-              onClick={() => onChange('')}
-              disabled={disabled || value.length === 0}
-              className="p-1 hover:bg-purple-100 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-              aria-label="Clear text"
+              onClick={onGenerate}
+              disabled={!canGenerate || isGenerating || disabled}
+              className="hidden lg:flex items-center gap-2 px-6 py-2.5 bg-purple-600 hover:bg-purple-700 text-white font-medium rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-purple-600"
             >
-              <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-              </svg>
+              {isGenerating ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  <span>Generating...</span>
+                </>
+              ) : (
+                <>
+                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M8 5v14l11-7z" />
+                  </svg>
+                  <span>Generate Speech</span>
+                </>
+              )}
             </button>
-          </div>
+          )}
         </div>
 
         {/* Floating Example Buttons - 悬浮在底部栏上方 */}

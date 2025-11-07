@@ -258,27 +258,21 @@ export default function StudioTTSPage() {
                 }}
               />
 
-              {/* Text Input Card */}
-              <div className="bg-white rounded-2xl shadow-sm border border-gray-200 flex-shrink-0 overflow-hidden h-[450px]">
+              {/* Text Input Card with Generate Button - 占据 55% 左右 */}
+              <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden" style={{ flex: '0 0 55%' }}>
                 <TextInput
                   value={text}
                   onChange={handleTextChange}
                   maxCharacters={maxCharacters}
                   availableCharacters={availableCharacters}
                   disabled={isGenerating}
-                />
-              </div>
-
-              {/* Generate Button */}
-              <div className="flex-shrink-0">
-                <ActionButtons
                   onGenerate={handleGenerate}
                   isGenerating={isGenerating}
                   canGenerate={canGenerate}
                 />
               </div>
 
-              {/* Generation History List */}
+              {/* Generation History List - 占据剩余空间 */}
               <div className="flex-1 min-h-0 overflow-hidden">
                 <RecentGenerationsList
                   generations={generations}

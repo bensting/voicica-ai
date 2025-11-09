@@ -2,6 +2,14 @@
 
 import { useState } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
+import DatePicker, { registerLocale } from 'react-datepicker';
+import { enUS, zhCN, zhTW } from 'date-fns/locale';
+import 'react-datepicker/dist/react-datepicker.css';
+
+// Register locales
+registerLocale('en', enUS);
+registerLocale('zh-CN', zhCN);
+registerLocale('zh-TW', zhTW);
 
 interface DateRangeFilterProps {
   startDate: string | null;
@@ -10,50 +18,67 @@ interface DateRangeFilterProps {
 }
 
 export default function DateRangeFilter({ startDate, endDate, onDateRangeChange }: DateRangeFilterProps) {
-  const { t } = useLanguage();
-  const [localStartDate, setLocalStartDate] = useState(startDate || '');
-  const [localEndDate, setLocalEndDate] = useState(endDate || '');
+  const { t, locale } = useLanguage();
+  const [localStartDate, setLocalStartDate] = useState<Date | null>(
+    startDate ? new Date(startDate) : null
+  );
+  const [localEndDate, setLocalEndDate] = useState<Date | null>(
+    endDate ? new Date(endDate) : null
+  );
 
   const handleApply = () => {
     onDateRangeChange(
-      localStartDate || null,
-      localEndDate || null
+      localStartDate ? localStartDate.toISOString() : null,
+      localEndDate ? localEndDate.toISOString() : null
     );
   };
 
   const handleClear = () => {
-    setLocalStartDate('');
-    setLocalEndDate('');
+    setLocalStartDate(null);
+    setLocalEndDate(null);
     onDateRangeChange(null, null);
   };
 
-  const formatDateForInput = (date: string | null): string => {
-    if (!date) return '';
-    return date.split('T')[0];
-  };
-
-  const formatDateForApi = (date: string): string => {
-    if (!date) return '';
-    return new Date(date).toISOString();
+  // Map locale to date-fns locale
+  const getLocale = () => {
+    if (locale === 'zh-CN') return 'zh-CN';
+    if (locale === 'zh-TW') return 'zh-TW';
+    return 'en';
   };
 
   return (
     <div className="space-y-2 max-w-full">
       {/* Date Inputs Row */}
       <div className="flex items-center gap-2 max-w-full">
-        <input
-          type="date"
-          value={formatDateForInput(localStartDate)}
-          onChange={(e) => setLocalStartDate(e.target.value ? formatDateForApi(e.target.value) : '')}
-          className="w-0 flex-1 min-w-0 px-2 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
-        />
+        <div className="flex-1 min-w-0">
+          <DatePicker
+            selected={localStartDate}
+            onChange={(date) => setLocalStartDate(date)}
+            selectsStart
+            startDate={localStartDate}
+            endDate={localEndDate}
+            locale={getLocale()}
+            dateFormat="yyyy/MM/dd"
+            className="w-full px-2 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
+            placeholderText={locale === 'zh-CN' || locale === 'zh-TW' ? '年/月/日' : 'MM/DD/YYYY'}
+            maxDate={localEndDate || undefined}
+          />
+        </div>
         <span className="text-gray-500 flex-shrink-0">-</span>
-        <input
-          type="date"
-          value={formatDateForInput(localEndDate)}
-          onChange={(e) => setLocalEndDate(e.target.value ? formatDateForApi(e.target.value) : '')}
-          className="w-0 flex-1 min-w-0 px-2 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
-        />
+        <div className="flex-1 min-w-0">
+          <DatePicker
+            selected={localEndDate}
+            onChange={(date) => setLocalEndDate(date)}
+            selectsEnd
+            startDate={localStartDate}
+            endDate={localEndDate}
+            locale={getLocale()}
+            dateFormat="yyyy/MM/dd"
+            className="w-full px-2 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
+            placeholderText={locale === 'zh-CN' || locale === 'zh-TW' ? '年/月/日' : 'MM/DD/YYYY'}
+            minDate={localStartDate || undefined}
+          />
+        </div>
       </div>
 
       {/* Action Buttons Row */}

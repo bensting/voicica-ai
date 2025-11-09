@@ -33,14 +33,14 @@ export default function FiltersSection({
       <div className="hidden lg:block bg-white rounded-lg shadow-sm border border-gray-200 p-6">
         <div className="space-y-4">
           {/* Status Filter */}
-          <div>
-            <h3 className="text-sm font-medium text-gray-700 mb-3">{statusLabel}</h3>
+          <div className="grid grid-cols-[auto_minmax(0,400px)] gap-3 items-center">
+            <h3 className="text-sm font-medium text-gray-700 whitespace-nowrap">{statusLabel}</h3>
             <StatusFilter selectedStatus={selectedStatus} onStatusChange={onStatusChange} />
           </div>
 
           {/* Date Range Filter */}
-          <div>
-            <h3 className="text-sm font-medium text-gray-700 mb-3">{dateRangeLabel}</h3>
+          <div className="grid grid-cols-[auto_minmax(0,400px)] gap-3 items-start">
+            <h3 className="text-sm font-medium text-gray-700 whitespace-nowrap pt-2">{dateRangeLabel}</h3>
             <DateRangeFilter
               startDate={startDate}
               endDate={endDate}
@@ -52,16 +52,16 @@ export default function FiltersSection({
 
       {/* ========== 移动端布局 (<lg) ========== */}
       <div className="lg:hidden bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-        <div className="space-y-4">
+        <div className="space-y-3">
           {/* Status Filter */}
-          <div>
-            <h3 className="text-sm font-medium text-gray-700 mb-2">{statusLabel}</h3>
+          <div className="grid grid-cols-[auto_1fr] gap-2 items-center">
+            <h3 className="text-sm font-medium text-gray-700 whitespace-nowrap">{statusLabel}</h3>
             <StatusFilter selectedStatus={selectedStatus} onStatusChange={onStatusChange} />
           </div>
 
           {/* Date Range Filter */}
-          <div>
-            <h3 className="text-sm font-medium text-gray-700 mb-2">{dateRangeLabel}</h3>
+          <div className="grid grid-cols-[auto_1fr] gap-2 items-start">
+            <h3 className="text-sm font-medium text-gray-700 whitespace-nowrap pt-2">{dateRangeLabel}</h3>
             <DateRangeFilter
               startDate={startDate}
               endDate={endDate}

@@ -53,7 +53,11 @@ export default function GenerationHistoryPage() {
     handleDateRangeChange,
     closeConfirmDialog,
     fetchRecords,
-  } = useGenerationHistory({ user, authLoading });
+  } = useGenerationHistory({
+    user,
+    authLoading,
+    accumulateData: isMobile // Enable infinite scroll on mobile
+  });
 
   // Show loading while checking auth (optional, can be removed if not needed)
   // Note: Anonymous users can also view their generation history
@@ -116,9 +120,7 @@ export default function GenerationHistoryPage() {
       {isMobile ? (
         // Mobile Layout
         <div className="fixed inset-0 bg-gray-50 pt-16 overflow-hidden">
-          <div className="h-full px-4">
-            <MobileView {...viewProps} />
-          </div>
+          <MobileView {...viewProps} />
         </div>
       ) : (
         // Desktop Layout

@@ -13,6 +13,7 @@ interface UseGenerationHistoryProps {
   user: { uid: string } | null;
   authLoading?: boolean;
   pageSize?: number;
+  accumulateData?: boolean; // For infinite scroll on mobile
 }
 
 interface UseGenerationHistoryReturn {
@@ -58,6 +59,7 @@ export function useGenerationHistory({
   user,
   authLoading = false,
   pageSize: initialPageSize = 20,
+  accumulateData = false,
 }: UseGenerationHistoryProps): UseGenerationHistoryReturn {
   // Data state
   const [loading, setLoading] = useState(true);
@@ -103,7 +105,12 @@ export function useGenerationHistory({
       // Convert TtsRecord to Generation format
       const convertedGenerations = response.records.map(convertTtsRecordToGeneration);
 
-      setGenerations(convertedGenerations);
+      // Accumulate data for infinite scroll or replace for pagination
+      if (accumulateData && currentPage > 1) {
+        setGenerations(prev => [...prev, ...convertedGenerations]);
+      } else {
+        setGenerations(convertedGenerations);
+      }
       setTotal(response.total);
       setTotalPages(response.total_pages);
     } catch (err) {
@@ -115,7 +122,7 @@ export function useGenerationHistory({
     } finally {
       setLoading(false);
     }
-  }, [selectedStatus, startDate, endDate, currentPage, pageSize]);
+  }, [selectedStatus, startDate, endDate, currentPage, pageSize, accumulateData]);
 
   // Handle user login/logout
   useEffect(() => {

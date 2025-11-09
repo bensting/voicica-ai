@@ -97,14 +97,14 @@ export default function MobileView({
               <h2 className="text-base font-semibold text-gray-900 whitespace-nowrap">
                 {t('generationHistory.generatedSpeech')}
               </h2>
-              <div className="flex items-center justify-center w-6 h-6 bg-gray-900 text-white text-xs font-medium rounded-full">
+              <div className="flex items-center justify-center w-6 h-6 bg-purple-600 text-white text-xs font-medium rounded-full">
                 {total}
               </div>
             </div>
             {total > 0 && (
               <button
                 onClick={onClearAll}
-                className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-900 text-white text-xs font-medium rounded-lg hover:bg-gray-800 transition-colors"
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-purple-600 text-white text-xs font-medium rounded-lg hover:bg-purple-700 transition-colors"
               >
                 <Trash2 className="w-3.5 h-3.5" />
                 <span className="whitespace-nowrap">{t('generationHistory.clearAll')}</span>
@@ -164,7 +164,7 @@ export default function MobileView({
           {/* Loading More Indicator (for infinite scroll) */}
           {loading && generations.length > 0 && (
             <div className="flex justify-center py-4">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600"></div>
             </div>
           )}
 

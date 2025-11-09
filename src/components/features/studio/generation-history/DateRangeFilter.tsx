@@ -85,14 +85,14 @@ export default function DateRangeFilter({ startDate, endDate, onDateRangeChange 
       <div className="flex items-center gap-2 max-w-full">
         <button
           onClick={handleApply}
-          className="w-0 flex-1 px-4 py-2 bg-gray-900 text-white text-sm font-medium rounded-lg hover:bg-gray-800 transition-colors"
+          className="w-0 flex-1 px-4 py-2 bg-purple-600 text-white text-sm font-medium rounded-lg hover:bg-purple-700 transition-colors"
         >
           {t('generationHistory.filters.apply') || 'Apply'}
         </button>
         {(localStartDate || localEndDate) && (
           <button
             onClick={handleClear}
-            className="w-0 flex-1 px-4 py-2 bg-white text-gray-700 text-sm font-medium rounded-lg border border-gray-300 hover:bg-gray-50 transition-colors"
+            className="w-0 flex-1 px-4 py-2 bg-white text-purple-600 text-sm font-medium rounded-lg border border-purple-600 hover:bg-purple-50 transition-colors"
           >
             {t('generationHistory.filters.clear') || 'Clear'}
           </button>

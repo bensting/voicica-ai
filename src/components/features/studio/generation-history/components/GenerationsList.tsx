@@ -37,7 +37,7 @@ export default function GenerationsList({
       <div className="flex items-center justify-between p-4 lg:p-6 border-b border-gray-200">
         <div className="flex items-center gap-2 lg:gap-3 min-w-0 flex-1">
           <h2 className="text-base lg:text-xl font-semibold text-gray-900 whitespace-nowrap">{title}</h2>
-          <div className="flex items-center justify-center w-7 h-7 lg:w-8 lg:h-8 bg-gray-900 text-white text-xs lg:text-sm font-medium rounded-full flex-shrink-0">
+          <div className="flex items-center justify-center w-7 h-7 lg:w-8 lg:h-8 bg-purple-600 text-white text-xs lg:text-sm font-medium rounded-full flex-shrink-0">
             {total}
           </div>
         </div>
@@ -45,7 +45,7 @@ export default function GenerationsList({
         {total > 0 && (
           <button
             onClick={onClearAll}
-            className="flex items-center gap-1.5 lg:gap-2 px-3 lg:px-4 py-2 bg-gray-900 text-white text-xs lg:text-sm font-medium rounded-lg hover:bg-gray-800 transition-colors flex-shrink-0 ml-2"
+            className="flex items-center gap-1.5 lg:gap-2 px-3 lg:px-4 py-2 bg-purple-600 text-white text-xs lg:text-sm font-medium rounded-lg hover:bg-purple-700 transition-colors flex-shrink-0 ml-2"
           >
             <Trash2 className="w-3.5 h-3.5 lg:w-4 lg:h-4" />
             <span className="whitespace-nowrap">{clearAllLabel}</span>

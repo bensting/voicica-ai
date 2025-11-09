@@ -1,7 +1,8 @@
 'use client';
 
 import { X } from 'lucide-react';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 
 interface TextExpandModalProps {
   isOpen: boolean;
@@ -10,6 +11,13 @@ interface TextExpandModalProps {
 }
 
 export default function TextExpandModal({ isOpen, text, onClose }: TextExpandModalProps) {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+    return () => setMounted(false);
+  }, []);
+
   // Prevent body scroll when modal is open
   useEffect(() => {
     if (isOpen) {
@@ -22,18 +30,18 @@ export default function TextExpandModal({ isOpen, text, onClose }: TextExpandMod
     };
   }, [isOpen]);
 
-  if (!isOpen) return null;
+  if (!isOpen || !mounted) return null;
 
-  return (
-    <div className="fixed inset-0 z-[9999] flex items-end">
+  const modalContent = (
+    <>
       {/* Backdrop */}
       <div
-        className="fixed inset-0 bg-black/50 animate-fade-in"
+        className="fixed inset-0 z-[9998] bg-black/50 animate-fade-in"
         onClick={onClose}
       />
 
       {/* Modal Content */}
-      <div className="fixed bottom-0 left-0 right-0 w-full max-h-[80vh] bg-white rounded-t-2xl animate-slide-up">
+      <div className="fixed bottom-0 left-0 right-0 z-[9999] w-full max-h-[80vh] bg-white rounded-t-2xl animate-slide-up shadow-2xl">
         {/* Header */}
         <div className="sticky top-0 bg-white rounded-t-2xl border-b border-gray-200 px-4 py-3 flex items-center justify-between">
           <h3 className="text-base font-semibold text-gray-900">Generated Text</h3>
@@ -52,6 +60,8 @@ export default function TextExpandModal({ isOpen, text, onClose }: TextExpandMod
           </p>
         </div>
       </div>
-    </div>
+    </>
   );
+
+  return createPortal(modalContent, document.body);
 }

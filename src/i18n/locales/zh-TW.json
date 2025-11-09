@@ -108,8 +108,8 @@
     "noGenerations": "暫無生成記錄",
     "noGenerationsDescription": "開始創建後，您的語音生成記錄將顯示在這裡。",
     "filters": {
-      "status": "按狀態篩選",
-      "dateRange": "按日期範圍篩選",
+      "status": "狀態",
+      "dateRange": "日期",
       "allStatus": "全部狀態",
       "success": "成功",
       "processing": "處理中",

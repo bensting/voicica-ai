@@ -114,8 +114,8 @@
     "noGenerations": "No generations yet",
     "noGenerationsDescription": "Your speech generations will appear here once you start creating.",
     "filters": {
-      "status": "Filter by Status",
-      "dateRange": "Filter by Date Range",
+      "status": "Status",
+      "dateRange": "Date",
       "allStatus": "All Status",
       "success": "Success",
       "processing": "Processing",

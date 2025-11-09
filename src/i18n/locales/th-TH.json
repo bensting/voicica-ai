@@ -108,8 +108,8 @@
     "noGenerations": "ยังไม่มีการสร้าง",
     "noGenerationsDescription": "การสร้างเสียงของคุณจะปรากฏที่นี่เมื่อคุณเริ่มสร้าง",
     "filters": {
-      "status": "กรองตามสถานะ",
-      "dateRange": "กรองตามช่วงวันที่",
+      "status": "สถานะ",
+      "dateRange": "วันที่",
       "allStatus": "ทุกสถานะ",
       "success": "สำเร็จ",
       "processing": "กำลังดำเนินการ",

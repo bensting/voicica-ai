@@ -14,7 +14,7 @@ export default function LanguageSwitcher({
   variant = 'full',
   showArrow = true
 }: LanguageSwitcherProps = {}) {
-  const { locale, setLocale } = useLanguage();
+  const { locale, setLocale, isReady } = useLanguage();
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -62,8 +62,8 @@ export default function LanguageSwitcher({
           />
         </svg>
         {variant === 'full' && (
-          <span className="hidden sm:inline text-sm font-medium">
-            {currentLocale.nativeName}
+          <span className="hidden sm:inline text-sm font-medium" suppressHydrationWarning>
+            {isReady ? currentLocale.nativeName : ''}
           </span>
         )}
         {showArrow && (

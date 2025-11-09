@@ -38,36 +38,36 @@ export default function DateRangeFilter({ startDate, endDate, onDateRangeChange 
   };
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-2 max-w-full">
       {/* Date Inputs Row */}
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 max-w-full">
         <input
           type="date"
           value={formatDateForInput(localStartDate)}
           onChange={(e) => setLocalStartDate(e.target.value ? formatDateForApi(e.target.value) : '')}
-          className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
+          className="w-0 flex-1 min-w-0 px-2 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
         />
-        <span className="text-gray-500">-</span>
+        <span className="text-gray-500 flex-shrink-0">-</span>
         <input
           type="date"
           value={formatDateForInput(localEndDate)}
           onChange={(e) => setLocalEndDate(e.target.value ? formatDateForApi(e.target.value) : '')}
-          className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
+          className="w-0 flex-1 min-w-0 px-2 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
         />
       </div>
 
       {/* Action Buttons Row */}
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 max-w-full">
         <button
           onClick={handleApply}
-          className="flex-1 px-4 py-2 bg-gray-900 text-white text-sm font-medium rounded-lg hover:bg-gray-800 transition-colors"
+          className="w-0 flex-1 px-4 py-2 bg-gray-900 text-white text-sm font-medium rounded-lg hover:bg-gray-800 transition-colors"
         >
           {t('generationHistory.filters.apply') || 'Apply'}
         </button>
         {(localStartDate || localEndDate) && (
           <button
             onClick={handleClear}
-            className="flex-1 px-4 py-2 bg-white text-gray-700 text-sm font-medium rounded-lg border border-gray-300 hover:bg-gray-50 transition-colors"
+            className="w-0 flex-1 px-4 py-2 bg-white text-gray-700 text-sm font-medium rounded-lg border border-gray-300 hover:bg-gray-50 transition-colors"
           >
             {t('generationHistory.filters.clear') || 'Clear'}
           </button>

@@ -1,0 +1,77 @@
+import { useState, useCallback } from 'react';
+import { useAuth } from '@/contexts/AuthContext';
+import { getMySubscriptions, cancelSubscription } from '@/lib/api/subscription';
+import type { UserSubscriptionListResponse } from '@/types/subscription';
+
+type TabType = 'all' | 'text_to_speech' | 'voice_cloning';
+
+export function useSubscriptionManager() {
+  const { user, loading: authLoading } = useAuth();
+  const [activeTab, setActiveTab] = useState<TabType>('all');
+  const [data, setData] = useState<UserSubscriptionListResponse | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [cancelingId, setCancelingId] = useState<string | null>(null);
+
+  // 获取订阅数据
+  const fetchSubscriptions = useCallback(async (productType?: 'text_to_speech' | 'voice_cloning') => {
+    // 如果正在检查认证状态，不执行查询
+    if (authLoading) {
+      console.log('⏳ 等待认证状态确认...');
+      return;
+    }
+
+    // 如果用户未登录，不执行查询
+    if (!user) {
+      console.log('👤 用户未登录，跳过订阅查询');
+      setLoading(false);
+      return;
+    }
+
+    try {
+      setLoading(true);
+      setError(null);
+      const responseData: UserSubscriptionListResponse = await getMySubscriptions(
+        productType ? { product_type: productType } : undefined
+      );
+      setData(responseData);
+    } catch (err) {
+      console.error('Failed to fetch subscriptions:', err);
+      setError('Failed to load subscriptions');
+    } finally {
+      setLoading(false);
+    }
+  }, [user, authLoading]);
+
+  // 取消订阅
+  const handleCancelSubscription = useCallback(async (subscriptionId: string, reason?: string) => {
+    try {
+      setCancelingId(subscriptionId);
+      await cancelSubscription(subscriptionId, reason ? { cancellation_reason: reason } : undefined);
+
+      // 重新获取订阅列表
+      await fetchSubscriptions(activeTab === 'all' ? undefined : activeTab);
+
+      return { success: true };
+    } catch (err: any) {
+      console.error('Failed to cancel subscription:', err);
+      return {
+        success: false,
+        error: err.response?.data?.detail || 'Failed to cancel subscription'
+      };
+    } finally {
+      setCancelingId(null);
+    }
+  }, [fetchSubscriptions, activeTab]);
+
+  return {
+    activeTab,
+    setActiveTab,
+    data,
+    loading,
+    error,
+    cancelingId,
+    fetchSubscriptions,
+    handleCancelSubscription,
+  };
+}

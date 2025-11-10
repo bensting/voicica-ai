@@ -87,3 +87,16 @@ export const getMySubscriptions = (params?: {
 }): Promise<UserSubscriptionListResponse> => {
   return apiClient.get<UserSubscriptionListResponse>('/api/v1/subscriptions/my-subscriptions', { params });
 };
+
+// 取消订阅（仅限 Stripe）
+export const cancelSubscription = (
+  subscriptionId: string,
+  data?: { cancellation_reason?: string }
+) => {
+  return apiClient.post<{
+    success: boolean;
+    message: string;
+    subscription_id: string;
+    canceled_at: string;
+  }>(`/api/v1/subscriptions/${subscriptionId}/cancel`, data || {});
+};

@@ -29,7 +29,9 @@ export default function MySubscriptionPage() {
   useEffect(() => {
     if (!authLoading && !user) {
       console.log('🚫 未登录，重定向到登录页');
-      router.push('/login');
+      // 保存当前路径，登录成功后返回
+      const currentPath = window.location.pathname;
+      router.push(`/studio/login?returnUrl=${encodeURIComponent(currentPath)}`);
     }
   }, [user, authLoading, router]);
 

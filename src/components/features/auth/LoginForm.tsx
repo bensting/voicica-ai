@@ -6,7 +6,6 @@ import SocialLoginButton, {
   GoogleIcon,
   AppleIcon,
   TwitterIcon,
-  SSOIcon,
 } from './SocialLoginButton';
 
 /**
@@ -75,15 +74,6 @@ export default function LoginForm() {
           icon={<TwitterIcon />}
         >
           {t('login.signInWithX')}
-        </SocialLoginButton>
-
-        <SocialLoginButton
-          provider="sso"
-          onClick={() => console.log('SSO not implemented')}
-          disabled={loading}
-          icon={<SSOIcon />}
-        >
-          {t('login.signInWithSSO')}
         </SocialLoginButton>
       </div>
 

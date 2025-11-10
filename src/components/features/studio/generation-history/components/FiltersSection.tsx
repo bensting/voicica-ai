@@ -31,16 +31,18 @@ export default function FiltersSection({
     <>
       {/* ========== 桌面端布局 (lg+) ========== */}
       <div className="hidden lg:block bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        <div className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-4 items-start max-w-[500px]">
-          {/* Status Filter Row */}
-          <h3 className="text-sm font-medium text-gray-700 whitespace-nowrap pt-2.5">{statusLabel}</h3>
-          <div className="min-w-0 overflow-hidden">
-            <StatusFilter selectedStatus={selectedStatus} onStatusChange={onStatusChange} />
+        <div className="flex items-center gap-6">
+          {/* Status Filter */}
+          <div className="flex items-center gap-3">
+            <h3 className="text-sm font-medium text-gray-700 whitespace-nowrap">{statusLabel}</h3>
+            <div className="w-48">
+              <StatusFilter selectedStatus={selectedStatus} onStatusChange={onStatusChange} />
+            </div>
           </div>
 
-          {/* Date Range Filter Row */}
-          <h3 className="text-sm font-medium text-gray-700 whitespace-nowrap pt-2">{dateRangeLabel}</h3>
-          <div className="min-w-0 overflow-hidden">
+          {/* Date Range Filter */}
+          <div className="flex items-center gap-3">
+            <h3 className="text-sm font-medium text-gray-700 whitespace-nowrap">{dateRangeLabel}</h3>
             <DateRangeFilter
               startDate={startDate}
               endDate={endDate}

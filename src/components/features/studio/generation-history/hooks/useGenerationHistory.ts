@@ -130,25 +130,7 @@ export function useGenerationHistory({
     }
   }, [selectedStatus, startDate, endDate, currentPage, pageSize, accumulateData]);
 
-  // Handle user login/logout
-  useEffect(() => {
-    if (authLoading) return;
-
-    if (!user) {
-      // User logged out, clear all data
-      setGenerations([]);
-      setTotal(0);
-      setTotalPages(0);
-      setCurrentPage(1);
-      setError(null);
-    } else {
-      // User logged in, fetch records
-      void fetchRecords();
-    }
-  }, [user, authLoading, fetchRecords]);
-
-  // Fetch records when filters change (supports both authenticated and anonymous users)
-  // The backend uses unified_user which handles both logged-in and anonymous users
+  // Handle user login/logout and fetch records when filters change
   // Wait for auth to complete before fetching to avoid duplicate queries
   useEffect(() => {
     // Don't fetch if still checking authentication status
@@ -156,8 +138,19 @@ export function useGenerationHistory({
       return;
     }
 
+    // If user logged out, clear all data (don't fetch)
+    if (!user) {
+      setGenerations([]);
+      setTotal(0);
+      setTotalPages(0);
+      setCurrentPage(1);
+      setError(null);
+      return;
+    }
+
+    // User is logged in, fetch records
     void fetchRecords();
-  }, [fetchRecords, authLoading]);
+  }, [user, authLoading, fetchRecords]);
 
   // Handle clear all records
   const handleClearAll = useCallback(async () => {

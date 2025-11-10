@@ -53,11 +53,12 @@ export function useSubscriptionManager() {
       await fetchSubscriptions(activeTab === 'all' ? undefined : activeTab);
 
       return { success: true };
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Failed to cancel subscription:', err);
+      const error = err as { response?: { data?: { detail?: string } } };
       return {
         success: false,
-        error: err.response?.data?.detail || 'Failed to cancel subscription'
+        error: error.response?.data?.detail || 'Failed to cancel subscription'
       };
     } finally {
       setCancelingId(null);

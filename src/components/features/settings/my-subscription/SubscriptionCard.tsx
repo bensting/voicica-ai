@@ -63,7 +63,8 @@ export default function SubscriptionCard({
   // 获取显示名称（支持多语言）
   const getDisplayName = () => {
     // 如果有 display_name，尝试获取当前语言的名称
-    const displayNameMap = (subscription as any).display_name as Record<string, string> | undefined;
+    type SubscriptionWithDisplayName = UserSubscription & { display_name?: Record<string, string> };
+    const displayNameMap = (subscription as SubscriptionWithDisplayName).display_name;
 
     if (displayNameMap && typeof displayNameMap === 'object') {
       // 尝试多种键格式：locale 完整格式 (en-US)、简短格式 (en)、中文特殊格式 (zh-CN, zh-TW)
@@ -114,53 +115,107 @@ export default function SubscriptionCard({
     <>
       <div
         className={`
-          border rounded-lg p-4 flex items-center justify-between
+          border rounded-lg p-4
           ${isActive ? 'border-purple-200 bg-purple-50' : 'border-gray-200 bg-white'}
         `}
       >
-        {/* 左侧：图标 + 计划信息 */}
-        <div className="flex items-center gap-4">
-          <span className="text-3xl">{getPlatformIcon(subscription.platform)}</span>
-          <div>
-            {/* 计划名称 */}
-            <div className="flex items-center gap-2 mb-1">
-              <h4 className="text-lg font-semibold text-gray-900">
-                {getDisplayName()}
-              </h4>
-              <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusBadge(subscription.status)}`}>
-                {subscription.status}
-              </span>
+        {/* 桌面端：单行布局 */}
+        <div className="hidden lg:flex items-center justify-between">
+          {/* 左侧：图标 + 计划信息 */}
+          <div className="flex items-center gap-4">
+            <span className="text-3xl">{getPlatformIcon(subscription.platform)}</span>
+            <div>
+              {/* 计划名称 */}
+              <div className="flex items-center gap-2 mb-1">
+                <h4 className="text-lg font-semibold text-gray-900">
+                  {getDisplayName()}
+                </h4>
+                <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusBadge(subscription.status)}`}>
+                  {subscription.status}
+                </span>
+              </div>
+              {/* 有效期 */}
+              {subscription.end_date && (
+                <p className="text-sm text-gray-600">
+                  Valid until: {formatDate(subscription.end_date)}
+                  {subscription.days_remaining !== undefined && subscription.days_remaining !== null && (
+                    <span className="ml-2 text-gray-500">({subscription.days_remaining} days left)</span>
+                  )}
+                </p>
+              )}
             </div>
-            {/* 有效期 */}
-            {subscription.end_date && (
-              <p className="text-sm text-gray-600">
-                Valid until: {formatDate(subscription.end_date)}
-                {subscription.days_remaining !== undefined && subscription.days_remaining !== null && (
-                  <span className="ml-2 text-gray-500">({subscription.days_remaining} days left)</span>
-                )}
+          </div>
+
+          {/* 右侧：价格 + 取消按钮 */}
+          <div className="flex items-center gap-4">
+            {/* 价格 */}
+            <div className="text-right">
+              <div className="text-lg font-semibold text-gray-900">
+                {formatPrice(subscription.amount, subscription.currency)}
+              </div>
+              <p className="text-xs text-gray-500">
+                {subscription.credits_allocated.toLocaleString()} credits
               </p>
+            </div>
+
+            {/* 取消按钮 */}
+            {showCancelButton && (
+              <button
+                onClick={() => setShowCancelDialog(true)}
+                disabled={isCanceling}
+                className="px-4 py-2 text-sm font-medium text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
+              >
+                {isCanceling ? 'Canceling...' : 'Cancel Subscription'}
+              </button>
             )}
           </div>
         </div>
 
-        {/* 右侧：价格 + 取消按钮 */}
-        <div className="flex items-center gap-4">
-          {/* 价格 */}
-          <div className="text-right">
-            <div className="text-lg font-semibold text-gray-900">
-              {formatPrice(subscription.amount, subscription.currency)}
+        {/* 移动端：多行布局 */}
+        <div className="lg:hidden">
+          {/* 第一行：图标 + 计划信息 + 价格 */}
+          <div className="flex items-start justify-between mb-3">
+            <div className="flex items-start gap-3">
+              <span className="text-3xl">{getPlatformIcon(subscription.platform)}</span>
+              <div>
+                {/* 计划名称 */}
+                <div className="flex items-center gap-2 mb-1 flex-wrap">
+                  <h4 className="text-base font-semibold text-gray-900">
+                    {getDisplayName()}
+                  </h4>
+                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusBadge(subscription.status)}`}>
+                    {subscription.status}
+                  </span>
+                </div>
+                {/* 有效期 */}
+                {subscription.end_date && (
+                  <p className="text-xs text-gray-600">
+                    Valid until: {formatDate(subscription.end_date)}
+                    {subscription.days_remaining !== undefined && subscription.days_remaining !== null && (
+                      <span className="block text-gray-500">({subscription.days_remaining} days left)</span>
+                    )}
+                  </p>
+                )}
+              </div>
             </div>
-            <p className="text-xs text-gray-500">
-              {subscription.credits_allocated.toLocaleString()} credits
-            </p>
+
+            {/* 价格 */}
+            <div className="text-right">
+              <div className="text-base font-semibold text-gray-900">
+                {formatPrice(subscription.amount, subscription.currency)}
+              </div>
+              <p className="text-xs text-gray-500">
+                {subscription.credits_allocated.toLocaleString()} credits
+              </p>
+            </div>
           </div>
 
-          {/* 取消按钮 */}
+          {/* 第二行：取消按钮 */}
           {showCancelButton && (
             <button
               onClick={() => setShowCancelDialog(true)}
               disabled={isCanceling}
-              className="px-4 py-2 text-sm font-medium text-red-600 border border-red-300 rounded-lg hover:bg-red-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
+              className="w-full px-4 py-2 text-sm font-medium text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isCanceling ? 'Canceling...' : 'Cancel Subscription'}
             </button>

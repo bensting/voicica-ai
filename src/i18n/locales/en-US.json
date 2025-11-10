@@ -162,7 +162,7 @@
       "note": "Your allocated credits will remain available for use.",
       "reasonLabel": "Reason for cancellation (optional)",
       "reasonPlaceholder": "Tell us why you're canceling...",
-      "confirm": "Yes, Cancel Subscription",
+      "confirm": "Confirm",
       "canceling": "Canceling..."
     }
   },

@@ -156,7 +156,7 @@
       "note": "您已分配的积分将继续可用。",
       "reasonLabel": "取消原因（选填）",
       "reasonPlaceholder": "告诉我们您取消的原因...",
-      "confirm": "确认取消订阅",
+      "confirm": "确认",
       "canceling": "取消中..."
     }
   },

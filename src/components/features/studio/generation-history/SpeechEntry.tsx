@@ -16,16 +16,37 @@ export default function SpeechEntry({ generation, onDelete, onDownload }: Speech
   const [isPlaying, setIsPlaying] = useState(false);
   const [isTextExpanded, setIsTextExpanded] = useState(false);
   const [showExpandButton, setShowExpandButton] = useState(false);
-  const textRef = useRef<HTMLParagraphElement>(null);
+  const mobileTextRef = useRef<HTMLParagraphElement>(null);
+  const desktopTextRef = useRef<HTMLParagraphElement>(null);
 
   useEffect(() => {
-    // Check if text content exceeds 2 lines
-    if (textRef.current) {
-      const lineHeight = parseFloat(getComputedStyle(textRef.current).lineHeight);
-      const height = textRef.current.scrollHeight;
-      const lines = Math.round(height / lineHeight);
-      setShowExpandButton(lines > 2);
-    }
+    // Check if text content is truncated by line-clamp
+    const checkTruncation = () => {
+      // Check if the element is visible (offsetParent is not null for visible elements)
+      // Check mobile (line-clamp-1)
+      if (mobileTextRef.current && mobileTextRef.current.offsetParent !== null) {
+        const { scrollHeight, clientHeight } = mobileTextRef.current;
+        if (scrollHeight > clientHeight + 1) { // +1 for rounding errors
+          setShowExpandButton(true);
+          return;
+        }
+      }
+
+      // Check desktop (line-clamp-2)
+      if (desktopTextRef.current && desktopTextRef.current.offsetParent !== null) {
+        const { scrollHeight, clientHeight } = desktopTextRef.current;
+        if (scrollHeight > clientHeight + 1) { // +1 for rounding errors
+          setShowExpandButton(true);
+          return;
+        }
+      }
+
+      setShowExpandButton(false);
+    };
+
+    // Run after a short delay to ensure styles are applied
+    const timer = setTimeout(checkTruncation, 100);
+    return () => clearTimeout(timer);
   }, [generation.text]);
 
   const handlePlay = () => {
@@ -65,7 +86,7 @@ export default function SpeechEntry({ generation, onDelete, onDownload }: Speech
         {/* 移动端：单行文本 + 右侧图标按钮 */}
         <div className="lg:hidden flex items-start gap-2">
           <p
-            ref={textRef}
+            ref={mobileTextRef}
             className={`flex-1 text-gray-900 text-base ${!isTextExpanded ? 'line-clamp-1' : ''}`}
           >
             {generation.text}
@@ -87,17 +108,30 @@ export default function SpeechEntry({ generation, onDelete, onDownload }: Speech
 
         {/* 桌面端：两行文本 + 下方按钮 */}
         <div className="hidden lg:block">
-          <p
-            className={`text-gray-900 text-lg leading-relaxed ${!isTextExpanded ? 'line-clamp-2' : ''}`}
-          >
-            {generation.text}
-          </p>
+          <div className={`${isTextExpanded ? 'max-h-64 overflow-y-auto pr-2' : ''}`}>
+            <p
+              ref={desktopTextRef}
+              className={`text-gray-900 text-lg leading-relaxed ${!isTextExpanded ? 'line-clamp-2' : ''}`}
+            >
+              {generation.text}
+            </p>
+          </div>
           {showExpandButton && (
             <button
               onClick={() => setIsTextExpanded(!isTextExpanded)}
-              className="mt-2 text-sm text-blue-600 hover:text-blue-700 font-medium transition-colors"
+              className="mt-2 text-sm text-purple-600 hover:text-purple-700 font-medium transition-colors inline-flex items-center gap-1"
             >
-              {isTextExpanded ? 'Show less' : 'Show more'}
+              {isTextExpanded ? (
+                <>
+                  <Minus className="w-3.5 h-3.5" />
+                  <span>Show less</span>
+                </>
+              ) : (
+                <>
+                  <Plus className="w-3.5 h-3.5" />
+                  <span>Show more</span>
+                </>
+              )}
             </button>
           )}
         </div>

@@ -115,6 +115,7 @@ export interface UserSubscription {
   currency?: string;
   auto_renew: boolean;
   created_at: string;
+  display_name?: Record<string, string>; // 多语言显示名称 { "en": "Basic Plan", "zh-CN": "基础套餐" }
   is_active: boolean;
   days_remaining?: number;
 }

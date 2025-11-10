@@ -47,7 +47,7 @@ export default function MySubscriptionPage() {
   // 认证加载中，显示加载状态
   if (authLoading) {
     return (
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 lg:p-6">
         <LoadingState />
       </div>
     );
@@ -59,30 +59,32 @@ export default function MySubscriptionPage() {
   }
 
   return (
-    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 lg:p-6 flex flex-col max-h-[calc(100vh-120px)] lg:max-h-[calc(100vh-180px)]">
       {/* Section Header */}
       <SectionHeader />
 
       {/* Tabs */}
       <SubscriptionTabs activeTab={activeTab} onTabChange={setActiveTab} />
 
-      {/* Content */}
-      {loading ? (
-        <LoadingState />
-      ) : error ? (
-        <ErrorState
-          error={error}
-          onRetry={() => fetchSubscriptions(activeTab === 'all' ? undefined : activeTab)}
-        />
-      ) : data?.subscriptions.length === 0 ? (
-        <EmptyState />
-      ) : data ? (
-        <SubscriptionList
-          data={data}
-          onCancel={handleCancelSubscription}
-          cancelingId={cancelingId}
-        />
-      ) : null}
+      {/* Content - Scrollable */}
+      <div className="flex-1 overflow-y-auto">
+        {loading ? (
+          <LoadingState />
+        ) : error ? (
+          <ErrorState
+            error={error}
+            onRetry={() => fetchSubscriptions(activeTab === 'all' ? undefined : activeTab)}
+          />
+        ) : data?.subscriptions.length === 0 ? (
+          <EmptyState />
+        ) : data ? (
+          <SubscriptionList
+            data={data}
+            onCancel={handleCancelSubscription}
+            cancelingId={cancelingId}
+          />
+        ) : null}
+      </div>
     </div>
   );
 }

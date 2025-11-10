@@ -18,7 +18,7 @@ const tabs: Tab[] = [
 
 export default function SubscriptionTabs({ activeTab, onTabChange }: SubscriptionTabsProps) {
   return (
-    <div className="border-b border-gray-200 mb-6">
+    <div className="border-b border-gray-200 mb-4">
       <nav className="flex gap-4">
         {tabs.map((tab) => (
           <button

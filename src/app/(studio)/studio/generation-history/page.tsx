@@ -63,7 +63,7 @@ export default function GenerationHistoryPage() {
   // Note: Anonymous users can also view their generation history
   if (authLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 pt-20 flex items-center justify-center">
+      <div className="fixed inset-0 bg-gray-50 pt-[60px] flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
       </div>
     );
@@ -72,8 +72,8 @@ export default function GenerationHistoryPage() {
   // Show error state
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-50 pt-20">
-        <div className="max-w-6xl mx-auto px-4 py-8">
+      <div className="fixed inset-0 bg-gray-50 pt-[60px] flex items-center justify-center">
+        <div className="max-w-md mx-auto px-4">
           <div className="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
             <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
               <svg className="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -118,14 +118,14 @@ export default function GenerationHistoryPage() {
   return (
     <>
       {isMobile ? (
-        // Mobile Layout
+        // Mobile Layout - Fixed viewport with internal scrolling
         <div className="fixed inset-0 bg-gray-50 pt-16 overflow-hidden">
           <MobileView {...viewProps} />
         </div>
       ) : (
-        // Desktop Layout
-        <div className="min-h-screen bg-gray-50 pt-20 overflow-x-hidden">
-          <div className="max-w-6xl mx-auto px-4 py-8">
+        // Desktop Layout - Fixed viewport with internal scrolling (like TTS page)
+        <div className="fixed inset-0 bg-gradient-to-b from-gray-50 to-white pt-[60px] overflow-hidden">
+          <div className="h-full max-w-6xl mx-auto px-4 py-6 overflow-hidden">
             <DesktopView {...viewProps} />
           </div>
         </div>

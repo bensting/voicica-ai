@@ -56,14 +56,14 @@ export default function CancelSubscriptionDialog({
         {/* Warning Message */}
         <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-4">
           <p className="text-sm text-yellow-800">
-            <strong>Warning:</strong> This action cannot be undone. Your subscription will be canceled immediately and you will not be charged again.
+            <strong>Warning:</strong> {t('subscription.cancel.warning')}
           </p>
         </div>
 
         {/* Benefits Note */}
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
           <p className="text-sm text-blue-800">
-            <strong>Note:</strong> Your allocated credits will remain available for use.
+            <strong>Note:</strong> {t('subscription.cancel.note')}
           </p>
         </div>
 
@@ -99,10 +99,10 @@ export default function CancelSubscriptionDialog({
             {loading ? (
               <>
                 <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                <span>Canceling...</span>
+                <span>{t('subscription.cancel.canceling')}</span>
               </>
             ) : (
-              <span>{t('subscription.cancel.confirm') || 'Yes, Cancel Subscription'}</span>
+              <span>{t('subscription.cancel.confirm')}</span>
             )}
           </button>
         </div>

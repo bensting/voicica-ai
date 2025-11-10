@@ -1,6 +1,7 @@
 {
   "common": {
-    "brand": "AI 语音实验室"
+    "brand": "AI 语音实验室",
+    "cancel": "取消"
   },
   "navbar": {
     "explore": "探索",
@@ -148,6 +149,15 @@
       "feature4": "优先生成",
       "feature5": "创建无限声音克隆模型",
       "upgradeNow": "Upgrade Now"
+    },
+    "cancel": {
+      "title": "取消订阅",
+      "warning": "此操作无法撤销。您的订阅将立即取消，不会再次收费。",
+      "note": "您已分配的积分将继续可用。",
+      "reasonLabel": "取消原因（选填）",
+      "reasonPlaceholder": "告诉我们您取消的原因...",
+      "confirm": "确认取消订阅",
+      "canceling": "取消中..."
     }
   },
   "languages": {

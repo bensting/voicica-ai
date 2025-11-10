@@ -1,6 +1,7 @@
 {
   "common": {
-    "brand": "AI 語音實驗室"
+    "brand": "AI 語音實驗室",
+    "cancel": "取消"
   },
   "navbar": {
     "explore": "探索",
@@ -148,6 +149,15 @@
       "feature4": "優先生成",
       "feature5": "創建無限聲音克隆模型",
       "upgradeNow": "Upgrade Now"
+    },
+    "cancel": {
+      "title": "取消訂閱",
+      "warning": "此操作無法撤銷。您的訂閱將立即取消，不會再次收費。",
+      "note": "您已分配的積分將繼續可用。",
+      "reasonLabel": "取消原因（選填）",
+      "reasonPlaceholder": "告訴我們您取消的原因...",
+      "confirm": "確認取消訂閱",
+      "canceling": "取消中..."
     }
   },
   "languages": {

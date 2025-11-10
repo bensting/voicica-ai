@@ -6,7 +6,8 @@
 
 {
   "common": {
-    "brand": "AI Voice Labs"
+    "brand": "AI Voice Labs",
+    "cancel": "Cancel"
   },
   "navbar": {
     "explore": "Explore",
@@ -154,6 +155,15 @@
       "feature4": "Priority generation",
       "feature5": "Create unlimited voice clone models",
       "upgradeNow": "Upgrade Now"
+    },
+    "cancel": {
+      "title": "Cancel Subscription",
+      "warning": "This action cannot be undone. Your subscription will be canceled immediately and you will not be charged again.",
+      "note": "Your allocated credits will remain available for use.",
+      "reasonLabel": "Reason for cancellation (optional)",
+      "reasonPlaceholder": "Tell us why you're canceling...",
+      "confirm": "Yes, Cancel Subscription",
+      "canceling": "Canceling..."
     }
   },
   "studio": {

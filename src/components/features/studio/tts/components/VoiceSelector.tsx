@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import type { VoiceModel } from '@/hooks/useTTSGenerator';
+import type { Voice } from '@/types/voice';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { getLocalizedVoiceName } from '@/types/voice';
@@ -16,8 +16,8 @@ import type { LocaleOption } from '@/types/config';
 import LanguageSelectorModal from '@/components/common/LanguageSelectorModal';
 
 interface VoiceSelectorProps {
-  selectedVoice: VoiceModel | null;
-  onSelect: (voice: VoiceModel) => void;
+  selectedVoice: Voice | null;
+  onSelect: (voice: Voice) => void;
   disabled?: boolean;
 }
 
@@ -64,7 +64,7 @@ export default function VoiceSelector({
   const voiceName = selectedVoice ? getLocalizedVoiceName(selectedVoice, locale) : '晓臻';
 
   // Helper function to get voice display name
-  const getVoiceName = (voice: VoiceModel) => getLocalizedVoiceName(voice, locale);
+  const getVoiceName = (voice: Voice) => getLocalizedVoiceName(voice, locale);
 
   // Get all locale options for language modal
   const allLocaleOptions = getAllLocaleOptions();

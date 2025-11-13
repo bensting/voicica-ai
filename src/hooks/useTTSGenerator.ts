@@ -22,7 +22,7 @@ export type VoiceModel = Voice;
 export function useTTSGenerator(maxCharacters: number = 120) {
   const { refreshCredits, deductCredits } = useCredits();
   const [text, setText] = useState('');
-  const [selectedVoice, setSelectedVoice] = useState<VoiceModel | null>(null);
+  const [selectedVoice, setSelectedVoice] = useState<Voice | null>(null);
   const [speed, setSpeed] = useState(1.0);
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -74,7 +74,7 @@ export function useTTSGenerator(maxCharacters: number = 120) {
   );
 
   // 处理语音选择
-  const handleVoiceSelect = useCallback((voice: VoiceModel) => {
+  const handleVoiceSelect = useCallback((voice: Voice) => {
     setSelectedVoice(voice);
     setError(null);
   }, []);
@@ -99,7 +99,7 @@ export function useTTSGenerator(maxCharacters: number = 120) {
       console.log('🎤 开始生成音频', {
         text,
         voice: selectedVoice.name,
-        voiceId: selectedVoice.id,
+        voiceName: selectedVoice.name,
         language: selectedVoice.locale,
         speed,
       });
@@ -107,7 +107,7 @@ export function useTTSGenerator(maxCharacters: number = 120) {
       // 调用后端 API 生成音频
       const result = await generateTTS({
         text,
-        voiceId: selectedVoice.id,
+        voiceName: selectedVoice.name,  // 使用 voice.name 而不是 voice.id
         language: selectedVoice.locale,
         speed,
       });

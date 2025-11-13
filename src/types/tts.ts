@@ -64,7 +64,7 @@ export interface Generation {
 // TTS 生成请求参数
 export interface TtsGenerateRequest {
   text: string;
-  voiceId: string;
+  voiceName: string;  // 语音名称，如 zh-CN-XiaoxiaoNeural
   language: string;
   speed?: number;
   pitch?: number;

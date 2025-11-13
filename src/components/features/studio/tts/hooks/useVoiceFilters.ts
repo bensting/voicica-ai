@@ -1,10 +1,10 @@
 import { useState, useMemo } from 'react';
-import type { VoiceModel } from '@/hooks/useTTSGenerator';
+import type { Voice } from '@/types/voice';
 import { getLanguageFromLocale, getCountryFromLocale } from '../utils/localeUtils';
 import { getLanguagesByCountry } from '../utils/localeConfig';
 
 interface UseVoiceFiltersProps {
-  voices: VoiceModel[];
+  voices: Voice[];
   languages: string[];
 }
 

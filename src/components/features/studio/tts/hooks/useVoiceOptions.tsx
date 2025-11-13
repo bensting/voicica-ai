@@ -1,11 +1,11 @@
 import { useMemo, useCallback } from 'react';
-import type { VoiceModel } from '@/hooks/useTTSGenerator';
+import type { Voice } from '@/types/voice';
 import type { SelectOption } from '@/components/ui/CustomSelect';
 import { getCountryFlagComponent, sortCountriesByLanguage } from '../utils/countryUtils';
 import { SUPPORTED_COUNTRIES, SUPPORTED_LANGUAGES } from '../utils/localeConfig';
 
 interface UseVoiceOptionsProps {
-  voices: VoiceModel[];
+  voices: Voice[];
   availableLanguages: string[];
   locale: string;
   t: (key: string) => string;

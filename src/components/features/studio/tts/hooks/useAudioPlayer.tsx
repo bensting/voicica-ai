@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import type { VoiceModel } from '@/hooks/useTTSGenerator';
+import type { Voice } from '@/types/voice';
 
 /**
  * 音频播放 Hook
@@ -8,7 +8,7 @@ export function useAudioPlayer() {
   const [currentAudio, setCurrentAudio] = useState<HTMLAudioElement | null>(null);
   const [playingVoiceId, setPlayingVoiceId] = useState<string | null>(null);
 
-  const handlePlayPause = useCallback((voice: VoiceModel, e: React.MouseEvent) => {
+  const handlePlayPause = useCallback((voice: Voice, e: React.MouseEvent) => {
     e.stopPropagation();
 
     // 如果点击的是正在播放的音频，则暂停

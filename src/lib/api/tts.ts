@@ -21,7 +21,7 @@ export async function generateTTS(
 ): Promise<TtsTaskStatus> {
   return apiClient.post<TtsTaskStatus>('/api/v1/tts/generate', {
     text: request.text,
-    voice_id: request.voiceId,
+    voiceName: request.voiceName,  // 使用 camelCase，后端有 alias 支持
     language: request.language,
     speed: request.speed,
     pitch: request.pitch,

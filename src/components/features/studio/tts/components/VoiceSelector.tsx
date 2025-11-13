@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import type { VoiceModel } from '@/hooks/useTTSGenerator';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useAuth } from '@/contexts/AuthContext';
 import { getLocalizedVoiceName } from '@/types/voice';
 import { useVoices } from '@/components/features/studio/voices/hooks/useVoices';
 import VoiceSearchBar from '@/components/features/studio/voices/VoiceSearchBar';
@@ -33,6 +34,7 @@ export default function VoiceSelector({
 }: VoiceSelectorProps) {
   const router = useRouter();
   const { locale } = useLanguage();
+  const { user, loading: authLoading } = useAuth();
   const [isLanguageModalOpen, setIsLanguageModalOpen] = useState(false);
 
   // Use voices hook for desktop (only runs on desktop)
@@ -51,7 +53,7 @@ export default function VoiceSelector({
     loadingMore,
     hasMore,
     loadMoreVoices,
-  } = useVoices({ locale });
+  } = useVoices({ locale, user, authLoading });
 
   // Mobile: Navigate to voices page
   const handleOpenVoiceModal = () => {

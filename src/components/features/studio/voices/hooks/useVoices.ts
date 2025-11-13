@@ -3,9 +3,12 @@ import { getVoices } from '@/lib/api/voice';
 import { getLocalizedVoiceName } from '@/types/voice';
 import type { Voice } from '@/types/voice';
 import type { LocaleOption } from '@/types/config';
+import type { User } from 'firebase/auth';
 
 interface UseVoicesProps {
   locale: string;
+  user: User | null;
+  authLoading: boolean;
 }
 
 interface UseVoicesReturn {
@@ -51,7 +54,7 @@ interface UseVoicesReturn {
  * - Search and filtering
  * - Audio playback
  */
-export function useVoices({ locale }: UseVoicesProps): UseVoicesReturn {
+export function useVoices({ locale, user, authLoading }: UseVoicesProps): UseVoicesReturn {
   // Voices data state
   const [voices, setVoices] = useState<Voice[]>([]);
   const [loading, setLoading] = useState(true);
@@ -174,9 +177,22 @@ export function useVoices({ locale }: UseVoicesProps): UseVoicesReturn {
   }, [loadingMore, currentPage, totalPages, selectedLanguage, selectedGender, selectedTagId, pageSize]);
 
   // Initial load and reload when filters change
+  // Wait for authentication to complete before loading voices
   useEffect(() => {
+    // Skip if auth is still loading
+    if (authLoading) {
+      return;
+    }
+
+    // Skip if user is not authenticated
+    if (!user) {
+      setLoading(false);
+      return;
+    }
+
+    // Load voices only after authentication is complete
     void loadVoices();
-  }, [loadVoices]);
+  }, [loadVoices, authLoading, user]);
 
   // Filter voices based on search query (client-side only)
   // Other filters (language, gender, tag) are handled by API

@@ -52,6 +52,7 @@ export default function VoicesPage() {
     playingVoiceId,
     handlePlayVoice,
     loadMoreVoices,
+    refreshVoices,
   } = useVoices({ locale, user, authLoading });
 
   // Handle scroll to load more
@@ -184,6 +185,7 @@ export default function VoicesPage() {
                 getVoiceName={getVoiceName}
                 onPlayVoice={handlePlayVoice}
                 onSelectVoice={handleSelectVoice}
+                onRetry={refreshVoices}
               />
 
               {/* Loading more indicator */}

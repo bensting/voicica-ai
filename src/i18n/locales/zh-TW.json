@@ -1,7 +1,8 @@
 {
   "common": {
     "brand": "AI 語音實驗室",
-    "cancel": "取消"
+    "cancel": "取消",
+    "retry": "重試"
   },
   "navbar": {
     "explore": "探索",

@@ -1,6 +1,8 @@
 {
   "common": {
-    "brand": "AI Voice Labs"
+    "brand": "AI Voice Labs",
+    "cancel": "ยกเลิก",
+    "retry": "ลองใหม่"
   },
   "navbar": {
     "explore": "สำรวจ",

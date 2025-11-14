@@ -1,5 +1,6 @@
 import VoiceCard from './VoiceCard';
 import type { Voice } from '@/types/voice';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface VoiceListProps {
   voices: Voice[];
@@ -14,6 +15,8 @@ interface VoiceListProps {
   loadingMore?: boolean;
   hasMore?: boolean;
   onLoadMore?: () => void;
+  // Error retry handler
+  onRetry?: () => void;
 }
 
 /**
@@ -30,7 +33,10 @@ export default function VoiceList({
   loadingMore = false,
   hasMore = false,
   onLoadMore,
+  onRetry,
 }: VoiceListProps) {
+  const { t } = useLanguage();
+
   // Loading state - Show skeleton
   if (loading) {
     return (
@@ -61,8 +67,16 @@ export default function VoiceList({
   // Error state
   if (error) {
     return (
-      <div className="flex justify-center items-center py-12">
+      <div className="flex flex-col justify-center items-center py-12 space-y-4">
         <div className="text-sm text-red-500">{error}</div>
+        {onRetry && (
+          <button
+            onClick={onRetry}
+            className="px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors font-medium text-sm"
+          >
+            {t('common.retry')}
+          </button>
+        )}
       </div>
     );
   }

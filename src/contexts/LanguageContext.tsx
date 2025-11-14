@@ -55,7 +55,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     setIsReady(true);
   }, []);
 
-  // 加载语言文件（主文件 + FAQ 文件 + TTS Samples 文件）
+  // 加载语言文件（主文件 + FAQ 文件 + TTS Samples 文件 + TTS Input 文件）
   useEffect(() => {
     const loadMessages = async () => {
       try {
@@ -71,10 +71,15 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
         const ttsSamplesModule = await import(`@/i18n/locales/${locale}/tts-samples.json`);
         const ttsSamplesMessages = ttsSamplesModule.default;
 
+        // 加载 TTS Input 语言文件
+        const ttsInputModule = await import(`@/i18n/locales/${locale}/tts-input.json`);
+        const ttsInputMessages = ttsInputModule.default;
+
         // 合并消息
         setMessages({
           ...mainMessages,
           faq: faqMessages,
+          ttsInput: ttsInputMessages,
           ...ttsSamplesMessages
         });
       } catch (error) {

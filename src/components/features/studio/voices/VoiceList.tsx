@@ -85,7 +85,7 @@ export default function VoiceList({
   if (voices.length === 0) {
     return (
       <div className="flex justify-center items-center py-12">
-        <div className="text-sm text-gray-500">No voices found</div>
+        <div className="text-sm text-gray-500">{t('voiceFilters.noVoicesFound')}</div>
       </div>
     );
   }
@@ -135,7 +135,7 @@ export default function VoiceList({
           onClick={onLoadMore}
           className="w-full py-3 px-4 bg-white border-2 border-purple-200 text-purple-600 rounded-lg hover:bg-purple-50 hover:border-purple-300 transition-colors font-medium"
         >
-          Load More Voices
+          {t('voiceFilters.loadMoreVoices')}
         </button>
       )}
     </div>

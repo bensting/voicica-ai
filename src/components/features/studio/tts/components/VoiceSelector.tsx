@@ -32,7 +32,7 @@ export default function VoiceSelector({
   disabled = false,
 }: VoiceSelectorProps) {
   const router = useRouter();
-  const { locale } = useLanguage();
+  const { locale, t } = useLanguage();
   const { user, loading: authLoading } = useAuth();
   const [isLanguageModalOpen, setIsLanguageModalOpen] = useState(false);
 
@@ -154,7 +154,13 @@ export default function VoiceSelector({
             </div>
             {selectedVoice && (
               <div className="text-xs text-gray-500">
-                {selectedVoice.locale} • {selectedVoice.gender === 'male' ? 'Male' : selectedVoice.gender === 'female' ? 'Female' : 'Neutral'}
+                {selectedVoice.locale} • {
+                  selectedVoice.gender === 'male'
+                    ? t('voiceFilters.male')
+                    : selectedVoice.gender === 'female'
+                      ? t('voiceFilters.female')
+                      : t('voiceFilters.neutral')
+                }
               </div>
             )}
           </div>
@@ -212,8 +218,8 @@ export default function VoiceSelector({
         selectedLocale={selectedLanguage}
         availableLocales={allLocaleOptions}
         onSelect={handleSelectLanguage}
-        title="Select Language"
-        searchPlaceholder="Search languages..."
+        title={t('voiceFilters.selectLanguage')}
+        searchPlaceholder={t('voiceFilters.searchLanguages')}
         showAllOption={true}
       />
     </>

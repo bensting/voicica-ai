@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface VoiceFiltersProps {
   selectedGender: string;
@@ -12,7 +13,24 @@ export default function VoiceFilters({
   selectedGender,
   onGenderChange,
 }: VoiceFiltersProps) {
+  const { t } = useLanguage();
   const [isGenderDropdownOpen, setIsGenderDropdownOpen] = useState(false);
+
+  // Gender label helper
+  const getGenderLabel = (gender: string) => {
+    switch (gender) {
+      case 'all':
+        return t('voiceFilters.gender');
+      case 'male':
+        return t('voiceFilters.male');
+      case 'female':
+        return t('voiceFilters.female');
+      case 'neutral':
+        return t('voiceFilters.neutral');
+      default:
+        return t('voiceFilters.gender');
+    }
+  };
 
   return (
     <div className="flex-shrink-0 px-3 py-2 bg-white border-b border-gray-200">
@@ -25,7 +43,7 @@ export default function VoiceFilters({
               selectedGender !== 'all' ? 'border-purple-500 text-purple-600' : 'border-gray-200 text-gray-700'
             }`}
           >
-            {selectedGender === 'all' ? 'Gender' : selectedGender === 'male' ? 'Male' : selectedGender === 'female' ? 'Female' : 'Neutral'}
+            {getGenderLabel(selectedGender)}
             <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
             </svg>
@@ -45,7 +63,7 @@ export default function VoiceFilters({
                     selectedGender === gender ? 'bg-purple-50 text-purple-600 font-medium' : 'text-gray-700'
                   } ${gender === 'all' ? 'rounded-t-lg' : ''} ${gender === 'neutral' ? 'rounded-b-lg' : ''}`}
                 >
-                  {gender === 'all' ? 'All' : gender.charAt(0).toUpperCase() + gender.slice(1)}
+                  {gender === 'all' ? t('voiceFilters.all') : getGenderLabel(gender)}
                 </button>
               ))}
             </div>
@@ -57,7 +75,7 @@ export default function VoiceFilters({
           disabled
           className="px-3 py-1.5 text-xs font-medium text-gray-400 bg-gray-50 border border-gray-200 rounded-lg cursor-not-allowed flex items-center gap-1.5 opacity-50"
         >
-          Pro/Basic
+          {t('voiceFilters.proBasic')}
           <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
           </svg>

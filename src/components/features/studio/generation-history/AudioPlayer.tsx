@@ -12,7 +12,7 @@ interface AudioPlayerProps {
   onDownload: () => void;
   voiceAvatar?: string;
   voiceName?: string;
-  voiceDisplayName?: Record<string, string>;
+  voiceDisplayName?: string;
 }
 
 export default function AudioPlayer({
@@ -30,8 +30,8 @@ export default function AudioPlayer({
   const [currentTime, setCurrentTime] = useState(0);
   const [progress, setProgress] = useState(0);
 
-  // Get display name based on current locale
-  const displayName = voiceDisplayName?.[locale] || voiceName || 'Voice';
+  // Get display name
+  const displayName = voiceDisplayName || voiceName || 'Voice';
 
   // Generate mock waveform data
   const generateWaveform = () => {

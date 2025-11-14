@@ -17,4 +17,3 @@ export * from './hooks';
 
 // 重新导出 Voice 类型（方便使用）
 export type { Voice } from '@/types/voice';
-export { getLocalizedVoiceName } from '@/types/voice';

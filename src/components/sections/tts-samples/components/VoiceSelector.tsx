@@ -3,7 +3,6 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { ChevronDown, Play, Pause } from 'lucide-react';
 import type { Voice } from '@/types/voice';
-import { getLocalizedVoiceName } from '@/types/voice';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 interface VoiceSelectorProps {
@@ -63,9 +62,9 @@ export default function VoiceSelector({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [isOpen, onToggle]);
 
-  // 获取语音的显示名称（使用当前页面语言）
+  // 获取语音的显示名称
   const getDisplayName = (voice: Voice) => {
-    return getLocalizedVoiceName(voice, locale);
+    return voice.display_name;
   };
 
   // 获取语音描述（角色 - 性别）

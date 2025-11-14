@@ -9,7 +9,7 @@
 export interface Voice {
   id: string;
   name: string;
-  display_name: Record<string, string>;
+  display_name: string;
   provider: string;
   locale: string;
   country: string;
@@ -28,9 +28,12 @@ export interface Voice {
 
 /**
  * 获取本地化的语音名称
+ *
+ * 注意：display_name 现在是单一字符串，不再需要语言代码
+ * 保留 languageCode 参数是为了向后兼容，但不再使用
  */
-export function getLocalizedVoiceName(voice: Voice, languageCode: string = 'en-US'): string {
-  return voice.display_name[languageCode] || voice.display_name['en-US'] || voice.name;
+export function getLocalizedVoiceName(voice: Voice, languageCode?: string): string {
+  return voice.display_name || voice.name;
 }
 
 /**

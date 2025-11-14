@@ -57,7 +57,7 @@ export interface Generation {
   status?: TaskStatus;
   errorMessage?: string;
   voiceName?: string;
-  voiceDisplayName?: Record<string, string>; // 语音多语言显示名称
+  voiceDisplayName?: string; // 语音显示名称
   voiceAvatar?: string; // 语音头像 URL
 }
 

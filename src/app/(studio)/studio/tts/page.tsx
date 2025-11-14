@@ -8,7 +8,6 @@ import { useCredits } from '@/contexts/CreditsContext';
 import { useTTSGenerator } from '@/hooks/useTTSGenerator';
 import { voiceAPI } from '@/lib/api';
 import type { Voice } from '@/types/voice';
-import { getLocalizedVoiceName } from '@/types/voice';
 import TextInput from '@/components/features/studio/tts/components/TextInput';
 import VoiceSelector from '@/components/features/studio/tts/components/VoiceSelector';
 import VoiceSelectorButton from '@/components/features/studio/tts/components/VoiceSelectorButton';
@@ -192,8 +191,8 @@ export default function StudioTTSPage() {
     console.log('Open settings');
   };
 
-  // 获取当前语言的显示名称
-  const voiceDisplayName = selectedVoice ? getLocalizedVoiceName(selectedVoice, locale) : '晓臻';
+  // 获取语音显示名称
+  const voiceDisplayName = selectedVoice?.display_name || '晓臻';
 
   return (
     <>

@@ -1,6 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
 import { getVoices } from '@/lib/api/voice';
-import { getLocalizedVoiceName } from '@/types/voice';
 import type { Voice } from '@/types/voice';
 import type { LocaleOption } from '@/types/config';
 import type { User } from 'firebase/auth';
@@ -199,7 +198,7 @@ export function useVoices({ locale, user, authLoading }: UseVoicesProps): UseVoi
   const filteredVoices = voices.filter((voice) => {
     // Search filter (client-side for better UX)
     if (searchQuery) {
-      const voiceName = getLocalizedVoiceName(voice, locale).toLowerCase();
+      const voiceName = voice.display_name.toLowerCase();
       if (!voiceName.includes(searchQuery.toLowerCase())) {
         return false;
       }

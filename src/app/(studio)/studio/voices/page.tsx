@@ -12,7 +12,6 @@ import VoiceFilters from '@/components/features/studio/voices/VoiceFilters';
 import VoiceList from '@/components/features/studio/voices/VoiceList';
 import { useVoices } from '@/components/features/studio/voices/hooks/useVoices';
 import { getAllLocaleOptions } from '@/utils/localeMapper';
-import { getLocalizedVoiceName } from '@/types/voice';
 import type { LocaleOption } from '@/types/config';
 import type { Voice } from '@/types/voice';
 
@@ -133,8 +132,8 @@ export default function VoicesPage() {
     router.push('/studio/tts');
   };
 
-  // Helper to get localized voice name
-  const getVoiceName = (voice: Voice) => getLocalizedVoiceName(voice, locale);
+  // Helper to get voice display name
+  const getVoiceName = (voice: Voice) => voice.display_name;
 
   return (
     <div className="h-[calc(100vh-60px)] lg:h-screen flex flex-col bg-white overflow-hidden">

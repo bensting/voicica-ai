@@ -6,7 +6,6 @@ import Image from 'next/image';
 import type { Voice } from '@/types/voice';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
-import { getLocalizedVoiceName } from '@/types/voice';
 import { useVoices } from '@/components/features/studio/voices/hooks/useVoices';
 import VoiceSearchBar from '@/components/features/studio/voices/VoiceSearchBar';
 import VoiceFilters from '@/components/features/studio/voices/VoiceFilters';
@@ -60,11 +59,11 @@ export default function VoiceSelector({
     router.push('/studio/voices');
   };
 
-  // Get localized voice name for mobile button
-  const voiceName = selectedVoice ? getLocalizedVoiceName(selectedVoice, locale) : '晓臻';
+  // Get voice display name for mobile button
+  const voiceName = selectedVoice?.display_name || '晓臻';
 
   // Helper function to get voice display name
-  const getVoiceName = (voice: Voice) => getLocalizedVoiceName(voice, locale);
+  const getVoiceName = (voice: Voice) => voice.display_name;
 
   // Get all locale options for language modal
   const allLocaleOptions = getAllLocaleOptions();

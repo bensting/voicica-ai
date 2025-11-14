@@ -10,11 +10,16 @@ import {
 } from '@/types/tts';
 
 /**
- * 生成 TTS 语音
+ * 生成 TTS 语音（异步任务）
  *
  * 支持正式用户和匿名用户
  * - 正式用户：自动通过 Authorization header 传递 token
  * - 匿名用户：需要通过 X-Device-Fingerprint header 传递设备指纹
+ *
+ * 返回：
+ * - task_id: 任务ID，用于查询进度
+ * - status: 初始状态为 pending
+ * - progress: 0
  */
 export async function generateTTS(
   request: TtsGenerateRequest
@@ -27,6 +32,24 @@ export async function generateTTS(
     pitch: request.pitch,
     volume: request.volume,
   });
+}
+
+/**
+ * 查询 TTS 任务状态
+ *
+ * 支持正式用户和匿名用户
+ * - 正式用户：自动通过 Authorization header 传递 token
+ * - 匿名用户：需要通过 X-Device-Fingerprint header 传递设备指纹
+ *
+ * 返回：
+ * - task_id: 任务ID
+ * - status: 任务状态（pending/processing/success/failure）
+ * - progress: 进度（0-100）
+ * - result: 成功时的结果（包含 audio_url 等）
+ * - error: 失败时的错误信息
+ */
+export async function getTaskStatus(taskId: string): Promise<TtsTaskStatus> {
+  return apiClient.get<TtsTaskStatus>(`/api/v1/tts/task/${taskId}`);
 }
 
 /**

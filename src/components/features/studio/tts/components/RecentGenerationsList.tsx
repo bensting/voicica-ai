@@ -5,12 +5,17 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Download, Trash2, Play, Pause, ChevronRight } from 'lucide-react';
 import type { Generation } from '@/types/tts';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface RecentGenerationsListProps {
   generations: Generation[];
   loading: boolean;
   onDelete: (id: string) => void;
   onDownload: (id: string) => void;
+  // 生成中状态
+  isGenerating?: boolean;
+  generatingText?: string;
+  taskProgress?: number;
 }
 
 /**
@@ -22,7 +27,11 @@ export default function RecentGenerationsList({
   loading,
   onDelete,
   onDownload,
+  isGenerating = false,
+  generatingText = '',
+  taskProgress = 0,
 }: RecentGenerationsListProps) {
+  const { t } = useLanguage();
   const [playingId, setPlayingId] = useState<string | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
@@ -86,28 +95,61 @@ export default function RecentGenerationsList({
               </div>
             ))}
           </div>
-        ) : generations.length === 0 ? (
-          <div className="flex flex-col items-center justify-center p-12 text-center">
-            <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
-              <svg
-                className="w-8 h-8 text-gray-400"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"
-                />
-              </svg>
-            </div>
-            <h3 className="text-base font-medium text-gray-900 mb-1">无语音记录</h3>
-            <p className="text-sm text-gray-500">暂无语音记录</p>
-          </div>
         ) : (
           <div className="space-y-2">
+            {/* 生成中的卡片 */}
+            {isGenerating && generatingText && (
+              <div className="flex items-center gap-3 p-3 bg-purple-50 border-2 border-purple-200 rounded-lg">
+                {/* 加载动画 */}
+                <div className="w-8 h-8 flex items-center justify-center rounded-full bg-purple-100 flex-shrink-0">
+                  <div className="w-5 h-5 border-2 border-purple-600 border-t-transparent rounded-full animate-spin" />
+                </div>
+
+                {/* 文本内容 */}
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm text-gray-900 truncate">{generatingText}</p>
+                  <p className="text-xs text-purple-600 font-medium mt-1">
+                    {t('studio.generating')} {taskProgress}%
+                  </p>
+                </div>
+
+                {/* 进度条 */}
+                <div className="w-32 h-2 bg-purple-200 rounded-full flex-shrink-0 overflow-hidden">
+                  <div
+                    className="h-full bg-purple-600 rounded-full transition-all duration-500"
+                    style={{ width: `${taskProgress}%` }}
+                  />
+                </div>
+
+                {/* 占位符（保持布局对齐） */}
+                <div className="w-8 flex-shrink-0" />
+                <div className="w-8 flex-shrink-0" />
+              </div>
+            )}
+
+            {/* 现有记录列表 */}
+            {generations.length === 0 && !isGenerating && (
+              <div className="flex flex-col items-center justify-center p-12 text-center">
+                <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+                  <svg
+                    className="w-8 h-8 text-gray-400"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"
+                    />
+                  </svg>
+                </div>
+                <h3 className="text-base font-medium text-gray-900 mb-1">无语音记录</h3>
+                <p className="text-sm text-gray-500">暂无语音记录</p>
+              </div>
+            )}
+
             {generations.map((gen) => (
               <div
                 key={gen.id}

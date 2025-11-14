@@ -171,6 +171,19 @@
     "tts": "Text to Speech",
     "upgrade": "Upgrade",
     "credits": "Credits",
+    "generating": "Generating...",
+    "taskProgress": "Progress",
+    "errors": {
+      "selectTextAndVoice": "Please enter text and select a voice",
+      "invalidParams": "Invalid parameters, please check your input",
+      "insufficientCredits": "Insufficient credits, please upgrade or recharge",
+      "unauthorized": "Not logged in or session expired, please login again",
+      "taskSubmitFailed": "Failed to submit task, please try again",
+      "taskNoId": "Task submission failed, no task ID returned",
+      "queryTaskFailed": "Failed to query task status, please refresh the page",
+      "generationFailed": "Generation failed, please try again",
+      "unknownTaskStatus": "Unknown task status, please try again"
+    },
     "menu": {
       "home": "Home",
       "creationHub": "Creation Hub",

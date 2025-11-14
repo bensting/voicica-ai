@@ -249,6 +249,19 @@
     "tts": "文字轉語音",
     "upgrade": "購買/升級",
     "credits": "積分",
+    "generating": "生成中...",
+    "taskProgress": "進度",
+    "errors": {
+      "selectTextAndVoice": "請輸入文字並選擇語音",
+      "invalidParams": "請求參數錯誤，請檢查輸入",
+      "insufficientCredits": "積分不足，請升級套餐或充值",
+      "unauthorized": "未登入或登入已過期，請重新登入",
+      "taskSubmitFailed": "提交任務失敗，請重試",
+      "taskNoId": "任務提交失敗，未返回任務ID",
+      "queryTaskFailed": "查詢任務狀態失敗，請重新整理頁面查看結果",
+      "generationFailed": "生成失敗，請重試",
+      "unknownTaskStatus": "任務狀態異常，請重試"
+    },
     "menu": {
       "home": "首頁",
       "creationHub": "創作中心",

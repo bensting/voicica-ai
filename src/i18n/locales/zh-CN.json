@@ -249,6 +249,19 @@
     "tts": "文字转语音",
     "upgrade": "购买/升级",
     "credits": "积分",
+    "generating": "生成中...",
+    "taskProgress": "进度",
+    "errors": {
+      "selectTextAndVoice": "请输入文本并选择语音",
+      "invalidParams": "请求参数错误，请检查输入",
+      "insufficientCredits": "积分不足，请升级套餐或充值",
+      "unauthorized": "未登录或登录已过期，请重新登录",
+      "taskSubmitFailed": "提交任务失败，请重试",
+      "taskNoId": "任务提交失败，未返回任务ID",
+      "queryTaskFailed": "查询任务状态失败，请刷新页面查看结果",
+      "generationFailed": "生成失败，请重试",
+      "unknownTaskStatus": "任务状态异常，请重试"
+    },
     "menu": {
       "home": "首页",
       "creationHub": "创作中心",

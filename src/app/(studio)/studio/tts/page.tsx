@@ -55,6 +55,8 @@ export default function StudioTTSPage() {
     audioUrl,
     availableCharacters,
     canGenerate,
+    currentTaskId,
+    taskProgress,
     handleTextChange,
     handleVoiceSelect,
     handleGenerate,
@@ -283,6 +285,9 @@ export default function StudioTTSPage() {
                   loading={historyLoading}
                   onDelete={handleDeleteGeneration}
                   onDownload={handleDownloadGeneration}
+                  isGenerating={isGenerating}
+                  generatingText={text}
+                  taskProgress={taskProgress}
                 />
               </div>
             </div>

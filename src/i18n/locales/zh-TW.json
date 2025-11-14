@@ -251,6 +251,8 @@
     "credits": "積分",
     "generating": "生成中...",
     "taskProgress": "進度",
+    "recentAuditions": "最近生成",
+    "allRecords": "全部記錄",
     "errors": {
       "selectTextAndVoice": "請輸入文字並選擇語音",
       "invalidParams": "請求參數錯誤，請檢查輸入",

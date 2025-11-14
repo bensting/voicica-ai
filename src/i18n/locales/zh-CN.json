@@ -251,6 +251,8 @@
     "credits": "积分",
     "generating": "生成中...",
     "taskProgress": "进度",
+    "recentAuditions": "最近生成",
+    "allRecords": "全部记录",
     "errors": {
       "selectTextAndVoice": "请输入文本并选择语音",
       "invalidParams": "请求参数错误，请检查输入",

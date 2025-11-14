@@ -54,7 +54,6 @@ export default function StudioTTSPage() {
     audioUrl,
     availableCharacters,
     canGenerate,
-    currentTaskId,
     taskProgress,
     handleTextChange,
     handleVoiceSelect,

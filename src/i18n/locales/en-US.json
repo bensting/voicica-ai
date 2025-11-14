@@ -173,6 +173,8 @@
     "credits": "Credits",
     "generating": "Generating...",
     "taskProgress": "Progress",
+    "recentAuditions": "Recent auditions",
+    "allRecords": "All records",
     "errors": {
       "selectTextAndVoice": "Please enter text and select a voice",
       "invalidParams": "Invalid parameters, please check your input",

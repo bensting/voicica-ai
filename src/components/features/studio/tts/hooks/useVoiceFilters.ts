@@ -40,7 +40,7 @@ export function useVoiceFilters({ voices, languages }: UseVoiceFiltersProps) {
       const voiceLanguage = getLanguageFromLocale(voice.locale);
 
       const matchesSearch = voice.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                           voice.display_name?.en?.toLowerCase().includes(searchQuery.toLowerCase());
+                           voice.display_name?.toLowerCase().includes(searchQuery.toLowerCase());
       const matchesCountry = selectedCountry === 'all' || voiceCountry === selectedCountry;
       const matchesLanguage = selectedLanguage === 'all' || voiceLanguage === selectedLanguage;
       const matchesGender = selectedGender === 'all' || voice.gender === selectedGender;

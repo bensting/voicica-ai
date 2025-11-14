@@ -71,12 +71,12 @@ export default function RecentGenerationsList({
     <div className="bg-white rounded-2xl shadow-sm border border-gray-200 h-full flex flex-col overflow-hidden">
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-4 border-b border-gray-200 flex-shrink-0">
-        <h3 className="text-base font-semibold text-gray-900">Recent auditions</h3>
+        <h3 className="text-base font-semibold text-gray-900">{t('studio.recentAuditions')}</h3>
         <Link
           href="/studio/generation-history"
           className="flex items-center gap-1 text-sm text-purple-600 hover:text-purple-700 transition-colors"
         >
-          All records
+          {t('studio.allRecords')}
           <ChevronRight className="w-4 h-4" />
         </Link>
       </div>
@@ -192,7 +192,7 @@ export default function RecentGenerationsList({
                       <span className="text-xs text-purple-600">🎤</span>
                     </div>
                   )}
-                  <span className="text-xs text-gray-600">{gen.voiceName}</span>
+                  <span className="text-xs text-gray-600">{gen.voiceDisplayName || gen.voiceName}</span>
                 </div>
 
                 {/* Duration */}

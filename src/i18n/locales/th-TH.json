@@ -2,7 +2,8 @@
   "common": {
     "brand": "AI Voice Labs",
     "cancel": "ยกเลิก",
-    "retry": "ลองใหม่"
+    "retry": "ลองใหม่",
+    "loading": "กำลังโหลด..."
   },
   "navbar": {
     "explore": "สำรวจ",
@@ -165,6 +166,7 @@
     "tts": "ข้อความเป็นเสียง",
     "upgrade": "อัปเกรด",
     "credits": "เครดิต",
+    "selectVoice": "เลือกเสียง",
     "generating": "กำลังสร้าง...",
     "taskProgress": "ความคืบหน้า",
     "recentAuditions": "การสร้างล่าสุด",
@@ -205,8 +207,19 @@
   "voiceFilters": {
     "selectCountry": "เลือกประเทศ",
     "selectLanguage": "เลือกภาษา",
+    "allLanguages": "ทุกภาษา",
     "selectGender": "เลือกเพศ",
-    "searchPlaceholder": "ค้นหาเสียงตามชื่อ..."
+    "searchPlaceholder": "ค้นหาเสียงตามชื่อ...",
+    "search": "ค้นหา...",
+    "gender": "เพศ",
+    "all": "ทั้งหมด",
+    "male": "ชาย",
+    "female": "หญิง",
+    "neutral": "กลาง",
+    "proBasic": "Pro/Basic",
+    "noVoicesFound": "ไม่พบเสียง",
+    "loadMoreVoices": "โหลดเพิ่ม",
+    "searchLanguages": "ค้นหาภาษา..."
   },
   "voices": {
     "tags": {

@@ -8,7 +8,8 @@
   "common": {
     "brand": "AI Voice Labs",
     "cancel": "Cancel",
-    "retry": "Retry"
+    "retry": "Retry",
+    "loading": "Loading..."
   },
   "navbar": {
     "explore": "Explore",
@@ -171,6 +172,7 @@
     "tts": "Text to Speech",
     "upgrade": "Upgrade",
     "credits": "Credits",
+    "selectVoice": "Select Voice",
     "generating": "Generating...",
     "taskProgress": "Progress",
     "recentAuditions": "Recent auditions",
@@ -211,8 +213,19 @@
   "voiceFilters": {
     "selectCountry": "Select Country",
     "selectLanguage": "Select Language",
+    "allLanguages": "All Languages",
     "selectGender": "Select Gender",
-    "searchPlaceholder": "Search voices by name..."
+    "searchPlaceholder": "Search voices by name...",
+    "search": "Search...",
+    "gender": "Gender",
+    "all": "All",
+    "male": "Male",
+    "female": "Female",
+    "neutral": "Neutral",
+    "proBasic": "Pro/Basic",
+    "noVoicesFound": "No voices found",
+    "loadMoreVoices": "Load More Voices",
+    "searchLanguages": "Search languages..."
   },
   "voices": {
     "tags": {

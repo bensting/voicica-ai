@@ -188,7 +188,8 @@ export default function StudioTTSPage() {
   };
 
   // 获取语音显示名称
-  const voiceDisplayName = selectedVoice?.display_name || '晓臻';
+  const voiceDisplayName = selectedVoice?.display_name
+    || (authLoading || !isLocaleReady ? t('common.loading') : t('studio.selectVoice'));
 
   return (
     <>

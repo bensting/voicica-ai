@@ -36,33 +36,38 @@ export function useTTSGenerator(maxCharacters: number = 120) {
   const [taskProgress, setTaskProgress] = useState(0);
 
   // Check for pre-selected voice from sessionStorage (from Voices Gallery page)
+  // Run on every render to catch updates when navigating back from voices page
   useEffect(() => {
     const preSelectedVoiceStr = sessionStorage.getItem('ttsPreSelectedVoice');
     if (preSelectedVoiceStr) {
       try {
         const preSelectedVoice = JSON.parse(preSelectedVoiceStr) as Voice;
 
-        console.log('✅ [useTTSGenerator] Loaded pre-selected voice from Voices Gallery:', preSelectedVoice.name);
+        // Only update if it's a different voice
+        if (!selectedVoice || selectedVoice.id !== preSelectedVoice.id) {
+          console.log('✅ [useTTSGenerator] Loaded pre-selected voice from Voices Gallery:', preSelectedVoice.name);
 
-        // Clear the module-level cache in MobileTTSPage to prevent it from using old default voice
-        // We need to do this BEFORE setting the voice to ensure the cache is cleared
-        if (typeof window !== 'undefined') {
-          // Signal to MobileTTSPage to clear its cache
-          sessionStorage.setItem('clearVoiceCache', 'true');
-          // Also set a flag to indicate voice was pre-selected from gallery
-          // This prevents mobile page from overriding with default voice
-          sessionStorage.setItem('voicePreSelectedFromGallery', 'true');
+          // Clear the module-level cache in MobileTTSPage to prevent it from using old default voice
+          // We need to do this BEFORE setting the voice to ensure the cache is cleared
+          if (typeof window !== 'undefined') {
+            // Signal to MobileTTSPage to clear its cache
+            sessionStorage.setItem('clearVoiceCache', 'true');
+            // Also set a flag to indicate voice was pre-selected from gallery
+            // This prevents mobile page from overriding with default voice
+            sessionStorage.setItem('voicePreSelectedFromGallery', 'true');
+          }
+
+          setSelectedVoice(preSelectedVoice);
         }
 
-        setSelectedVoice(preSelectedVoice);
-        // DON'T remove ttsPreSelectedVoice immediately - keep it until MobileTTSPage reads the flag
-        // sessionStorage.removeItem('ttsPreSelectedVoice');
+        // Clear after applying to prevent re-applying on every render
+        sessionStorage.removeItem('ttsPreSelectedVoice');
       } catch (err) {
         console.error('❌ Failed to parse pre-selected voice:', err);
         sessionStorage.removeItem('ttsPreSelectedVoice');
       }
     }
-  }, []);
+  }); // No dependency array - runs on every render to catch navigation updates
 
   // 可用字符数
   const availableCharacters = maxCharacters - text.length;

@@ -10,7 +10,8 @@ import { voiceAPI } from '@/lib/api';
 import type { Voice } from '@/types/voice';
 import TextInput from '@/components/features/studio/tts/components/TextInput';
 import VoiceSelector from '@/components/features/studio/tts/components/VoiceSelector';
-import VoiceSelectorButton from '@/components/features/studio/tts/components/VoiceSelectorButton';
+import VoiceSelectButton from '@/components/features/studio/tts/components/VoiceSelectButton';
+import VoiceSelectorBottomSheet from '@/components/features/studio/tts/components/mobile/VoiceSelectorBottomSheet';
 import ActionButtons from '@/components/features/studio/tts/components/ActionButtons';
 import AudioPlayerModal from '@/components/features/studio/tts/components/mobile/AudioPlayerModal';
 import { useGenerationHistory } from '@/components/features/studio/generation-history/hooks/useGenerationHistory';
@@ -37,6 +38,7 @@ export default function StudioTTSPage() {
   const { setTitle } = useStudio();
   const { credits } = useCredits();
   const [isAudioModalOpen, setIsAudioModalOpen] = useState(false);
+  const [isVoiceSelectorOpen, setIsVoiceSelectorOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
   // Set page title
@@ -214,11 +216,11 @@ export default function StudioTTSPage() {
           />
         </div>
 
-        {/* Voice Selector */}
+        {/* Voice Select Button */}
         <div className="flex-shrink-0">
-          <VoiceSelector
-            selectedVoice={selectedVoice}
-            onSelect={handleVoiceSelect}
+          <VoiceSelectButton
+            voice={selectedVoice}
+            onClick={() => setIsVoiceSelectorOpen(true)}
             disabled={isGenerating}
           />
         </div>
@@ -249,14 +251,14 @@ export default function StudioTTSPage() {
             {/* Left Column: Voice Button, Text Input & Generation History (67%) */}
             <div className="col-span-8 flex flex-col gap-3 overflow-hidden">
               {/* Voice Selector Button */}
-              <VoiceSelectorButton
-                voiceName={voiceDisplayName}
-                voiceAvatar={selectedVoice?.avatar_url}
-                disabled={isGenerating}
+              <VoiceSelectButton
+                voice={selectedVoice}
                 onClick={() => {
                   // TODO: 可以滚动到右侧或打开模态框
                   console.log('Open voice selector');
                 }}
+                disabled={isGenerating}
+                size="medium"
               />
 
               {/* Text Input Card with Generate Button - 占据 55% 左右 */}
@@ -299,6 +301,14 @@ export default function StudioTTSPage() {
           </div>
         </div>
       </div>
+
+      {/* Voice Selector Bottom Sheet (Mobile) */}
+      <VoiceSelectorBottomSheet
+        isOpen={isVoiceSelectorOpen}
+        onClose={() => setIsVoiceSelectorOpen(false)}
+        selectedVoice={selectedVoice}
+        onSelect={handleVoiceSelect}
+      />
 
       {/* Audio Player Modal (Mobile) - fixed 定位，不占据布局空间 */}
       {audioUrl && (

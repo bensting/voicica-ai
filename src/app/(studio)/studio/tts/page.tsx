@@ -6,6 +6,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useStudio } from '@/contexts/StudioContext';
 import { useCredits } from '@/contexts/CreditsContext';
 import { useTTSGenerator } from '@/hooks/useTTSGenerator';
+import { TaskStatus } from '@/types/tts';
 import type { Voice } from '@/types/voice';
 import TextInput from '@/components/features/studio/tts/components/TextInput';
 import VoiceSelector from '@/components/features/studio/tts/components/VoiceSelector';
@@ -69,7 +70,7 @@ export default function StudioTTSPage() {
     user,
     authLoading,
     pageSize: 6,
-    defaultStatus: null, // 查询所有状态，然后在前端过滤失败的记录
+    defaultStatus: [TaskStatus.SUCCESS, TaskStatus.PROCESSING, TaskStatus.PENDING], // 只查询这三种状态，不查询 FAILURE
   });
 
   // 检测是否为移动端（只在客户端执行一次）

@@ -4,7 +4,8 @@ import {
   deleteTtsRecord,
   batchDeleteTtsRecords,
   downloadAudio,
-  convertTtsRecordToGeneration
+  convertTtsRecordToGeneration,
+  getTtsRecordById
 } from '@/lib/api/tts';
 import { TaskStatus } from '@/types/tts';
 import type { Generation } from '@/types/tts';
@@ -81,8 +82,8 @@ export function useGenerationHistory({
   const [startDate, setStartDate] = useState<string | null>(null);
   const [endDate, setEndDate] = useState<string | null>(null);
 
-  // Polling for processing records
-  const pollingIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  // Polling for processing records - 使用 Map 存储每个记录的轮询定时器
+  const pollingTimersRef = useRef<Map<string, NodeJS.Timeout>>(new Map());
 
   // Keep track of the actual status filter to use (can be array or single value)
   const statusFilter = useRef<TaskStatus | TaskStatus[] | null>(defaultStatus);
@@ -146,20 +147,65 @@ export function useGenerationHistory({
     }
   }, [selectedStatus, startDate, endDate, currentPage, pageSize, accumulateData]);
 
-  // Clear polling interval
-  const clearPolling = useCallback(() => {
-    if (pollingIntervalRef.current) {
-      clearTimeout(pollingIntervalRef.current);
-      pollingIntervalRef.current = null;
+  // Clear all polling timers
+  const clearAllPolling = useCallback(() => {
+    pollingTimersRef.current.forEach((timer) => {
+      clearTimeout(timer);
+    });
+    pollingTimersRef.current.clear();
+  }, []);
+
+  // Clear specific record's polling timer
+  const clearRecordPolling = useCallback((recordId: string) => {
+    const timer = pollingTimersRef.current.get(recordId);
+    if (timer) {
+      clearTimeout(timer);
+      pollingTimersRef.current.delete(recordId);
     }
   }, []);
+
+  // Poll single record status
+  const pollRecordStatus = useCallback(async (recordId: string) => {
+    try {
+      console.log(`🔄 [useGenerationHistory] Polling record ${recordId}`);
+
+      const record = await getTtsRecordById(recordId);
+      const updatedGeneration = convertTtsRecordToGeneration(record);
+
+      // Update only this record in the list
+      setGenerations(prev => prev.map(gen =>
+        gen.id === recordId ? updatedGeneration : gen
+      ));
+
+      // If still processing, schedule next poll
+      if (record.status === TaskStatus.PROCESSING || record.status === TaskStatus.PENDING) {
+        const timer = setTimeout(() => {
+          void pollRecordStatus(recordId);
+        }, 2000); // Poll every 2 seconds
+
+        pollingTimersRef.current.set(recordId, timer);
+      } else {
+        // Record completed or failed, stop polling
+        clearRecordPolling(recordId);
+        console.log(`✅ [useGenerationHistory] Record ${recordId} completed with status ${record.status}`);
+      }
+    } catch (err) {
+      console.error(`❌ [useGenerationHistory] Error polling record ${recordId}:`, err);
+      // Continue polling even on error (network might be temporarily down)
+      const timer = setTimeout(() => {
+        void pollRecordStatus(recordId);
+      }, 3000); // Retry after 3 seconds on error
+
+      pollingTimersRef.current.set(recordId, timer);
+    }
+  }, [clearRecordPolling]);
 
   // Cleanup on unmount
   useEffect(() => {
     return () => {
-      clearPolling();
+      clearAllPolling();
     };
-  }, [clearPolling]);
+  }, [clearAllPolling]);
 
   // Handle user login/logout and fetch records when filters change
   // Wait for auth to complete before fetching to avoid duplicate queries
@@ -178,29 +224,35 @@ export function useGenerationHistory({
     void fetchRecords();
   }, [user, authLoading, fetchRecords]);
 
-  // Poll for processing records
+  // Smart polling for processing records - poll each record individually
   useEffect(() => {
-    // Check if there are any processing or pending records
-    const hasProcessingRecords = generations.some(
+    if (loading) return;
+
+    // Get all processing/pending records
+    const processingRecords = generations.filter(
       gen => gen.status === TaskStatus.PROCESSING || gen.status === TaskStatus.PENDING
     );
 
-    // Clear existing polling
-    clearPolling();
+    // Get currently polling record IDs
+    const currentlyPolling = new Set(pollingTimersRef.current.keys());
 
-    // Start polling if there are processing records
-    if (hasProcessingRecords && !loading) {
-      console.log('🔄 [useGenerationHistory] Starting polling for processing records');
-      pollingIntervalRef.current = setTimeout(() => {
-        console.log('⏰ [useGenerationHistory] Polling interval triggered');
-        void fetchRecords();
-      }, 2000); // Poll every 2 seconds
-    }
+    // Start polling for new processing records
+    processingRecords.forEach(gen => {
+      if (!currentlyPolling.has(gen.id)) {
+        console.log(`🔄 [useGenerationHistory] Starting polling for record ${gen.id}`);
+        void pollRecordStatus(gen.id);
+      }
+    });
 
-    return () => {
-      clearPolling();
-    };
-  }, [generations, loading, fetchRecords, clearPolling]);
+    // Stop polling for records that are no longer processing
+    const processingIds = new Set(processingRecords.map(gen => gen.id));
+    currentlyPolling.forEach(recordId => {
+      if (!processingIds.has(recordId)) {
+        console.log(`⏹️ [useGenerationHistory] Stopping polling for record ${recordId}`);
+        clearRecordPolling(recordId);
+      }
+    });
+  }, [generations, loading, pollRecordStatus, clearRecordPolling]);
 
   // Handle clear all records
   const handleClearAll = useCallback(async () => {

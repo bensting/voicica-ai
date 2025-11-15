@@ -70,6 +70,20 @@ export async function queryTtsRecords(
 }
 
 /**
+ * 根据记录 ID 获取单条 TTS 记录
+ */
+export async function getTtsRecordById(recordId: string): Promise<TtsRecord> {
+  return apiClient.get<TtsRecord>(`/api/v1/tts/records/${recordId}`);
+}
+
+/**
+ * 根据任务 ID 获取 TTS 记录
+ */
+export async function getTtsRecordByTaskId(taskId: string): Promise<TtsRecord> {
+  return apiClient.get<TtsRecord>(`/api/v1/tts/records/task/${taskId}`);
+}
+
+/**
  * 删除 TTS 记录
  */
 export async function deleteTtsRecord(recordId: string): Promise<void> {

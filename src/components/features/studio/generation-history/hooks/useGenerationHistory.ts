@@ -138,15 +138,10 @@ export function useGenerationHistory({
       return;
     }
 
-    // If user logged out, clear all data (don't fetch)
-    if (!user) {
-      setGenerations([]);
-      setTotal(0);
-      setTotalPages(0);
-      setCurrentPage(1);
-      setError(null);
-      return;
-    }
+    // Fetch records for both authenticated and anonymous users
+    // API client will handle authentication automatically:
+    // - Authenticated users: use Firebase token
+    // - Anonymous users: use device fingerprint
 
     // User is logged in, fetch records
     void fetchRecords();

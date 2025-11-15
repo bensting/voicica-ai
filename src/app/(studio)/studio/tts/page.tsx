@@ -56,7 +56,7 @@ export default function StudioTTSPage() {
     handleGenerate,
   } = useTTSGenerator(maxCharacters);
 
-  // Generation history hook (显示最近6条)
+  // Generation history hook (显示最近6条，只查询成功和进行中的记录，不显示失败的)
   const {
     loading: historyLoading,
     generations,
@@ -69,6 +69,7 @@ export default function StudioTTSPage() {
     user,
     authLoading,
     pageSize: 6,
+    defaultStatus: null, // 查询所有状态，然后在前端过滤失败的记录
   });
 
   // 检测是否为移动端（只在客户端执行一次）

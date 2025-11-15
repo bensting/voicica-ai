@@ -18,10 +18,6 @@ import { useGenerationHistory } from '@/components/features/studio/generation-hi
 import RecentGenerationsList from '@/components/features/studio/tts/components/RecentGenerationsList';
 import ConfirmDialog from '@/components/ui/ConfirmDialog';
 
-// 模块级别的缓存，防止 React Strict Mode 导致的重复加载
-let voiceLoadingPromise: Promise<Voice | null> | null = null;
-let loadedVoiceCache: Voice | null = null;
-
 /**
  * Studio TTS Page
  *
@@ -85,7 +81,7 @@ export default function StudioTTSPage() {
     checkMobile();
   }, []);
 
-  // Initialize default voice based on current locale
+  // Load last selected voice from localStorage (remember user's choice)
   useEffect(() => {
     // 等待认证完成
     if (authLoading) return;
@@ -96,75 +92,39 @@ export default function StudioTTSPage() {
     // Skip if already selected
     if (selectedVoice) return;
 
-    const fetchDefaultVoice = async () => {
-      // 检查是否从 gallery 预选了语音
+    const loadLastSelectedVoice = async () => {
+      // 1. 检查是否从 voices 页面预选了语音（最高优先级）
       const hasGallerySelection = sessionStorage.getItem('voicePreSelectedFromGallery');
-
-      // 如果从 gallery 选择了语音，永远不加载默认语音
       if (hasGallerySelection) {
         // 清除所有 gallery 相关标志，避免影响下次使用
         sessionStorage.removeItem('voicePreSelectedFromGallery');
         sessionStorage.removeItem('gallerySelectedVoiceId');
         sessionStorage.removeItem('ttsPreSelectedVoice');
         sessionStorage.removeItem('clearVoiceCache');
-        return;
+        return; // useTTSGenerator hook 会处理预选语音
       }
 
-      // 检查是否需要清除缓存
-      const shouldClearCache = sessionStorage.getItem('clearVoiceCache');
-      if (shouldClearCache) {
-        loadedVoiceCache = null;
-        sessionStorage.removeItem('clearVoiceCache');
-      }
-
-      // 如果已经有缓存，直接使用
-      if (loadedVoiceCache) {
-        handleVoiceSelect(loadedVoiceCache);
-        return;
-      }
-
-      // 如果正在加载，等待现有的 Promise
-      if (voiceLoadingPromise) {
-        const voice = await voiceLoadingPromise;
-        if (voice) {
-          handleVoiceSelect(voice);
-        }
-        return;
-      }
-
-      // 创建新的加载 Promise
-      voiceLoadingPromise = (async () => {
+      // 2. 尝试从 localStorage 加载上次选择的语音（记住用户选择）
+      const lastVoiceStr = localStorage.getItem('lastSelectedVoice');
+      if (lastVoiceStr) {
         try {
-          const response = await voiceAPI.getVoices({
-            locale,
-            is_active: true,
-            page: 1,
-            page_size: 1,
-          });
-
-          if (response.voices && response.voices.length > 0) {
-            loadedVoiceCache = response.voices[0];
-            return response.voices[0];
-          }
-          return null;
+          const lastVoice = JSON.parse(lastVoiceStr) as Voice;
+          console.log('🔄 [TTSPage] Loading last selected voice from localStorage:', lastVoice.display_name);
+          handleVoiceSelect(lastVoice);
+          console.log('✅ [TTSPage] Restored last selected voice:', lastVoice.display_name);
+          return;
         } catch (err) {
-          console.error('[TTSPage] Failed to load default voice:', err);
-          return null;
-        } finally {
-          // 清除 Promise，但保留缓存
-          voiceLoadingPromise = null;
+          console.error('[TTSPage] Failed to parse last selected voice:', err);
+          localStorage.removeItem('lastSelectedVoice');
         }
-      })();
-
-      const voice = await voiceLoadingPromise;
-      if (voice) {
-        handleVoiceSelect(voice);
       }
+
+      // 3. 首次访问或找不到上次的语音：不自动选择，让用户主动选择
+      console.log('ℹ️ [TTSPage] No voice pre-selected, waiting for user to choose');
     };
 
-    void fetchDefaultVoice();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [locale, isLocaleReady, authLoading, selectedVoice]);
+    void loadLastSelectedVoice();
+  }, [locale, isLocaleReady, authLoading, selectedVoice, handleVoiceSelect]);
 
   // 当音频生成成功时，移动端自动打开弹窗
   useEffect(() => {

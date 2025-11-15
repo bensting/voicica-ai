@@ -31,7 +31,7 @@ export interface TtsRecord {
 
 // 查询 TTS 记录的请求参数
 export interface TtsRecordsQueryParams {
-  status?: TaskStatus;
+  status?: TaskStatus | TaskStatus[];  // 支持单个状态或多个状态数组
   start_date?: string;  // ISO 8601 format
   end_date?: string;    // ISO 8601 format
   page?: number;

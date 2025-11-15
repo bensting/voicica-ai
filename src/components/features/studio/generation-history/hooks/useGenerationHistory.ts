@@ -14,6 +14,7 @@ interface UseGenerationHistoryProps {
   authLoading?: boolean;
   pageSize?: number;
   accumulateData?: boolean; // For infinite scroll on mobile
+  defaultStatus?: TaskStatus | TaskStatus[] | null; // 默认状态过滤
 }
 
 interface UseGenerationHistoryReturn {
@@ -60,6 +61,7 @@ export function useGenerationHistory({
   authLoading = false,
   pageSize: initialPageSize = 20,
   accumulateData = false,
+  defaultStatus = TaskStatus.SUCCESS,
 }: UseGenerationHistoryProps): UseGenerationHistoryReturn {
   // Data state
   const [loading, setLoading] = useState(true);
@@ -71,12 +73,19 @@ export function useGenerationHistory({
   // Filter & pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize] = useState(initialPageSize);
-  const [selectedStatus, setSelectedStatus] = useState<TaskStatus | null>(TaskStatus.SUCCESS);
+  // For filter UI, we only support single status selection
+  // But we use defaultStatus (which can be array) directly for API calls
+  const [selectedStatus, setSelectedStatus] = useState<TaskStatus | null>(
+    Array.isArray(defaultStatus) ? null : defaultStatus
+  );
   const [startDate, setStartDate] = useState<string | null>(null);
   const [endDate, setEndDate] = useState<string | null>(null);
 
   // Polling for processing records
   const pollingIntervalRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Keep track of the actual status filter to use (can be array or single value)
+  const statusFilter = useRef<TaskStatus | TaskStatus[] | null>(defaultStatus);
 
   // Confirmation dialog state
   const [confirmDialog, setConfirmDialog] = useState<{
@@ -97,8 +106,12 @@ export function useGenerationHistory({
       setLoading(true);
       setError(null);
 
+      // Use statusFilter.current (which can be array) for API calls
+      // or selectedStatus if user changed the filter in UI
+      const actualStatus = selectedStatus !== null ? selectedStatus : statusFilter.current;
+
       const response = await queryTtsRecords({
-        status: selectedStatus || undefined,
+        status: actualStatus || undefined,
         start_date: startDate || undefined,
         end_date: endDate || undefined,
         page: currentPage,

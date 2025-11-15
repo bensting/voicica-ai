@@ -104,39 +104,17 @@ export default function VoiceList({
         />
       ))}
 
-      {/* Loading more skeleton */}
+      {/* Loading more indicator - subtle loading state */}
       {loadingMore && (
-        <>
-          {[...Array(3)].map((_, index) => (
-            <div
-              key={`loading-${index}`}
-              className="bg-white rounded-lg p-4 border border-gray-200 flex items-center gap-4 animate-pulse"
-            >
-              {/* Avatar skeleton */}
-              <div className="w-12 h-12 rounded-full bg-gray-200 flex-shrink-0" />
-
-              {/* Content skeleton */}
-              <div className="flex-1 min-w-0 space-y-2">
-                <div className="h-4 bg-gray-200 rounded w-3/4" />
-                <div className="h-3 bg-gray-200 rounded w-1/2" />
-                <div className="h-3 bg-gray-200 rounded w-1/3" />
-              </div>
-
-              {/* Button skeleton */}
-              <div className="w-8 h-8 rounded-lg bg-gray-200 flex-shrink-0" />
-            </div>
-          ))}
-        </>
-      )}
-
-      {/* Load More button */}
-      {!loadingMore && hasMore && onLoadMore && (
-        <button
-          onClick={onLoadMore}
-          className="w-full py-3 px-4 bg-white border-2 border-purple-200 text-purple-600 rounded-lg hover:bg-purple-50 hover:border-purple-300 transition-colors font-medium"
-        >
-          {t('voiceFilters.loadMoreVoices')}
-        </button>
+        <div className="flex justify-center py-4">
+          <div className="flex items-center gap-2 text-sm text-gray-500">
+            <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
+              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+            </svg>
+            <span>{t('common.loading')}</span>
+          </div>
+        </div>
       )}
     </div>
   );

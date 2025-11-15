@@ -8,6 +8,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { useVoices } from '@/components/features/studio/voices/hooks/useVoices';
 import VoiceSearchBar from '@/components/features/studio/voices/VoiceSearchBar';
+import VoiceTagSelector from '@/components/features/studio/voices/VoiceTagSelector';
 import VoiceFilters from '@/components/features/studio/voices/VoiceFilters';
 import VoiceList from '@/components/features/studio/voices/VoiceList';
 import { getAllLocaleOptions } from '@/utils/localeMapper';
@@ -45,6 +46,8 @@ export default function VoiceSelector({
     setSearchQuery,
     selectedLanguage,
     setSelectedLanguage,
+    selectedTagId,
+    setSelectedTagId,
     selectedGender,
     setSelectedGender,
     playingVoiceId,
@@ -52,6 +55,7 @@ export default function VoiceSelector({
     loadingMore,
     hasMore,
     loadMoreVoices,
+    total,
   } = useVoices({ locale, user, authLoading });
 
   // Mobile: Navigate to voices page
@@ -122,6 +126,16 @@ export default function VoiceSelector({
     }
   };
 
+  // Handle scroll for infinite loading (desktop)
+  const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
+    const target = e.currentTarget;
+    const bottom = target.scrollHeight - target.scrollTop <= target.clientHeight + 100;
+
+    if (bottom && hasMore && !loading && !loadingMore) {
+      void loadMoreVoices();
+    }
+  };
+
   return (
     <>
       {/* Mobile: Compact Button */}
@@ -177,37 +191,57 @@ export default function VoiceSelector({
         </svg>
       </button>
 
-      {/* Desktop: Voice Search Bar + Filters + List */}
-      <div className="hidden lg:flex flex-col h-full bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
-        {/* Search Bar */}
-        <VoiceSearchBar
-          searchQuery={searchQuery}
-          onSearchChange={setSearchQuery}
-          selectedLanguage={selectedLanguage}
-          onLanguageClick={handleLanguageClick}
-        />
-
-        {/* Filters */}
-        <VoiceFilters
-          selectedGender={selectedGender}
-          onGenderChange={setSelectedGender}
-        />
-
-        {/* Voice List - Scrollable */}
-        <div className="flex-1 min-h-0 overflow-y-auto p-3">
-          <VoiceList
-            voices={filteredVoices}
-            loading={loading}
-            error={error}
-            playingVoiceId={playingVoiceId}
-            locale={locale}
-            getVoiceName={getVoiceName}
-            onPlayVoice={handlePlayVoice}
-            onSelectVoice={onSelect}
-            loadingMore={loadingMore}
-            hasMore={hasMore}
-            onLoadMore={loadMoreVoices}
+      {/* Desktop: Tag Selector + Voice Search Bar + Filters + List */}
+      <div className="hidden lg:flex h-full bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+        {/* Left: Tag Selector */}
+        <div className="flex-shrink-0 border-r border-gray-200">
+          <VoiceTagSelector
+            selectedTagId={selectedTagId}
+            onTagSelect={setSelectedTagId}
           />
+        </div>
+
+        {/* Right: Search + Filters + List */}
+        <div className="flex-1 flex flex-col overflow-hidden min-w-0">
+          {/* Search Bar */}
+          <VoiceSearchBar
+            searchQuery={searchQuery}
+            onSearchChange={setSearchQuery}
+            selectedLanguage={selectedLanguage}
+            onLanguageClick={handleLanguageClick}
+          />
+
+          {/* Filters */}
+          <VoiceFilters
+            selectedGender={selectedGender}
+            onGenderChange={setSelectedGender}
+          />
+
+          {/* Voice List - Scrollable with infinite loading */}
+          <div className="flex-1 min-h-0 overflow-y-auto p-3 bg-gray-50" onScroll={handleScroll}>
+            <VoiceList
+              voices={filteredVoices}
+              loading={loading}
+              error={error}
+              playingVoiceId={playingVoiceId}
+              locale={locale}
+              getVoiceName={getVoiceName}
+              onPlayVoice={handlePlayVoice}
+              onSelectVoice={onSelect}
+              loadingMore={loadingMore}
+              hasMore={hasMore}
+              onLoadMore={loadMoreVoices}
+            />
+
+            {/* End of list indicator */}
+            {!loading && !loadingMore && !hasMore && filteredVoices.length > 0 && (
+              <div className="flex justify-center py-4">
+                <div className="text-xs text-gray-400">
+                  {t('voiceFilters.allVoicesLoaded').replace('{{total}}', String(total))}
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 

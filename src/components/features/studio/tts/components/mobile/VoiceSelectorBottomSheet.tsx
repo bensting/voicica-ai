@@ -32,7 +32,6 @@ interface VoiceSelectorBottomSheetProps {
 export default function VoiceSelectorBottomSheet({
   isOpen,
   onClose,
-  selectedVoice,
   onSelect,
 }: VoiceSelectorBottomSheetProps) {
   const { locale, t } = useLanguage();
@@ -217,7 +216,7 @@ export default function VoiceSelectorBottomSheet({
                 {!loading && !loadingMore && !hasMore && filteredVoices.length > 0 && (
                   <div className="flex justify-center py-4">
                     <div className="text-xs text-gray-400">
-                      {t('voiceFilters.allVoicesLoaded', { total })}
+                      {t('voiceFilters.allVoicesLoaded').replace('{{total}}', String(total))}
                     </div>
                   </div>
                 )}

@@ -89,6 +89,14 @@ export function useTTSGenerator(maxCharacters: number = 120) {
   const handleVoiceSelect = useCallback((voice: Voice) => {
     setSelectedVoice(voice);
     setError(null);
+
+    // 保存完整的语音对象到 localStorage，记住用户的选择
+    try {
+      localStorage.setItem('lastSelectedVoice', JSON.stringify(voice));
+      console.log('💾 [useTTSGenerator] Saved last selected voice:', voice.display_name, voice.id);
+    } catch (err) {
+      console.error('Failed to save voice to localStorage:', err);
+    }
   }, []);
 
   // 处理速度变化

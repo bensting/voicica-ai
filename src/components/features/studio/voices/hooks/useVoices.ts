@@ -183,15 +183,12 @@ export function useVoices({ locale, user, authLoading }: UseVoicesProps): UseVoi
       return;
     }
 
-    // Skip if user is not authenticated
-    if (!user) {
-      setLoading(false);
-      return;
-    }
-
-    // Load voices only after authentication is complete
+    // Load voices for both authenticated and anonymous users
+    // API client will handle authentication automatically:
+    // - Authenticated users: use Firebase token
+    // - Anonymous users: use device fingerprint
     void loadVoices();
-  }, [loadVoices, authLoading, user]);
+  }, [loadVoices, authLoading]);
 
   // Filter voices based on search query (client-side only)
   // Other filters (language, gender, tag) are handled by API

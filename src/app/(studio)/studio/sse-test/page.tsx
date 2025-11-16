@@ -3,7 +3,9 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCredits } from '@/contexts/CreditsContext';
-import { createCreditsSSE, closeCreditsSSE, type CreditsSSEData } from '@/lib/api/sse';
+import { createCreditsSSE, closeCreditsSSE, type CreditsSSEData, type SSEController } from '@/lib/api/sse';
+import { auth } from '@/lib/firebase';
+import { getDeviceFingerprint } from '@/lib/utils/fingerprint';
 
 /**
  * SSE 测试页面
@@ -16,7 +18,7 @@ export default function SSETestPage() {
   const [logs, setLogs] = useState<string[]>([]);
   const [sseStatus, setSSEStatus] = useState<'disconnected' | 'connecting' | 'connected' | 'error'>('disconnected');
   const [lastUpdate, setLastUpdate] = useState<CreditsSSEData | null>(null);
-  const [manualEventSource, setManualEventSource] = useState<EventSource | null>(null);
+  const [manualController, setManualController] = useState<SSEController | null>(null);
 
   const addLog = (message: string) => {
     const timestamp = new Date().toLocaleTimeString();
@@ -29,12 +31,26 @@ export default function SSETestPage() {
     setSSEStatus('connecting');
 
     try {
-      const token = user ? await user.getIdToken() : null;
-      const deviceFingerprint = !user ? localStorage.getItem('deviceFingerprint') : null;
+      // 使用与 API Client 相同的认证方式
+      const currentUser = auth.currentUser;
+      addLog(`当前 Firebase 用户: ${currentUser ? currentUser.email || '匿名登录' : '未登录'}`);
+
+      let token: string | null = null;
+      let deviceFingerprint: string | null = null;
+
+      if (currentUser) {
+        // 已登录用户：获取 ID Token
+        token = await currentUser.getIdToken();
+        addLog(`✅ 获取到 Token (前20字符): ${token.substring(0, 20)}...`);
+      } else {
+        // 匿名用户：获取设备指纹
+        deviceFingerprint = await getDeviceFingerprint();
+        addLog(`✅ 获取到设备指纹 (前16字符): ${deviceFingerprint.substring(0, 16)}...`);
+      }
 
       addLog(`认证信息: ${token ? 'Token (已登录)' : deviceFingerprint ? 'Device Fingerprint (匿名)' : '无'}`);
 
-      const eventSource = createCreditsSSE({
+      const controller = createCreditsSSE({
         token: token || undefined,
         deviceFingerprint: deviceFingerprint || undefined,
         onMessage: (data) => {
@@ -43,7 +59,8 @@ export default function SSETestPage() {
           setSSEStatus('connected');
         },
         onError: (error) => {
-          addLog(`❌ SSE 连接错误`);
+          const errorMessage = error instanceof Error ? error.message : String(error);
+          addLog(`❌ SSE 连接错误: ${errorMessage}`);
           console.error('SSE Error:', error);
           setSSEStatus('error');
         },
@@ -53,8 +70,8 @@ export default function SSETestPage() {
         },
       });
 
-      setManualEventSource(eventSource);
-      addLog('EventSource 已创建');
+      setManualController(controller);
+      addLog('SSE Controller 已创建');
     } catch (error) {
       addLog(`❌ 创建 SSE 连接失败: ${error}`);
       setSSEStatus('error');
@@ -63,9 +80,9 @@ export default function SSETestPage() {
 
   // 断开连接
   const disconnectSSE = () => {
-    if (manualEventSource) {
-      closeCreditsSSE(manualEventSource);
-      setManualEventSource(null);
+    if (manualController) {
+      closeCreditsSSE(manualController);
+      setManualController(null);
       setSSEStatus('disconnected');
       addLog('已断开 SSE 连接');
     }
@@ -80,11 +97,11 @@ export default function SSETestPage() {
   // 页面卸载时断开连接
   useEffect(() => {
     return () => {
-      if (manualEventSource) {
-        closeCreditsSSE(manualEventSource);
+      if (manualController) {
+        closeCreditsSSE(manualController);
       }
     };
-  }, [manualEventSource]);
+  }, [manualController]);
 
   return (
     <div className="min-h-screen bg-gray-50 p-8">
@@ -149,9 +166,9 @@ export default function SSETestPage() {
                 </>
               )}
             </div>
-            {manualEventSource && (
+            {sseStatus !== 'disconnected' && (
               <p className="text-sm text-gray-600 mt-2">
-                ReadyState: {manualEventSource.readyState === 0 ? 'CONNECTING' : manualEventSource.readyState === 1 ? 'OPEN' : 'CLOSED'}
+                使用 fetch-event-source
               </p>
             )}
           </div>
@@ -237,11 +254,11 @@ export default function SSETestPage() {
         <div className="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
           <h4 className="text-sm font-semibold text-blue-900 mb-2">测试说明</h4>
           <ul className="text-sm text-blue-800 space-y-1 list-disc list-inside">
-            <li>点击"连接 SSE"按钮建立 SSE 连接</li>
+            <li>点击&ldquo;连接 SSE&rdquo;按钮建立 SSE 连接</li>
             <li>后端每 3 秒推送一次积分更新</li>
             <li>连接成功后,日志面板会显示收到的数据</li>
             <li>当前积分卡片会实时更新(通过 CreditsContext)</li>
-            <li>如果连接失败,请检查后端是否支持 Cookie 认证</li>
+            <li>现在使用 fetch-event-source 支持自定义 Headers 认证</li>
           </ul>
         </div>
       </div>

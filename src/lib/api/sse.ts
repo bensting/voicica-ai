@@ -17,7 +17,7 @@ export interface SSEConnectionOptions {
   token?: string;
   deviceFingerprint?: string;
   onMessage?: (data: CreditsSSEData) => void;
-  onError?: (error: any) => void;
+  onError?: (error: Error | unknown) => void;
   onOpen?: () => void;
 }
 
@@ -59,19 +59,20 @@ export function createCreditsSSE(options: SSEConnectionOptions): SSEController {
   console.log('[SSE API] 创建积分推送连接:', sseUrl);
 
   // 构建认证 headers
-  const headers: Record<string, string> = {
-    'Content-Type': 'text/event-stream',
-  };
+  const headers: Record<string, string> = {};
 
   if (token) {
     headers['Authorization'] = `Bearer ${token}`;
     console.log('[SSE API] 使用 Token 认证');
+    console.log('[SSE API] Token 前20字符:', token.substring(0, 20) + '...');
   } else if (deviceFingerprint) {
     headers['X-Device-Fingerprint'] = deviceFingerprint;
     console.log('[SSE API] 使用设备指纹认证:', deviceFingerprint.substring(0, 16) + '...');
   } else {
-    console.warn('[SSE API] 缺少认证信息');
+    console.warn('[SSE API] ⚠️ 缺少认证信息 - token:', !!token, 'deviceFingerprint:', !!deviceFingerprint);
   }
+
+  console.log('[SSE API] 最终 Headers:', headers);
 
   const controller = new SSEController();
   const abortController = controller.getAbortController();
@@ -80,6 +81,7 @@ export function createCreditsSSE(options: SSEConnectionOptions): SSEController {
   fetchEventSource(sseUrl, {
     headers,
     signal: abortController.signal,
+    method: 'GET', // 明确指定 GET 方法
 
     onopen: async (response) => {
       if (response.ok) {

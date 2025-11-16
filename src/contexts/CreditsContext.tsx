@@ -94,7 +94,7 @@ export function CreditsProvider({ children }: { children: React.ReactNode }) {
 
   useCreditsSSE({
     onCreditsUpdate: handleCreditsUpdate,
-    enabled: !authLoading, // 认证完成后才启用SSE
+    enabled: true, // 始终启用，hook内部会处理认证
   });
 
   const value: CreditsContextState = {

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useUser } from '@/contexts/UserContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import ProfilePictureUpload from '@/components/features/settings/my-account/ProfilePictureUpload';
@@ -12,11 +12,23 @@ export default function MyAccountPage() {
   const { profile, loading } = useUser();
   const { t } = useLanguage();
   const [formData, setFormData] = useState({
-    name: profile?.name || '',
-    email: profile?.email || '',
+    name: '',
+    email: '',
     phone: '',
     countryCode: '+66'
   });
+
+  // 当 profile 加载完成后，更新表单数据
+  useEffect(() => {
+    if (profile) {
+      setFormData({
+        name: profile.name || '',
+        email: profile.email || '',
+        phone: '',
+        countryCode: '+66'
+      });
+    }
+  }, [profile]);
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({

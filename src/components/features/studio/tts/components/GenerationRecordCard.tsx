@@ -137,9 +137,9 @@ export default function GenerationRecordCard({
           </button>
         </div>
 
-        {/* Text Content */}
-        <div className="text-center">
-          <p className={`${config.text} text-gray-900 font-medium line-clamp-3`}>{generation.text}</p>
+        {/* Text Content - 单行显示,超出省略 */}
+        <div className="text-center px-2">
+          <p className={`${config.text} text-gray-900 font-medium truncate`}>{generation.text}</p>
         </div>
 
         {/* Voice Info - centered */}

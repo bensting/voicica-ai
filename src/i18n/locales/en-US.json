@@ -8,6 +8,7 @@
   "common": {
     "brand": "AI Voice Labs",
     "cancel": "Cancel",
+    "close": "Close",
     "retry": "Retry",
     "loading": "Loading..."
   },
@@ -174,6 +175,12 @@
     "credits": "Credits",
     "selectVoice": "Select Voice",
     "generating": "Generating...",
+    "generationComplete": "Generation Complete",
+    "generationFailed": "Generation Failed",
+    "processingMessage": "Your audio is being generated, please wait...",
+    "successMessage": "Audio generated successfully!",
+    "generatingTip": "This may take a few seconds. You can close this and check later in Generation History.",
+    "successTip": "Your audio is ready! You can download or play it now.",
     "taskProgress": "Progress",
     "recentAuditions": "Recent auditions",
     "allRecords": "All records",

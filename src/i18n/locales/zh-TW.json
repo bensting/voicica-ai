@@ -2,6 +2,7 @@
   "common": {
     "brand": "AI 語音實驗室",
     "cancel": "取消",
+    "close": "關閉",
     "retry": "重試",
     "loading": "載入中..."
   },
@@ -252,6 +253,12 @@
     "credits": "積分",
     "selectVoice": "選擇語音",
     "generating": "生成中...",
+    "generationComplete": "生成完成",
+    "generationFailed": "生成失敗",
+    "processingMessage": "正在生成您的音訊，請稍候...",
+    "successMessage": "音訊生成成功！",
+    "generatingTip": "這可能需要幾秒鐘。您可以關閉此視窗，稍後在生成歷史中查看。",
+    "successTip": "您的音訊已準備就緒！現在可以下載或播放。",
     "taskProgress": "進度",
     "recentAuditions": "最近生成",
     "allRecords": "全部記錄",

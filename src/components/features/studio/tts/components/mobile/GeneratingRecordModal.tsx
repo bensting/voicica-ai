@@ -1,6 +1,5 @@
 'use client';
 
-import { useEffect } from 'react';
 import { X } from 'lucide-react';
 import type { Generation } from '@/types/tts';
 import { TaskStatus } from '@/types/tts';
@@ -28,17 +27,6 @@ export default function GeneratingRecordModal({
   onDownload,
 }: GeneratingRecordModalProps) {
   const { t } = useLanguage();
-
-  // Auto close when generation is complete
-  useEffect(() => {
-    if (generation?.status === TaskStatus.SUCCESS) {
-      // Auto close after 2 seconds when completed
-      const timer = setTimeout(() => {
-        onClose();
-      }, 2000);
-      return () => clearTimeout(timer);
-    }
-  }, [generation?.status, onClose]);
 
   if (!isOpen || !generation) return null;
 

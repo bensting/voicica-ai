@@ -38,6 +38,7 @@ export default function StudioTTSPage() {
   const [isVoiceSelectorOpen, setIsVoiceSelectorOpen] = useState(false);
   const [isGeneratingModalOpen, setIsGeneratingModalOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [lastOpenedRecordId, setLastOpenedRecordId] = useState<string | null>(null);
 
   // Set page title
   useEffect(() => {
@@ -151,12 +152,16 @@ export default function StudioTTSPage() {
   useEffect(() => {
     if (isMobile && generations.length > 0) {
       const latestRecord = generations[0];
-      // 如果最新记录是正在处理的，打开弹窗
+      // 只在新记录首次出现时打开弹窗（通过记录 ID 判断是否是新记录）
       if (latestRecord.status === TaskStatus.PROCESSING || latestRecord.status === TaskStatus.PENDING) {
-        setIsGeneratingModalOpen(true);
+        if (latestRecord.id !== lastOpenedRecordId) {
+          console.log('📱 [TTSPage] 打开移动端生成进度弹窗，记录ID:', latestRecord.id);
+          setIsGeneratingModalOpen(true);
+          setLastOpenedRecordId(latestRecord.id);
+        }
       }
     }
-  }, [generations, isMobile]);
+  }, [generations, isMobile, lastOpenedRecordId]);
 
   const handleOpenSettings = () => {
     // TODO: Open settings modal
@@ -295,7 +300,15 @@ export default function StudioTTSPage() {
       {/* Generating Record Modal (Mobile) - 显示生成进度 */}
       <GeneratingRecordModal
         isOpen={isGeneratingModalOpen}
-        onClose={() => setIsGeneratingModalOpen(false)}
+        onClose={() => {
+          setIsGeneratingModalOpen(false);
+          // 当弹窗关闭时（无论是用户手动关闭还是自动关闭），
+          // 如果当前记录已经完成，清除 lastOpenedRecordId，
+          // 这样下次生成新记录时弹窗还能正常打开
+          if (generations.length > 0 && generations[0].status === TaskStatus.SUCCESS) {
+            setLastOpenedRecordId(null);
+          }
+        }}
         generation={generations.length > 0 ? generations[0] : null}
         onDelete={handleDeleteGeneration}
         onDownload={handleDownloadGeneration}

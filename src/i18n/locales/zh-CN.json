@@ -2,6 +2,7 @@
   "common": {
     "brand": "AI 语音实验室",
     "cancel": "取消",
+    "close": "关闭",
     "retry": "重试",
     "loading": "加载中..."
   },
@@ -252,6 +253,12 @@
     "credits": "积分",
     "selectVoice": "选择语音",
     "generating": "生成中...",
+    "generationComplete": "生成完成",
+    "generationFailed": "生成失败",
+    "processingMessage": "正在生成您的音频，请稍候...",
+    "successMessage": "音频生成成功！",
+    "generatingTip": "这可能需要几秒钟。您可以关闭此窗口，稍后在生成历史中查看。",
+    "successTip": "您的音频已准备就绪！现在可以下载或播放。",
     "taskProgress": "进度",
     "recentAuditions": "最近生成",
     "allRecords": "全部记录",

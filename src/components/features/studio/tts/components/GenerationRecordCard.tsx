@@ -86,22 +86,128 @@ export default function GenerationRecordCard({
       voiceText: 'text-xs',
       progressText: 'text-xs',
       progressBar: 'w-32 h-1',
+      layout: 'flex-row',
     },
     large: {
-      container: 'p-4',
-      playButton: 'w-12 h-12',
-      playIcon: 'w-6 h-6',
-      spinner: 'w-7 h-7',
-      avatar: 'w-10 h-10',
-      text: 'text-base',
-      voiceText: 'text-sm',
-      progressText: 'text-sm',
-      progressBar: 'w-full h-2',
+      container: 'p-5',
+      playButton: 'w-16 h-16',
+      playIcon: 'w-8 h-8',
+      spinner: 'w-9 h-9',
+      avatar: 'w-12 h-12',
+      text: 'text-lg',
+      voiceText: 'text-base',
+      progressText: 'text-base',
+      progressBar: 'w-full h-2.5',
+      layout: 'flex-col',
     },
   };
 
   const config = sizeConfig[size];
 
+  // Large size uses vertical layout for better mobile UX
+  if (size === 'large') {
+    return (
+      <div
+        className={`flex flex-col gap-4 rounded-2xl transition-all ${config.container} ${
+          isProcessing
+            ? 'bg-purple-50 border-2 border-purple-200'
+            : 'bg-white border border-gray-200'
+        }`}
+      >
+        {/* Top section: Play button centered */}
+        <div className="flex justify-center">
+          <button
+            onClick={() => !isProcessing && handlePlay(generation.id, generation.audioUrl || '')}
+            className={`${config.playButton} flex items-center justify-center rounded-full transition-colors shadow-lg ${
+              isProcessing
+                ? 'bg-purple-100 cursor-not-allowed'
+                : playingId === generation.id
+                  ? 'bg-purple-600 text-white hover:bg-purple-700'
+                  : 'bg-purple-100 text-purple-600 hover:bg-purple-200'
+            }`}
+            disabled={isProcessing || !generation.audioUrl}
+          >
+            {isProcessing ? (
+              <div className={`${config.spinner} border-3 border-purple-600 border-t-transparent rounded-full animate-spin`} />
+            ) : playingId === generation.id ? (
+              <Pause className={config.playIcon} fill="currentColor" />
+            ) : (
+              <Play className={config.playIcon} fill="currentColor" />
+            )}
+          </button>
+        </div>
+
+        {/* Text Content */}
+        <div className="text-center">
+          <p className={`${config.text} text-gray-900 font-medium line-clamp-3`}>{generation.text}</p>
+        </div>
+
+        {/* Voice Info - centered */}
+        <div className="flex items-center justify-center gap-3">
+          {generation.voiceAvatar ? (
+            <Image
+              src={generation.voiceAvatar}
+              alt={generation.voiceName || ''}
+              width={48}
+              height={48}
+              className={`${config.avatar} rounded-full object-cover ring-2 ring-purple-100`}
+            />
+          ) : (
+            <div className={`${config.avatar} rounded-full bg-purple-100 flex items-center justify-center ring-2 ring-purple-200`}>
+              <span className="text-2xl">🎤</span>
+            </div>
+          )}
+          <span className={`${config.voiceText} text-gray-700 font-medium`}>{generation.voiceDisplayName || generation.voiceName}</span>
+        </div>
+
+        {/* Progress section */}
+        <div className="flex flex-col gap-2">
+          <div className="flex items-center justify-between">
+            <span className={`${config.progressText} text-gray-600`}>
+              {isProcessing ? '生成进度' : '时长'}
+            </span>
+            <span className={`${config.progressText} font-semibold ${isProcessing ? 'text-purple-600' : 'text-gray-700'}`}>
+              {isProcessing ? `${progress}%` : generation.duration ? `${generation.duration}s` : '-'}
+            </span>
+          </div>
+          <div className={`${config.progressBar} bg-gray-200 rounded-full overflow-hidden`}>
+            <div
+              className={`h-full rounded-full transition-all duration-500 ${
+                isProcessing ? 'bg-purple-600' : 'bg-purple-400'
+              }`}
+              style={{ width: isProcessing ? `${progress}%` : '100%' }}
+            />
+          </div>
+        </div>
+
+        {/* Action Buttons - full width */}
+        {showActions && !isProcessing && (
+          <div className="flex gap-3 pt-2">
+            <button
+              onClick={() => onDownload(generation.id)}
+              className="flex-1 py-3 bg-purple-50 text-purple-600 font-medium rounded-xl hover:bg-purple-100 transition-colors flex items-center justify-center gap-2"
+              disabled={!generation.audioUrl}
+            >
+              <Download className="w-5 h-5" />
+              下载
+            </button>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onDelete(generation.id);
+              }}
+              className="flex-1 py-3 bg-gray-50 text-gray-600 font-medium rounded-xl hover:bg-red-50 hover:text-red-600 transition-colors flex items-center justify-center gap-2"
+            >
+              <Trash2 className="w-5 h-5" />
+              删除
+            </button>
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  // Normal size uses horizontal layout
   return (
     <div
       className={`flex items-center gap-3 rounded-lg hover:shadow-sm transition-all ${config.container} ${
@@ -142,8 +248,8 @@ export default function GenerationRecordCard({
           <Image
             src={generation.voiceAvatar}
             alt={generation.voiceName || ''}
-            width={size === 'large' ? 40 : 24}
-            height={size === 'large' ? 40 : 24}
+            width={24}
+            height={24}
             className={`${config.avatar} rounded-full object-cover`}
           />
         ) : (

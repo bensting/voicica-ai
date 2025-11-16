@@ -1,13 +1,15 @@
 'use client';
 
 import MobileBottomNav from '@/components/layout/studio/MobileBottomNav';
+import SSECreditsProvider from '@/components/providers/SSECreditsProvider';
 
 /**
  * TTS Layout
  *
  * Provides desktop/mobile specific layouts for TTS pages:
- * - Desktop: Standard content layout
+ * - Desktop: Standard content layout with SSE credits updates
  * - Mobile: Content with bottom navigation bar and appropriate padding
+ * - SSE: Real-time credits updates for all TTS pages
  */
 export default function TTSLayout({
   children,
@@ -15,7 +17,7 @@ export default function TTSLayout({
   children: React.ReactNode;
 }) {
   return (
-    <>
+    <SSECreditsProvider>
       {/* ========== 桌面端布局 (lg+) ========== */}
       <div className="hidden lg:block">
         {children}
@@ -33,6 +35,6 @@ export default function TTSLayout({
         {/* Mobile Bottom Navigation */}
         <MobileBottomNav />
       </div>
-    </>
+    </SSECreditsProvider>
   );
 }

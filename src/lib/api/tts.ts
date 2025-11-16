@@ -107,55 +107,71 @@ export async function batchDeleteTtsRecords(recordIds?: string[] | null): Promis
 
 /**
  * 下载音频文件
+ *
+ * 策略说明（按优先级排序）：
+ * 1. Firebase Storage 直接下载（通过 response-content-disposition 参数）- 最快最简单
+ * 2. Fetch + Blob 下载 - 降级方案，解决某些浏览器兼容性问题
  */
 export async function downloadAudio(audioUrl: string, filename: string): Promise<void> {
+  console.log('[downloadAudio] 开始下载音频:', { audioUrl, filename });
+
+  // 方法1: Firebase Storage 直接下载（最优方案）
   try {
-    console.log('[downloadAudio] 开始下载音频:', { audioUrl, filename });
+    // 对于 Firebase Storage，添加 response-content-disposition=attachment 参数强制下载
+    const downloadUrl = audioUrl.includes('?')
+      ? `${audioUrl}&response-content-disposition=attachment;filename=${encodeURIComponent(filename)}`
+      : `${audioUrl}?response-content-disposition=attachment;filename=${encodeURIComponent(filename)}`;
 
-    // 方法1: 尝试使用 fetch + blob 下载（适用于同源或支持 CORS 的 URL）
-    try {
-      const response = await fetch(audioUrl, {
-        method: 'GET',
-        mode: 'cors', // 支持跨域
-        credentials: 'omit', // 不发送凭证
-      });
+    const link = document.createElement('a');
+    link.href = downloadUrl;
+    link.download = filename;
+    link.style.display = 'none';
+    document.body.appendChild(link);
+    link.click();
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
+    setTimeout(() => {
+      document.body.removeChild(link);
+      console.log('[downloadAudio] ✅ 下载完成（Firebase Storage 直接下载）');
+    }, 100);
 
-      const blob = await response.blob();
-      console.log('[downloadAudio] Blob 创建成功:', blob.size, 'bytes');
+    return; // 成功则直接返回
 
-      // 创建下载链接
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', filename);
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-      window.URL.revokeObjectURL(url);
+  } catch (directError) {
+    console.warn('[downloadAudio] Firebase Storage 直接下载失败，尝试 Fetch 方式:', directError);
+  }
 
-      console.log('[downloadAudio] 下载成功');
-      return;
-    } catch (fetchError) {
-      console.warn('[downloadAudio] Fetch 下载失败，尝试直接链接下载:', fetchError);
+  // 方法2: 使用 fetch + blob 下载（降级方案）
+  try {
+    const response = await fetch(audioUrl, {
+      method: 'GET',
+      mode: 'cors',
+      credentials: 'omit',
+    });
 
-      // 方法2: 如果 fetch 失败（可能是 CORS），直接使用链接下载
-      const link = document.createElement('a');
-      link.href = audioUrl;
-      link.setAttribute('download', filename);
-      link.setAttribute('target', '_blank'); // 新标签页打开，避免页面跳转
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-
-      console.log('[downloadAudio] 使用直接链接下载');
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
     }
-  } catch (error) {
-    console.error('[downloadAudio] 下载失败:', error);
-    throw error;
+
+    const blob = await response.blob();
+    console.log('[downloadAudio] Blob 创建成功:', blob.size, 'bytes');
+
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    link.style.display = 'none';
+    document.body.appendChild(link);
+    link.click();
+
+    setTimeout(() => {
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+      console.log('[downloadAudio] ✅ 下载完成（Fetch + Blob）');
+    }, 100);
+
+  } catch (fetchError) {
+    console.error('[downloadAudio] ❌ 所有下载方法都失败了:', fetchError);
+    throw new Error('下载失败，请稍后重试');
   }
 }
 

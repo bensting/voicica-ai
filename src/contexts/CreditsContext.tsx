@@ -44,6 +44,12 @@ export function CreditsProvider({ children }: { children: React.ReactNode }) {
 
   // 获取积分
   const fetchCredits = useCallback(async () => {
+    // 确保认证已完成
+    if (authLoading) {
+      console.log('⏳ 认证尚未完成，跳过积分获取');
+      return;
+    }
+
     try {
       setLoading(true);
       setError(null);
@@ -64,7 +70,7 @@ export function CreditsProvider({ children }: { children: React.ReactNode }) {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [authLoading]);
 
   // 刷新积分（供外部调用）
   const refreshCredits = useCallback(async () => {

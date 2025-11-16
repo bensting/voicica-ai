@@ -4,14 +4,19 @@
 
 // 用户资料 - 与后端 UserProfileResponse 保持一致
 export interface UserProfile {
-  id: string;
+  id: number | string; // 数据库主键（int）或业务主键（str）
+  user_id: string; // 业务主键（Firebase UID 或 anonymous_xxx）
   email: string | null;
   name: string | null;
   photo_url: string | null;
   credits: number;
   total_credits_used: number;
-  subscription_status: string;
-  active_subscription_id: string | null;
+
+  // 用户类型标识
+  is_anonymous: boolean; // 是否为匿名用户
+
+  // 匿名用户专属字段
+  expires_at: string | null; // 过期时间（仅匿名用户，ISO 8601 格式）
 }
 
 // 用户更新请求

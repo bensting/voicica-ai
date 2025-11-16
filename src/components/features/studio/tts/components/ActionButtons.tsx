@@ -1,6 +1,7 @@
 'use client';
 
 import { Loader2, Play } from 'lucide-react';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface ActionButtonsProps {
   onGenerate: () => void;
@@ -21,6 +22,7 @@ export default function ActionButtons({
   isGenerating,
   canGenerate,
 }: ActionButtonsProps) {
+  const { t } = useLanguage();
   return (
     <>
       {/* Mobile: Settings + Generate buttons */}
@@ -48,14 +50,14 @@ export default function ActionButtons({
           {isGenerating ? (
             <>
               <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-              <span className="text-base">生成中...</span>
+              <span className="text-base">{t('ttsInput.generating')}</span>
             </>
           ) : (
             <>
               <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M8 5v14l11-7z" />
               </svg>
-              <span className="text-base">生成</span>
+              <span className="text-base">{t('ttsInput.generateSpeech')}</span>
             </>
           )}
         </button>

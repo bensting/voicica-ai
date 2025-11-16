@@ -24,6 +24,7 @@ interface CreditsContextState {
   error: string | null;
   refreshCredits: () => Promise<void>;
   deductCredits: (amount: number) => void;
+  updateCredits: (newCredits: number) => void; // 直接更新积分（用于 SSE）
 }
 
 const CreditsContext = createContext<CreditsContextState | undefined>(undefined);
@@ -89,6 +90,12 @@ export function CreditsProvider({ children, enableSSE = false }: CreditsProvider
     console.log(`💰 本地扣减积分: -${amount}`);
   }, []);
 
+  // 直接更新积分（用于 SSE 推送，不发起 API 请求）
+  const updateCredits = useCallback((newCredits: number) => {
+    setCredits(newCredits);
+    console.log(`💰 [SSE] 积分直接更新: ${newCredits}`);
+  }, []);
+
   // 等待认证完成后再获取积分
   useEffect(() => {
     // 只在认证状态确定后（authLoading = false）才获取积分
@@ -115,6 +122,7 @@ export function CreditsProvider({ children, enableSSE = false }: CreditsProvider
     error,
     refreshCredits,
     deductCredits,
+    updateCredits,
   };
 
   return <CreditsContext.Provider value={value}>{children}</CreditsContext.Provider>;

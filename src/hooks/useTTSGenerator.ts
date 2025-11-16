@@ -1,6 +1,5 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { generateTTS } from '@/lib/api/tts';
-import { useCredits } from '@/contexts/CreditsContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import type { Voice } from '@/types/voice';
 
@@ -20,7 +19,6 @@ export type VoiceModel = Voice;
  * - 字符限制校验
  */
 export function useTTSGenerator(maxCharacters: number = 120) {
-  const { refreshCredits, deductCredits } = useCredits();
   const { t } = useLanguage();
   const [text, setText] = useState('');
   const [selectedVoice, setSelectedVoice] = useState<Voice | null>(null);
@@ -29,9 +27,15 @@ export function useTTSGenerator(maxCharacters: number = 120) {
   const [error, setError] = useState<string | null>(null);
   const [audioUrl, setAudioUrl] = useState<string | null>(null);
 
+  // Ref to track if we've already loaded the pre-selected voice
+  const hasLoadedPreSelection = useRef(false);
+
   // Check for pre-selected voice from sessionStorage (from Voices Gallery page)
-  // Run on every render to catch updates when navigating back from voices page
+  // Only run once to prevent infinite render loop
   useEffect(() => {
+    // Only run once
+    if (hasLoadedPreSelection.current) return;
+
     const preSelectedVoiceStr = sessionStorage.getItem('ttsPreSelectedVoice');
     if (preSelectedVoiceStr) {
       try {
@@ -42,26 +46,23 @@ export function useTTSGenerator(maxCharacters: number = 120) {
           console.log('✅ [useTTSGenerator] Loaded pre-selected voice from Voices Gallery:', preSelectedVoice.name);
 
           // Clear the module-level cache in MobileTTSPage to prevent it from using old default voice
-          // We need to do this BEFORE setting the voice to ensure the cache is cleared
           if (typeof window !== 'undefined') {
-            // Signal to MobileTTSPage to clear its cache
             sessionStorage.setItem('clearVoiceCache', 'true');
-            // Also set a flag to indicate voice was pre-selected from gallery
-            // This prevents mobile page from overriding with default voice
             sessionStorage.setItem('voicePreSelectedFromGallery', 'true');
           }
 
           setSelectedVoice(preSelectedVoice);
+          hasLoadedPreSelection.current = true; // Mark as loaded
         }
 
-        // Clear after applying to prevent re-applying on every render
+        // Clear after applying
         sessionStorage.removeItem('ttsPreSelectedVoice');
       } catch (err) {
         console.error('❌ Failed to parse pre-selected voice:', err);
         sessionStorage.removeItem('ttsPreSelectedVoice');
       }
     }
-  }); // No dependency array - runs on every render to catch navigation updates
+  }, [selectedVoice]); // ✅ Now has dependency array
 
   // 可用字符数
   const availableCharacters = maxCharacters - text.length;

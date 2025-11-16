@@ -115,18 +115,6 @@ export default function GeneratingRecordModal({
               </p>
             </div>
           </div>
-
-          {/* Footer - Only show when completed */}
-          {isSuccess && (
-            <div className="p-4 border-t border-gray-200">
-              <button
-                onClick={onClose}
-                className="w-full py-3 bg-purple-600 text-white font-medium rounded-xl hover:bg-purple-700 transition-colors"
-              >
-                {t('common.close')}
-              </button>
-            </div>
-          )}
         </div>
       </div>
     </>

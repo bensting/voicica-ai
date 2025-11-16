@@ -142,7 +142,8 @@ export default function StudioTTSPage() {
       }, 300);
       return () => clearTimeout(timer);
     }
-  }, [isGenerating, fetchRecords]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isGenerating]); // 移除 fetchRecords 依赖，避免重复调用
 
   // 移动端：当新的生成记录出现时，自动打开底部抽屉显示进度
   useEffect(() => {

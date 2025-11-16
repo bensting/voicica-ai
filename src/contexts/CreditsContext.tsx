@@ -28,6 +28,11 @@ interface CreditsContextState {
 
 const CreditsContext = createContext<CreditsContextState | undefined>(undefined);
 
+interface CreditsProviderProps {
+  children: React.ReactNode;
+  enableSSE?: boolean; // 是否启用 SSE 实时更新
+}
+
 /**
  * Credits Provider
  *
@@ -35,8 +40,9 @@ const CreditsContext = createContext<CreditsContextState | undefined>(undefined)
  * - 自动获取积分
  * - 手动刷新
  * - 本地乐观更新（生成后立即扣减）
+ * - 可选的 SSE 实时推送（默认关闭）
  */
-export function CreditsProvider({ children }: { children: React.ReactNode }) {
+export function CreditsProvider({ children, enableSSE = false }: CreditsProviderProps) {
   const { user, loading: authLoading } = useAuth();
   const [credits, setCredits] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -92,7 +98,7 @@ export function CreditsProvider({ children }: { children: React.ReactNode }) {
     }
   }, [fetchCredits, user, authLoading]);
 
-  // SSE 实时推送积分更新
+  // SSE 实时推送积分更新（可选）
   const handleCreditsUpdate = useCallback((newCredits: number) => {
     console.log('💰 [SSE] 积分实时更新:', newCredits);
     setCredits(newCredits);
@@ -100,7 +106,7 @@ export function CreditsProvider({ children }: { children: React.ReactNode }) {
 
   useCreditsSSE({
     onCreditsUpdate: handleCreditsUpdate,
-    enabled: true, // 始终启用，hook内部会处理认证
+    enabled: enableSSE, // 根据 prop 决定是否启用 SSE
   });
 
   const value: CreditsContextState = {

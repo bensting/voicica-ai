@@ -18,6 +18,7 @@ import GeneratingRecordModal from '@/components/features/studio/tts/components/m
 import { useGenerationHistory } from '@/components/features/studio/generation-history/hooks/useGenerationHistory';
 import RecentGenerationsList from '@/components/features/studio/tts/components/RecentGenerationsList';
 import ConfirmDialog from '@/components/ui/ConfirmDialog';
+import SSECreditsProvider from '@/components/providers/SSECreditsProvider';
 
 /**
  * Studio TTS Page
@@ -173,7 +174,7 @@ export default function StudioTTSPage() {
     || (authLoading || !isLocaleReady ? t('common.loading') : t('studio.selectVoice'));
 
   return (
-    <>
+    <SSECreditsProvider>
       {/* Mobile Layout */}
       <div className="lg:hidden h-full flex flex-col px-4 pt-3 pb-20 gap-2 bg-gradient-to-b from-gray-50 to-white">
         {/* Error Message */}
@@ -323,6 +324,6 @@ export default function StudioTTSPage() {
         onCancel={closeConfirmDialog}
         variant="danger"
       />
-    </>
+    </SSECreditsProvider>
   );
 }

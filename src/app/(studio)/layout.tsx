@@ -55,7 +55,7 @@ export default function StudioLayout({
 }) {
   return (
     <StudioProvider>
-      <CreditsProvider>
+      <CreditsProvider enableSSE={false}>
         <StudioLayoutContent>{children}</StudioLayoutContent>
       </CreditsProvider>
     </StudioProvider>

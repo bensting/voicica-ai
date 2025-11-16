@@ -2,7 +2,7 @@
  * API 统一导出
  *
  * 使用方式：
- * import { userAPI, voiceAPI, subscriptionAPI, ttsAPI, enumsAPI, configAPI } from '@/lib/api'
+ * import { userAPI, voiceAPI, subscriptionAPI, ttsAPI, enumsAPI, configAPI, sseAPI } from '@/lib/api'
  */
 
 // 导出 API 客户端
@@ -25,3 +25,6 @@ export * as enumsAPI from './enums';
 
 // 导出配置相关 API
 export * as configAPI from './config';
+
+// 导出 SSE 相关 API
+export * as sseAPI from './sse';

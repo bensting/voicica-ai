@@ -1,6 +1,6 @@
 {
   "placeholder": "在此輸入文本，我們將自動識別並轉換為對應的語音。",
-  "charactersLeft": "剩餘字元",
+  "creditsLeft": "剩餘積分",
   "characterCount": "{current} / {max}",
   "generateSpeech": "生成語音",
   "generating": "生成中...",

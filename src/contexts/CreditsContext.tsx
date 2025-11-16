@@ -3,6 +3,7 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { apiClient } from '@/lib/api/client';
+import { useCreditsSSE } from '@/hooks/useCreditsSSE';
 
 /**
  * 用户积分响应接口
@@ -84,6 +85,17 @@ export function CreditsProvider({ children }: { children: React.ReactNode }) {
       void fetchCredits();
     }
   }, [fetchCredits, user, authLoading]);
+
+  // SSE 实时推送积分更新
+  const handleCreditsUpdate = useCallback((newCredits: number) => {
+    console.log('💰 [SSE] 积分实时更新:', newCredits);
+    setCredits(newCredits);
+  }, []);
+
+  useCreditsSSE({
+    onCreditsUpdate: handleCreditsUpdate,
+    enabled: !authLoading, // 认证完成后才启用SSE
+  });
 
   const value: CreditsContextState = {
     credits,

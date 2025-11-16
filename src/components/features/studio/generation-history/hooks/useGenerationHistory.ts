@@ -222,7 +222,8 @@ export function useGenerationHistory({
 
     // User is logged in, fetch records
     void fetchRecords();
-  }, [user, authLoading, fetchRecords]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user, authLoading]); // 移除 fetchRecords 依赖，避免无限循环
 
   // Smart polling for processing records - poll each record individually
   useEffect(() => {

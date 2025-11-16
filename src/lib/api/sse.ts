@@ -9,7 +9,8 @@ import { fetchEventSource } from '@microsoft/fetch-event-source';
 export interface CreditsSSEData {
   credits: number;
   timestamp: number;
-  user_id?: string;
+  user_id: string; // 用户ID（匿名用户或 Firebase UID）
+  is_anonymous: boolean; // 标识用户类型
   error?: string;
 }
 

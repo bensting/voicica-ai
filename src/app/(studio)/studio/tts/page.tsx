@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback, useMemo } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { useStudio } from '@/contexts/StudioContext';
@@ -37,8 +37,15 @@ export default function StudioTTSPage() {
   const [isAudioModalOpen, setIsAudioModalOpen] = useState(false);
   const [isVoiceSelectorOpen, setIsVoiceSelectorOpen] = useState(false);
   const [isGeneratingModalOpen, setIsGeneratingModalOpen] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
   const [lastOpenedRecordId, setLastOpenedRecordId] = useState<string | null>(null);
+
+  // 检测是否为移动端（在 useState 初始化，避免 useEffect）
+  const [isMobile] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return window.innerWidth < 1024;
+    }
+    return false;
+  });
 
   // Set page title
   useEffect(() => {
@@ -76,14 +83,6 @@ export default function StudioTTSPage() {
     defaultStatus: [TaskStatus.SUCCESS, TaskStatus.PROCESSING, TaskStatus.PENDING], // 只查询这三种状态，不查询 FAILURE
   });
 
-  // 检测是否为移动端（只在客户端执行一次）
-  useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 1024);
-    };
-    checkMobile();
-  }, []);
-
   // Load last selected voice from localStorage (remember user's choice)
   useEffect(() => {
     // 等待认证完成
@@ -112,9 +111,7 @@ export default function StudioTTSPage() {
       if (lastVoiceStr) {
         try {
           const lastVoice = JSON.parse(lastVoiceStr) as Voice;
-          console.log('🔄 [TTSPage] Loading last selected voice from localStorage:', lastVoice.display_name);
           handleVoiceSelect(lastVoice);
-          console.log('✅ [TTSPage] Restored last selected voice:', lastVoice.display_name);
           return;
         } catch (err) {
           console.error('[TTSPage] Failed to parse last selected voice:', err);
@@ -123,7 +120,6 @@ export default function StudioTTSPage() {
       }
 
       // 3. 首次访问或找不到上次的语音：不自动选择，让用户主动选择
-      console.log('ℹ️ [TTSPage] No voice pre-selected, waiting for user to choose');
     };
 
     void loadLastSelectedVoice();
@@ -163,14 +159,23 @@ export default function StudioTTSPage() {
     }
   }, [generations, isMobile, lastOpenedRecordId]);
 
-  const handleOpenSettings = () => {
+  // Memoize callbacks to prevent unnecessary re-renders
+  const handleOpenSettings = useCallback(() => {
     // TODO: Open settings modal
     console.log('Open settings');
-  };
+  }, []);
 
-  // 获取语音显示名称
-  const voiceDisplayName = selectedVoice?.display_name
-    || (authLoading || !isLocaleReady ? t('common.loading') : t('studio.selectVoice'));
+  const handleVoiceSelectorOpen = useCallback(() => setIsVoiceSelectorOpen(true), []);
+  const handleVoiceSelectorClose = useCallback(() => setIsVoiceSelectorOpen(false), []);
+  const handleAudioModalClose = useCallback(() => setIsAudioModalOpen(false), []);
+
+  // Memoize computed values
+  const voiceDisplayName = useMemo(
+    () =>
+      selectedVoice?.display_name ||
+      (authLoading || !isLocaleReady ? t('common.loading') : t('studio.selectVoice')),
+    [selectedVoice?.display_name, authLoading, isLocaleReady, t]
+  );
 
   return (
     <>
@@ -199,7 +204,7 @@ export default function StudioTTSPage() {
         <div className="flex-shrink-0">
           <VoiceSelectButton
             voice={selectedVoice}
-            onClick={() => setIsVoiceSelectorOpen(true)}
+            onClick={handleVoiceSelectorOpen}
             disabled={isGenerating}
           />
         </div>
@@ -278,19 +283,21 @@ export default function StudioTTSPage() {
         </div>
       </div>
 
-      {/* Voice Selector Bottom Sheet (Mobile) */}
-      <VoiceSelectorBottomSheet
-        isOpen={isVoiceSelectorOpen}
-        onClose={() => setIsVoiceSelectorOpen(false)}
-        selectedVoice={selectedVoice}
-        onSelect={handleVoiceSelect}
-      />
+      {/* Voice Selector Bottom Sheet (Mobile) - 只在打开时渲染，避免重复请求 */}
+      {isVoiceSelectorOpen && (
+        <VoiceSelectorBottomSheet
+          isOpen={isVoiceSelectorOpen}
+          onClose={handleVoiceSelectorClose}
+          selectedVoice={selectedVoice}
+          onSelect={handleVoiceSelect}
+        />
+      )}
 
       {/* Audio Player Modal (Mobile) - fixed 定位，不占据布局空间 */}
       {audioUrl && (
         <AudioPlayerModal
           isOpen={isAudioModalOpen}
-          onClose={() => setIsAudioModalOpen(false)}
+          onClose={handleAudioModalClose}
           audioUrl={audioUrl}
           voiceName={voiceDisplayName}
           voiceAvatar={selectedVoice?.avatar_url}

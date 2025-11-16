@@ -1,11 +1,11 @@
 'use client';
 
-import { useEffect, useCallback } from 'react';
+import { useEffect, useCallback, useRef } from 'react';
+import { useAuth } from '@/contexts/AuthContext';
 import { useCredits } from '@/contexts/CreditsContext';
 import { createCreditsSSE, closeCreditsSSE, type CreditsSSEData, type SSEController } from '@/lib/api/sse';
 import { auth } from '@/lib/firebase';
 import { getDeviceFingerprint } from '@/lib/utils/fingerprint';
-import { useRef } from 'react';
 
 /**
  * SSE Credits Provider
@@ -25,24 +25,52 @@ import { useRef } from 'react';
  * ```
  */
 export default function SSECreditsProvider({ children }: { children: React.ReactNode }) {
-  const { refreshCredits } = useCredits();
+  const { user, loading: authLoading } = useAuth();
+  const { updateCredits } = useCredits();
   const controllerRef = useRef<SSEController | null>(null);
 
-  // 处理 SSE 消息
+  // 处理 SSE 消息（带用户验证）
   const handleCreditsUpdate = useCallback((data: CreditsSSEData) => {
     if (data.error) {
       console.error('[SSECreditsProvider] 服务器错误:', data.error);
       return;
     }
 
-    if (typeof data.credits === 'number') {
-      console.log('💰 [SSE] 积分实时更新:', data.credits);
-      // 触发 CreditsContext 的刷新
-      void refreshCredits();
+    // 验证返回的用户ID是否匹配
+    const currentUser = auth.currentUser;
+    const expectedUserId = currentUser ? currentUser.uid : null;
+
+    if (currentUser && data.user_id !== expectedUserId) {
+      console.warn('[SSECreditsProvider] ⚠️ 用户ID不匹配:', {
+        expected: expectedUserId,
+        received: data.user_id,
+        is_anonymous: data.is_anonymous,
+      });
+      return;
     }
-  }, [refreshCredits]);
+
+    if (typeof data.credits === 'number') {
+      console.log('💰 [SSE] 积分实时更新:', {
+        credits: data.credits,
+        user_id: data.user_id,
+        is_anonymous: data.is_anonymous,
+      });
+      // 直接更新积分，不发起 API 请求
+      updateCredits(data.credits);
+    }
+  }, [updateCredits]);
 
   useEffect(() => {
+    // 等待认证完成后再建立 SSE 连接
+    if (authLoading) {
+      console.log('[SSECreditsProvider] 等待认证完成...');
+      return;
+    }
+
+    console.log('[SSECreditsProvider] 认证完成，准备建立 SSE 连接', {
+      isLoggedIn: !!user,
+    });
+
     // 建立 SSE 连接
     const connectSSE = async () => {
       try {
@@ -53,10 +81,10 @@ export default function SSECreditsProvider({ children }: { children: React.React
 
         if (currentUser) {
           token = await currentUser.getIdToken();
-          console.log('[SSECreditsProvider] 使用 Token 认证');
+          console.log('[SSECreditsProvider] 使用 Token 认证 (已登录用户)');
         } else {
           deviceFingerprint = await getDeviceFingerprint();
-          console.log('[SSECreditsProvider] 使用设备指纹认证');
+          console.log('[SSECreditsProvider] 使用设备指纹认证 (匿名用户)');
         }
 
         const controller = createCreditsSSE({
@@ -87,7 +115,7 @@ export default function SSECreditsProvider({ children }: { children: React.React
         console.log('[SSECreditsProvider] SSE 连接已关闭');
       }
     };
-  }, [handleCreditsUpdate]);
+  }, [authLoading, user, handleCreditsUpdate]);
 
   return <>{children}</>;
 }

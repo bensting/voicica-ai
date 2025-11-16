@@ -5,7 +5,6 @@ import StudioSidebar from '@/components/layout/studio/StudioSidebar';
 import StudioTopNav from '@/components/layout/studio/StudioTopNav';
 import UpgradeModal from '@/components/features/pricing/UpgradeModal';
 import { StudioProvider } from '@/contexts/StudioContext';
-import { CreditsProvider } from '@/contexts/CreditsContext';
 
 function StudioLayoutContent({
   children,
@@ -55,9 +54,7 @@ export default function StudioLayout({
 }) {
   return (
     <StudioProvider>
-      <CreditsProvider enableSSE={false}>
-        <StudioLayoutContent>{children}</StudioLayoutContent>
-      </CreditsProvider>
+      <StudioLayoutContent>{children}</StudioLayoutContent>
     </StudioProvider>
   );
 }

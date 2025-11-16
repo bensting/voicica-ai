@@ -1,9 +1,8 @@
 'use client';
 
-import { Menu, X, Coins, Crown } from 'lucide-react';
+import { Menu, X, Crown } from 'lucide-react';
 import Image from 'next/image';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useUser } from '@/contexts/UserContext';
 import { useAuth } from '@/contexts/AuthContext';
 import LanguageSwitcher from '@/components/layout/Navbar/LanguageSwitcher';
 import UserMenu from '@/components/layout/Navbar/UserMenu';
@@ -30,7 +29,7 @@ interface StudioTopNavProps {
  *
  * 桌面端样式：
  * - Logo (左侧)
- * - Credits + Upgrade + Language + User/Login (右侧)
+ * - Upgrade + Language + User/Login (右侧)
  */
 export default function StudioTopNav({
   onUpgradeClick,
@@ -39,11 +38,6 @@ export default function StudioTopNav({
 }: StudioTopNavProps) {
   const { t } = useLanguage();
   const { user } = useAuth();
-  const { profile, loading: profileLoading } = useUser();
-
-  // 积分数据从 user profile 获取
-  const credits = profile?.credits ?? 0;
-  const creditsLoading = profileLoading;
 
   const toggleMenu = () => {
     onMenuToggle?.(!isMenuOpen);
@@ -103,23 +97,6 @@ export default function StudioTopNav({
 
         {/* ========== 桌面端右侧 (>= lg) ========== */}
         <div className="hidden lg:flex items-center gap-3">
-          {/* Credits Display - 始终显示 */}
-          <div className="flex items-center gap-2 px-3 py-1.5 bg-blue-100 rounded-lg">
-            <div className="w-5 h-5 bg-blue-600 rounded-full flex items-center justify-center">
-              <Coins className="w-3 h-3 text-white" />
-            </div>
-            {creditsLoading ? (
-              <div className="w-12 h-4 bg-blue-200 rounded animate-pulse" />
-            ) : (
-              <span className="text-sm font-semibold text-blue-900">
-                {credits}
-              </span>
-            )}
-          </div>
-
-          {/* Divider */}
-          <div className="h-6 w-px bg-gray-300"></div>
-
           {/* Upgrade Button - 始终显示 */}
           <button
             onClick={onUpgradeClick}

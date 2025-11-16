@@ -212,8 +212,11 @@ export function useGenerationHistory({
   useEffect(() => {
     // Don't fetch if still checking authentication status
     if (authLoading) {
+      console.log('🔄 [useGenerationHistory] 等待认证完成，跳过 fetchRecords');
       return;
     }
+
+    console.log('🔄 [useGenerationHistory] useEffect 触发 fetchRecords', { user: !!user, authLoading });
 
     // Fetch records for both authenticated and anonymous users
     // API client will handle authentication automatically:

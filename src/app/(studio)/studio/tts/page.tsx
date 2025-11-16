@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useCallback, useMemo } from 'react';
+import { useEffect, useState, useCallback, useMemo, useRef } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { useStudio } from '@/contexts/StudioContext';
@@ -18,6 +18,9 @@ import GeneratingRecordModal from '@/components/features/studio/tts/components/m
 import { useGenerationHistory } from '@/components/features/studio/generation-history/hooks/useGenerationHistory';
 import RecentGenerationsList from '@/components/features/studio/tts/components/RecentGenerationsList';
 import ConfirmDialog from '@/components/ui/ConfirmDialog';
+
+// 将 defaultStatus 提取到组件外部，避免每次渲染创建新数组引用
+const DEFAULT_GENERATION_STATUS = [TaskStatus.SUCCESS, TaskStatus.PROCESSING, TaskStatus.PENDING];
 
 /**
  * Studio TTS Page
@@ -38,6 +41,9 @@ export default function StudioTTSPage() {
   const [isVoiceSelectorOpen, setIsVoiceSelectorOpen] = useState(false);
   const [isGeneratingModalOpen, setIsGeneratingModalOpen] = useState(false);
   const [lastOpenedRecordId, setLastOpenedRecordId] = useState<string | null>(null);
+
+  // 追踪 isGenerating 的前一个值，避免首次加载时误触发刷新
+  const prevIsGeneratingRef = useRef<boolean | null>(null);
 
   // 检测是否为移动端（在 useState 初始化，避免 useEffect）
   const [isMobile] = useState(() => {
@@ -80,7 +86,7 @@ export default function StudioTTSPage() {
     user,
     authLoading,
     pageSize: 6,
-    defaultStatus: [TaskStatus.SUCCESS, TaskStatus.PROCESSING, TaskStatus.PENDING], // 只查询这三种状态，不查询 FAILURE
+    defaultStatus: DEFAULT_GENERATION_STATUS, // 只查询这三种状态，不查询 FAILURE
   });
 
   // Load last selected voice from localStorage (remember user's choice)
@@ -134,14 +140,22 @@ export default function StudioTTSPage() {
 
   // 任务提交后立即刷新历史记录
   useEffect(() => {
-    if (!isGenerating) {
-      // 任务刚刚提交完成，立即刷新记录列表
-      // 这样新的 PENDING/PROCESSING 记录会立即出现
+    // 只在 isGenerating 从 true 变为 false 时刷新（即任务刚完成时）
+    // 避免首次加载时误触发
+    if (prevIsGeneratingRef.current === true && !isGenerating) {
+      console.log('🔄 [TTSPage] 任务完成，300ms 后刷新记录');
       const timer = setTimeout(() => {
         void fetchRecords();
       }, 300);
+
+      // 更新 ref
+      prevIsGeneratingRef.current = isGenerating;
+
       return () => clearTimeout(timer);
     }
+
+    // 更新 ref 追踪当前值
+    prevIsGeneratingRef.current = isGenerating;
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isGenerating]); // 移除 fetchRecords 依赖，避免重复调用
 

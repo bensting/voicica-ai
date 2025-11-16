@@ -20,7 +20,7 @@ export const NAV_LINKS: NavLink[] = [
     href: '/studio/tts',
     labelKey: 'nav.studio',
     type: 'page',
-    openInNewWindow: true,
+    // openInNewWindow 已移除 - 现在在当前页面跳转
   },
   {
     href: '/pricing',

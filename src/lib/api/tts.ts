@@ -110,21 +110,51 @@ export async function batchDeleteTtsRecords(recordIds?: string[] | null): Promis
  */
 export async function downloadAudio(audioUrl: string, filename: string): Promise<void> {
   try {
-    // Note: Direct file download doesn't need authentication
-    const response = await fetch(audioUrl);
-    const blob = await response.blob();
+    console.log('[downloadAudio] 开始下载音频:', { audioUrl, filename });
 
-    // 创建下载链接
-    const url = window.URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.setAttribute('download', filename);
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
-    window.URL.revokeObjectURL(url);
+    // 方法1: 尝试使用 fetch + blob 下载（适用于同源或支持 CORS 的 URL）
+    try {
+      const response = await fetch(audioUrl, {
+        method: 'GET',
+        mode: 'cors', // 支持跨域
+        credentials: 'omit', // 不发送凭证
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const blob = await response.blob();
+      console.log('[downloadAudio] Blob 创建成功:', blob.size, 'bytes');
+
+      // 创建下载链接
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', filename);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+
+      console.log('[downloadAudio] 下载成功');
+      return;
+    } catch (fetchError) {
+      console.warn('[downloadAudio] Fetch 下载失败，尝试直接链接下载:', fetchError);
+
+      // 方法2: 如果 fetch 失败（可能是 CORS），直接使用链接下载
+      const link = document.createElement('a');
+      link.href = audioUrl;
+      link.setAttribute('download', filename);
+      link.setAttribute('target', '_blank'); // 新标签页打开，避免页面跳转
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+
+      console.log('[downloadAudio] 使用直接链接下载');
+    }
   } catch (error) {
-    console.error('Error downloading audio:', error);
+    console.error('[downloadAudio] 下载失败:', error);
     throw error;
   }
 }

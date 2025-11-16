@@ -71,6 +71,7 @@ export default function StudioTTSPage() {
     handleTextChange,
     handleVoiceSelect,
     handleGenerate,
+    handleClearText,
   } = useTTSGenerator(maxCharacters);
 
   // Generation history hook (显示最近6条，只查询成功和进行中的记录，不显示失败的)
@@ -212,6 +213,7 @@ export default function StudioTTSPage() {
             availableCharacters={availableCharacters}
             disabled={isGenerating}
             remainingCredits={credits}
+            onClear={handleClearText}
           />
         </div>
 
@@ -272,6 +274,7 @@ export default function StudioTTSPage() {
                   isGenerating={isGenerating}
                   canGenerate={canGenerate}
                   remainingCredits={credits}
+                  onClear={handleClearText}
                 />
               </div>
 

@@ -20,7 +20,16 @@ export type VoiceModel = Voice;
  */
 export function useTTSGenerator(maxCharacters: number = 120) {
   const { t } = useLanguage();
-  const [text, setText] = useState('');
+
+  // 从 localStorage 恢复上次输入的文本
+  const [text, setText] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const savedText = localStorage.getItem('lastTTSInputText');
+      return savedText || '';
+    }
+    return '';
+  });
+
   const [selectedVoice, setSelectedVoice] = useState<Voice | null>(null);
   const [speed, setSpeed] = useState(1.0);
   const [isGenerating, setIsGenerating] = useState(false);
@@ -75,6 +84,13 @@ export function useTTSGenerator(maxCharacters: number = 120) {
       if (newText.length <= maxCharacters) {
         setText(newText);
         setError(null);
+
+        // 保存到 localStorage，记住用户输入的内容
+        try {
+          localStorage.setItem('lastTTSInputText', newText);
+        } catch (err) {
+          console.error('Failed to save text to localStorage:', err);
+        }
       }
     },
     [maxCharacters]
@@ -160,6 +176,19 @@ export function useTTSGenerator(maxCharacters: number = 120) {
     }
   }, [canGenerate, selectedVoice, text, speed, t]);
 
+  // 清空文本输入
+  const handleClearText = useCallback(() => {
+    setText('');
+    setError(null);
+
+    // 同时清除 localStorage 中的保存
+    try {
+      localStorage.removeItem('lastTTSInputText');
+    } catch (err) {
+      console.error('Failed to clear text from localStorage:', err);
+    }
+  }, []);
+
   // 重置
   const reset = useCallback(() => {
     setText('');
@@ -185,6 +214,7 @@ export function useTTSGenerator(maxCharacters: number = 120) {
     handleVoiceSelect,
     handleSpeedChange,
     handleGenerate,
+    handleClearText,
     reset,
   };
 }

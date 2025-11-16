@@ -14,6 +14,7 @@ import VoiceSelectButton from '@/components/features/studio/tts/components/Voice
 import VoiceSelectorBottomSheet from '@/components/features/studio/tts/components/mobile/VoiceSelectorBottomSheet';
 import ActionButtons from '@/components/features/studio/tts/components/ActionButtons';
 import AudioPlayerModal from '@/components/features/studio/tts/components/mobile/AudioPlayerModal';
+import GeneratingRecordModal from '@/components/features/studio/tts/components/mobile/GeneratingRecordModal';
 import { useGenerationHistory } from '@/components/features/studio/generation-history/hooks/useGenerationHistory';
 import RecentGenerationsList from '@/components/features/studio/tts/components/RecentGenerationsList';
 import ConfirmDialog from '@/components/ui/ConfirmDialog';
@@ -35,6 +36,7 @@ export default function StudioTTSPage() {
   const { credits } = useCredits();
   const [isAudioModalOpen, setIsAudioModalOpen] = useState(false);
   const [isVoiceSelectorOpen, setIsVoiceSelectorOpen] = useState(false);
+  const [isGeneratingModalOpen, setIsGeneratingModalOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
   // Set page title
@@ -144,6 +146,17 @@ export default function StudioTTSPage() {
       return () => clearTimeout(timer);
     }
   }, [isGenerating, fetchRecords]);
+
+  // 移动端：当新的生成记录出现时，自动打开底部抽屉显示进度
+  useEffect(() => {
+    if (isMobile && generations.length > 0) {
+      const latestRecord = generations[0];
+      // 如果最新记录是正在处理的，打开弹窗
+      if (latestRecord.status === TaskStatus.PROCESSING || latestRecord.status === TaskStatus.PENDING) {
+        setIsGeneratingModalOpen(true);
+      }
+    }
+  }, [generations, isMobile]);
 
   const handleOpenSettings = () => {
     // TODO: Open settings modal
@@ -278,6 +291,15 @@ export default function StudioTTSPage() {
           voiceAvatar={selectedVoice?.avatar_url}
         />
       )}
+
+      {/* Generating Record Modal (Mobile) - 显示生成进度 */}
+      <GeneratingRecordModal
+        isOpen={isGeneratingModalOpen}
+        onClose={() => setIsGeneratingModalOpen(false)}
+        generation={generations.length > 0 ? generations[0] : null}
+        onDelete={handleDeleteGeneration}
+        onDownload={handleDownloadGeneration}
+      />
 
       {/* Confirmation Dialog */}
       <ConfirmDialog

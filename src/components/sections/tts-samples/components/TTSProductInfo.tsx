@@ -52,18 +52,18 @@ export default function TTSProductInfo() {
         </ul>
       </div>
 
-      {/* CTA Button and Stats - 响应式布局 */}
+      {/* CTA Button and Stats - 横向布局（移动端和桌面端均为横向） */}
       <div>
-        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
-          {/* 按钮 - 移动端缩小内边距 */}
-          <div className="w-full sm:w-auto">
-            <GradientButton size="lg" className="px-6 sm:px-8 whitespace-nowrap">
+        <div className="flex items-center gap-3 sm:gap-4">
+          {/* 按钮 - 移动端缩小 */}
+          <div className="flex-shrink-0">
+            <GradientButton size="lg" className="px-6 sm:px-8 py-3 sm:py-4 text-sm sm:text-base whitespace-nowrap">
               {t('ttsSamples.productInfo.cta.button')}
             </GradientButton>
           </div>
 
           {/* 右侧统计数据区域 */}
-          <div className="flex flex-col gap-1">
+          <div className="flex flex-col gap-1 flex-1">
             {/* 星星评分 */}
             <div className="flex items-center gap-1">
               {[...Array(5)].map((_, i) => (

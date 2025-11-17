@@ -151,9 +151,8 @@ export default function VoiceSelectButton({
           </div>
           {showDetails && voice && (
             <div className={`flex items-center gap-1.5 ${config.details}`}>
-              {getGenderIcon(voice.gender)}
-              <span className="text-gray-400">|</span>
               {getFlagIcon(voice.locale)}
+              {getGenderIcon(voice.gender)}
             </div>
           )}
         </div>

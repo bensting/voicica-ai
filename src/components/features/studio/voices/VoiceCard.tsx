@@ -97,9 +97,8 @@ export default function VoiceCard({
       <div className="flex-1 min-w-0">
         <h3 className="text-sm font-semibold text-gray-900 truncate">{voiceName}</h3>
         <div className="flex items-center gap-1.5 text-xs">
-          {getGenderIcon(voice.gender)}
-          <span className="text-gray-400">|</span>
           {getFlagIcon(voice.locale)}
+          {getGenderIcon(voice.gender)}
         </div>
       </div>
 

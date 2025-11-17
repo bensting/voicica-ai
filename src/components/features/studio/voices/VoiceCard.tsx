@@ -1,5 +1,6 @@
 import Image from 'next/image';
-import { Play, Pause, ArrowRight } from 'lucide-react';
+import { Play, Pause, ArrowRight, User, UserRound } from 'lucide-react';
+import * as FlagIcons from 'country-flag-icons/react/3x2';
 import type { Voice } from '@/types/voice';
 
 interface VoiceCardProps {
@@ -20,6 +21,47 @@ export default function VoiceCard({
   onPlay,
   onSelect,
 }: VoiceCardProps) {
+  // Get country code from locale
+  const getCountryCode = (locale: string): string => {
+    const countryMap: Record<string, string> = {
+      'zh-CN': 'CN',
+      'zh-TW': 'TW',
+      'en-US': 'US',
+      'en-GB': 'GB',
+      'ja-JP': 'JP',
+      'ko-KR': 'KR',
+      'es-ES': 'ES',
+      'fr-FR': 'FR',
+      'de-DE': 'DE',
+      'it-IT': 'IT',
+      'pt-BR': 'BR',
+      'ru-RU': 'RU',
+    };
+    return countryMap[locale] || 'UN';
+  };
+
+  // Get Flag Icon component
+  const getFlagIcon = (locale: string) => {
+    const countryCode = getCountryCode(locale);
+    const FlagComponent = (FlagIcons as any)[countryCode];
+
+    if (FlagComponent) {
+      return <FlagComponent className="w-4 h-4 rounded-sm" />;
+    }
+    return <span className="text-xs">🌐</span>;
+  };
+
+  // Get gender icon
+  const getGenderIcon = (gender: string) => {
+    switch (gender) {
+      case 'male':
+        return <User className="w-3.5 h-3.5 text-blue-500" />;
+      case 'female':
+        return <UserRound className="w-3.5 h-3.5 text-pink-500" />;
+      default:
+        return <User className="w-3.5 h-3.5 text-gray-500" />;
+    }
+  };
   return (
     <div className="bg-white rounded-lg p-4 border border-gray-200 flex items-center gap-4 hover:shadow-md transition-shadow">
       {/* Avatar + Play button */}
@@ -55,9 +97,11 @@ export default function VoiceCard({
       <div className="flex-1 min-w-0">
         <h3 className="text-sm font-semibold text-gray-900 truncate">{voiceName}</h3>
         <p className="text-xs text-orange-500 capitalize">{voice.role || 'General'}</p>
-        <p className="text-xs text-gray-500">
-          {voice.gender === 'male' ? 'Male' : voice.gender === 'female' ? 'Female' : 'Neutral'} | {voice.locale}
-        </p>
+        <div className="flex items-center gap-1.5 text-xs">
+          {getGenderIcon(voice.gender)}
+          <span className="text-gray-400">|</span>
+          {getFlagIcon(voice.locale)}
+        </div>
       </div>
 
       {/* Select button */}

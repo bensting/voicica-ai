@@ -229,7 +229,7 @@ export default function StudioTTSPage() {
       <PageLoading show={isPageLoading} />
 
       {/* Mobile Layout */}
-      <div className="lg:hidden h-[calc(100vh-60px)] flex flex-col px-4 pt-2 pb-[72px] gap-1.5 bg-gradient-to-b from-gray-50 to-white overflow-hidden">
+      <div className="lg:hidden h-[calc(100vh-60px)] flex flex-col px-4 pt-2 pb-[80px] gap-1.5 bg-gradient-to-b from-gray-50 to-white overflow-hidden" style={{ paddingBottom: 'max(80px, env(safe-area-inset-bottom) + 80px)' }}>
         {/* Error Message */}
         {error && (
           <div className="flex-shrink-0 p-2.5 bg-red-50 border border-red-200 rounded-xl">

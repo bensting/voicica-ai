@@ -2,7 +2,6 @@
 
 import { useRef, useCallback, useEffect } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { Trash2 } from 'lucide-react';
 import FiltersSection from './components/FiltersSection';
 import MobileSpeechCard from './MobileSpeechCard';
 import MobileSpeechCardSkeleton from './MobileSpeechCardSkeleton';
@@ -92,24 +91,13 @@ export default function MobileView({
 
         {/* Title Bar */}
         <div className="bg-white border-b border-gray-200 px-4 py-3">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <h2 className="text-base font-semibold text-gray-900 whitespace-nowrap">
-                {t('generationHistory.generatedSpeech')}
-              </h2>
-              <div className="flex items-center justify-center w-6 h-6 bg-purple-600 text-white text-xs font-medium rounded-full">
-                {total}
-              </div>
+          <div className="flex items-center gap-2">
+            <h2 className="text-base font-semibold text-gray-900 whitespace-nowrap">
+              {t('generationHistory.generatedSpeech')}
+            </h2>
+            <div className="flex items-center justify-center w-6 h-6 bg-purple-600 text-white text-xs font-medium rounded-full">
+              {total}
             </div>
-            {total > 0 && (
-              <button
-                onClick={onClearAll}
-                className="flex items-center gap-1.5 px-3 py-1.5 bg-purple-600 text-white text-xs font-medium rounded-lg hover:bg-purple-700 transition-colors"
-              >
-                <Trash2 className="w-3.5 h-3.5" />
-                <span className="whitespace-nowrap">{t('generationHistory.clearAll')}</span>
-              </button>
-            )}
           </div>
         </div>
       </div>

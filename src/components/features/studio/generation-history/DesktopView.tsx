@@ -1,7 +1,6 @@
 'use client';
 
 import { useLanguage } from '@/contexts/LanguageContext';
-import { Trash2 } from 'lucide-react';
 import PageHeader from './components/PageHeader';
 import FiltersSection from './components/FiltersSection';
 import MobileSpeechCard from './MobileSpeechCard';
@@ -73,26 +72,15 @@ export default function DesktopView({
           dateRangeLabel={t('generationHistory.filters.dateRange') || 'Filter by Date Range'}
         />
 
-        {/* Title Bar with Clear All Button - Fixed */}
+        {/* Title Bar - Fixed */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-          <div className="flex items-center justify-between p-4">
-            <div className="flex items-center gap-3">
-              <h2 className="text-xl font-semibold text-gray-900 whitespace-nowrap">
-                {t('generationHistory.generatedSpeech')}
-              </h2>
-              <div className="flex items-center justify-center w-8 h-8 bg-purple-600 text-white text-sm font-medium rounded-full">
-                {total}
-              </div>
+          <div className="flex items-center gap-3 p-4">
+            <h2 className="text-xl font-semibold text-gray-900 whitespace-nowrap">
+              {t('generationHistory.generatedSpeech')}
+            </h2>
+            <div className="flex items-center justify-center w-8 h-8 bg-purple-600 text-white text-sm font-medium rounded-full">
+              {total}
             </div>
-            {total > 0 && (
-              <button
-                onClick={onClearAll}
-                className="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white text-sm font-medium rounded-lg hover:bg-purple-700 transition-colors"
-              >
-                <Trash2 className="w-4 h-4" />
-                <span className="whitespace-nowrap">{t('generationHistory.clearAll')}</span>
-              </button>
-            )}
           </div>
         </div>
       </div>

@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import ConfirmDialog from '@/components/ui/ConfirmDialog';
+import PageLoading from '@/components/ui/PageLoading';
 import DesktopView from '@/components/features/studio/generation-history/DesktopView';
 import MobileView from '@/components/features/studio/generation-history/MobileView';
 import { useGenerationHistory } from '@/components/features/studio/generation-history/hooks/useGenerationHistory';
@@ -62,11 +63,7 @@ export default function GenerationHistoryPage() {
   // Show loading while checking auth (optional, can be removed if not needed)
   // Note: Anonymous users can also view their generation history
   if (authLoading) {
-    return (
-      <div className="fixed inset-0 bg-gray-50 pt-[60px] flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
-      </div>
-    );
+    return <PageLoading show={true} />;
   }
 
   // Show error state

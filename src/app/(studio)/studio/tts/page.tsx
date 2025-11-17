@@ -220,8 +220,8 @@ export default function StudioTTSPage() {
     [selectedVoice?.display_name, authLoading, isLocaleReady, t]
   );
 
-  // 页面加载状态
-  const isPageLoading = authLoading || !isLocaleReady;
+  // 页面加载状态（认证、语言加载、或初始历史记录加载）
+  const isPageLoading = authLoading || !isLocaleReady || (historyLoading && generations.length === 0);
 
   return (
     <>

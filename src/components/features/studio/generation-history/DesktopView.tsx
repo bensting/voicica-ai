@@ -75,12 +75,20 @@ export default function DesktopView({
         {/* Title Bar - Fixed */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-200">
           <div className="flex items-center gap-3 p-4">
-            <h2 className="text-xl font-semibold text-gray-900 whitespace-nowrap">
+            {/* List Icon */}
+            <div className="w-6 h-6 flex items-center justify-center text-gray-600">
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
+            </div>
+            {/* Title */}
+            <h2 className="text-lg font-medium text-gray-700 whitespace-nowrap">
               {t('generationHistory.generatedSpeech')}
             </h2>
-            <div className="flex items-center justify-center w-8 h-8 bg-purple-600 text-white text-sm font-medium rounded-full">
-              {total}
-            </div>
+            {/* Count */}
+            <span className="text-lg font-semibold text-gray-500">
+              ({total})
+            </span>
           </div>
         </div>
       </div>

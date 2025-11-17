@@ -157,36 +157,57 @@ export default function TextInput({
         {showExamples && (
           <div className="absolute bottom-full left-0 right-0 mb-2 px-2">
             <div className="bg-white/95 backdrop-blur-sm rounded-xl shadow-lg border border-purple-100 p-2">
-              <div className="flex items-center justify-between mb-2 px-2">
-                <div className="flex items-center gap-1.5">
-                  <span className="text-sm">📌</span>
-                  <span className="text-xs font-medium text-gray-600">
-                    {t('ttsInput.tryExamples')}
-                  </span>
+              {/* 移动端：两行布局，桌面端：单行布局 */}
+              <div className="flex flex-col gap-2 lg:flex-row lg:items-center lg:justify-between lg:gap-0">
+                {/* 第一行：标题和移动端关闭按钮 */}
+                <div className="flex items-center justify-between lg:contents">
+                  {/* 标题 */}
+                  <div className="flex items-center gap-1.5 flex-shrink-0">
+                    <span className="text-sm">📌</span>
+                    <span className="text-xs font-medium text-gray-600 whitespace-nowrap">
+                      {t('ttsInput.tryExamples')}
+                    </span>
+                  </div>
+
+                  {/* 移动端关闭按钮 */}
+                  <button
+                    type="button"
+                    onClick={() => setShowExamples(false)}
+                    className="p-0.5 hover:bg-gray-100 rounded transition-colors lg:hidden flex-shrink-0"
+                    aria-label="Close examples"
+                  >
+                    <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
                 </div>
+
+                {/* 第二行（移动端）/ 中间部分（桌面端）：按钮 */}
+                <div className="flex gap-1.5 flex-wrap lg:flex-nowrap lg:ml-3">
+                  {EXAMPLE_BUTTONS.map((example) => (
+                    <button
+                      key={example.id}
+                      type="button"
+                      onClick={() => handleSelectExample(example.text)}
+                      disabled={disabled}
+                      className="px-2.5 py-1 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white text-[11px] font-medium rounded-full transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-sm whitespace-nowrap"
+                    >
+                      {example.label}
+                    </button>
+                  ))}
+                </div>
+
+                {/* 桌面端关闭按钮 */}
                 <button
                   type="button"
                   onClick={() => setShowExamples(false)}
-                  className="p-0.5 hover:bg-gray-100 rounded transition-colors"
+                  className="hidden lg:block p-0.5 hover:bg-gray-100 rounded transition-colors flex-shrink-0 ml-3"
                   aria-label="Close examples"
                 >
                   <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                   </svg>
                 </button>
-              </div>
-              <div className="flex gap-1.5 flex-wrap lg:flex-nowrap px-1">
-                {EXAMPLE_BUTTONS.map((example) => (
-                  <button
-                    key={example.id}
-                    type="button"
-                    onClick={() => handleSelectExample(example.text)}
-                    disabled={disabled}
-                    className="px-3 py-1.5 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white text-xs font-medium rounded-full transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-sm whitespace-nowrap"
-                  >
-                    {example.label}
-                  </button>
-                ))}
               </div>
             </div>
           </div>

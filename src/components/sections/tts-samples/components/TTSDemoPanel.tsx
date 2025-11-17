@@ -27,7 +27,6 @@ interface TTSDemoPanelProps {
   maxTextLength: number;
   isPlaying: boolean;
   onTextChange: (text: string) => void;
-  onPlay: () => void;
 }
 
 /**
@@ -60,7 +59,6 @@ export default function TTSDemoPanel({
   maxTextLength,
   isPlaying,
   onTextChange,
-  onPlay,
 }: TTSDemoPanelProps) {
   const router = useRouter();
   const { t } = useLanguage();

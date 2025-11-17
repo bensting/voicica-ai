@@ -3,7 +3,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { Download } from 'lucide-react';
 import Image from 'next/image';
-import { useLanguage } from '@/contexts/LanguageContext';
 
 interface MobileAudioPlayerProps {
   audioUrl: string;
@@ -26,7 +25,6 @@ export default function MobileAudioPlayer({
   voiceName,
   voiceDisplayName
 }: MobileAudioPlayerProps) {
-  const { locale } = useLanguage();
   const audioRef = useRef<HTMLAudioElement>(null);
   const [currentTime, setCurrentTime] = useState(0);
   const [progress, setProgress] = useState(0);

@@ -43,7 +43,7 @@ export default function VoiceSelector({
   onToggle,
 }: VoiceSelectorProps) {
   const router = useRouter();
-  const { t, locale } = useLanguage();
+  const { t } = useLanguage();
   const dropdownRef = useRef<HTMLDivElement>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [playingVoiceId, setPlayingVoiceId] = useState<string | null>(null);

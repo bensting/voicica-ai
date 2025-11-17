@@ -2,7 +2,6 @@
 
 import { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
-import { useLanguage } from '@/contexts/LanguageContext';
 
 interface AudioPlayerProps {
   audioUrl: string;
@@ -25,7 +24,6 @@ export default function AudioPlayer({
   voiceName,
   voiceDisplayName
 }: AudioPlayerProps) {
-  const { locale } = useLanguage();
   const audioRef = useRef<HTMLAudioElement>(null);
   const [currentTime, setCurrentTime] = useState(0);
   const [progress, setProgress] = useState(0);

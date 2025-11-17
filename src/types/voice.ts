@@ -30,9 +30,8 @@ export interface Voice {
  * 获取本地化的语音名称
  *
  * 注意：display_name 现在是单一字符串，不再需要语言代码
- * 保留 languageCode 参数是为了向后兼容，但不再使用
  */
-export function getLocalizedVoiceName(voice: Voice, languageCode?: string): string {
+export function getLocalizedVoiceName(voice: Voice): string {
   return voice.display_name || voice.name;
 }
 

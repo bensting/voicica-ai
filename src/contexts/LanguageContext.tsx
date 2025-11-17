@@ -50,15 +50,13 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   const [messages, setMessages] = useState<Record<string, MessageValue>>({});
   const [isReady, setIsReady] = useState(false);
 
-  // 标记为已就绪
-  useEffect(() => {
-    setIsReady(true);
-  }, []);
-
   // 加载语言文件（主文件 + FAQ 文件 + TTS Samples 文件 + TTS Input 文件）
   useEffect(() => {
     const loadMessages = async () => {
       try {
+        // 每次切换语言时，先设置为未就绪
+        setIsReady(false);
+
         // 加载主语言文件
         const messagesModule = await import(`@/i18n/locales/${locale}.json`);
         const mainMessages = messagesModule.default;
@@ -82,8 +80,13 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
           ttsInput: ttsInputMessages,
           ...ttsSamplesMessages
         });
+
+        // 语言文件加载完成后，标记为已就绪
+        setIsReady(true);
       } catch (error) {
         console.error(`Failed to load locale ${locale}`, error);
+        // 即使加载失败也设置为就绪，避免一直卡住
+        setIsReady(true);
       }
     };
     loadMessages();

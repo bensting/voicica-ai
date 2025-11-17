@@ -53,7 +53,7 @@ interface UseVoicesReturn {
  * - Search and filtering
  * - Audio playback
  */
-export function useVoices({ locale, user, authLoading }: UseVoicesProps): UseVoicesReturn {
+export function useVoices({ authLoading }: UseVoicesProps): UseVoicesReturn {
   // Voices data state
   const [voices, setVoices] = useState<Voice[]>([]);
   const [loading, setLoading] = useState(true);

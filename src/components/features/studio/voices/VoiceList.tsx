@@ -31,8 +31,6 @@ export default function VoiceList({
   onPlayVoice,
   onSelectVoice,
   loadingMore = false,
-  hasMore = false,
-  onLoadMore,
   onRetry,
 }: VoiceListProps) {
   const { t } = useLanguage();

@@ -90,13 +90,15 @@ export default function MobileView({
         </div>
 
         {/* Title Bar */}
-        <div className="bg-white border-b border-gray-200 px-4 py-3">
-          <div className="flex items-center gap-2">
-            <h2 className="text-base font-semibold text-gray-900 whitespace-nowrap">
-              {t('generationHistory.generatedSpeech')}
-            </h2>
-            <div className="flex items-center justify-center w-6 h-6 bg-purple-600 text-white text-xs font-medium rounded-full">
-              {total}
+        <div className="mx-4 mb-3">
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 px-4 py-3">
+            <div className="flex items-center gap-2">
+              <h2 className="text-base font-semibold text-gray-900 whitespace-nowrap">
+                {t('generationHistory.generatedSpeech')}
+              </h2>
+              <div className="flex items-center justify-center w-6 h-6 bg-purple-600 text-white text-xs font-medium rounded-full">
+                {total}
+              </div>
             </div>
           </div>
         </div>

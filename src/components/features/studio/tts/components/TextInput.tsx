@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 interface ExampleButton {
@@ -42,6 +42,12 @@ export default function TextInput({
 }: TextInputProps) {
   const { t } = useLanguage();
   const [showExamples, setShowExamples] = useState(true);
+  const [isMounted, setIsMounted] = useState(false);
+
+  // 避免 hydration 错误：只在客户端挂载后才显示清除按钮
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   // Get example buttons from i18n
   const EXAMPLE_BUTTONS: ExampleButton[] = [
@@ -102,7 +108,7 @@ export default function TextInput({
           {/* Right: Clear button, Character count and Desktop Generate button */}
           <div className="flex items-center gap-2">
             {/* Clear button (扫把图标) - 只在有内容时显示 */}
-            {value.length > 0 && (
+            {isMounted && value.length > 0 && (
               <button
                 type="button"
                 onClick={handleClear}

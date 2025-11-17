@@ -293,6 +293,30 @@
       "voices": "语音库",
       "clone": "克隆",
       "history": "历史"
+    },
+    "audioSettings": {
+      "title": "音频设置",
+      "speed": {
+        "title": "语速",
+        "description": "调整音频播放速度",
+        "current": "当前语速"
+      },
+      "volume": {
+        "title": "音量",
+        "description": "语音音量设置",
+        "current": "当前音量"
+      },
+      "pitch": {
+        "title": "音调",
+        "description": "调整整体音调",
+        "current": "当前音调",
+        "deep": "低沉",
+        "dull": "平淡",
+        "consistent": "稳定",
+        "bright": "明亮",
+        "crisp": "清脆"
+      },
+      "save": "保存"
     }
   },
   "voiceFilters": {

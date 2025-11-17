@@ -18,6 +18,8 @@ import GeneratingRecordModal from '@/components/features/studio/tts/components/m
 import { useGenerationHistory } from '@/components/features/studio/generation-history/hooks/useGenerationHistory';
 import RecentGenerationsList from '@/components/features/studio/tts/components/RecentGenerationsList';
 import ConfirmDialog from '@/components/ui/ConfirmDialog';
+import AudioSettingsModal from '@/components/features/studio/tts/AudioSettingsModal';
+import AudioSettingsPanel from '@/components/features/studio/tts/AudioSettingsPanel';
 
 // 将 defaultStatus 提取到组件外部，避免每次渲染创建新数组引用
 const DEFAULT_GENERATION_STATUS = [TaskStatus.SUCCESS, TaskStatus.PROCESSING, TaskStatus.PENDING];
@@ -40,6 +42,7 @@ export default function StudioTTSPage() {
   const [isAudioModalOpen, setIsAudioModalOpen] = useState(false);
   const [isVoiceSelectorOpen, setIsVoiceSelectorOpen] = useState(false);
   const [isGeneratingModalOpen, setIsGeneratingModalOpen] = useState(false);
+  const [isAudioSettingsOpen, setIsAudioSettingsOpen] = useState(false);
   const [lastOpenedRecordId, setLastOpenedRecordId] = useState<string | null>(null);
 
   // 追踪 isGenerating 的前一个值，避免首次加载时误触发刷新
@@ -177,13 +180,13 @@ export default function StudioTTSPage() {
 
   // Memoize callbacks to prevent unnecessary re-renders
   const handleOpenSettings = useCallback(() => {
-    // TODO: Open settings modal
-    console.log('Open settings');
+    setIsAudioSettingsOpen(true);
   }, []);
 
   const handleVoiceSelectorOpen = useCallback(() => setIsVoiceSelectorOpen(true), []);
   const handleVoiceSelectorClose = useCallback(() => setIsVoiceSelectorOpen(false), []);
   const handleAudioModalClose = useCallback(() => setIsAudioModalOpen(false), []);
+  const handleAudioSettingsClose = useCallback(() => setIsAudioSettingsOpen(false), []);
 
   // Memoize computed values
   const voiceDisplayName = useMemo(
@@ -289,13 +292,19 @@ export default function StudioTTSPage() {
               </div>
             </div>
 
-            {/* Right Column: Voice Selector (42%) */}
-            <div className="col-span-5 h-full min-h-0 flex flex-col overflow-hidden">
-              <VoiceSelector
-                selectedVoice={selectedVoice}
-                onSelect={handleVoiceSelect}
-                disabled={isGenerating}
-              />
+            {/* Right Column: Audio Settings & Voice Selector (42%) */}
+            <div className="col-span-5 h-full min-h-0 flex flex-col gap-3 overflow-hidden">
+              {/* Audio Settings Panel */}
+              <AudioSettingsPanel />
+
+              {/* Voice Selector */}
+              <div className="flex-1 min-h-0">
+                <VoiceSelector
+                  selectedVoice={selectedVoice}
+                  onSelect={handleVoiceSelect}
+                  disabled={isGenerating}
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -337,6 +346,12 @@ export default function StudioTTSPage() {
         generation={generations.length > 0 ? generations[0] : null}
         onDelete={handleDeleteGeneration}
         onDownload={handleDownloadGeneration}
+      />
+
+      {/* Audio Settings Modal (Mobile) */}
+      <AudioSettingsModal
+        isOpen={isAudioSettingsOpen}
+        onClose={handleAudioSettingsClose}
       />
 
       {/* Confirmation Dialog */}

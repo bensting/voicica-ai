@@ -215,6 +215,30 @@
       "voices": "Voices",
       "clone": "Clone",
       "history": "History"
+    },
+    "audioSettings": {
+      "title": "Audio Settings",
+      "speed": {
+        "title": "Speech speed",
+        "description": "Adjust audio speaking speed",
+        "current": "Current Speech speed"
+      },
+      "volume": {
+        "title": "Volume",
+        "description": "Speech volume setting",
+        "current": "Current Volume"
+      },
+      "pitch": {
+        "title": "Pitch",
+        "description": "Adjust overall pitch",
+        "current": "Current Pitch",
+        "deep": "Deep",
+        "dull": "Dull",
+        "consistent": "Consistent",
+        "bright": "Bright",
+        "crisp": "Crisp"
+      },
+      "save": "Save"
     }
   },
   "voiceFilters": {

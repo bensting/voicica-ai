@@ -293,6 +293,30 @@
       "voices": "語音庫",
       "clone": "複製",
       "history": "歷史"
+    },
+    "audioSettings": {
+      "title": "音訊設定",
+      "speed": {
+        "title": "語速",
+        "description": "調整音訊播放速度",
+        "current": "當前語速"
+      },
+      "volume": {
+        "title": "音量",
+        "description": "語音音量設定",
+        "current": "當前音量"
+      },
+      "pitch": {
+        "title": "音調",
+        "description": "調整整體音調",
+        "current": "當前音調",
+        "deep": "低沉",
+        "dull": "平淡",
+        "consistent": "穩定",
+        "bright": "明亮",
+        "crisp": "清脆"
+      },
+      "save": "儲存"
     }
   },
   "voiceFilters": {

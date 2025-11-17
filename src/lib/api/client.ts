@@ -34,7 +34,8 @@ class APIClient {
 
         if (user) {
           // 已登录用户：添加 Authorization token
-          const token = await user.getIdToken();
+          // forceRefresh: false - 默认使用缓存的 token，如果过期会自动刷新
+          const token = await user.getIdToken(false);
           config.headers.Authorization = `Bearer ${token}`;
           console.log('🔑 已登录用户请求，使用 Authorization token');
         } else {
@@ -65,10 +66,11 @@ class APIClient {
         });
         return response;
       },
-      (error) => {
+      async (error) => {
         if (error.response) {
           // 服务器返回错误
           const { status, data } = error.response;
+          const originalRequest = error.config;
 
           console.error('❌ [API Error] Server returned error:', {
             status,
@@ -81,13 +83,27 @@ class APIClient {
           if (status === 401) {
             // 未授权：检查是否为已登录用户的 token 过期
             const user = auth.currentUser;
-            if (user) {
-              // 已登录用户的 token 过期，清除登录状态并跳转到登录页
-              console.error('🔑 Token 已过期，跳转到登录页');
-              if (typeof window !== 'undefined') {
-                window.location.href = '/login';
+            if (user && !originalRequest._retry) {
+              // 标记请求已重试，避免无限循环
+              originalRequest._retry = true;
+
+              try {
+                console.log('🔄 Token 可能过期，尝试刷新 token 并重试请求');
+                // 强制刷新 token
+                const newToken = await user.getIdToken(true);
+                originalRequest.headers.Authorization = `Bearer ${newToken}`;
+
+                // 重试原始请求
+                console.log('✅ Token 刷新成功，重试请求');
+                return this.client(originalRequest);
+              } catch (refreshError) {
+                // Token 刷新失败，清除登录状态并跳转到登录页
+                console.error('❌ Token 刷新失败，跳转到登录页', refreshError);
+                if (typeof window !== 'undefined') {
+                  window.location.href = '/login';
+                }
               }
-            } else {
+            } else if (!user) {
               // 匿名用户收到 401，可能是设备指纹问题，不跳转登录页
               console.warn('📱 匿名用户认证失败（可能是设备指纹问题）');
             }

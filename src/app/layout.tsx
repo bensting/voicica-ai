@@ -4,6 +4,7 @@ import "./globals.css";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { UserProvider } from "@/contexts/UserContext";
+import { AudioSettingsProvider } from "@/contexts/AudioSettingsContext";
 import InstallPrompt from "@/components/features/pwa/InstallPrompt";
 
 const geistSans = Geist({
@@ -56,8 +57,10 @@ export default function RootLayout({
         <AuthProvider>
           <UserProvider>
             <LanguageProvider>
-              {children}
-              <InstallPrompt />
+              <AudioSettingsProvider>
+                {children}
+                <InstallPrompt />
+              </AudioSettingsProvider>
             </LanguageProvider>
           </UserProvider>
         </AuthProvider>

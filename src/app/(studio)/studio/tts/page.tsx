@@ -230,7 +230,7 @@ export default function StudioTTSPage() {
 
       {/* Mobile Layout */}
       <div className="lg:hidden fixed inset-0 top-[60px] flex flex-col bg-gradient-to-b from-gray-50 to-white">
-        <div className="flex-1 flex flex-col px-4 pt-2 gap-1.5 overflow-hidden pb-2">
+        <div className="flex-1 flex flex-col px-4 pt-2 gap-1.5 overflow-hidden pb-3">
           {/* Error Message */}
           {error && (
             <div className="flex-shrink-0 p-2.5 bg-red-50 border border-red-200 rounded-xl">

@@ -228,6 +228,21 @@ export function useGenerationHistory({
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, authLoading]); // 移除 fetchRecords 依赖，避免无限循环
 
+  // Fetch records when page, filters, or status changes
+  useEffect(() => {
+    if (authLoading) return;
+
+    console.log('🔄 [useGenerationHistory] Filters/Page changed, fetching records', {
+      currentPage,
+      selectedStatus,
+      startDate,
+      endDate
+    });
+
+    void fetchRecords();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentPage, selectedStatus, startDate, endDate]); // Trigger fetch when filters/page change
+
   // Smart polling for processing records - poll each record individually
   useEffect(() => {
     if (loading) return;

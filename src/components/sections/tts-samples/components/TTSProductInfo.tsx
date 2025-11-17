@@ -1,3 +1,4 @@
+import { useRouter } from 'next/navigation';
 import { Mic, Star } from 'lucide-react';
 import { GradientButton } from '@/components/ui';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -8,6 +9,13 @@ import { useLanguage } from '@/contexts/LanguageContext';
  */
 export default function TTSProductInfo() {
   const { t } = useLanguage();
+  const router = useRouter();
+
+  // Navigate to TTS page
+  const handleTryNow = () => {
+    router.push('/studio/tts');
+  };
+
   return (
     <div className="flex flex-col justify-between">
       {/* Icon and Title */}
@@ -57,7 +65,11 @@ export default function TTSProductInfo() {
         <div className="flex items-center gap-3 sm:gap-4">
           {/* 按钮 - 移动端缩小 */}
           <div className="flex-shrink-0">
-            <GradientButton size="lg" className="px-6 sm:px-8 py-3 sm:py-4 text-sm sm:text-base whitespace-nowrap">
+            <GradientButton
+              size="lg"
+              className="px-6 sm:px-8 py-3 sm:py-4 text-sm sm:text-base whitespace-nowrap"
+              onClick={handleTryNow}
+            >
               {t('ttsSamples.productInfo.cta.button')}
             </GradientButton>
           </div>

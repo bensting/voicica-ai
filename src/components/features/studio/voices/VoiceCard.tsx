@@ -96,7 +96,6 @@ export default function VoiceCard({
       {/* Voice information */}
       <div className="flex-1 min-w-0">
         <h3 className="text-sm font-semibold text-gray-900 truncate">{voiceName}</h3>
-        <p className="text-xs text-orange-500 capitalize">{voice.role || 'General'}</p>
         <div className="flex items-center gap-1.5 text-xs">
           {getGenderIcon(voice.gender)}
           <span className="text-gray-400">|</span>

@@ -124,7 +124,7 @@ export default function TextInput({
 
             {/* Character count - 只显示数字，不显示文档图标 */}
             <span className="text-gray-400 text-sm font-normal">
-              {value.length} / {maxCharacters}
+              {hasMounted ? value.length : 0} / {maxCharacters}
             </span>
 
             {/* Desktop Generate button */}
@@ -175,14 +175,14 @@ export default function TextInput({
                   </svg>
                 </button>
               </div>
-              <div className="flex gap-1.5 flex-wrap px-1">
+              <div className="flex gap-1.5 flex-wrap lg:flex-nowrap px-1">
                 {EXAMPLE_BUTTONS.map((example) => (
                   <button
                     key={example.id}
                     type="button"
                     onClick={() => handleSelectExample(example.text)}
                     disabled={disabled}
-                    className="px-3 py-1.5 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white text-xs font-medium rounded-full transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
+                    className="px-3 py-1.5 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white text-xs font-medium rounded-full transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-sm whitespace-nowrap"
                   >
                     {example.label}
                   </button>

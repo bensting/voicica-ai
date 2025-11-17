@@ -25,7 +25,6 @@ export function useTTSDemo() {
   const [selectedVoice, setSelectedVoice] = useState<Voice | null>(null);
   const [selectedLocale, setSelectedLocale] = useState<LocaleOption | null>(null);
   const [textInput, setTextInput] = useState('');
-  const [enhanceVoice, setEnhanceVoice] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
 
   // ==================== UI 状态 ====================
@@ -104,11 +103,6 @@ export function useTTSDemo() {
     [maxTextLength]
   );
 
-  // 切换增强语音
-  const toggleEnhanceVoice = useCallback(() => {
-    setEnhanceVoice((prev) => !prev);
-  }, []);
-
   // 处理播放
   const handlePlay = useCallback(() => {
     if (!textInput.trim()) {
@@ -126,7 +120,6 @@ export function useTTSDemo() {
       voice: selectedVoice.name,
       locale: selectedLocale?.code,
       text: textInput,
-      enhanced: enhanceVoice,
     });
 
     // TODO: 实现实际的音频播放逻辑
@@ -134,7 +127,7 @@ export function useTTSDemo() {
     setTimeout(() => {
       setIsPlaying(false);
     }, 3000);
-  }, [selectedVoice, selectedLocale, textInput, enhanceVoice]);
+  }, [selectedVoice, selectedLocale, textInput]);
 
   // 处理语音选择
   const handleVoiceSelect = useCallback((voice: Voice) => {
@@ -178,7 +171,6 @@ export function useTTSDemo() {
     selectedVoice,
     selectedLocale,
     textInput,
-    enhanceVoice,
     isPlaying,
 
     // 语音列表
@@ -191,7 +183,6 @@ export function useTTSDemo() {
 
     // Actions
     handleTextChange,
-    toggleEnhanceVoice,
     handlePlay,
     handleVoiceSelect,
     handleLocaleSelect,

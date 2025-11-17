@@ -28,7 +28,6 @@ export default function TTSSamples() {
     selectedVoice,
     selectedLocale,
     textInput,
-    enhanceVoice,
     isPlaying,
 
     // 语音列表
@@ -41,7 +40,6 @@ export default function TTSSamples() {
 
     // Actions
     handleTextChange,
-    toggleEnhanceVoice,
     handlePlay,
     handleVoiceSelect,
     handleLocaleSelect,
@@ -67,7 +65,7 @@ export default function TTSSamples() {
         <div className="bg-gradient-to-br from-gray-900/95 to-black/95 rounded-3xl p-8 md:p-12 border border-gray-700 shadow-2xl shadow-purple-500/10 backdrop-blur-sm">
           {isLoadingConfig ? (
             <div className="flex items-center justify-center py-20">
-              <div className="text-white text-lg">Loading configuration...</div>
+              <div className="text-white text-lg">{t('ttsSamples.demoPanel.loadingConfig')}</div>
             </div>
           ) : (
             <div className="grid grid-cols-1 lg:grid-cols-5 gap-12">
@@ -95,10 +93,8 @@ export default function TTSSamples() {
                   // 文本和播放
                   textInput={textInput}
                   maxTextLength={maxTextLength}
-                  enhanceVoice={enhanceVoice}
                   isPlaying={isPlaying}
                   onTextChange={handleTextChange}
-                  onToggleEnhance={toggleEnhanceVoice}
                   onPlay={handlePlay}
                 />
               </div>

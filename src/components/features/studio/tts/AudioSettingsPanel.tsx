@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAudioSettings } from '@/contexts/AudioSettingsContext';
 import { AUDIO_SETTINGS_RANGE } from '@/types/audioSettings';
-import { ChevronDown, ChevronUp } from 'lucide-react';
+import { Settings } from 'lucide-react';
 
 /**
  * 桌面端音频参数设置面板
@@ -29,20 +29,16 @@ export default function AudioSettingsPanel() {
   };
 
   return (
-    <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
+    <div className="bg-white rounded-2xl border-2 border-gray-200 shadow-sm">
       {/* Header */}
       <button
         onClick={() => setIsExpanded(!isExpanded)}
-        className="w-full flex items-center justify-between p-3.5 hover:bg-gray-50 transition-colors rounded-lg"
+        className="w-full flex flex-col items-center justify-center p-3.5 hover:bg-gray-50 transition-colors rounded-2xl gap-1.5"
       >
-        <span className="font-medium text-gray-900">
+        <Settings className="w-6 h-6 text-gray-700" />
+        <span className="text-xs font-medium text-gray-700">
           {t('studio.audioSettings.title')}
         </span>
-        {isExpanded ? (
-          <ChevronUp className="w-5 h-5 text-gray-500" />
-        ) : (
-          <ChevronDown className="w-5 h-5 text-gray-500" />
-        )}
       </button>
 
       {/* Content */}

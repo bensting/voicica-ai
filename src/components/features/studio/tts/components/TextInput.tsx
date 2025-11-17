@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+import { Trash2 } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 interface ExampleButton {
@@ -42,13 +43,6 @@ export default function TextInput({
 }: TextInputProps) {
   const { t } = useLanguage();
   const [showExamples, setShowExamples] = useState(true);
-  // Use client-side only state to avoid hydration mismatch
-  const [showClearButton, setShowClearButton] = useState(false);
-
-  // Update clear button visibility only on client side
-  useEffect(() => {
-    setShowClearButton(value.length > 0);
-  }, [value.length]);
 
   // Get example buttons from i18n
   const EXAMPLE_BUTTONS: ExampleButton[] = [
@@ -108,22 +102,15 @@ export default function TextInput({
 
           {/* Right: Clear button, Character count and Desktop Generate button */}
           <div className="flex items-center gap-2">
-            {/* Clear button (扫把图标) - 只在有内容时显示，使用 client-side state 避免 hydration mismatch */}
-            {showClearButton && (
-              <button
-                type="button"
-                onClick={handleClear}
-                disabled={disabled}
-                className="p-1 hover:bg-purple-50 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed group"
-                aria-label="Clear text"
-                title="清空输入框"
-              >
-                {/* 垃圾桶图标 - 更清晰的清理图标 */}
-                <svg className="w-4 h-4 text-gray-400 group-hover:text-purple-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                </svg>
-              </button>
-            )}
+            {/* Clear button - always shown for testing */}
+            <button
+              type="button"
+              className="p-1 hover:bg-purple-100 rounded transition-colors group"
+              aria-label="Clear text"
+              title="清空输入框"
+            >
+              <Trash2 className="w-4 h-4 text-gray-400 group-hover:text-purple-600 transition-colors" />
+            </button>
 
             {/* Character count - 只显示数字，不显示文档图标 */}
             <span className="text-gray-400 text-sm font-normal">

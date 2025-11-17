@@ -1,6 +1,7 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { generateTTS } from '@/lib/api/tts';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useAudioSettings } from '@/contexts/AudioSettingsContext';
 import type { Voice } from '@/types/voice';
 
 /**
@@ -20,6 +21,7 @@ export type VoiceModel = Voice;
  */
 export function useTTSGenerator(maxCharacters: number = 120) {
   const { t } = useLanguage();
+  const { settings: audioSettings } = useAudioSettings();
 
   // 从 localStorage 恢复上次输入的文本
   const [text, setText] = useState(() => {
@@ -31,7 +33,6 @@ export function useTTSGenerator(maxCharacters: number = 120) {
   });
 
   const [selectedVoice, setSelectedVoice] = useState<Voice | null>(null);
-  const [speed, setSpeed] = useState(1.0);
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [audioUrl, setAudioUrl] = useState<string | null>(null);
@@ -110,11 +111,6 @@ export function useTTSGenerator(maxCharacters: number = 120) {
     }
   }, []);
 
-  // 处理速度变化
-  const handleSpeedChange = useCallback((newSpeed: number) => {
-    setSpeed(newSpeed);
-  }, []);
-
   // 生成音频（提交任务，polling 由 useGenerationHistory 处理）
   const handleGenerate = useCallback(async () => {
     if (!canGenerate || !selectedVoice) {
@@ -131,15 +127,17 @@ export function useTTSGenerator(maxCharacters: number = 120) {
         text,
         voice: selectedVoice.name,
         language: selectedVoice.locale,
-        speed,
+        audioSettings,
       });
 
-      // 调用后端 API 提交任务
+      // 调用后端 API 提交任务（使用 AudioSettings Context 中的音频参数）
       const result = await generateTTS({
         text,
         voiceName: selectedVoice.name,
         language: selectedVoice.locale,
-        speed,
+        speed: audioSettings.speed,
+        pitch: audioSettings.pitch,
+        volume: audioSettings.volume,
       });
 
       console.log('✅ [useTTSGenerator] 任务已提交，task_id:', result.task_id);
@@ -174,7 +172,7 @@ export function useTTSGenerator(maxCharacters: number = 120) {
 
       setIsGenerating(false);
     }
-  }, [canGenerate, selectedVoice, text, speed, t]);
+  }, [canGenerate, selectedVoice, text, audioSettings, t]);
 
   // 清空文本输入
   const handleClearText = useCallback(() => {
@@ -193,7 +191,6 @@ export function useTTSGenerator(maxCharacters: number = 120) {
   const reset = useCallback(() => {
     setText('');
     setSelectedVoice(null);
-    setSpeed(1.0);
     setAudioUrl(null);
     setError(null);
   }, []);
@@ -202,7 +199,6 @@ export function useTTSGenerator(maxCharacters: number = 120) {
     // 状态
     text,
     selectedVoice,
-    speed,
     isGenerating,
     error,
     audioUrl,
@@ -212,7 +208,6 @@ export function useTTSGenerator(maxCharacters: number = 120) {
     // 方法
     handleTextChange,
     handleVoiceSelect,
-    handleSpeedChange,
     handleGenerate,
     handleClearText,
     reset,

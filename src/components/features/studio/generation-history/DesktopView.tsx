@@ -72,12 +72,9 @@ export default function DesktopView({
           statusLabel={t('generationHistory.filters.status') || 'Filter by Status'}
           dateRangeLabel={t('generationHistory.filters.dateRange') || 'Filter by Date Range'}
         />
-      </div>
 
-      {/* Scrollable Content Area */}
-      <div className="flex-1 min-h-0 overflow-y-auto">
-        {/* Title Bar with Clear All Button */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 mb-4">
+        {/* Title Bar with Clear All Button - Fixed */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200">
           <div className="flex items-center justify-between p-4">
             <div className="flex items-center gap-3">
               <h2 className="text-xl font-semibold text-gray-900 whitespace-nowrap">
@@ -98,7 +95,10 @@ export default function DesktopView({
             )}
           </div>
         </div>
+      </div>
 
+      {/* Scrollable Content Area */}
+      <div className="flex-1 min-h-0 overflow-y-auto">
         {/* Loading State - Show Skeletons */}
         {loading && generations.length === 0 && (
           <div className="space-y-3">

@@ -33,7 +33,7 @@ export default function AudioSettingsPanel() {
       {/* Header */}
       <button
         onClick={() => setIsExpanded(!isExpanded)}
-        className="w-full flex items-center justify-between p-4 hover:bg-gray-50 transition-colors rounded-lg"
+        className="w-full flex items-center justify-between p-3.5 hover:bg-gray-50 transition-colors rounded-lg"
       >
         <span className="font-medium text-gray-900">
           {t('studio.audioSettings.title')}

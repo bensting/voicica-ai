@@ -284,16 +284,26 @@ export default function StudioTTSPage() {
           <div className="grid grid-cols-12 gap-4 flex-1 min-h-0">
             {/* Left Column: Voice Button, Text Input & Generation History (58%) */}
             <div className="col-span-7 flex flex-col gap-3 overflow-hidden">
-              {/* Voice Selector Button */}
-              <VoiceSelectButton
-                voice={selectedVoice}
-                onClick={() => {
-                  // TODO: 可以滚动到右侧或打开模态框
-                  console.log('Open voice selector');
-                }}
-                disabled={isGenerating}
-                size="medium"
-              />
+              {/* Audio Settings & Voice Selector Button - 水平排列 */}
+              <div className="flex items-start gap-3 relative">
+                {/* Audio Settings Panel - 占约1/3宽度，使用绝对定位避免挤压下方内容 */}
+                <div className="w-1/3 flex-shrink-0 absolute z-10">
+                  <AudioSettingsPanel />
+                </div>
+
+                {/* Voice Selector Button - 占据剩余空间 */}
+                <div className="flex-1 ml-[calc(33.333%+0.75rem)]">
+                  <VoiceSelectButton
+                    voice={selectedVoice}
+                    onClick={() => {
+                      // TODO: 可以滚动到右侧或打开模态框
+                      console.log('Open voice selector');
+                    }}
+                    disabled={isGenerating}
+                    size="medium"
+                  />
+                </div>
+              </div>
 
               {/* Text Input Card with Generate Button - 占据 55% 左右 */}
               <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden" style={{ flex: '0 0 55%' }}>
@@ -322,11 +332,8 @@ export default function StudioTTSPage() {
               </div>
             </div>
 
-            {/* Right Column: Audio Settings & Voice Selector (42%) */}
+            {/* Right Column: Voice Selector (42%) */}
             <div className="col-span-5 h-full min-h-0 flex flex-col gap-3 overflow-hidden">
-              {/* Audio Settings Panel */}
-              <AudioSettingsPanel />
-
               {/* Voice Selector */}
               <div className="flex-1 min-h-0">
                 <VoiceSelector

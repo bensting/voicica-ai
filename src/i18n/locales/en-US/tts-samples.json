@@ -36,6 +36,13 @@
       "unlockTitle": "Try more voices for free",
       "unlockSubtitle": "3200+ AI Voices",
       "noVoices": "No voices available for this language"
+    },
+    "demoPanel": {
+      "textPlaceholder": "Enter text to convert to speech...",
+      "enhanceVoice": "Enhance Voice",
+      "listenButton": "Listen",
+      "playingButton": "Playing...",
+      "loadingConfig": "Loading configuration..."
     }
   }
 }

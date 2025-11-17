@@ -105,7 +105,30 @@ export default function StudioTTSPage() {
     if (selectedVoice) return;
 
     const loadLastSelectedVoice = async () => {
-      // 1. 检查是否从 voices 页面预选了语音（最高优先级）
+      // 1. 检查是否从首页 TTS Samples 预填充了数据（最高优先级）
+      const prefillText = localStorage.getItem('tts_prefill_text');
+      const prefillVoiceStr = localStorage.getItem('tts_prefill_voice');
+      if (prefillText && prefillVoiceStr) {
+        try {
+          const prefillVoice = JSON.parse(prefillVoiceStr) as Voice;
+          console.log('📋 [TTSPage] 从首页预填充数据:', { text: prefillText, voice: prefillVoice.name });
+
+          // 设置文本和语音
+          handleTextChange(prefillText);
+          handleVoiceSelect(prefillVoice);
+
+          // 清除预填充数据，避免下次访问时重复应用
+          localStorage.removeItem('tts_prefill_text');
+          localStorage.removeItem('tts_prefill_voice');
+          return;
+        } catch (err) {
+          console.error('[TTSPage] Failed to parse prefill data:', err);
+          localStorage.removeItem('tts_prefill_text');
+          localStorage.removeItem('tts_prefill_voice');
+        }
+      }
+
+      // 2. 检查是否从 voices 页面预选了语音
       const hasGallerySelection = sessionStorage.getItem('voicePreSelectedFromGallery');
       if (hasGallerySelection) {
         // 清除所有 gallery 相关标志，避免影响下次使用
@@ -116,7 +139,7 @@ export default function StudioTTSPage() {
         return; // useTTSGenerator hook 会处理预选语音
       }
 
-      // 2. 尝试从 localStorage 加载上次选择的语音（记住用户选择）
+      // 3. 尝试从 localStorage 加载上次选择的语音（记住用户选择）
       const lastVoiceStr = localStorage.getItem('lastSelectedVoice');
       if (lastVoiceStr) {
         try {
@@ -129,11 +152,11 @@ export default function StudioTTSPage() {
         }
       }
 
-      // 3. 首次访问或找不到上次的语音：不自动选择，让用户主动选择
+      // 4. 首次访问或找不到上次的语音：不自动选择，让用户主动选择
     };
 
     void loadLastSelectedVoice();
-  }, [locale, isLocaleReady, authLoading, selectedVoice, handleVoiceSelect]);
+  }, [locale, isLocaleReady, authLoading, selectedVoice, handleVoiceSelect, handleTextChange]);
 
   // 当音频生成成功时，移动端自动打开弹窗
   useEffect(() => {

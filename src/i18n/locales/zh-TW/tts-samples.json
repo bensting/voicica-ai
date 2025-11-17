@@ -36,6 +36,13 @@
       "unlockTitle": "免費試用更多語音",
       "unlockSubtitle": "3200+ AI 語音",
       "noVoices": "該語言暫無可用語音"
+    },
+    "demoPanel": {
+      "textPlaceholder": "輸入要轉換為語音的文字...",
+      "enhanceVoice": "增強語音",
+      "listenButton": "試聽",
+      "playingButton": "播放中...",
+      "loadingConfig": "載入配置中..."
     }
   }
 }

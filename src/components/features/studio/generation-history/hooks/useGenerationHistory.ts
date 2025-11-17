@@ -84,6 +84,9 @@ export function useGenerationHistory({
 
   // Polling for processing records - 使用 Map 存储每个记录的轮询定时器
   const pollingTimersRef = useRef<Map<string, NodeJS.Timeout>>(new Map());
+  // Track retry counts for each record to prevent infinite polling on errors
+  const pollingRetryCountRef = useRef<Map<string, number>>(new Map());
+  const MAX_RETRY_ATTEMPTS = 20; // Stop polling after 20 failed attempts (~1 minute)
 
   // Keep track of the actual status filter to use (can be array or single value)
   const statusFilter = useRef<TaskStatus | TaskStatus[] | null>(defaultStatus);
@@ -153,24 +156,29 @@ export function useGenerationHistory({
       clearTimeout(timer);
     });
     pollingTimersRef.current.clear();
+    pollingRetryCountRef.current.clear();
   }, []);
 
-  // Clear specific record's polling timer
+  // Clear specific record's polling timer and retry count
   const clearRecordPolling = useCallback((recordId: string) => {
     const timer = pollingTimersRef.current.get(recordId);
     if (timer) {
       clearTimeout(timer);
       pollingTimersRef.current.delete(recordId);
     }
+    pollingRetryCountRef.current.delete(recordId);
   }, []);
 
-  // Poll single record status
+  // Poll single record status with retry limit
   const pollRecordStatus = useCallback(async (recordId: string) => {
     try {
       console.log(`🔄 [useGenerationHistory] Polling record ${recordId}`);
 
       const record = await getTtsRecordById(recordId);
       const updatedGeneration = convertTtsRecordToGeneration(record);
+
+      // Reset retry count on successful fetch
+      pollingRetryCountRef.current.set(recordId, 0);
 
       // Update only this record in the list
       setGenerations(prev => prev.map(gen =>
@@ -191,14 +199,29 @@ export function useGenerationHistory({
       }
     } catch (err) {
       console.error(`❌ [useGenerationHistory] Error polling record ${recordId}:`, err);
-      // Continue polling even on error (network might be temporarily down)
+
+      // Increment retry count
+      const currentRetries = pollingRetryCountRef.current.get(recordId) || 0;
+      const newRetries = currentRetries + 1;
+
+      // Check if max retries exceeded
+      if (newRetries >= MAX_RETRY_ATTEMPTS) {
+        console.error(`❌ [useGenerationHistory] Max retry attempts (${MAX_RETRY_ATTEMPTS}) reached for record ${recordId}, stopping polling`);
+        clearRecordPolling(recordId);
+        return;
+      }
+
+      // Update retry count and continue polling
+      pollingRetryCountRef.current.set(recordId, newRetries);
+      console.log(`🔄 [useGenerationHistory] Retry ${newRetries}/${MAX_RETRY_ATTEMPTS} for record ${recordId}`);
+
       const timer = setTimeout(() => {
         void pollRecordStatus(recordId);
       }, 3000); // Retry after 3 seconds on error
 
       pollingTimersRef.current.set(recordId, timer);
     }
-  }, [clearRecordPolling]);
+  }, [clearRecordPolling, MAX_RETRY_ATTEMPTS]);
 
   // Cleanup on unmount
   useEffect(() => {

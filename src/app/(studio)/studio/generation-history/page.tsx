@@ -1,6 +1,5 @@
 'use client';
 
-import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import ConfirmDialog from '@/components/ui/ConfirmDialog';
 import PageLoading from '@/components/ui/PageLoading';
@@ -13,25 +12,10 @@ import { useGenerationHistory } from '@/components/features/studio/generation-hi
  *
  * Displays user's TTS generation history with filtering and pagination
  * Supports both authenticated and anonymous users
- * Uses CSS media query to determine which view to render (avoids state updates)
+ * Uses CSS media queries to show/hide views (no JS state, better performance)
  */
 export default function GenerationHistoryPage() {
   const { user, loading: authLoading } = useAuth();
-  const [isMobile, setIsMobile] = useState(false);
-
-  // Detect mobile on client-side only
-  useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.matchMedia('(max-width: 1023px)').matches);
-    };
-    checkMobile();
-
-    // Optional: listen for resize
-    const mediaQuery = window.matchMedia('(max-width: 1023px)');
-    const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches);
-    mediaQuery.addEventListener('change', handler);
-    return () => mediaQuery.removeEventListener('change', handler);
-  }, []);
 
   // Use custom hook for all business logic
   const {
@@ -109,25 +93,23 @@ export default function GenerationHistoryPage() {
   };
 
   // Show main content (supports both authenticated and anonymous users)
-  // Only render ONE view based on screen size (no duplication)
+  // Use CSS to show/hide views based on screen size (better performance than JS state)
   return (
     <>
       {/* Page Loading Animation */}
       <PageLoading show={isInitialLoading} />
 
-      {isMobile ? (
-        // Mobile Layout - Fixed viewport with internal scrolling
-        <div className="fixed inset-0 bg-gray-50 pt-16 overflow-hidden">
-          <MobileView {...viewProps} />
+      {/* Mobile Layout - shown only on mobile screens */}
+      <div className="lg:hidden fixed inset-0 bg-gray-50 pt-16 overflow-hidden">
+        <MobileView {...viewProps} />
+      </div>
+
+      {/* Desktop Layout - shown only on desktop screens */}
+      <div className="hidden lg:block fixed inset-0 bg-gradient-to-b from-gray-50 to-white pt-[60px] overflow-hidden">
+        <div className="h-full max-w-6xl mx-auto px-4 py-6 overflow-hidden">
+          <DesktopView {...viewProps} />
         </div>
-      ) : (
-        // Desktop Layout - Fixed viewport with internal scrolling (like TTS page)
-        <div className="fixed inset-0 bg-gradient-to-b from-gray-50 to-white pt-[60px] overflow-hidden">
-          <div className="h-full max-w-6xl mx-auto px-4 py-6 overflow-hidden">
-            <DesktopView {...viewProps} />
-          </div>
-        </div>
-      )}
+      </div>
 
       {/* Confirmation Dialog */}
       <ConfirmDialog

@@ -52,30 +52,35 @@ export default function TTSProductInfo() {
         </ul>
       </div>
 
-      {/* CTA Button and Stats - 横向布局 */}
+      {/* CTA Button and Stats - 响应式布局 */}
       <div>
-        <div className="flex items-center gap-4 mb-3">
-          {/* 按钮 */}
-          <GradientButton size="lg">{t('ttsSamples.productInfo.cta.button')}</GradientButton>
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
+          {/* 按钮 - 移动端缩小内边距 */}
+          <div className="w-full sm:w-auto">
+            <GradientButton size="lg" className="px-6 sm:px-8 whitespace-nowrap">
+              {t('ttsSamples.productInfo.cta.button')}
+            </GradientButton>
+          </div>
 
-          {/* 星星和统计数据 */}
+          {/* 右侧统计数据区域 */}
           <div className="flex flex-col gap-1">
             {/* 星星评分 */}
             <div className="flex items-center gap-1">
               {[...Array(5)].map((_, i) => (
-                <Star key={i} className="w-5 h-5 text-yellow-400 fill-yellow-400" />
+                <Star key={i} className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-400 fill-yellow-400" />
               ))}
             </div>
-            {/* 统计数字 */}
-            <div className="text-gray-300">
-              <span className="font-bold text-white">1M+</span>
-              <div className="text-sm text-gray-400">{t('ttsSamples.productInfo.cta.conversions')}</div>
+
+            {/* 统计数字 - 1M+ 和 次语音转换在同一行 */}
+            <div className="text-xs sm:text-sm">
+              <span className="font-bold text-white">1M+</span>{' '}
+              <span className="text-gray-400">{t('ttsSamples.productInfo.cta.conversions')}</span>
             </div>
+
+            {/* 使用人数 */}
+            <div className="text-xs sm:text-sm text-gray-400">{t('ttsSamples.productInfo.cta.usersCount')}</div>
           </div>
         </div>
-
-        {/* 使用人数 */}
-        <div className="text-sm text-gray-400">{t('ttsSamples.productInfo.cta.usersCount')}</div>
       </div>
     </div>
   );

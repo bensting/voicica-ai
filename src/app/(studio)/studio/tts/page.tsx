@@ -229,10 +229,10 @@ export default function StudioTTSPage() {
       <PageLoading show={isPageLoading} />
 
       {/* Mobile Layout */}
-      <div className="lg:hidden h-full flex flex-col px-4 pt-3 pb-20 gap-2 bg-gradient-to-b from-gray-50 to-white">
+      <div className="lg:hidden h-full flex flex-col px-4 pt-2 pb-[72px] gap-1.5 bg-gradient-to-b from-gray-50 to-white overflow-hidden">
         {/* Error Message */}
         {error && (
-          <div className="flex-shrink-0 p-3 bg-red-50 border border-red-200 rounded-xl">
+          <div className="flex-shrink-0 p-2.5 bg-red-50 border border-red-200 rounded-xl">
             <p className="text-red-600 font-medium text-sm">{error}</p>
           </div>
         )}

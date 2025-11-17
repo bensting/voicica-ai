@@ -1,9 +1,11 @@
 'use client';
 
 import { useLanguage } from '@/contexts/LanguageContext';
+import { Trash2 } from 'lucide-react';
 import PageHeader from './components/PageHeader';
 import FiltersSection from './components/FiltersSection';
-import GenerationsList from './components/GenerationsList';
+import MobileSpeechCard from './MobileSpeechCard';
+import MobileSpeechCardSkeleton from './MobileSpeechCardSkeleton';
 import Pagination from './Pagination';
 import { TaskStatus } from '@/types/tts';
 import type { Generation } from '@/types/tts';
@@ -29,6 +31,7 @@ interface DesktopViewProps {
 /**
  * Desktop View for Generation History
  * Fixed height layout with internal scrolling
+ * Reuses MobileSpeechCard component for consistency
  */
 export default function DesktopView({
   generations,
@@ -73,19 +76,76 @@ export default function DesktopView({
 
       {/* Scrollable Content Area */}
       <div className="flex-1 min-h-0 overflow-y-auto">
-        {/* Generations List */}
-        <GenerationsList
-          generations={generations}
-          total={total}
-          loading={loading}
-          onClearAll={onClearAll}
-          onDelete={onDeleteGeneration}
-          onDownload={onDownloadGeneration}
-          title={t('generationHistory.generatedSpeech')}
-          clearAllLabel={t('generationHistory.clearAll')}
-          noGenerationsTitle={t('generationHistory.noGenerations')}
-          noGenerationsDescription={t('generationHistory.noGenerationsDescription')}
-        />
+        {/* Title Bar with Clear All Button */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 mb-4">
+          <div className="flex items-center justify-between p-4">
+            <div className="flex items-center gap-3">
+              <h2 className="text-xl font-semibold text-gray-900 whitespace-nowrap">
+                {t('generationHistory.generatedSpeech')}
+              </h2>
+              <div className="flex items-center justify-center w-8 h-8 bg-purple-600 text-white text-sm font-medium rounded-full">
+                {total}
+              </div>
+            </div>
+            {total > 0 && (
+              <button
+                onClick={onClearAll}
+                className="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white text-sm font-medium rounded-lg hover:bg-purple-700 transition-colors"
+              >
+                <Trash2 className="w-4 h-4" />
+                <span className="whitespace-nowrap">{t('generationHistory.clearAll')}</span>
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* Loading State - Show Skeletons */}
+        {loading && generations.length === 0 && (
+          <div className="space-y-3">
+            {[1, 2, 3, 4, 5].map((i) => (
+              <MobileSpeechCardSkeleton key={i} />
+            ))}
+          </div>
+        )}
+
+        {/* Empty State */}
+        {generations.length === 0 && !loading && (
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-12 text-center">
+            <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg
+                className="w-8 h-8 text-gray-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"
+                />
+              </svg>
+            </div>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">
+              {t('generationHistory.noGenerations')}
+            </h3>
+            <p className="text-gray-500">{t('generationHistory.noGenerationsDescription')}</p>
+          </div>
+        )}
+
+        {/* Speech Cards - Reuse Mobile Component */}
+        {generations.length > 0 && (
+          <div className="space-y-3">
+            {generations.map((generation) => (
+              <MobileSpeechCard
+                key={generation.id}
+                generation={generation}
+                onDelete={() => onDeleteGeneration(generation.id)}
+                onDownload={() => onDownloadGeneration(generation.id)}
+              />
+            ))}
+          </div>
+        )}
 
         {/* Pagination */}
         {totalPages > 1 && (

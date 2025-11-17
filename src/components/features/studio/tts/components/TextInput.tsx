@@ -126,7 +126,7 @@ export default function TextInput({
 
             {/* Character count - 只显示数字，不显示文档图标 */}
             <span className="text-gray-400 text-sm font-normal">
-              {value.length} / {maxCharacters}
+              {isMounted ? value.length : 0} / {maxCharacters}
             </span>
 
             {/* Desktop Generate button */}

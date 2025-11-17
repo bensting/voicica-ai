@@ -17,14 +17,14 @@ interface StepperProps {
  */
 export default function Stepper({ steps, currentStep }: StepperProps) {
   return (
-    <div className="w-full bg-gradient-to-r from-blue-50 via-white to-purple-50 border-b border-gray-200 py-6 px-4">
+    <div className="w-full bg-gradient-to-r from-pink-50 via-white to-fuchsia-50 border-b border-gray-200 py-6 px-4">
       <div className="max-w-4xl mx-auto">
         {/* Desktop: Horizontal Stepper */}
         <div className="hidden lg:flex items-center justify-between relative">
           {/* Background Progress Line */}
           <div className="absolute top-6 left-0 right-0 h-1 bg-gray-200 rounded-full" style={{ zIndex: 0 }} />
           <div
-            className="absolute top-6 left-0 h-1 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full transition-all duration-500"
+            className="absolute top-6 left-0 h-1 bg-gradient-to-r from-pink-500 to-fuchsia-500 rounded-full transition-all duration-500"
             style={{
               width: `${(currentStep / (steps.length - 1)) * 100}%`,
               zIndex: 0
@@ -45,9 +45,9 @@ export default function Stepper({ steps, currentStep }: StepperProps) {
                     transition-all duration-300 font-semibold text-base
                     ${
                       isCurrent
-                        ? 'bg-gradient-to-br from-blue-500 to-blue-600 text-white shadow-lg shadow-blue-500/50 scale-110'
+                        ? 'bg-gradient-to-br from-pink-500 to-fuchsia-500 text-white shadow-lg shadow-pink-500/50 scale-110'
                         : isCompleted
-                        ? 'bg-gradient-to-br from-blue-500 to-blue-600 text-white shadow-md'
+                        ? 'bg-gradient-to-br from-pink-500 to-fuchsia-500 text-white shadow-md'
                         : 'bg-white border-2 border-gray-300 text-gray-400'
                     }
                   `}
@@ -74,9 +74,9 @@ export default function Stepper({ steps, currentStep }: StepperProps) {
                       text-sm font-semibold transition-colors whitespace-nowrap
                       ${
                         isCurrent
-                          ? 'text-blue-600'
+                          ? 'text-pink-600'
                           : isCompleted
-                          ? 'text-blue-500'
+                          ? 'text-pink-500'
                           : 'text-gray-400'
                       }
                     `}
@@ -84,7 +84,7 @@ export default function Stepper({ steps, currentStep }: StepperProps) {
                     {step.label}
                   </span>
                   {isCurrent && (
-                    <div className="w-2 h-2 rounded-full bg-blue-600 animate-pulse" />
+                    <div className="w-2 h-2 rounded-full bg-pink-600 animate-pulse" />
                   )}
                 </div>
               </div>
@@ -98,7 +98,7 @@ export default function Stepper({ steps, currentStep }: StepperProps) {
           <div className="relative">
             <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
               <div
-                className="h-full bg-gradient-to-r from-blue-500 to-blue-600 transition-all duration-500 rounded-full"
+                className="h-full bg-gradient-to-r from-pink-500 to-fuchsia-500 transition-all duration-500 rounded-full"
                 style={{ width: `${((currentStep + 1) / steps.length) * 100}%` }}
               />
             </div>
@@ -107,12 +107,12 @@ export default function Stepper({ steps, currentStep }: StepperProps) {
           {/* Current Step Info */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 text-white flex items-center justify-center font-semibold shadow-lg shadow-blue-500/30">
+              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-pink-500 to-fuchsia-500 text-white flex items-center justify-center font-semibold shadow-lg shadow-pink-500/30">
                 {currentStep + 1}
               </div>
               <div>
                 <div className="text-xs text-gray-500">步骤 {currentStep + 1} / {steps.length}</div>
-                <div className="text-base font-semibold text-blue-600">{steps[currentStep].label}</div>
+                <div className="text-base font-semibold text-pink-600">{steps[currentStep].label}</div>
               </div>
             </div>
 
@@ -125,9 +125,9 @@ export default function Stepper({ steps, currentStep }: StepperProps) {
                     w-2 h-2 rounded-full transition-all duration-300
                     ${
                       index === currentStep
-                        ? 'w-6 bg-blue-600'
+                        ? 'w-6 bg-pink-600'
                         : index < currentStep
-                        ? 'bg-blue-500'
+                        ? 'bg-pink-500'
                         : 'bg-gray-300'
                     }
                   `}

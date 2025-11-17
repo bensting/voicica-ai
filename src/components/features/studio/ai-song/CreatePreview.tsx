@@ -46,7 +46,7 @@ export default function CreatePreview({
     return (
       <div className="flex items-center justify-center py-20">
         <div className="flex flex-col items-center gap-4">
-          <Sparkles className="w-12 h-12 text-blue-500 animate-pulse" />
+          <Sparkles className="w-12 h-12 text-pink-500 animate-pulse" />
           <p className="text-gray-600">正在创作中...</p>
         </div>
       </div>
@@ -58,9 +58,9 @@ export default function CreatePreview({
     return (
       <div className="space-y-4">
         {/* 音频播放器占位 */}
-        <div className="w-full bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl p-8 text-center">
+        <div className="w-full bg-gradient-to-r from-pink-50 to-fuchsia-50 rounded-xl p-8 text-center">
           <div className="space-y-4">
-            <div className="w-20 h-20 mx-auto bg-blue-500 rounded-full flex items-center justify-center">
+            <div className="w-20 h-20 mx-auto bg-pink-500 rounded-full flex items-center justify-center">
               <svg className="w-10 h-10 text-white" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M8 5v14l11-7z" />
               </svg>
@@ -72,7 +72,7 @@ export default function CreatePreview({
         <button
           type="button"
           onClick={onRegenerate}
-          className="w-full py-3 bg-blue-100 text-blue-600 rounded-xl hover:bg-blue-200 transition-colors font-medium"
+          className="w-full py-3 bg-pink-100 text-pink-600 rounded-xl hover:bg-pink-200 transition-colors font-medium"
         >
           🔄 重新生成歌曲
         </button>
@@ -80,7 +80,7 @@ export default function CreatePreview({
         <button
           type="button"
           onClick={onContinueToMV}
-          className="w-full py-4 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl hover:from-blue-600 hover:to-blue-700 transition-all font-semibold text-lg"
+          className="w-full py-4 bg-gradient-to-r from-pink-500 to-fuchsia-500 text-white rounded-xl hover:from-pink-600 hover:to-fuchsia-600 transition-all font-semibold text-lg"
         >
           🎬 继续制作 MV
         </button>
@@ -133,7 +133,7 @@ export default function CreatePreview({
       </div>
 
       {/* 歌词预览 */}
-      <div className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-5 space-y-3">
+      <div className="bg-gradient-to-br from-pink-50 to-fuchsia-50 rounded-xl p-5 space-y-3">
         <div className="flex items-center justify-between">
           <h3 className="font-semibold text-gray-900 text-sm">歌词预览</h3>
           <span className="text-xs text-gray-500">{lyrics.length} 字符</span>
@@ -163,8 +163,8 @@ export default function CreatePreview({
                 p-3 rounded-xl border-2 transition-all text-center
                 ${
                   duration === durationOption.id
-                    ? 'border-blue-500 bg-blue-50 text-blue-600'
-                    : 'border-gray-200 bg-white text-gray-700 hover:border-blue-300'
+                    ? 'border-pink-500 bg-pink-50 text-pink-600'
+                    : 'border-gray-200 bg-white text-gray-700 hover:border-pink-300'
                 }
               `}
             >
@@ -179,7 +179,7 @@ export default function CreatePreview({
       <button
         type="button"
         onClick={onGenerate}
-        className="w-full py-4 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl hover:from-blue-600 hover:to-blue-700 transition-all font-semibold text-lg flex items-center justify-center gap-2"
+        className="w-full py-4 bg-gradient-to-r from-pink-500 to-fuchsia-500 text-white rounded-xl hover:from-pink-600 hover:to-fuchsia-600 transition-all font-semibold text-lg flex items-center justify-center gap-2"
       >
         <Sparkles className="w-5 h-5" />
         开始生成歌曲

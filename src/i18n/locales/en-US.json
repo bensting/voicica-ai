@@ -208,6 +208,8 @@
       "speechToSpeech": "Speech to Speech",
       "voiceCloning": "Voice Cloning",
       "voiceoverStudio": "Voiceover Studio",
+      "aiSong": "AI Song",
+      "aiMusicMovie": "AI Music Movie",
       "aiMusic": "AI Music",
       "aiCover": "AI Cover",
       "musicTools": "Music Tools"

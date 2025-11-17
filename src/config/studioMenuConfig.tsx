@@ -117,7 +117,7 @@ export const studioMenuItems: StudioMenuItemConfig[] = [
     labelKey: 'studio.menu.voiceCloning',
     href: '/studio/clone',
     category: 'voiceover',
-    enabled: false, // 已启用
+    enabled: true, // 已启用
     icon: (
       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
@@ -139,6 +139,30 @@ export const studioMenuItems: StudioMenuItemConfig[] = [
 
 
   // Music AI
+  {
+    id: 'ai-song',
+    labelKey: 'studio.menu.aiSong',
+    href: '/studio/ai-song',
+    category: 'music',
+    enabled: true, // 已启用
+    icon: (
+      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
+      </svg>
+    ),
+  },
+  {
+    id: 'ai-music-movie',
+    labelKey: 'studio.menu.aiMusicMovie',
+    href: '/studio/ai-music-movie',
+    category: 'music',
+    enabled: true, // 已启用
+    icon: (
+      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 4v16M17 4v16M3 8h4m10 0h4M3 12h18M3 16h4m10 0h4M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z" />
+      </svg>
+    ),
+  },
   {
     id: 'ai-music',
     labelKey: 'studio.menu.aiMusic',

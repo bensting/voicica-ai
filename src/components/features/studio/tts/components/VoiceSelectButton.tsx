@@ -1,7 +1,8 @@
 'use client';
 
 import Image from 'next/image';
-import { ChevronRight } from 'lucide-react';
+import { ChevronRight, User, UserRound } from 'lucide-react';
+import * as FlagIcons from 'country-flag-icons/react/3x2';
 import type { Voice } from '@/types/voice';
 import { useLanguage } from '@/contexts/LanguageContext';
 
@@ -40,6 +41,7 @@ export default function VoiceSelectButton({
       name: 'text-sm',
       details: 'text-xs',
       icon: 'w-4 h-4',
+      flag: 'w-3.5 h-3.5',
     },
     medium: {
       container: 'p-3.5',
@@ -47,6 +49,7 @@ export default function VoiceSelectButton({
       name: 'text-sm',
       details: 'text-xs',
       icon: 'w-5 h-5',
+      flag: 'w-4 h-4',
     },
     large: {
       container: 'p-4',
@@ -54,21 +57,52 @@ export default function VoiceSelectButton({
       name: 'text-base',
       details: 'text-xs',
       icon: 'w-5 h-5',
+      flag: 'w-4 h-4',
     },
   };
 
   const config = sizeConfig[size];
   const voiceName = voice?.display_name || t('studio.selectVoice');
 
-  // Get gender display text
-  const getGenderText = (gender: string) => {
+  // Get country code from locale
+  const getCountryCode = (locale: string): string => {
+    const countryMap: Record<string, string> = {
+      'zh-CN': 'CN',
+      'zh-TW': 'TW',
+      'en-US': 'US',
+      'en-GB': 'GB',
+      'ja-JP': 'JP',
+      'ko-KR': 'KR',
+      'es-ES': 'ES',
+      'fr-FR': 'FR',
+      'de-DE': 'DE',
+      'it-IT': 'IT',
+      'pt-BR': 'BR',
+      'ru-RU': 'RU',
+    };
+    return countryMap[locale] || 'UN'; // UN for unknown
+  };
+
+  // Get Flag Icon component
+  const getFlagIcon = (locale: string) => {
+    const countryCode = getCountryCode(locale);
+    const FlagComponent = (FlagIcons as any)[countryCode];
+
+    if (FlagComponent) {
+      return <FlagComponent className={`${config.flag} rounded-sm`} />;
+    }
+    return <span className="text-xs">🌐</span>;
+  };
+
+  // Get gender icon
+  const getGenderIcon = (gender: string) => {
     switch (gender) {
       case 'male':
-        return t('voiceFilters.male');
+        return <User className={`${config.flag} text-blue-500`} />;
       case 'female':
-        return t('voiceFilters.female');
+        return <UserRound className={`${config.flag} text-pink-500`} />;
       default:
-        return t('voiceFilters.neutral');
+        return <User className={`${config.flag} text-gray-500`} />;
     }
   };
 
@@ -116,8 +150,10 @@ export default function VoiceSelectButton({
             {voiceName}
           </div>
           {showDetails && voice && (
-            <div className={`text-gray-500 truncate ${config.details}`}>
-              {voice.locale} • {getGenderText(voice.gender)}
+            <div className={`flex items-center gap-1.5 ${config.details}`}>
+              {getFlagIcon(voice.locale)}
+              <span className="text-gray-400">•</span>
+              {getGenderIcon(voice.gender)}
             </div>
           )}
         </div>

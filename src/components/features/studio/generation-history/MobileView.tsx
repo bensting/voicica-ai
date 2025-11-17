@@ -38,7 +38,7 @@ export default function MobileView({
   selectedStatus,
   startDate,
   endDate,
-  onClearAll,
+  // onClearAll,  // Not used - removed to fix ESLint warning
   onDeleteGeneration,
   onDownloadGeneration,
   onPageChange,

@@ -36,13 +36,13 @@ export default function DesktopView({
   generations,
   total,
   currentPage,
-  pageSize,
+  // pageSize,  // Not used - removed to fix ESLint warning
   totalPages,
   loading = false,
   selectedStatus,
   startDate,
   endDate,
-  onClearAll,
+  // onClearAll,  // Not used - removed to fix ESLint warning
   onDeleteGeneration,
   onDownloadGeneration,
   onPageChange,

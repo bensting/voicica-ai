@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, memo, useCallback } from 'react';
 import { Trash2, ChevronDown, ChevronUp } from 'lucide-react';
 import MobileAudioPlayer from './MobileAudioPlayer';
 import TextExpandModal from './TextExpandModal';
@@ -13,13 +13,32 @@ interface MobileSpeechCardProps {
   onDownload: () => void;
 }
 
-export default function MobileSpeechCard({ generation, onDelete, onDownload }: MobileSpeechCardProps) {
+/**
+ * Mobile Speech Card Component
+ *
+ * Optimized with React.memo to prevent unnecessary re-renders
+ * Only re-renders when generation data or callbacks change
+ */
+function MobileSpeechCard({ generation, onDelete, onDownload }: MobileSpeechCardProps) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isTextExpanded, setIsTextExpanded] = useState(false);
   const [isTruncated, setIsTruncated] = useState(false);
   const textRef = useRef<HTMLParagraphElement>(null);
 
-  // Check if text is truncated
+  // Memoize handlers to prevent unnecessary re-renders of child components
+  const handleTogglePlay = useCallback(() => {
+    setIsPlaying(prev => !prev);
+  }, []);
+
+  const handleToggleTextExpanded = useCallback(() => {
+    setIsTextExpanded(prev => !prev);
+  }, []);
+
+  const handleCloseModal = useCallback(() => {
+    setIsTextExpanded(false);
+  }, []);
+
+  // Check if text is truncated - debounced for better performance
   useEffect(() => {
     const checkTruncation = () => {
       if (textRef.current) {
@@ -33,11 +52,18 @@ export default function MobileSpeechCard({ generation, onDelete, onDownload }: M
     // Delay check to ensure DOM is fully rendered
     const timeoutId = setTimeout(checkTruncation, 0);
 
-    // Recheck on window resize
-    window.addEventListener('resize', checkTruncation);
+    // Debounced resize handler to improve performance
+    let resizeTimer: NodeJS.Timeout;
+    const debouncedCheckTruncation = () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(checkTruncation, 150);
+    };
+
+    window.addEventListener('resize', debouncedCheckTruncation);
     return () => {
       clearTimeout(timeoutId);
-      window.removeEventListener('resize', checkTruncation);
+      clearTimeout(resizeTimer);
+      window.removeEventListener('resize', debouncedCheckTruncation);
     };
   }, [generation.text]);
 
@@ -78,7 +104,7 @@ export default function MobileSpeechCard({ generation, onDelete, onDownload }: M
         </p>
         {isTruncated && (
           <button
-            onClick={() => setIsTextExpanded(!isTextExpanded)}
+            onClick={handleToggleTextExpanded}
             className="absolute top-0 right-0 p-0.5 text-gray-500 hover:text-gray-700 transition-colors"
             title={isTextExpanded ? "Hide full text" : "View full text"}
           >
@@ -97,7 +123,7 @@ export default function MobileSpeechCard({ generation, onDelete, onDownload }: M
           audioUrl={generation.audioUrl}
           duration={generation.duration}
           isPlaying={isPlaying}
-          onPlay={() => setIsPlaying(!isPlaying)}
+          onPlay={handleTogglePlay}
           onDownload={onDownload}
           voiceAvatar={generation.voiceAvatar}
           voiceName={generation.voiceName}
@@ -110,8 +136,28 @@ export default function MobileSpeechCard({ generation, onDelete, onDownload }: M
       <TextExpandModal
         isOpen={isTextExpanded}
         text={generation.text}
-        onClose={() => setIsTextExpanded(false)}
+        onClose={handleCloseModal}
       />
     </>
   );
 }
+
+/**
+ * Export memoized component to prevent unnecessary re-renders
+ * Component will only re-render when:
+ * - generation.id changes (new record)
+ * - generation status changes (polling updates)
+ * - generation data changes
+ * - onDelete/onDownload callbacks change
+ */
+export default memo(MobileSpeechCard, (prevProps, nextProps) => {
+  // Custom comparison: only re-render if generation data actually changed
+  return (
+    prevProps.generation.id === nextProps.generation.id &&
+    prevProps.generation.status === nextProps.generation.status &&
+    prevProps.generation.text === nextProps.generation.text &&
+    prevProps.generation.audioUrl === nextProps.generation.audioUrl &&
+    prevProps.onDelete === nextProps.onDelete &&
+    prevProps.onDownload === nextProps.onDownload
+  );
+});

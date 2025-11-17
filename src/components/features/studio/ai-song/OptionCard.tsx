@@ -22,13 +22,13 @@ export default function OptionCard({ icon, label, selected, onClick }: OptionCar
         flex items-center gap-3
         ${
           selected
-            ? 'border-blue-500 bg-blue-50'
-            : 'border-gray-200 bg-white hover:border-blue-300 hover:bg-blue-50/50'
+            ? 'border-pink-500 bg-pink-50'
+            : 'border-gray-200 bg-white hover:border-pink-300 hover:bg-pink-50/50'
         }
       `}
     >
       <span className="text-2xl flex-shrink-0">{icon}</span>
-      <span className={`text-left font-medium ${selected ? 'text-blue-600' : 'text-gray-700'}`}>
+      <span className={`text-left font-medium ${selected ? 'text-pink-600' : 'text-gray-700'}`}>
         {label}
       </span>
 
@@ -37,7 +37,7 @@ export default function OptionCard({ icon, label, selected, onClick }: OptionCar
         <div
           className={`
             w-5 h-5 rounded-full border-2 flex items-center justify-center
-            ${selected ? 'border-blue-500 bg-blue-500' : 'border-gray-300 bg-white'}
+            ${selected ? 'border-pink-500 bg-pink-500' : 'border-gray-300 bg-white'}
           `}
         >
           {selected && (

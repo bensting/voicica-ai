@@ -262,7 +262,7 @@ export default function AiSongPage() {
   };
 
   return (
-    <div className="flex flex-col h-[calc(100vh-60px)] bg-gradient-to-b from-blue-50 to-white">
+    <div className="flex flex-col h-[calc(100vh-60px)] bg-gradient-to-b from-pink-50 to-white">
       {/* Stepper */}
       <Stepper steps={STEPS} currentStep={currentStep} />
 
@@ -301,7 +301,7 @@ export default function AiSongPage() {
                 flex-1 py-3 rounded-xl font-semibold transition-all flex items-center justify-center gap-2
                 ${
                   canProceed() && !isGeneratingLyrics
-                    ? 'bg-blue-600 text-white hover:bg-blue-700'
+                    ? 'bg-gradient-to-r from-pink-500 to-fuchsia-500 text-white hover:from-pink-600 hover:to-fuchsia-600'
                     : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                 }
               `}

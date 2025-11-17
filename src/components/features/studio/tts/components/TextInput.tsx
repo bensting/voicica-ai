@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 interface ExampleButton {
@@ -42,6 +42,13 @@ export default function TextInput({
 }: TextInputProps) {
   const { t } = useLanguage();
   const [showExamples, setShowExamples] = useState(true);
+  // Use client-side only state to avoid hydration mismatch
+  const [showClearButton, setShowClearButton] = useState(false);
+
+  // Update clear button visibility only on client side
+  useEffect(() => {
+    setShowClearButton(value.length > 0);
+  }, [value.length]);
 
   // Get example buttons from i18n
   const EXAMPLE_BUTTONS: ExampleButton[] = [
@@ -101,8 +108,8 @@ export default function TextInput({
 
           {/* Right: Clear button, Character count and Desktop Generate button */}
           <div className="flex items-center gap-2">
-            {/* Clear button (扫把图标) - 只在有内容时显示 */}
-            {value.length > 0 && (
+            {/* Clear button (扫把图标) - 只在有内容时显示，使用 client-side state 避免 hydration mismatch */}
+            {showClearButton && (
               <button
                 type="button"
                 onClick={handleClear}

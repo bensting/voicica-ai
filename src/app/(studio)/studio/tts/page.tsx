@@ -20,6 +20,7 @@ import RecentGenerationsList from '@/components/features/studio/tts/components/R
 import ConfirmDialog from '@/components/ui/ConfirmDialog';
 import AudioSettingsModal from '@/components/features/studio/tts/AudioSettingsModal';
 import AudioSettingsPanel from '@/components/features/studio/tts/AudioSettingsPanel';
+import PageLoading from '@/components/ui/PageLoading';
 
 // 将 defaultStatus 提取到组件外部，避免每次渲染创建新数组引用
 const DEFAULT_GENERATION_STATUS = [TaskStatus.SUCCESS, TaskStatus.PROCESSING, TaskStatus.PENDING];
@@ -219,8 +220,14 @@ export default function StudioTTSPage() {
     [selectedVoice?.display_name, authLoading, isLocaleReady, t]
   );
 
+  // 页面加载状态
+  const isPageLoading = authLoading || !isLocaleReady;
+
   return (
     <>
+      {/* 加载动画 - 在页面中间显示，不遮挡内容 */}
+      {isPageLoading && <PageLoading />}
+
       {/* Mobile Layout */}
       <div className="lg:hidden h-full flex flex-col px-4 pt-3 pb-20 gap-2 bg-gradient-to-b from-gray-50 to-white">
         {/* Error Message */}

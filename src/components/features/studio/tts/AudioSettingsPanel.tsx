@@ -35,18 +35,19 @@ export default function AudioSettingsPanel() {
         onClick={() => setIsExpanded(!isExpanded)}
         className="w-full flex flex-col items-center justify-center p-3.5 hover:bg-gray-50 transition-colors rounded-2xl gap-1.5 relative"
       >
-        <Settings className="w-6 h-6 text-gray-700" />
-        <span className="text-xs font-medium text-gray-700">
-          {t('studio.audioSettings.title')}
-        </span>
-        {/* Expand/Collapse indicator */}
-        <div className="absolute top-2 right-2">
+        {/* Expand/Collapse indicator - right side vertically centered */}
+        <div className="absolute right-3 top-1/2 -translate-y-1/2">
           {isExpanded ? (
             <ChevronUp className="w-4 h-4 text-gray-400" />
           ) : (
             <ChevronDown className="w-4 h-4 text-gray-400" />
           )}
         </div>
+
+        <Settings className="w-6 h-6 text-gray-700" />
+        <span className="text-xs font-medium text-gray-700">
+          {t('studio.audioSettings.title')}
+        </span>
       </button>
 
       {/* Content */}

@@ -60,14 +60,12 @@ export default function GenerationHistoryPage() {
     accumulateData: isMobile // Enable infinite scroll on mobile
   });
 
-  // Show loading while checking auth (optional, can be removed if not needed)
+  // Show loading while checking auth or initial data loading
   // Note: Anonymous users can also view their generation history
-  if (authLoading) {
-    return <PageLoading show={true} />;
-  }
+  const isInitialLoading = authLoading || (loading && generations.length === 0);
 
   // Show error state
-  if (error) {
+  if (error && !authLoading) {
     return (
       <div className="fixed inset-0 bg-gray-50 pt-[60px] flex items-center justify-center">
         <div className="max-w-md mx-auto px-4">
@@ -114,6 +112,9 @@ export default function GenerationHistoryPage() {
   // Only render ONE view based on screen size (no duplication)
   return (
     <>
+      {/* Page Loading Animation */}
+      <PageLoading show={isInitialLoading} />
+
       {isMobile ? (
         // Mobile Layout - Fixed viewport with internal scrolling
         <div className="fixed inset-0 bg-gray-50 pt-16 overflow-hidden">

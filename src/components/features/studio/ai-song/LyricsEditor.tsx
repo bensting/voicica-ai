@@ -79,7 +79,7 @@ export default function LyricsEditor({
         <div className="flex-1">
           <p className="text-sm text-pink-700">
             <span className="font-medium">提示：</span>
-            你可以直接编辑歌词，或点击"重新生成"让 AI 创作新的版本
+            你可以直接编辑歌词，或点击&ldquo;重新生成&rdquo;让 AI 创作新的版本
           </p>
         </div>
       </div>

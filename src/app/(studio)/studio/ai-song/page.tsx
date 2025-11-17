@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useStudio } from '@/contexts/StudioContext';
-import { ChevronLeft, ChevronRight, Sparkles } from 'lucide-react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import Stepper from '@/components/features/studio/ai-song/Stepper';
 import OptionCard from '@/components/features/studio/ai-song/OptionCard';
 import LyricsEditor from '@/components/features/studio/ai-song/LyricsEditor';

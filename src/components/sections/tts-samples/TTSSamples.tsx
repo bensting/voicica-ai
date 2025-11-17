@@ -40,7 +40,6 @@ export default function TTSSamples() {
 
     // Actions
     handleTextChange,
-    handlePlay,
     handleVoiceSelect,
     handleLocaleSelect,
     toggleLanguageDropdown,
@@ -95,7 +94,6 @@ export default function TTSSamples() {
                   maxTextLength={maxTextLength}
                   isPlaying={isPlaying}
                   onTextChange={handleTextChange}
-                  onPlay={handlePlay}
                 />
               </div>
             </div>

@@ -86,7 +86,7 @@ export default function VoiceSelectButton({
   // Get Flag Icon component
   const getFlagIcon = (locale: string) => {
     const countryCode = getCountryCode(locale);
-    const FlagComponent = (FlagIcons as any)[countryCode];
+    const FlagComponent = (FlagIcons as Record<string, React.ComponentType<{ className?: string }>>)[countryCode];
 
     if (FlagComponent) {
       return <FlagComponent className={`${config.flag} rounded-sm`} />;

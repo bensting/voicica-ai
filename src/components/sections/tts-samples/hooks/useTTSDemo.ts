@@ -25,7 +25,7 @@ export function useTTSDemo() {
   const [selectedVoice, setSelectedVoice] = useState<Voice | null>(null);
   const [selectedLocale, setSelectedLocale] = useState<LocaleOption | null>(null);
   const [textInput, setTextInput] = useState('');
-  const [isPlaying, setIsPlaying] = useState(false);
+  const [isPlaying] = useState(false); // Currently not used, but kept for future functionality
 
   // ==================== UI 状态 ====================
   const [isLanguageDropdownOpen, setIsLanguageDropdownOpen] = useState(false);

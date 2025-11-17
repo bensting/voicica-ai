@@ -76,7 +76,7 @@ export default function TTSDemoPanel({
   };
 
   return (
-    <div className="bg-gradient-to-br from-gray-950 to-black rounded-2xl p-6 border border-gray-800">
+    <div className="bg-gradient-to-br from-gray-950 to-black rounded-2xl p-3 sm:p-4 md:p-6 border border-gray-800">
       {/* Voice & Language Selection */}
       <div className="flex flex-col md:flex-row items-stretch md:items-center gap-3 md:gap-4 mb-4">
         <div className="w-full md:flex-1">

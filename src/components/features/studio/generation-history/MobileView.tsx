@@ -166,6 +166,15 @@ export default function MobileView({
             </div>
           )}
 
+          {/* All Records Loaded Message */}
+          {!loading && generations.length > 0 && currentPage >= totalPages && (
+            <div className="flex justify-center py-6">
+              <div className="text-sm text-gray-500">
+                {t('generationHistory.allRecordsLoaded')} ({total} {t('generationHistory.total')})
+              </div>
+            </div>
+          )}
+
           {/* Infinite Scroll Trigger */}
           <div ref={observerTarget} className="h-4" />
         </div>

@@ -111,6 +111,8 @@
     "clearAll": "清空全部",
     "noGenerations": "暂无生成记录",
     "noGenerationsDescription": "开始创建后，您的语音生成记录将显示在这里。",
+    "allRecordsLoaded": "所有记录已加载完毕",
+    "total": "条",
     "filters": {
       "status": "状态",
       "dateRange": "日期",

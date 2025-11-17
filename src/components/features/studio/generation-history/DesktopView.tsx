@@ -1,11 +1,11 @@
 'use client';
 
+import { useRef, useCallback, useEffect } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import PageHeader from './components/PageHeader';
 import FiltersSection from './components/FiltersSection';
 import MobileSpeechCard from './MobileSpeechCard';
 import MobileSpeechCardSkeleton from './MobileSpeechCardSkeleton';
-import Pagination from './Pagination';
 import { TaskStatus } from '@/types/tts';
 import type { Generation } from '@/types/tts';
 
@@ -29,7 +29,7 @@ interface DesktopViewProps {
 
 /**
  * Desktop View for Generation History
- * Fixed height layout with internal scrolling
+ * Fixed height layout with internal scrolling and infinite scroll
  * Reuses MobileSpeechCard component for consistency
  */
 export default function DesktopView({
@@ -50,6 +50,31 @@ export default function DesktopView({
   onDateRangeChange
 }: DesktopViewProps) {
   const { t } = useLanguage();
+  const observerTarget = useRef<HTMLDivElement>(null);
+
+  // Infinite scroll observer
+  const handleObserver = useCallback((entries: IntersectionObserverEntry[]) => {
+    const [target] = entries;
+    if (target.isIntersecting && !loading && currentPage < totalPages) {
+      onPageChange(currentPage + 1);
+    }
+  }, [loading, currentPage, totalPages, onPageChange]);
+
+  useEffect(() => {
+    const element = observerTarget.current;
+    if (!element) return;
+
+    const option = {
+      root: null,
+      rootMargin: '100px',
+      threshold: 0
+    };
+
+    const observer = new IntersectionObserver(handleObserver, option);
+    observer.observe(element);
+
+    return () => observer.disconnect();
+  }, [handleObserver]);
 
   return (
     <div className="h-full flex flex-col overflow-hidden">
@@ -131,7 +156,7 @@ export default function DesktopView({
 
         {/* Speech Cards - Reuse Mobile Component */}
         {generations.length > 0 && (
-          <div className="space-y-3">
+          <div className="space-y-3 pb-4">
             {generations.map((generation) => (
               <MobileSpeechCard
                 key={generation.id}
@@ -140,19 +165,25 @@ export default function DesktopView({
                 onDownload={() => onDownloadGeneration(generation.id)}
               />
             ))}
-          </div>
-        )}
 
-        {/* Pagination */}
-        {totalPages > 1 && (
-          <div className="mt-6">
-            <Pagination
-              currentPage={currentPage}
-              totalPages={totalPages}
-              totalItems={total}
-              itemsPerPage={pageSize}
-              onPageChange={onPageChange}
-            />
+            {/* Loading More Indicator (for infinite scroll) */}
+            {loading && (
+              <div className="flex justify-center py-4">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600"></div>
+              </div>
+            )}
+
+            {/* All Records Loaded Message */}
+            {!loading && currentPage >= totalPages && (
+              <div className="flex justify-center py-6">
+                <div className="text-sm text-gray-500">
+                  {t('generationHistory.allRecordsLoaded')} ({total} {t('generationHistory.total')})
+                </div>
+              </div>
+            )}
+
+            {/* Infinite Scroll Trigger */}
+            <div ref={observerTarget} className="h-4" />
           </div>
         )}
       </div>

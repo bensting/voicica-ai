@@ -226,7 +226,7 @@ export default function StudioTTSPage() {
   return (
     <>
       {/* 加载动画 - 在页面中间显示，不遮挡内容 */}
-      {isPageLoading && <PageLoading />}
+      <PageLoading show={isPageLoading} />
 
       {/* Mobile Layout */}
       <div className="lg:hidden h-full flex flex-col px-4 pt-3 pb-20 gap-2 bg-gradient-to-b from-gray-50 to-white">

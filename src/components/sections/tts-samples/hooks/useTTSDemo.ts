@@ -103,32 +103,6 @@ export function useTTSDemo() {
     [maxTextLength]
   );
 
-  // 处理播放
-  const handlePlay = useCallback(() => {
-    if (!textInput.trim()) {
-      console.warn('⚠️ 文本为空，无法播放');
-      return;
-    }
-
-    if (!selectedVoice) {
-      console.warn('⚠️ 未选择语音，无法播放');
-      return;
-    }
-
-    setIsPlaying(true);
-    console.log('🎵 播放 TTS:', {
-      voice: selectedVoice.name,
-      locale: selectedLocale?.code,
-      text: textInput,
-    });
-
-    // TODO: 实现实际的音频播放逻辑
-    // 模拟播放结束
-    setTimeout(() => {
-      setIsPlaying(false);
-    }, 3000);
-  }, [selectedVoice, selectedLocale, textInput]);
-
   // 处理语音选择
   const handleVoiceSelect = useCallback((voice: Voice) => {
     setSelectedVoice(voice);
@@ -183,7 +157,6 @@ export function useTTSDemo() {
 
     // Actions
     handleTextChange,
-    handlePlay,
     handleVoiceSelect,
     handleLocaleSelect,
     toggleLanguageDropdown,

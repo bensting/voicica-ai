@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Trash2 } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 
@@ -43,6 +43,12 @@ export default function TextInput({
 }: TextInputProps) {
   const { t } = useLanguage();
   const [showExamples, setShowExamples] = useState(true);
+  // Track if component has mounted (client-side only)
+  const [hasMounted, setHasMounted] = useState(false);
+
+  useEffect(() => {
+    setHasMounted(true);
+  }, []);
 
   // Get example buttons from i18n
   const EXAMPLE_BUTTONS: ExampleButton[] = [
@@ -102,15 +108,19 @@ export default function TextInput({
 
           {/* Right: Clear button, Character count and Desktop Generate button */}
           <div className="flex items-center gap-2">
-            {/* Clear button - always shown for testing */}
-            <button
-              type="button"
-              className="p-1 hover:bg-purple-100 rounded transition-colors group"
-              aria-label="Clear text"
-              title="清空输入框"
-            >
-              <Trash2 className="w-4 h-4 text-gray-400 group-hover:text-purple-600 transition-colors" />
-            </button>
+            {/* Clear button - only render after mount and when there's text */}
+            {hasMounted && value.length > 0 && (
+              <button
+                type="button"
+                onClick={handleClear}
+                disabled={disabled}
+                className="p-1 hover:bg-purple-100 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed group"
+                aria-label="Clear text"
+                title="清空输入框"
+              >
+                <Trash2 className="w-4 h-4 text-gray-400 group-hover:text-purple-600 transition-colors" />
+              </button>
+            )}
 
             {/* Character count - 只显示数字，不显示文档图标 */}
             <span className="text-gray-400 text-sm font-normal">

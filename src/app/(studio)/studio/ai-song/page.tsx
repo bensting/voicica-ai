@@ -6,6 +6,8 @@ import { useStudio } from '@/contexts/StudioContext';
 import { ChevronLeft, ChevronRight, Sparkles } from 'lucide-react';
 import Stepper from '@/components/features/studio/ai-song/Stepper';
 import OptionCard from '@/components/features/studio/ai-song/OptionCard';
+import LyricsEditor from '@/components/features/studio/ai-song/LyricsEditor';
+import CreatePreview from '@/components/features/studio/ai-song/CreatePreview';
 
 // 步骤定义
 const STEPS = [
@@ -209,30 +211,12 @@ export default function AiSongPage() {
               </p>
             </div>
 
-            {isGeneratingLyrics ? (
-              <div className="flex items-center justify-center py-20">
-                <div className="flex flex-col items-center gap-4">
-                  <Sparkles className="w-12 h-12 text-blue-500 animate-pulse" />
-                  <p className="text-gray-600">正在生成歌词...</p>
-                </div>
-              </div>
-            ) : (
-              <div className="space-y-4">
-                <textarea
-                  value={lyrics}
-                  onChange={(e) => setLyrics(e.target.value)}
-                  placeholder="歌词将在这里显示..."
-                  className="w-full h-64 p-4 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:outline-none resize-none"
-                />
-                <button
-                  type="button"
-                  onClick={handleGenerateLyrics}
-                  className="w-full py-3 bg-blue-100 text-blue-600 rounded-xl hover:bg-blue-200 transition-colors font-medium"
-                >
-                  🔄 重新生成歌词
-                </button>
-              </div>
-            )}
+            <LyricsEditor
+              lyrics={lyrics}
+              onLyricsChange={setLyrics}
+              onRegenerate={handleGenerateLyrics}
+              isGenerating={isGeneratingLyrics}
+            />
           </div>
         );
 
@@ -256,134 +240,19 @@ export default function AiSongPage() {
               </p>
             </div>
 
-            {isGeneratingSong ? (
-              <div className="flex items-center justify-center py-20">
-                <div className="flex flex-col items-center gap-4">
-                  <Sparkles className="w-12 h-12 text-blue-500 animate-pulse" />
-                  <p className="text-gray-600">正在创作中...</p>
-                </div>
-              </div>
-            ) : generatedAudioUrl ? (
-              <div className="space-y-4">
-                {/* 音频播放器占位 */}
-                <div className="w-full bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl p-8 text-center">
-                  <div className="space-y-4">
-                    <div className="w-20 h-20 mx-auto bg-blue-500 rounded-full flex items-center justify-center">
-                      <svg
-                        className="w-10 h-10 text-white"
-                        fill="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path d="M8 5v14l11-7z" />
-                      </svg>
-                    </div>
-                    <p className="text-gray-600">音频播放器（待实现）</p>
-                  </div>
-                </div>
-
-                <button
-                  type="button"
-                  onClick={handleGenerateSong}
-                  className="w-full py-3 bg-blue-100 text-blue-600 rounded-xl hover:bg-blue-200 transition-colors font-medium"
-                >
-                  🔄 重新生成歌曲
-                </button>
-
-                <button
-                  type="button"
-                  className="w-full py-4 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl hover:from-blue-600 hover:to-blue-700 transition-all font-semibold text-lg"
-                >
-                  🎬 继续制作 MV
-                </button>
-              </div>
-            ) : (
-              <div className="space-y-6">
-                {/* 预览选择 */}
-                <div className="bg-gray-50 rounded-xl p-5 space-y-4">
-                  <h3 className="font-semibold text-gray-900 text-sm">你的创作配置</h3>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    {/* Theme */}
-                    <div className="flex items-center gap-2 text-sm">
-                      <span className="text-gray-500">主题：</span>
-                      <span className="font-medium text-gray-900">
-                        {THEME_OPTIONS.find(opt => opt.id === selectedTheme)?.icon}{' '}
-                        {THEME_OPTIONS.find(opt => opt.id === selectedTheme)?.label}
-                      </span>
-                    </div>
-
-                    {/* Mood */}
-                    <div className="flex items-center gap-2 text-sm">
-                      <span className="text-gray-500">情绪：</span>
-                      <span className="font-medium text-gray-900">
-                        {MOOD_OPTIONS.find(opt => opt.id === selectedMood)?.icon}{' '}
-                        {MOOD_OPTIONS.find(opt => opt.id === selectedMood)?.label}
-                      </span>
-                    </div>
-
-                    {/* Vocal */}
-                    <div className="flex items-center gap-2 text-sm">
-                      <span className="text-gray-500">声线：</span>
-                      <span className="font-medium text-gray-900">
-                        {VOCAL_OPTIONS.find(opt => opt.id === selectedVocal)?.icon}{' '}
-                        {VOCAL_OPTIONS.find(opt => opt.id === selectedVocal)?.label}
-                      </span>
-                    </div>
-
-                    {/* Duration */}
-                    <div className="flex items-center gap-2 text-sm">
-                      <span className="text-gray-500">时长：</span>
-                      <span className="font-medium text-gray-900">
-                        {selectedDuration === '1min' && '⏱️ 1 分钟'}
-                        {selectedDuration === '2min' && '⏱️ 2 分钟'}
-                        {selectedDuration === '3min' && '⏱️ 3 分钟'}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* 时长选择 */}
-                <div className="space-y-3">
-                  <label className="block text-sm font-medium text-gray-700">
-                    歌曲时长
-                  </label>
-                  <div className="grid grid-cols-3 gap-3">
-                    {[
-                      { id: '1min', label: '1 分钟', icon: '⏱️' },
-                      { id: '2min', label: '2 分钟', icon: '⏱️' },
-                      { id: '3min', label: '3 分钟', icon: '⏱️' },
-                    ].map((duration) => (
-                      <button
-                        key={duration.id}
-                        type="button"
-                        onClick={() => setSelectedDuration(duration.id)}
-                        className={`
-                          p-3 rounded-xl border-2 transition-all text-center
-                          ${
-                            selectedDuration === duration.id
-                              ? 'border-blue-500 bg-blue-50 text-blue-600'
-                              : 'border-gray-200 bg-white text-gray-700 hover:border-blue-300'
-                          }
-                        `}
-                      >
-                        <div className="text-xl mb-1">{duration.icon}</div>
-                        <div className="text-sm font-medium">{duration.label}</div>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* 生成按钮 */}
-                <button
-                  type="button"
-                  onClick={handleGenerateSong}
-                  className="w-full py-4 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl hover:from-blue-600 hover:to-blue-700 transition-all font-semibold text-lg flex items-center justify-center gap-2"
-                >
-                  <Sparkles className="w-5 h-5" />
-                  开始生成歌曲
-                </button>
-              </div>
-            )}
+            <CreatePreview
+              theme={THEME_OPTIONS.find(opt => opt.id === selectedTheme)}
+              mood={MOOD_OPTIONS.find(opt => opt.id === selectedMood)}
+              vocal={VOCAL_OPTIONS.find(opt => opt.id === selectedVocal)}
+              duration={selectedDuration}
+              lyrics={lyrics}
+              onDurationChange={setSelectedDuration}
+              isGenerating={isGeneratingSong}
+              generatedAudioUrl={generatedAudioUrl}
+              onGenerate={handleGenerateSong}
+              onRegenerate={handleGenerateSong}
+              onContinueToMV={() => console.log('Continue to MV')}
+            />
           </div>
         );
 

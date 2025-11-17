@@ -229,45 +229,50 @@ export default function StudioTTSPage() {
       <PageLoading show={isPageLoading} />
 
       {/* Mobile Layout */}
-      <div className="lg:hidden h-[calc(100vh-60px)] flex flex-col px-4 pt-2 pb-[80px] gap-1.5 bg-gradient-to-b from-gray-50 to-white overflow-hidden" style={{ paddingBottom: 'max(80px, env(safe-area-inset-bottom) + 80px)' }}>
-        {/* Error Message */}
-        {error && (
-          <div className="flex-shrink-0 p-2.5 bg-red-50 border border-red-200 rounded-xl">
-            <p className="text-red-600 font-medium text-sm">{error}</p>
+      <div className="lg:hidden fixed inset-0 top-[60px] flex flex-col bg-gradient-to-b from-gray-50 to-white">
+        <div className="flex-1 flex flex-col px-4 pt-2 gap-1.5 overflow-hidden pb-2">
+          {/* Error Message */}
+          {error && (
+            <div className="flex-shrink-0 p-2.5 bg-red-50 border border-red-200 rounded-xl">
+              <p className="text-red-600 font-medium text-sm">{error}</p>
+            </div>
+          )}
+
+          {/* Text Input - 占据大部分空间 */}
+          <div className="flex-1 min-h-0">
+            <TextInput
+              value={text}
+              onChange={handleTextChange}
+              maxCharacters={maxCharacters}
+              availableCharacters={availableCharacters}
+              disabled={isGenerating}
+              remainingCredits={credits}
+              onClear={handleClearText}
+            />
           </div>
-        )}
 
-        {/* Text Input - 占据大部分空间 */}
-        <div className="flex-1 min-h-0">
-          <TextInput
-            value={text}
-            onChange={handleTextChange}
-            maxCharacters={maxCharacters}
-            availableCharacters={availableCharacters}
-            disabled={isGenerating}
-            remainingCredits={credits}
-            onClear={handleClearText}
-          />
+          {/* Voice Select Button */}
+          <div className="flex-shrink-0">
+            <VoiceSelectButton
+              voice={selectedVoice}
+              onClick={handleVoiceSelectorOpen}
+              disabled={isGenerating}
+            />
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex-shrink-0">
+            <ActionButtons
+              onGenerate={handleGenerate}
+              onOpenSettings={handleOpenSettings}
+              isGenerating={isGenerating}
+              canGenerate={canGenerate}
+            />
+          </div>
         </div>
 
-        {/* Voice Select Button */}
-        <div className="flex-shrink-0">
-          <VoiceSelectButton
-            voice={selectedVoice}
-            onClick={handleVoiceSelectorOpen}
-            disabled={isGenerating}
-          />
-        </div>
-
-        {/* Action Buttons */}
-        <div className="flex-shrink-0">
-          <ActionButtons
-            onGenerate={handleGenerate}
-            onOpenSettings={handleOpenSettings}
-            isGenerating={isGenerating}
-            canGenerate={canGenerate}
-          />
-        </div>
+        {/* 底部导航栏占位空间 */}
+        <div className="h-[64px] flex-shrink-0" style={{ height: 'calc(64px + env(safe-area-inset-bottom))' }} />
       </div>
 
       {/* Desktop Layout - Two Column */}

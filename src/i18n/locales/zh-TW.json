@@ -111,6 +111,8 @@
     "clearAll": "清空全部",
     "noGenerations": "暫無生成記錄",
     "noGenerationsDescription": "開始創建後，您的語音生成記錄將顯示在這裡。",
+    "allRecordsLoaded": "所有記錄已加載完畢",
+    "total": "條",
     "filters": {
       "status": "狀態",
       "dateRange": "日期",

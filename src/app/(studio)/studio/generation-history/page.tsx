@@ -57,7 +57,7 @@ export default function GenerationHistoryPage() {
   } = useGenerationHistory({
     user,
     authLoading,
-    accumulateData: isMobile // Enable infinite scroll on mobile
+    accumulateData: true // Enable infinite scroll for both mobile and desktop
   });
 
   // Show loading while checking auth or initial data loading

@@ -118,6 +118,13 @@ export default function SubscriptionCard({
           ${isActive ? 'border-purple-200 bg-purple-50' : 'border-gray-200 bg-white'}
         `}
       >
+        {/* 订阅编号 - 卡片左上角 */}
+        {subscription.external_subscription_id && (
+          <p className="text-xs text-gray-500 mb-4 font-mono">
+            {subscription.external_subscription_id}
+          </p>
+        )}
+
         {/* 桌面端：单行布局 */}
         <div className="hidden lg:flex items-center justify-between">
           {/* 左侧：图标 + 计划信息 */}

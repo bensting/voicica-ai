@@ -228,6 +228,7 @@ export async function getMySubscriptions(params?: {
       display_name: sub.subscription_plans?.display_name as Record<string, string> | null,
       is_active: isActive,
       days_remaining: daysRemaining,
+      external_subscription_id: sub.external_subscription_id,
     };
   };
 
@@ -284,6 +285,7 @@ export async function getMyActiveSubscription(): Promise<UserSubscription | null
     display_name: activeSubscription.subscription_plans?.display_name as Record<string, string> | null,
     is_active: true,
     days_remaining: daysRemaining,
+    external_subscription_id: activeSubscription.external_subscription_id,
   };
 }
 

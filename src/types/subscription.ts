@@ -98,6 +98,7 @@ export interface UserSubscription {
   display_name?: Record<string, string> | null; // 多语言显示名称 { "en": "Basic Plan", "zh-CN": "基础套餐" }
   is_active: boolean;
   days_remaining?: number | null;
+  external_subscription_id?: string | null; // Stripe 订阅 ID
 }
 
 // 用户订阅列表响应

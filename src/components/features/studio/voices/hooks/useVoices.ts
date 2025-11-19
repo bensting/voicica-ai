@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { getVoices } from '@/lib/api/voice';
+import { listVoices } from '@/actions/voice';
 import type { Voice } from '@/types/voice';
 import type { LocaleOption } from '@/types/config';
 import type { User } from 'firebase/auth';
@@ -114,9 +114,9 @@ export function useVoices({ authLoading }: UseVoicesProps): UseVoicesReturn {
         params.tag = selectedTagId;
       }
 
-      const response = await getVoices(params);
+      const response = await listVoices(params);
 
-      setVoices(response.voices);
+      setVoices(response.voices as Voice[]);
       setTotal(response.total);
       setTotalPages(response.total_pages);
       setCurrentPage(response.page);
@@ -162,9 +162,9 @@ export function useVoices({ authLoading }: UseVoicesProps): UseVoicesReturn {
         params.tag = selectedTagId;
       }
 
-      const response = await getVoices(params);
+      const response = await listVoices(params);
 
-      setVoices((prev) => [...prev, ...response.voices]);
+      setVoices((prev) => [...prev, ...(response.voices as Voice[])]);
       setTotal(response.total);
       setTotalPages(response.total_pages);
       setCurrentPage(response.page);

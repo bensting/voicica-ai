@@ -176,7 +176,7 @@ export default function SubscriptionCard({
           {/* 第一行：图标 + 计划信息 + 价格 */}
           <div className="flex items-start justify-between mb-3">
             <div className="flex items-start gap-3">
-              <span className="text-3xl">{getPlatformIcon(subscription.platform)}</span>
+              <span className="text-3xl">{getPlatformIcon(subscription.platform || 'stripe')}</span>
               <div>
                 {/* 计划名称 */}
                 <div className="flex items-center gap-2 mb-1 flex-wrap">

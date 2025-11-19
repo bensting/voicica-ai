@@ -4,8 +4,6 @@
 import { NextResponse } from 'next/server';
 import { getDb } from '@/lib/db';
 
-export const runtime = 'edge';
-
 // SQL statements to create all tables
 const CREATE_TABLE_STATEMENTS: Record<string, string> = {
   anonymous_users: `

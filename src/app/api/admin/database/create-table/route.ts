@@ -4,8 +4,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getDb } from '@/lib/db';
 
-export const runtime = 'edge';
-
 // Import from sync route would cause circular dependency, so we duplicate the essential ones
 const CREATE_TABLE_STATEMENTS: Record<string, string> = {
   anonymous_users: `

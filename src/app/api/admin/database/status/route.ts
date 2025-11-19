@@ -4,8 +4,6 @@
 import { NextResponse } from 'next/server';
 import { getDb } from '@/lib/db';
 
-export const runtime = 'edge';
-
 // Tables defined in schema
 const SCHEMA_TABLES = [
   'anonymous_users',

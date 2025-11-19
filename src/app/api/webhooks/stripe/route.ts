@@ -4,8 +4,6 @@ import { getDb } from '@/lib/db';
 import { subscriptionPlans, userSubscriptions, users, creditHistory, subscriptionHistory } from '@/db/schema';
 import { eq, and, desc, sql } from 'drizzle-orm';
 
-export const runtime = 'edge';
-
 // Lazy initialization to avoid build-time errors
 function getStripe() {
   return new Stripe(process.env.STRIPE_SECRET_KEY!);

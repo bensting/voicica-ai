@@ -104,10 +104,10 @@ export default function UserMenu({ size = 'md' }: UserMenuProps = {}) {
         className="flex items-center gap-2 hover:opacity-80 transition-opacity"
         aria-label="User menu"
       >
-        {user.photoURL ? (
+        {user.image ? (
           <Image
-            src={user.photoURL}
-            alt={user.displayName || 'User'}
+            src={user.image}
+            alt={user.name || 'User'}
             width={imageSize}
             height={imageSize}
             className={`${avatarSize} rounded-full border-2 border-gray-200 object-cover`}
@@ -125,10 +125,10 @@ export default function UserMenu({ size = 'md' }: UserMenuProps = {}) {
           {/* 用户信息 */}
           <div className="px-4 py-3 border-b border-gray-100">
             <div className="flex items-center gap-3">
-              {user.photoURL ? (
+              {user.image ? (
                 <Image
-                  src={user.photoURL}
-                  alt={user.displayName || 'User'}
+                  src={user.image}
+                  alt={user.name || 'User'}
                   width={48}
                   height={48}
                   className="w-12 h-12 rounded-full"
@@ -140,7 +140,7 @@ export default function UserMenu({ size = 'md' }: UserMenuProps = {}) {
               )}
               <div className="flex-1 min-w-0">
                 <p className="font-semibold text-gray-900 truncate">
-                  {user.displayName || 'User'}
+                  {user.name || 'User'}
                 </p>
                 <p className="text-sm text-gray-500 truncate">{user.email}</p>
               </div>

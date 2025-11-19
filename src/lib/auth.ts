@@ -2,9 +2,12 @@
  * 服务端认证工具函数
  *
  * 用于 Server Actions 中验证用户身份
+ * 支持 Auth.js 正式用户和设备指纹匿名用户
  */
-import { cookies, headers } from 'next/headers';
-import { auth } from './firebase-admin';
+import { headers } from 'next/headers';
+import { auth } from './auth-next';
+import prisma from './prisma';
+import crypto from 'crypto';
 
 export interface AuthUser {
   uid: string;
@@ -18,34 +21,36 @@ export interface UnifiedUser {
   is_anonymous: boolean;
 }
 
+// 匿名用户默认积分
+const DEFAULT_ANONYMOUS_CREDITS = 1000;
+
+// 匿名用户过期天数
+const ANONYMOUS_USER_EXPIRY_DAYS = 30;
+
 /**
- * 获取当前登录用户
+ * 获取当前登录用户 (Auth.js)
  *
- * 从 cookie 中获取 Firebase ID Token 并验证
- *
- * @throws Error 如果未登录或 token 无效
+ * @throws Error 如果未登录
  */
 export async function getCurrentUser(): Promise<AuthUser> {
-  const cookieStore = await cookies();
-  const token = cookieStore.get('firebase-token')?.value;
+  const session = await auth();
 
-  if (!token) {
+  if (!session?.user) {
     throw new Error('未登录');
   }
 
-  try {
-    const decodedToken = await auth.verifyIdToken(token);
+  // 获取应用用户 ID
+  const authUser = await prisma.user.findUnique({
+    where: { id: session.user.id },
+    select: { appUserId: true },
+  });
 
-    return {
-      uid: decodedToken.uid,
-      email: decodedToken.email,
-      name: decodedToken.name,
-      picture: decodedToken.picture,
-    };
-  } catch (error) {
-    console.error('Token 验证失败:', error);
-    throw new Error('Token 无效或已过期');
-  }
+  return {
+    uid: authUser?.appUserId || session.user.id!,
+    email: session.user.email ?? undefined,
+    name: session.user.name ?? undefined,
+    picture: session.user.image ?? undefined,
+  };
 }
 
 /**
@@ -62,34 +67,97 @@ export async function getOptionalUser(): Promise<AuthUser | null> {
 }
 
 /**
+ * 创建或获取匿名用户
+ *
+ * 基于设备指纹创建或返回现有匿名用户
+ */
+async function createOrGetAnonymousUser(
+  deviceFingerprint: string,
+  ipAddress?: string,
+  userAgent?: string
+): Promise<{ user_id: string; credits: number }> {
+  // 生成匿名用户 ID
+  const hash = crypto.createHash('sha256').update(deviceFingerprint).digest('hex').substring(0, 16);
+  const anonymousUserId = `anonymous_${hash}`;
+
+  // 查找现有匿名用户
+  let anonUser = await prisma.anonymous_users.findUnique({
+    where: { user_id: anonymousUserId },
+  });
+
+  if (anonUser) {
+    // 更新最后使用时间
+    await prisma.anonymous_users.update({
+      where: { user_id: anonymousUserId },
+      data: {
+        last_used_at: new Date(),
+        ip_address: ipAddress || anonUser.ip_address,
+        user_agent: userAgent || anonUser.user_agent,
+      },
+    });
+
+    console.log(`📱 匿名用户访问: ${anonymousUserId}, 积分: ${anonUser.credits}`);
+    return { user_id: anonUser.user_id, credits: anonUser.credits };
+  }
+
+  // 创建新匿名用户
+  const expiresAt = new Date();
+  expiresAt.setDate(expiresAt.getDate() + ANONYMOUS_USER_EXPIRY_DAYS);
+
+  anonUser = await prisma.anonymous_users.create({
+    data: {
+      user_id: anonymousUserId,
+      device_fingerprint: deviceFingerprint,
+      ip_address: ipAddress,
+      user_agent: userAgent,
+      credits: DEFAULT_ANONYMOUS_CREDITS,
+      total_credits_used: 0,
+      is_anonymous: true,
+      expires_at: expiresAt,
+      last_used_at: new Date(),
+    },
+  });
+
+  console.log(`✅ 新匿名用户创建: ${anonymousUserId}, 初始积分: ${DEFAULT_ANONYMOUS_CREDITS}`);
+  return { user_id: anonUser.user_id, credits: anonUser.credits };
+}
+
+/**
  * 获取统一用户（支持正式用户和匿名用户）
  *
- * 优先使用 Firebase Token，其次使用设备指纹
+ * 优先使用 Auth.js Session，其次使用设备指纹
  *
- * @throws Error 如果既没有 token 也没有设备指纹
+ * @throws Error 如果既没有 session 也没有设备指纹
  */
 export async function getUserOrAnonymous(): Promise<UnifiedUser> {
-  // 尝试获取正式用户
-  const user = await getOptionalUser();
-  if (user) {
+  // 1. 尝试获取正式用户 (Auth.js)
+  const session = await auth();
+  if (session?.user) {
+    // 获取应用用户 ID
+    const authUser = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: { appUserId: true },
+    });
+
+    const userId = authUser?.appUserId || session.user.id!;
     return {
-      user_id: user.uid,
+      user_id: userId,
       is_anonymous: false,
     };
   }
 
-  // 尝试获取匿名用户
+  // 2. 尝试获取匿名用户
   const headersList = await headers();
   const fingerprint = headersList.get('x-device-fingerprint');
 
   if (fingerprint) {
-    // 生成匿名用户 ID
-    const crypto = await import('crypto');
-    const hash = crypto.createHash('sha256').update(fingerprint).digest('hex').substring(0, 16);
-    const anonymousUserId = `anonymous_${hash}`;
+    const ipAddress = headersList.get('x-forwarded-for')?.split(',')[0] || undefined;
+    const userAgent = headersList.get('user-agent') || undefined;
+
+    const anonUser = await createOrGetAnonymousUser(fingerprint, ipAddress, userAgent);
 
     return {
-      user_id: anonymousUserId,
+      user_id: anonUser.user_id,
       is_anonymous: true,
     };
   }

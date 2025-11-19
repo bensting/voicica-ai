@@ -3,7 +3,8 @@
 /**
  * 配置模块 Server Actions
  */
-import prisma from '@/lib/prisma';
+import { getDb, configs } from '@/lib/db';
+import { eq, inArray, asc } from 'drizzle-orm';
 
 // 类型定义
 export interface Config {
@@ -20,11 +21,12 @@ export interface Config {
  * 获取配置项
  */
 export async function getConfig(key: string): Promise<Config | null> {
-  const config = await prisma.configs.findUnique({
-    where: { key },
+  const db = getDb();
+  const config = await db.query.configs.findFirst({
+    where: eq(configs.key, key),
   });
 
-  if (!config || !config.is_active) {
+  if (!config || !config.isActive) {
     return null;
   }
 
@@ -33,9 +35,9 @@ export async function getConfig(key: string): Promise<Config | null> {
     key: config.key,
     value: config.value,
     description: config.description,
-    config_type: config.config_type,
+    config_type: config.configType,
     version: config.version,
-    is_active: config.is_active,
+    is_active: config.isActive,
   };
 }
 
@@ -51,16 +53,16 @@ export async function getConfigValue<T = unknown>(key: string): Promise<T | null
  * 获取多个配置项
  */
 export async function getConfigs(keys: string[]): Promise<Record<string, unknown>> {
-  const configs = await prisma.configs.findMany({
-    where: {
-      key: { in: keys },
-      is_active: true,
-    },
+  const db = getDb();
+  const configList = await db.query.configs.findMany({
+    where: inArray(configs.key, keys),
   });
 
   const result: Record<string, unknown> = {};
-  for (const config of configs) {
-    result[config.key] = config.value;
+  for (const config of configList) {
+    if (config.isActive) {
+      result[config.key] = config.value;
+    }
   }
 
   return result;
@@ -70,23 +72,23 @@ export async function getConfigs(keys: string[]): Promise<Record<string, unknown
  * 获取某类型的所有配置
  */
 export async function getConfigsByType(configType: string): Promise<Config[]> {
-  const configs = await prisma.configs.findMany({
-    where: {
-      config_type: configType,
-      is_active: true,
-    },
-    orderBy: { key: 'asc' },
+  const db = getDb();
+  const configList = await db.query.configs.findMany({
+    where: eq(configs.configType, configType),
+    orderBy: [asc(configs.key)],
   });
 
-  return configs.map((c) => ({
-    id: c.id,
-    key: c.key,
-    value: c.value,
-    description: c.description,
-    config_type: c.config_type,
-    version: c.version,
-    is_active: c.is_active,
-  }));
+  return configList
+    .filter(c => c.isActive)
+    .map((c) => ({
+      id: c.id,
+      key: c.key,
+      value: c.value,
+      description: c.description,
+      config_type: c.configType,
+      version: c.version,
+      is_active: c.isActive,
+    }));
 }
 
 /**
@@ -115,10 +117,10 @@ export interface TtsSamplesConfig {
  * 获取 TTS Demo 页面配置
  */
 export async function getTtsSamples(): Promise<TtsSamplesConfig> {
-  const configs = await getConfigs(['tts_sample_locales', 'tts_sample_max_length']);
+  const configData = await getConfigs(['tts_sample_locales', 'tts_sample_max_length']);
 
   return {
-    sample_locales: (configs['tts_sample_locales'] as string[]) || ['en-US', 'zh-CN', 'zh-TW', 'ja-JP', 'ko-KR'],
-    sample_text_max_length: (configs['tts_sample_max_length'] as number) || 100,
+    sample_locales: (configData['tts_sample_locales'] as string[]) || ['en-US', 'zh-CN', 'zh-TW', 'ja-JP', 'ko-KR'],
+    sample_text_max_length: (configData['tts_sample_max_length'] as number) || 100,
   };
 }

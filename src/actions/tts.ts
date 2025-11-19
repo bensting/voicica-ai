@@ -3,10 +3,11 @@
 /**
  * TTS 模块 Server Actions
  */
-import prisma from '@/lib/prisma';
+import { getDb, users, anonymousUsers, taskQueue, ttsRecords, voices } from '@/lib/db';
 import { getUserOrAnonymous } from '@/lib/auth';
 import { v4 as uuidv4 } from 'uuid';
 import { inngest } from '@/lib/inngest/client';
+import { eq, desc, and, gte, lte, inArray, count } from 'drizzle-orm';
 
 // 类型定义
 export interface TtsRequest {
@@ -93,16 +94,18 @@ async function checkCredits(
   required: number,
   isAnonymous: boolean
 ): Promise<boolean> {
+  const db = getDb();
+
   if (isAnonymous) {
-    const user = await prisma.anonymous_users.findUnique({
-      where: { user_id: userId },
-      select: { credits: true },
+    const user = await db.query.anonymousUsers.findFirst({
+      where: eq(anonymousUsers.userId, userId),
+      columns: { credits: true },
     });
     return (user?.credits ?? 0) >= required;
   } else {
-    const user = await prisma.users.findUnique({
-      where: { user_id: userId },
-      select: { credits: true },
+    const user = await db.query.users.findFirst({
+      where: eq(users.userId, userId),
+      columns: { credits: true },
     });
     return (user?.credits ?? 0) >= required;
   }
@@ -114,6 +117,7 @@ async function checkCredits(
  * 返回任务 ID，实际处理由后台 Worker 完成
  */
 export async function createTtsTask(request: TtsRequest): Promise<TtsTaskStatus> {
+  const db = getDb();
   const unifiedUser = await getUserOrAnonymous();
   const userId = unifiedUser.user_id;
   const isAnonymous = unifiedUser.is_anonymous;
@@ -131,35 +135,13 @@ export async function createTtsTask(request: TtsRequest): Promise<TtsTaskStatus>
   const taskId = uuidv4();
 
   // 4. 创建任务队列记录
-  await prisma.task_queue.create({
-    data: {
-      task_id: taskId,
-      task_type: 'TTS',
-      user_id: userId,
-      status: 'PENDING',
-      priority: 5,
-      payload: {
-        text: request.text,
-        voice_name: request.voice_name,
-        language: request.language || null,
-        speed: request.speed || 1.0,
-        pitch: request.pitch || 1,
-        volume: request.volume || 1,
-        credits_cost: requiredCredits,
-        is_anonymous: isAnonymous,
-      },
-      retry_count: 0,
-      max_retries: 3,
-      timeout_seconds: 300,
-    },
-  });
-
-  // 5. 创建 TTS 记录
-  const characterCount = request.text.length;
-  await prisma.tts_records.create({
-    data: {
-      user_id: userId,
-      task_id: taskId,
+  await db.insert(taskQueue).values({
+    taskId: taskId,
+    taskType: 'TTS',
+    userId: userId,
+    status: 'PENDING',
+    priority: 5,
+    payload: {
       text: request.text,
       voice_name: request.voice_name,
       language: request.language || null,
@@ -167,11 +149,29 @@ export async function createTtsTask(request: TtsRequest): Promise<TtsTaskStatus>
       pitch: request.pitch || 1,
       volume: request.volume || 1,
       credits_cost: requiredCredits,
-      character_count: characterCount,
-      status: 'PENDING',
-      progress: 0,
-      format: 'mp3',
+      is_anonymous: isAnonymous,
     },
+    retryCount: 0,
+    maxRetries: 3,
+    timeoutSeconds: 300,
+  });
+
+  // 5. 创建 TTS 记录
+  const characterCount = request.text.length;
+  await db.insert(ttsRecords).values({
+    userId: userId,
+    taskId: taskId,
+    text: request.text,
+    voiceName: request.voice_name,
+    language: request.language || null,
+    speed: request.speed || 1.0,
+    pitch: request.pitch || 1,
+    volume: request.volume || 1,
+    creditsCost: requiredCredits,
+    characterCount: characterCount,
+    status: 'PENDING',
+    progress: 0,
+    format: 'mp3',
   });
 
   console.log(`TTS 任务已创建: ${taskId}, 用户: ${userId}, 积分: ${requiredCredits}`);
@@ -208,8 +208,9 @@ export async function createTtsTask(request: TtsRequest): Promise<TtsTaskStatus>
  * 查询 TTS 任务状态
  */
 export async function getTtsTaskStatus(taskId: string): Promise<TtsTaskStatus> {
-  const record = await prisma.tts_records.findUnique({
-    where: { task_id: taskId },
+  const db = getDb();
+  const record = await db.query.ttsRecords.findFirst({
+    where: eq(ttsRecords.taskId, taskId),
   });
 
   if (!record) {
@@ -241,13 +242,13 @@ export async function getTtsTaskStatus(taskId: string): Promise<TtsTaskStatus> {
         status: 'SUCCESS',
         progress: 100,
         result: {
-          audio_url: record.audio_url || '',
+          audio_url: record.audioUrl || '',
           duration: record.duration || 0,
           format: record.format,
           task_id: taskId,
-          user_id: record.user_id,
+          user_id: record.userId,
           record_id: record.id,
-          credits_cost: record.credits_cost,
+          credits_cost: record.creditsCost,
         },
         error: null,
       };
@@ -258,7 +259,7 @@ export async function getTtsTaskStatus(taskId: string): Promise<TtsTaskStatus> {
         status: 'FAILURE',
         progress: 0,
         result: null,
-        error: record.error_message,
+        error: record.errorMessage,
       };
 
     default:
@@ -270,35 +271,36 @@ export async function getTtsTaskStatus(taskId: string): Promise<TtsTaskStatus> {
  * 获取用户 TTS 历史记录
  */
 export async function getTtsRecords(limit: number = 50): Promise<TtsRecord[]> {
+  const db = getDb();
   const unifiedUser = await getUserOrAnonymous();
   const userId = unifiedUser.user_id;
 
-  const records = await prisma.tts_records.findMany({
-    where: { user_id: userId },
-    orderBy: { created_at: 'desc' },
-    take: limit,
+  const records = await db.query.ttsRecords.findMany({
+    where: eq(ttsRecords.userId, userId),
+    orderBy: [desc(ttsRecords.createdAt)],
+    limit: limit,
   });
 
   return records.map((r) => ({
     id: r.id,
-    user_id: r.user_id,
-    task_id: r.task_id,
+    user_id: r.userId,
+    task_id: r.taskId,
     text: r.text,
-    voice_name: r.voice_name,
+    voice_name: r.voiceName,
     language: r.language,
     speed: r.speed,
     pitch: r.pitch,
     volume: r.volume,
-    credits_cost: r.credits_cost,
-    character_count: r.character_count,
+    credits_cost: r.creditsCost,
+    character_count: r.characterCount,
     status: r.status,
     progress: r.progress,
-    audio_url: r.audio_url,
+    audio_url: r.audioUrl,
     duration: r.duration,
     format: r.format,
-    error_message: r.error_message,
-    created_at: r.created_at,
-    completed_at: r.completed_at,
+    error_message: r.errorMessage,
+    created_at: r.createdAt,
+    completed_at: r.completedAt,
   }));
 }
 
@@ -312,6 +314,7 @@ export async function queryTtsRecords(params: {
   page?: number;
   page_size?: number;
 }): Promise<TtsRecordsQueryResponse> {
+  const db = getDb();
   const unifiedUser = await getUserOrAnonymous();
   const userId = unifiedUser.user_id;
 
@@ -324,78 +327,80 @@ export async function queryTtsRecords(params: {
   } = params;
 
   // 构建查询条件
-  const where: Record<string, unknown> = {
-    user_id: userId,
-  };
+  const conditions = [eq(ttsRecords.userId, userId)];
 
   if (status) {
-    // 支持逗号分隔的多状态查询
     if (status.includes(',')) {
-      where.status = { in: status.split(',') };
+      conditions.push(inArray(ttsRecords.status, status.split(',')));
     } else {
-      where.status = status;
+      conditions.push(eq(ttsRecords.status, status));
     }
   }
 
-  if (start_date || end_date) {
-    where.created_at = {};
-    if (start_date) {
-      (where.created_at as Record<string, unknown>).gte = start_date;
-    }
-    if (end_date) {
-      (where.created_at as Record<string, unknown>).lte = end_date;
-    }
+  if (start_date) {
+    conditions.push(gte(ttsRecords.createdAt, start_date));
   }
+
+  if (end_date) {
+    conditions.push(lte(ttsRecords.createdAt, end_date));
+  }
+
+  const whereClause = and(...conditions);
 
   // 查询总数
-  const total = await prisma.tts_records.count({ where });
+  const totalResult = await db.select({ count: count() })
+    .from(ttsRecords)
+    .where(whereClause);
+  const total = totalResult[0]?.count ?? 0;
 
   // 查询记录
   const offset = (page - 1) * page_size;
-  const records = await prisma.tts_records.findMany({
-    where,
-    orderBy: { created_at: 'desc' },
-    skip: offset,
-    take: page_size,
+  const records = await db.query.ttsRecords.findMany({
+    where: whereClause,
+    orderBy: [desc(ttsRecords.createdAt)],
+    offset: offset,
+    limit: page_size,
   });
 
   // 关联语音信息
-  const voiceNames = [...new Set(records.map((r) => r.voice_name))];
-  const voices = await prisma.voices.findMany({
-    where: { name: { in: voiceNames } },
-  });
-  const voiceMap = new Map(voices.map((v) => [v.name, v]));
+  const voiceNames = [...new Set(records.map((r) => r.voiceName))];
+  const voiceList = voiceNames.length > 0
+    ? await db.query.voices.findMany({
+        where: inArray(voices.name, voiceNames),
+      })
+    : [];
+  const voiceMap = new Map(voiceList.map((v) => [v.name, v]));
 
   const recordsWithVoice = records.map((r) => {
-    const voice = voiceMap.get(r.voice_name);
+    const voice = voiceMap.get(r.voiceName);
     return {
       id: r.id,
-      user_id: r.user_id,
-      task_id: r.task_id,
+      user_id: r.userId,
+      task_id: r.taskId,
       text: r.text,
-      voice_name: r.voice_name,
+      voice_name: r.voiceName,
       language: r.language,
       speed: r.speed,
       pitch: r.pitch,
       volume: r.volume,
-      credits_cost: r.credits_cost,
-      character_count: r.character_count,
+      credits_cost: r.creditsCost,
+      character_count: r.characterCount,
       status: r.status,
       progress: r.progress,
-      audio_url: r.audio_url,
+      audio_url: r.audioUrl,
       duration: r.duration,
       format: r.format,
-      error_message: r.error_message,
-      created_at: r.created_at,
-      completed_at: r.completed_at,
+      error_message: r.errorMessage,
+      created_at: r.createdAt,
+      completed_at: r.completedAt,
       voice: voice ? {
         id: voice.id,
         name: voice.name,
-        display_name: voice.display_name,
+        display_name: voice.displayName,
         provider: voice.provider,
         locale: voice.locale,
         country: voice.country,
-        avatar_url: voice.avatar_url,
+        avatar_url: voice.avatarUrl,
       } : null,
     };
   });
@@ -415,11 +420,12 @@ export async function queryTtsRecords(params: {
  * 根据记录 ID 获取单条 TTS 记录
  */
 export async function getTtsRecordById(recordId: number): Promise<TtsRecord> {
+  const db = getDb();
   const unifiedUser = await getUserOrAnonymous();
   const userId = unifiedUser.user_id;
 
-  const record = await prisma.tts_records.findUnique({
-    where: { id: recordId },
+  const record = await db.query.ttsRecords.findFirst({
+    where: eq(ttsRecords.id, recordId),
   });
 
   if (!record) {
@@ -427,30 +433,30 @@ export async function getTtsRecordById(recordId: number): Promise<TtsRecord> {
   }
 
   // 验证记录是否属于当前用户
-  if (record.user_id !== userId) {
+  if (record.userId !== userId) {
     throw new Error('无权访问此记录');
   }
 
   return {
     id: record.id,
-    user_id: record.user_id,
-    task_id: record.task_id,
+    user_id: record.userId,
+    task_id: record.taskId,
     text: record.text,
-    voice_name: record.voice_name,
+    voice_name: record.voiceName,
     language: record.language,
     speed: record.speed,
     pitch: record.pitch,
     volume: record.volume,
-    credits_cost: record.credits_cost,
-    character_count: record.character_count,
+    credits_cost: record.creditsCost,
+    character_count: record.characterCount,
     status: record.status,
     progress: record.progress,
-    audio_url: record.audio_url,
+    audio_url: record.audioUrl,
     duration: record.duration,
     format: record.format,
-    error_message: record.error_message,
-    created_at: record.created_at,
-    completed_at: record.completed_at,
+    error_message: record.errorMessage,
+    created_at: record.createdAt,
+    completed_at: record.completedAt,
   };
 }
 
@@ -458,6 +464,7 @@ export async function getTtsRecordById(recordId: number): Promise<TtsRecord> {
  * 删除单个 TTS 记录
  */
 export async function deleteTtsRecord(recordId: string): Promise<void> {
+  const db = getDb();
   const unifiedUser = await getUserOrAnonymous();
   const userId = unifiedUser.user_id;
 
@@ -467,8 +474,8 @@ export async function deleteTtsRecord(recordId: string): Promise<void> {
     throw new Error(`无效的记录 ID: ${recordId}`);
   }
 
-  const record = await prisma.tts_records.findUnique({
-    where: { id: numericId },
+  const record = await db.query.ttsRecords.findFirst({
+    where: eq(ttsRecords.id, numericId),
   });
 
   if (!record) {
@@ -476,14 +483,12 @@ export async function deleteTtsRecord(recordId: string): Promise<void> {
   }
 
   // 验证记录是否属于当前用户
-  if (record.user_id !== userId) {
+  if (record.userId !== userId) {
     throw new Error('无权删除此记录');
   }
 
   // 删除记录
-  await prisma.tts_records.delete({
-    where: { id: numericId },
-  });
+  await db.delete(ttsRecords).where(eq(ttsRecords.id, numericId));
 
   console.log(`TTS 记录已删除: ${recordId}`);
 }
@@ -492,6 +497,7 @@ export async function deleteTtsRecord(recordId: string): Promise<void> {
  * 批量删除 TTS 记录
  */
 export async function batchDeleteTtsRecords(recordIds: string[]): Promise<{ deleted: number; failed: number }> {
+  const db = getDb();
   const unifiedUser = await getUserOrAnonymous();
   const userId = unifiedUser.user_id;
 
@@ -506,18 +512,16 @@ export async function batchDeleteTtsRecords(recordIds: string[]): Promise<{ dele
         continue;
       }
 
-      const record = await prisma.tts_records.findUnique({
-        where: { id: numericId },
+      const record = await db.query.ttsRecords.findFirst({
+        where: eq(ttsRecords.id, numericId),
       });
 
-      if (!record || record.user_id !== userId) {
+      if (!record || record.userId !== userId) {
         failed++;
         continue;
       }
 
-      await prisma.tts_records.delete({
-        where: { id: numericId },
-      });
+      await db.delete(ttsRecords).where(eq(ttsRecords.id, numericId));
       deleted++;
     } catch {
       failed++;
@@ -532,11 +536,12 @@ export async function batchDeleteTtsRecords(recordIds: string[]): Promise<{ dele
  * 根据 task_id 获取 TTS 记录
  */
 export async function getTtsRecordByTaskId(taskId: string): Promise<TtsRecord> {
+  const db = getDb();
   const unifiedUser = await getUserOrAnonymous();
   const userId = unifiedUser.user_id;
 
-  const record = await prisma.tts_records.findUnique({
-    where: { task_id: taskId },
+  const record = await db.query.ttsRecords.findFirst({
+    where: eq(ttsRecords.taskId, taskId),
   });
 
   if (!record) {
@@ -544,29 +549,29 @@ export async function getTtsRecordByTaskId(taskId: string): Promise<TtsRecord> {
   }
 
   // 验证记录是否属于当前用户
-  if (record.user_id !== userId) {
+  if (record.userId !== userId) {
     throw new Error('无权访问此记录');
   }
 
   return {
     id: record.id,
-    user_id: record.user_id,
-    task_id: record.task_id,
+    user_id: record.userId,
+    task_id: record.taskId,
     text: record.text,
-    voice_name: record.voice_name,
+    voice_name: record.voiceName,
     language: record.language,
     speed: record.speed,
     pitch: record.pitch,
     volume: record.volume,
-    credits_cost: record.credits_cost,
-    character_count: record.character_count,
+    credits_cost: record.creditsCost,
+    character_count: record.characterCount,
     status: record.status,
     progress: record.progress,
-    audio_url: record.audio_url,
+    audio_url: record.audioUrl,
     duration: record.duration,
     format: record.format,
-    error_message: record.error_message,
-    created_at: record.created_at,
-    completed_at: record.completed_at,
+    error_message: record.errorMessage,
+    created_at: record.createdAt,
+    completed_at: record.completedAt,
   };
 }

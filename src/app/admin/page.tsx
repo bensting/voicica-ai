@@ -1,8 +1,6 @@
 /**
  * Admin Dashboard Overview
  */
-export const runtime = 'edge';
-
 export default function AdminPage() {
   return (
     <div className="bg-white rounded-lg shadow-sm border p-6">

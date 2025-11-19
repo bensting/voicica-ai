@@ -29,6 +29,7 @@ export async function checkAuthStatus(): Promise<{
 /**
  * @deprecated Auth.js 自动管理 cookie,无需手动设置
  */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export async function setAuthCookie(_token: string): Promise<{ success: boolean; error?: string }> {
   console.warn('setAuthCookie is deprecated - Auth.js manages sessions automatically');
   return { success: true };

@@ -318,7 +318,12 @@ export async function queryTtsRecords(params: {
   };
 
   if (status) {
-    where.status = status;
+    // 支持逗号分隔的多状态查询
+    if (status.includes(',')) {
+      where.status = { in: status.split(',') };
+    } else {
+      where.status = status;
+    }
   }
 
   if (start_date || end_date) {

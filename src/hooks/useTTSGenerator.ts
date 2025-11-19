@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
-import { generateTTS } from '@/lib/api/tts';
+import { createTtsTask } from '@/actions/tts';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAudioSettings } from '@/contexts/AudioSettingsContext';
 import type { Voice } from '@/types/voice';
@@ -130,10 +130,10 @@ export function useTTSGenerator(maxCharacters: number = 120) {
         audioSettings,
       });
 
-      // 调用后端 API 提交任务（使用 AudioSettings Context 中的音频参数）
-      const result = await generateTTS({
+      // 调用 Server Action 提交任务（使用 AudioSettings Context 中的音频参数）
+      const result = await createTtsTask({
         text,
-        voiceName: selectedVoice.name,
+        voice_name: selectedVoice.name,
         language: selectedVoice.locale,
         speed: audioSettings.speed,
         pitch: audioSettings.pitch,
@@ -149,23 +149,17 @@ export function useTTSGenerator(maxCharacters: number = 120) {
     } catch (err: unknown) {
       console.error('❌ [useTTSGenerator] 提交任务失败', err);
 
-      // 处理不同类型的错误
-      if (err && typeof err === 'object' && 'response' in err) {
-        const axiosError = err as { response?: { status?: number; data?: { detail?: string } } };
-        const status = axiosError.response?.status;
-        const detail = axiosError.response?.data?.detail;
+      // 处理 Server Action 错误
+      if (err instanceof Error) {
+        const message = err.message;
 
-        if (status === 400) {
-          setError(detail || t('studio.errors.invalidParams'));
-        } else if (status === 402 || (detail && detail.includes('Insufficient credits'))) {
+        if (message.includes('积分不足') || message.includes('Insufficient credits')) {
           setError(t('studio.errors.insufficientCredits'));
-        } else if (status === 401) {
+        } else if (message.includes('无权') || message.includes('unauthorized')) {
           setError(t('studio.errors.unauthorized'));
         } else {
-          setError(detail || t('studio.errors.taskSubmitFailed'));
+          setError(message || t('studio.errors.taskSubmitFailed'));
         }
-      } else if (err instanceof Error) {
-        setError(err.message || t('studio.errors.taskSubmitFailed'));
       } else {
         setError(t('studio.errors.taskSubmitFailed'));
       }

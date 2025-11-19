@@ -53,7 +53,7 @@ if errorlevel 1 (
 echo ✅ feature 已更新
 echo.
 
-REM 4. 显示 feature 比 main 多的提交
+REM 4. 显示差异
 echo [4/7] Feature → Main 差异：
 echo ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 git --no-pager log origin/main..HEAD --oneline --graph -20
@@ -67,7 +67,7 @@ if !DIFFCNT! EQU 0 (
     exit /b 0
 )
 
-REM 5. 确认
+REM 5. 确认合并
 set /p CONFIRM="⚠️ 确定要将 feature 合并到 main？(yes/no): "
 if /i not "!CONFIRM!"=="yes" (
     echo ❌ 已取消
@@ -76,7 +76,7 @@ if /i not "!CONFIRM!"=="yes" (
 )
 echo.
 
-REM 6. 切 main → 更新 → 合并 → 推送
+REM 6. 切 main → 更新 → 合并
 echo [5/7] 切换到 main...
 git checkout main || goto :error
 
@@ -97,7 +97,8 @@ if errorlevel 1 (
 echo ✅ 合并成功
 echo.
 
-echo [7/7] 推送到远程 main...
+REM 7. 推送 main
+echo [7/7] 推送 main 到远程...
 git push origin main || goto :error
 echo.
 

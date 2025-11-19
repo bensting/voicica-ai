@@ -25,7 +25,7 @@ function convertTtsRecordToGeneration(record: TtsRecord): Generation {
     audioUrl: record.audio_url || '',
     status: record.status as TaskStatus,
     progress: record.progress,
-    errorMessage: record.error_message,
+    errorMessage: record.error_message ?? undefined,
     voiceName: record.voice_name,
     voiceDisplayName: undefined,
     voiceAvatar: undefined,

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Download, Trash2, Play, Pause, ChevronRight } from 'lucide-react';
@@ -31,7 +31,34 @@ export default function RecentGenerationsList({
 }: RecentGenerationsListProps) {
   const { t } = useLanguage();
   const [playingId, setPlayingId] = useState<string | null>(null);
+  const [playbackProgress, setPlaybackProgress] = useState<number>(0);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  // Track playback progress
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    const updateProgress = () => {
+      if (audio.duration > 0) {
+        setPlaybackProgress((audio.currentTime / audio.duration) * 100);
+      }
+    };
+
+    const handleEnded = () => {
+      setPlayingId(null);
+      setPlaybackProgress(0);
+      audioRef.current = null;
+    };
+
+    audio.addEventListener('timeupdate', updateProgress);
+    audio.addEventListener('ended', handleEnded);
+
+    return () => {
+      audio.removeEventListener('timeupdate', updateProgress);
+      audio.removeEventListener('ended', handleEnded);
+    };
+  }, [playingId]);
 
   const handlePlay = (id: string, audioUrl: string) => {
     // 如果点击的是当前正在播放的音频
@@ -39,6 +66,7 @@ export default function RecentGenerationsList({
       audioRef.current.pause();
       audioRef.current = null;
       setPlayingId(null);
+      setPlaybackProgress(0);
       return;
     }
 
@@ -52,17 +80,14 @@ export default function RecentGenerationsList({
     const audio = new Audio(audioUrl);
     audioRef.current = audio;
     setPlayingId(id);
+    setPlaybackProgress(0);
 
     audio.play().catch((error) => {
       console.error('Failed to play audio:', error);
       setPlayingId(null);
+      setPlaybackProgress(0);
       audioRef.current = null;
     });
-
-    audio.onended = () => {
-      setPlayingId(null);
-      audioRef.current = null;
-    };
   };
 
   return (
@@ -189,10 +214,16 @@ export default function RecentGenerationsList({
                   {/* Progress Bar */}
                   <div className="w-32 h-1 bg-gray-200 rounded-full flex-shrink-0 overflow-hidden">
                     <div
-                      className={`h-full rounded-full transition-all duration-500 ${
-                        isProcessing ? 'bg-purple-600' : 'bg-purple-400'
+                      className={`h-full rounded-full transition-all ${
+                        isProcessing ? 'bg-purple-600 duration-500' : 'bg-purple-400 duration-100'
                       }`}
-                      style={{ width: isProcessing ? `${progress}%` : '100%' }}
+                      style={{
+                        width: isProcessing
+                          ? `${progress}%`
+                          : playingId === gen.id
+                            ? `${playbackProgress}%`
+                            : '0%'
+                      }}
                     />
                   </div>
 

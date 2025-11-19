@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { PricingPlan } from '@/types/subscription';
 import { useAuth } from '@/contexts/AuthContext';
-import { createStripeCheckout, createCreemCheckout } from '@/actions/payment';
+import { createStripeCheckout } from '@/actions/payment';
 import { BillingCycle } from '../hooks/usePricing';
 import { getCurrencySymbol, getCurrencyFromLocale } from '@/config/currency';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -120,50 +120,26 @@ export default function PaidPlanCard({ plan, isRecommended = false }: PaidPlanCa
     setIsLoading(true);
 
     try {
-      // 获取支付平台配置
-      const paymentProvider = process.env.NEXT_PUBLIC_PAYMENT_PROVIDER || 'creem';
-      console.log(`📡 [handleUpgrade] Payment provider: ${paymentProvider}`);
-
       // 获取回调 URL
       const successUrl = process.env.NEXT_PUBLIC_PAYMENT_SUCCESS_URL || `${window.location.origin}/payment/success`;
       const cancelUrl = process.env.NEXT_PUBLIC_PAYMENT_CANCEL_URL || `${window.location.origin}/pricing`;
       console.log('📡 [handleUpgrade] Success URL:', successUrl);
       console.log('📡 [handleUpgrade] Cancel URL:', cancelUrl);
 
-      let data: { checkout_url: string };
+      // 获取当前计划的货币
+      const currency = priceInfo?.currency?.toLowerCase() || 'usd';
+      console.log('📡 [handleUpgrade] Currency:', currency);
 
-      // 根据配置的支付平台调用不同的 API
-      if (paymentProvider === 'stripe') {
-        console.log('📡 [handleUpgrade] Calling Stripe API...');
+      const requestData = {
+        product_id: plan.product_id,
+        currency: currency,
+        success_url: successUrl,
+        cancel_url: cancelUrl,
+      };
+      console.log('📡 [handleUpgrade] Request data:', JSON.stringify(requestData, null, 2));
 
-        // 获取当前计划的货币
-        const currency = priceInfo?.currency?.toLowerCase() || 'usd';
-        console.log('📡 [handleUpgrade] Currency:', currency);
-
-        const requestData = {
-          product_id: plan.product_id,
-          currency: currency,
-          success_url: successUrl,
-          cancel_url: cancelUrl,
-        };
-        console.log('📡 [handleUpgrade] Request data:', JSON.stringify(requestData, null, 2));
-
-        data = await createStripeCheckout(requestData);
-
-        console.log('✅ [handleUpgrade] Stripe API response:', JSON.stringify(data, null, 2));
-      } else {
-        // 默认使用 Creem
-        console.log('📡 [handleUpgrade] Calling Creem API...');
-        const requestData = {
-          product_id: plan.product_id,
-          success_url: successUrl,
-        };
-        console.log('📡 [handleUpgrade] Request data:', JSON.stringify(requestData, null, 2));
-
-        data = await createCreemCheckout(requestData);
-
-        console.log('✅ [handleUpgrade] Creem API response:', JSON.stringify(data, null, 2));
-      }
+      const data = await createStripeCheckout(requestData);
+      console.log('✅ [handleUpgrade] Stripe API response:', JSON.stringify(data, null, 2));
 
       // 检查响应数据
       if (!data || typeof data !== 'object') {

@@ -1,8 +1,6 @@
 import { apiClient } from './client';
 import type {
   BillingPeriod,
-  CreemVerifyRequest,
-  CreemVerifyResponse,
   StripeVerifyRequest,
   StripeVerifyResponse,
   UserSubscriptionListResponse
@@ -24,27 +22,11 @@ export const createSubscription = (data: unknown) => {
 
 // 获取订阅计划列表
 export const getPlans = (params?: {
-  platform?: 'google' | 'apple' | 'stripe' | 'creem';
+  platform?: 'google' | 'apple' | 'stripe';
   product_type?: 'voice_cloning' | 'text_to_speech';
   active_only?: boolean;
 }) => {
   return apiClient.get('/api/v1/subscriptions/plans', { params });
-};
-
-// 创建 Creem Checkout 会话
-export const createCreemCheckout = (data: {
-  product_id: string;
-  success_url: string;
-}) => {
-  return apiClient.post<{ checkout_url: string; checkout_id: string }>(
-    '/api/v1/subscriptions/checkout/creem',
-    data
-  );
-};
-
-// 验证 Creem 支付 (POST 请求，包含签名验证)
-export const verifyCreemPayment = (data: CreemVerifyRequest) => {
-  return apiClient.post<CreemVerifyResponse>('/api/v1/subscriptions/verify/creem', data);
 };
 
 // 创建 Stripe Checkout 会话
@@ -83,7 +65,7 @@ export const getStripePrices = (productId: string) => {
 export const getMySubscriptions = (params?: {
   status?: 'TRIAL' | 'ACTIVE' | 'EXPIRED' | 'CANCELLED' | 'SUSPENDED';
   product_type?: 'text_to_speech' | 'voice_cloning';
-  platform?: 'stripe' | 'creem' | 'google_play' | 'apple';
+  platform?: 'stripe' | 'google_play' | 'apple';
 }): Promise<UserSubscriptionListResponse> => {
   return apiClient.get<UserSubscriptionListResponse>('/api/v1/subscriptions/my-subscriptions', { params });
 };

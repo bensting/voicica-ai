@@ -97,8 +97,11 @@ Authorization: Bearer <firebase-id-token>
 - `getSubscription()` - 获取订阅信息
 - `createSubscription(data)` - 创建订阅
 - `getPlans(params)` - 获取订阅计划列表
-- `createCreemCheckout(data)` - 创建 Creem Checkout 会话
-- `verifyCreemPayment(data)` - 验证 Creem 支付
+- `createStripeCheckout(data)` - 创建 Stripe Checkout 会话
+- `verifyStripePayment(data)` - 验证 Stripe 支付
+- `getStripePrices(productId)` - 获取 Stripe 产品价格
+- `getMySubscriptions(params)` - 获取用户订阅列表
+- `cancelSubscription(subscriptionId, data)` - 取消订阅
 
 ### TTS API (`@/lib/api/tts`)
 - `queryTtsRecords(params)` - 查询 TTS 记录

@@ -2,21 +2,13 @@
 
 import { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { verifyCreemPayment as verifyCreemPaymentAction, verifyStripePayment as verifyStripePaymentAction } from '@/actions/payment';
-import { SubscriptionStatus } from '@/types/subscription';
-import type { CreemVerifyResponse, StripeVerifyResponse } from '@/types/subscription';
-import { getCurrencySymbol } from '@/config/currency';
+import { verifyStripePayment as verifyStripePaymentAction } from '@/actions/payment';
+import type { StripeVerifyResponse } from '@/types/subscription';
 
 type PaymentStatus = 'verifying' | 'success' | 'pending' | 'failed';
-type PaymentProvider = 'creem' | 'stripe';
 
 interface PaymentDetails {
-  provider: PaymentProvider;
   orderId: string;
-  amount?: number;
-  currency?: string;
-  productId?: string;
-  verified?: boolean;
   subscriptionId?: string;
   message?: string;
 }
@@ -28,70 +20,6 @@ function PaymentSuccessContent() {
   const [paymentDetails, setPaymentDetails] = useState<PaymentDetails | null>(null);
   const [error, setError] = useState<string>('');
   const [countdown, setCountdown] = useState(5);
-
-  // 格式化金额
-  const formatAmount = (amount: number, currency: string) => {
-    const value = (amount / 100).toFixed(2);
-    return `${getCurrencySymbol(currency)}${value} ${currency.toUpperCase()}`;
-  };
-
-  // 检测支付提供商
-  const detectProvider = (params: URLSearchParams): PaymentProvider => {
-    // Stripe 使用 request_id
-    if (params.has('request_id')) {
-      return 'stripe';
-    }
-    // Creem 使用 signature
-    if (params.has('signature')) {
-      return 'creem';
-    }
-    // 默认返回 stripe
-    return 'stripe';
-  };
-
-  // 验证 Creem 支付
-  const verifyCreemPayment = async (params: URLSearchParams) => {
-    const signature = params.get('signature');
-    if (!signature) {
-      throw new Error('缺少 Creem 签名信息');
-    }
-
-    const verifyRequest = {
-      signature,
-      request_id: params.get('request_id') || undefined,
-      checkout_id: params.get('checkout_id') || undefined,
-      order_id: params.get('order_id') || undefined,
-      customer_id: params.get('customer_id') || undefined,
-      subscription_id: params.get('subscription_id') || undefined,
-      product_id: params.get('product_id') || undefined,
-    };
-
-    console.log('🔍 验证 Creem 支付:', { ...verifyRequest, signature: '***' });
-
-    const response: CreemVerifyResponse = await verifyCreemPaymentAction(verifyRequest);
-
-    console.log('✅ Creem 支付验证结果:', response);
-
-    const details: PaymentDetails = {
-      provider: 'creem',
-      orderId: response.checkout_id,
-      amount: response.amount,
-      currency: response.currency,
-      productId: response.product_id,
-      verified: response.verified,
-    };
-
-    setPaymentDetails(details);
-
-    if (response.status === SubscriptionStatus.ACTIVE) {
-      setStatus('success');
-    } else if (response.status === SubscriptionStatus.PENDING) {
-      setStatus('pending');
-    } else {
-      setStatus('failed');
-      setError(`支付状态异常: ${response.status}`);
-    }
-  };
 
   // 验证 Stripe 支付
   const verifyStripePayment = async (params: URLSearchParams) => {
@@ -118,7 +46,6 @@ function PaymentSuccessContent() {
     console.log('✅ Stripe 支付验证结果:', response);
 
     const details: PaymentDetails = {
-      provider: 'stripe',
       orderId: requestId,
       subscriptionId: response.subscription_id,
       message: response.message,
@@ -167,14 +94,7 @@ function PaymentSuccessContent() {
           }, 5000);
         });
 
-        const provider = detectProvider(searchParams);
-        console.log('📡 [支付验证] 检测到支付提供商:', provider);
-
-        if (provider === 'creem') {
-          await verifyCreemPayment(searchParams);
-        } else {
-          await verifyStripePayment(searchParams);
-        }
+        await verifyStripePayment(searchParams);
       } catch (err) {
         console.error('❌ 支付验证失败:', err);
         setStatus('failed');
@@ -264,59 +184,16 @@ function PaymentSuccessContent() {
               </h3>
               <div className="space-y-3">
                 <div className="flex justify-between items-center">
-                  <span className="text-gray-600">支付方式</span>
-                  <span className="text-gray-900 font-semibold uppercase">
-                    {paymentDetails.provider}
-                  </span>
-                </div>
-                <div className="flex justify-between items-center">
                   <span className="text-gray-600">订单号</span>
                   <span className="text-gray-900 font-mono text-sm">
                     {paymentDetails.orderId.slice(0, 20)}...
                   </span>
                 </div>
-                {paymentDetails.amount && paymentDetails.currency && (
-                  <div className="flex justify-between items-center">
-                    <span className="text-gray-600">支付金额</span>
-                    <span className="text-gray-900 font-bold text-lg">
-                      {formatAmount(paymentDetails.amount, paymentDetails.currency)}
-                    </span>
-                  </div>
-                )}
-                {paymentDetails.productId && (
-                  <div className="flex justify-between items-center">
-                    <span className="text-gray-600">产品 ID</span>
-                    <span className="text-gray-900 font-mono text-sm">
-                      {paymentDetails.productId}
-                    </span>
-                  </div>
-                )}
                 {paymentDetails.subscriptionId && (
                   <div className="flex justify-between items-center">
                     <span className="text-gray-600">订阅 ID</span>
                     <span className="text-gray-900 font-mono text-sm">
                       {paymentDetails.subscriptionId}
-                    </span>
-                  </div>
-                )}
-                {paymentDetails.provider === 'creem' && (
-                  <div className="flex justify-between items-center">
-                    <span className="text-gray-600">验证状态</span>
-                    <span className="inline-flex items-center gap-1">
-                      {paymentDetails.verified ? (
-                        <>
-                          <svg className="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                            <path
-                              fillRule="evenodd"
-                              d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                              clipRule="evenodd"
-                            />
-                          </svg>
-                          <span className="text-green-600 font-semibold">已验证</span>
-                        </>
-                      ) : (
-                        <span className="text-yellow-600 font-semibold">待验证</span>
-                      )}
                     </span>
                   </div>
                 )}
@@ -366,25 +243,11 @@ function PaymentSuccessContent() {
             {/* 订单信息 */}
             <div className="bg-gray-50 rounded-xl p-4 mb-6 text-left text-sm">
               <div className="flex justify-between mb-2">
-                <span className="text-gray-600">支付方式:</span>
-                <span className="text-gray-900 font-semibold uppercase">
-                  {paymentDetails.provider}
-                </span>
-              </div>
-              <div className="flex justify-between mb-2">
                 <span className="text-gray-600">订单号:</span>
                 <span className="text-gray-900 font-mono">
                   {paymentDetails.orderId.slice(0, 20)}...
                 </span>
               </div>
-              {paymentDetails.amount && paymentDetails.currency && (
-                <div className="flex justify-between">
-                  <span className="text-gray-600">金额:</span>
-                  <span className="text-gray-900 font-semibold">
-                    {formatAmount(paymentDetails.amount, paymentDetails.currency)}
-                  </span>
-                </div>
-              )}
             </div>
 
             <div className="space-y-3">

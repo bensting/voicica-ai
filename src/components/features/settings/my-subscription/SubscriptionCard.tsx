@@ -53,7 +53,6 @@ export default function SubscriptionCard({
   const getPlatformIcon = (platform: string) => {
     const icons: Record<string, string> = {
       stripe: '💳',
-      creem: '💰',
       google_play: '🤖',
       apple: '🍎',
     };

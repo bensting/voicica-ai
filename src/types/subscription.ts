@@ -3,7 +3,7 @@
  */
 
 // 平台类型
-export type Platform = 'google' | 'apple' | 'stripe' | 'creem';
+export type Platform = 'google' | 'apple' | 'stripe';
 
 // 订阅计划基础模型
 export interface SubscriptionPlan {
@@ -65,29 +65,6 @@ export type SubscriptionStatusType =
   | SubscriptionStatus.EXPIRED
   | SubscriptionStatus.CANCELLED
   | SubscriptionStatus.REFUNDED;
-
-// Creem 支付验证请求
-export interface CreemVerifyRequest {
-  request_id?: string;      // 请求 ID (可选)
-  checkout_id?: string;     // Checkout ID (可选)
-  order_id?: string;        // 订单 ID (可选)
-  customer_id?: string;     // 客户 ID (可选)
-  subscription_id?: string; // 订阅 ID (可选)
-  product_id?: string;      // 产品 ID (可选)
-  signature: string;        // Creem 签名 (必填)
-}
-
-// Creem 支付验证响应
-export interface CreemVerifyResponse {
-  checkout_id: string;
-  status: SubscriptionStatusType;
-  amount: number;          // 金额（分）
-  currency: string;        // 货币代码 (USD, EUR, CNY)
-  product_id: string;
-  created_at: string;
-  activated_at?: string;
-  verified: boolean;       // 签名验证结果
-}
 
 // Stripe 支付验证请求
 export interface StripeVerifyRequest {

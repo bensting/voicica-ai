@@ -9,8 +9,6 @@
 import { cookies } from 'next/headers';
 import { getCurrentUser } from '@/lib/auth';
 import type {
-  CreemVerifyRequest,
-  CreemVerifyResponse,
   StripeVerifyRequest,
   StripeVerifyResponse,
 } from '@/types/subscription';
@@ -21,11 +19,6 @@ export interface StripeCheckoutRequest {
   currency?: string;
   success_url: string;
   cancel_url: string;
-}
-
-export interface CreemCheckoutRequest {
-  product_id: string;
-  success_url: string;
 }
 
 export interface CheckoutResponse {
@@ -66,59 +59,6 @@ export async function createStripeCheckout(request: StripeCheckoutRequest): Prom
   if (!response.ok) {
     const error = await response.text();
     throw new Error(`Stripe checkout failed: ${error}`);
-  }
-
-  return response.json();
-}
-
-/**
- * 创建 Creem Checkout 会话
- */
-export async function createCreemCheckout(request: CreemCheckoutRequest): Promise<CheckoutResponse> {
-  // 验证用户已登录
-  await getCurrentUser();
-
-  // 从 cookie 获取 token
-  const cookieStore = await cookies();
-  const token = cookieStore.get('firebase-token')?.value;
-
-  if (!token) {
-    throw new Error('未登录');
-  }
-
-  const response = await fetch(`${getApiBaseUrl()}/api/v1/subscriptions/creem/checkout`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`,
-    },
-    body: JSON.stringify(request),
-  });
-
-  if (!response.ok) {
-    const error = await response.text();
-    throw new Error(`Creem checkout failed: ${error}`);
-  }
-
-  return response.json();
-}
-
-/**
- * 验证 Creem 支付
- */
-export async function verifyCreemPayment(request: CreemVerifyRequest): Promise<CreemVerifyResponse> {
-  // 支付验证可以不需要认证，因为是通过签名验证的
-  const response = await fetch(`${getApiBaseUrl()}/api/v1/subscriptions/creem/verify`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(request),
-  });
-
-  if (!response.ok) {
-    const error = await response.text();
-    throw new Error(`Creem payment verification failed: ${error}`);
   }
 
   return response.json();

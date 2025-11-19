@@ -34,8 +34,8 @@ export function usePricingByType({ productType }: UsePricingByTypeOptions) {
         setLoading(true);
         setError(null);
 
-        // 获取配置的支付平台
-        const paymentProvider = (process.env.NEXT_PUBLIC_PAYMENT_PROVIDER || 'creem') as 'creem' | 'stripe';
+        // 使用 Stripe 作为支付平台
+        const paymentProvider = 'stripe';
         console.log(`Fetching plans for payment provider: ${paymentProvider}, product type: ${productType}`);
 
         // 使用 product_type 参数获取对应类型的计划

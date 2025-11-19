@@ -28,8 +28,8 @@ export function usePricing() {
         setLoading(true);
         setError(null);
 
-        // 获取配置的支付平台
-        const paymentProvider = (process.env.NEXT_PUBLIC_PAYMENT_PROVIDER || 'creem') as 'creem' | 'stripe';
+        // 使用 Stripe 作为支付平台
+        const paymentProvider = 'stripe';
         console.log(`Fetching plans for payment provider: ${paymentProvider}`);
 
         // 使用 product_type 参数直接获取 text_to_speech 类型的计划

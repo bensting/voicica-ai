@@ -27,8 +27,8 @@ function convertTtsRecordToGeneration(record: TtsRecord): Generation {
     progress: record.progress,
     errorMessage: record.error_message ?? undefined,
     voiceName: record.voice_name,
-    voiceDisplayName: undefined,
-    voiceAvatar: undefined,
+    voiceDisplayName: record.voice?.display_name ?? undefined,
+    voiceAvatar: record.voice?.avatar_url ?? undefined,
   };
 }
 

@@ -95,7 +95,8 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session, eventId
     // 订阅模式：从 Stripe 获取周期结束时间
     try {
       const stripeSubscription = await stripe.subscriptions.retrieve(stripeSubscriptionId);
-      endDate = new Date(stripeSubscription.current_period_end * 1000);
+      const currentPeriodEnd = (stripeSubscription as unknown as { current_period_end: number }).current_period_end;
+      endDate = new Date(currentPeriodEnd * 1000);
       console.log(`📅 从 Stripe 获取订阅周期: ${now.toISOString()} - ${endDate.toISOString()}`);
     } catch (error) {
       console.error('⚠️ 获取 Stripe 订阅失败，使用 cycle_days 计算:', error);
@@ -144,6 +145,16 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session, eventId
     where: { user_id: userId },
     data: {
       credits: { increment: plan.credits_per_cycle },
+    },
+  });
+
+  // 记录积分变动历史
+  await prisma.credit_history.create({
+    data: {
+      user_id: userId,
+      amount: plan.credits_per_cycle,
+      description: `订阅购买: ${plan.plan_name}`,
+      task_id: `subscription_${subscription.id}`,
     },
   });
 
@@ -225,6 +236,16 @@ async function handleInvoicePaid(invoice: Stripe.Invoice, eventId: string) {
     },
   });
 
+  // 记录积分变动历史
+  await prisma.credit_history.create({
+    data: {
+      user_id: subscription.user_id,
+      amount: plan.credits_per_cycle,
+      description: `订阅续费: ${plan.plan_name}`,
+      task_id: `subscription_${subscription.id}_renewal`,
+    },
+  });
+
   console.log(`✅ 订阅已续费: ${subscription.id}, 积分: +${plan.credits_per_cycle}`);
 
   // 记录历史
@@ -283,16 +304,21 @@ async function handleSubscriptionUpdated(stripeSubscription: Stripe.Subscription
       break;
   }
 
+  // 获取 Stripe 的周期结束时间
+  const currentPeriodEnd = (stripeSubscription as unknown as { current_period_end: number }).current_period_end;
+
   await prisma.user_subscriptions.update({
     where: { id: subscription.id },
     data: {
       status: newStatus,
       cancel_at_period_end: stripeSubscription.cancel_at_period_end,
+      // 同步 Stripe 的周期结束时间
+      end_date: new Date(currentPeriodEnd * 1000),
       updated_at: new Date(),
     },
   });
 
-  console.log(`✅ 订阅状态已更新: ${oldStatus} -> ${newStatus}`);
+  console.log(`✅ 订阅状态已更新: ${oldStatus} -> ${newStatus}, end_date: ${new Date(currentPeriodEnd * 1000).toISOString()}`);
 
   // 记录历史
   await recordSubscriptionHistory({

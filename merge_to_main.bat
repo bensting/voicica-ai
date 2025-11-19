@@ -146,15 +146,7 @@ if defined EXISTING_PR (
 ) else (
     REM 创建新 PR
     echo 正在创建 PR...
-    gh pr create --base main --head feature --title "Merge feature into main" --body "## Summary^
-
-- 合并 feature 分支到 main^
-
-^
-
-## Changes^
-
-查看提交历史了解详细变更"
+    gh pr create --base main --head feature --title "Merge feature into main" --body "合并 feature 分支到 main。查看提交历史了解详细变更。"
 
     if errorlevel 1 (
         echo ❌ 创建 PR 失败

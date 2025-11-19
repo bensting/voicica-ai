@@ -33,10 +33,17 @@ export const authConfig: NextAuthConfig = {
       if (session.user) {
         session.user.id = user.id;
 
+        console.log('📝 [Session Callback] User ID:', user.id);
+
         // 获取应用用户信息
         const authUser = await prisma.user.findUnique({
           where: { id: user.id },
           include: { appUser: true },
+        });
+
+        console.log('📝 [Session Callback] Auth User:', {
+          hasAppUser: !!authUser?.appUser,
+          appUserId: authUser?.appUser?.user_id,
         });
 
         if (authUser?.appUser) {
@@ -98,7 +105,9 @@ export const authConfig: NextAuthConfig = {
 
   cookies: {
     sessionToken: {
-      name: `__Secure-next-auth.session-token`,
+      name: process.env.NODE_ENV === 'production'
+        ? `__Secure-next-auth.session-token`
+        : `next-auth.session-token`,
       options: {
         httpOnly: true,
         sameSite: 'lax',

@@ -6,6 +6,7 @@
 import prisma from '@/lib/prisma';
 import { getUserOrAnonymous } from '@/lib/auth';
 import { v4 as uuidv4 } from 'uuid';
+import { inngest } from '@/lib/inngest/client';
 
 // 类型定义
 export interface TtsRequest {
@@ -163,6 +164,25 @@ export async function createTtsTask(request: TtsRequest): Promise<TtsTaskStatus>
   });
 
   console.log(`TTS 任务已创建: ${taskId}, 用户: ${userId}, 积分: ${requiredCredits}`);
+
+  // 6. 触发 Inngest 处理任务
+  await inngest.send({
+    name: 'tts/task.created',
+    data: {
+      taskId,
+      userId,
+      text: request.text,
+      voiceName: request.voice_name,
+      language: request.language || undefined,
+      speed: request.speed || 1.0,
+      pitch: request.pitch || 1,
+      volume: request.volume || 1,
+      creditsCost: requiredCredits,
+      isAnonymous,
+    },
+  });
+
+  console.log(`📤 Inngest 事件已发送: ${taskId}`);
 
   return {
     task_id: taskId,

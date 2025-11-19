@@ -10,6 +10,9 @@ import prisma from './prisma';
 export const authConfig: NextAuthConfig = {
   adapter: PrismaAdapter(prisma),
 
+  // 启用调试模式查看详细日志
+  debug: process.env.NODE_ENV === 'development',
+
   providers: [
     Google({
       clientId: process.env.GOOGLE_CLIENT_ID!,
@@ -100,9 +103,12 @@ export const authConfig: NextAuthConfig = {
   session: {
     strategy: 'database',
     // Session 30 天过期
-    maxAge: 30 * 24 * 60 * 60, // 30 days
+    maxAge: 30 * 24 * 60 * 60, // 30 days in seconds
+    // 每次访问时更新 session 过期时间
+    updateAge: 24 * 60 * 60, // 24 hours
   },
 
+  // 配置 cookies 确保持久化
   cookies: {
     sessionToken: {
       name: process.env.NODE_ENV === 'production'
@@ -113,8 +119,6 @@ export const authConfig: NextAuthConfig = {
         sameSite: 'lax',
         path: '/',
         secure: process.env.NODE_ENV === 'production',
-        // 关键配置:设置 cookie 过期时间为 30 天,确保浏览器关闭后仍然有效
-        maxAge: 30 * 24 * 60 * 60, // 30 days in seconds
       },
     },
   },

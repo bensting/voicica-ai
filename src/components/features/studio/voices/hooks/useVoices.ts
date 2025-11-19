@@ -2,11 +2,10 @@ import { useState, useEffect, useCallback } from 'react';
 import { listVoices } from '@/actions/voice';
 import type { Voice } from '@/types/voice';
 import type { LocaleOption } from '@/types/config';
-import type { User } from 'firebase/auth';
 
 interface UseVoicesProps {
   locale: string;
-  user: User | null;
+  user: { id: string } | null;
   authLoading: boolean;
 }
 

@@ -102,7 +102,7 @@ export default function PaidPlanCard({ plan, isRecommended = false }: PaidPlanCa
   const handleUpgrade = async () => {
     console.log('🔵 [handleUpgrade] Start - Plan:', plan.plan_name);
     console.log('🔵 [handleUpgrade] Product ID:', plan.product_id);
-    console.log('🔵 [handleUpgrade] User:', user?.uid || 'Not logged in');
+    console.log('🔵 [handleUpgrade] User:', user?.id || 'Not logged in');
 
     // 检查是否有 product_id
     if (!plan.product_id) {

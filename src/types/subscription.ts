@@ -7,10 +7,11 @@ export type Platform = 'google' | 'apple' | 'stripe' | 'creem';
 
 // 订阅计划基础模型
 export interface SubscriptionPlan {
-  id?: string;
-  platform: Platform;
+  id: number | string;
+  platform: string;
+  product_type?: string;
   product_id: string;
-  base_plan_id?: string;
+  base_plan_id?: string | null;
   plan_name: string; // 计划名称 (Free, Basic, Premium, Plus)
   payment_link?: string;
   display_name: Record<string, string>;
@@ -24,7 +25,9 @@ export interface SubscriptionPlan {
   // 价格字段（后端直接返回，key 为货币代码，value 为价格）
   price?: Record<string, number>; // 例如: { "CNY": 34, "TWD": 149, "USD": 4.99 }
   discounted_price?: Record<string, number>; // 折扣价格
-  billing_period?: BillingPeriod; // 计费周期
+  billing_period?: string; // 计费周期
+  enable_first_month_coupon?: boolean;
+  first_month_coupon_id?: string | null;
 }
 
 // 计费周期枚举（与后端保持一致）
@@ -105,24 +108,24 @@ export interface UserSubscription {
   user_id: string;
   subscription_plan_id?: string;
   product_id: string;
-  product_type: 'text_to_speech' | 'voice_cloning';
-  platform: Platform;
-  status: 'TRIAL' | 'ACTIVE' | 'EXPIRED' | 'CANCELLED' | 'SUSPENDED';
+  product_type: string | null;
+  platform: string | null;
+  status: string;
   start_date: string;
-  end_date?: string;
+  end_date: string;
   credits_allocated: number;
   amount?: number;
   currency?: string;
   auto_renew: boolean;
   created_at: string;
-  display_name?: Record<string, string>; // 多语言显示名称 { "en": "Basic Plan", "zh-CN": "基础套餐" }
+  display_name?: Record<string, string> | null; // 多语言显示名称 { "en": "Basic Plan", "zh-CN": "基础套餐" }
   is_active: boolean;
-  days_remaining?: number;
+  days_remaining?: number | null;
 }
 
 // 用户订阅列表响应
 export interface UserSubscriptionListResponse {
   subscriptions: UserSubscription[];
   total: number;
-  active_subscription?: UserSubscription;
+  active_subscription: UserSubscription | null;
 }

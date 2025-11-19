@@ -1,6 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { voiceAPI } from '@/lib/api';
-import type { Voice } from '@/types/voice';
+import { listVoices, type Voice } from '@/actions/voice';
 
 interface UseVoicesOptions {
   /** 语言区域代码 */
@@ -44,20 +43,17 @@ export function useVoices({ locale, enabled = true }: UseVoicesOptions = {}): Us
       setIsLoading(true);
       setError(null);
 
-      const params: Record<string, unknown> = {
+      const params = {
         is_active: true,
-        limit: 3, // 只获取 3 条数据用于 TTS 演示
+        page_size: 3, // 只获取 3 条数据用于 TTS 演示
+        locale: locale,
       };
 
-      if (locale) {
-        params.locale = locale;
-      }
-
       console.log('🎤 获取语音列表:', params);
-      const response = await voiceAPI.getVoices(params);
+      const response = await listVoices(params);
 
-      // API 返回的数据结构是 { voices: Voice[], total, page, ... }
-      const voiceList = response.voices || [];
+      // Server Action 返回的数据结构是 { voices: Voice[], total, page, ... }
+      const voiceList = (response.voices || []) as Voice[];
 
       setVoices(voiceList);
       console.log(`✅ 成功加载 ${voiceList.length} 个语音`, voiceList);

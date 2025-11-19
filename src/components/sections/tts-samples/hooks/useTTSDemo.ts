@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect } from 'react';
-import { configAPI } from '@/lib/api';
+import { getTtsSamples } from '@/actions/config';
 import { LocaleOption } from '@/types/config';
 import type { Voice } from '@/types/voice';
 import { mapLocaleCodesToOptions } from '@/utils/localeMapper';
@@ -61,7 +61,7 @@ export function useTTSDemo() {
     const loadConfig = async () => {
       try {
         setIsLoadingConfig(true);
-        const config = await configAPI.getTtsSamples();
+        const config = await getTtsSamples();
 
         // 转换语言代码为选项
         const localeOptions = mapLocaleCodesToOptions(config.sample_locales);

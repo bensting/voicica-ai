@@ -2,12 +2,9 @@
 
 import { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { subscriptionAPI } from '@/lib/api';
-import {
-  SubscriptionStatus,
-  type CreemVerifyResponse,
-  type StripeVerifyResponse,
-} from '@/types/subscription';
+import { verifyCreemPayment as verifyCreemPaymentAction, verifyStripePayment as verifyStripePaymentAction } from '@/actions/payment';
+import type { CreemVerifyResponse, StripeVerifyResponse } from '@/actions/payment';
+import { SubscriptionStatus } from '@/types/subscription';
 import { getCurrencySymbol } from '@/config/currency';
 
 type PaymentStatus = 'verifying' | 'success' | 'pending' | 'failed';
@@ -71,7 +68,7 @@ function PaymentSuccessContent() {
 
     console.log('🔍 验证 Creem 支付:', { ...verifyRequest, signature: '***' });
 
-    const response: CreemVerifyResponse = await subscriptionAPI.verifyCreemPayment(verifyRequest);
+    const response: CreemVerifyResponse = await verifyCreemPaymentAction(verifyRequest);
 
     console.log('✅ Creem 支付验证结果:', response);
 
@@ -114,7 +111,7 @@ function PaymentSuccessContent() {
 
     console.log('🔍 [Stripe验证] 请求参数:', { request_id: requestId });
 
-    const response: StripeVerifyResponse = await subscriptionAPI.verifyStripePayment({
+    const response: StripeVerifyResponse = await verifyStripePaymentAction({
       request_id: requestId,
     });
 

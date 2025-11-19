@@ -27,6 +27,33 @@ export interface Voice {
 }
 
 /**
+ * 语音列表响应
+ */
+export interface VoiceListResponse {
+  voices: Voice[];
+  total: number;
+  page: number;
+  page_size: number;
+  total_pages: number;
+}
+
+/**
+ * 语音过滤参数
+ */
+export interface VoiceFilters {
+  provider?: string;
+  country?: string;
+  language?: string;
+  locale?: string;
+  role?: string;
+  gender?: string;
+  tag?: string;
+  is_active?: boolean;
+  page?: number;
+  page_size?: number;
+}
+
+/**
  * 获取本地化的语音名称
  *
  * 注意：display_name 现在是单一字符串，不再需要语言代码

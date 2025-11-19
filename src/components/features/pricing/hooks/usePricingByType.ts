@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import { subscriptionAPI } from '@/lib/api';
+import { getSubscriptionPlans } from '@/actions/subscription';
 import { PricingPlan } from '@/types/subscription';
 import { useLanguage } from '@/contexts/LanguageContext';
 
@@ -39,11 +39,11 @@ export function usePricingByType({ productType }: UsePricingByTypeOptions) {
         console.log(`Fetching plans for payment provider: ${paymentProvider}, product type: ${productType}`);
 
         // 使用 product_type 参数获取对应类型的计划
-        const data = await subscriptionAPI.getPlans({
+        const data = await getSubscriptionPlans({
           platform: paymentProvider,
           product_type: productType,
           active_only: true
-        }) as PricingPlan[];
+        }) as unknown as PricingPlan[];
 
         console.log(`Fetched ${productType} plans:`, data);
 

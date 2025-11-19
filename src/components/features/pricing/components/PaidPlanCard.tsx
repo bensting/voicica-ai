@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { PricingPlan } from '@/types/subscription';
 import { useAuth } from '@/contexts/AuthContext';
-import { subscriptionAPI } from '@/lib/api';
+import { createStripeCheckout, createCreemCheckout } from '@/actions/payment';
 import { BillingCycle } from '../hooks/usePricing';
 import { getCurrencySymbol, getCurrencyFromLocale } from '@/config/currency';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -148,7 +148,7 @@ export default function PaidPlanCard({ plan, isRecommended = false }: PaidPlanCa
         };
         console.log('📡 [handleUpgrade] Request data:', JSON.stringify(requestData, null, 2));
 
-        data = await subscriptionAPI.createStripeCheckout(requestData);
+        data = await createStripeCheckout(requestData);
 
         console.log('✅ [handleUpgrade] Stripe API response:', JSON.stringify(data, null, 2));
       } else {
@@ -160,7 +160,7 @@ export default function PaidPlanCard({ plan, isRecommended = false }: PaidPlanCa
         };
         console.log('📡 [handleUpgrade] Request data:', JSON.stringify(requestData, null, 2));
 
-        data = await subscriptionAPI.createCreemCheckout(requestData);
+        data = await createCreemCheckout(requestData);
 
         console.log('✅ [handleUpgrade] Creem API response:', JSON.stringify(data, null, 2));
       }

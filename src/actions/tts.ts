@@ -437,3 +437,120 @@ export async function getTtsRecordById(recordId: number): Promise<TtsRecord> {
     completed_at: record.completed_at,
   };
 }
+
+/**
+ * 删除单个 TTS 记录
+ */
+export async function deleteTtsRecord(recordId: string): Promise<void> {
+  const unifiedUser = await getUserOrAnonymous();
+  const userId = unifiedUser.user_id;
+
+  // 将 string ID 转换为 number（数据库使用 number ID）
+  const numericId = parseInt(recordId, 10);
+  if (isNaN(numericId)) {
+    throw new Error(`无效的记录 ID: ${recordId}`);
+  }
+
+  const record = await prisma.tts_records.findUnique({
+    where: { id: numericId },
+  });
+
+  if (!record) {
+    throw new Error(`记录不存在: ${recordId}`);
+  }
+
+  // 验证记录是否属于当前用户
+  if (record.user_id !== userId) {
+    throw new Error('无权删除此记录');
+  }
+
+  // 删除记录
+  await prisma.tts_records.delete({
+    where: { id: numericId },
+  });
+
+  console.log(`TTS 记录已删除: ${recordId}`);
+}
+
+/**
+ * 批量删除 TTS 记录
+ */
+export async function batchDeleteTtsRecords(recordIds: string[]): Promise<{ deleted: number; failed: number }> {
+  const unifiedUser = await getUserOrAnonymous();
+  const userId = unifiedUser.user_id;
+
+  let deleted = 0;
+  let failed = 0;
+
+  for (const recordId of recordIds) {
+    try {
+      const numericId = parseInt(recordId, 10);
+      if (isNaN(numericId)) {
+        failed++;
+        continue;
+      }
+
+      const record = await prisma.tts_records.findUnique({
+        where: { id: numericId },
+      });
+
+      if (!record || record.user_id !== userId) {
+        failed++;
+        continue;
+      }
+
+      await prisma.tts_records.delete({
+        where: { id: numericId },
+      });
+      deleted++;
+    } catch {
+      failed++;
+    }
+  }
+
+  console.log(`批量删除完成: 成功 ${deleted}, 失败 ${failed}`);
+  return { deleted, failed };
+}
+
+/**
+ * 根据 task_id 获取 TTS 记录
+ */
+export async function getTtsRecordByTaskId(taskId: string): Promise<TtsRecord> {
+  const unifiedUser = await getUserOrAnonymous();
+  const userId = unifiedUser.user_id;
+
+  const record = await prisma.tts_records.findUnique({
+    where: { task_id: taskId },
+  });
+
+  if (!record) {
+    throw new Error(`记录不存在: ${taskId}`);
+  }
+
+  // 验证记录是否属于当前用户
+  if (record.user_id !== userId) {
+    throw new Error('无权访问此记录');
+  }
+
+  return {
+    id: record.id,
+    user_id: record.user_id,
+    task_id: record.task_id,
+    text: record.text,
+    voice_name: record.voice_name,
+    language: record.language,
+    speed: record.speed,
+    pitch: record.pitch,
+    volume: record.volume,
+    credits_cost: record.credits_cost,
+    character_count: record.character_count,
+    status: record.status,
+    progress: record.progress,
+    audio_url: record.audio_url,
+    duration: record.duration,
+    format: record.format,
+    error_message: record.error_message,
+    created_at: record.created_at,
+    completed_at: record.completed_at,
+  };
+}

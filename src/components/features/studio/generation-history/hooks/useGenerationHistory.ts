@@ -3,12 +3,47 @@ import {
   queryTtsRecords,
   deleteTtsRecord,
   batchDeleteTtsRecords,
-  downloadAudio,
-  convertTtsRecordToGeneration,
-  getTtsRecordById
-} from '@/lib/api/tts';
+  getTtsRecordById,
+} from '@/actions/tts';
+import type { TtsRecord } from '@/actions/tts';
 import { TaskStatus } from '@/types/tts';
 import type { Generation } from '@/types/tts';
+
+// 格式化时间戳
+function formatTimestamp(date: Date): string {
+  return new Date(date).toLocaleString();
+}
+
+// 将 TtsRecord 转换为 Generation 格式
+function convertTtsRecordToGeneration(record: TtsRecord): Generation {
+  return {
+    id: String(record.id),
+    text: record.text,
+    timestamp: formatTimestamp(record.created_at),
+    duration: record.duration || 0,
+    characterCount: record.character_count,
+    audioUrl: record.audio_url || '',
+    status: record.status as TaskStatus,
+    progress: record.progress,
+    errorMessage: record.error_message,
+    voiceName: record.voice_name,
+    voiceDisplayName: undefined,
+    voiceAvatar: undefined,
+  };
+}
+
+// 下载音频文件
+async function downloadAudio(audioUrl: string, filename: string): Promise<void> {
+  const link = document.createElement('a');
+  link.href = audioUrl;
+  link.download = filename;
+  link.style.display = 'none';
+  document.body.appendChild(link);
+  link.click();
+  setTimeout(() => {
+    document.body.removeChild(link);
+  }, 100);
+}
 
 interface UseGenerationHistoryProps {
   user: { uid: string } | null;
@@ -114,10 +149,18 @@ export function useGenerationHistory({
       // or selectedStatus if user changed the filter in UI
       const actualStatus = selectedStatus !== null ? selectedStatus : statusFilter.current;
 
+      // Convert status to string format for API
+      let statusParam: string | undefined;
+      if (Array.isArray(actualStatus)) {
+        statusParam = actualStatus.join(',');
+      } else if (actualStatus) {
+        statusParam = actualStatus;
+      }
+
       const response = await queryTtsRecords({
-        status: actualStatus || undefined,
-        start_date: startDate || undefined,
-        end_date: endDate || undefined,
+        status: statusParam,
+        start_date: startDate ? new Date(startDate) : undefined,
+        end_date: endDate ? new Date(endDate) : undefined,
         page: currentPage,
         page_size: pageSize,
       });
@@ -174,7 +217,14 @@ export function useGenerationHistory({
     try {
       console.log(`🔄 [useGenerationHistory] Polling record ${recordId}`);
 
-      const record = await getTtsRecordById(recordId);
+      const numericId = parseInt(recordId, 10);
+      if (isNaN(numericId)) {
+        console.error(`❌ [useGenerationHistory] Invalid record ID: ${recordId}`);
+        clearRecordPolling(recordId);
+        return;
+      }
+
+      const record = await getTtsRecordById(numericId);
       const updatedGeneration = convertTtsRecordToGeneration(record);
 
       // Reset retry count on successful fetch
@@ -301,14 +351,14 @@ export function useGenerationHistory({
     try {
       // Fetch all records that match current filters
       const response = await queryTtsRecords({
-        status: selectedStatus || undefined,
-        start_date: startDate || undefined,
-        end_date: endDate || undefined,
+        status: selectedStatus ?? undefined,
+        start_date: startDate ? new Date(startDate) : undefined,
+        end_date: endDate ? new Date(endDate) : undefined,
         page: 1,
         page_size: 10000,
       });
 
-      const allMatchingIds = response.records.map(record => record.id);
+      const allMatchingIds = response.records.map(record => String(record.id));
 
       if (allMatchingIds.length === 0) {
         window.alert('No records to delete.');

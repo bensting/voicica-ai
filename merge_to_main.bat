@@ -1,79 +1,78 @@
 @echo off
-chcp 65001 >nul
 setlocal enabledelayedexpansion
 
 echo ========================================
-echo   Feature - Main 自动合并脚本
+echo   Feature to Main - Auto Merge Script
 echo ========================================
 echo.
 
-REM 保存目录
+REM Save directory
 set "SCRIPT_DIR=%~dp0"
 cd /d "%SCRIPT_DIR%"
 
-REM 确保工作区干净
-echo [1/5] 检查工作区状态...
+REM Check working directory is clean
+echo [1/5] Checking workspace...
 for /f %%i in ('git status --porcelain ^| find /c /v ""') do set CHANGES=%%i
 if !CHANGES! GTR 0 (
-    echo [X] 工作区有未提交修改
+    echo [X] Workspace has uncommitted changes
     git status --short
     pause
     exit /b 1
 )
-echo [OK] 工作区干净
+echo [OK] Workspace is clean
 echo.
 
-REM 拉取最新代码
-echo [2/5] 更新远程分支...
+REM Fetch remote
+echo [2/5] Fetching remote...
 git fetch origin
 if errorlevel 1 (
-    echo [X] 获取远程失败
+    echo [X] Failed to fetch remote
     pause
     exit /b 1
 )
-echo [OK] 远程已更新
+echo [OK] Remote updated
 echo.
 
-REM 切换到 main
-echo [3/5] 切换到 main...
+REM Switch to main
+echo [3/5] Switching to main...
 git checkout main
 if errorlevel 1 (
-    echo [X] 切换分支失败
+    echo [X] Failed to checkout main
     pause
     exit /b 1
 )
 git pull origin main
 if errorlevel 1 (
-    echo [X] 拉取 main 失败
+    echo [X] Failed to pull main
     pause
     exit /b 1
 )
-echo [OK] main 已更新
+echo [OK] Main branch updated
 echo.
 
-REM 合并 feature 分支
-echo [4/5] 合并 feature - main...
+REM Merge feature branch
+echo [4/5] Merging feature into main...
 git merge feature --no-edit
 if errorlevel 1 (
-    echo [X] 合并冲突，请手动解决
+    echo [X] Merge conflict - please resolve manually
     pause
     exit /b 1
 )
-echo [OK] 合并成功
+echo [OK] Merge successful
 echo.
 
-REM 推送 main
-echo [5/5] 推送 main 到远程...
+REM Push main
+echo [5/5] Pushing main to remote...
 git push origin main
 if errorlevel 1 (
-    echo [X] 推送失败
+    echo [X] Failed to push
     pause
     exit /b 1
 )
-echo [OK] 推送成功
+echo [OK] Push successful
 echo.
 
 echo ========================================
-echo [OK] 完成！main 已更新
+echo [OK] Done! Main branch has been updated
 echo ========================================
 pause

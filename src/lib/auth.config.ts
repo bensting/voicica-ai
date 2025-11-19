@@ -92,5 +92,21 @@ export const authConfig: NextAuthConfig = {
 
   session: {
     strategy: 'database',
+    // Session 30 天过期
+    maxAge: 30 * 24 * 60 * 60, // 30 days
+  },
+
+  cookies: {
+    sessionToken: {
+      name: `__Secure-next-auth.session-token`,
+      options: {
+        httpOnly: true,
+        sameSite: 'lax',
+        path: '/',
+        secure: process.env.NODE_ENV === 'production',
+        // 关键配置:设置 cookie 过期时间为 30 天,确保浏览器关闭后仍然有效
+        maxAge: 30 * 24 * 60 * 60, // 30 days in seconds
+      },
+    },
   },
 };

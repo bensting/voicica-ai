@@ -23,7 +23,7 @@ export const authConfig: NextAuthConfig = {
 
   callbacks: {
     // 登录验证
-    async signIn({ user }) {
+    async signIn() {
       // 允许所有登录
       return true;
     },
@@ -41,8 +41,9 @@ export const authConfig: NextAuthConfig = {
 
         if (authUser?.appUser) {
           // 添加应用用户信息到 session
-          (session.user as any).appUserId = authUser.appUser.user_id;
-          (session.user as any).credits = authUser.appUser.credits;
+          const extendedUser = session.user as { appUserId?: string; credits?: number };
+          extendedUser.appUserId = authUser.appUser.user_id;
+          extendedUser.credits = authUser.appUser.credits;
         }
       }
       return session;

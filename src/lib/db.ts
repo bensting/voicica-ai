@@ -5,6 +5,11 @@ import { getRequestContext } from '@cloudflare/next-on-pages';
 import { drizzle } from 'drizzle-orm/d1';
 import * as schema from '@/db/schema';
 
+// Define the environment type with D1 binding
+interface Env extends Record<string, unknown> {
+  DB: D1Database;
+}
+
 export type DbClient = ReturnType<typeof getDb>;
 
 /**
@@ -12,8 +17,8 @@ export type DbClient = ReturnType<typeof getDb>;
  * Use this in API routes and server actions
  */
 export function getDb() {
-  const { env } = getRequestContext();
-  return drizzle(env.DB, { schema });
+  const { env } = getRequestContext<Env>();
+  return drizzle(env.DB as D1Database, { schema });
 }
 
 /**

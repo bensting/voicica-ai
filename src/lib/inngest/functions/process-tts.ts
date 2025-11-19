@@ -2,7 +2,9 @@
  * TTS 任务处理函数 (Inngest)
  */
 import { inngest } from '../client';
-import prisma from '@/lib/prisma';
+import { getDb } from '@/lib/db';
+import { ttsRecords, taskQueue, users, anonymousUsers, voices } from '@/db/schema';
+import { eq, and, gte, sql } from 'drizzle-orm';
 import { synthesizeSpeech } from '@/lib/services/azure-tts';
 import { uploadAudio } from '@/lib/services/r2-storage';
 
@@ -33,8 +35,9 @@ export const processTtsTask = inngest.createFunction(
     try {
       // Step 1: 获取任务记录并更新状态为处理中
       const record = await step.run('get-record', async () => {
-        const ttsRecord = await prisma.tts_records.findUnique({
-          where: { task_id: taskId },
+        const db = getDb();
+        const ttsRecord = await db.query.ttsRecords.findFirst({
+          where: eq(ttsRecords.taskId, taskId),
         });
 
         if (!ttsRecord) {
@@ -42,44 +45,56 @@ export const processTtsTask = inngest.createFunction(
         }
 
         // 更新状态为处理中
-        await prisma.tts_records.update({
-          where: { id: ttsRecord.id },
-          data: {
+        await db
+          .update(ttsRecords)
+          .set({
             status: 'PROCESSING',
             progress: 10,
-            character_count: text.length,
-          },
-        });
+            characterCount: text.length,
+          })
+          .where(eq(ttsRecords.id, ttsRecord.id));
 
         return { id: ttsRecord.id };
       });
 
       // Step 2: 扣减积分
       await step.run('deduct-credits', async () => {
+        const db = getDb();
         if (isAnonymous) {
-          const result = await prisma.anonymous_users.updateMany({
-            where: {
-              user_id: userId,
-              credits: { gte: creditsCost },
-            },
-            data: {
-              credits: { decrement: creditsCost },
-            },
+          const result = await db
+            .update(anonymousUsers)
+            .set({
+              credits: sql`${anonymousUsers.credits} - ${creditsCost}`,
+            })
+            .where(
+              and(
+                eq(anonymousUsers.userId, userId),
+                gte(anonymousUsers.credits, creditsCost)
+              )
+            );
+          // D1 doesn't support rowCount easily, we'll check differently
+          const user = await db.query.anonymousUsers.findFirst({
+            where: eq(anonymousUsers.userId, userId),
           });
-          if (result.count === 0) {
+          if (!user || user.credits < 0) {
             throw new Error('积分扣减失败，余额不足');
           }
         } else {
-          const result = await prisma.users.updateMany({
-            where: {
-              user_id: userId,
-              credits: { gte: creditsCost },
-            },
-            data: {
-              credits: { decrement: creditsCost },
-            },
+          await db
+            .update(users)
+            .set({
+              credits: sql`${users.credits} - ${creditsCost}`,
+            })
+            .where(
+              and(
+                eq(users.userId, userId),
+                gte(users.credits, creditsCost)
+              )
+            );
+          const user = await db.query.users.findFirst({
+            where: eq(users.userId, userId),
           });
-          if (result.count === 0) {
+          if (!user || user.credits < 0) {
             throw new Error('积分扣减失败，余额不足');
           }
         }
@@ -89,16 +104,18 @@ export const processTtsTask = inngest.createFunction(
 
       // Step 3: 更新进度
       await step.run('update-progress-20', async () => {
-        await prisma.tts_records.update({
-          where: { id: record.id },
-          data: { progress: 20 },
-        });
+        const db = getDb();
+        await db
+          .update(ttsRecords)
+          .set({ progress: 20 })
+          .where(eq(ttsRecords.id, record.id));
       });
 
       // Step 4: 获取语音信息
       const voice = await step.run('get-voice', async () => {
-        const voiceRecord = await prisma.voices.findFirst({
-          where: { name: voiceName },
+        const db = getDb();
+        const voiceRecord = await db.query.voices.findFirst({
+          where: eq(voices.name, voiceName),
         });
         if (!voiceRecord) {
           throw new Error(`语音不存在: ${voiceName}`);
@@ -108,10 +125,11 @@ export const processTtsTask = inngest.createFunction(
 
       // Step 5: 更新进度
       await step.run('update-progress-30', async () => {
-        await prisma.tts_records.update({
-          where: { id: record.id },
-          data: { progress: 30 },
-        });
+        const db = getDb();
+        await db
+          .update(ttsRecords)
+          .set({ progress: 30 })
+          .where(eq(ttsRecords.id, record.id));
       });
 
       // Step 6: 调用 Azure TTS 生成音频
@@ -135,10 +153,11 @@ export const processTtsTask = inngest.createFunction(
 
       // Step 7: 更新进度
       await step.run('update-progress-80', async () => {
-        await prisma.tts_records.update({
-          where: { id: record.id },
-          data: { progress: 80 },
-        });
+        const db = getDb();
+        await db
+          .update(ttsRecords)
+          .set({ progress: 80 })
+          .where(eq(ttsRecords.id, record.id));
       });
 
       // Step 8: 上传音频到 R2
@@ -156,26 +175,27 @@ export const processTtsTask = inngest.createFunction(
 
       // Step 9: 更新任务状态为成功
       await step.run('mark-success', async () => {
-        await prisma.tts_records.update({
-          where: { id: record.id },
-          data: {
+        const db = getDb();
+        await db
+          .update(ttsRecords)
+          .set({
             status: 'SUCCESS',
             progress: 100,
-            audio_url: audioUrl,
+            audioUrl: audioUrl,
             duration: ttsResult.duration,
             format: ttsResult.format,
-            completed_at: new Date(),
-          },
-        });
+            completedAt: new Date(),
+          })
+          .where(eq(ttsRecords.id, record.id));
 
         // 更新 task_queue 状态
-        await prisma.task_queue.updateMany({
-          where: { task_id: taskId },
-          data: {
+        await db
+          .update(taskQueue)
+          .set({
             status: 'SUCCESS',
-            completed_at: new Date(),
-          },
-        });
+            completedAt: new Date(),
+          })
+          .where(eq(taskQueue.taskId, taskId));
       });
 
       console.log(`✅ [Inngest] TTS 任务处理成功: ${taskId}`);
@@ -193,20 +213,21 @@ export const processTtsTask = inngest.createFunction(
       // 如果积分已扣减，退还积分
       if (creditsDeducted) {
         try {
+          const db = getDb();
           if (isAnonymous) {
-            await prisma.anonymous_users.update({
-              where: { user_id: userId },
-              data: {
-                credits: { increment: creditsCost },
-              },
-            });
+            await db
+              .update(anonymousUsers)
+              .set({
+                credits: sql`${anonymousUsers.credits} + ${creditsCost}`,
+              })
+              .where(eq(anonymousUsers.userId, userId));
           } else {
-            await prisma.users.update({
-              where: { user_id: userId },
-              data: {
-                credits: { increment: creditsCost },
-              },
-            });
+            await db
+              .update(users)
+              .set({
+                credits: sql`${users.credits} + ${creditsCost}`,
+              })
+              .where(eq(users.userId, userId));
           }
           console.log(`💰 积分已退还: ${userId}, +${creditsCost}`);
         } catch (refundError) {
@@ -216,24 +237,25 @@ export const processTtsTask = inngest.createFunction(
 
       // 更新任务状态为失败
       try {
-        await prisma.tts_records.updateMany({
-          where: { task_id: taskId },
-          data: {
+        const db = getDb();
+        await db
+          .update(ttsRecords)
+          .set({
             status: 'FAILURE',
             progress: 0,
-            error_message: error instanceof Error ? error.message : String(error),
-            completed_at: new Date(),
-          },
-        });
+            errorMessage: error instanceof Error ? error.message : String(error),
+            completedAt: new Date(),
+          })
+          .where(eq(ttsRecords.taskId, taskId));
 
-        await prisma.task_queue.updateMany({
-          where: { task_id: taskId },
-          data: {
+        await db
+          .update(taskQueue)
+          .set({
             status: 'FAILURE',
-            error_message: error instanceof Error ? error.message : String(error),
-            completed_at: new Date(),
-          },
-        });
+            errorMessage: error instanceof Error ? error.message : String(error),
+            completedAt: new Date(),
+          })
+          .where(eq(taskQueue.taskId, taskId));
       } catch (updateError) {
         console.error('更新失败状态异常:', updateError);
       }

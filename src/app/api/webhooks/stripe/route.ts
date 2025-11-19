@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
-import prisma from '@/lib/prisma';
+import { getDb } from '@/lib/db';
+import { subscriptionPlans, userSubscriptions, users, creditHistory, subscriptionHistory } from '@/db/schema';
+import { eq, and, desc, sql } from 'drizzle-orm';
 
 export const runtime = 'edge';
 
@@ -26,25 +28,24 @@ async function recordSubscriptionHistory(params: {
   metadata?: object;
 }) {
   try {
-    await prisma.subscription_history.create({
-      data: {
-        subscription_id: params.subscriptionId,
-        user_id: params.userId,
-        event_type: params.eventType,
-        old_status: params.oldStatus,
-        new_status: params.newStatus,
-        stripe_event_id: params.stripeEventId,
-        stripe_event_type: params.stripeEventType,
-        amount: params.amount,
-        currency: params.currency,
-        credits_change: params.creditsChange,
-        metadata: params.metadata,
-      },
+    const db = getDb();
+    await db.insert(subscriptionHistory).values({
+      subscriptionId: params.subscriptionId,
+      userId: params.userId,
+      eventType: params.eventType,
+      oldStatus: params.oldStatus,
+      newStatus: params.newStatus,
+      stripeEventId: params.stripeEventId,
+      stripeEventType: params.stripeEventType,
+      amount: params.amount,
+      currency: params.currency,
+      creditsChange: params.creditsChange,
+      metadata: params.metadata,
     });
     console.log(`📝 订阅历史已记录: ${params.eventType} for subscription ${params.subscriptionId}`);
   } catch (error) {
     // 如果是重复事件（stripe_event_id unique constraint），忽略
-    if ((error as { code?: string }).code === 'P2002') {
+    if ((error as { code?: string }).code === 'SQLITE_CONSTRAINT') {
       console.log(`⏭️ 事件已处理过，跳过: ${params.stripeEventId}`);
       return;
     }
@@ -68,9 +69,14 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session, eventId
     return;
   }
 
+  const db = getDb();
+
   // 获取订阅计划
-  const plan = await prisma.subscription_plans.findFirst({
-    where: { product_id: productId, active: true },
+  const plan = await db.query.subscriptionPlans.findFirst({
+    where: and(
+      eq(subscriptionPlans.productId, productId),
+      eq(subscriptionPlans.active, true)
+    ),
   });
 
   if (!plan) {
@@ -103,13 +109,13 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session, eventId
     } catch (error) {
       console.error('⚠️ 获取 Stripe 订阅失败，使用 cycle_days 计算:', error);
       endDate = new Date(now);
-      endDate.setDate(endDate.getDate() + plan.cycle_days);
+      endDate.setDate(endDate.getDate() + plan.cycleDays);
     }
   } else {
     // 一次性支付：用 cycle_days 计算
     endDate = new Date(now);
-    endDate.setDate(endDate.getDate() + plan.cycle_days);
-    console.log(`📅 一次性支付，使用 cycle_days (${plan.cycle_days}) 计算: ${now.toISOString()} - ${endDate.toISOString()}`);
+    endDate.setDate(endDate.getDate() + plan.cycleDays);
+    console.log(`📅 一次性支付，使用 cycle_days (${plan.cycleDays}) 计算: ${now.toISOString()} - ${endDate.toISOString()}`);
   }
 
   console.log('📊 Checkout 数据:', {
@@ -120,47 +126,48 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session, eventId
   });
 
   // 创建订阅记录
-  const subscription = await prisma.user_subscriptions.create({
-    data: {
-      user_id: userId,
-      subscription_plan_id: plan.id,
-      product_id: productId,
-      product_type: plan.product_type,
+  const result = await db
+    .insert(userSubscriptions)
+    .values({
+      userId: userId,
+      subscriptionPlanId: plan.id,
+      productId: productId,
+      productType: plan.productType,
       platform: 'stripe',
-      external_transaction_id: session.id,
-      external_subscription_id: stripeSubscriptionId,
-      request_id: `stripe_${session.id}`,
+      externalTransactionId: session.id,
+      externalSubscriptionId: stripeSubscriptionId,
+      requestId: `stripe_${session.id}`,
       status: 'ACTIVE',
-      start_date: now,
-      end_date: endDate,
-      credits_allocated: plan.credits_per_cycle,
+      startDate: now,
+      endDate: endDate,
+      creditsAllocated: plan.creditsPerCycle,
       amount: amount,
       currency: currency,
-      auto_renew: isSubscription,
-      cancel_at_period_end: false,
-      activated_at: now,
-    },
-  });
+      autoRenew: isSubscription,
+      cancelAtPeriodEnd: false,
+      activatedAt: now,
+    })
+    .returning();
+
+  const subscription = result[0];
 
   // 给用户添加积分
-  await prisma.users.update({
-    where: { user_id: userId },
-    data: {
-      credits: { increment: plan.credits_per_cycle },
-    },
-  });
+  await db
+    .update(users)
+    .set({
+      credits: sql`${users.credits} + ${plan.creditsPerCycle}`,
+    })
+    .where(eq(users.userId, userId));
 
   // 记录积分变动历史
-  await prisma.credit_history.create({
-    data: {
-      user_id: userId,
-      amount: plan.credits_per_cycle,
-      description: `订阅购买: ${plan.plan_name}`,
-      task_id: `subscription_${subscription.id}`,
-    },
+  await db.insert(creditHistory).values({
+    userId: userId,
+    amount: plan.creditsPerCycle,
+    description: `订阅购买: ${plan.planName}`,
+    taskId: `subscription_${subscription.id}`,
   });
 
-  console.log(`✅ 订阅已创建: ${subscription.id}, 积分: +${plan.credits_per_cycle}`);
+  console.log(`✅ 订阅已创建: ${subscription.id}, 积分: +${plan.creditsPerCycle}`);
 
   // 记录历史
   await recordSubscriptionHistory({
@@ -172,11 +179,11 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session, eventId
     stripeEventType: 'checkout.session.completed',
     amount: amount || undefined,
     currency: currency || undefined,
-    creditsChange: plan.credits_per_cycle,
+    creditsChange: plan.creditsPerCycle,
     metadata: {
       session_id: session.id,
-      plan_name: plan.plan_name,
-      cycle_days: plan.cycle_days,
+      plan_name: plan.planName,
+      cycle_days: plan.cycleDays,
     },
   });
 }
@@ -197,15 +204,14 @@ async function handleInvoicePaid(invoice: Stripe.Invoice, eventId: string) {
     return;
   }
 
+  const db = getDb();
+
   // 查找现有订阅
-  const subscription = await prisma.user_subscriptions.findFirst({
-    where: {
-      external_subscription_id: subscriptionId,
-      platform: 'stripe',
-    },
-    include: {
-      subscription_plans: true,
-    },
+  const subscription = await db.query.userSubscriptions.findFirst({
+    where: and(
+      eq(userSubscriptions.externalSubscriptionId, subscriptionId),
+      eq(userSubscriptions.platform, 'stripe')
+    ),
   });
 
   if (!subscription) {
@@ -213,47 +219,54 @@ async function handleInvoicePaid(invoice: Stripe.Invoice, eventId: string) {
     return;
   }
 
-  const plan = subscription.subscription_plans;
+  // 获取计划信息
+  const plan = await db.query.subscriptionPlans.findFirst({
+    where: eq(subscriptionPlans.id, subscription.subscriptionPlanId),
+  });
+
+  if (!plan) {
+    console.log(`⏭️ 未找到计划记录: ${subscription.subscriptionPlanId}`);
+    return;
+  }
+
   const oldStatus = subscription.status;
 
   // 更新订阅日期
   const now = new Date();
-  const newEndDate = new Date(subscription.end_date);
-  newEndDate.setDate(newEndDate.getDate() + plan.cycle_days);
+  const newEndDate = new Date(subscription.endDate);
+  newEndDate.setDate(newEndDate.getDate() + plan.cycleDays);
 
-  await prisma.user_subscriptions.update({
-    where: { id: subscription.id },
-    data: {
+  await db
+    .update(userSubscriptions)
+    .set({
       status: 'ACTIVE',
-      end_date: newEndDate,
-      updated_at: now,
-    },
-  });
+      endDate: newEndDate,
+      updatedAt: now,
+    })
+    .where(eq(userSubscriptions.id, subscription.id));
 
   // 给用户添加积分
-  await prisma.users.update({
-    where: { user_id: subscription.user_id },
-    data: {
-      credits: { increment: plan.credits_per_cycle },
-    },
-  });
+  await db
+    .update(users)
+    .set({
+      credits: sql`${users.credits} + ${plan.creditsPerCycle}`,
+    })
+    .where(eq(users.userId, subscription.userId));
 
   // 记录积分变动历史
-  await prisma.credit_history.create({
-    data: {
-      user_id: subscription.user_id,
-      amount: plan.credits_per_cycle,
-      description: `订阅续费: ${plan.plan_name}`,
-      task_id: `subscription_${subscription.id}_renewal`,
-    },
+  await db.insert(creditHistory).values({
+    userId: subscription.userId,
+    amount: plan.creditsPerCycle,
+    description: `订阅续费: ${plan.planName}`,
+    taskId: `subscription_${subscription.id}_renewal`,
   });
 
-  console.log(`✅ 订阅已续费: ${subscription.id}, 积分: +${plan.credits_per_cycle}`);
+  console.log(`✅ 订阅已续费: ${subscription.id}, 积分: +${plan.creditsPerCycle}`);
 
   // 记录历史
   await recordSubscriptionHistory({
     subscriptionId: subscription.id,
-    userId: subscription.user_id,
+    userId: subscription.userId,
     eventType: 'RENEWED',
     oldStatus,
     newStatus: 'ACTIVE',
@@ -261,7 +274,7 @@ async function handleInvoicePaid(invoice: Stripe.Invoice, eventId: string) {
     stripeEventType: 'invoice.paid',
     amount: invoice.amount_paid,
     currency: invoice.currency.toUpperCase(),
-    creditsChange: plan.credits_per_cycle,
+    creditsChange: plan.creditsPerCycle,
     metadata: {
       invoice_id: invoice.id,
       new_end_date: newEndDate.toISOString(),
@@ -275,11 +288,13 @@ async function handleInvoicePaid(invoice: Stripe.Invoice, eventId: string) {
 async function handleSubscriptionUpdated(stripeSubscription: Stripe.Subscription, eventId: string) {
   console.log('🔄 处理 customer.subscription.updated:', stripeSubscription.id);
 
-  const subscription = await prisma.user_subscriptions.findFirst({
-    where: {
-      external_subscription_id: stripeSubscription.id,
-      platform: 'stripe',
-    },
+  const db = getDb();
+
+  const subscription = await db.query.userSubscriptions.findFirst({
+    where: and(
+      eq(userSubscriptions.externalSubscriptionId, stripeSubscription.id),
+      eq(userSubscriptions.platform, 'stripe')
+    ),
   });
 
   if (!subscription) {
@@ -309,23 +324,23 @@ async function handleSubscriptionUpdated(stripeSubscription: Stripe.Subscription
   // 获取 Stripe 的周期结束时间
   const currentPeriodEnd = (stripeSubscription as unknown as { current_period_end: number }).current_period_end;
 
-  await prisma.user_subscriptions.update({
-    where: { id: subscription.id },
-    data: {
+  await db
+    .update(userSubscriptions)
+    .set({
       status: newStatus,
-      cancel_at_period_end: stripeSubscription.cancel_at_period_end,
+      cancelAtPeriodEnd: stripeSubscription.cancel_at_period_end,
       // 同步 Stripe 的周期结束时间
-      end_date: new Date(currentPeriodEnd * 1000),
-      updated_at: new Date(),
-    },
-  });
+      endDate: new Date(currentPeriodEnd * 1000),
+      updatedAt: new Date(),
+    })
+    .where(eq(userSubscriptions.id, subscription.id));
 
   console.log(`✅ 订阅状态已更新: ${oldStatus} -> ${newStatus}, end_date: ${new Date(currentPeriodEnd * 1000).toISOString()}`);
 
   // 记录历史
   await recordSubscriptionHistory({
     subscriptionId: subscription.id,
-    userId: subscription.user_id,
+    userId: subscription.userId,
     eventType: 'UPDATED',
     oldStatus,
     newStatus,
@@ -344,12 +359,14 @@ async function handleSubscriptionUpdated(stripeSubscription: Stripe.Subscription
 async function handleSubscriptionDeleted(stripeSubscription: Stripe.Subscription, eventId: string) {
   console.log('❌ 处理 customer.subscription.deleted:', stripeSubscription.id);
 
+  const db = getDb();
+
   // 先用 external_subscription_id 查找
-  let subscription = await prisma.user_subscriptions.findFirst({
-    where: {
-      external_subscription_id: stripeSubscription.id,
-      platform: 'stripe',
-    },
+  let subscription = await db.query.userSubscriptions.findFirst({
+    where: and(
+      eq(userSubscriptions.externalSubscriptionId, stripeSubscription.id),
+      eq(userSubscriptions.platform, 'stripe')
+    ),
   });
 
   // 如果找不到，尝试用最新的 invoice 中的 checkout session 查找
@@ -362,13 +379,19 @@ async function handleSubscriptionDeleted(stripeSubscription: Stripe.Subscription
       : stripeSubscription.customer?.id;
 
     if (customerId) {
-      subscription = await prisma.user_subscriptions.findFirst({
-        where: {
-          platform: 'stripe',
-          status: 'ACTIVE',
-        },
-        orderBy: { created_at: 'desc' },
-      });
+      const subscriptions = await db
+        .select()
+        .from(userSubscriptions)
+        .where(
+          and(
+            eq(userSubscriptions.platform, 'stripe'),
+            eq(userSubscriptions.status, 'ACTIVE')
+          )
+        )
+        .orderBy(desc(userSubscriptions.createdAt))
+        .limit(1);
+
+      subscription = subscriptions[0];
     }
   }
 
@@ -379,22 +402,22 @@ async function handleSubscriptionDeleted(stripeSubscription: Stripe.Subscription
 
   const oldStatus = subscription.status;
 
-  await prisma.user_subscriptions.update({
-    where: { id: subscription.id },
-    data: {
+  await db
+    .update(userSubscriptions)
+    .set({
       status: 'CANCELLED',
-      cancelled_at: new Date(),
-      auto_renew: false,
-      updated_at: new Date(),
-    },
-  });
+      cancelledAt: new Date(),
+      autoRenew: false,
+      updatedAt: new Date(),
+    })
+    .where(eq(userSubscriptions.id, subscription.id));
 
   console.log(`✅ 订阅已取消: ${subscription.id}`);
 
   // 记录历史
   await recordSubscriptionHistory({
     subscriptionId: subscription.id,
-    userId: subscription.user_id,
+    userId: subscription.userId,
     eventType: 'CANCELLED',
     oldStatus,
     newStatus: 'CANCELLED',

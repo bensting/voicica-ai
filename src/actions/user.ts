@@ -3,7 +3,9 @@
 /**
  * 用户模块 Server Actions
  */
-import prisma from '@/lib/prisma';
+import { getDb } from '@/lib/db';
+import { users, anonymousUsers } from '@/db/schema';
+import { eq } from 'drizzle-orm';
 import { getCurrentUser, getUserOrAnonymous } from '@/lib/auth';
 import type { UserProfile, CreditsInfo } from '@/types/user';
 
@@ -14,35 +16,39 @@ import type { UserProfile, CreditsInfo } from '@/types/user';
  */
 export async function getCurrentUserProfile(): Promise<UserProfile> {
   const authUser = await getCurrentUser();
+  const db = getDb();
 
   // 查找或创建用户
-  let user = await prisma.users.findUnique({
-    where: { user_id: authUser.uid },
+  let user = await db.query.users.findFirst({
+    where: eq(users.userId, authUser.uid),
   });
 
   if (!user) {
     // 首次登录，自动创建用户
-    user = await prisma.users.create({
-      data: {
-        user_id: authUser.uid,
+    const result = await db
+      .insert(users)
+      .values({
+        userId: authUser.uid,
         email: authUser.email || null,
         name: authUser.name || null,
-        photo_url: authUser.picture || null,
+        photoUrl: authUser.picture || null,
         credits: 0,
-        total_credits_used: 0,
-      },
-    });
+        totalCreditsUsed: 0,
+      })
+      .returning();
+
+    user = result[0];
     console.log(`新用户注册: ${authUser.uid}`);
   }
 
   return {
     id: user.id,
-    user_id: user.user_id,
+    user_id: user.userId,
     email: user.email,
     name: user.name,
-    photo_url: user.photo_url,
+    photo_url: user.photoUrl,
     credits: user.credits,
-    total_credits_used: user.total_credits_used,
+    total_credits_used: user.totalCreditsUsed,
     is_anonymous: false,
     expires_at: null,
   };
@@ -56,24 +62,28 @@ export async function updateUserProfile(data: {
   photo_url?: string;
 }): Promise<UserProfile> {
   const authUser = await getCurrentUser();
+  const db = getDb();
 
-  const user = await prisma.users.update({
-    where: { user_id: authUser.uid },
-    data: {
+  const result = await db
+    .update(users)
+    .set({
       name: data.name,
-      photo_url: data.photo_url,
-      updated_at: new Date(),
-    },
-  });
+      photoUrl: data.photo_url,
+      updatedAt: new Date(),
+    })
+    .where(eq(users.userId, authUser.uid))
+    .returning();
+
+  const user = result[0];
 
   return {
     id: user.id,
-    user_id: user.user_id,
+    user_id: user.userId,
     email: user.email,
     name: user.name,
-    photo_url: user.photo_url,
+    photo_url: user.photoUrl,
     credits: user.credits,
-    total_credits_used: user.total_credits_used,
+    total_credits_used: user.totalCreditsUsed,
     is_anonymous: false,
     expires_at: null,
   };
@@ -84,10 +94,11 @@ export async function updateUserProfile(data: {
  */
 export async function getUserCredits(): Promise<{ credits: number; total_used: number }> {
   const authUser = await getCurrentUser();
+  const db = getDb();
 
-  const user = await prisma.users.findUnique({
-    where: { user_id: authUser.uid },
-    select: { credits: true, total_credits_used: true },
+  const user = await db.query.users.findFirst({
+    where: eq(users.userId, authUser.uid),
+    columns: { credits: true, totalCreditsUsed: true },
   });
 
   if (!user) {
@@ -96,7 +107,7 @@ export async function getUserCredits(): Promise<{ credits: number; total_used: n
 
   return {
     credits: user.credits,
-    total_used: user.total_credits_used,
+    total_used: user.totalCreditsUsed,
   };
 }
 
@@ -105,11 +116,12 @@ export async function getUserCredits(): Promise<{ credits: number; total_used: n
  */
 export async function getUnifiedUserProfile(): Promise<UserProfile> {
   const unifiedUser = await getUserOrAnonymous();
+  const db = getDb();
 
   if (unifiedUser.is_anonymous) {
     // 匿名用户
-    const anonUser = await prisma.anonymous_users.findUnique({
-      where: { user_id: unifiedUser.user_id },
+    const anonUser = await db.query.anonymousUsers.findFirst({
+      where: eq(anonymousUsers.userId, unifiedUser.user_id),
     });
 
     if (!anonUser) {
@@ -118,19 +130,19 @@ export async function getUnifiedUserProfile(): Promise<UserProfile> {
 
     return {
       id: anonUser.id,
-      user_id: anonUser.user_id,
+      user_id: anonUser.userId,
       email: null,
       name: null,
       photo_url: null,
       credits: anonUser.credits,
-      total_credits_used: anonUser.total_credits_used,
+      total_credits_used: anonUser.totalCreditsUsed,
       is_anonymous: true,
-      expires_at: anonUser.expires_at?.toISOString() || null,
+      expires_at: anonUser.expiresAt?.toISOString() || null,
     };
   } else {
     // 正式用户
-    const user = await prisma.users.findUnique({
-      where: { user_id: unifiedUser.user_id },
+    const user = await db.query.users.findFirst({
+      where: eq(users.userId, unifiedUser.user_id),
     });
 
     if (!user) {
@@ -139,12 +151,12 @@ export async function getUnifiedUserProfile(): Promise<UserProfile> {
 
     return {
       id: user.id,
-      user_id: user.user_id,
+      user_id: user.userId,
       email: user.email,
       name: user.name,
-      photo_url: user.photo_url,
+      photo_url: user.photoUrl,
       credits: user.credits,
-      total_credits_used: user.total_credits_used,
+      total_credits_used: user.totalCreditsUsed,
       is_anonymous: false,
       expires_at: null,
     };
@@ -156,14 +168,15 @@ export async function getUnifiedUserProfile(): Promise<UserProfile> {
  */
 export async function getUnifiedCredits(): Promise<CreditsInfo> {
   const unifiedUser = await getUserOrAnonymous();
+  const db = getDb();
 
   if (unifiedUser.is_anonymous) {
-    const anonUser = await prisma.anonymous_users.findUnique({
-      where: { user_id: unifiedUser.user_id },
-      select: {
+    const anonUser = await db.query.anonymousUsers.findFirst({
+      where: eq(anonymousUsers.userId, unifiedUser.user_id),
+      columns: {
         credits: true,
-        total_credits_used: true,
-        expires_at: true,
+        totalCreditsUsed: true,
+        expiresAt: true,
       },
     });
 
@@ -173,16 +186,16 @@ export async function getUnifiedCredits(): Promise<CreditsInfo> {
 
     return {
       credits: anonUser.credits,
-      total_used: anonUser.total_credits_used,
+      total_used: anonUser.totalCreditsUsed,
       is_anonymous: true,
-      expires_at: anonUser.expires_at?.toISOString() || null,
+      expires_at: anonUser.expiresAt?.toISOString() || null,
     };
   } else {
-    const user = await prisma.users.findUnique({
-      where: { user_id: unifiedUser.user_id },
-      select: {
+    const user = await db.query.users.findFirst({
+      where: eq(users.userId, unifiedUser.user_id),
+      columns: {
         credits: true,
-        total_credits_used: true,
+        totalCreditsUsed: true,
       },
     });
 
@@ -192,7 +205,7 @@ export async function getUnifiedCredits(): Promise<CreditsInfo> {
 
     return {
       credits: user.credits,
-      total_used: user.total_credits_used,
+      total_used: user.totalCreditsUsed,
       is_anonymous: false,
       expires_at: null,
     };

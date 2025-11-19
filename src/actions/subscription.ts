@@ -4,7 +4,9 @@
  * 订阅模块 Server Actions
  */
 import Stripe from 'stripe';
-import prisma from '@/lib/prisma';
+import { getDb } from '@/lib/db';
+import { subscriptionPlans, userSubscriptions } from '@/db/schema';
+import { eq, and, gte, desc } from 'drizzle-orm';
 import { getCurrentUser } from '@/lib/auth';
 import type { SubscriptionPlan, UserSubscription, UserSubscriptionListResponse } from '@/types/subscription';
 
@@ -20,46 +22,47 @@ export async function getSubscriptionPlans(params?: {
   active_only?: boolean;
 }): Promise<SubscriptionPlan[]> {
   const { platform, product_type, active_only = true } = params || {};
+  const db = getDb();
 
-  const where: Record<string, unknown> = {};
-
+  // 构建查询条件
+  const conditions = [];
   if (active_only) {
-    where.active = true;
+    conditions.push(eq(subscriptionPlans.active, true));
   }
-
   if (platform) {
-    where.platform = platform;
+    conditions.push(eq(subscriptionPlans.platform, platform));
   }
 
-  const plans = await prisma.subscription_plans.findMany({
-    where,
-    orderBy: { sort_order: 'asc' },
-  });
+  const plans = await db
+    .select()
+    .from(subscriptionPlans)
+    .where(conditions.length > 0 ? and(...conditions) : undefined)
+    .orderBy(subscriptionPlans.sortOrder);
 
   // 按 product_type 筛选
   let filtered = plans;
   if (product_type) {
-    filtered = plans.filter((p) => p.product_type === product_type);
+    filtered = plans.filter((p) => p.productType === product_type);
   }
 
   return filtered.map((p) => ({
     id: p.id,
     platform: p.platform,
-    product_type: p.product_type,
-    product_id: p.product_id,
-    base_plan_id: p.base_plan_id,
-    plan_name: p.plan_name,
-    display_name: p.display_name as Record<string, string>,
+    product_type: p.productType,
+    product_id: p.productId,
+    base_plan_id: p.basePlanId,
+    plan_name: p.planName,
+    display_name: p.displayName as Record<string, string>,
     features: p.features as Record<string, string[]>,
-    credits_per_cycle: p.credits_per_cycle,
-    cycle_days: p.cycle_days,
+    credits_per_cycle: p.creditsPerCycle,
+    cycle_days: p.cycleDays,
     active: p.active,
-    sort_order: p.sort_order,
+    sort_order: p.sortOrder,
     price: p.price as Record<string, number>,
-    discounted_price: p.discounted_price as Record<string, number>,
-    billing_period: p.billing_period,
-    enable_first_month_coupon: p.enable_first_month_coupon,
-    first_month_coupon_id: p.first_month_coupon_id,
+    discounted_price: p.discountedPrice as Record<string, number>,
+    billing_period: p.billingPeriod,
+    enable_first_month_coupon: p.enableFirstMonthCoupon,
+    first_month_coupon_id: p.firstMonthCouponId,
   }));
 }
 
@@ -70,37 +73,37 @@ export async function getPlansByProductId(
   productId: string,
   activeOnly: boolean = true
 ): Promise<SubscriptionPlan[]> {
-  const where: Record<string, unknown> = {
-    product_id: productId,
-  };
+  const db = getDb();
 
+  const conditions = [eq(subscriptionPlans.productId, productId)];
   if (activeOnly) {
-    where.active = true;
+    conditions.push(eq(subscriptionPlans.active, true));
   }
 
-  const plans = await prisma.subscription_plans.findMany({
-    where,
-    orderBy: { sort_order: 'asc' },
-  });
+  const plans = await db
+    .select()
+    .from(subscriptionPlans)
+    .where(and(...conditions))
+    .orderBy(subscriptionPlans.sortOrder);
 
   return plans.map((p) => ({
     id: p.id,
     platform: p.platform,
-    product_type: p.product_type,
-    product_id: p.product_id,
-    base_plan_id: p.base_plan_id,
-    plan_name: p.plan_name,
-    display_name: p.display_name as Record<string, string>,
+    product_type: p.productType,
+    product_id: p.productId,
+    base_plan_id: p.basePlanId,
+    plan_name: p.planName,
+    display_name: p.displayName as Record<string, string>,
     features: p.features as Record<string, string[]>,
-    credits_per_cycle: p.credits_per_cycle,
-    cycle_days: p.cycle_days,
+    credits_per_cycle: p.creditsPerCycle,
+    cycle_days: p.cycleDays,
     active: p.active,
-    sort_order: p.sort_order,
+    sort_order: p.sortOrder,
     price: p.price as Record<string, number>,
-    discounted_price: p.discounted_price as Record<string, number>,
-    billing_period: p.billing_period,
-    enable_first_month_coupon: p.enable_first_month_coupon,
-    first_month_coupon_id: p.first_month_coupon_id,
+    discounted_price: p.discountedPrice as Record<string, number>,
+    billing_period: p.billingPeriod,
+    enable_first_month_coupon: p.enableFirstMonthCoupon,
+    first_month_coupon_id: p.firstMonthCouponId,
   }));
 }
 
@@ -112,39 +115,50 @@ export async function getSubscriptionPlan(
   productId: string,
   basePlanId: string | null
 ): Promise<SubscriptionPlan | null> {
-  const where: Record<string, unknown> = {
-    platform,
-    product_id: productId,
-  };
+  const db = getDb();
 
+  const conditions = [
+    eq(subscriptionPlans.platform, platform),
+    eq(subscriptionPlans.productId, productId),
+  ];
+
+  // 处理 basePlanId 条件
   if (basePlanId && basePlanId !== 'null') {
-    where.base_plan_id = basePlanId;
-  } else {
-    where.base_plan_id = null;
+    conditions.push(eq(subscriptionPlans.basePlanId, basePlanId));
   }
 
-  const plan = await prisma.subscription_plans.findFirst({ where });
+  const plans = await db
+    .select()
+    .from(subscriptionPlans)
+    .where(and(...conditions))
+    .limit(1);
+
+  // 如果需要 null basePlanId，在结果中过滤
+  let plan = plans[0];
+  if (!basePlanId || basePlanId === 'null') {
+    plan = plans.find(p => p.basePlanId === null) || plans[0];
+  }
 
   if (!plan) return null;
 
   return {
     id: plan.id,
     platform: plan.platform,
-    product_type: plan.product_type,
-    product_id: plan.product_id,
-    base_plan_id: plan.base_plan_id,
-    plan_name: plan.plan_name,
-    display_name: plan.display_name as Record<string, string>,
+    product_type: plan.productType,
+    product_id: plan.productId,
+    base_plan_id: plan.basePlanId,
+    plan_name: plan.planName,
+    display_name: plan.displayName as Record<string, string>,
     features: plan.features as Record<string, string[]>,
-    credits_per_cycle: plan.credits_per_cycle,
-    cycle_days: plan.cycle_days,
+    credits_per_cycle: plan.creditsPerCycle,
+    cycle_days: plan.cycleDays,
     active: plan.active,
-    sort_order: plan.sort_order,
+    sort_order: plan.sortOrder,
     price: plan.price as Record<string, number>,
-    discounted_price: plan.discounted_price as Record<string, number>,
-    billing_period: plan.billing_period,
-    enable_first_month_coupon: plan.enable_first_month_coupon,
-    first_month_coupon_id: plan.first_month_coupon_id,
+    discounted_price: plan.discountedPrice as Record<string, number>,
+    billing_period: plan.billingPeriod,
+    enable_first_month_coupon: plan.enableFirstMonthCoupon,
+    first_month_coupon_id: plan.firstMonthCouponId,
   };
 }
 
@@ -158,77 +172,83 @@ export async function getMySubscriptions(params?: {
 }): Promise<UserSubscriptionListResponse> {
   const user = await getCurrentUser();
   const userId = user.uid;
+  const db = getDb();
 
   const { status, product_type, platform } = params || {};
 
   // 构建查询条件
-  const where: Record<string, unknown> = {
-    user_id: userId,
-  };
+  const conditions = [eq(userSubscriptions.userId, userId)];
 
   if (status) {
-    where.status = status;
+    conditions.push(eq(userSubscriptions.status, status));
   }
-
   if (product_type) {
-    where.product_type = product_type;
+    conditions.push(eq(userSubscriptions.productType, product_type));
   }
-
   if (platform) {
-    where.platform = platform;
+    conditions.push(eq(userSubscriptions.platform, platform));
   }
 
   // 查询订阅列表
-  const subscriptions = await prisma.user_subscriptions.findMany({
-    where,
-    orderBy: { created_at: 'desc' },
-    take: 100,
-    include: {
-      subscription_plans: true,
-    },
-  });
+  const subscriptions = await db
+    .select()
+    .from(userSubscriptions)
+    .where(and(...conditions))
+    .orderBy(desc(userSubscriptions.createdAt))
+    .limit(100);
+
+  // 获取关联的计划信息
+  const planIds = [...new Set(subscriptions.map(s => s.subscriptionPlanId))];
+  const plans = planIds.length > 0
+    ? await db.select().from(subscriptionPlans)
+    : [];
 
   // 查询活跃订阅
   const now = new Date();
-  const activeSubscription = await prisma.user_subscriptions.findFirst({
-    where: {
-      user_id: userId,
-      status: 'ACTIVE',
-      end_date: { gte: now },
-    },
-    include: {
-      subscription_plans: true,
-    },
-  });
+  const activeSubscriptions = await db
+    .select()
+    .from(userSubscriptions)
+    .where(
+      and(
+        eq(userSubscriptions.userId, userId),
+        eq(userSubscriptions.status, 'ACTIVE'),
+        gte(userSubscriptions.endDate, now)
+      )
+    )
+    .limit(1);
+
+  const activeSubscription = activeSubscriptions[0] || null;
 
   // 转换为响应格式
   const toResponse = (sub: typeof subscriptions[0]): UserSubscription => {
     const isActive = sub.status === 'ACTIVE';
     let daysRemaining: number | null = null;
 
-    if (isActive && sub.end_date) {
-      daysRemaining = Math.max(0, Math.floor((sub.end_date.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)));
+    if (isActive && sub.endDate) {
+      daysRemaining = Math.max(0, Math.floor((sub.endDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)));
     }
+
+    const plan = plans.find(p => p.id === sub.subscriptionPlanId);
 
     return {
       id: String(sub.id),
-      user_id: sub.user_id,
-      subscription_plan_id: String(sub.subscription_plan_id),
-      product_id: sub.product_id,
-      product_type: sub.product_type,
+      user_id: sub.userId,
+      subscription_plan_id: String(sub.subscriptionPlanId),
+      product_id: sub.productId,
+      product_type: sub.productType,
       platform: sub.platform,
       status: sub.status,
-      start_date: sub.start_date.toISOString(),
-      end_date: sub.end_date.toISOString(),
-      credits_allocated: sub.credits_allocated,
+      start_date: sub.startDate.toISOString(),
+      end_date: sub.endDate.toISOString(),
+      credits_allocated: sub.creditsAllocated,
       amount: sub.amount ?? undefined,
       currency: sub.currency ?? undefined,
-      auto_renew: sub.auto_renew,
-      created_at: sub.created_at.toISOString(),
-      display_name: sub.subscription_plans?.display_name as Record<string, string> | null,
+      auto_renew: sub.autoRenew,
+      created_at: sub.createdAt.toISOString(),
+      display_name: plan?.displayName as Record<string, string> | null,
       is_active: isActive,
       days_remaining: daysRemaining,
-      external_subscription_id: sub.external_subscription_id,
+      external_subscription_id: sub.externalSubscriptionId,
     };
   };
 
@@ -245,47 +265,56 @@ export async function getMySubscriptions(params?: {
 export async function getMyActiveSubscription(): Promise<UserSubscription | null> {
   const user = await getCurrentUser();
   const userId = user.uid;
+  const db = getDb();
 
   const now = new Date();
-  const activeSubscription = await prisma.user_subscriptions.findFirst({
-    where: {
-      user_id: userId,
-      status: 'ACTIVE',
-      end_date: { gte: now },
-    },
-    include: {
-      subscription_plans: true,
-    },
-  });
+  const activeSubscriptions = await db
+    .select()
+    .from(userSubscriptions)
+    .where(
+      and(
+        eq(userSubscriptions.userId, userId),
+        eq(userSubscriptions.status, 'ACTIVE'),
+        gte(userSubscriptions.endDate, now)
+      )
+    )
+    .limit(1);
+
+  const activeSubscription = activeSubscriptions[0];
 
   if (!activeSubscription) {
     return null;
   }
 
+  // 获取计划信息
+  const plan = await db.query.subscriptionPlans.findFirst({
+    where: eq(subscriptionPlans.id, activeSubscription.subscriptionPlanId),
+  });
+
   const daysRemaining = Math.max(
     0,
-    Math.floor((activeSubscription.end_date.getTime() - now.getTime()) / (1000 * 60 * 60 * 24))
+    Math.floor((activeSubscription.endDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24))
   );
 
   return {
     id: String(activeSubscription.id),
-    user_id: activeSubscription.user_id,
-    subscription_plan_id: String(activeSubscription.subscription_plan_id),
-    product_id: activeSubscription.product_id,
-    product_type: activeSubscription.product_type,
+    user_id: activeSubscription.userId,
+    subscription_plan_id: String(activeSubscription.subscriptionPlanId),
+    product_id: activeSubscription.productId,
+    product_type: activeSubscription.productType,
     platform: activeSubscription.platform,
     status: activeSubscription.status,
-    start_date: activeSubscription.start_date.toISOString(),
-    end_date: activeSubscription.end_date.toISOString(),
-    credits_allocated: activeSubscription.credits_allocated,
+    start_date: activeSubscription.startDate.toISOString(),
+    end_date: activeSubscription.endDate.toISOString(),
+    credits_allocated: activeSubscription.creditsAllocated,
     amount: activeSubscription.amount ?? undefined,
     currency: activeSubscription.currency ?? undefined,
-    auto_renew: activeSubscription.auto_renew,
-    created_at: activeSubscription.created_at.toISOString(),
-    display_name: activeSubscription.subscription_plans?.display_name as Record<string, string> | null,
+    auto_renew: activeSubscription.autoRenew,
+    created_at: activeSubscription.createdAt.toISOString(),
+    display_name: plan?.displayName as Record<string, string> | null,
     is_active: true,
     days_remaining: daysRemaining,
-    external_subscription_id: activeSubscription.external_subscription_id,
+    external_subscription_id: activeSubscription.externalSubscriptionId,
   };
 }
 
@@ -303,14 +332,21 @@ export async function cancelSubscription(
 }> {
   const user = await getCurrentUser();
   const userId = user.uid;
+  const db = getDb();
 
   // 查找订阅
-  const subscription = await prisma.user_subscriptions.findFirst({
-    where: {
-      id: parseInt(subscriptionId),
-      user_id: userId,
-    },
-  });
+  const subscriptions = await db
+    .select()
+    .from(userSubscriptions)
+    .where(
+      and(
+        eq(userSubscriptions.id, parseInt(subscriptionId)),
+        eq(userSubscriptions.userId, userId)
+      )
+    )
+    .limit(1);
+
+  const subscription = subscriptions[0];
 
   if (!subscription) {
     throw new Error('订阅不存在或无权操作');
@@ -323,17 +359,17 @@ export async function cancelSubscription(
   const now = new Date();
 
   // 如果有 Stripe 订阅 ID，调用 Stripe API 取消
-  if (subscription.external_subscription_id && subscription.platform === 'stripe') {
+  if (subscription.externalSubscriptionId && subscription.platform === 'stripe') {
     try {
-      console.log(`🔄 取消 Stripe 订阅: ${subscription.external_subscription_id}`);
+      console.log(`🔄 取消 Stripe 订阅: ${subscription.externalSubscriptionId}`);
 
-      await stripe.subscriptions.cancel(subscription.external_subscription_id, {
+      await stripe.subscriptions.cancel(subscription.externalSubscriptionId, {
         cancellation_details: {
           comment: data?.cancellation_reason,
         },
       });
 
-      console.log(`✅ Stripe 订阅已取消: ${subscription.external_subscription_id}`);
+      console.log(`✅ Stripe 订阅已取消: ${subscription.externalSubscriptionId}`);
     } catch (error) {
       console.error('❌ Stripe 取消失败:', error);
       // 如果 Stripe 取消失败，仍然更新本地状态（可能是测试数据或已取消的订阅）
@@ -341,16 +377,16 @@ export async function cancelSubscription(
   }
 
   // 更新订阅状态
-  await prisma.user_subscriptions.update({
-    where: { id: subscription.id },
-    data: {
+  await db
+    .update(userSubscriptions)
+    .set({
       status: 'CANCELLED',
-      auto_renew: false,
-      cancelled_at: now,
-      cancellation_reason: data?.cancellation_reason || null,
-      updated_at: now,
-    },
-  });
+      autoRenew: false,
+      cancelledAt: now,
+      cancellationReason: data?.cancellation_reason || null,
+      updatedAt: now,
+    })
+    .where(eq(userSubscriptions.id, subscription.id));
 
   console.log(`✅ 订阅已取消: ${subscriptionId}`);
 

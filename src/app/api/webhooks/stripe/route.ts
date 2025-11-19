@@ -1,0 +1,380 @@
+import { NextRequest, NextResponse } from 'next/server';
+import Stripe from 'stripe';
+import prisma from '@/lib/prisma';
+
+// Initialize Stripe
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
+
+const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!;
+
+/**
+ * 记录订阅历史
+ */
+async function recordSubscriptionHistory(params: {
+  subscriptionId: number;
+  userId: string;
+  eventType: string;
+  oldStatus?: string;
+  newStatus?: string;
+  stripeEventId: string;
+  stripeEventType: string;
+  amount?: number;
+  currency?: string;
+  creditsChange?: number;
+  metadata?: object;
+}) {
+  try {
+    await prisma.subscription_history.create({
+      data: {
+        subscription_id: params.subscriptionId,
+        user_id: params.userId,
+        event_type: params.eventType,
+        old_status: params.oldStatus,
+        new_status: params.newStatus,
+        stripe_event_id: params.stripeEventId,
+        stripe_event_type: params.stripeEventType,
+        amount: params.amount,
+        currency: params.currency,
+        credits_change: params.creditsChange,
+        metadata: params.metadata,
+      },
+    });
+    console.log(`📝 订阅历史已记录: ${params.eventType} for subscription ${params.subscriptionId}`);
+  } catch (error) {
+    // 如果是重复事件（stripe_event_id unique constraint），忽略
+    if ((error as { code?: string }).code === 'P2002') {
+      console.log(`⏭️ 事件已处理过，跳过: ${params.stripeEventId}`);
+      return;
+    }
+    throw error;
+  }
+}
+
+/**
+ * 处理 checkout.session.completed 事件
+ * 用户完成支付后触发
+ */
+async function handleCheckoutCompleted(session: Stripe.Checkout.Session, eventId: string) {
+  console.log('💳 处理 checkout.session.completed:', session.id);
+
+  const metadata = session.metadata || {};
+  const userId = metadata.user_id;
+  const productId = metadata.product_id;
+
+  if (!userId || !productId) {
+    console.error('❌ 缺少必要的 metadata:', { userId, productId });
+    return;
+  }
+
+  // 获取订阅计划
+  const plan = await prisma.subscription_plans.findFirst({
+    where: { product_id: productId, active: true },
+  });
+
+  if (!plan) {
+    console.error(`❌ 找不到订阅计划: ${productId}`);
+    return;
+  }
+
+  // 计算订阅日期
+  const now = new Date();
+  const endDate = new Date(now);
+  endDate.setDate(endDate.getDate() + plan.cycle_days);
+
+  // 创建订阅记录
+  const subscription = await prisma.user_subscriptions.create({
+    data: {
+      user_id: userId,
+      subscription_plan_id: plan.id,
+      product_id: productId,
+      product_type: plan.product_type,
+      platform: 'stripe',
+      external_transaction_id: session.id,
+      external_subscription_id: session.subscription as string || null,
+      request_id: `stripe_${session.id}`,
+      status: 'ACTIVE',
+      start_date: now,
+      end_date: endDate,
+      credits_allocated: plan.credits_per_cycle,
+      amount: session.amount_total,
+      currency: session.currency?.toUpperCase(),
+      auto_renew: !!session.subscription,
+      cancel_at_period_end: false,
+      activated_at: now,
+    },
+  });
+
+  // 给用户添加积分
+  await prisma.users.update({
+    where: { user_id: userId },
+    data: {
+      credits: { increment: plan.credits_per_cycle },
+    },
+  });
+
+  console.log(`✅ 订阅已创建: ${subscription.id}, 积分: +${plan.credits_per_cycle}`);
+
+  // 记录历史
+  await recordSubscriptionHistory({
+    subscriptionId: subscription.id,
+    userId,
+    eventType: 'CREATED',
+    newStatus: 'ACTIVE',
+    stripeEventId: eventId,
+    stripeEventType: 'checkout.session.completed',
+    amount: session.amount_total || undefined,
+    currency: session.currency?.toUpperCase(),
+    creditsChange: plan.credits_per_cycle,
+    metadata: {
+      session_id: session.id,
+      plan_name: plan.plan_name,
+      cycle_days: plan.cycle_days,
+    },
+  });
+}
+
+/**
+ * 处理 invoice.paid 事件
+ * 订阅续费成功后触发
+ */
+async function handleInvoicePaid(invoice: Stripe.Invoice, eventId: string) {
+  console.log('💰 处理 invoice.paid:', invoice.id);
+
+  // 从 line items 获取订阅 ID
+  const lineItem = invoice.lines?.data?.[0];
+  const subscriptionId = lineItem?.parent?.subscription_item_details?.subscription;
+
+  if (!subscriptionId || typeof subscriptionId !== 'string') {
+    console.log('⏭️ 非订阅发票，跳过');
+    return;
+  }
+
+  // 查找现有订阅
+  const subscription = await prisma.user_subscriptions.findFirst({
+    where: {
+      external_subscription_id: subscriptionId,
+      platform: 'stripe',
+    },
+    include: {
+      subscription_plans: true,
+    },
+  });
+
+  if (!subscription) {
+    console.log(`⏭️ 未找到订阅记录: ${subscriptionId}`);
+    return;
+  }
+
+  const plan = subscription.subscription_plans;
+  const oldStatus = subscription.status;
+
+  // 更新订阅日期
+  const now = new Date();
+  const newEndDate = new Date(subscription.end_date);
+  newEndDate.setDate(newEndDate.getDate() + plan.cycle_days);
+
+  await prisma.user_subscriptions.update({
+    where: { id: subscription.id },
+    data: {
+      status: 'ACTIVE',
+      end_date: newEndDate,
+      updated_at: now,
+    },
+  });
+
+  // 给用户添加积分
+  await prisma.users.update({
+    where: { user_id: subscription.user_id },
+    data: {
+      credits: { increment: plan.credits_per_cycle },
+    },
+  });
+
+  console.log(`✅ 订阅已续费: ${subscription.id}, 积分: +${plan.credits_per_cycle}`);
+
+  // 记录历史
+  await recordSubscriptionHistory({
+    subscriptionId: subscription.id,
+    userId: subscription.user_id,
+    eventType: 'RENEWED',
+    oldStatus,
+    newStatus: 'ACTIVE',
+    stripeEventId: eventId,
+    stripeEventType: 'invoice.paid',
+    amount: invoice.amount_paid,
+    currency: invoice.currency.toUpperCase(),
+    creditsChange: plan.credits_per_cycle,
+    metadata: {
+      invoice_id: invoice.id,
+      new_end_date: newEndDate.toISOString(),
+    },
+  });
+}
+
+/**
+ * 处理 customer.subscription.updated 事件
+ */
+async function handleSubscriptionUpdated(stripeSubscription: Stripe.Subscription, eventId: string) {
+  console.log('🔄 处理 customer.subscription.updated:', stripeSubscription.id);
+
+  const subscription = await prisma.user_subscriptions.findFirst({
+    where: {
+      external_subscription_id: stripeSubscription.id,
+      platform: 'stripe',
+    },
+  });
+
+  if (!subscription) {
+    console.log(`⏭️ 未找到订阅记录: ${stripeSubscription.id}`);
+    return;
+  }
+
+  const oldStatus = subscription.status;
+  let newStatus = oldStatus;
+
+  // 根据 Stripe 状态更新本地状态
+  switch (stripeSubscription.status) {
+    case 'active':
+      newStatus = 'ACTIVE';
+      break;
+    case 'past_due':
+      newStatus = 'SUSPENDED';
+      break;
+    case 'canceled':
+      newStatus = 'CANCELLED';
+      break;
+    case 'unpaid':
+      newStatus = 'EXPIRED';
+      break;
+  }
+
+  await prisma.user_subscriptions.update({
+    where: { id: subscription.id },
+    data: {
+      status: newStatus,
+      cancel_at_period_end: stripeSubscription.cancel_at_period_end,
+      updated_at: new Date(),
+    },
+  });
+
+  console.log(`✅ 订阅状态已更新: ${oldStatus} -> ${newStatus}`);
+
+  // 记录历史
+  await recordSubscriptionHistory({
+    subscriptionId: subscription.id,
+    userId: subscription.user_id,
+    eventType: 'UPDATED',
+    oldStatus,
+    newStatus,
+    stripeEventId: eventId,
+    stripeEventType: 'customer.subscription.updated',
+    metadata: {
+      stripe_status: stripeSubscription.status,
+      cancel_at_period_end: stripeSubscription.cancel_at_period_end,
+    },
+  });
+}
+
+/**
+ * 处理 customer.subscription.deleted 事件
+ */
+async function handleSubscriptionDeleted(stripeSubscription: Stripe.Subscription, eventId: string) {
+  console.log('❌ 处理 customer.subscription.deleted:', stripeSubscription.id);
+
+  const subscription = await prisma.user_subscriptions.findFirst({
+    where: {
+      external_subscription_id: stripeSubscription.id,
+      platform: 'stripe',
+    },
+  });
+
+  if (!subscription) {
+    console.log(`⏭️ 未找到订阅记录: ${stripeSubscription.id}`);
+    return;
+  }
+
+  const oldStatus = subscription.status;
+
+  await prisma.user_subscriptions.update({
+    where: { id: subscription.id },
+    data: {
+      status: 'CANCELLED',
+      cancelled_at: new Date(),
+      auto_renew: false,
+      updated_at: new Date(),
+    },
+  });
+
+  console.log(`✅ 订阅已取消: ${subscription.id}`);
+
+  // 记录历史
+  await recordSubscriptionHistory({
+    subscriptionId: subscription.id,
+    userId: subscription.user_id,
+    eventType: 'CANCELLED',
+    oldStatus,
+    newStatus: 'CANCELLED',
+    stripeEventId: eventId,
+    stripeEventType: 'customer.subscription.deleted',
+    metadata: {
+      cancellation_reason: stripeSubscription.cancellation_details?.reason,
+    },
+  });
+}
+
+/**
+ * POST /api/webhooks/stripe
+ * Stripe Webhook 处理器
+ */
+export async function POST(request: NextRequest) {
+  try {
+    const body = await request.text();
+    const signature = request.headers.get('stripe-signature');
+
+    if (!signature) {
+      console.error('❌ 缺少 Stripe 签名');
+      return NextResponse.json({ error: 'Missing signature' }, { status: 400 });
+    }
+
+    // 验证签名
+    let event: Stripe.Event;
+    try {
+      event = stripe.webhooks.constructEvent(body, signature, webhookSecret);
+    } catch (err) {
+      console.error('❌ Webhook 签名验证失败:', err);
+      return NextResponse.json({ error: 'Invalid signature' }, { status: 400 });
+    }
+
+    console.log(`📥 收到 Stripe 事件: ${event.type} (${event.id})`);
+
+    // 处理不同事件类型
+    switch (event.type) {
+      case 'checkout.session.completed':
+        await handleCheckoutCompleted(event.data.object as Stripe.Checkout.Session, event.id);
+        break;
+
+      case 'invoice.paid':
+        await handleInvoicePaid(event.data.object as Stripe.Invoice, event.id);
+        break;
+
+      case 'customer.subscription.updated':
+        await handleSubscriptionUpdated(event.data.object as Stripe.Subscription, event.id);
+        break;
+
+      case 'customer.subscription.deleted':
+        await handleSubscriptionDeleted(event.data.object as Stripe.Subscription, event.id);
+        break;
+
+      default:
+        console.log(`⏭️ 未处理的事件类型: ${event.type}`);
+    }
+
+    return NextResponse.json({ received: true });
+  } catch (error) {
+    console.error('❌ Webhook 处理错误:', error);
+    return NextResponse.json(
+      { error: 'Webhook handler failed' },
+      { status: 500 }
+    );
+  }
+}

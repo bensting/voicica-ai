@@ -169,6 +169,35 @@ model user_subscriptions {
   @@index([status, end_date], map: "ix_user_subscriptions_status_end_date")
   @@index([user_id], map: "ix_user_subscriptions_user_id")
   @@index([user_id, status], map: "ix_user_subscriptions_user_status")
+
+  // 关联历史记录
+  history subscription_history[]
+}
+
+/// 订阅变动历史表
+model subscription_history {
+  id                 Int                @id @default(autoincrement())
+  subscription_id    Int
+  user_id            String             @db.VarChar(128)
+  event_type         String             @db.VarChar(50) // CREATED, ACTIVATED, RENEWED, CANCELLED, EXPIRED, UPDATED
+  old_status         String?            @db.VarChar(50)
+  new_status         String?            @db.VarChar(50)
+  stripe_event_id    String?            @db.VarChar(255) // Stripe event ID for deduplication
+  stripe_event_type  String?            @db.VarChar(100) // checkout.session.completed, invoice.paid, etc.
+  amount             Int?               // 金额（分）
+  currency           String?            @db.VarChar(10)
+  credits_change     Int?               // 积分变动
+  metadata           Json?              // 额外信息
+  created_at         DateTime           @default(now()) @db.Timestamptz(6)
+
+  // 关联
+  subscription       user_subscriptions @relation(fields: [subscription_id], references: [id], onDelete: Cascade)
+
+  @@unique([stripe_event_id]) // 防止重复处理
+  @@index([subscription_id], map: "ix_subscription_history_subscription_id")
+  @@index([user_id], map: "ix_subscription_history_user_id")
+  @@index([event_type], map: "ix_subscription_history_event_type")
+  @@index([created_at], map: "ix_subscription_history_created_at")
 }
 
 model users {

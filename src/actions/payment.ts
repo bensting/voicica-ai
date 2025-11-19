@@ -2,16 +2,13 @@
 
 /**
  * 支付模块 Server Actions
- *
- * 注意：这些 Server Actions 用于客户端发起的支付操作
- * Webhook 处理需要单独的 API 路由
  */
-import { cookies } from 'next/headers';
+import Stripe from 'stripe';
 import { getCurrentUser } from '@/lib/auth';
-import type {
-  StripeVerifyRequest,
-  StripeVerifyResponse,
-} from '@/types/subscription';
+import prisma from '@/lib/prisma';
+
+// Initialize Stripe
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
 // 支付特有的类型定义
 export interface StripeCheckoutRequest {
@@ -23,13 +20,7 @@ export interface StripeCheckoutRequest {
 
 export interface CheckoutResponse {
   checkout_url: string;
-}
-
-/**
- * 获取后端 API 基础 URL
- */
-function getApiBaseUrl(): string {
-  return process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000';
+  session_id: string;
 }
 
 /**
@@ -37,49 +28,153 @@ function getApiBaseUrl(): string {
  */
 export async function createStripeCheckout(request: StripeCheckoutRequest): Promise<CheckoutResponse> {
   // 验证用户已登录
-  await getCurrentUser();
+  const user = await getCurrentUser();
+  const userId = user.uid;
 
-  // 从 cookie 获取 token
-  const cookieStore = await cookies();
-  const token = cookieStore.get('firebase-token')?.value;
-
-  if (!token) {
-    throw new Error('未登录');
-  }
-
-  const response = await fetch(`${getApiBaseUrl()}/api/v1/subscriptions/stripe/checkout`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`,
+  // 获取订阅计划
+  const plan = await prisma.subscription_plans.findFirst({
+    where: {
+      product_id: request.product_id,
+      platform: 'stripe',
+      active: true,
     },
-    body: JSON.stringify(request),
   });
 
-  if (!response.ok) {
-    const error = await response.text();
-    throw new Error(`Stripe checkout failed: ${error}`);
+  if (!plan) {
+    throw new Error(`订阅计划不存在: ${request.product_id}`);
   }
 
-  return response.json();
+  // 确定货币和价格
+  const currency = (request.currency || 'usd').toLowerCase();
+  const priceData = plan.discounted_price as Record<string, number> | null;
+  const originalPriceData = plan.price as Record<string, number> | null;
+
+  // 优先使用折扣价，没有则使用原价
+  const priceMap = priceData || originalPriceData;
+  if (!priceMap) {
+    throw new Error('订阅计划没有价格信息');
+  }
+
+  // 获取指定货币的价格，回退到 USD
+  const currencyKey = currency.toUpperCase();
+  let unitAmount = priceMap[currencyKey];
+  if (unitAmount === undefined) {
+    unitAmount = priceMap['USD'];
+  }
+  if (unitAmount === undefined) {
+    throw new Error(`不支持的货币: ${currency}`);
+  }
+
+  // 转换为分（Stripe 使用最小货币单位）
+  const unitAmountInCents = Math.round(unitAmount * 100);
+
+  // 获取用户信息（用于 Stripe customer）
+  const appUser = await prisma.users.findUnique({
+    where: { user_id: userId },
+  });
+
+  // 创建 Stripe Checkout Session
+  const sessionParams: Stripe.Checkout.SessionCreateParams = {
+    mode: plan.billing_period ? 'subscription' : 'payment',
+    payment_method_types: ['card'],
+    line_items: [
+      {
+        price_data: {
+          currency: currency,
+          unit_amount: unitAmountInCents,
+          product_data: {
+            name: (plan.display_name as Record<string, string>)?.en || plan.plan_name,
+            description: `${plan.credits_per_cycle} credits for ${plan.cycle_days} days`,
+          },
+          ...(plan.billing_period && {
+            recurring: {
+              interval: plan.billing_period === 'year' ? 'year' : 'month',
+            },
+          }),
+        },
+        quantity: 1,
+      },
+    ],
+    success_url: request.success_url,
+    cancel_url: request.cancel_url,
+    metadata: {
+      user_id: userId,
+      product_id: request.product_id,
+      plan_id: String(plan.id),
+      credits: String(plan.credits_per_cycle),
+    },
+    ...(appUser?.email && {
+      customer_email: appUser.email,
+    }),
+  };
+
+  const session = await stripe.checkout.sessions.create(sessionParams);
+
+  if (!session.url) {
+    throw new Error('Failed to create checkout session');
+  }
+
+  console.log(`✅ Stripe Checkout 创建成功: ${session.id}, 用户: ${userId}`);
+
+  return {
+    checkout_url: session.url,
+    session_id: session.id,
+  };
 }
 
 /**
- * 验证 Stripe 支付
+ * 验证 Stripe 支付状态
  */
-export async function verifyStripePayment(request: StripeVerifyRequest): Promise<StripeVerifyResponse> {
-  const response = await fetch(`${getApiBaseUrl()}/api/v1/subscriptions/stripe/verify`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
+export async function verifyStripePayment(sessionId: string): Promise<{
+  status: string;
+  payment_status: string;
+  subscription_id?: string;
+}> {
+  const session = await stripe.checkout.sessions.retrieve(sessionId);
+
+  return {
+    status: session.status || 'unknown',
+    payment_status: session.payment_status,
+    subscription_id: session.subscription as string | undefined,
+  };
+}
+
+/**
+ * 获取 Stripe 产品价格列表
+ */
+export async function getStripePrices(productId: string): Promise<Array<{
+  id: string;
+  unit_amount: number;
+  currency: string;
+  active: boolean;
+  billing_type: 'recurring' | 'one_time';
+  billing_period: string | null;
+}>> {
+  // 从数据库获取订阅计划的价格信息
+  const plan = await prisma.subscription_plans.findFirst({
+    where: {
+      product_id: productId,
+      platform: 'stripe',
+      active: true,
     },
-    body: JSON.stringify(request),
   });
 
-  if (!response.ok) {
-    const error = await response.text();
-    throw new Error(`Stripe payment verification failed: ${error}`);
+  if (!plan) {
+    return [];
   }
 
-  return response.json();
+  const priceData = (plan.discounted_price || plan.price) as Record<string, number> | null;
+  if (!priceData) {
+    return [];
+  }
+
+  // 转换为价格数组
+  return Object.entries(priceData).map(([currency, amount]) => ({
+    id: `${plan.product_id}_${currency}`,
+    unit_amount: Math.round(amount * 100),
+    currency: currency.toLowerCase(),
+    active: true,
+    billing_type: plan.billing_period ? 'recurring' : 'one_time',
+    billing_period: plan.billing_period,
+  }));
 }

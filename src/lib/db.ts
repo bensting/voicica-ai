@@ -17,8 +17,8 @@ export type DbClient = ReturnType<typeof getDb>;
  * Use this in API routes and server actions
  */
 export function getDb() {
-  const { env } = getRequestContext<Env>();
-  return drizzle(env.DB as D1Database, { schema });
+  const { env } = getRequestContext() as unknown as { env: Env };
+  return drizzle(env.DB, { schema });
 }
 
 /**

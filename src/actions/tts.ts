@@ -34,6 +34,16 @@ export interface TtsTaskStatus {
   error?: string | null;
 }
 
+export interface TtsRecordVoice {
+  id: number;
+  name: string;
+  display_name: string | null;
+  provider: string;
+  locale: string;
+  country: string;
+  avatar_url: string;
+}
+
 export interface TtsRecord {
   id: number;
   user_id: string;
@@ -54,7 +64,7 @@ export interface TtsRecord {
   error_message: string | null;
   created_at: Date;
   completed_at: Date | null;
-  voice?: Record<string, unknown> | null;
+  voice?: TtsRecordVoice | null;
 }
 
 export interface TtsRecordsQueryResponse {

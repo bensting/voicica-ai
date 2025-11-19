@@ -7,9 +7,6 @@ import prisma from '@/lib/prisma';
 import { getCurrentUser, getUserOrAnonymous } from '@/lib/auth';
 import type { UserProfile, CreditsInfo } from '@/types/user';
 
-// 重新导出类型供其他模块使用
-export type { UserProfile, CreditsInfo };
-
 /**
  * 获取当前用户资料
  *

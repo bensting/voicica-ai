@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
-import { listVoices, type Voice } from '@/actions/voice';
+import { listVoices } from '@/actions/voice';
+import type { Voice } from '@/types/voice';
 
 interface UseVoicesOptions {
   /** 语言区域代码 */

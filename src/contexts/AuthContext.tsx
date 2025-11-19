@@ -29,14 +29,15 @@ function AuthContextProvider({ children }: { children: ReactNode }) {
   const loading = status === 'loading';
 
   // 转换 session 到 user 对象
-  const user: AuthUser | null = session?.user
+  const sessionUser = session?.user as { id?: string; email?: string | null; name?: string | null; image?: string | null; appUserId?: string; credits?: number } | undefined;
+  const user: AuthUser | null = sessionUser
     ? {
-        id: session.user.id!,
-        email: session.user.email,
-        name: session.user.name,
-        image: session.user.image,
-        appUserId: (session.user as any).appUserId,
-        credits: (session.user as any).credits,
+        id: sessionUser.id!,
+        email: sessionUser.email,
+        name: sessionUser.name,
+        image: sessionUser.image,
+        appUserId: sessionUser.appUserId,
+        credits: sessionUser.credits,
       }
     : null;
 

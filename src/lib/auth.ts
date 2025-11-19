@@ -6,7 +6,7 @@
  */
 import { headers } from 'next/headers';
 import { auth } from './auth-next';
-import { getDb, users, anonymousUsers } from './db';
+import { getDb, anonymousUsers } from './db';
 import { eq } from 'drizzle-orm';
 import crypto from 'crypto';
 

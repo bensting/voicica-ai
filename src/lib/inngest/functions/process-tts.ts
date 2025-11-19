@@ -61,7 +61,7 @@ export const processTtsTask = inngest.createFunction(
       await step.run('deduct-credits', async () => {
         const db = getDb();
         if (isAnonymous) {
-          const result = await db
+          await db
             .update(anonymousUsers)
             .set({
               credits: sql`${anonymousUsers.credits} - ${creditsCost}`,

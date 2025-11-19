@@ -65,7 +65,7 @@ export interface TtsRecordsQueryResponse {
 }
 
 // 积分计算（简化版，实际可能需要更复杂的逻辑）
-async function calculateCreditsCost(text: string, voiceName: string): Promise<number> {
+async function calculateCreditsCost(text: string, _voiceName: string): Promise<number> {
   // 基础：每个字符 1 积分
   const baseCost = text.length;
 

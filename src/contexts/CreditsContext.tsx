@@ -6,16 +6,6 @@ import { getUnifiedCredits } from '@/actions/user';
 import { useCreditsSSE } from '@/hooks/useCreditsSSE';
 
 /**
- * 用户积分响应接口
- */
-interface CreditsResponse {
-  credits: number;
-  total_used: number;
-  is_anonymous: boolean;
-  expires_at: string | null;
-}
-
-/**
  * Credits Context 状态
  */
 interface CreditsContextState {

@@ -24,3 +24,11 @@ export interface UserUpdateRequest {
   name?: string;
   photo_url?: string;
 }
+
+// 积分信息
+export interface CreditsInfo {
+  credits: number;
+  total_used: number;
+  is_anonymous: boolean;
+  expires_at: string | null;
+}

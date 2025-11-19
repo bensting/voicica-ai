@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { apiClient } from '@/lib/api/client';
+import { getUnifiedCredits } from '@/actions/user';
 import { useCreditsSSE } from '@/hooks/useCreditsSSE';
 
 /**
@@ -61,7 +61,7 @@ export function CreditsProvider({ children, enableSSE = false }: CreditsProvider
       setLoading(true);
       setError(null);
 
-      const response = await apiClient.get<CreditsResponse>('/api/v1/users/credits');
+      const response = await getUnifiedCredits();
       setCredits(response.credits);
 
       console.log('✅ 积分获取成功:', {

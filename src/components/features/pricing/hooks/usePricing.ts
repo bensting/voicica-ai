@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import { subscriptionAPI } from '@/lib/api';
+import { getSubscriptionPlans } from '@/actions/subscription';
 import { PricingPlan } from '@/types/subscription';
 import { useLanguage } from '@/contexts/LanguageContext';
 
@@ -33,12 +33,12 @@ export function usePricing() {
         console.log(`Fetching plans for payment provider: ${paymentProvider}`);
 
         // 使用 product_type 参数直接获取 text_to_speech 类型的计划
-        // 后端会返回包含所有必要信息（包括价格）的完整计划数据
-        const data = await subscriptionAPI.getPlans({
+        // Server Action 会返回包含所有必要信息（包括价格）的完整计划数据
+        const data = await getSubscriptionPlans({
           platform: paymentProvider,
           product_type: 'text_to_speech',
           active_only: true
-        }) as PricingPlan[];
+        }) as unknown as PricingPlan[];
 
         console.log('Fetched text_to_speech plans:', data);
 

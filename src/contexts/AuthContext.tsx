@@ -10,6 +10,7 @@ import {
   onAuthStateChanged,
 } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
+import { setAuthCookie, clearAuthCookie } from '@/actions/auth';
 
 interface AuthContextType {
   user: User | null;
@@ -113,6 +114,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         email: user?.email,
         uid: user?.uid,
       });
+
+      if (user) {
+        // 用户已登录，设置认证 cookie
+        try {
+          const token = await user.getIdToken();
+          const result = await setAuthCookie(token);
+          if (result.success) {
+            console.log('🍪 认证 Cookie 设置成功');
+          } else {
+            console.error('🍪 认证 Cookie 设置失败:', result.error);
+          }
+        } catch (error) {
+          console.error('🍪 获取 Token 失败:', error);
+        }
+      } else {
+        // 用户已登出，清除认证 cookie
+        await clearAuthCookie();
+        console.log('🍪 认证 Cookie 已清除');
+      }
 
       setUser(user);
       setLoading(false);

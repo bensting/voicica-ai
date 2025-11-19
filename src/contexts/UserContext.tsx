@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { useAuth } from './AuthContext';
-import { userAPI } from '@/lib/api';
+import { getCurrentUserProfile } from '@/actions/user';
 import type { UserProfile } from '@/types/user';
 
 interface UserContextType {
@@ -39,12 +39,12 @@ export function UserProvider({ children }: { children: ReactNode }) {
       setLoading(true);
       setError(null);
 
-      console.log('📡 UserContext: 调用后端 API /api/v1/users/me');
+      console.log('📡 UserContext: 调用 Server Action getCurrentUserProfile');
 
-      const userData = await userAPI.getCurrentUser();
+      const userData = await getCurrentUserProfile();
 
-      console.log('✅ UserContext: 后端用户数据获取成功', userData);
-      setProfile(userData);
+      console.log('✅ UserContext: 用户数据获取成功', userData);
+      setProfile(userData as UserProfile);
     } catch (err) {
       const error = err as Error;
       console.error('❌ UserContext: 后端 API 调用失败', error);

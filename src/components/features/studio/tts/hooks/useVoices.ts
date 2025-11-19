@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
-import type { Voice } from '@/types/voice';
-import { voiceAPI } from '@/lib/api';
+import { listVoices, type Voice } from '@/actions/voice';
 
 /**
  * 语音数据获取 Hook
@@ -34,8 +33,8 @@ export function useVoices() {
         setLoading(true);
         setError(null);
 
-        const response = await voiceAPI.getVoices({ is_active: true, page: 1, page_size: 1000 });
-        setVoices(response.voices);
+        const response = await listVoices({ is_active: true, page: 1, page_size: 1000 });
+        setVoices(response.voices as Voice[]);
         console.log('✅ 成功获取语音列表:', `共 ${response.voices.length} 条`, response.voices[0]);
       } catch (err) {
         const error = err as Error;

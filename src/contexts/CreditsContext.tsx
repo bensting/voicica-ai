@@ -3,7 +3,6 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { getUnifiedCredits } from '@/actions/user';
-import { useCreditsSSE } from '@/hooks/useCreditsSSE';
 
 /**
  * Credits Context 状态
@@ -14,14 +13,13 @@ interface CreditsContextState {
   error: string | null;
   refreshCredits: () => Promise<void>;
   deductCredits: (amount: number) => void;
-  updateCredits: (newCredits: number) => void; // 直接更新积分（用于 SSE）
+  updateCredits: (newCredits: number) => void;
 }
 
 const CreditsContext = createContext<CreditsContextState | undefined>(undefined);
 
 interface CreditsProviderProps {
   children: React.ReactNode;
-  enableSSE?: boolean; // 是否启用 SSE 实时更新
 }
 
 /**
@@ -31,9 +29,8 @@ interface CreditsProviderProps {
  * - 自动获取积分
  * - 手动刷新
  * - 本地乐观更新（生成后立即扣减）
- * - 可选的 SSE 实时推送（默认关闭）
  */
-export function CreditsProvider({ children, enableSSE = false }: CreditsProviderProps) {
+export function CreditsProvider({ children }: CreditsProviderProps) {
   const { user, loading: authLoading } = useAuth();
   const [credits, setCredits] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -80,10 +77,10 @@ export function CreditsProvider({ children, enableSSE = false }: CreditsProvider
     console.log(`💰 本地扣减积分: -${amount}`);
   }, []);
 
-  // 直接更新积分（用于 SSE 推送，不发起 API 请求）
+  // 直接更新积分
   const updateCredits = useCallback((newCredits: number) => {
     setCredits(newCredits);
-    console.log(`💰 [SSE] 积分直接更新: ${newCredits}`);
+    console.log(`💰 积分更新: ${newCredits}`);
   }, []);
 
   // 等待认证完成后再获取积分
@@ -94,17 +91,6 @@ export function CreditsProvider({ children, enableSSE = false }: CreditsProvider
       void fetchCredits();
     }
   }, [fetchCredits, user, authLoading]);
-
-  // SSE 实时推送积分更新（可选）
-  const handleCreditsUpdate = useCallback((newCredits: number) => {
-    console.log('💰 [SSE] 积分实时更新:', newCredits);
-    setCredits(newCredits);
-  }, []);
-
-  useCreditsSSE({
-    onCreditsUpdate: handleCreditsUpdate,
-    enabled: enableSSE, // 根据 prop 决定是否启用 SSE
-  });
 
   const value: CreditsContextState = {
     credits,

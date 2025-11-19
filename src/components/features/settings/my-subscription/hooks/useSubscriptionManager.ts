@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { getMySubscriptions, cancelSubscription } from '@/lib/api/subscription';
+import { getMySubscriptions, cancelSubscription } from '@/actions/subscription';
 import type { UserSubscriptionListResponse } from '@/types/subscription';
 
 type TabType = 'all' | 'text_to_speech' | 'voice_cloning';
@@ -55,10 +55,9 @@ export function useSubscriptionManager() {
       return { success: true };
     } catch (err: unknown) {
       console.error('Failed to cancel subscription:', err);
-      const error = err as { response?: { data?: { detail?: string } } };
       return {
         success: false,
-        error: error.response?.data?.detail || 'Failed to cancel subscription'
+        error: err instanceof Error ? err.message : 'Failed to cancel subscription'
       };
     } finally {
       setCancelingId(null);

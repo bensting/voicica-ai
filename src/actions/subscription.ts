@@ -3,9 +3,13 @@
 /**
  * 订阅模块 Server Actions
  */
+import Stripe from 'stripe';
 import prisma from '@/lib/prisma';
 import { getCurrentUser } from '@/lib/auth';
 import type { SubscriptionPlan, UserSubscription, UserSubscriptionListResponse } from '@/types/subscription';
+
+// Initialize Stripe
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
 /**
  * 获取订阅计划列表
@@ -314,21 +318,39 @@ export async function cancelSubscription(
     throw new Error('订阅已取消');
   }
 
-  // 更新订阅状态
   const now = new Date();
+
+  // 如果有 Stripe 订阅 ID，调用 Stripe API 取消
+  if (subscription.external_subscription_id && subscription.platform === 'stripe') {
+    try {
+      console.log(`🔄 取消 Stripe 订阅: ${subscription.external_subscription_id}`);
+
+      await stripe.subscriptions.cancel(subscription.external_subscription_id, {
+        cancellation_details: {
+          comment: data?.cancellation_reason,
+        },
+      });
+
+      console.log(`✅ Stripe 订阅已取消: ${subscription.external_subscription_id}`);
+    } catch (error) {
+      console.error('❌ Stripe 取消失败:', error);
+      // 如果 Stripe 取消失败，仍然更新本地状态（可能是测试数据或已取消的订阅）
+    }
+  }
+
+  // 更新订阅状态
   await prisma.user_subscriptions.update({
     where: { id: subscription.id },
     data: {
       status: 'CANCELLED',
       auto_renew: false,
+      cancelled_at: now,
+      cancellation_reason: data?.cancellation_reason || null,
       updated_at: now,
     },
   });
 
-  // 记录取消原因（如果有）
-  if (data?.cancellation_reason) {
-    console.log(`订阅 ${subscriptionId} 取消原因: ${data.cancellation_reason}`);
-  }
+  console.log(`✅ 订阅已取消: ${subscriptionId}`);
 
   return {
     success: true,

@@ -6,10 +6,14 @@ import { eq, and, desc, sql } from 'drizzle-orm';
 
 export const runtime = 'edge';
 
-// Initialize Stripe
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
+// Lazy initialization to avoid build-time errors
+function getStripe() {
+  return new Stripe(process.env.STRIPE_SECRET_KEY!);
+}
 
-const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!;
+function getWebhookSecret() {
+  return process.env.STRIPE_WEBHOOK_SECRET!;
+}
 
 /**
  * 记录订阅历史
@@ -102,7 +106,7 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session, eventId
   if (isSubscription && stripeSubscriptionId) {
     // 订阅模式：从 Stripe 获取周期结束时间
     try {
-      const stripeSubscription = await stripe.subscriptions.retrieve(stripeSubscriptionId);
+      const stripeSubscription = await getStripe().subscriptions.retrieve(stripeSubscriptionId);
       const currentPeriodEnd = (stripeSubscription as unknown as { current_period_end: number }).current_period_end;
       endDate = new Date(currentPeriodEnd * 1000);
       console.log(`📅 从 Stripe 获取订阅周期: ${now.toISOString()} - ${endDate.toISOString()}`);
@@ -446,7 +450,7 @@ export async function POST(request: NextRequest) {
     // 验证签名
     let event: Stripe.Event;
     try {
-      event = stripe.webhooks.constructEvent(body, signature, webhookSecret);
+      event = getStripe().webhooks.constructEvent(body, signature, getWebhookSecret());
     } catch (err) {
       console.error('❌ Webhook 签名验证失败:', err);
       return NextResponse.json({ error: 'Invalid signature' }, { status: 400 });

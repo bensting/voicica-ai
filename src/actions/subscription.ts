@@ -282,3 +282,58 @@ export async function getMyActiveSubscription(): Promise<UserSubscription | null
     days_remaining: daysRemaining,
   };
 }
+
+/**
+ * 取消订阅
+ */
+export async function cancelSubscription(
+  subscriptionId: string,
+  data?: { cancellation_reason?: string }
+): Promise<{
+  success: boolean;
+  message: string;
+  subscription_id: string;
+  canceled_at: string;
+}> {
+  const user = await getCurrentUser();
+  const userId = user.uid;
+
+  // 查找订阅
+  const subscription = await prisma.user_subscriptions.findFirst({
+    where: {
+      id: parseInt(subscriptionId),
+      user_id: userId,
+    },
+  });
+
+  if (!subscription) {
+    throw new Error('订阅不存在或无权操作');
+  }
+
+  if (subscription.status === 'CANCELLED') {
+    throw new Error('订阅已取消');
+  }
+
+  // 更新订阅状态
+  const now = new Date();
+  await prisma.user_subscriptions.update({
+    where: { id: subscription.id },
+    data: {
+      status: 'CANCELLED',
+      auto_renew: false,
+      updated_at: now,
+    },
+  });
+
+  // 记录取消原因（如果有）
+  if (data?.cancellation_reason) {
+    console.log(`订阅 ${subscriptionId} 取消原因: ${data.cancellation_reason}`);
+  }
+
+  return {
+    success: true,
+    message: '订阅已成功取消',
+    subscription_id: subscriptionId,
+    canceled_at: now.toISOString(),
+  };
+}

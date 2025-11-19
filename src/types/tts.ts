@@ -89,3 +89,31 @@ export interface TtsTaskStatus {
   };
   error?: string;
 }
+
+// 工具函数
+
+/**
+ * 获取状态的显示文本
+ */
+export function getStatusLabel(status: TaskStatus): string {
+  const labels: Record<TaskStatus, string> = {
+    [TaskStatus.PENDING]: 'Pending',
+    [TaskStatus.PROCESSING]: 'Processing',
+    [TaskStatus.SUCCESS]: 'Success',
+    [TaskStatus.FAILURE]: 'Failed',
+  };
+  return labels[status] || status;
+}
+
+/**
+ * 获取状态的颜色样式
+ */
+export function getStatusColor(status: TaskStatus): string {
+  const colors: Record<TaskStatus, string> = {
+    [TaskStatus.PENDING]: 'bg-yellow-100 text-yellow-800',
+    [TaskStatus.PROCESSING]: 'bg-blue-100 text-blue-800',
+    [TaskStatus.SUCCESS]: 'bg-green-100 text-green-800',
+    [TaskStatus.FAILURE]: 'bg-red-100 text-red-800',
+  };
+  return colors[status] || 'bg-gray-100 text-gray-800';
+}

@@ -59,3 +59,4 @@ next-env.d.ts
 **/*-firebase-adminsdk-*.json
 
 .idea/encodings.xml
+merge_to_main.bat

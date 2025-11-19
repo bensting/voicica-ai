@@ -1,0 +1,17 @@
+/**
+ * Drizzle ORM Database Client for D1
+ */
+import { drizzle } from 'drizzle-orm/d1';
+import * as schema from './schema';
+
+export type Database = ReturnType<typeof createDb>;
+
+export function createDb(d1: D1Database) {
+  return drizzle(d1, { schema });
+}
+
+// Re-export schema for convenience
+export * from './schema';
+
+// Type for the database instance
+export type DbClient = ReturnType<typeof createDb>;

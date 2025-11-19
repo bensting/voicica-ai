@@ -1,15 +1,13 @@
 /**
- * Auth.js 配置
+ * Auth.js 配置 - 使用 JWT sessions (Edge Runtime 兼容)
  */
 import type { NextAuthConfig } from 'next-auth';
 import Google from 'next-auth/providers/google';
 import Apple from 'next-auth/providers/apple';
-import { PrismaAdapter } from '@auth/prisma-adapter';
-import prisma from './prisma';
+import { getDb, users } from './db';
+import { eq } from 'drizzle-orm';
 
 export const authConfig: NextAuthConfig = {
-  adapter: PrismaAdapter(prisma),
-
   providers: [
     Google({
       clientId: process.env.GOOGLE_CLIENT_ID!,
@@ -22,66 +20,66 @@ export const authConfig: NextAuthConfig = {
   ],
 
   callbacks: {
-    // 登录验证
-    async signIn() {
-      // 允许所有登录
-      return true;
-    },
+    // JWT callback - 在 token 中存储用户信息
+    async jwt({ token, user, account }) {
+      if (user) {
+        token.id = user.id;
+        token.email = user.email;
+        token.name = user.name;
+        token.image = user.image;
 
-    // 自定义 session
-    async session({ session, user }) {
-      if (session.user) {
-        session.user.id = user.id;
+        // 首次登录时创建/关联应用用户
+        if (account && user.email) {
+          const db = getDb();
 
-        // 获取应用用户信息
-        const authUser = await prisma.user.findUnique({
-          where: { id: user.id },
-          include: { appUser: true },
-        });
+          // 查找或创建应用用户
+          let appUser = await db.query.users.findFirst({
+            where: eq(users.email, user.email),
+          });
 
-        if (authUser?.appUser) {
-          // 添加应用用户信息到 session
-          const extendedUser = session.user as { appUserId?: string; credits?: number };
-          extendedUser.appUserId = authUser.appUser.user_id;
-          extendedUser.credits = authUser.appUser.credits;
+          if (!appUser) {
+            const result = await db.insert(users).values({
+              userId: user.id!,
+              email: user.email,
+              name: user.name ?? null,
+              photoUrl: user.image ?? null,
+              credits: 1000,
+              totalCreditsUsed: 0,
+            }).returning();
+
+            appUser = result[0];
+            console.log(`✅ 新用户注册: ${user.email}, 初始积分: 1000`);
+          }
+
+          token.appUserId = appUser.userId;
+          token.credits = appUser.credits;
         }
       }
-      return session;
+
+      return token;
     },
-  },
 
-  events: {
-    // 新用户创建后,关联应用用户
-    async createUser({ user }) {
-      if (!user.id || !user.email) return;
+    // Session callback - 从 token 构建 session
+    async session({ session, token }) {
+      if (session.user && token) {
+        session.user.id = token.id as string;
 
-      // 查找或创建应用用户
-      let appUser = await prisma.users.findFirst({
-        where: { email: user.email },
-      });
+        // 获取最新的用户积分
+        if (token.appUserId) {
+          const db = getDb();
+          const appUser = await db.query.users.findFirst({
+            where: eq(users.userId, token.appUserId as string),
+          });
 
-      if (!appUser) {
-        // 创建应用用户
-        appUser = await prisma.users.create({
-          data: {
-            user_id: user.id, // 使用 Auth.js User ID
-            email: user.email,
-            name: user.name ?? null,
-            photo_url: user.image ?? null,
-            credits: 1000, // 新用户初始积分
-            total_credits_used: 0,
-          },
-        });
-        console.log(`✅ 新用户注册: ${user.email}, 初始积分: 1000`);
+          if (appUser) {
+            const extendedUser = session.user as { appUserId?: string; credits?: number };
+            extendedUser.appUserId = appUser.userId;
+            extendedUser.credits = appUser.credits;
+          }
+        }
       }
 
-      // 关联 Auth.js User 和应用 User
-      await prisma.user.update({
-        where: { id: user.id },
-        data: { appUserId: appUser.user_id },
-      });
-
-      console.log(`🔗 用户关联成功: Auth.js User ${user.id} -> App User ${appUser.user_id}`);
+      return session;
     },
   },
 
@@ -91,6 +89,6 @@ export const authConfig: NextAuthConfig = {
   },
 
   session: {
-    strategy: 'database',
+    strategy: 'jwt',
   },
 };

@@ -6,7 +6,8 @@
  */
 import { headers } from 'next/headers';
 import { auth } from './auth-next';
-import prisma from './prisma';
+import { getDb, users, anonymousUsers } from './db';
+import { eq } from 'drizzle-orm';
 import crypto from 'crypto';
 
 export interface AuthUser {
@@ -39,14 +40,12 @@ export async function getCurrentUser(): Promise<AuthUser> {
     throw new Error('未登录');
   }
 
-  // 获取应用用户 ID
-  const authUser = await prisma.user.findUnique({
-    where: { id: session.user.id },
-    select: { appUserId: true },
-  });
+  // 从 session 获取 appUserId (JWT 模式下已经在 token 中)
+  const extendedUser = session.user as { id?: string; appUserId?: string };
+  const userId = extendedUser.appUserId || extendedUser.id!;
 
   return {
-    uid: authUser?.appUserId || session.user.id!,
+    uid: userId,
     email: session.user.email ?? undefined,
     name: session.user.name ?? undefined,
     picture: session.user.image ?? undefined,
@@ -76,50 +75,50 @@ async function createOrGetAnonymousUser(
   ipAddress?: string,
   userAgent?: string
 ): Promise<{ user_id: string; credits: number }> {
+  const db = getDb();
+
   // 生成匿名用户 ID
   const hash = crypto.createHash('sha256').update(deviceFingerprint).digest('hex').substring(0, 16);
   const anonymousUserId = `anonymous_${hash}`;
 
   // 查找现有匿名用户
-  let anonUser = await prisma.anonymous_users.findUnique({
-    where: { user_id: anonymousUserId },
+  const anonUser = await db.query.anonymousUsers.findFirst({
+    where: eq(anonymousUsers.userId, anonymousUserId),
   });
 
   if (anonUser) {
     // 更新最后使用时间
-    await prisma.anonymous_users.update({
-      where: { user_id: anonymousUserId },
-      data: {
-        last_used_at: new Date(),
-        ip_address: ipAddress || anonUser.ip_address,
-        user_agent: userAgent || anonUser.user_agent,
-      },
-    });
+    await db.update(anonymousUsers)
+      .set({
+        lastUsedAt: new Date(),
+        ipAddress: ipAddress || anonUser.ipAddress,
+        userAgent: userAgent || anonUser.userAgent,
+      })
+      .where(eq(anonymousUsers.userId, anonymousUserId));
 
     console.log(`📱 匿名用户访问: ${anonymousUserId}, 积分: ${anonUser.credits}`);
-    return { user_id: anonUser.user_id, credits: anonUser.credits };
+    return { user_id: anonUser.userId, credits: anonUser.credits };
   }
 
   // 创建新匿名用户
   const expiresAt = new Date();
   expiresAt.setDate(expiresAt.getDate() + ANONYMOUS_USER_EXPIRY_DAYS);
 
-  anonUser = await prisma.anonymous_users.create({
-    data: {
-      user_id: anonymousUserId,
-      device_fingerprint: deviceFingerprint,
-      ip_address: ipAddress,
-      user_agent: userAgent,
-      credits: DEFAULT_ANONYMOUS_CREDITS,
-      total_credits_used: 0,
-      is_anonymous: true,
-      expires_at: expiresAt,
-      last_used_at: new Date(),
-    },
-  });
+  const result = await db.insert(anonymousUsers).values({
+    userId: anonymousUserId,
+    deviceFingerprint: deviceFingerprint,
+    ipAddress: ipAddress,
+    userAgent: userAgent,
+    credits: DEFAULT_ANONYMOUS_CREDITS,
+    totalCreditsUsed: 0,
+    isAnonymous: true,
+    expiresAt: expiresAt,
+    lastUsedAt: new Date(),
+  }).returning();
 
+  const newUser = result[0];
   console.log(`✅ 新匿名用户创建: ${anonymousUserId}, 初始积分: ${DEFAULT_ANONYMOUS_CREDITS}`);
-  return { user_id: anonUser.user_id, credits: anonUser.credits };
+  return { user_id: newUser.userId, credits: newUser.credits };
 }
 
 /**
@@ -133,13 +132,9 @@ export async function getUserOrAnonymous(): Promise<UnifiedUser> {
   // 1. 尝试获取正式用户 (Auth.js)
   const session = await auth();
   if (session?.user) {
-    // 获取应用用户 ID
-    const authUser = await prisma.user.findUnique({
-      where: { id: session.user.id },
-      select: { appUserId: true },
-    });
+    const extendedUser = session.user as { id?: string; appUserId?: string };
+    const userId = extendedUser.appUserId || extendedUser.id!;
 
-    const userId = authUser?.appUserId || session.user.id!;
     return {
       user_id: userId,
       is_anonymous: false,

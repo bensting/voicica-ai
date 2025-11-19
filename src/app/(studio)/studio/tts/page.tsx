@@ -39,7 +39,7 @@ export default function StudioTTSPage() {
   const { locale, isReady: isLocaleReady, t } = useLanguage();
   const { user, loading: authLoading } = useAuth();
   const { setTitle } = useStudio();
-  const { credits } = useCredits();
+  const { credits, refreshCredits } = useCredits();
   const [isAudioModalOpen, setIsAudioModalOpen] = useState(false);
   const [isVoiceSelectorOpen, setIsVoiceSelectorOpen] = useState(false);
   const [isGeneratingModalOpen, setIsGeneratingModalOpen] = useState(false);
@@ -166,14 +166,15 @@ export default function StudioTTSPage() {
     }
   }, [audioUrl, isMobile]);
 
-  // 任务提交后立即刷新历史记录
+  // 任务提交后立即刷新历史记录和积分
   useEffect(() => {
     // 只在 isGenerating 从 true 变为 false 时刷新（即任务刚完成时）
     // 避免首次加载时误触发
     if (prevIsGeneratingRef.current === true && !isGenerating) {
-      console.log('🔄 [TTSPage] 任务完成，300ms 后刷新记录');
+      console.log('🔄 [TTSPage] 任务完成，300ms 后刷新记录和积分');
       const timer = setTimeout(() => {
         void fetchRecords();
+        void refreshCredits(); // 刷新积分
       }, 300);
 
       // 更新 ref
@@ -185,7 +186,7 @@ export default function StudioTTSPage() {
     // 更新 ref 追踪当前值
     prevIsGeneratingRef.current = isGenerating;
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isGenerating]); // 移除 fetchRecords 依赖，避免重复调用
+  }, [isGenerating]); // 移除 fetchRecords 和 refreshCredits 依赖，避免重复调用
 
   // 移动端：当新的生成记录出现时，自动打开底部抽屉显示进度
   useEffect(() => {

@@ -1,17 +1,15 @@
 'use client';
 
 import MobileBottomNav from '@/components/layout/studio/MobileBottomNav';
-import SSECreditsProvider from '@/components/providers/SSECreditsProvider';
 import { CreditsProvider } from '@/contexts/CreditsContext';
 
 /**
  * TTS Layout
  *
  * Provides desktop/mobile specific layouts for TTS pages:
- * - Desktop: Standard content layout with SSE credits updates
+ * - Desktop: Standard content layout
  * - Mobile: Content with bottom navigation bar and appropriate padding
- * - Credits: Provides credits data (without SSE in provider)
- * - SSE: Real-time credits updates via SSECreditsProvider
+ * - Credits: Provides credits data (refreshed after operations)
  */
 export default function TTSLayout({
   children,
@@ -19,26 +17,24 @@ export default function TTSLayout({
   children: React.ReactNode;
 }) {
   return (
-    <CreditsProvider enableSSE={false}>
-      <SSECreditsProvider>
-        {/* ========== 桌面端布局 (lg+) ========== */}
-        <div className="hidden lg:block">
-          {children}
-        </div>
+    <CreditsProvider>
+      {/* ========== 桌面端布局 (lg+) ========== */}
+      <div className="hidden lg:block">
+        {children}
+      </div>
 
-        {/* ========== 移动端布局 (<lg) ========== */}
-        <div className="lg:hidden h-[calc(100vh-60px)] flex flex-col">
-          {/* Content area */}
-          <div className="flex-1 min-h-0">
-            <div className="h-full">
-              {children}
-            </div>
+      {/* ========== 移动端布局 (<lg) ========== */}
+      <div className="lg:hidden h-[calc(100vh-60px)] flex flex-col">
+        {/* Content area */}
+        <div className="flex-1 min-h-0">
+          <div className="h-full">
+            {children}
           </div>
-
-          {/* Mobile Bottom Navigation */}
-          <MobileBottomNav />
         </div>
-      </SSECreditsProvider>
+
+        {/* Mobile Bottom Navigation */}
+        <MobileBottomNav />
+      </div>
     </CreditsProvider>
   );
 }

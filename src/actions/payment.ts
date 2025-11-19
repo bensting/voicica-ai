@@ -73,6 +73,11 @@ export async function createStripeCheckout(request: StripeCheckoutRequest): Prom
     where: { user_id: userId },
   });
 
+  // 构建带 session ID 的 success URL
+  const successUrl = request.success_url.includes('?')
+    ? `${request.success_url}&request_id={CHECKOUT_SESSION_ID}`
+    : `${request.success_url}?request_id={CHECKOUT_SESSION_ID}`;
+
   // 创建 Stripe Checkout Session
   const sessionParams: Stripe.Checkout.SessionCreateParams = {
     mode: plan.billing_period ? 'subscription' : 'payment',
@@ -95,7 +100,7 @@ export async function createStripeCheckout(request: StripeCheckoutRequest): Prom
         quantity: 1,
       },
     ],
-    success_url: request.success_url,
+    success_url: successUrl,
     cancel_url: request.cancel_url,
     metadata: {
       user_id: userId,

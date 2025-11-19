@@ -76,11 +76,6 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session, eventId
     return;
   }
 
-  // 计算订阅日期
-  const now = new Date();
-  const endDate = new Date(now);
-  endDate.setDate(endDate.getDate() + plan.cycle_days);
-
   // 获取金额和货币（从 line items 或 session）
   const lineItem = session.line_items?.data?.[0];
   const amount = session.amount_total ?? lineItem?.amount_total ?? null;
@@ -91,6 +86,28 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session, eventId
   const stripeSubscriptionId = typeof session.subscription === 'string'
     ? session.subscription
     : session.subscription?.id ?? null;
+
+  // 计算订阅日期
+  const now = new Date();
+  let endDate: Date;
+
+  if (isSubscription && stripeSubscriptionId) {
+    // 订阅模式：从 Stripe 获取周期结束时间
+    try {
+      const stripeSubscription = await stripe.subscriptions.retrieve(stripeSubscriptionId);
+      endDate = new Date(stripeSubscription.current_period_end * 1000);
+      console.log(`📅 从 Stripe 获取订阅周期: ${now.toISOString()} - ${endDate.toISOString()}`);
+    } catch (error) {
+      console.error('⚠️ 获取 Stripe 订阅失败，使用 cycle_days 计算:', error);
+      endDate = new Date(now);
+      endDate.setDate(endDate.getDate() + plan.cycle_days);
+    }
+  } else {
+    // 一次性支付：用 cycle_days 计算
+    endDate = new Date(now);
+    endDate.setDate(endDate.getDate() + plan.cycle_days);
+    console.log(`📅 一次性支付，使用 cycle_days (${plan.cycle_days}) 计算: ${now.toISOString()} - ${endDate.toISOString()}`);
+  }
 
   console.log('📊 Checkout 数据:', {
     amount,

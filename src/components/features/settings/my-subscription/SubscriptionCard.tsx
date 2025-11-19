@@ -123,7 +123,7 @@ export default function SubscriptionCard({
         <div className="hidden lg:flex items-center justify-between">
           {/* 左侧：图标 + 计划信息 */}
           <div className="flex items-center gap-4">
-            <span className="text-3xl">{getPlatformIcon(subscription.platform)}</span>
+            <span className="text-3xl">{getPlatformIcon(subscription.platform || 'stripe')}</span>
             <div>
               {/* 计划名称 */}
               <div className="flex items-center gap-2 mb-1">

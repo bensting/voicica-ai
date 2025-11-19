@@ -81,6 +81,24 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session, eventId
   const endDate = new Date(now);
   endDate.setDate(endDate.getDate() + plan.cycle_days);
 
+  // 获取金额和货币（从 line items 或 session）
+  const lineItem = session.line_items?.data?.[0];
+  const amount = session.amount_total ?? lineItem?.amount_total ?? null;
+  const currency = (session.currency ?? lineItem?.currency)?.toUpperCase() ?? null;
+
+  // 判断是否为订阅模式
+  const isSubscription = session.mode === 'subscription';
+  const stripeSubscriptionId = typeof session.subscription === 'string'
+    ? session.subscription
+    : session.subscription?.id ?? null;
+
+  console.log('📊 Checkout 数据:', {
+    amount,
+    currency,
+    mode: session.mode,
+    subscription_id: stripeSubscriptionId,
+  });
+
   // 创建订阅记录
   const subscription = await prisma.user_subscriptions.create({
     data: {
@@ -90,15 +108,15 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session, eventId
       product_type: plan.product_type,
       platform: 'stripe',
       external_transaction_id: session.id,
-      external_subscription_id: session.subscription as string || null,
+      external_subscription_id: stripeSubscriptionId,
       request_id: `stripe_${session.id}`,
       status: 'ACTIVE',
       start_date: now,
       end_date: endDate,
       credits_allocated: plan.credits_per_cycle,
-      amount: session.amount_total,
-      currency: session.currency?.toUpperCase(),
-      auto_renew: !!session.subscription,
+      amount: amount,
+      currency: currency,
+      auto_renew: isSubscription,
       cancel_at_period_end: false,
       activated_at: now,
     },
@@ -122,8 +140,8 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session, eventId
     newStatus: 'ACTIVE',
     stripeEventId: eventId,
     stripeEventType: 'checkout.session.completed',
-    amount: session.amount_total || undefined,
-    currency: session.currency?.toUpperCase(),
+    amount: amount || undefined,
+    currency: currency || undefined,
     creditsChange: plan.credits_per_cycle,
     metadata: {
       session_id: session.id,
@@ -144,7 +162,7 @@ async function handleInvoicePaid(invoice: Stripe.Invoice, eventId: string) {
   const lineItem = invoice.lines?.data?.[0];
   const subscriptionId = lineItem?.parent?.subscription_item_details?.subscription;
 
-  if (!subscriptionId || typeof subscriptionId !== 'string') {
+  if (!subscriptionId) {
     console.log('⏭️ 非订阅发票，跳过');
     return;
   }
@@ -281,12 +299,33 @@ async function handleSubscriptionUpdated(stripeSubscription: Stripe.Subscription
 async function handleSubscriptionDeleted(stripeSubscription: Stripe.Subscription, eventId: string) {
   console.log('❌ 处理 customer.subscription.deleted:', stripeSubscription.id);
 
-  const subscription = await prisma.user_subscriptions.findFirst({
+  // 先用 external_subscription_id 查找
+  let subscription = await prisma.user_subscriptions.findFirst({
     where: {
       external_subscription_id: stripeSubscription.id,
       platform: 'stripe',
     },
   });
+
+  // 如果找不到，尝试用最新的 invoice 中的 checkout session 查找
+  if (!subscription) {
+    console.log(`⚠️ 未通过 subscription_id 找到记录，尝试其他方式...`);
+
+    // 获取最近一次活跃的订阅（同一用户）
+    const customerId = typeof stripeSubscription.customer === 'string'
+      ? stripeSubscription.customer
+      : stripeSubscription.customer?.id;
+
+    if (customerId) {
+      subscription = await prisma.user_subscriptions.findFirst({
+        where: {
+          platform: 'stripe',
+          status: 'ACTIVE',
+        },
+        orderBy: { created_at: 'desc' },
+      });
+    }
+  }
 
   if (!subscription) {
     console.log(`⏭️ 未找到订阅记录: ${stripeSubscription.id}`);

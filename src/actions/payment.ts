@@ -108,7 +108,11 @@ export async function createStripeCheckout(request: StripeCheckoutRequest): Prom
     }),
   };
 
-  const session = await stripe.checkout.sessions.create(sessionParams);
+  const session = await stripe.checkout.sessions.create({
+    ...sessionParams,
+    // 展开 line_items 以便在 webhook 中获取
+    expand: ['line_items'],
+  });
 
   if (!session.url) {
     throw new Error('Failed to create checkout session');
@@ -125,18 +129,43 @@ export async function createStripeCheckout(request: StripeCheckoutRequest): Prom
 /**
  * 验证 Stripe 支付状态
  */
-export async function verifyStripePayment(sessionId: string): Promise<{
-  status: string;
+export async function verifyStripePayment(params: { request_id: string }): Promise<{
+  success: boolean;
   payment_status: string;
   subscription_id?: string;
+  message: string;
 }> {
-  const session = await stripe.checkout.sessions.retrieve(sessionId);
+  try {
+    const session = await stripe.checkout.sessions.retrieve(params.request_id);
 
-  return {
-    status: session.status || 'unknown',
-    payment_status: session.payment_status,
-    subscription_id: session.subscription as string | undefined,
-  };
+    const isPaid = session.payment_status === 'paid';
+
+    // 查找订阅记录
+    let subscriptionId: string | undefined;
+    if (isPaid) {
+      const subscription = await prisma.user_subscriptions.findFirst({
+        where: {
+          external_transaction_id: session.id,
+          platform: 'stripe',
+        },
+      });
+      subscriptionId = subscription ? String(subscription.id) : undefined;
+    }
+
+    return {
+      success: isPaid,
+      payment_status: session.payment_status,
+      subscription_id: subscriptionId,
+      message: isPaid ? '支付成功' : '支付未完成',
+    };
+  } catch (error) {
+    console.error('验证支付状态失败:', error);
+    return {
+      success: false,
+      payment_status: 'unknown',
+      message: '验证支付状态失败',
+    };
+  }
 }
 
 /**

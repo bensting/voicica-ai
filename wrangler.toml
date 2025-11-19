@@ -6,5 +6,5 @@ compatibility_flags = ["nodejs_compat"]
 # D1 Database binding
 [[d1_databases]]
 binding = "DB"
-database_name = "ai-voice-labs-db"
-database_id = "" # Fill this after creating D1 database
+database_name = "ai-voice-labs"
+database_id = "57652cf3-2ce9-468f-bc7e-18b3af5bc64b" # Fill this after creating D1 database

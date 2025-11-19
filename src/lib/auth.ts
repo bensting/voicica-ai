@@ -132,11 +132,22 @@ async function createOrGetAnonymousUser(
 export async function getUserOrAnonymous(): Promise<UnifiedUser> {
   // 1. 尝试获取正式用户 (Auth.js)
   const session = await auth();
+  console.log('🔍 [getUserOrAnonymous] Session:', {
+    hasSession: !!session,
+    hasUser: !!session?.user,
+    userId: session?.user?.id,
+  });
+
   if (session?.user) {
     // 获取应用用户 ID
     const authUser = await prisma.user.findUnique({
       where: { id: session.user.id },
       select: { appUserId: true },
+    });
+
+    console.log('🔍 [getUserOrAnonymous] Auth User:', {
+      hasAuthUser: !!authUser,
+      appUserId: authUser?.appUserId,
     });
 
     const userId = authUser?.appUserId || session.user.id!;
@@ -149,6 +160,8 @@ export async function getUserOrAnonymous(): Promise<UnifiedUser> {
   // 2. 尝试获取匿名用户
   const headersList = await headers();
   const fingerprint = headersList.get('x-device-fingerprint');
+
+  console.log('🔍 [getUserOrAnonymous] Fingerprint:', fingerprint);
 
   if (fingerprint) {
     const ipAddress = headersList.get('x-forwarded-for')?.split(',')[0] || undefined;

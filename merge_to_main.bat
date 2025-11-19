@@ -58,7 +58,7 @@ echo.
 REM 4. 显示即将合并的提交
 echo [4/7] 即将合并的提交列表：
 echo ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-git log origin/main..HEAD --oneline --graph -20
+git --no-pager log origin/main..HEAD --oneline --graph -20
 echo ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 echo.
 

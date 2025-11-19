@@ -34,7 +34,7 @@ export async function createStripeCheckout(request: StripeCheckoutRequest): Prom
   // 验证用户已登录
   const user = await getCurrentUser();
   const userId = user.uid;
-  const db = getDb();
+  const db = await getDb();
 
   // 获取订阅计划
   const plans = await db
@@ -153,7 +153,7 @@ export async function verifyStripePayment(params: { request_id: string }): Promi
 }> {
   try {
     const session = await getStripe().checkout.sessions.retrieve(params.request_id);
-    const db = getDb();
+    const db = await getDb();
 
     const isPaid = session.payment_status === 'paid';
 
@@ -196,7 +196,7 @@ export async function getStripePrices(productId: string): Promise<Array<{
   billing_type: 'recurring' | 'one_time';
   billing_period: string | null;
 }>> {
-  const db = getDb();
+  const db = await getDb();
 
   // 从数据库获取订阅计划的价格信息
   const plan = await db.query.subscriptionPlans.findFirst({

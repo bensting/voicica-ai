@@ -35,7 +35,7 @@ export const processTtsTask = inngest.createFunction(
     try {
       // Step 1: 获取任务记录并更新状态为处理中
       const record = await step.run('get-record', async () => {
-        const db = getDb();
+        const db = await getDb();
         const ttsRecord = await db.query.ttsRecords.findFirst({
           where: eq(ttsRecords.taskId, taskId),
         });
@@ -59,7 +59,7 @@ export const processTtsTask = inngest.createFunction(
 
       // Step 2: 扣减积分
       await step.run('deduct-credits', async () => {
-        const db = getDb();
+        const db = await getDb();
         if (isAnonymous) {
           await db
             .update(anonymousUsers)
@@ -104,7 +104,7 @@ export const processTtsTask = inngest.createFunction(
 
       // Step 3: 更新进度
       await step.run('update-progress-20', async () => {
-        const db = getDb();
+        const db = await getDb();
         await db
           .update(ttsRecords)
           .set({ progress: 20 })
@@ -113,7 +113,7 @@ export const processTtsTask = inngest.createFunction(
 
       // Step 4: 获取语音信息
       const voice = await step.run('get-voice', async () => {
-        const db = getDb();
+        const db = await getDb();
         const voiceRecord = await db.query.voices.findFirst({
           where: eq(voices.name, voiceName),
         });
@@ -125,7 +125,7 @@ export const processTtsTask = inngest.createFunction(
 
       // Step 5: 更新进度
       await step.run('update-progress-30', async () => {
-        const db = getDb();
+        const db = await getDb();
         await db
           .update(ttsRecords)
           .set({ progress: 30 })
@@ -153,7 +153,7 @@ export const processTtsTask = inngest.createFunction(
 
       // Step 7: 更新进度
       await step.run('update-progress-80', async () => {
-        const db = getDb();
+        const db = await getDb();
         await db
           .update(ttsRecords)
           .set({ progress: 80 })
@@ -175,7 +175,7 @@ export const processTtsTask = inngest.createFunction(
 
       // Step 9: 更新任务状态为成功
       await step.run('mark-success', async () => {
-        const db = getDb();
+        const db = await getDb();
         await db
           .update(ttsRecords)
           .set({
@@ -213,7 +213,7 @@ export const processTtsTask = inngest.createFunction(
       // 如果积分已扣减，退还积分
       if (creditsDeducted) {
         try {
-          const db = getDb();
+          const db = await getDb();
           if (isAnonymous) {
             await db
               .update(anonymousUsers)
@@ -237,7 +237,7 @@ export const processTtsTask = inngest.createFunction(
 
       // 更新任务状态为失败
       try {
-        const db = getDb();
+        const db = await getDb();
         await db
           .update(ttsRecords)
           .set({

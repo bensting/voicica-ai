@@ -94,7 +94,7 @@ async function checkCredits(
   required: number,
   isAnonymous: boolean
 ): Promise<boolean> {
-  const db = getDb();
+  const db = await getDb();
 
   if (isAnonymous) {
     const user = await db.query.anonymousUsers.findFirst({
@@ -117,7 +117,7 @@ async function checkCredits(
  * 返回任务 ID，实际处理由后台 Worker 完成
  */
 export async function createTtsTask(request: TtsRequest): Promise<TtsTaskStatus> {
-  const db = getDb();
+  const db = await getDb();
   const unifiedUser = await getUserOrAnonymous();
   const userId = unifiedUser.user_id;
   const isAnonymous = unifiedUser.is_anonymous;
@@ -208,7 +208,7 @@ export async function createTtsTask(request: TtsRequest): Promise<TtsTaskStatus>
  * 查询 TTS 任务状态
  */
 export async function getTtsTaskStatus(taskId: string): Promise<TtsTaskStatus> {
-  const db = getDb();
+  const db = await getDb();
   const record = await db.query.ttsRecords.findFirst({
     where: eq(ttsRecords.taskId, taskId),
   });
@@ -271,7 +271,7 @@ export async function getTtsTaskStatus(taskId: string): Promise<TtsTaskStatus> {
  * 获取用户 TTS 历史记录
  */
 export async function getTtsRecords(limit: number = 50): Promise<TtsRecord[]> {
-  const db = getDb();
+  const db = await getDb();
   const unifiedUser = await getUserOrAnonymous();
   const userId = unifiedUser.user_id;
 
@@ -314,7 +314,7 @@ export async function queryTtsRecords(params: {
   page?: number;
   page_size?: number;
 }): Promise<TtsRecordsQueryResponse> {
-  const db = getDb();
+  const db = await getDb();
   const unifiedUser = await getUserOrAnonymous();
   const userId = unifiedUser.user_id;
 
@@ -420,7 +420,7 @@ export async function queryTtsRecords(params: {
  * 根据记录 ID 获取单条 TTS 记录
  */
 export async function getTtsRecordById(recordId: number): Promise<TtsRecord> {
-  const db = getDb();
+  const db = await getDb();
   const unifiedUser = await getUserOrAnonymous();
   const userId = unifiedUser.user_id;
 
@@ -464,7 +464,7 @@ export async function getTtsRecordById(recordId: number): Promise<TtsRecord> {
  * 删除单个 TTS 记录
  */
 export async function deleteTtsRecord(recordId: string): Promise<void> {
-  const db = getDb();
+  const db = await getDb();
   const unifiedUser = await getUserOrAnonymous();
   const userId = unifiedUser.user_id;
 
@@ -497,7 +497,7 @@ export async function deleteTtsRecord(recordId: string): Promise<void> {
  * 批量删除 TTS 记录
  */
 export async function batchDeleteTtsRecords(recordIds: string[]): Promise<{ deleted: number; failed: number }> {
-  const db = getDb();
+  const db = await getDb();
   const unifiedUser = await getUserOrAnonymous();
   const userId = unifiedUser.user_id;
 
@@ -536,7 +536,7 @@ export async function batchDeleteTtsRecords(recordIds: string[]): Promise<{ dele
  * 根据 task_id 获取 TTS 记录
  */
 export async function getTtsRecordByTaskId(taskId: string): Promise<TtsRecord> {
-  const db = getDb();
+  const db = await getDb();
   const unifiedUser = await getUserOrAnonymous();
   const userId = unifiedUser.user_id;
 

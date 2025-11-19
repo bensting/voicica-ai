@@ -21,7 +21,7 @@ export interface Config {
  * 获取配置项
  */
 export async function getConfig(key: string): Promise<Config | null> {
-  const db = getDb();
+  const db = await getDb();
   const config = await db.query.configs.findFirst({
     where: eq(configs.key, key),
   });
@@ -53,7 +53,7 @@ export async function getConfigValue<T = unknown>(key: string): Promise<T | null
  * 获取多个配置项
  */
 export async function getConfigs(keys: string[]): Promise<Record<string, unknown>> {
-  const db = getDb();
+  const db = await getDb();
   const configList = await db.query.configs.findMany({
     where: inArray(configs.key, keys),
   });
@@ -72,7 +72,7 @@ export async function getConfigs(keys: string[]): Promise<Record<string, unknown
  * 获取某类型的所有配置
  */
 export async function getConfigsByType(configType: string): Promise<Config[]> {
-  const db = getDb();
+  const db = await getDb();
   const configList = await db.query.configs.findMany({
     where: eq(configs.configType, configType),
     orderBy: [asc(configs.key)],

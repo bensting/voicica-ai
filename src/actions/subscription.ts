@@ -24,7 +24,7 @@ export async function getSubscriptionPlans(params?: {
   active_only?: boolean;
 }): Promise<SubscriptionPlan[]> {
   const { platform, product_type, active_only = true } = params || {};
-  const db = getDb();
+  const db = await getDb();
 
   // 构建查询条件
   const conditions = [];
@@ -75,7 +75,7 @@ export async function getPlansByProductId(
   productId: string,
   activeOnly: boolean = true
 ): Promise<SubscriptionPlan[]> {
-  const db = getDb();
+  const db = await getDb();
 
   const conditions = [eq(subscriptionPlans.productId, productId)];
   if (activeOnly) {
@@ -117,7 +117,7 @@ export async function getSubscriptionPlan(
   productId: string,
   basePlanId: string | null
 ): Promise<SubscriptionPlan | null> {
-  const db = getDb();
+  const db = await getDb();
 
   const conditions = [
     eq(subscriptionPlans.platform, platform),
@@ -174,7 +174,7 @@ export async function getMySubscriptions(params?: {
 }): Promise<UserSubscriptionListResponse> {
   const user = await getCurrentUser();
   const userId = user.uid;
-  const db = getDb();
+  const db = await getDb();
 
   const { status, product_type, platform } = params || {};
 
@@ -267,7 +267,7 @@ export async function getMySubscriptions(params?: {
 export async function getMyActiveSubscription(): Promise<UserSubscription | null> {
   const user = await getCurrentUser();
   const userId = user.uid;
-  const db = getDb();
+  const db = await getDb();
 
   const now = new Date();
   const activeSubscriptions = await db
@@ -334,7 +334,7 @@ export async function cancelSubscription(
 }> {
   const user = await getCurrentUser();
   const userId = user.uid;
-  const db = getDb();
+  const db = await getDb();
 
   // 查找订阅
   const subscriptions = await db

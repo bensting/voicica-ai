@@ -1,13 +1,14 @@
 /**
  * Database helper for Cloudflare D1
  */
-import { getRequestContext } from '@cloudflare/next-on-pages';
+import { getCloudflareContext } from '@opennextjs/cloudflare';
 import { drizzle } from 'drizzle-orm/d1';
 import * as schema from '@/db/schema';
 
 // Define the environment type with D1 binding
-interface Env extends Record<string, unknown> {
+interface CloudflareEnv {
   DB: D1Database;
+  [key: string]: unknown;
 }
 
 export type DbClient = ReturnType<typeof getDb>;
@@ -16,8 +17,8 @@ export type DbClient = ReturnType<typeof getDb>;
  * Get database client from Cloudflare context
  * Use this in API routes and server actions
  */
-export function getDb() {
-  const { env } = getRequestContext() as unknown as { env: Env };
+export async function getDb() {
+  const { env } = await getCloudflareContext<CloudflareEnv>();
   return drizzle(env.DB, { schema });
 }
 

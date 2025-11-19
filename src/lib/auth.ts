@@ -74,7 +74,7 @@ async function createOrGetAnonymousUser(
   ipAddress?: string,
   userAgent?: string
 ): Promise<{ user_id: string; credits: number }> {
-  const db = getDb();
+  const db = await getDb();
 
   // 生成匿名用户 ID (使用 Web Crypto API)
   const encoder = new TextEncoder();

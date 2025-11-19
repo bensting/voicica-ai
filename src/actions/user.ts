@@ -16,7 +16,7 @@ import type { UserProfile, CreditsInfo } from '@/types/user';
  */
 export async function getCurrentUserProfile(): Promise<UserProfile> {
   const authUser = await getCurrentUser();
-  const db = getDb();
+  const db = await getDb();
 
   // 查找或创建用户
   let user = await db.query.users.findFirst({
@@ -62,7 +62,7 @@ export async function updateUserProfile(data: {
   photo_url?: string;
 }): Promise<UserProfile> {
   const authUser = await getCurrentUser();
-  const db = getDb();
+  const db = await getDb();
 
   const result = await db
     .update(users)
@@ -94,7 +94,7 @@ export async function updateUserProfile(data: {
  */
 export async function getUserCredits(): Promise<{ credits: number; total_used: number }> {
   const authUser = await getCurrentUser();
-  const db = getDb();
+  const db = await getDb();
 
   const user = await db.query.users.findFirst({
     where: eq(users.userId, authUser.uid),
@@ -116,7 +116,7 @@ export async function getUserCredits(): Promise<{ credits: number; total_used: n
  */
 export async function getUnifiedUserProfile(): Promise<UserProfile> {
   const unifiedUser = await getUserOrAnonymous();
-  const db = getDb();
+  const db = await getDb();
 
   if (unifiedUser.is_anonymous) {
     // 匿名用户
@@ -168,7 +168,7 @@ export async function getUnifiedUserProfile(): Promise<UserProfile> {
  */
 export async function getUnifiedCredits(): Promise<CreditsInfo> {
   const unifiedUser = await getUserOrAnonymous();
-  const db = getDb();
+  const db = await getDb();
 
   if (unifiedUser.is_anonymous) {
     const anonUser = await db.query.anonymousUsers.findFirst({

@@ -30,7 +30,7 @@ export const authConfig: NextAuthConfig = {
 
         // 首次登录时创建/关联应用用户
         if (account && user.email) {
-          const db = getDb();
+          const db = await getDb();
 
           // 查找或创建应用用户
           let appUser = await db.query.users.findFirst({
@@ -66,7 +66,7 @@ export const authConfig: NextAuthConfig = {
 
         // 获取最新的用户积分
         if (token.appUserId) {
-          const db = getDb();
+          const db = await getDb();
           const appUser = await db.query.users.findFirst({
             where: eq(users.userId, token.appUserId as string),
           });

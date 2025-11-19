@@ -303,7 +303,7 @@ const CREATE_INDEX_STATEMENTS = [
 
 export async function POST() {
   try {
-    const db = getDb();
+    const db = await getDb();
     const results: string[] = [];
     const errors: string[] = [];
 

@@ -249,7 +249,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const db = getDb();
+    const db = await getDb();
     const sql = CREATE_TABLE_STATEMENTS[tableName];
 
     await db.run(sql);

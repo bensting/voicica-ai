@@ -26,7 +26,7 @@ const SCHEMA_TABLES = [
 
 export async function GET() {
   try {
-    const db = getDb();
+    const db = await getDb();
 
     // Get existing tables from D1
     const result = await db.run(

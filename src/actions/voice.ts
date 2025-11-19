@@ -30,7 +30,7 @@ let voiceCache: VoiceCache = {
  * 获取数据库中最新的 updated_at 时间戳
  */
 async function getLatestUpdatedAt(): Promise<Date | null> {
-  const db = getDb();
+  const db = await getDb();
   const result = await db
     .select({ maxUpdatedAt: max(voicesTable.updatedAt) })
     .from(voicesTable)
@@ -62,7 +62,7 @@ async function isCacheValid(): Promise<boolean> {
 async function loadVoicesIntoCache(): Promise<void> {
   console.log('🔄 [VoiceCache] 重新加载语音缓存...');
 
-  const db = getDb();
+  const db = await getDb();
   const voices = await db
     .select()
     .from(voicesTable)
@@ -147,7 +147,7 @@ export async function listVoices(filters: VoiceFilters = {}): Promise<VoiceListR
 
   // 如果查询非活跃语音，需要直接查数据库（缓存只存活跃的）
   if (!is_active) {
-    const db = getDb();
+    const db = await getDb();
     voices = await db
       .select()
       .from(voicesTable)
@@ -216,7 +216,7 @@ export async function getVoiceById(id: number): Promise<Voice | null> {
   }
 
   // 缓存没有，查数据库（可能是非活跃的）
-  const db = getDb();
+  const db = await getDb();
   const dbVoice = await db.query.voices.findFirst({
     where: eq(voicesTable.id, id),
   });
@@ -239,7 +239,7 @@ export async function getVoiceByName(name: string): Promise<Voice | null> {
   }
 
   // 缓存没有，查数据库
-  const db = getDb();
+  const db = await getDb();
   const dbVoice = await db.query.voices.findFirst({
     where: eq(voicesTable.name, name),
   });

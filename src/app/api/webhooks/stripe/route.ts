@@ -32,7 +32,7 @@ async function recordSubscriptionHistory(params: {
   metadata?: object;
 }) {
   try {
-    const db = getDb();
+    const db = await getDb();
     await db.insert(subscriptionHistory).values({
       subscriptionId: params.subscriptionId,
       userId: params.userId,
@@ -73,7 +73,7 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session, eventId
     return;
   }
 
-  const db = getDb();
+  const db = await getDb();
 
   // 获取订阅计划
   const plan = await db.query.subscriptionPlans.findFirst({
@@ -208,7 +208,7 @@ async function handleInvoicePaid(invoice: Stripe.Invoice, eventId: string) {
     return;
   }
 
-  const db = getDb();
+  const db = await getDb();
 
   // 查找现有订阅
   const subscription = await db.query.userSubscriptions.findFirst({
@@ -292,7 +292,7 @@ async function handleInvoicePaid(invoice: Stripe.Invoice, eventId: string) {
 async function handleSubscriptionUpdated(stripeSubscription: Stripe.Subscription, eventId: string) {
   console.log('🔄 处理 customer.subscription.updated:', stripeSubscription.id);
 
-  const db = getDb();
+  const db = await getDb();
 
   const subscription = await db.query.userSubscriptions.findFirst({
     where: and(
@@ -363,7 +363,7 @@ async function handleSubscriptionUpdated(stripeSubscription: Stripe.Subscription
 async function handleSubscriptionDeleted(stripeSubscription: Stripe.Subscription, eventId: string) {
   console.log('❌ 处理 customer.subscription.deleted:', stripeSubscription.id);
 
-  const db = getDb();
+  const db = await getDb();
 
   // 先用 external_subscription_id 查找
   let subscription = await db.query.userSubscriptions.findFirst({

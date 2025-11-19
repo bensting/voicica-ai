@@ -15,9 +15,6 @@ import type {
   StripeVerifyResponse,
 } from '@/types/subscription';
 
-// 重新导出类型供其他模块使用
-export type { CreemVerifyRequest, CreemVerifyResponse, StripeVerifyRequest, StripeVerifyResponse };
-
 // 支付特有的类型定义
 export interface StripeCheckoutRequest {
   product_id: string;

@@ -44,7 +44,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
       const userData = await getCurrentUserProfile();
 
       console.log('✅ UserContext: 用户数据获取成功', userData);
-      setProfile(userData as UserProfile);
+      setProfile(userData);
     } catch (err) {
       const error = err as Error;
       console.error('❌ UserContext: 后端 API 调用失败', error);

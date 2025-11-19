@@ -3,8 +3,8 @@
 import { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { verifyCreemPayment as verifyCreemPaymentAction, verifyStripePayment as verifyStripePaymentAction } from '@/actions/payment';
-import type { CreemVerifyResponse, StripeVerifyResponse } from '@/actions/payment';
 import { SubscriptionStatus } from '@/types/subscription';
+import type { CreemVerifyResponse, StripeVerifyResponse } from '@/types/subscription';
 import { getCurrencySymbol } from '@/config/currency';
 
 type PaymentStatus = 'verifying' | 'success' | 'pending' | 'failed';

@@ -9,9 +9,6 @@ import type { Voice, VoiceListResponse, VoiceFilters } from '@/types/voice';
 // 从 Prisma Client 获取 voices 类型
 type voices = Awaited<ReturnType<typeof prisma.voices.findFirst>>;
 
-// 重新导出类型供其他模块使用
-export type { Voice, VoiceListResponse, VoiceFilters };
-
 // 将数据库模型转换为返回类型
 function toVoice(model: NonNullable<voices>): Voice {
   return {

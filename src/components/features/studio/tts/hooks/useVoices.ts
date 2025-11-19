@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { listVoices, type Voice } from '@/actions/voice';
+import { listVoices } from '@/actions/voice';
+import type { Voice } from '@/types/voice';
 
 /**
  * 语音数据获取 Hook

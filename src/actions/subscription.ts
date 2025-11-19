@@ -7,9 +7,6 @@ import prisma from '@/lib/prisma';
 import { getCurrentUser } from '@/lib/auth';
 import type { SubscriptionPlan, UserSubscription, UserSubscriptionListResponse } from '@/types/subscription';
 
-// 重新导出类型供其他模块使用
-export type { SubscriptionPlan, UserSubscription, UserSubscriptionListResponse };
-
 /**
  * 获取订阅计划列表
  */

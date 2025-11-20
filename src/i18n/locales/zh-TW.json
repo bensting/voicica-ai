@@ -273,7 +273,17 @@
       "taskNoId": "任務提交失敗，未返回任務ID",
       "queryTaskFailed": "查詢任務狀態失敗，請重新整理頁面查看結果",
       "generationFailed": "生成失敗，請重試",
-      "unknownTaskStatus": "任務狀態異常，請重試"
+      "unknownTaskStatus": "任務狀態異常，請重試",
+      "INSUFFICIENT_CREDITS": "積分不足。需要 {{required}} 積分，當前剩餘 {{current}} 積分",
+      "UNAUTHORIZED": "未授權，請登入",
+      "NO_AUTH_INFO": "未提供認證資訊",
+      "TASK_NOT_FOUND": "任務不存在：{{taskId}}",
+      "TASK_CREATION_FAILED": "任務建立失敗",
+      "VALIDATION_ERROR": "參數驗證錯誤：{{field}}",
+      "TEXT_TOO_LONG": "文字過長。最大長度：{{maxLength}}，當前長度：{{currentLength}}",
+      "RESOURCE_NOT_FOUND": "{{resource}}不存在：{{id}}",
+      "VOICE_NOT_FOUND": "語音模型不存在：{{voiceName}}",
+      "INTERNAL_ERROR": "伺服器內部錯誤"
     },
     "menu": {
       "home": "首頁",

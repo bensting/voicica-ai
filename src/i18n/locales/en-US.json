@@ -195,7 +195,17 @@
       "taskNoId": "Task submission failed, no task ID returned",
       "queryTaskFailed": "Failed to query task status, please refresh the page",
       "generationFailed": "Generation failed, please try again",
-      "unknownTaskStatus": "Unknown task status, please try again"
+      "unknownTaskStatus": "Unknown task status, please try again",
+      "INSUFFICIENT_CREDITS": "Insufficient credits. Required: {{required}}, Current: {{current}}",
+      "UNAUTHORIZED": "Unauthorized. Please log in",
+      "NO_AUTH_INFO": "No authentication info provided",
+      "TASK_NOT_FOUND": "Task not found: {{taskId}}",
+      "TASK_CREATION_FAILED": "Task creation failed",
+      "VALIDATION_ERROR": "Validation error: {{field}}",
+      "TEXT_TOO_LONG": "Text too long. Max length: {{maxLength}}, Current: {{currentLength}}",
+      "RESOURCE_NOT_FOUND": "{{resource}} not found: {{id}}",
+      "VOICE_NOT_FOUND": "Voice model not found: {{voiceName}}",
+      "INTERNAL_ERROR": "Internal server error"
     },
     "menu": {
       "home": "Home",

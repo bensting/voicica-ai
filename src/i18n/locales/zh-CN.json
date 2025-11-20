@@ -273,7 +273,17 @@
       "taskNoId": "任务提交失败，未返回任务ID",
       "queryTaskFailed": "查询任务状态失败，请刷新页面查看结果",
       "generationFailed": "生成失败，请重试",
-      "unknownTaskStatus": "任务状态异常，请重试"
+      "unknownTaskStatus": "任务状态异常，请重试",
+      "INSUFFICIENT_CREDITS": "积分不足。需要 {{required}} 积分，当前剩余 {{current}} 积分",
+      "UNAUTHORIZED": "未授权，请登录",
+      "NO_AUTH_INFO": "未提供认证信息",
+      "TASK_NOT_FOUND": "任务不存在：{{taskId}}",
+      "TASK_CREATION_FAILED": "任务创建失败",
+      "VALIDATION_ERROR": "参数验证错误：{{field}}",
+      "TEXT_TOO_LONG": "文本过长。最大长度：{{maxLength}}，当前长度：{{currentLength}}",
+      "RESOURCE_NOT_FOUND": "{{resource}}不存在：{{id}}",
+      "VOICE_NOT_FOUND": "语音模型不存在：{{voiceName}}",
+      "INTERNAL_ERROR": "服务器内部错误"
     },
     "menu": {
       "home": "首页",

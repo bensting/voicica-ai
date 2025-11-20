@@ -29,10 +29,11 @@ const ANONYMOUS_USER_EXPIRY_DAYS = 30;
 
 /**
  * 从 HTTP Header 获取 Firebase ID Token 并验证
+ *
+ * @param headersList - Headers 对象（必须在调用侧获取）
  */
-async function verifyFirebaseToken(): Promise<AuthUser | null> {
+async function verifyFirebaseToken(headersList: Awaited<ReturnType<typeof headers>>): Promise<AuthUser | null> {
   try {
-    const headersList = await headers();
     const authHeader = headersList.get('authorization');
 
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
@@ -108,7 +109,8 @@ async function createOrUpdateFirebaseUser(decodedToken: {
  * @throws Error 如果未登录
  */
 export async function getCurrentUser(): Promise<AuthUser> {
-  const user = await verifyFirebaseToken();
+  const headersList = await headers();
+  const user = await verifyFirebaseToken(headersList);
 
   if (!user) {
     throw new Error('未登录');
@@ -123,7 +125,8 @@ export async function getCurrentUser(): Promise<AuthUser> {
  * 如果用户未登录，返回 null 而不是抛出错误
  */
 export async function getOptionalUser(): Promise<AuthUser | null> {
-  return await verifyFirebaseToken();
+  const headersList = await headers();
+  return await verifyFirebaseToken(headersList);
 }
 
 /**
@@ -190,8 +193,12 @@ async function createOrGetAnonymousUser(
  * @throws Error 如果既没有 token 也没有设备指纹
  */
 export async function getUserOrAnonymous(): Promise<UnifiedUser> {
+  // IMPORTANT: 在 Next.js 15 中，headers() 必须在函数顶层调用
+  // 这样确保在 Vercel 生产环境中正确工作
+  const headersList = await headers();
+
   // 1. 尝试 Firebase Token 验证
-  const firebaseUser = await verifyFirebaseToken();
+  const firebaseUser = await verifyFirebaseToken(headersList);
 
   if (firebaseUser) {
     console.log('🔍 [getUserOrAnonymous] Firebase User:', firebaseUser.uid);
@@ -202,7 +209,6 @@ export async function getUserOrAnonymous(): Promise<UnifiedUser> {
   }
 
   // 2. 降级到匿名用户
-  const headersList = await headers();
   const fingerprint = headersList.get('x-device-fingerprint');
 
   console.log('🔍 [getUserOrAnonymous] Fingerprint:', fingerprint);

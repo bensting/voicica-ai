@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
-import { getUnifiedCredits } from '@/actions/user';
+import { getUnifiedCredits, getUserCredits } from '@/actions/user';
 
 /**
  * Credits Context 状态
@@ -48,20 +48,35 @@ export function CreditsProvider({ children }: CreditsProviderProps) {
       setLoading(true);
       setError(null);
 
-      const response = await getUnifiedCredits();
-      setCredits(response.credits);
+      // 根据用户登录状态选择不同的 API
+      // 已登录: 使用 getUserCredits (严格要求 Firebase 认证,不降级)
+      // 未登录: 使用 getUnifiedCredits (允许降级到匿名用户)
+      if (user) {
+        console.log('💳 [CreditsContext] Firebase 用户已登录,获取正式用户积分');
+        const response = await getUserCredits();
+        setCredits(response.credits);
 
-      console.log('✅ 积分获取成功:', {
-        credits: response.credits,
-        total_used: response.total_used,
-        is_anonymous: response.is_anonymous,
-        expires_at: response.expires_at,
-      });
+        console.log('✅ 积分获取成功 (正式用户):', {
+          credits: response.credits,
+          total_used: response.total_used,
+        });
+      } else {
+        console.log('💳 [CreditsContext] 未登录,尝试获取匿名用户积分');
+        const response = await getUnifiedCredits();
+        setCredits(response.credits);
+
+        console.log('✅ 积分获取成功 (匿名用户):', {
+          credits: response.credits,
+          total_used: response.total_used,
+          is_anonymous: response.is_anonymous,
+          expires_at: response.expires_at,
+        });
+      }
     } catch (err) {
       const error = err as Error;
       console.error('❌ 获取积分失败:', err);
 
-      // 如果是"未提供认证信息"错误，静默处理（用户可能在首页未登录且无设备指纹）
+      // 如果是"未提供认证信息"或"未登录"错误，静默处理
       if (error.message === '未提供认证信息' || error.message === '未登录') {
         console.log('⚠️ CreditsContext: 认证信息未就绪，将在下次重试');
         setCredits(0);
@@ -73,7 +88,7 @@ export function CreditsProvider({ children }: CreditsProviderProps) {
     } finally {
       setLoading(false);
     }
-  }, [authLoading]);
+  }, [authLoading, user]);
 
   // 刷新积分（供外部调用）
   const refreshCredits = useCallback(async () => {

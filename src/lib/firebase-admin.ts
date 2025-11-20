@@ -56,7 +56,7 @@ function initializeFirebaseAdmin(): { app: App; auth: Auth } {
 export const auth = new Proxy({} as Auth, {
   get(_target, prop) {
     const { auth } = initializeFirebaseAdmin();
-    return (auth as any)[prop];
+    return auth[prop as keyof Auth];
   },
 });
 
@@ -64,7 +64,7 @@ export const auth = new Proxy({} as Auth, {
 const app = new Proxy({} as App, {
   get(_target, prop) {
     const { app } = initializeFirebaseAdmin();
-    return (app as any)[prop];
+    return app[prop as keyof App];
   },
 });
 

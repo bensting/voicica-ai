@@ -47,7 +47,7 @@ async function downloadAudio(audioUrl: string, filename: string): Promise<void> 
 }
 
 interface UseGenerationHistoryProps {
-  user: { id: string } | null;
+  user: { uid: string } | null;
   authLoading?: boolean;
   pageSize?: number;
   accumulateData?: boolean; // For infinite scroll on mobile

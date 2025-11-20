@@ -80,9 +80,9 @@ async function createOrUpdateFirebaseUser(decodedToken: {
       where: { user_id: decodedToken.uid },
       data: {
         email: decodedToken.email || existingUser.email,
-        display_name: decodedToken.name || existingUser.display_name,
-        avatar_url: decodedToken.picture || existingUser.avatar_url,
-        last_login_at: new Date(),
+        name: decodedToken.name || existingUser.name,
+        photo_url: decodedToken.picture || existingUser.photo_url,
+        updated_at: new Date(),
       },
     });
     console.log(`🔄 [Firebase Auth] 用户信息已更新: ${decodedToken.uid}`);
@@ -92,13 +92,10 @@ async function createOrUpdateFirebaseUser(decodedToken: {
       data: {
         user_id: decodedToken.uid,
         email: decodedToken.email || `${decodedToken.uid}@firebase.user`,
-        display_name: decodedToken.name || 'Firebase User',
-        avatar_url: decodedToken.picture,
+        name: decodedToken.name || 'Firebase User',
+        photo_url: decodedToken.picture,
         credits: 1000, // 新用户初始积分
         total_credits_used: 0,
-        is_premium: false,
-        created_at: new Date(),
-        last_login_at: new Date(),
       },
     });
     console.log(`✅ [Firebase Auth] 新用户已创建: ${decodedToken.uid}`);

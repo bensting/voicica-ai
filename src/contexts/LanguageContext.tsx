@@ -7,7 +7,7 @@ type Locale = 'en-US' | 'zh-CN' | 'zh-TW' | 'th-TH';
 interface LanguageContextType {
   locale: Locale;
   setLocale: (locale: Locale) => void;
-  t: (key: string) => string;
+  t: (key: string, params?: Record<string, unknown>) => string;
   isReady: boolean; // 添加就绪状态
 }
 
@@ -100,9 +100,9 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     []
   );
 
-  // 简单的翻译函数
+  // 翻译函数（支持参数插值）
   const t = useMemo(
-    () => (key: string): string => {
+    () => (key: string, params?: Record<string, unknown>): string => {
       const keys = key.split('.');
       let value: MessageValue | undefined = messages;
 
@@ -114,7 +114,17 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
         }
       }
 
-      return typeof value === 'string' ? value : key;
+      let result = typeof value === 'string' ? value : key;
+
+      // 如果提供了参数，进行插值替换
+      if (params && typeof result === 'string') {
+        Object.keys(params).forEach((paramKey) => {
+          const regex = new RegExp(`{{\\s*${paramKey}\\s*}}`, 'g');
+          result = result.replace(regex, String(params[paramKey]));
+        });
+      }
+
+      return result;
     },
     [messages]
   );

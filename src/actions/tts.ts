@@ -7,6 +7,7 @@ import prisma from '@/lib/prisma';
 import { getUserOrAnonymous } from '@/lib/auth-firebase';
 import { v4 as uuidv4 } from 'uuid';
 import { inngest } from '@/lib/inngest/client';
+import { InsufficientCreditsError, errorToResponse } from '@/lib/errors';
 
 // 类型定义
 export interface TtsRequest {
@@ -32,6 +33,8 @@ export interface TtsTaskStatus {
     credits_cost: number;
   } | null;
   error?: string | null;
+  errorCode?: string; // 错误码，用于前端国际化
+  errorData?: Record<string, unknown>; // 错误相关数据，如 { required: 100, current: 50 }
 }
 
 export interface TtsRecordVoice {
@@ -129,7 +132,14 @@ export async function createTtsTask(request: TtsRequest): Promise<TtsTaskStatus>
     // 2. 检查积分是否足够
     const hasEnoughCredits = await checkCredits(userId, requiredCredits, isAnonymous);
     if (!hasEnoughCredits) {
-      throw new Error(`积分不足，需要 ${requiredCredits} 积分`);
+      const currentCredits = isAnonymous
+        ? (await prisma.anonymous_users.findUnique({ where: { user_id: userId }, select: { credits: true } }))?.credits ?? 0
+        : (await prisma.users.findUnique({ where: { user_id: userId }, select: { credits: true } }))?.credits ?? 0;
+
+      console.log(`⚠️ [createTtsTask] 积分不足: 需要 ${requiredCredits}, 当前 ${currentCredits}`);
+
+      // 抛出业务错误，由 catch 块统一处理
+      throw new InsufficientCreditsError(requiredCredits, currentCredits);
     }
 
     // 3. 生成任务 ID
@@ -209,7 +219,17 @@ export async function createTtsTask(request: TtsRequest): Promise<TtsTaskStatus>
     };
   } catch (error) {
     console.error('❌ [createTtsTask] 创建任务失败:', error);
-    throw error;
+
+    // 统一错误处理：将错误转换为标准响应格式
+    const errorResponse = errorToResponse(error);
+
+    return {
+      task_id: '',
+      status: 'FAILURE',
+      progress: 0,
+      result: null,
+      ...errorResponse,
+    };
   }
 }
 

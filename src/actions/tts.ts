@@ -114,31 +114,57 @@ async function checkCredits(
  * 返回任务 ID，实际处理由后台 Worker 完成
  */
 export async function createTtsTask(request: TtsRequest): Promise<TtsTaskStatus> {
-  const unifiedUser = await getUserOrAnonymous();
-  const userId = unifiedUser.user_id;
-  const isAnonymous = unifiedUser.is_anonymous;
+  console.log('🎤 [createTtsTask] 开始创建 TTS 任务');
 
-  // 1. 计算所需积分
-  const requiredCredits = await calculateCreditsCost(request.text, request.voice_name);
+  try {
+    const unifiedUser = await getUserOrAnonymous();
+    const userId = unifiedUser.user_id;
+    const isAnonymous = unifiedUser.is_anonymous;
 
-  // 2. 检查积分是否足够
-  const hasEnoughCredits = await checkCredits(userId, requiredCredits, isAnonymous);
-  if (!hasEnoughCredits) {
-    throw new Error(`积分不足，需要 ${requiredCredits} 积分`);
-  }
+    console.log('🎤 [createTtsTask] 用户认证成功:', { userId, isAnonymous });
 
-  // 3. 生成任务 ID
-  const taskId = uuidv4();
+    // 1. 计算所需积分
+    const requiredCredits = await calculateCreditsCost(request.text, request.voice_name);
 
-  // 4. 创建任务队列记录
-  await prisma.task_queue.create({
-    data: {
-      task_id: taskId,
-      task_type: 'TTS',
-      user_id: userId,
-      status: 'PENDING',
-      priority: 5,
-      payload: {
+    // 2. 检查积分是否足够
+    const hasEnoughCredits = await checkCredits(userId, requiredCredits, isAnonymous);
+    if (!hasEnoughCredits) {
+      throw new Error(`积分不足，需要 ${requiredCredits} 积分`);
+    }
+
+    // 3. 生成任务 ID
+    const taskId = uuidv4();
+
+    // 4. 创建任务队列记录
+    await prisma.task_queue.create({
+      data: {
+        task_id: taskId,
+        task_type: 'TTS',
+        user_id: userId,
+        status: 'PENDING',
+        priority: 5,
+        payload: {
+          text: request.text,
+          voice_name: request.voice_name,
+          language: request.language || null,
+          speed: request.speed || 1.0,
+          pitch: request.pitch || 1,
+          volume: request.volume || 1,
+          credits_cost: requiredCredits,
+          is_anonymous: isAnonymous,
+        },
+        retry_count: 0,
+        max_retries: 3,
+        timeout_seconds: 300,
+      },
+    });
+
+    // 5. 创建 TTS 记录
+    const characterCount = request.text.length;
+    await prisma.tts_records.create({
+      data: {
+        user_id: userId,
+        task_id: taskId,
         text: request.text,
         voice_name: request.voice_name,
         language: request.language || null,
@@ -146,62 +172,45 @@ export async function createTtsTask(request: TtsRequest): Promise<TtsTaskStatus>
         pitch: request.pitch || 1,
         volume: request.volume || 1,
         credits_cost: requiredCredits,
-        is_anonymous: isAnonymous,
+        character_count: characterCount,
+        status: 'PENDING',
+        progress: 0,
+        format: 'mp3',
       },
-      retry_count: 0,
-      max_retries: 3,
-      timeout_seconds: 300,
-    },
-  });
+    });
 
-  // 5. 创建 TTS 记录
-  const characterCount = request.text.length;
-  await prisma.tts_records.create({
-    data: {
-      user_id: userId,
+    console.log(`TTS 任务已创建: ${taskId}, 用户: ${userId}, 积分: ${requiredCredits}`);
+
+    // 6. 触发 Inngest 处理任务
+    await inngest.send({
+      name: 'tts/task.created',
+      data: {
+        taskId,
+        userId,
+        text: request.text,
+        voiceName: request.voice_name,
+        language: request.language || undefined,
+        speed: request.speed || 1.0,
+        pitch: request.pitch || 1,
+        volume: request.volume || 1,
+        creditsCost: requiredCredits,
+        isAnonymous,
+      },
+    });
+
+    console.log(`📤 Inngest 事件已发送: ${taskId}`);
+
+    return {
       task_id: taskId,
-      text: request.text,
-      voice_name: request.voice_name,
-      language: request.language || null,
-      speed: request.speed || 1.0,
-      pitch: request.pitch || 1,
-      volume: request.volume || 1,
-      credits_cost: requiredCredits,
-      character_count: characterCount,
       status: 'PENDING',
       progress: 0,
-      format: 'mp3',
-    },
-  });
-
-  console.log(`TTS 任务已创建: ${taskId}, 用户: ${userId}, 积分: ${requiredCredits}`);
-
-  // 6. 触发 Inngest 处理任务
-  await inngest.send({
-    name: 'tts/task.created',
-    data: {
-      taskId,
-      userId,
-      text: request.text,
-      voiceName: request.voice_name,
-      language: request.language || undefined,
-      speed: request.speed || 1.0,
-      pitch: request.pitch || 1,
-      volume: request.volume || 1,
-      creditsCost: requiredCredits,
-      isAnonymous,
-    },
-  });
-
-  console.log(`📤 Inngest 事件已发送: ${taskId}`);
-
-  return {
-    task_id: taskId,
-    status: 'PENDING',
-    progress: 0,
-    result: null,
-    error: null,
-  };
+      result: null,
+      error: null,
+    };
+  } catch (error) {
+    console.error('❌ [createTtsTask] 创建任务失败:', error);
+    throw error;
+  }
 }
 
 /**

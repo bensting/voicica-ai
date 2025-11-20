@@ -14,15 +14,24 @@ export function middleware(request: NextRequest) {
   // 2. 从 cookie 中读取设备指纹
   const deviceFingerprint = request.cookies.get('device-fingerprint')?.value;
 
+  console.log('🔧 [Middleware] Path:', request.nextUrl.pathname);
+  console.log('🔧 [Middleware] Firebase token exists:', !!firebaseToken);
+  console.log('🔧 [Middleware] Firebase token preview:', firebaseToken?.substring(0, 20) + '...');
+  console.log('🔧 [Middleware] Device fingerprint:', deviceFingerprint?.substring(0, 16) + '...');
+
   // 3. 创建新的 headers 对象,添加认证信息
   const requestHeaders = new Headers(request.headers);
 
   if (firebaseToken) {
     requestHeaders.set('authorization', `Bearer ${firebaseToken}`);
+    console.log('✅ [Middleware] Authorization header 已设置');
+  } else {
+    console.log('⚠️ [Middleware] 没有找到 firebase-token cookie');
   }
 
   if (deviceFingerprint) {
     requestHeaders.set('x-device-fingerprint', deviceFingerprint);
+    console.log('✅ [Middleware] Device fingerprint header 已设置');
   }
 
   // 4. 返回带有修改后 headers 的响应

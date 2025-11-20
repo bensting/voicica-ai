@@ -31,7 +31,7 @@ export const processTtsTask = inngest.createFunction(
     let creditsDeducted = false;
 
     try {
-      // Step 1: 获取任务记录并更新状态为处理中
+      // Step 1: 获取任务记录并更新状态为处理中（幂等性保护）
       const record = await step.run('get-record', async () => {
         const ttsRecord = await prisma.tts_records.findUnique({
           where: { task_id: taskId },
@@ -41,9 +41,18 @@ export const processTtsTask = inngest.createFunction(
           throw new Error(`任务记录不存在: ${taskId}`);
         }
 
-        // 更新状态为处理中
-        await prisma.tts_records.update({
-          where: { id: ttsRecord.id },
+        // 🔒 幂等性检查：如果任务已经在处理或已完成，跳过执行
+        if (ttsRecord.status !== 'PENDING') {
+          console.log(`⚠️ [Inngest] 任务 ${taskId} 已被处理，状态: ${ttsRecord.status}，跳过执行`);
+          return { id: ttsRecord.id, alreadyProcessed: true as const, currentStatus: ttsRecord.status };
+        }
+
+        // 🔒 使用乐观锁更新状态为处理中（只有 PENDING 状态才能更新）
+        const updateResult = await prisma.tts_records.updateMany({
+          where: {
+            task_id: taskId,
+            status: 'PENDING', // 只有 PENDING 状态才能更新
+          },
           data: {
             status: 'PROCESSING',
             progress: 10,
@@ -51,40 +60,75 @@ export const processTtsTask = inngest.createFunction(
           },
         });
 
-        return { id: ttsRecord.id };
+        // 如果更新失败（count = 0），说明状态已被其他实例修改
+        if (updateResult.count === 0) {
+          console.log(`⚠️ [Inngest] 任务 ${taskId} 状态已被其他实例修改，跳过执行`);
+          return { id: ttsRecord.id, alreadyProcessed: true as const, currentStatus: 'PROCESSING' };
+        }
+
+        console.log(`🔓 [Inngest] 任务 ${taskId} 状态已锁定为 PROCESSING`);
+        return { id: ttsRecord.id, alreadyProcessed: false as const };
       });
 
-      // Step 2: 扣减积分
+      // 如果任务已被处理，直接返回
+      if (record.alreadyProcessed) {
+        console.log(`✅ [Inngest] 任务 ${taskId} 已被处理，幂等性保护生效`);
+        return {
+          success: true,
+          taskId,
+          skipped: true,
+          reason: `Task already in status: ${record.currentStatus}`,
+        };
+      }
+
+      // Step 2: 扣减积分并记录历史
       await step.run('deduct-credits', async () => {
-        if (isAnonymous) {
-          const result = await prisma.anonymous_users.updateMany({
-            where: {
-              user_id: userId,
-              credits: { gte: creditsCost },
-            },
+        // 使用事务确保积分扣减和历史记录的原子性
+        await prisma.$transaction(async (tx) => {
+          // 扣减积分
+          if (isAnonymous) {
+            const result = await tx.anonymous_users.updateMany({
+              where: {
+                user_id: userId,
+                credits: { gte: creditsCost },
+              },
+              data: {
+                credits: { decrement: creditsCost },
+                total_credits_used: { increment: creditsCost },
+              },
+            });
+            if (result.count === 0) {
+              throw new Error('积分扣减失败，余额不足');
+            }
+          } else {
+            const result = await tx.users.updateMany({
+              where: {
+                user_id: userId,
+                credits: { gte: creditsCost },
+              },
+              data: {
+                credits: { decrement: creditsCost },
+                total_credits_used: { increment: creditsCost },
+              },
+            });
+            if (result.count === 0) {
+              throw new Error('积分扣减失败，余额不足');
+            }
+          }
+
+          // 记录积分扣减历史
+          await tx.credit_history.create({
             data: {
-              credits: { decrement: creditsCost },
+              user_id: userId,
+              amount: -creditsCost, // 负数表示扣减
+              task_id: taskId,
+              description: `TTS生成: ${text.substring(0, 30)}${text.length > 30 ? '...' : ''}`,
             },
           });
-          if (result.count === 0) {
-            throw new Error('积分扣减失败，余额不足');
-          }
-        } else {
-          const result = await prisma.users.updateMany({
-            where: {
-              user_id: userId,
-              credits: { gte: creditsCost },
-            },
-            data: {
-              credits: { decrement: creditsCost },
-            },
-          });
-          if (result.count === 0) {
-            throw new Error('积分扣减失败，余额不足');
-          }
-        }
-        creditsDeducted = true;
-        console.log(`💰 积分扣减成功: ${userId}, -${creditsCost}`);
+
+          creditsDeducted = true;
+          console.log(`💰 积分扣减成功: ${userId}, -${creditsCost}, 已记录到 credit_history`);
+        });
       });
 
       // Step 3: 更新进度
@@ -190,25 +234,41 @@ export const processTtsTask = inngest.createFunction(
     } catch (error) {
       console.error(`❌ [Inngest] TTS 任务处理失败: ${taskId}`, error);
 
-      // 如果积分已扣减，退还积分
+      // 如果积分已扣减，退还积分并记录历史
       if (creditsDeducted) {
         try {
-          if (isAnonymous) {
-            await prisma.anonymous_users.update({
-              where: { user_id: userId },
+          await prisma.$transaction(async (tx) => {
+            // 退还积分
+            if (isAnonymous) {
+              await tx.anonymous_users.update({
+                where: { user_id: userId },
+                data: {
+                  credits: { increment: creditsCost },
+                  total_credits_used: { decrement: creditsCost },
+                },
+              });
+            } else {
+              await tx.users.update({
+                where: { user_id: userId },
+                data: {
+                  credits: { increment: creditsCost },
+                  total_credits_used: { decrement: creditsCost },
+                },
+              });
+            }
+
+            // 记录积分退还历史
+            await tx.credit_history.create({
               data: {
-                credits: { increment: creditsCost },
+                user_id: userId,
+                amount: creditsCost, // 正数表示退还
+                task_id: taskId,
+                description: `TTS任务失败，积分退还`,
               },
             });
-          } else {
-            await prisma.users.update({
-              where: { user_id: userId },
-              data: {
-                credits: { increment: creditsCost },
-              },
-            });
-          }
-          console.log(`💰 积分已退还: ${userId}, +${creditsCost}`);
+
+            console.log(`💰 积分已退还: ${userId}, +${creditsCost}, 已记录到 credit_history`);
+          });
         } catch (refundError) {
           console.error('积分退还失败:', refundError);
         }

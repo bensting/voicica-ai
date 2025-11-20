@@ -197,6 +197,11 @@ export async function getUserOrAnonymous(): Promise<UnifiedUser> {
   // 这样确保在 Vercel 生产环境中正确工作
   const headersList = await headers();
 
+  // 调试: 检查 headers 中是否有 authorization
+  const authHeader = headersList.get('authorization');
+  console.log('🔍 [getUserOrAnonymous] Authorization header exists:', !!authHeader);
+  console.log('🔍 [getUserOrAnonymous] Authorization header preview:', authHeader?.substring(0, 20) + '...');
+
   // 1. 尝试 Firebase Token 验证
   const firebaseUser = await verifyFirebaseToken(headersList);
 
@@ -211,6 +216,7 @@ export async function getUserOrAnonymous(): Promise<UnifiedUser> {
   // 2. 降级到匿名用户
   const fingerprint = headersList.get('x-device-fingerprint');
 
+  console.log('🔍 [getUserOrAnonymous] Firebase 验证失败,检查设备指纹');
   console.log('🔍 [getUserOrAnonymous] Fingerprint:', fingerprint);
 
   if (fingerprint) {
@@ -219,12 +225,15 @@ export async function getUserOrAnonymous(): Promise<UnifiedUser> {
 
     const anonUser = await createOrGetAnonymousUser(fingerprint, ipAddress, userAgent);
 
+    console.log('⚠️ [getUserOrAnonymous] 已降级到匿名用户:', anonUser.user_id);
+
     return {
       user_id: anonUser.user_id,
       is_anonymous: true,
     };
   }
 
+  console.error('❌ [getUserOrAnonymous] 既没有 Firebase token 也没有设备指纹');
   throw new Error('未提供认证信息');
 }
 

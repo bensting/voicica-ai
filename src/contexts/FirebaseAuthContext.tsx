@@ -50,13 +50,19 @@ export function FirebaseAuthProvider({ children }: { children: React.ReactNode }
         setToken(idToken);
 
         // 保存 token 到 cookie，供 middleware 使用
-        document.cookie = `firebase-token=${idToken}; path=/; max-age=3600; SameSite=Strict`;
+        // 生产环境 (HTTPS) 需要 Secure 标志
+        const isProduction = window.location.protocol === 'https:';
+        const secureCookie = isProduction ? 'Secure; ' : '';
+        document.cookie = `firebase-token=${idToken}; path=/; max-age=3600; SameSite=Strict; ${secureCookie}`;
+
+        console.log('✅ [FirebaseAuth] Token cookie 已设置', { isProduction });
       } else {
         setUser(null);
         setToken(null);
 
         // 清除 token cookie
         document.cookie = 'firebase-token=; path=/; max-age=0';
+        console.log('🗑️ [FirebaseAuth] Token cookie 已清除');
       }
 
       setLoading(false);
@@ -74,10 +80,12 @@ export function FirebaseAuthProvider({ children }: { children: React.ReactNode }
         const idToken = await user.getIdToken(true); // force refresh
         setToken(idToken);
 
-        // 更新 cookie
-        document.cookie = `firebase-token=${idToken}; path=/; max-age=3600; SameSite=Strict`;
+        // 更新 cookie (生产环境需要 Secure 标志)
+        const isProduction = window.location.protocol === 'https:';
+        const secureCookie = isProduction ? 'Secure; ' : '';
+        document.cookie = `firebase-token=${idToken}; path=/; max-age=3600; SameSite=Strict; ${secureCookie}`;
 
-        console.log('🔄 [FirebaseAuth] Token 已刷新');
+        console.log('🔄 [FirebaseAuth] Token 已刷新', { isProduction });
       } catch (error) {
         console.error('❌ [FirebaseAuth] Token 刷新失败:', error);
       }

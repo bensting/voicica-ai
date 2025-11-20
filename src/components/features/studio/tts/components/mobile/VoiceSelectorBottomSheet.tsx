@@ -5,7 +5,7 @@ import { X } from 'lucide-react';
 import type { Voice } from '@/types/voice';
 import type { LocaleOption } from '@/types/config';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useAuth } from '@/contexts/AuthContext';
+import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 import { useVoices } from '@/components/features/studio/voices/hooks/useVoices';
 import VoiceSearchBar from '@/components/features/studio/voices/VoiceSearchBar';
 import VoiceTagSelector from '@/components/features/studio/voices/VoiceTagSelector';
@@ -35,7 +35,7 @@ export default function VoiceSelectorBottomSheet({
   onSelect,
 }: VoiceSelectorBottomSheetProps) {
   const { locale, t } = useLanguage();
-  const { user, loading: authLoading } = useAuth();
+  const { user, loading: authLoading } = useFirebaseAuth();
   const [isLanguageModalOpen, setIsLanguageModalOpen] = useState(false);
 
   // Use voices hook

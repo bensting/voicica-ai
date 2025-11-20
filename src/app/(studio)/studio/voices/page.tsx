@@ -3,7 +3,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useAuth } from '@/contexts/AuthContext';
+import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 import { useStudio } from '@/contexts/StudioContext';
 import LanguageSelectorModal from '@/components/common/LanguageSelectorModal';
 import VoiceTagSelector from '@/components/features/studio/voices/VoiceTagSelector';
@@ -26,7 +26,7 @@ import type { Voice } from '@/types/voice';
 export default function VoicesPage() {
   const router = useRouter();
   const { locale } = useLanguage();
-  const { user, loading: authLoading } = useAuth();
+  const { user, loading: authLoading } = useFirebaseAuth();
   const { setTitle } = useStudio();
 
   // Language selector modal state

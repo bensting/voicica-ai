@@ -1,7 +1,7 @@
 'use client';
 
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { useAuth } from './AuthContext';
+import { useFirebaseAuth } from './FirebaseAuthContext';
 import { getCurrentUserProfile } from '@/actions/user';
 import type { UserProfile } from '@/types/user';
 
@@ -26,7 +26,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const { user, loading: authLoading } = useAuth();
+  const { user, loading: authLoading } = useFirebaseAuth();
 
   // 获取用户资料
   const fetchProfile = async () => {

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import { useAuth } from '@/contexts/AuthContext';
+import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 import { getUnifiedCredits } from '@/actions/user';
 
 /**
@@ -31,7 +31,7 @@ interface CreditsProviderProps {
  * - 本地乐观更新（生成后立即扣减）
  */
 export function CreditsProvider({ children }: CreditsProviderProps) {
-  const { user, loading: authLoading } = useAuth();
+  const { user, loading: authLoading } = useFirebaseAuth();
   const [credits, setCredits] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

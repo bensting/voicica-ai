@@ -3,7 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import "./globals.css";
 import { LanguageProvider } from "@/contexts/LanguageContext";
-import { AuthProvider } from "@/contexts/AuthContext";
+import { FirebaseAuthProvider } from "@/contexts/FirebaseAuthContext";
 import { UserProvider } from "@/contexts/UserContext";
 import { AudioSettingsProvider } from "@/contexts/AudioSettingsContext";
 import InstallPrompt from "@/components/features/pwa/InstallPrompt";
@@ -57,7 +57,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         suppressHydrationWarning
       >
-        <AuthProvider>
+        <FirebaseAuthProvider>
           <UserProvider>
             <LanguageProvider>
               <LanguageLoadingWrapper>
@@ -69,7 +69,7 @@ export default function RootLayout({
               </LanguageLoadingWrapper>
             </LanguageProvider>
           </UserProvider>
-        </AuthProvider>
+        </FirebaseAuthProvider>
       </body>
       {process.env.NEXT_PUBLIC_GA_ID && (
         <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID} />

@@ -4,7 +4,7 @@
  * TTS 模块 Server Actions
  */
 import prisma from '@/lib/prisma';
-import { getUserOrAnonymous } from '@/lib/auth';
+import { getUserOrAnonymous } from '@/lib/auth-firebase';
 import { v4 as uuidv4 } from 'uuid';
 import { inngest } from '@/lib/inngest/client';
 

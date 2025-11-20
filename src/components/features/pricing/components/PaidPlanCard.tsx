@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { PricingPlan } from '@/types/subscription';
-import { useAuth } from '@/contexts/AuthContext';
+import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 import { createStripeCheckout } from '@/actions/payment';
 import { BillingCycle } from '../hooks/usePricing';
 import { getCurrencySymbol, getCurrencyFromLocale } from '@/config/currency';
@@ -31,7 +31,7 @@ const Feature = ({ children, isNegative = false }: { children: React.ReactNode; 
 );
 
 export default function PaidPlanCard({ plan, isRecommended = false }: PaidPlanCardProps) {
-  const { user } = useAuth();
+  const { user } = useFirebaseAuth();
   const { locale, t } = useLanguage();
   const [isLoading, setIsLoading] = useState(false);
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);

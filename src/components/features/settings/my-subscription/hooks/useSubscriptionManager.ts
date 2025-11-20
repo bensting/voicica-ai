@@ -1,12 +1,12 @@
 import { useState, useCallback } from 'react';
-import { useAuth } from '@/contexts/AuthContext';
+import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 import { getMySubscriptions, cancelSubscription } from '@/actions/subscription';
 import type { UserSubscriptionListResponse } from '@/types/subscription';
 
 type TabType = 'all' | 'text_to_speech' | 'voice_cloning';
 
 export function useSubscriptionManager() {
-  const { user, loading: authLoading } = useAuth();
+  const { user, loading: authLoading } = useFirebaseAuth();
   const [activeTab, setActiveTab] = useState<TabType>('all');
   const [data, setData] = useState<UserSubscriptionListResponse | null>(null);
   const [loading, setLoading] = useState(true);

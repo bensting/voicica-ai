@@ -4,7 +4,7 @@ import { useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { X } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useAuth } from '@/contexts/AuthContext';
+import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 import { useLogin } from '@/hooks/useLogin';
 import SocialLoginButton, {
   GoogleIcon,
@@ -26,7 +26,7 @@ interface LoginModalProps {
 export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
   const { t } = useLanguage();
   const { loading, error, handleLogin } = useLogin();
-  const { user } = useAuth();
+  const { user } = useFirebaseAuth();
 
   // 登录成功后自动关闭模态框
   useEffect(() => {

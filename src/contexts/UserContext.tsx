@@ -48,7 +48,15 @@ export function UserProvider({ children }: { children: ReactNode }) {
     } catch (err) {
       const error = err as Error;
       console.error('❌ UserContext: 后端 API 调用失败', error);
-      setError(error.message || '获取用户信息失败');
+
+      // 如果是"未登录"错误，不设置为错误状态（可能是竞态条件或 token 未就绪）
+      if (error.message === '未登录') {
+        console.log('⚠️ UserContext: Token 可能尚未就绪，将在下次重试');
+        setProfile(null);
+        setError(null);
+      } else {
+        setError(error.message || '获取用户信息失败');
+      }
     } finally {
       setLoading(false);
     }

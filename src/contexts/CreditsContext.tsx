@@ -1,7 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import { useAuth } from '@/contexts/AuthContext';
+import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 import { getUnifiedCredits } from '@/actions/user';
 
 /**
@@ -31,7 +31,7 @@ interface CreditsProviderProps {
  * - 本地乐观更新（生成后立即扣减）
  */
 export function CreditsProvider({ children }: CreditsProviderProps) {
-  const { user, loading: authLoading } = useAuth();
+  const { user, loading: authLoading } = useFirebaseAuth();
   const [credits, setCredits] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -58,9 +58,18 @@ export function CreditsProvider({ children }: CreditsProviderProps) {
         expires_at: response.expires_at,
       });
     } catch (err) {
+      const error = err as Error;
       console.error('❌ 获取积分失败:', err);
-      setError('Failed to fetch credits');
-      setCredits(0);
+
+      // 如果是"未提供认证信息"错误，静默处理（用户可能在首页未登录且无设备指纹）
+      if (error.message === '未提供认证信息' || error.message === '未登录') {
+        console.log('⚠️ CreditsContext: 认证信息未就绪，将在下次重试');
+        setCredits(0);
+        setError(null);
+      } else {
+        setError('Failed to fetch credits');
+        setCredits(0);
+      }
     } finally {
       setLoading(false);
     }

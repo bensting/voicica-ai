@@ -4,7 +4,7 @@
  * 用户模块 Server Actions
  */
 import prisma from '@/lib/prisma';
-import { getCurrentUser, getUserOrAnonymous } from '@/lib/auth';
+import { getCurrentUser, getUserOrAnonymous } from '@/lib/auth-firebase';
 import type { UserProfile, CreditsInfo } from '@/types/user';
 
 /**

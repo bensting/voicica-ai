@@ -5,7 +5,7 @@ import type { LocaleOption } from '@/types/config';
 
 interface UseVoicesProps {
   locale: string;
-  user: { id: string } | null;
+  user: { uid: string } | null;
   authLoading: boolean;
 }
 

@@ -4,6 +4,7 @@ import {
   deleteTtsRecord,
   batchDeleteTtsRecords,
   getTtsRecordById,
+  checkAndHandleStuckTask,
 } from '@/actions/tts';
 import type { TtsRecord } from '@/actions/tts';
 import { TaskStatus } from '@/types/tts';
@@ -46,7 +47,7 @@ async function downloadAudio(audioUrl: string, filename: string): Promise<void> 
 }
 
 interface UseGenerationHistoryProps {
-  user: { id: string } | null;
+  user: { uid: string } | null;
   authLoading?: boolean;
   pageSize?: number;
   accumulateData?: boolean; // For infinite scroll on mobile
@@ -212,7 +213,7 @@ export function useGenerationHistory({
     pollingRetryCountRef.current.delete(recordId);
   }, []);
 
-  // Poll single record status with retry limit
+  // Poll single record status with retry limit and timeout handling
   const pollRecordStatus = useCallback(async (recordId: string) => {
     try {
       console.log(`🔄 [useGenerationHistory] Polling record ${recordId}`);
@@ -235,8 +236,43 @@ export function useGenerationHistory({
         gen.id === recordId ? updatedGeneration : gen
       ));
 
-      // If still processing, schedule next poll
+      // If still processing, check if task is stuck (> 5 minutes)
       if (record.status === TaskStatus.PROCESSING || record.status === TaskStatus.PENDING) {
+        const taskAge = Date.now() - new Date(record.created_at).getTime();
+        const taskAgeMinutes = taskAge / 1000 / 60;
+        const TIMEOUT_THRESHOLD_MINUTES = 5;
+
+        // 如果任务超过5分钟,立即触发后台检查
+        if (taskAgeMinutes > TIMEOUT_THRESHOLD_MINUTES) {
+          console.warn(`⚠️ [useGenerationHistory] Task ${recordId} has been running for ${taskAgeMinutes.toFixed(1)} minutes, triggering timeout check`);
+
+          try {
+            const result = await checkAndHandleStuckTask(numericId);
+            console.log(`✅ [useGenerationHistory] Timeout check completed for record ${recordId}:`, result.message);
+
+            // 更新记录状态
+            const timeoutUpdatedGeneration = convertTtsRecordToGeneration(result.record);
+            setGenerations(prev => prev.map(gen =>
+              gen.id === recordId ? timeoutUpdatedGeneration : gen
+            ));
+
+            // 停止轮询
+            clearRecordPolling(recordId);
+
+            // 如果任务被标记为失败,显示通知
+            if (result.handled && result.newStatus === 'FAILURE') {
+              console.error(`❌ [useGenerationHistory] Task ${recordId} marked as failed: ${result.message}`);
+            }
+          } catch (backendErr) {
+            console.error(`❌ [useGenerationHistory] Timeout check failed for record ${recordId}:`, backendErr);
+            // 即使后端检查失败,也停止轮询
+            clearRecordPolling(recordId);
+          }
+
+          return;
+        }
+
+        // 任务还在正常时间范围内,继续轮询
         const timer = setTimeout(() => {
           void pollRecordStatus(recordId);
         }, 2000); // Poll every 2 seconds
@@ -254,10 +290,38 @@ export function useGenerationHistory({
       const currentRetries = pollingRetryCountRef.current.get(recordId) || 0;
       const newRetries = currentRetries + 1;
 
-      // Check if max retries exceeded
+      // Check if max retries exceeded - trigger backend check
       if (newRetries >= MAX_RETRY_ATTEMPTS) {
-        console.error(`❌ [useGenerationHistory] Max retry attempts (${MAX_RETRY_ATTEMPTS}) reached for record ${recordId}, stopping polling`);
-        clearRecordPolling(recordId);
+        console.warn(`⚠️ [useGenerationHistory] Max retry attempts (${MAX_RETRY_ATTEMPTS}) reached for record ${recordId}`);
+        console.log(`🔧 [useGenerationHistory] Triggering backend timeout check for record ${recordId}`);
+
+        try {
+          // 调用后端检查任务是否超时
+          const numericId = parseInt(recordId, 10);
+          const result = await checkAndHandleStuckTask(numericId);
+
+          console.log(`✅ [useGenerationHistory] Backend check completed for record ${recordId}:`, result.message);
+
+          // 更新记录状态
+          const updatedGeneration = convertTtsRecordToGeneration(result.record);
+          setGenerations(prev => prev.map(gen =>
+            gen.id === recordId ? updatedGeneration : gen
+          ));
+
+          // 停止轮询
+          clearRecordPolling(recordId);
+
+          // 如果任务被标记为失败，显示通知
+          if (result.handled && result.newStatus === 'FAILURE') {
+            console.error(`❌ [useGenerationHistory] Task ${recordId} marked as failed: ${result.message}`);
+            // TODO: 可以在这里显示用户友好的通知
+          }
+        } catch (backendErr) {
+          console.error(`❌ [useGenerationHistory] Backend timeout check failed for record ${recordId}:`, backendErr);
+          // 即使后端检查失败，也停止轮询，避免无限循环
+          clearRecordPolling(recordId);
+        }
+
         return;
       }
 

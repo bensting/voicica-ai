@@ -5,7 +5,7 @@
  */
 import Stripe from 'stripe';
 import prisma from '@/lib/prisma';
-import { getCurrentUser } from '@/lib/auth';
+import { getCurrentUser } from '@/lib/auth-firebase';
 import type { SubscriptionPlan, UserSubscription, UserSubscriptionListResponse } from '@/types/subscription';
 
 // Initialize Stripe

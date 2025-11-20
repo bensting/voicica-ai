@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAuth } from '@/contexts/AuthContext';
+import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 
 /**
  * 登录业务逻辑 Hook
@@ -16,7 +16,7 @@ export function useLogin() {
   const [error, setError] = useState<string | null>(null);
   const [isReturningUser, setIsReturningUser] = useState(false);
 
-  const { user, signInWithGoogle, signInWithApple } = useAuth();
+  const { user, signInWithGoogle, signInWithApple, signInWithTwitter } = useFirebaseAuth();
   const router = useRouter();
 
   // 检测回访用户
@@ -47,7 +47,7 @@ export function useLogin() {
       // 记录访问历史
       localStorage.setItem('hasVisited', 'true');
 
-      // Auth.js 会自动处理重定向
+      // Firebase Auth 登录
       switch (provider) {
         case 'google':
           await signInWithGoogle();
@@ -56,17 +56,25 @@ export function useLogin() {
           await signInWithApple();
           break;
         case 'twitter':
-          // Twitter/X 暂不支持
-          setError('Twitter 登录暂不支持');
+          await signInWithTwitter();
           break;
       }
+
+      // 登录成功,保存邮箱
+      if (user?.email) {
+        localStorage.setItem('lastLoginEmail', user.email);
+      }
+
+      // 登录成功后自动跳转
+      console.log('✅ useLogin: 登录成功，准备跳转');
+      setLoading(false);
+      router.push('/studio/tts');
     } catch (err) {
       const error = err as { code?: string; message?: string };
       console.error('❌ useLogin: 登录失败', error);
       setError(error.message || '登录失败，请重试');
       setLoading(false);
     }
-    // 注意：不要在这里 setLoading(false)，因为 Auth.js 会重定向页面
   };
 
   return {

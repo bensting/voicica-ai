@@ -30,7 +30,17 @@ function initializeFirebaseAdmin(): { app: App; auth: Auth } {
   const privateKey = process.env.FIREBASE_ADMIN_PRIVATE_KEY?.replace(/\\n/g, '\n');
 
   if (!projectId || !clientEmail || !privateKey) {
-    throw new Error('Firebase Admin SDK 环境变量未配置');
+    const missing = [];
+    if (!projectId) missing.push('FIREBASE_ADMIN_PROJECT_ID');
+    if (!clientEmail) missing.push('FIREBASE_ADMIN_CLIENT_EMAIL');
+    if (!privateKey) missing.push('FIREBASE_ADMIN_PRIVATE_KEY');
+
+    const error = `Firebase Admin SDK 环境变量未配置: ${missing.join(', ')}\n` +
+      `请检查 Vercel 环境变量设置,特别注意 FIREBASE_ADMIN_PRIVATE_KEY 需要包含外层引号。\n` +
+      `详见: VERCEL_DEPLOYMENT_GUIDE.md`;
+
+    console.error('❌ [Firebase Admin]', error);
+    throw new Error(error);
   }
 
   try {

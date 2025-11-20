@@ -5,10 +5,12 @@ import "./globals.css";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 import { FirebaseAuthProvider } from "@/contexts/FirebaseAuthContext";
 import { UserProvider } from "@/contexts/UserContext";
+import { CreditsProvider } from "@/contexts/CreditsContext";
 import { AudioSettingsProvider } from "@/contexts/AudioSettingsContext";
 import InstallPrompt from "@/components/features/pwa/InstallPrompt";
 import PWAUpdatePrompt from "@/components/layout/PWAUpdatePrompt";
 import LanguageLoadingWrapper from "@/components/providers/LanguageLoadingWrapper";
+import DeviceFingerprintProvider from "@/components/providers/DeviceFingerprintProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -59,15 +61,18 @@ export default function RootLayout({
       >
         <FirebaseAuthProvider>
           <UserProvider>
-            <LanguageProvider>
-              <LanguageLoadingWrapper>
-                <AudioSettingsProvider>
-                  {children}
-                  <InstallPrompt />
-                  <PWAUpdatePrompt />
-                </AudioSettingsProvider>
-              </LanguageLoadingWrapper>
-            </LanguageProvider>
+            <CreditsProvider>
+              <LanguageProvider>
+                <LanguageLoadingWrapper>
+                  <AudioSettingsProvider>
+                    <DeviceFingerprintProvider />
+                    {children}
+                    <InstallPrompt />
+                    <PWAUpdatePrompt />
+                  </AudioSettingsProvider>
+                </LanguageLoadingWrapper>
+              </LanguageProvider>
+            </CreditsProvider>
           </UserProvider>
         </FirebaseAuthProvider>
       </body>

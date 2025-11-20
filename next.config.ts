@@ -1,9 +1,22 @@
 import type { NextConfig } from "next";
 // @ts-ignore - next-pwa doesn't have TypeScript definitions
 import withPWA from 'next-pwa';
+import { readFileSync } from 'fs';
+import { join } from 'path';
+
+// 读取版本号
+const packageJson = JSON.parse(
+  readFileSync(join(__dirname, 'package.json'), 'utf8')
+);
+const APP_VERSION = packageJson.version;
 
 const nextConfig: NextConfig = {
   /* config options here */
+
+  // 环境变量注入
+  env: {
+    NEXT_PUBLIC_APP_VERSION: APP_VERSION,
+  },
 
   // 配置外部图片域名
   images: {

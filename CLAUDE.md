@@ -258,20 +258,89 @@ const user = await userAPI.getCurrentUser();
 - `NEXT_PUBLIC_FIREBASE_PROJECT_ID`
 - `NEXT_PUBLIC_API_BASE_URL`: 后端 API 地址
 
+### 自动注入的环境变量
+- `NEXT_PUBLIC_APP_VERSION`: 应用版本号（构建时从 package.json 自动注入）
+
 ### 配置方法
 1. 复制 `.env.example` 到 `.env.local`
 2. 填写实际值
 3. 重启开发服务器
 
+## 版本管理
+
+本项目使用 **package.json 作为版本号的单一来源**，通过自动化脚本确保版本一致性。
+
+### 版本号同步机制
+
+1. **主版本源**: `package.json` 的 `version` 字段
+2. **自动同步目标**:
+   - `public/manifest.json` - PWA manifest 版本号
+   - `NEXT_PUBLIC_APP_VERSION` - 应用内环境变量
+
+### 更新版本号
+
+```bash
+# 方法 1: 使用 npm version（推荐）
+npm version patch   # 0.1.0 -> 0.1.1 (Bug 修复)
+npm version minor   # 0.1.0 -> 0.2.0 (新功能)
+npm version major   # 0.1.0 -> 1.0.0 (重大更新)
+
+# 方法 2: 手动修改 package.json 后同步
+npm run version:sync
+```
+
+### 自动化流程
+
+每次构建时自动执行:
+1. `prebuild` hook 运行 `scripts/sync-version.js`
+2. 从 `package.json` 读取版本号
+3. 自动更新 `manifest.json`
+4. Next.js 构建时注入到 `process.env.NEXT_PUBLIC_APP_VERSION`
+
+### 在代码中使用版本号
+
+```tsx
+// 任何组件中
+const version = process.env.NEXT_PUBLIC_APP_VERSION;
+return <div>v{version}</div>;
+```
+
+**示例**: Footer 组件显示版本号 (`src/components/layout/Footer/index.tsx:43`)
+
+**详细文档**: 查看 `VERSION_MANAGEMENT.md`
+
+## PWA 版本更新机制
+
+### 工作流程
+1. 用户访问应用时检查 Service Worker 更新
+2. 检测到新版本时显示更新提示组件
+3. 用户确认后激活新版本并刷新页面
+
+### 关键配置
+- `next.config.ts`: `skipWaiting: false` - 等待用户确认
+- `PWAUpdatePrompt` 组件: 友好的更新提示界面
+- 每小时自动检查更新一次
+
+### 更新策略
+- **NetworkFirst**: 优先获取网络资源
+- **缓存过期**: 24 小时
+- **用户控制**: 可选择"立即更新"或"稍后"
+
 ## 最近完成的功能
 
-### 1. 用户中心重构 (2024)
+### 1. PWA 版本管理系统 (2024)
+- 统一版本号管理（package.json 作为单一来源）
+- 自动版本同步脚本
+- 用户友好的更新提示
+- 支持多语言的更新通知
+
+### 2. 用户中心重构 (2024)
 - 创建 settings 布局系统
 - 实现侧边栏导航（桌面端垂直、移动端水平）
 - 页面结构优化为子路由模式
 - 组件按功能模块组织
 
-### 2. 用户菜单重构
+### 3. 用户菜单重构
 - 配置化管理菜单项 (`userMenuConfig.tsx`)
 - 组件化菜单项 (`UserMenuItem.tsx`)
 - 支持动态路由和特殊操作

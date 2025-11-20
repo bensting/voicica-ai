@@ -570,3 +570,178 @@ export async function getTtsRecordByTaskId(taskId: string): Promise<TtsRecord> {
     completed_at: record.completed_at,
   };
 }
+
+/**
+ * 检查并处理超时的 TTS 任务
+ *
+ * 工作流程：
+ * 1. 前端轮询超时后调用此函数
+ * 2. 后端检查任务真实状态
+ * 3. 如果任务卡住/异常，标记为失败并返还积分
+ * 4. 如果任务正常，延长等待时间并返回最新状态
+ */
+export async function checkAndHandleStuckTask(
+  recordId: number
+): Promise<{
+  handled: boolean;
+  newStatus: 'FAILURE' | 'PROCESSING' | 'SUCCESS' | 'PENDING';
+  message: string;
+  record: TtsRecord;
+}> {
+  const unifiedUser = await getUserOrAnonymous();
+  const userId = unifiedUser.user_id;
+
+  // 1. 获取记录
+  const record = await prisma.tts_records.findUnique({
+    where: { id: recordId },
+  });
+
+  if (!record) {
+    throw new Error(`记录不存在: ${recordId}`);
+  }
+
+  // 验证权限
+  if (record.user_id !== userId) {
+    throw new Error('无权访问此记录');
+  }
+
+  // 2. 如果任务已经完成，直接返回
+  if (record.status === 'SUCCESS' || record.status === 'FAILURE') {
+    return {
+      handled: false,
+      newStatus: record.status as 'SUCCESS' | 'FAILURE',
+      message: '任务已完成',
+      record: {
+        id: record.id,
+        user_id: record.user_id,
+        task_id: record.task_id,
+        text: record.text,
+        voice_name: record.voice_name,
+        language: record.language,
+        speed: record.speed,
+        pitch: record.pitch,
+        volume: record.volume,
+        credits_cost: record.credits_cost,
+        character_count: record.character_count,
+        status: record.status,
+        progress: record.progress,
+        audio_url: record.audio_url,
+        duration: record.duration,
+        format: record.format,
+        error_message: record.error_message,
+        created_at: record.created_at,
+        completed_at: record.completed_at,
+      },
+    };
+  }
+
+  // 3. 检查任务创建时间，判断是否超时
+  const now = new Date();
+  const createdAt = new Date(record.created_at);
+  const elapsedMinutes = (now.getTime() - createdAt.getTime()) / 1000 / 60;
+
+  // 超时阈值：5分钟
+  const TIMEOUT_THRESHOLD_MINUTES = 5;
+
+  if (elapsedMinutes > TIMEOUT_THRESHOLD_MINUTES) {
+    console.error(`❌ [checkStuckTask] 任务 ${record.task_id} 已超时 ${elapsedMinutes.toFixed(1)} 分钟，标记为失败`);
+
+    // 4. 标记为失败并返还积分（仅当积分已被扣减时）
+    // 根据 Inngest worker 流程：progress >= 20 表示积分已扣减
+    const creditsWereDeducted = (record.progress ?? 0) >= 20;
+
+    const updatedRecord = await prisma.$transaction(async (tx) => {
+      // 更新任务状态
+      const updated = await tx.tts_records.update({
+        where: { id: recordId },
+        data: {
+          status: 'FAILURE',
+          progress: 0,
+          error_message: `任务超时（运行时间: ${elapsedMinutes.toFixed(1)} 分钟）`,
+          completed_at: now,
+        },
+      });
+
+      // 只有在积分已被扣减的情况下才返还
+      if (creditsWereDeducted) {
+        const isAnonymous = unifiedUser.is_anonymous;
+        if (isAnonymous) {
+          await tx.anonymous_users.update({
+            where: { user_id: userId },
+            data: { credits: { increment: record.credits_cost } },
+          });
+        } else {
+          await tx.users.update({
+            where: { user_id: userId },
+            data: { credits: { increment: record.credits_cost } },
+          });
+        }
+
+        console.log(`✅ [checkStuckTask] 已返还 ${record.credits_cost} 积分给用户 ${userId}`);
+      } else {
+        console.log(`ℹ️ [checkStuckTask] 积分未被扣减（progress: ${record.progress}），无需返还`);
+      }
+
+      return updated;
+    });
+
+    return {
+      handled: true,
+      newStatus: 'FAILURE',
+      message: creditsWereDeducted
+        ? `任务超时已取消，已返还 ${record.credits_cost} 积分`
+        : '任务超时已取消（积分未扣减）',
+      record: {
+        id: updatedRecord.id,
+        user_id: updatedRecord.user_id,
+        task_id: updatedRecord.task_id,
+        text: updatedRecord.text,
+        voice_name: updatedRecord.voice_name,
+        language: updatedRecord.language,
+        speed: updatedRecord.speed,
+        pitch: updatedRecord.pitch,
+        volume: updatedRecord.volume,
+        credits_cost: updatedRecord.credits_cost,
+        character_count: updatedRecord.character_count,
+        status: updatedRecord.status,
+        progress: updatedRecord.progress,
+        audio_url: updatedRecord.audio_url,
+        duration: updatedRecord.duration,
+        format: updatedRecord.format,
+        error_message: updatedRecord.error_message,
+        created_at: updatedRecord.created_at,
+        completed_at: updatedRecord.completed_at,
+      },
+    };
+  }
+
+  // 5. 未超时，任务仍在处理中，延长等待
+  console.log(`⏳ [checkStuckTask] 任务 ${record.task_id} 运行 ${elapsedMinutes.toFixed(1)} 分钟，继续等待`);
+
+  return {
+    handled: false,
+    newStatus: record.status as 'PROCESSING' | 'PENDING',
+    message: `任务仍在处理中（已运行 ${elapsedMinutes.toFixed(1)} 分钟）`,
+    record: {
+      id: record.id,
+      user_id: record.user_id,
+      task_id: record.task_id,
+      text: record.text,
+      voice_name: record.voice_name,
+      language: record.language,
+      speed: record.speed,
+      pitch: record.pitch,
+      volume: record.volume,
+      credits_cost: record.credits_cost,
+      character_count: record.character_count,
+      status: record.status,
+      progress: record.progress,
+      audio_url: record.audio_url,
+      duration: record.duration,
+      format: record.format,
+      error_message: record.error_message,
+      created_at: record.created_at,
+      completed_at: record.completed_at,
+    },
+  };
+}

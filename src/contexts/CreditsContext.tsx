@@ -58,9 +58,18 @@ export function CreditsProvider({ children }: CreditsProviderProps) {
         expires_at: response.expires_at,
       });
     } catch (err) {
+      const error = err as Error;
       console.error('❌ 获取积分失败:', err);
-      setError('Failed to fetch credits');
-      setCredits(0);
+
+      // 如果是"未提供认证信息"错误，静默处理（用户可能在首页未登录且无设备指纹）
+      if (error.message === '未提供认证信息' || error.message === '未登录') {
+        console.log('⚠️ CreditsContext: 认证信息未就绪，将在下次重试');
+        setCredits(0);
+        setError(null);
+      } else {
+        setError('Failed to fetch credits');
+        setCredits(0);
+      }
     } finally {
       setLoading(false);
     }

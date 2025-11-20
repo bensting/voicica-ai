@@ -140,6 +140,25 @@ export function useTTSGenerator(maxCharacters: number = 120) {
         volume: audioSettings.volume,
       });
 
+      console.log('✅ [useTTSGenerator] 任务提交结果:', result);
+
+      // 检查是否返回错误（业务逻辑错误，如积分不足）
+      if (result.status === 'FAILURE' && result.errorCode) {
+        console.error('❌ [useTTSGenerator] 任务失败:', result.errorCode, result.errorData);
+
+        // 根据错误码使用国际化消息
+        const errorKey = `studio.errors.${result.errorCode}`;
+
+        // 如果有错误数据，传递给翻译函数进行插值
+        const errorMessage = result.errorData
+          ? t(errorKey, result.errorData)
+          : t(errorKey);
+
+        setError(errorMessage);
+        setIsGenerating(false);
+        return;
+      }
+
       console.log('✅ [useTTSGenerator] 任务已提交，task_id:', result.task_id);
 
       // Task submitted successfully
@@ -147,19 +166,11 @@ export function useTTSGenerator(maxCharacters: number = 120) {
       // and the record will appear in the list immediately with PENDING/PROCESSING status
       setIsGenerating(false);
     } catch (err: unknown) {
-      console.error('❌ [useTTSGenerator] 提交任务失败', err);
+      console.error('❌ [useTTSGenerator] 提交任务失败（异常）', err);
 
-      // 处理 Server Action 错误
+      // 处理未预期的异常（网络错误、服务器崩溃等）
       if (err instanceof Error) {
-        const message = err.message;
-
-        if (message.includes('积分不足') || message.includes('Insufficient credits')) {
-          setError(t('studio.errors.insufficientCredits'));
-        } else if (message.includes('无权') || message.includes('unauthorized')) {
-          setError(t('studio.errors.unauthorized'));
-        } else {
-          setError(message || t('studio.errors.taskSubmitFailed'));
-        }
+        setError(err.message || t('studio.errors.taskSubmitFailed'));
       } else {
         setError(t('studio.errors.taskSubmitFailed'));
       }

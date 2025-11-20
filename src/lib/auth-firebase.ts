@@ -1,11 +1,11 @@
 /**
- * 服务端认证工具函数
+ * Firebase Auth 服务端认证工具函数
  *
  * 用于 Server Actions 中验证用户身份
- * 支持 Auth.js 正式用户和设备指纹匿名用户
+ * 支持 Firebase 正式用户和设备指纹匿名用户
  */
 import { headers } from 'next/headers';
-import { auth } from './auth-next';
+import { auth as adminAuth } from './firebase-admin';
 import prisma from './prisma';
 import crypto from 'crypto';
 
@@ -28,29 +28,93 @@ const DEFAULT_ANONYMOUS_CREDITS = 1000;
 const ANONYMOUS_USER_EXPIRY_DAYS = 30;
 
 /**
- * 获取当前登录用户 (Auth.js)
+ * 从 HTTP Header 获取 Firebase ID Token 并验证
+ */
+async function verifyFirebaseToken(): Promise<AuthUser | null> {
+  try {
+    const headersList = await headers();
+    const authHeader = headersList.get('authorization');
+
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return null;
+    }
+
+    const token = authHeader.substring(7); // 移除 "Bearer " 前缀
+
+    // 验证 Firebase ID Token
+    const decodedToken = await adminAuth.verifyIdToken(token);
+
+    console.log('✅ [Firebase Auth] Token 验证成功:', decodedToken.uid);
+
+    // 自动注册或更新用户
+    await createOrUpdateFirebaseUser(decodedToken);
+
+    return {
+      uid: decodedToken.uid,
+      email: decodedToken.email,
+      name: decodedToken.name,
+      picture: decodedToken.picture,
+    };
+  } catch (error) {
+    console.error('❌ [Firebase Auth] Token 验证失败:', error);
+    return null;
+  }
+}
+
+/**
+ * 创建或更新 Firebase 用户到数据库
+ */
+async function createOrUpdateFirebaseUser(decodedToken: {
+  uid: string;
+  email?: string;
+  name?: string;
+  picture?: string;
+}): Promise<void> {
+  const existingUser = await prisma.users.findUnique({
+    where: { user_id: decodedToken.uid },
+  });
+
+  if (existingUser) {
+    // 更新用户信息
+    await prisma.users.update({
+      where: { user_id: decodedToken.uid },
+      data: {
+        email: decodedToken.email || existingUser.email,
+        name: decodedToken.name || existingUser.name,
+        photo_url: decodedToken.picture || existingUser.photo_url,
+        updated_at: new Date(),
+      },
+    });
+    console.log(`🔄 [Firebase Auth] 用户信息已更新: ${decodedToken.uid}`);
+  } else {
+    // 创建新用户
+    await prisma.users.create({
+      data: {
+        user_id: decodedToken.uid,
+        email: decodedToken.email || `${decodedToken.uid}@firebase.user`,
+        name: decodedToken.name || 'Firebase User',
+        photo_url: decodedToken.picture,
+        credits: 1000, // 新用户初始积分
+        total_credits_used: 0,
+      },
+    });
+    console.log(`✅ [Firebase Auth] 新用户已创建: ${decodedToken.uid}`);
+  }
+}
+
+/**
+ * 获取当前登录用户 (Firebase)
  *
  * @throws Error 如果未登录
  */
 export async function getCurrentUser(): Promise<AuthUser> {
-  const session = await auth();
+  const user = await verifyFirebaseToken();
 
-  if (!session?.user) {
+  if (!user) {
     throw new Error('未登录');
   }
 
-  // 获取应用用户 ID
-  const authUser = await prisma.user.findUnique({
-    where: { id: session.user.id },
-    select: { appUserId: true },
-  });
-
-  return {
-    uid: authUser?.appUserId || session.user.id!,
-    email: session.user.email ?? undefined,
-    name: session.user.name ?? undefined,
-    picture: session.user.image ?? undefined,
-  };
+  return user;
 }
 
 /**
@@ -59,11 +123,7 @@ export async function getCurrentUser(): Promise<AuthUser> {
  * 如果用户未登录，返回 null 而不是抛出错误
  */
 export async function getOptionalUser(): Promise<AuthUser | null> {
-  try {
-    return await getCurrentUser();
-  } catch {
-    return null;
-  }
+  return await verifyFirebaseToken();
 }
 
 /**
@@ -123,41 +183,25 @@ async function createOrGetAnonymousUser(
 }
 
 /**
- * 获取统一用户（支持正式用户和匿名用户）
+ * 获取统一用户（支持 Firebase 用户和匿名用户）
  *
- * 优先使用 Auth.js Session，其次使用设备指纹
+ * 优先使用 Firebase Token，其次使用设备指纹
  *
- * @throws Error 如果既没有 session 也没有设备指纹
+ * @throws Error 如果既没有 token 也没有设备指纹
  */
 export async function getUserOrAnonymous(): Promise<UnifiedUser> {
-  // 1. 尝试获取正式用户 (Auth.js)
-  const session = await auth();
-  console.log('🔍 [getUserOrAnonymous] Session:', {
-    hasSession: !!session,
-    hasUser: !!session?.user,
-    userId: session?.user?.id,
-  });
+  // 1. 尝试 Firebase Token 验证
+  const firebaseUser = await verifyFirebaseToken();
 
-  if (session?.user) {
-    // 获取应用用户 ID
-    const authUser = await prisma.user.findUnique({
-      where: { id: session.user.id },
-      select: { appUserId: true },
-    });
-
-    console.log('🔍 [getUserOrAnonymous] Auth User:', {
-      hasAuthUser: !!authUser,
-      appUserId: authUser?.appUserId,
-    });
-
-    const userId = authUser?.appUserId || session.user.id!;
+  if (firebaseUser) {
+    console.log('🔍 [getUserOrAnonymous] Firebase User:', firebaseUser.uid);
     return {
-      user_id: userId,
+      user_id: firebaseUser.uid,
       is_anonymous: false,
     };
   }
 
-  // 2. 尝试获取匿名用户
+  // 2. 降级到匿名用户
   const headersList = await headers();
   const fingerprint = headersList.get('x-device-fingerprint');
 

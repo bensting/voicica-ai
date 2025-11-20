@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useAuth } from '@/contexts/AuthContext';
+import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import UserMenu from './UserMenu';
 import LoginModal from '@/components/features/auth/LoginModal';
@@ -14,7 +14,7 @@ import LoginModal from '@/components/features/auth/LoginModal';
  * - 已登录：显示用户菜单
  */
 export default function LoginButton() {
-  const { user, loading } = useAuth();
+  const { user, loading } = useFirebaseAuth();
   const { t } = useLanguage();
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 

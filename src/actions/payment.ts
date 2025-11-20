@@ -4,7 +4,7 @@
  * 支付模块 Server Actions
  */
 import Stripe from 'stripe';
-import { getCurrentUser } from '@/lib/auth';
+import { getCurrentUser } from '@/lib/auth-firebase';
 import prisma from '@/lib/prisma';
 
 // Initialize Stripe

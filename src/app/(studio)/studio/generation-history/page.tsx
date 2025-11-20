@@ -1,6 +1,6 @@
 'use client';
 
-import { useAuth } from '@/contexts/AuthContext';
+import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 import ConfirmDialog from '@/components/ui/ConfirmDialog';
 import PageLoading from '@/components/ui/PageLoading';
 import DesktopView from '@/components/features/studio/generation-history/DesktopView';
@@ -15,7 +15,7 @@ import { useGenerationHistory } from '@/components/features/studio/generation-hi
  * Uses CSS media queries to show/hide views (no JS state, better performance)
  */
 export default function GenerationHistoryPage() {
-  const { user, loading: authLoading } = useAuth();
+  const { user, loading: authLoading } = useFirebaseAuth();
 
   // Use custom hook for all business logic
   const {

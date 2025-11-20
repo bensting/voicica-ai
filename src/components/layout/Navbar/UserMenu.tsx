@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { useAuth } from '@/contexts/AuthContext';
+import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
@@ -22,7 +22,7 @@ export default function UserMenu({ size = 'md' }: UserMenuProps = {}) {
   const [isOpen, setIsOpen] = useState(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
-  const { user, signOut } = useAuth();
+  const { user, signOut } = useFirebaseAuth();
   const { t } = useLanguage();
   const router = useRouter();
 
@@ -104,10 +104,10 @@ export default function UserMenu({ size = 'md' }: UserMenuProps = {}) {
         className="flex items-center gap-2 hover:opacity-80 transition-opacity"
         aria-label="User menu"
       >
-        {user.image ? (
+        {user.photoURL ? (
           <Image
-            src={user.image}
-            alt={user.name || 'User'}
+            src={user.photoURL}
+            alt={user.displayName || 'User'}
             width={imageSize}
             height={imageSize}
             className={`${avatarSize} rounded-full border-2 border-gray-200 object-cover`}
@@ -125,10 +125,10 @@ export default function UserMenu({ size = 'md' }: UserMenuProps = {}) {
           {/* 用户信息 */}
           <div className="px-4 py-3 border-b border-gray-100">
             <div className="flex items-center gap-3">
-              {user.image ? (
+              {user.photoURL ? (
                 <Image
-                  src={user.image}
-                  alt={user.name || 'User'}
+                  src={user.photoURL}
+                  alt={user.displayName || 'User'}
                   width={48}
                   height={48}
                   className="w-12 h-12 rounded-full"
@@ -140,7 +140,7 @@ export default function UserMenu({ size = 'md' }: UserMenuProps = {}) {
               )}
               <div className="flex-1 min-w-0">
                 <p className="font-semibold text-gray-900 truncate">
-                  {user.name || 'User'}
+                  {user.displayName || 'User'}
                 </p>
                 <p className="text-sm text-gray-500 truncate">{user.email}</p>
               </div>

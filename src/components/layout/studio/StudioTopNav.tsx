@@ -3,7 +3,7 @@
 import { Menu, X, Crown } from 'lucide-react';
 import Image from 'next/image';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useAuth } from '@/contexts/AuthContext';
+import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 import LanguageSwitcher from '@/components/layout/Navbar/LanguageSwitcher';
 import UserMenu from '@/components/layout/Navbar/UserMenu';
 import LoginButton from '@/components/layout/Navbar/LoginButton';
@@ -37,7 +37,7 @@ export default function StudioTopNav({
   onMenuToggle
 }: StudioTopNavProps) {
   const { t } = useLanguage();
-  const { user } = useAuth();
+  const { user } = useFirebaseAuth();
 
   const toggleMenu = () => {
     onMenuToggle?.(!isMenuOpen);

@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback, useMemo, useRef } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useAuth } from '@/contexts/AuthContext';
+import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 import { useStudio } from '@/contexts/StudioContext';
 import { useCredits } from '@/contexts/CreditsContext';
 import { useTTSGenerator } from '@/hooks/useTTSGenerator';
@@ -37,7 +37,7 @@ const DEFAULT_GENERATION_STATUS = [TaskStatus.SUCCESS, TaskStatus.PROCESSING, Ta
  */
 export default function StudioTTSPage() {
   const { locale, isReady: isLocaleReady, t } = useLanguage();
-  const { user, loading: authLoading } = useAuth();
+  const { user, loading: authLoading } = useFirebaseAuth();
   const { setTitle } = useStudio();
   const { credits, refreshCredits } = useCredits();
   const [isAudioModalOpen, setIsAudioModalOpen] = useState(false);

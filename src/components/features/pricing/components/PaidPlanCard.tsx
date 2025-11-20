@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { PricingPlan } from '@/types/subscription';
-import { useAuth } from '@/contexts/AuthContext';
+import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 import { createStripeCheckout } from '@/actions/payment';
 import { BillingCycle } from '../hooks/usePricing';
 import { getCurrencySymbol, getCurrencyFromLocale } from '@/config/currency';
@@ -31,7 +31,7 @@ const Feature = ({ children, isNegative = false }: { children: React.ReactNode; 
 );
 
 export default function PaidPlanCard({ plan, isRecommended = false }: PaidPlanCardProps) {
-  const { user } = useAuth();
+  const { user } = useFirebaseAuth();
   const { locale, t } = useLanguage();
   const [isLoading, setIsLoading] = useState(false);
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
@@ -102,7 +102,7 @@ export default function PaidPlanCard({ plan, isRecommended = false }: PaidPlanCa
   const handleUpgrade = async () => {
     console.log('🔵 [handleUpgrade] Start - Plan:', plan.plan_name);
     console.log('🔵 [handleUpgrade] Product ID:', plan.product_id);
-    console.log('🔵 [handleUpgrade] User:', user?.id || 'Not logged in');
+    console.log('🔵 [handleUpgrade] User:', user?.uid || 'Not logged in');
 
     // 检查是否有 product_id
     if (!plan.product_id) {

@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAuth } from '@/contexts/AuthContext';
+import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 import { useSubscriptionManager } from '@/components/features/settings/my-subscription/hooks/useSubscriptionManager';
 import SectionHeader from '@/components/features/settings/my-subscription/SectionHeader';
 import SubscriptionTabs from '@/components/features/settings/my-subscription/SubscriptionTabs';
@@ -13,7 +13,7 @@ import SubscriptionList from '@/components/features/settings/my-subscription/Sub
 
 export default function MySubscriptionPage() {
   const router = useRouter();
-  const { user, loading: authLoading } = useAuth();
+  const { user, loading: authLoading } = useFirebaseAuth();
   const {
     activeTab,
     setActiveTab,

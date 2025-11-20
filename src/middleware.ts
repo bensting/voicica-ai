@@ -8,23 +8,29 @@ import type { NextRequest } from 'next/server';
  * Server Actions 可以通过 headers() 读取 Authorization header
  */
 export function middleware(request: NextRequest) {
-  const response = NextResponse.next();
-
   // 1. 从 cookie 中读取 Firebase token（由客户端设置）
   const firebaseToken = request.cookies.get('firebase-token')?.value;
 
-  if (firebaseToken) {
-    // 2. 添加到 request headers，供 Server Actions 使用
-    response.headers.set('authorization', `Bearer ${firebaseToken}`);
-  }
-
-  // 3. 传递设备指纹（用于匿名用户）
+  // 2. 从 cookie 中读取设备指纹
   const deviceFingerprint = request.cookies.get('device-fingerprint')?.value;
-  if (deviceFingerprint) {
-    response.headers.set('x-device-fingerprint', deviceFingerprint);
+
+  // 3. 创建新的 headers 对象,添加认证信息
+  const requestHeaders = new Headers(request.headers);
+
+  if (firebaseToken) {
+    requestHeaders.set('authorization', `Bearer ${firebaseToken}`);
   }
 
-  return response;
+  if (deviceFingerprint) {
+    requestHeaders.set('x-device-fingerprint', deviceFingerprint);
+  }
+
+  // 4. 返回带有修改后 headers 的响应
+  return NextResponse.next({
+    request: {
+      headers: requestHeaders,
+    },
+  });
 }
 
 // 配置 middleware 匹配路径

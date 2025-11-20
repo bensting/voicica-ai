@@ -60,3 +60,7 @@ next-env.d.ts
 
 .idea/encodings.xml
 merge_to_main.bat
+
+# Windows special device files (should not be created as regular files)
+nul
+NUL

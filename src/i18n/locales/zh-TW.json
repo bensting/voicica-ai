@@ -388,6 +388,12 @@
     "titleHighlight": "明星產品",
     "titleSuffix": "不容錯過 👍"
   },
+  "pwa": {
+    "updateAvailable": "發現新版本",
+    "updateDescription": "應用程式有新版本可用。點擊更新以獲取最新功能和改進。",
+    "update": "立即更新",
+    "later": "稍後"
+  },
   "countries": {
     "CN": "中國",
     "TW": "台灣",

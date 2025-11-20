@@ -55,6 +55,22 @@ const nextConfig: NextConfig = {
 export default withPWA({
   dest: 'public',
   register: true,
-  skipWaiting: true,
+  skipWaiting: false,  // 改为 false,让新 Service Worker 等待
   disable: process.env.NODE_ENV === 'development',
+  // 自定义 Service Worker 配置
+  buildExcludes: [/middleware-manifest\.json$/, /_buildManifest\.js$/],
+  // 添加版本控制
+  runtimeCaching: [
+    {
+      urlPattern: /^https?.*/,
+      handler: 'NetworkFirst',
+      options: {
+        cacheName: 'offlineCache',
+        expiration: {
+          maxEntries: 200,
+          maxAgeSeconds: 24 * 60 * 60, // 24 hours
+        },
+      },
+    },
+  ],
 })(nextConfig);

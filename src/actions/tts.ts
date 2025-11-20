@@ -431,6 +431,11 @@ export async function getTtsRecordById(recordId: number): Promise<TtsRecord> {
     throw new Error('无权访问此记录');
   }
 
+  // 关联查询语音信息
+  const voice = await prisma.voices.findFirst({
+    where: { name: record.voice_name },
+  });
+
   return {
     id: record.id,
     user_id: record.user_id,
@@ -451,6 +456,15 @@ export async function getTtsRecordById(recordId: number): Promise<TtsRecord> {
     error_message: record.error_message,
     created_at: record.created_at,
     completed_at: record.completed_at,
+    voice: voice ? {
+      id: voice.id,
+      name: voice.name,
+      display_name: voice.display_name,
+      provider: voice.provider,
+      locale: voice.locale,
+      country: voice.country,
+      avatar_url: voice.avatar_url,
+    } : null,
   };
 }
 

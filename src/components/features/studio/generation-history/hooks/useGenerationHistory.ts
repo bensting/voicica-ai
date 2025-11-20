@@ -52,6 +52,7 @@ interface UseGenerationHistoryProps {
   pageSize?: number;
   accumulateData?: boolean; // For infinite scroll on mobile
   defaultStatus?: TaskStatus | TaskStatus[] | null; // 默认状态过滤
+  onTaskCompleted?: () => void; // 任务完成时的回调（用于刷新积分）
 }
 
 interface UseGenerationHistoryReturn {
@@ -99,6 +100,7 @@ export function useGenerationHistory({
   pageSize: initialPageSize = 20,
   accumulateData = false,
   defaultStatus = TaskStatus.SUCCESS,
+  onTaskCompleted,
 }: UseGenerationHistoryProps): UseGenerationHistoryReturn {
   // Data state
   const [loading, setLoading] = useState(true);
@@ -122,6 +124,8 @@ export function useGenerationHistory({
   const pollingTimersRef = useRef<Map<string, NodeJS.Timeout>>(new Map());
   // Track retry counts for each record to prevent infinite polling on errors
   const pollingRetryCountRef = useRef<Map<string, number>>(new Map());
+  // Track previous status of each record to detect completion
+  const previousStatusRef = useRef<Map<string, TaskStatus>>(new Map());
   const MAX_RETRY_ATTEMPTS = 20; // Stop polling after 20 failed attempts (~1 minute)
 
   // Keep track of the actual status filter to use (can be array or single value)
@@ -231,13 +235,28 @@ export function useGenerationHistory({
       // Reset retry count on successful fetch
       pollingRetryCountRef.current.set(recordId, 0);
 
+      // 检测状态变化：从 PROCESSING/PENDING → SUCCESS/FAILURE
+      const previousStatus = previousStatusRef.current.get(recordId);
+      const isProcessing = record.status === TaskStatus.PROCESSING || record.status === TaskStatus.PENDING;
+      const wasProcessing = previousStatus === TaskStatus.PROCESSING || previousStatus === TaskStatus.PENDING;
+      const isCompleted = record.status === TaskStatus.SUCCESS || record.status === TaskStatus.FAILURE;
+
+      // 如果状态从处理中变为完成，触发回调
+      if (wasProcessing && isCompleted && onTaskCompleted) {
+        console.log(`💰 [useGenerationHistory] 任务 ${recordId} 完成，刷新积分`);
+        onTaskCompleted();
+      }
+
+      // 更新状态追踪
+      previousStatusRef.current.set(recordId, record.status as TaskStatus);
+
       // Update only this record in the list
       setGenerations(prev => prev.map(gen =>
         gen.id === recordId ? updatedGeneration : gen
       ));
 
       // If still processing, check if task is stuck (> 5 minutes)
-      if (record.status === TaskStatus.PROCESSING || record.status === TaskStatus.PENDING) {
+      if (isProcessing) {
         const taskAge = Date.now() - new Date(record.created_at).getTime();
         const taskAgeMinutes = taskAge / 1000 / 60;
         const TIMEOUT_THRESHOLD_MINUTES = 5;
@@ -335,7 +354,7 @@ export function useGenerationHistory({
 
       pollingTimersRef.current.set(recordId, timer);
     }
-  }, [clearRecordPolling, MAX_RETRY_ATTEMPTS]);
+  }, [clearRecordPolling, MAX_RETRY_ATTEMPTS, onTaskCompleted]);
 
   // Cleanup on unmount
   useEffect(() => {

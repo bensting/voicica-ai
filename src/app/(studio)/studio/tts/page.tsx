@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useCallback, useMemo, useRef } from 'react';
+import { useEffect, useState, useCallback, useMemo } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 import { useStudio } from '@/contexts/StudioContext';
@@ -46,9 +46,6 @@ export default function StudioTTSPage() {
   const [isAudioSettingsOpen, setIsAudioSettingsOpen] = useState(false);
   const [lastOpenedRecordId, setLastOpenedRecordId] = useState<string | null>(null);
 
-  // 追踪 isGenerating 的前一个值，避免首次加载时误触发刷新
-  const prevIsGeneratingRef = useRef<boolean | null>(null);
-
   // 检测是否为移动端（在 useState 初始化，避免 useEffect）
   const [isMobile] = useState(() => {
     if (typeof window !== 'undefined') {
@@ -61,6 +58,14 @@ export default function StudioTTSPage() {
   useEffect(() => {
     setTitle(t('studio.tts'));
   }, [t, setTitle]);
+
+  // 页面加载时刷新积分（保证用户看到最新积分）
+  useEffect(() => {
+    if (!authLoading) {
+      console.log('🔄 [TTSPage] 页面加载，刷新积分');
+      void refreshCredits();
+    }
+  }, [authLoading, refreshCredits]);
 
   // TTS Generator logic
   const maxCharacters = 500;
@@ -76,7 +81,15 @@ export default function StudioTTSPage() {
     handleVoiceSelect,
     handleGenerate,
     handleClearText,
-  } = useTTSGenerator(maxCharacters);
+  } = useTTSGenerator(maxCharacters, {
+    onTaskSubmitted: () => {
+      console.log('🔄 [TTSPage] 任务成功提交，300ms 后刷新记录和积分');
+      setTimeout(() => {
+        void fetchRecords();
+        void refreshCredits();
+      }, 300);
+    },
+  });
 
   // Generation history hook (显示最近6条，只查询成功和进行中的记录，不显示失败的)
   const {
@@ -92,6 +105,10 @@ export default function StudioTTSPage() {
     authLoading,
     pageSize: 6,
     defaultStatus: DEFAULT_GENERATION_STATUS, // 只查询这三种状态，不查询 FAILURE
+    onTaskCompleted: () => {
+      console.log('💰 [TTSPage] 任务完成（轮询检测），刷新积分');
+      void refreshCredits();
+    },
   });
 
   // Load last selected voice from localStorage (remember user's choice)
@@ -165,28 +182,6 @@ export default function StudioTTSPage() {
       setIsAudioModalOpen(true);
     }
   }, [audioUrl, isMobile]);
-
-  // 任务提交后立即刷新历史记录和积分
-  useEffect(() => {
-    // 只在 isGenerating 从 true 变为 false 时刷新（即任务刚完成时）
-    // 避免首次加载时误触发
-    if (prevIsGeneratingRef.current === true && !isGenerating) {
-      console.log('🔄 [TTSPage] 任务完成，300ms 后刷新记录和积分');
-      const timer = setTimeout(() => {
-        void fetchRecords();
-        void refreshCredits(); // 刷新积分
-      }, 300);
-
-      // 更新 ref
-      prevIsGeneratingRef.current = isGenerating;
-
-      return () => clearTimeout(timer);
-    }
-
-    // 更新 ref 追踪当前值
-    prevIsGeneratingRef.current = isGenerating;
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isGenerating]); // 移除 fetchRecords 和 refreshCredits 依赖，避免重复调用
 
   // 移动端：当新的生成记录出现时，自动打开底部抽屉显示进度
   useEffect(() => {

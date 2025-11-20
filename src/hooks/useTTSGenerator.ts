@@ -19,7 +19,12 @@ export type VoiceModel = Voice;
  * - 处理生成逻辑
  * - 字符限制校验
  */
-export function useTTSGenerator(maxCharacters: number = 120) {
+export function useTTSGenerator(
+  maxCharacters: number = 120,
+  options?: {
+    onTaskSubmitted?: () => void; // 任务成功提交后的回调
+  }
+) {
   const { t } = useLanguage();
   const { settings: audioSettings } = useAudioSettings();
 
@@ -165,6 +170,11 @@ export function useTTSGenerator(maxCharacters: number = 120) {
       // The generation history hook will poll for updates
       // and the record will appear in the list immediately with PENDING/PROCESSING status
       setIsGenerating(false);
+
+      // 调用成功回调（用于刷新积分等）
+      if (options?.onTaskSubmitted) {
+        options.onTaskSubmitted();
+      }
     } catch (err: unknown) {
       console.error('❌ [useTTSGenerator] 提交任务失败（异常）', err);
 
@@ -177,7 +187,7 @@ export function useTTSGenerator(maxCharacters: number = 120) {
 
       setIsGenerating(false);
     }
-  }, [canGenerate, selectedVoice, text, audioSettings, t]);
+  }, [canGenerate, selectedVoice, text, audioSettings, t, options]);
 
   // 清空文本输入
   const handleClearText = useCallback(() => {

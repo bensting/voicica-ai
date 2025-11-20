@@ -7,6 +7,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { UserProvider } from "@/contexts/UserContext";
 import { AudioSettingsProvider } from "@/contexts/AudioSettingsContext";
 import InstallPrompt from "@/components/features/pwa/InstallPrompt";
+import PWAUpdatePrompt from "@/components/layout/PWAUpdatePrompt";
 import LanguageLoadingWrapper from "@/components/providers/LanguageLoadingWrapper";
 
 const geistSans = Geist({
@@ -63,6 +64,7 @@ export default function RootLayout({
                 <AudioSettingsProvider>
                   {children}
                   <InstallPrompt />
+                  <PWAUpdatePrompt />
                 </AudioSettingsProvider>
               </LanguageLoadingWrapper>
             </LanguageProvider>

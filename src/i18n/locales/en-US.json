@@ -414,6 +414,12 @@
     "titleHighlight": "Star Product",
     "titleSuffix": "You Can't Miss 👍"
   },
+  "pwa": {
+    "updateAvailable": "New version available",
+    "updateDescription": "A new version of the app is available. Click update to get the latest features and improvements.",
+    "update": "Update now",
+    "later": "Later"
+  },
   "countries": {
     "CN": "China",
     "TW": "Taiwan",

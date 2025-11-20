@@ -1,6 +1,7 @@
 {
   "name": "AI Voice Labs",
   "short_name": "AI Voice Labs",
+  "version": "0.1.0",
   "description": "One Stop AI Voice Solution for Speech & Cloned Voice",
   "theme_color": "#9333ea",
   "background_color": "#ffffff",

@@ -39,6 +39,11 @@ export default function Footer() {
           <p>
             &copy; {new Date().getFullYear()} {t('common.brand')}. {t('footer.copyright')}
           </p>
+          {process.env.NEXT_PUBLIC_APP_VERSION && (
+            <p className="mt-2 text-xs text-gray-600">
+              v{process.env.NEXT_PUBLIC_APP_VERSION}
+            </p>
+          )}
         </div>
       </div>
     </footer>

@@ -96,6 +96,7 @@ export function useVoices({ authLoading }: UseVoicesProps): UseVoicesReturn {
       setError(null);
 
       // Build API params
+      // When usedOnly is enabled, don't apply locale/gender filters
       const params: {
         is_active: boolean;
         page: number;
@@ -105,15 +106,18 @@ export function useVoices({ authLoading }: UseVoicesProps): UseVoicesReturn {
       } = {
         is_active: true,
         page: 1,
-        page_size: pageSize,
+        page_size: usedOnly ? 1000 : pageSize, // Load more when filtering by usedOnly
       };
 
-      if (selectedLanguage) {
-        params.locale = selectedLanguage.code;
-      }
+      // Only apply filters when usedOnly is NOT enabled
+      if (!usedOnly) {
+        if (selectedLanguage) {
+          params.locale = selectedLanguage.code;
+        }
 
-      if (selectedGender !== 'all') {
-        params.gender = selectedGender;
+        if (selectedGender !== 'all') {
+          params.gender = selectedGender;
+        }
       }
 
       const response = await listVoices(params);
@@ -128,7 +132,7 @@ export function useVoices({ authLoading }: UseVoicesProps): UseVoicesReturn {
     } finally {
       setLoading(false);
     }
-  }, [selectedLanguage, selectedGender, pageSize]);
+  }, [selectedLanguage, selectedGender, pageSize, usedOnly]);
 
   // Load more voices (pagination)
   const loadMoreVoices = useCallback(async () => {

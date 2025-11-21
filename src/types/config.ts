@@ -3,16 +3,6 @@
  */
 
 /**
- * TTS 试听示例配置
- */
-export interface TtsSamplesConfig {
-  /** 支持的语言列表 */
-  sample_locales: string[];
-  /** 试听文本最大长度 */
-  sample_text_max_length: number;
-}
-
-/**
  * 语言选项
  */
 export interface LocaleOption {

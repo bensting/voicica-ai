@@ -75,11 +75,11 @@ export default function StudioTopNav({
         </div>
 
         {/* ========== 移动端右侧 (< lg) ========== */}
-        <div className="flex items-center gap-2 flex-shrink-0 mr-1 lg:hidden">
+        <div className="flex items-center gap-3 flex-shrink-0 mr-1 lg:hidden">
           {/* Upgrade Button - 只显示皇冠图标 */}
           <button
             onClick={onUpgradeClick}
-            className="p-2 bg-gradient-to-r from-slate-800 to-slate-900 text-yellow-400 border-2 border-yellow-400/30 rounded-lg hover:border-yellow-400/50 hover:shadow-lg hover:shadow-yellow-400/20 transition-all"
+            className="p-2 bg-gradient-to-r from-slate-800 to-slate-900 text-yellow-400 border-[3px] border-yellow-400/50 rounded-lg hover:border-yellow-400/70 hover:shadow-lg hover:shadow-yellow-400/20 transition-all"
             aria-label="Upgrade"
           >
             <Crown className="w-4 h-4" />

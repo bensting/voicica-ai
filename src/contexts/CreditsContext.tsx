@@ -77,8 +77,8 @@ export function CreditsProvider({ children }: CreditsProviderProps) {
       }
     } catch (err) {
       const error = err as Error;
-      console.error('❌ 获取匿名用户积分失败:', err);
       if (error.message !== '未提供认证信息' && error.message !== '未登录') {
+        console.error('[CreditsContext] Failed to fetch anonymous credits:', err);
         setError('Failed to fetch credits');
       }
       setCredits(0);
@@ -108,14 +108,12 @@ export function CreditsProvider({ children }: CreditsProviderProps) {
       setLocalOverride(newValue);
       return newValue;
     });
-    console.log(`💰 本地扣减积分: -${amount}`);
   }, []);
 
   // 直接更新积分
   const updateCredits = useCallback((newCredits: number) => {
     setCredits(newCredits);
     setLocalOverride(newCredits);
-    console.log(`💰 积分更新: ${newCredits}`);
   }, []);
 
   const value: CreditsContextState = {

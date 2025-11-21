@@ -40,28 +40,24 @@ export async function getDeviceFingerprint(): Promise<string> {
     // 1. 尝试从 localStorage 获取已保存的指纹
     const savedFingerprint = localStorage.getItem(FINGERPRINT_STORAGE_KEY);
     if (savedFingerprint) {
-      console.log('📱 使用已保存的设备指纹:', savedFingerprint.substring(0, 16) + '...');
       return savedFingerprint;
     }
 
     // 2. 生成新的设备指纹
-    console.log('📱 生成新的设备指纹...');
     const fp = await initFingerprint();
     const result = await fp.get();
     const visitorId = result.visitorId;
 
     // 3. 保存到 localStorage
     localStorage.setItem(FINGERPRINT_STORAGE_KEY, visitorId);
-    console.log('📱 设备指纹已生成并保存:', visitorId.substring(0, 16) + '...');
 
     return visitorId;
   } catch (error) {
-    console.error('❌ 生成设备指纹失败:', error);
+    console.error('[Fingerprint] 生成设备指纹失败:', error);
 
     // 降级方案：生成简单的 UUID 并保存
     const fallbackId = generateFallbackId();
     localStorage.setItem(FINGERPRINT_STORAGE_KEY, fallbackId);
-    console.warn('📱 使用降级方案生成设备指纹:', fallbackId);
 
     return fallbackId;
   }
@@ -85,7 +81,6 @@ function generateFallbackId(): string {
 export function clearDeviceFingerprint(): void {
   if (typeof window !== 'undefined') {
     localStorage.removeItem(FINGERPRINT_STORAGE_KEY);
-    console.log('📱 设备指纹已清除');
   }
 }
 

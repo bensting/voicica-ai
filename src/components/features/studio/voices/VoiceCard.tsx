@@ -3,6 +3,7 @@ import Image from 'next/image';
 import { Play, Pause, ArrowRight, User, UserRound } from 'lucide-react';
 import * as FlagIcons from 'country-flag-icons/react/3x2';
 import type { Voice } from '@/types/voice';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface VoiceCardProps {
   voice: Voice;
@@ -22,8 +23,17 @@ export default function VoiceCard({
   onPlay,
   onSelect,
 }: VoiceCardProps) {
+  const { t } = useLanguage();
   // Selected style state (local for now, functionality to be added later)
   const [selectedStyle, setSelectedStyle] = useState<string | null>(null);
+
+  // Get style label with i18n
+  const getStyleLabel = (style: string) => {
+    const translated = t(`voiceStyles.${style}`);
+    // If translation not found, t() returns the key, so check and return original style
+    return translated === `voiceStyles.${style}` ? style : translated;
+  };
+
   // Get country code from locale
   const getCountryCode = (locale: string): string => {
     const countryMap: Record<string, string> = {
@@ -119,7 +129,7 @@ export default function VoiceCard({
                     : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                 }`}
               >
-                {style}
+                {getStyleLabel(style)}
               </button>
             ))}
           </div>

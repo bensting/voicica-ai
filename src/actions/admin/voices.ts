@@ -25,6 +25,7 @@ interface SyncResult {
   message: string;
   inserted?: number;
   skipped?: number;
+  updated?: number;
 }
 
 /**
@@ -257,6 +258,149 @@ export async function syncVoicesByLocale(locale: string): Promise<SyncResult> {
     return {
       success: false,
       message: error instanceof Error ? error.message : '同步失败',
+    };
+  }
+}
+
+/**
+ * 生成 DiceBear 头像 URL
+ * 使用 voice name 作为 seed，根据性别选择不同风格
+ * @param voiceName 语音名称作为 seed
+ * @param gender 性别 (Male/Female)
+ */
+function generateDiceBearUrl(voiceName: string, gender: string): string {
+  // 使用 avataaars 风格，支持性别差异
+  const style = 'avataaars';
+  // 根据性别设置不同的选项
+  const isMale = gender.toLowerCase() === 'male';
+
+  // 构建 URL，使用 voice name 作为 seed 确保每个语音头像唯一且稳定
+  const baseUrl = `https://api.dicebear.com/7.x/${style}/svg`;
+  const params = new URLSearchParams({
+    seed: voiceName,
+    // 根据性别设置发型和配饰
+    top: isMale ? 'shortHairShortFlat,shortHairShortWaved,shortHairShortCurly' : 'longHairStraight,longHairCurly,longHairBob',
+    accessories: 'blank,prescription01,prescription02',
+    accessoriesProbability: '30',
+    facialHair: isMale ? 'beardLight,beardMedium,blank' : 'blank',
+    facialHairProbability: isMale ? '30' : '0',
+  });
+
+  return `${baseUrl}?${params.toString()}`;
+}
+
+/**
+ * 同步所有语音的 DiceBear 头像
+ * 只更新 avatar_url 为空的语音
+ */
+export async function syncVoiceAvatars(): Promise<SyncResult> {
+  await verifyAdminWithoutDb();
+
+  try {
+    console.log('🔄 开始同步语音头像...');
+
+    // 获取所有没有头像的语音
+    const voicesWithoutAvatar = await prisma.voices.findMany({
+      where: {
+        OR: [
+          { avatar_url: '' },
+          { avatar_url: null as unknown as string },
+        ],
+      },
+      select: {
+        id: true,
+        name: true,
+        gender: true,
+      },
+    });
+
+    if (voicesWithoutAvatar.length === 0) {
+      return {
+        success: true,
+        message: '所有语音已有头像，无需同步',
+        updated: 0,
+      };
+    }
+
+    let updated = 0;
+
+    for (const voice of voicesWithoutAvatar) {
+      const avatarUrl = generateDiceBearUrl(voice.name, voice.gender);
+
+      await prisma.voices.update({
+        where: { id: voice.id },
+        data: { avatar_url: avatarUrl },
+      });
+
+      updated++;
+    }
+
+    console.log(`✅ 头像同步完成: 更新 ${updated} 个语音`);
+
+    return {
+      success: true,
+      message: `头像同步完成`,
+      updated,
+    };
+  } catch (error) {
+    console.error('❌ 同步头像失败:', error);
+    return {
+      success: false,
+      message: error instanceof Error ? error.message : '同步失败',
+    };
+  }
+}
+
+/**
+ * 强制重新生成所有语音的头像
+ */
+export async function regenerateAllAvatars(): Promise<SyncResult> {
+  await verifyAdminWithoutDb();
+
+  try {
+    console.log('🔄 开始重新生成所有语音头像...');
+
+    const allVoices = await prisma.voices.findMany({
+      select: {
+        id: true,
+        name: true,
+        gender: true,
+      },
+    });
+
+    if (allVoices.length === 0) {
+      return {
+        success: true,
+        message: '数据库中没有语音',
+        updated: 0,
+      };
+    }
+
+    let updated = 0;
+
+    for (const voice of allVoices) {
+      const avatarUrl = generateDiceBearUrl(voice.name, voice.gender);
+
+      await prisma.voices.update({
+        where: { id: voice.id },
+        data: { avatar_url: avatarUrl },
+      });
+
+      updated++;
+    }
+
+    console.log(`✅ 头像重新生成完成: 更新 ${updated} 个语音`);
+
+    return {
+      success: true,
+      message: `头像重新生成完成`,
+      updated,
+    };
+  } catch (error) {
+    console.error('❌ 重新生成头像失败:', error);
+    return {
+      success: false,
+      message: error instanceof Error ? error.message : '重新生成失败',
     };
   }
 }

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { getVoiceLocales, syncVoicesByLocale, getVoiceStatsByLocale } from '@/actions/admin/voices';
+import { syncVoicesByLocale, getVoiceStatsByLocale, syncVoiceAvatars } from '@/actions/admin/voices';
 
 interface LocaleStats {
   locale: string;
@@ -16,6 +16,7 @@ interface SyncResult {
   message: string;
   inserted?: number;
   skipped?: number;
+  updated?: number;
 }
 
 /**
@@ -67,7 +68,7 @@ export default function VoicesManagementPage() {
     }
   };
 
-  // 同步所有
+  // 基础同步所有
   const handleSyncAll = async () => {
     setSyncing('all');
     let totalInserted = 0;
@@ -108,6 +109,25 @@ export default function VoicesManagementPage() {
     }));
   };
 
+  // 同步头像
+  const handleSyncAvatars = async () => {
+    setSyncing('avatars');
+    try {
+      const result = await syncVoiceAvatars();
+      setSyncResults((prev) => ({ ...prev, avatars: result }));
+    } catch (error) {
+      setSyncResults((prev) => ({
+        ...prev,
+        avatars: {
+          success: false,
+          message: error instanceof Error ? error.message : '同步失败',
+        },
+      }));
+    } finally {
+      setSyncing(null);
+    }
+  };
+
   return (
     <div>
       {/* 页面标题 */}
@@ -120,8 +140,8 @@ export default function VoicesManagementPage() {
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-lg font-semibold text-gray-900">批量同步</h2>
-            <p className="text-sm text-gray-600 mt-1">同步所有可同步的语言区域</p>
+            <h2 className="text-lg font-semibold text-gray-900">基础同步</h2>
+            <p className="text-sm text-gray-600 mt-1">从 Azure TTS 同步所有可同步的语言区域</p>
           </div>
           <button
             onClick={handleSyncAll}
@@ -142,6 +162,38 @@ export default function VoicesManagementPage() {
             {(syncResults.all.inserted !== undefined || syncResults.all.skipped !== undefined) && (
               <div className="mt-1 text-xs opacity-80">
                 新增: {syncResults.all.inserted || 0} | 跳过: {syncResults.all.skipped || 0}
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+
+      {/* 头像同步 */}
+      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-lg font-semibold text-gray-900">头像同步</h2>
+            <p className="text-sm text-gray-600 mt-1">使用 DiceBear 为没有头像的语音生成头像</p>
+          </div>
+          <button
+            onClick={handleSyncAvatars}
+            disabled={syncing !== null}
+            className="px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {syncing === 'avatars' ? '同步中...' : '同步头像'}
+          </button>
+        </div>
+        {syncResults.avatars && (
+          <div className={`mt-4 p-3 rounded-lg text-sm ${
+            syncResults.avatars.success ? 'bg-green-50 text-green-800' : 'bg-red-50 text-red-800'
+          }`}>
+            <div className="font-medium">
+              {syncResults.avatars.success ? '✓ 同步完成' : '✗ 同步失败'}
+            </div>
+            <div className="mt-1">{syncResults.avatars.message}</div>
+            {syncResults.avatars.updated !== undefined && (
+              <div className="mt-1 text-xs opacity-80">
+                更新: {syncResults.avatars.updated}
               </div>
             )}
           </div>

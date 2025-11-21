@@ -118,7 +118,13 @@ export function useTTSGenerator(
 
   // 生成音频（提交任务，polling 由 useGenerationHistory 处理）
   const handleGenerate = useCallback(async () => {
+    console.log('🎤 [useTTSGenerator] ========== handleGenerate 开始 ==========');
+    console.log('🎤 [useTTSGenerator] canGenerate:', canGenerate);
+    console.log('🎤 [useTTSGenerator] selectedVoice:', selectedVoice);
+    console.log('🎤 [useTTSGenerator] text length:', text.length);
+
     if (!canGenerate || !selectedVoice) {
+      console.error('❌ [useTTSGenerator] 验证失败:', { canGenerate, hasVoice: !!selectedVoice, textLength: text.length });
       setError(t('studio.errors.selectTextAndVoice'));
       return;
     }
@@ -136,6 +142,7 @@ export function useTTSGenerator(
       });
 
       // 调用 Server Action 提交任务（使用 AudioSettings Context 中的音频参数）
+      console.log('📤 [useTTSGenerator] 调用 createTtsTask...');
       const result = await createTtsTask({
         text,
         voice_name: selectedVoice.name,
@@ -146,6 +153,12 @@ export function useTTSGenerator(
       });
 
       console.log('✅ [useTTSGenerator] 任务提交结果:', result);
+      console.log('📊 [useTTSGenerator] 结果详情:', {
+        status: result.status,
+        task_id: result.task_id,
+        error: result.error,
+        errorCode: result.errorCode,
+      });
 
       // 检查是否返回错误（业务逻辑错误，如积分不足）
       if (result.status === 'FAILURE' && result.errorCode) {
@@ -172,9 +185,14 @@ export function useTTSGenerator(
       setIsGenerating(false);
 
       // 调用成功回调（用于刷新积分等）
+      console.log('🔔 [useTTSGenerator] 准备调用 onTaskSubmitted 回调');
       if (options?.onTaskSubmitted) {
+        console.log('✅ [useTTSGenerator] 调用 onTaskSubmitted 回调');
         options.onTaskSubmitted();
+      } else {
+        console.warn('⚠️ [useTTSGenerator] 没有 onTaskSubmitted 回调');
       }
+      console.log('🎤 [useTTSGenerator] ========== handleGenerate 结束 ==========');
     } catch (err: unknown) {
       console.error('❌ [useTTSGenerator] 提交任务失败（异常）', err);
 

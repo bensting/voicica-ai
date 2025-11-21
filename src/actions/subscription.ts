@@ -62,9 +62,7 @@ export async function getPlansByProductId(
  * 从配置文件读取
  */
 export async function getSubscriptionPlan(
-  _platform: string,
-  productId: string,
-  _basePlanId: string | null
+  productId: string
 ): Promise<SubscriptionPlan | null> {
   const plan = getPlanByProductId(productId);
 

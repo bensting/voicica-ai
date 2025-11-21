@@ -3,10 +3,26 @@ import Stripe from 'stripe';
 import prisma from '@/lib/prisma';
 import { getPlanByProductId } from '@/config/subscription';
 
-// Initialize Stripe
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
+// 延迟初始化 Stripe，避免构建时因缺少环境变量而失败
+let _stripe: Stripe | null = null;
+function getStripe(): Stripe {
+  if (!_stripe) {
+    const apiKey = process.env.STRIPE_SECRET_KEY;
+    if (!apiKey) {
+      throw new Error('STRIPE_SECRET_KEY is not configured');
+    }
+    _stripe = new Stripe(apiKey);
+  }
+  return _stripe;
+}
 
-const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!;
+function getWebhookSecret(): string {
+  const secret = process.env.STRIPE_WEBHOOK_SECRET;
+  if (!secret) {
+    throw new Error('STRIPE_WEBHOOK_SECRET is not configured');
+  }
+  return secret;
+}
 
 /**
  * 记录订阅历史
@@ -93,7 +109,7 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session, eventId
   if (isSubscription && stripeSubscriptionId) {
     // 订阅模式：从 Stripe 获取周期结束时间
     try {
-      const stripeSubscription = await stripe.subscriptions.retrieve(stripeSubscriptionId);
+      const stripeSubscription = await getStripe().subscriptions.retrieve(stripeSubscriptionId);
       const currentPeriodEnd = (stripeSubscription as unknown as { current_period_end: number }).current_period_end;
       endDate = new Date(currentPeriodEnd * 1000);
       console.log(`📅 从 Stripe 获取订阅周期: ${now.toISOString()} - ${endDate.toISOString()}`);
@@ -422,7 +438,7 @@ export async function POST(request: NextRequest) {
     // 验证签名
     let event: Stripe.Event;
     try {
-      event = stripe.webhooks.constructEvent(body, signature, webhookSecret);
+      event = getStripe().webhooks.constructEvent(body, signature, getWebhookSecret());
     } catch (err) {
       console.error('❌ Webhook 签名验证失败:', err);
       return NextResponse.json({ error: 'Invalid signature' }, { status: 400 });

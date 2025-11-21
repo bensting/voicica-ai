@@ -73,11 +73,16 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
         const ttsInputModule = await import(`@/i18n/locales/${locale}/tts-input.json`);
         const ttsInputMessages = ttsInputModule.default;
 
+        // 加载 Voice Styles 语言文件
+        const voiceStylesModule = await import(`@/i18n/locales/${locale}/voice-styles.json`);
+        const voiceStylesMessages = voiceStylesModule.default;
+
         // 合并消息
         setMessages({
           ...mainMessages,
           faq: faqMessages,
           ttsInput: ttsInputMessages,
+          voiceStyles: voiceStylesMessages,
           ...ttsSamplesMessages
         });
 

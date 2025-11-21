@@ -1,57 +1,36 @@
-<svg viewBox="0 0 290 40" xmlns="http://www.w3.org/2000/svg" fill="none">
+<svg viewBox="0 0 320 40" xmlns="http://www.w3.org/2000/svg" fill="none">
   <defs>
-    <!-- 渐变 -->
-    <linearGradient id="gradAI" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#c084fc"/>
-      <stop offset="100%" stop-color="#8b5cf6"/>
+    <!-- 品牌渐变：从粉色到紫色到蓝色 -->
+    <linearGradient id="brandGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#f472b6"/>
+      <stop offset="50%" stop-color="#a855f7"/>
+      <stop offset="100%" stop-color="#6366f1"/>
     </linearGradient>
 
-    <!-- 发光 -->
-    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
-      <feGaussianBlur stdDeviation="3" result="blur"/>
-      <feMerge>
-        <feMergeNode in="blur"/>
-        <feMergeNode in="SourceGraphic"/>
-      </feMerge>
-    </filter>
+    <!-- 图标渐变 -->
+    <linearGradient id="iconGradient" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#a855f7"/>
+      <stop offset="100%" stop-color="#6366f1"/>
+    </linearGradient>
   </defs>
-
-  <style>
-    .word {
-      fill: #1f2937;
-      font-family: 'Poppins', sans-serif;
-      font-weight: 500;
-      font-size: 26px;
-    }
-    .dot {
-      fill: url(#gradAI);
-      font-weight: 700;
-      font-size: 32px;
-    }
-    .highlight {
-      fill: url(#gradAI);
-      font-weight: 700;
-      filter: url(#glow);
-    }
-  </style>
 
   <!-- 左侧麦克风图标 -->
   <g transform="translate(15, 20)">
     <!-- 麦克风主体 -->
-    <rect x="-5" y="-14" width="10" height="18" rx="5" fill="url(#gradAI)" />
+    <rect x="-5" y="-14" width="10" height="18" rx="5" fill="url(#iconGradient)" />
 
     <!-- 麦克风支架 -->
-    <path d="M -8 6 Q -8 10, 0 10 Q 8 10, 8 6" stroke="url(#gradAI)" stroke-width="2" fill="none" stroke-linecap="round"/>
-    <line x1="0" y1="10" x2="0" y2="16" stroke="url(#gradAI)" stroke-width="2" stroke-linecap="round"/>
-    <line x1="-6" y1="16" x2="6" y2="16" stroke="url(#gradAI)" stroke-width="2" stroke-linecap="round"/>
+    <path d="M -8 6 Q -8 10, 0 10 Q 8 10, 8 6" stroke="url(#iconGradient)" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <line x1="0" y1="10" x2="0" y2="16" stroke="url(#iconGradient)" stroke-width="2" stroke-linecap="round"/>
+    <line x1="-6" y1="16" x2="6" y2="16" stroke="url(#iconGradient)" stroke-width="2" stroke-linecap="round"/>
 
     <!-- 声波 -->
-    <path d="M -13 -5 Q -15 0, -13 5" stroke="url(#gradAI)" stroke-width="1.5" fill="none" stroke-linecap="round" opacity="0.7"/>
-    <path d="M 13 -5 Q 15 0, 13 5" stroke="url(#gradAI)" stroke-width="1.5" fill="none" stroke-linecap="round" opacity="0.7"/>
+    <path d="M -13 -5 Q -15 0, -13 5" stroke="url(#iconGradient)" stroke-width="1.5" fill="none" stroke-linecap="round" opacity="0.7"/>
+    <path d="M 13 -5 Q 15 0, 13 5" stroke="url(#iconGradient)" stroke-width="1.5" fill="none" stroke-linecap="round" opacity="0.7"/>
   </g>
 
-  <!-- 品牌文字 -->
-  <text x="38" y="29" class="word">
-    Voice-Labs<tspan class="dot">.</tspan><tspan class="highlight">AI</tspan>
+  <!-- 品牌文字 - 整体渐变 -->
+  <text x="38" y="29" fill="url(#brandGradient)" font-family="Poppins, sans-serif" font-weight="600" font-size="22">
+    AI-Voice-Labs<tspan font-size="18">.com</tspan>
   </text>
 </svg>

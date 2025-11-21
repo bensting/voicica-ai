@@ -65,8 +65,8 @@ export default function StudioTopNav({
           <Link href="/" className="flex items-center min-w-0">
             <Image
               src="/logo/voice-labs-logo-light.svg"
-              alt="Voice-Labs.AI"
-              width={180}
+              alt="AI-Voice-Labs.com"
+              width={200}
               height={28}
               priority
               className="h-7 w-auto"

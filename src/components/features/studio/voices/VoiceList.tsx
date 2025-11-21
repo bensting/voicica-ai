@@ -17,6 +17,8 @@ interface VoiceListProps {
   onLoadMore?: () => void;
   // Error retry handler
   onRetry?: () => void;
+  // Used only filter state (for empty state message)
+  usedOnly?: boolean;
 }
 
 /**
@@ -32,6 +34,7 @@ export default function VoiceList({
   onSelectVoice,
   loadingMore = false,
   onRetry,
+  usedOnly = false,
 }: VoiceListProps) {
   const { t } = useLanguage();
 
@@ -83,7 +86,9 @@ export default function VoiceList({
   if (voices.length === 0) {
     return (
       <div className="flex justify-center items-center py-12">
-        <div className="text-sm text-gray-500">{t('voiceFilters.noVoicesFound')}</div>
+        <div className="text-sm text-gray-500">
+          {usedOnly ? t('voiceFilters.noUsedVoices') : t('voiceFilters.noVoicesFound')}
+        </div>
       </div>
     );
   }

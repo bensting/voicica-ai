@@ -47,7 +47,7 @@ export default function StudioTopNav({
     <div className="fixed top-0 left-0 right-0 z-40 bg-white lg:bg-gradient-to-r lg:from-purple-50 lg:to-blue-50 border-b border-gray-200">
       <div className="flex items-center justify-between px-3 py-2.5 lg:px-4 lg:py-3 gap-2">
         {/* ========== 左侧：Hamburger Menu (移动端) + Logo (移动端和桌面端) ========== */}
-        <div className="flex items-center gap-1.5 flex-shrink min-w-0">
+        <div className="flex items-center gap-1.5 flex-shrink min-w-0 lg:ml-6">
           {/* Hamburger Menu - 仅移动端显示 */}
           <button
             onClick={toggleMenu}
@@ -69,14 +69,13 @@ export default function StudioTopNav({
               width={200}
               height={28}
               priority
-              className="h-7"
-              style={{ width: 'auto', height: 'auto', maxHeight: '28px' }}
+              className="h-7 w-auto"
             />
           </Link>
         </div>
 
         {/* ========== 移动端右侧 (< lg) ========== */}
-        <div className="flex items-center gap-1 flex-shrink-0 lg:hidden">
+        <div className="flex items-center gap-2 flex-shrink-0 mr-1 lg:hidden">
           {/* Upgrade Button - 只显示皇冠图标 */}
           <button
             onClick={onUpgradeClick}
@@ -87,9 +86,7 @@ export default function StudioTopNav({
           </button>
 
           {/* Language Switcher */}
-          <div className="flex items-center px-1">
-            <LanguageSwitcher theme="dark" variant="compact" showArrow={false} />
-          </div>
+          <LanguageSwitcher theme="dark" variant="compact" showArrow={false} />
 
           {/* User Menu */}
           <UserMenu size="sm" />

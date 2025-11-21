@@ -26,21 +26,22 @@ function buildSsml(request: TtsRequest): string {
     text,
     voiceName,
     language = 'en-US',
-    speed = 1.0,
-    pitch = 1.0,
-    volume = 1.0,
+    speed = 1.0,   // 0.5 - 2.0，默认 1.0 倍速
+    pitch = 50,    // 1 - 100，默认 50（中间值）
+    volume = 50,   // 1 - 100，默认 50（中间值）
   } = request;
 
-  // 语速转换：1.0 -> 0%, 1.5 -> +50%, 0.5 -> -50%
+  // 语速转换：0.5 -> -50%, 1.0 -> 0%, 2.0 -> +100%
   const rate = Math.round((speed - 1.0) * 100);
   const rateStr = rate > 0 ? `+${rate}%` : `${rate}%`;
 
-  // 音调转换：1.0 -> 0%, 1.2 -> +10%, 0.8 -> -10%
-  const pitchVal = Math.round((pitch - 1.0) * 50);
+  // 音调转换：1 -> -50%, 50 -> 0%, 100 -> +50%
+  // 前端范围 1-100，中间值 50 对应 0%
+  const pitchVal = Math.round((pitch - 50));
   const pitchStr = pitchVal > 0 ? `+${pitchVal}%` : `${pitchVal}%`;
 
-  // 音量转换：0.0-1.0 -> 0-100
-  const volumeVal = Math.round(volume * 100);
+  // 音量：前端 1-100，直接使用
+  const volumeVal = Math.round(volume);
 
   return `<speak version="1.0" xmlns="http://www.w3.org/2001/10/synthesis" xml:lang="${language}">
     <voice name="${voiceName}">

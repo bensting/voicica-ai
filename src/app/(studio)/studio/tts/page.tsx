@@ -108,6 +108,7 @@ export default function StudioTTSPage() {
       console.log('💰 [TTSPage] 任务完成（轮询检测），刷新积分');
       void refreshCredits();
     },
+    t, // 传入翻译函数
   });
 
   // Load last selected voice from localStorage (remember user's choice)

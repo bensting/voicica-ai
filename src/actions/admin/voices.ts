@@ -281,29 +281,28 @@ export async function syncVoicesByLocale(locale: string): Promise<SyncResult> {
 
 /**
  * 生成 DiceBear 头像 URL
- * 使用 voice name 作为 seed，根据性别选择不同风格
- * @param voiceName 语音名称作为 seed
+ * 使用 voice name 的哈希作为 seed
+ * @param voiceName 语音名称
  * @param gender 性别 (Male/Female)
  */
 function generateDiceBearUrl(voiceName: string, gender: string): string {
-  // 使用 avataaars 风格，支持性别差异
-  const style = 'avataaars';
-  // 根据性别设置不同的选项
+  // 简单哈希函数生成稳定的 seed
+  const hashCode = (str: string): string => {
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+      const char = str.charCodeAt(i);
+      hash = ((hash << 5) - hash) + char;
+      hash = hash & hash;
+    }
+    return Math.abs(hash).toString(16);
+  };
+
+  const seed = hashCode(voiceName);
+  // 根据性别选择不同风格：男性用 avataaars，女性用 lorelei
   const isMale = gender.toLowerCase() === 'male';
+  const style = isMale ? 'avataaars' : 'lorelei';
 
-  // 构建 URL，使用 voice name 作为 seed 确保每个语音头像唯一且稳定
-  const baseUrl = `https://api.dicebear.com/7.x/${style}/svg`;
-  const params = new URLSearchParams({
-    seed: voiceName,
-    // 根据性别设置发型和配饰
-    top: isMale ? 'shortHairShortFlat,shortHairShortWaved,shortHairShortCurly' : 'longHairStraight,longHairCurly,longHairBob',
-    accessories: 'blank,prescription01,prescription02',
-    accessoriesProbability: '30',
-    facialHair: isMale ? 'beardLight,beardMedium,blank' : 'blank',
-    facialHairProbability: isMale ? '30' : '0',
-  });
-
-  return `${baseUrl}?${params.toString()}`;
+  return `https://api.dicebear.com/7.x/${style}/svg?seed=${seed}`;
 }
 
 /**
@@ -319,10 +318,7 @@ export async function syncVoiceAvatars(): Promise<SyncResult> {
     // 获取所有没有头像的语音
     const voicesWithoutAvatar = await prisma.voices.findMany({
       where: {
-        OR: [
-          { avatar_url: '' },
-          { avatar_url: null as unknown as string },
-        ],
+        avatar_url: '',
       },
       select: {
         id: true,

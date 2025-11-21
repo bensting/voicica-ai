@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { syncVoicesByLocale, getVoiceStatsByLocale, syncVoiceAvatars } from '@/actions/admin/voices';
+import { syncVoicesByLocale, getVoiceStatsByLocale, syncVoiceAvatars, regenerateAllAvatars } from '@/actions/admin/voices';
 
 interface LocaleStats {
   locale: string;
@@ -110,18 +110,43 @@ export default function VoicesManagementPage() {
     }));
   };
 
-  // 同步头像
+  // 同步头像（只更新空头像）
   const handleSyncAvatars = async () => {
     setSyncing('avatars');
     try {
       const result = await syncVoiceAvatars();
       setSyncResults((prev) => ({ ...prev, avatars: result }));
+      if (result.success) {
+        await loadLocales();
+      }
     } catch (error) {
       setSyncResults((prev) => ({
         ...prev,
         avatars: {
           success: false,
           message: error instanceof Error ? error.message : '同步失败',
+        },
+      }));
+    } finally {
+      setSyncing(null);
+    }
+  };
+
+  // 重新生成全部头像
+  const handleRegenerateAllAvatars = async () => {
+    setSyncing('regenerate');
+    try {
+      const result = await regenerateAllAvatars();
+      setSyncResults((prev) => ({ ...prev, regenerate: result }));
+      if (result.success) {
+        await loadLocales();
+      }
+    } catch (error) {
+      setSyncResults((prev) => ({
+        ...prev,
+        regenerate: {
+          success: false,
+          message: error instanceof Error ? error.message : '重新生成失败',
         },
       }));
     } finally {
@@ -174,27 +199,36 @@ export default function VoicesManagementPage() {
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-lg font-semibold text-gray-900">头像同步</h2>
-            <p className="text-sm text-gray-600 mt-1">使用 DiceBear 为没有头像的语音生成头像</p>
+            <p className="text-sm text-gray-600 mt-1">使用 DiceBear 为语音生成头像</p>
           </div>
-          <button
-            onClick={handleSyncAvatars}
-            disabled={syncing !== null}
-            className="px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {syncing === 'avatars' ? '同步中...' : '同步头像'}
-          </button>
+          <div className="flex gap-3">
+            <button
+              onClick={handleSyncAvatars}
+              disabled={syncing !== null}
+              className="px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {syncing === 'avatars' ? '同步中...' : '同步空头像'}
+            </button>
+            <button
+              onClick={handleRegenerateAllAvatars}
+              disabled={syncing !== null}
+              className="px-6 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {syncing === 'regenerate' ? '生成中...' : '重新生成全部'}
+            </button>
+          </div>
         </div>
-        {syncResults.avatars && (
+        {(syncResults.avatars || syncResults.regenerate) && (
           <div className={`mt-4 p-3 rounded-lg text-sm ${
-            syncResults.avatars.success ? 'bg-green-50 text-green-800' : 'bg-red-50 text-red-800'
+            (syncResults.regenerate || syncResults.avatars)?.success ? 'bg-green-50 text-green-800' : 'bg-red-50 text-red-800'
           }`}>
             <div className="font-medium">
-              {syncResults.avatars.success ? '✓ 同步完成' : '✗ 同步失败'}
+              {(syncResults.regenerate || syncResults.avatars)?.success ? '✓ 操作完成' : '✗ 操作失败'}
             </div>
-            <div className="mt-1">{syncResults.avatars.message}</div>
-            {syncResults.avatars.updated !== undefined && (
+            <div className="mt-1">{(syncResults.regenerate || syncResults.avatars)?.message}</div>
+            {(syncResults.regenerate || syncResults.avatars)?.updated !== undefined && (
               <div className="mt-1 text-xs opacity-80">
-                更新: {syncResults.avatars.updated}
+                更新: {(syncResults.regenerate || syncResults.avatars)?.updated}
               </div>
             )}
           </div>

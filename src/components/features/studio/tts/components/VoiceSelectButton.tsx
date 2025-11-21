@@ -138,6 +138,7 @@ export default function VoiceSelectButton({
               width={48}
               height={48}
               className="w-full h-full object-cover"
+              priority
             />
           ) : (
             <span className="text-xl text-white">🎤</span>

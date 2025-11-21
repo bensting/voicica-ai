@@ -94,9 +94,10 @@ export default function VoiceList({
   }
 
   // Voice cards
+  // Give priority to first 4 images for LCP optimization (above-the-fold)
   return (
     <div className="space-y-3">
-      {voices.map((voice) => (
+      {voices.map((voice, index) => (
         <VoiceCard
           key={voice.id}
           voice={voice}
@@ -104,6 +105,7 @@ export default function VoiceList({
           isPlaying={playingVoiceId === voice.id}
           onPlay={onPlayVoice}
           onSelect={onSelectVoice}
+          priority={index < 4}
         />
       ))}
 

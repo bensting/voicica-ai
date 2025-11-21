@@ -38,11 +38,13 @@ function StudioLayoutContent({
         {children}
       </main>
 
-      {/* ========== Upgrade Modal ========== */}
-      <UpgradeModal
-        isOpen={isUpgradeModalOpen}
-        onClose={() => setIsUpgradeModalOpen(false)}
-      />
+      {/* ========== Upgrade Modal - 只在打开时渲染，避免预加载订阅数据 ========== */}
+      {isUpgradeModalOpen && (
+        <UpgradeModal
+          isOpen={isUpgradeModalOpen}
+          onClose={() => setIsUpgradeModalOpen(false)}
+        />
+      )}
     </div>
   );
 }

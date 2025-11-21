@@ -88,6 +88,7 @@ export default function VoiceCard({
             width={48}
             height={48}
             className="w-12 h-12 rounded-full object-cover"
+            priority={priority}
           />
         ) : (
           <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-400 to-pink-400 flex items-center justify-center text-white text-sm font-bold">

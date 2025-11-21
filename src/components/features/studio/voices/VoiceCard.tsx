@@ -11,6 +11,7 @@ interface VoiceCardProps {
   isPlaying: boolean;
   onPlay: (voice: Voice) => void;
   onSelect: (voice: Voice) => void;
+  priority?: boolean; // For LCP optimization - set true for above-the-fold images
 }
 
 /**
@@ -22,6 +23,7 @@ export default function VoiceCard({
   isPlaying,
   onPlay,
   onSelect,
+  priority = false,
 }: VoiceCardProps) {
   const { t } = useLanguage();
   // Selected style state (local for now, functionality to be added later)

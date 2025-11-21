@@ -82,7 +82,8 @@ export async function synthesizeSpeech(request: TtsRequest): Promise<TtsResult> 
     headers: {
       'Ocp-Apim-Subscription-Key': apiKey,
       'Content-Type': 'application/ssml+xml',
-      'X-Microsoft-OutputFormat': 'audio-24khz-96kbitrate-mono-mp3',
+      // 使用 48kHz 192kbps MP3 格式，更高质量，iOS/Android 完美兼容
+      'X-Microsoft-OutputFormat': 'audio-48khz-192kbitrate-mono-mp3',
       'User-Agent': 'ai-voice-labs',
     },
     body: ssml,

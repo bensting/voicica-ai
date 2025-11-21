@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { syncVoicesByLocale, getVoiceStatsByLocale, syncVoiceAvatars, regenerateAllAvatars, generateVoiceSamples, generateAllVoiceSamples } from '@/actions/admin/voices';
+import { syncVoicesByLocale, getVoiceStatsByLocale, syncVoiceAvatars, regenerateAllAvatars, generateVoiceSamples, generateAllVoiceSamples, updateAllVoices } from '@/actions/admin/voices';
 
 interface LocaleStats {
   locale: string;
@@ -199,6 +199,28 @@ export default function VoicesManagementPage() {
     }
   };
 
+  // 更新所有语音数据
+  const handleUpdateAll = async () => {
+    setSyncing('update-all');
+    try {
+      const result = await updateAllVoices();
+      setSyncResults((prev) => ({ ...prev, 'update-all': result }));
+      if (result.success) {
+        await loadLocales();
+      }
+    } catch (error) {
+      setSyncResults((prev) => ({
+        ...prev,
+        'update-all': {
+          success: false,
+          message: error instanceof Error ? error.message : '更新失败',
+        },
+      }));
+    } finally {
+      setSyncing(null);
+    }
+  };
+
   return (
     <div>
       {/* 页面标题 */}
@@ -214,23 +236,37 @@ export default function VoicesManagementPage() {
             <h2 className="text-lg font-semibold text-gray-900">基础同步</h2>
             <p className="text-sm text-gray-600 mt-1">从 Azure TTS 同步所有可同步的语言区域</p>
           </div>
-          <button
-            onClick={handleSyncAll}
-            disabled={syncing !== null || locales.filter(l => l.canSync).length === 0}
-            className="px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {syncing === 'all' ? '同步中...' : '同步全部'}
-          </button>
+          <div className="flex gap-3">
+            <button
+              onClick={handleSyncAll}
+              disabled={syncing !== null || locales.filter(l => l.canSync).length === 0}
+              className="px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {syncing === 'all' ? '同步中...' : '同步全部'}
+            </button>
+            <button
+              onClick={handleUpdateAll}
+              disabled={syncing !== null}
+              className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {syncing === 'update-all' ? '更新中...' : '更新全部'}
+            </button>
+          </div>
         </div>
-        {syncResults.all && (
+        {(syncResults.all || syncResults['update-all']) && (
           <div className={`mt-4 p-3 rounded-lg text-sm ${
-            syncResults.all.success ? 'bg-green-50 text-green-800' : 'bg-red-50 text-red-800'
+            (syncResults['update-all'] || syncResults.all)?.success ? 'bg-green-50 text-green-800' : 'bg-red-50 text-red-800'
           }`}>
             <div className="font-medium">
-              {syncResults.all.success ? '✓ 同步完成' : '✗ 部分失败'}
+              {(syncResults['update-all'] || syncResults.all)?.success ? '✓ 操作完成' : '✗ 部分失败'}
             </div>
-            <div className="mt-1">{syncResults.all.message}</div>
-            {(syncResults.all.inserted !== undefined || syncResults.all.skipped !== undefined) && (
+            <div className="mt-1">{(syncResults['update-all'] || syncResults.all)?.message}</div>
+            {syncResults['update-all']?.updated !== undefined && (
+              <div className="mt-1 text-xs opacity-80">
+                更新: {syncResults['update-all'].updated} | 跳过: {syncResults['update-all'].skipped || 0}
+              </div>
+            )}
+            {syncResults.all && (syncResults.all.inserted !== undefined || syncResults.all.skipped !== undefined) && (
               <div className="mt-1 text-xs opacity-80">
                 新增: {syncResults.all.inserted || 0} | 跳过: {syncResults.all.skipped || 0}
               </div>

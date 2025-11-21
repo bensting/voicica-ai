@@ -8,6 +8,7 @@ interface LocaleStats {
   localeName: string;
   azureCount: number;
   dbCount: number;
+  avatarCount: number;
   canSync: boolean;
 }
 
@@ -232,6 +233,9 @@ export default function VoicesManagementPage() {
                     数据库数量
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    头像数量
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     状态
                   </th>
                   <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -251,6 +255,17 @@ export default function VoicesManagementPage() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       {item.dbCount}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm">
+                      {item.dbCount === 0 ? (
+                        <span className="text-gray-400">-</span>
+                      ) : item.avatarCount === item.dbCount ? (
+                        <span className="text-green-600">{item.avatarCount}</span>
+                      ) : (
+                        <span className="text-yellow-600">
+                          {item.avatarCount}/{item.dbCount}
+                        </span>
+                      )}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       {item.azureCount === item.dbCount ? (

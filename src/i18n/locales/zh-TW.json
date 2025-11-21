@@ -25,6 +25,8 @@
     "generationHistory": "生成歷史"
   },
   "pricing": {
+    "pageTitle": "AI-Voice-Labs 套餐與定價",
+    "pageSubtitle": "AI-Voice-Labs 提供多種購買方案，更好地滿足您的需求。",
     "loading": "正在載入價格方案...",
     "error": "載入價格方案失敗，請稍後重試。",
     "retry": "重試",
@@ -36,7 +38,11 @@
     "renewalAt": "續費價格",
     "freeForEveryone": "永久免費",
     "mostPopular": "最受歡迎",
-    "autoRenew": "自動續費，隨時可取消。"
+    "autoRenew": "自動續費，隨時可取消。",
+    "loginRequired": "需要登入",
+    "loginRequiredDesc": "請登入後購買訂閱套餐",
+    "cancel": "取消",
+    "signIn": "登入"
   },
   "upgrade": {
     "header": {

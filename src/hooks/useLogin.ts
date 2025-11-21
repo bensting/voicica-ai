@@ -71,6 +71,14 @@ export function useLogin() {
       router.push('/studio/tts');
     } catch (err) {
       const error = err as { code?: string; message?: string };
+
+      // 用户主动关闭登录弹窗，不显示错误
+      if (error.code === 'auth/popup-closed-by-user' || error.code === 'auth/cancelled-popup-request') {
+        console.log('ℹ️ useLogin: 用户取消登录');
+        setLoading(false);
+        return;
+      }
+
       console.error('❌ useLogin: 登录失败', error);
       setError(error.message || '登录失败，请重试');
       setLoading(false);

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import prisma from '@/lib/prisma';
+import { getPlanByProductId } from '@/config/subscription';
 
 // Initialize Stripe
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
@@ -66,12 +67,10 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session, eventId
     return;
   }
 
-  // 获取订阅计划
-  const plan = await prisma.subscription_plans.findFirst({
-    where: { product_id: productId, active: true },
-  });
+  // 从配置文件获取订阅计划信息
+  const plan = getPlanByProductId(productId);
 
-  if (!plan) {
+  if (!plan || !plan.active) {
     console.error(`❌ 找不到订阅计划: ${productId}`);
     return;
   }
@@ -117,11 +116,10 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session, eventId
     subscription_id: stripeSubscriptionId,
   });
 
-  // 创建订阅记录
+  // 创建订阅记录（不再依赖 subscription_plans 表，使用 product_id 关联配置文件）
   const subscription = await prisma.user_subscriptions.create({
     data: {
       user_id: userId,
-      subscription_plan_id: plan.id,
       product_id: productId,
       product_type: plan.product_type,
       platform: 'stripe',
@@ -201,9 +199,6 @@ async function handleInvoicePaid(invoice: Stripe.Invoice, eventId: string) {
       external_subscription_id: subscriptionId,
       platform: 'stripe',
     },
-    include: {
-      subscription_plans: true,
-    },
   });
 
   if (!subscription) {
@@ -211,7 +206,13 @@ async function handleInvoicePaid(invoice: Stripe.Invoice, eventId: string) {
     return;
   }
 
-  const plan = subscription.subscription_plans;
+  // 从配置文件获取订阅计划信息
+  const plan = getPlanByProductId(subscription.product_id);
+  if (!plan) {
+    console.error(`❌ 找不到订阅计划: ${subscription.product_id}`);
+    return;
+  }
+
   const oldStatus = subscription.status;
 
   // 更新订阅日期

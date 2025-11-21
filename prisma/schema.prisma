@@ -61,33 +61,6 @@ model credit_history {
   @@index([user_id], map: "idx_credit_history_user_id")
 }
 
-model subscription_plans {
-  platform                  String               @db.VarChar(50)
-  product_type              String               @db.VarChar(50)
-  product_id                String               @db.VarChar(255)
-  base_plan_id              String?              @db.VarChar(255)
-  plan_name                 String               @db.VarChar(100)
-  display_name              Json                 @db.Json
-  features                  Json                 @db.Json
-  credits_per_cycle         Int
-  cycle_days                Int
-  active                    Boolean
-  sort_order                Int
-  price                     Json                 @db.Json
-  discounted_price          Json                 @db.Json
-  billing_period            String               @db.VarChar(20)
-  enable_first_month_coupon Boolean
-  first_month_coupon_id     String?              @db.VarChar(100)
-  created_at                DateTime             @default(now()) @db.Timestamptz(6)
-  updated_at                DateTime             @default(now()) @db.Timestamptz(6)
-  id                        Int                  @id(map: "pk_subscription_plans") @default(autoincrement())
-  user_subscriptions        user_subscriptions[]
-
-  @@index([active], map: "ix_subscription_plans_active")
-  @@index([platform], map: "ix_subscription_plans_platform")
-  @@index([product_id], map: "ix_subscription_plans_product_id")
-}
-
 model task_queue {
   task_id         String    @db.VarChar(255)
   task_type       String    @db.VarChar(50)
@@ -137,34 +110,33 @@ model tts_records {
 }
 
 model user_subscriptions {
-  user_id                  String             @db.VarChar(128)
-  subscription_plan_id     Int
-  product_id               String             @db.VarChar(255)
-  product_type             String?            @db.VarChar(50)
-  platform                 String?            @db.VarChar(50)
-  external_transaction_id  String             @db.VarChar(255)
-  external_subscription_id String?            @db.VarChar(255)
-  request_id               String             @unique(map: "ix_user_subscriptions_request_id") @db.VarChar(100)
-  status                   String             @db.VarChar(50)
-  start_date               DateTime           @db.Timestamptz(6)
-  end_date                 DateTime           @db.Timestamptz(6)
+  user_id                  String    @db.VarChar(128)
+  product_id               String    @db.VarChar(255) // 订阅计划标识，关联到配置文件
+  product_type             String?   @db.VarChar(50)
+  platform                 String?   @db.VarChar(50)
+  external_transaction_id  String    @db.VarChar(255)
+  external_subscription_id String?   @db.VarChar(255)
+  request_id               String    @unique(map: "ix_user_subscriptions_request_id") @db.VarChar(100)
+  status                   String    @db.VarChar(50)
+  start_date               DateTime  @db.Timestamptz(6)
+  end_date                 DateTime  @db.Timestamptz(6)
   credits_allocated        Int
   amount                   Int?
-  currency                 String?            @db.VarChar(10)
-  created_at               DateTime           @default(now()) @db.Timestamptz(6)
-  updated_at               DateTime           @default(now()) @db.Timestamptz(6)
-  activated_at             DateTime?          @db.Timestamptz(6)
-  cancelled_at             DateTime?          @db.Timestamptz(6)
-  cancellation_reason      String?            @db.VarChar(500)
+  currency                 String?   @db.VarChar(10)
+  created_at               DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at               DateTime  @default(now()) @db.Timestamptz(6)
+  activated_at             DateTime? @db.Timestamptz(6)
+  cancelled_at             DateTime? @db.Timestamptz(6)
+  cancellation_reason      String?   @db.VarChar(500)
   auto_renew               Boolean
   cancel_at_period_end     Boolean
-  id                       Int                @id(map: "pk_user_subscriptions") @default(autoincrement())
-  subscription_plans       subscription_plans @relation(fields: [subscription_plan_id], references: [id], onUpdate: NoAction, map: "fk_user_subscriptions_subscription_plan_id_subscription_plans")
-  users                    users              @relation(fields: [user_id], references: [user_id], onDelete: Cascade, onUpdate: NoAction, map: "fk_user_subscriptions_user_id_users")
+  id                       Int       @id(map: "pk_user_subscriptions") @default(autoincrement())
+  users                    users     @relation(fields: [user_id], references: [user_id], onDelete: Cascade, onUpdate: NoAction, map: "fk_user_subscriptions_user_id_users")
 
   @@index([end_date], map: "ix_user_subscriptions_end_date")
   @@index([platform, external_subscription_id], map: "ix_user_subscriptions_platform_ext_sub")
   @@index([platform, external_transaction_id], map: "ix_user_subscriptions_platform_ext_txn")
+  @@index([product_id], map: "ix_user_subscriptions_product_id")
   @@index([status], map: "ix_user_subscriptions_status")
   @@index([status, end_date], map: "ix_user_subscriptions_status_end_date")
   @@index([user_id], map: "ix_user_subscriptions_user_id")

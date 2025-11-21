@@ -283,7 +283,9 @@ export async function syncVoicesByLocale(locale: string): Promise<SyncResult> {
           voice_sample_url: '', // 需要单独生成
           voice_sample_text: '',
           tags: [],
-          style_list: voice.StyleList || [],
+          style_list: voice.StyleList && voice.StyleList.length > 0
+            ? (voice.StyleList.includes('default') ? voice.StyleList : ['default', ...voice.StyleList])
+            : ['default'],
           is_active: voice.Status === 'GA', // GA = Generally Available
           sort_order: 0,
           display_name: voice.DisplayName,
@@ -709,7 +711,9 @@ export async function updateAllVoices(): Promise<SyncResult> {
           gender: azureVoice.Gender.toLowerCase(),
           role: 'Professional', // 默认为 Professional
           country: getCountryFromLocale(azureVoice.Locale),
-          style_list: azureVoice.StyleList || [],
+          style_list: azureVoice.StyleList && azureVoice.StyleList.length > 0
+            ? (azureVoice.StyleList.includes('default') ? azureVoice.StyleList : ['default', ...azureVoice.StyleList])
+            : ['default'],
           display_name: azureVoice.LocalName, // 使用 LocalName 作为 display_name
           locale: azureVoice.Locale, // 同步更新 locale
           provider: 'microsoft',

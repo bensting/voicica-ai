@@ -29,6 +29,7 @@
     "firebase-admin": "^13.6.0",
     "inngest": "^3.45.1",
     "lucide-react": "^0.546.0",
+    "music-metadata": "^11.10.2",
     "next": "15.5.4",
     "next-auth": "^5.0.0-beta.30",
     "next-intl": "^4.3.12",

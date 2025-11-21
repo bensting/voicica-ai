@@ -2,6 +2,7 @@
  * Azure Text-to-Speech Service
  * 使用 REST API 调用 Azure Cognitive Services
  */
+import { parseBuffer } from 'music-metadata';
 
 export interface TtsRequest {
   text: string;
@@ -53,12 +54,18 @@ function buildSsml(request: TtsRequest): string {
 }
 
 /**
- * 估算音频时长（基于字符数和语速）
+ * 从音频 Buffer 中获取准确时长
  */
-function estimateDuration(text: string, speed: number): number {
-  // 平均每个字符约 0.1 秒
-  const baseDuration = text.length * 0.1;
-  return Math.round((baseDuration / speed) * 100) / 100;
+async function getAudioDuration(audioBuffer: Buffer): Promise<number> {
+  try {
+    const metadata = await parseBuffer(audioBuffer, { mimeType: 'audio/mpeg' });
+    const duration = metadata.format.duration || 0;
+    // 保留两位小数
+    return Math.round(duration * 100) / 100;
+  } catch (error) {
+    console.error('解析音频时长失败:', error);
+    return 0;
+  }
 }
 
 /**
@@ -98,11 +105,14 @@ export async function synthesizeSpeech(request: TtsRequest): Promise<TtsResult> 
   const audioBuffer = await response.arrayBuffer();
   const audioData = Buffer.from(audioBuffer);
 
-  console.log(`✅ Azure TTS: 合成成功, ${audioData.length} bytes`);
+  // 从音频 Buffer 中获取准确时长
+  const duration = await getAudioDuration(audioData);
+
+  console.log(`✅ Azure TTS: 合成成功, ${audioData.length} bytes, duration=${duration}s`);
 
   return {
     audioData,
-    duration: estimateDuration(request.text, request.speed || 1.0),
+    duration,
     format: 'mp3',
   };
 }

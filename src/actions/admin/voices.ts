@@ -215,11 +215,21 @@ async function fetchVoicesFromAzure(): Promise<AzureVoice[]> {
 }
 
 /**
- * 从 locale 中提取国家代码（如 en-US -> US）
+ * 从 locale 中提取国家代码
+ * - 普通情况: en-US -> US
+ * - zh 开头的特殊处理: zh-CN-liaoning -> CN（取第二段）
  */
 function getCountryFromLocale(locale: string): string {
   const parts = locale.split('-');
-  return parts.length > 1 ? parts[parts.length - 1].toUpperCase() : '';
+  if (parts.length < 2) return '';
+
+  // zh 开头的 locale，国家代码在第二段（如 zh-CN, zh-CN-liaoning, zh-TW）
+  if (parts[0] === 'zh') {
+    return parts[1].toUpperCase();
+  }
+
+  // 其他语言取最后一段
+  return parts[parts.length - 1].toUpperCase();
 }
 
 /**
@@ -371,7 +381,7 @@ export async function syncVoicesByLocale(locale: string): Promise<SyncResult> {
           locale: voice.Locale,
           country: getCountryFromLocale(voice.Locale),
           role: voice.VoiceType || 'Neural',
-          gender: voice.Gender,
+          gender: voice.Gender.toLowerCase(),
           avatar_url: '', // Azure 不提供头像
           voice_sample_url: '', // 需要单独生成
           voice_sample_text: '',
@@ -793,6 +803,96 @@ export async function generateAllVoiceSamples(): Promise<SyncResult> {
     return {
       success: false,
       message: error instanceof Error ? error.message : '生成失败',
+    };
+  }
+}
+
+/**
+ * 更新所有已存在的语音数据
+ * 从 Azure API 获取最新数据，更新以下字段：
+ * - gender: 转小写
+ * - role: 默认为 Professional
+ * - country: zh 开头的取第二段
+ * - style_list: 从 Azure 获取
+ * - display_name: 使用 Azure 的 LocalName
+ *
+ * 不更新的字段：is_active、avatar_url、voice_sample_url、voice_sample_text
+ */
+export async function updateAllVoices(): Promise<SyncResult> {
+  await verifyAdminWithoutDb();
+
+  try {
+    console.log('🔄 开始更新所有语音数据...');
+
+    // 从 Azure API 获取所有语音
+    const azureVoices = await fetchVoicesFromAzure();
+
+    // 构建 Azure 语音映射（ShortName -> AzureVoice）
+    const azureVoiceMap = new Map<string, AzureVoice>();
+    for (const voice of azureVoices) {
+      azureVoiceMap.set(voice.ShortName, voice);
+    }
+
+    // 获取数据库中所有语音
+    const dbVoices = await prisma.voices.findMany({
+      select: {
+        id: true,
+        name: true,
+        locale: true,
+      },
+    });
+
+    if (dbVoices.length === 0) {
+      return {
+        success: true,
+        message: '数据库中没有语音',
+        updated: 0,
+      };
+    }
+
+    let updated = 0;
+    let skipped = 0;
+
+    for (const dbVoice of dbVoices) {
+      const azureVoice = azureVoiceMap.get(dbVoice.name);
+
+      if (!azureVoice) {
+        // Azure 中没有这个语音，跳过
+        skipped++;
+        console.log(`⏭️ 跳过（Azure 中不存在）: ${dbVoice.name}`);
+        continue;
+      }
+
+      // 更新字段
+      await prisma.voices.update({
+        where: { id: dbVoice.id },
+        data: {
+          gender: azureVoice.Gender.toLowerCase(),
+          role: 'Professional', // 默认为 Professional
+          country: getCountryFromLocale(azureVoice.Locale),
+          style_list: azureVoice.StyleList || [],
+          display_name: azureVoice.LocalName, // 使用 LocalName 作为 display_name
+          locale: azureVoice.Locale, // 同步更新 locale
+          provider: 'microsoft',
+        },
+      });
+
+      updated++;
+    }
+
+    console.log(`✅ 语音数据更新完成: 更新 ${updated}, 跳过 ${skipped}`);
+
+    return {
+      success: true,
+      message: `更新完成: 更新 ${updated}, 跳过 ${skipped}`,
+      updated,
+      skipped,
+    };
+  } catch (error) {
+    console.error('❌ 更新语音数据失败:', error);
+    return {
+      success: false,
+      message: error instanceof Error ? error.message : '更新失败',
     };
   }
 }

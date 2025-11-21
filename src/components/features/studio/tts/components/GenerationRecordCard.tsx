@@ -29,10 +29,12 @@ export default function GenerationRecordCard({
   size = 'normal',
 }: GenerationRecordCardProps) {
   const [playingId, setPlayingId] = useState<string | null>(null);
+  const [playProgress, setPlayProgress] = useState(0); // 播放进度 0-100
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   const isProcessing = generation.status === TaskStatus.PROCESSING || generation.status === TaskStatus.PENDING;
   const progress = generation.progress || 0;
+  const isPlaying = playingId === generation.id;
 
   // Cleanup audio on unmount
   useEffect(() => {
@@ -63,14 +65,25 @@ export default function GenerationRecordCard({
     const audio = new Audio(audioUrl);
     audioRef.current = audio;
     setPlayingId(id);
+    setPlayProgress(0);
+
+    // 更新播放进度
+    audio.ontimeupdate = () => {
+      if (audio.duration > 0) {
+        const progressPercent = (audio.currentTime / audio.duration) * 100;
+        setPlayProgress(progressPercent);
+      }
+    };
 
     audio.play().catch((err) => {
       console.error('Error playing audio:', err);
       setPlayingId(null);
+      setPlayProgress(0);
     });
 
     audio.onended = () => {
       setPlayingId(null);
+      setPlayProgress(0);
     };
   };
 
@@ -174,10 +187,10 @@ export default function GenerationRecordCard({
         {/* Progress Bar */}
         <div className={`${config.progressBar} bg-gray-200 rounded-full overflow-hidden`}>
           <div
-            className={`h-full rounded-full transition-all duration-500 ${
-              isProcessing ? 'bg-purple-600' : 'bg-purple-400'
+            className={`h-full rounded-full transition-all ${
+              isProcessing ? 'bg-purple-600 duration-500' : isPlaying ? 'bg-purple-600 duration-100' : 'bg-purple-400 duration-500'
             }`}
-            style={{ width: isProcessing ? `${progress}%` : '100%' }}
+            style={{ width: isProcessing ? `${progress}%` : isPlaying ? `${playProgress}%` : '100%' }}
           />
         </div>
 
@@ -275,10 +288,10 @@ export default function GenerationRecordCard({
       {/* Progress Bar */}
       <div className={`${config.progressBar} bg-gray-200 rounded-full flex-shrink-0 overflow-hidden`}>
         <div
-          className={`h-full rounded-full transition-all duration-500 ${
-            isProcessing ? 'bg-purple-600' : 'bg-purple-400'
+          className={`h-full rounded-full transition-all ${
+            isProcessing ? 'bg-purple-600 duration-500' : isPlaying ? 'bg-purple-600 duration-100' : 'bg-purple-400 duration-500'
           }`}
-          style={{ width: isProcessing ? `${progress}%` : '100%' }}
+          style={{ width: isProcessing ? `${progress}%` : isPlaying ? `${playProgress}%` : '100%' }}
         />
       </div>
 

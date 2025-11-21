@@ -219,6 +219,9 @@ export async function createTtsTask(request: TtsRequest): Promise<TtsTaskStatus>
     };
   } catch (error) {
     console.error('❌ [createTtsTask] 创建任务失败:', error);
+    console.error('❌ [createTtsTask] 错误类型:', error instanceof Error ? error.constructor.name : typeof error);
+    console.error('❌ [createTtsTask] 错误消息:', error instanceof Error ? error.message : String(error));
+    console.error('❌ [createTtsTask] 错误堆栈:', error instanceof Error ? error.stack : 'No stack trace');
 
     // 统一错误处理：将错误转换为标准响应格式
     const errorResponse = errorToResponse(error);

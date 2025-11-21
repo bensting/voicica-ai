@@ -44,7 +44,6 @@ export default function StudioTTSPage() {
   const [isVoiceSelectorOpen, setIsVoiceSelectorOpen] = useState(false);
   const [isGeneratingModalOpen, setIsGeneratingModalOpen] = useState(false);
   const [isAudioSettingsOpen, setIsAudioSettingsOpen] = useState(false);
-  const [lastOpenedRecordId, setLastOpenedRecordId] = useState<string | null>(null);
 
   // 检测是否为移动端（在 useState 初始化，避免 useEffect）
   const [isMobile] = useState(() => {
@@ -183,20 +182,25 @@ export default function StudioTTSPage() {
     }
   }, [audioUrl, isMobile]);
 
-  // 移动端：当新的生成记录出现时，自动打开底部抽屉显示进度
+  // 移动端：当有处理中的任务时，自动打开弹窗显示最新记录
   useEffect(() => {
-    if (isMobile && generations.length > 0) {
-      const latestRecord = generations[0];
-      // 只在新记录首次出现时打开弹窗（通过记录 ID 判断是否是新记录）
-      if (latestRecord.status === TaskStatus.PROCESSING || latestRecord.status === TaskStatus.PENDING) {
-        if (latestRecord.id !== lastOpenedRecordId) {
-          console.log('📱 [TTSPage] 打开移动端生成进度弹窗，记录ID:', latestRecord.id);
-          setIsGeneratingModalOpen(true);
-          setLastOpenedRecordId(latestRecord.id);
-        }
-      }
+    if (!isMobile || generations.length === 0) return;
+
+    const latestRecord = generations[0];
+    const isProcessing = latestRecord.status === TaskStatus.PROCESSING || latestRecord.status === TaskStatus.PENDING;
+
+    // 如果最新记录是处理中状态，打开弹窗
+    if (isProcessing && !isGeneratingModalOpen) {
+      console.log('📱 [TTSPage] 检测到处理中的任务，打开弹窗', {
+        id: latestRecord.id,
+        status: latestRecord.status,
+      });
+      setIsGeneratingModalOpen(true);
     }
-  }, [generations, isMobile, lastOpenedRecordId]);
+
+    // 如果最新记录已完成且弹窗是打开的，不自动关闭（用户手动关闭）
+    // 用户可以查看完成结果，手动关闭弹窗
+  }, [generations, isMobile, isGeneratingModalOpen]);
 
   // Memoize callbacks to prevent unnecessary re-renders
   const handleOpenSettings = useCallback(() => {
@@ -373,13 +377,8 @@ export default function StudioTTSPage() {
       <GeneratingRecordModal
         isOpen={isGeneratingModalOpen}
         onClose={() => {
+          console.log('📱 [TTSPage] 用户手动关闭生成进度弹窗');
           setIsGeneratingModalOpen(false);
-          // 当弹窗关闭时（无论是用户手动关闭还是自动关闭），
-          // 如果当前记录已经完成，清除 lastOpenedRecordId，
-          // 这样下次生成新记录时弹窗还能正常打开
-          if (generations.length > 0 && generations[0].status === TaskStatus.SUCCESS) {
-            setLastOpenedRecordId(null);
-          }
         }}
         generation={generations.length > 0 ? generations[0] : null}
         onDelete={handleDeleteGeneration}

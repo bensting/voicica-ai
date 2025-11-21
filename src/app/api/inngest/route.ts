@@ -6,4 +6,6 @@ import { processTtsTask } from '@/lib/inngest/functions/process-tts';
 export const { GET, POST, PUT } = serve({
   client: inngest,
   functions: [processTtsTask],
+  // Signing key for verifying requests from Inngest (required in production)
+  signingKey: process.env.INNGEST_SIGNING_KEY,
 });

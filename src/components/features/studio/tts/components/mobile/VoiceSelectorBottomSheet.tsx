@@ -194,6 +194,7 @@ export default function VoiceSelectorBottomSheet({
                 onPlayVoice={handlePlayVoice}
                 onSelectVoice={handleSelectVoice}
                 onRetry={refreshVoices}
+                usedOnly={usedOnly}
               />
 
               {/* Loading more indicator */}

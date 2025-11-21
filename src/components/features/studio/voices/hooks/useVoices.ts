@@ -199,7 +199,9 @@ export function useVoices({ authLoading }: UseVoicesProps): UseVoicesReturn {
     }
 
     // Used only filter (client-side)
-    if (usedOnly && usedVoiceNames.length > 0) {
+    // When usedOnly is enabled, only show voices that user has used
+    // If user has never used any voice, this will correctly show empty list
+    if (usedOnly) {
       if (!usedVoiceNames.includes(voice.name)) {
         return false;
       }

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
 import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 import { getUnifiedCredits, getUserCredits } from '@/actions/user';
 
@@ -108,12 +108,23 @@ export function CreditsProvider({ children }: CreditsProviderProps) {
   }, []);
 
   // 等待认证完成后再获取积分
+  // 使用 useRef 追踪上一次的 user.uid，避免重复请求
+  const lastUserIdRef = useRef<string | null>(null);
+
   useEffect(() => {
     // 只在认证状态确定后（authLoading = false）才获取积分
-    if (!authLoading) {
-      console.log('💳 认证完成，获取积分...', { isLoggedIn: !!user });
-      void fetchCredits();
+    if (authLoading) return;
+
+    const currentUserId = user?.uid ?? null;
+
+    // 如果用户没变化，不重复请求
+    if (currentUserId === lastUserIdRef.current) {
+      return;
     }
+
+    lastUserIdRef.current = currentUserId;
+    console.log('💳 认证完成，获取积分...', { isLoggedIn: !!user, userId: currentUserId });
+    void fetchCredits();
   }, [fetchCredits, user, authLoading]);
 
   const value: CreditsContextState = {

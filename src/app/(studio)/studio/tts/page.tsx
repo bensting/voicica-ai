@@ -58,13 +58,8 @@ export default function StudioTTSPage() {
     setTitle(t('studio.tts'));
   }, [t, setTitle]);
 
-  // 页面加载时刷新积分（保证用户看到最新积分）
-  useEffect(() => {
-    if (!authLoading) {
-      console.log('🔄 [TTSPage] 页面加载，刷新积分');
-      void refreshCredits();
-    }
-  }, [authLoading, refreshCredits]);
+  // 注意：积分已由 CreditsContext 在认证完成后自动获取
+  // 这里不需要再主动调用 refreshCredits，避免重复请求
 
   // TTS Generator logic
   const maxCharacters = 500;

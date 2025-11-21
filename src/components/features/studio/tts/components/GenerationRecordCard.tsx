@@ -142,42 +142,43 @@ export default function GenerationRecordCard({
           <p className={`${config.text} text-gray-900 font-medium truncate`}>{generation.text}</p>
         </div>
 
-        {/* Voice Info - centered */}
-        <div className="flex items-center justify-center gap-3">
-          {generation.voiceAvatar ? (
-            <Image
-              src={generation.voiceAvatar}
-              alt={generation.voiceName || ''}
-              width={48}
-              height={48}
-              className={`${config.avatar} rounded-full object-cover ring-2 ring-purple-100`}
-            />
-          ) : (
-            <div className={`${config.avatar} rounded-full bg-purple-100 flex items-center justify-center ring-2 ring-purple-200`}>
-              <span className="text-2xl">🎤</span>
-            </div>
-          )}
-          <span className={`${config.voiceText} text-gray-700 font-medium`}>{generation.voiceDisplayName || generation.voiceName}</span>
-        </div>
+        {/* Voice Info + Duration - 同一行 */}
+        <div className="flex items-center justify-between">
+          {/* 左侧：头像和名字 */}
+          <div className="flex items-center gap-2">
+            {generation.voiceAvatar ? (
+              <Image
+                src={generation.voiceAvatar}
+                alt={generation.voiceName || ''}
+                width={40}
+                height={40}
+                className="w-10 h-10 rounded-full object-cover"
+              />
+            ) : (
+              <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center">
+                <span className="text-xl">🎤</span>
+              </div>
+            )}
+            <span className={`${config.voiceText} text-gray-700 font-medium`}>{generation.voiceDisplayName || generation.voiceName}</span>
+          </div>
 
-        {/* Progress section */}
-        <div className="flex flex-col gap-2">
-          <div className="flex items-center justify-between">
-            <span className={`${config.progressText} text-gray-600`}>
-              {isProcessing ? '生成进度' : '时长'}
-            </span>
+          {/* 右侧：时长/进度 */}
+          <div className="text-right">
+            <span className="text-xs text-gray-500 block">{isProcessing ? '生成进度' : '时长'}</span>
             <span className={`${config.progressText} font-semibold ${isProcessing ? 'text-purple-600' : 'text-gray-700'}`}>
               {isProcessing ? `${progress}%` : generation.duration ? `${generation.duration}s` : '-'}
             </span>
           </div>
-          <div className={`${config.progressBar} bg-gray-200 rounded-full overflow-hidden`}>
-            <div
-              className={`h-full rounded-full transition-all duration-500 ${
-                isProcessing ? 'bg-purple-600' : 'bg-purple-400'
-              }`}
-              style={{ width: isProcessing ? `${progress}%` : '100%' }}
-            />
-          </div>
+        </div>
+
+        {/* Progress Bar */}
+        <div className={`${config.progressBar} bg-gray-200 rounded-full overflow-hidden`}>
+          <div
+            className={`h-full rounded-full transition-all duration-500 ${
+              isProcessing ? 'bg-purple-600' : 'bg-purple-400'
+            }`}
+            style={{ width: isProcessing ? `${progress}%` : '100%' }}
+          />
         </div>
 
         {/* Action Buttons - full width */}

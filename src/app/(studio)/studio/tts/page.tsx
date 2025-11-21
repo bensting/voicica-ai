@@ -381,7 +381,12 @@ export default function StudioTTSPage() {
           setIsGeneratingModalOpen(false);
         }}
         generation={generations.length > 0 ? generations[0] : null}
-        onDelete={handleDeleteGeneration}
+        onDelete={(id) => {
+          console.log('📱 [TTSPage] 删除记录并关闭弹窗', id);
+          handleDeleteGeneration(id);
+          // 删除后立即关闭弹窗
+          setIsGeneratingModalOpen(false);
+        }}
         onDownload={handleDownloadGeneration}
       />
 

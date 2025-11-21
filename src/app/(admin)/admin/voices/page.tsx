@@ -6,7 +6,7 @@ import { getVoiceLocales, syncVoicesByLocale, getVoiceStatsByLocale } from '@/ac
 interface LocaleStats {
   locale: string;
   localeName: string;
-  apiCount: number;
+  azureCount: number;
   dbCount: number;
   canSync: boolean;
 }
@@ -174,7 +174,7 @@ export default function VoicesManagementPage() {
                     语言区域
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    API 数量
+                    Azure 数量
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     数据库数量
@@ -195,19 +195,19 @@ export default function VoicesManagementPage() {
                       <div className="text-sm text-gray-500">{item.localeName}</div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {item.apiCount}
+                      {item.azureCount}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       {item.dbCount}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      {item.apiCount === item.dbCount ? (
+                      {item.azureCount === item.dbCount ? (
                         <span className="px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">
                           已同步
                         </span>
                       ) : item.canSync ? (
                         <span className="px-2 py-1 text-xs font-medium bg-yellow-100 text-yellow-800 rounded-full">
-                          待同步 (+{item.apiCount - item.dbCount})
+                          待同步 (+{item.azureCount - item.dbCount})
                         </span>
                       ) : (
                         <span className="px-2 py-1 text-xs font-medium bg-gray-100 text-gray-600 rounded-full">
@@ -249,9 +249,9 @@ export default function VoicesManagementPage() {
       <div className="mt-8 bg-blue-50 border border-blue-200 rounded-xl p-4">
         <h3 className="text-sm font-semibold text-blue-800 mb-2">说明</h3>
         <ul className="text-sm text-blue-700 space-y-1">
-          <li>• 语音数据从后端 API 获取，按语言区域（locale）分组显示</li>
+          <li>• 语音数据从 <strong>Azure TTS API</strong> 获取，按语言区域（locale）分组显示</li>
           <li>• 同步操作只会<strong>插入新语音</strong>，不会更新已存在的语音数据</li>
-          <li>• "API 数量"表示后端 API 返回的语音数量</li>
+          <li>• "Azure 数量"表示 Azure TTS 服务可用的语音数量</li>
           <li>• "数据库数量"表示当前数据库中的语音数量</li>
         </ul>
       </div>

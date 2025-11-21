@@ -47,7 +47,7 @@ export default function PlansGrid({ plans, cycle, onCycleChange }: PlansGridProp
           key={plan.id || index}
           plan={plan}
           cycle={cycle}
-          isRecommended={plan.plan_name === 'Premium'}
+          isRecommended={plan.is_popular === true}
         />
       ))}
     </div>

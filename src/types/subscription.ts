@@ -28,6 +28,7 @@ export interface SubscriptionPlan {
   billing_period?: string; // 计费周期
   enable_first_month_coupon?: boolean;
   first_month_coupon_id?: string | null;
+  is_popular?: boolean; // 是否显示"最受欢迎"标签
 }
 
 // 计费周期枚举（与后端保持一致）

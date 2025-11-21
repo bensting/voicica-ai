@@ -121,6 +121,7 @@ export function convertToLegacyFormat(plan: SubscriptionPlanConfig): {
   billing_period?: string;
   enable_first_month_coupon?: boolean;
   first_month_coupon_id?: string | null;
+  is_popular?: boolean;
 } {
   return {
     id: plan.id,
@@ -140,5 +141,6 @@ export function convertToLegacyFormat(plan: SubscriptionPlanConfig): {
     billing_period: plan.billing_period,
     enable_first_month_coupon: plan.enable_first_month_coupon,
     first_month_coupon_id: plan.first_month_coupon_id,
+    is_popular: plan.is_popular,
   };
 }

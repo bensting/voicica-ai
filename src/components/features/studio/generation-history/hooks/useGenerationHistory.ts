@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import {
   queryTtsRecords,
   deleteTtsRecord,
@@ -342,20 +342,25 @@ export function useGenerationHistory({
     };
   }, [clearAllPolling]);
 
-  // Handle user login/logout and fetch records when filters change
+  // Track if initial fetch has been done
+  const hasFetchedRef = useRef(false);
+
+  // Handle initial fetch and user login/logout
   // Wait for auth to complete before fetching to avoid duplicate queries
   useEffect(() => {
     // Don't fetch if still checking authentication status
     if (authLoading) return;
 
     // Fetch records for both authenticated and anonymous users
+    hasFetchedRef.current = true;
     void fetchRecords();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, authLoading]); // 移除 fetchRecords 依赖，避免无限循环
 
-  // Fetch records when page, filters, or status changes
+  // Fetch records when page, filters, or status changes (skip initial render)
   useEffect(() => {
-    if (authLoading) return;
+    // Skip if auth is still loading or if initial fetch hasn't happened yet
+    if (authLoading || !hasFetchedRef.current) return;
 
     void fetchRecords();
   // eslint-disable-next-line react-hooks/exhaustive-deps

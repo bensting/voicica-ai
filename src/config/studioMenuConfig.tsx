@@ -101,6 +101,32 @@ export const studioMenuItems: StudioMenuItemConfig[] = [
       </svg>
     ),
   },
+
+  // Account (我的账户)
+  {
+    id: 'my-subscription',
+    labelKey: 'settings.menu.mySubscription',
+    href: '/studio/settings/my-subscription',
+    category: 'account',
+    enabled: true,
+    icon: (
+      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7" />
+      </svg>
+    ),
+  },
+  {
+    id: 'my-account',
+    labelKey: 'settings.menu.myProfile',
+    href: '/studio/settings/my-account',
+    category: 'account',
+    enabled: true,
+    icon: (
+      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+      </svg>
+    ),
+  },
 ];
 
 // 按分类组织的菜单项（只包含启用的项）
@@ -109,4 +135,5 @@ export const studioMenuCategories = {
   video: studioMenuItems.filter(item => item.category === 'video' && (item.enabled !== false)),
   voiceover: studioMenuItems.filter(item => item.category === 'voiceover' && (item.enabled !== false)),
   music: studioMenuItems.filter(item => item.category === 'music' && (item.enabled !== false)),
+  account: studioMenuItems.filter(item => item.category === 'account' && (item.enabled !== false)),
 };

@@ -149,6 +149,7 @@ export function useGenerationHistory({
 
   // Fetch records from API
   const fetchRecords = useCallback(async () => {
+    console.log('[useGenerationHistory] fetchRecords called');
     try {
       setLoading(true);
       setError(null);

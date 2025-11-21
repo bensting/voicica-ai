@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect } from 'react';
-import { getTtsSamples } from '@/actions/config';
+import { getSampleLocales, getSampleTextMaxLength } from '@/config/appConfig';
 import { LocaleOption } from '@/types/config';
 import type { Voice } from '@/types/voice';
 import { mapLocaleCodesToOptions } from '@/utils/localeMapper';
@@ -58,37 +58,26 @@ export function useTTSDemo() {
 
   // ==================== 加载配置 ====================
   useEffect(() => {
-    const loadConfig = async () => {
-      try {
-        setIsLoadingConfig(true);
-        const config = await getTtsSamples();
+    // 直接从配置文件读取，不再需要异步请求
+    const sampleLocales = getSampleLocales();
+    const maxLength = getSampleTextMaxLength();
 
-        // 转换语言代码为选项
-        const localeOptions = mapLocaleCodesToOptions(config.sample_locales);
-        setAvailableLocales(localeOptions);
-        setMaxTextLength(config.sample_text_max_length);
+    // 转换语言代码为选项
+    const localeOptions = mapLocaleCodesToOptions(sampleLocales);
+    setAvailableLocales(localeOptions);
+    setMaxTextLength(maxLength);
 
-        // 设置默认语言为第一个（如果有）
-        if (localeOptions.length > 0) {
-          setSelectedLocale(localeOptions[0]);
-        }
+    // 设置默认语言为第一个（如果有）
+    if (localeOptions.length > 0) {
+      setSelectedLocale(localeOptions[0]);
+    }
 
-        console.log('✅ TTS 配置加载成功:', {
-          locales: localeOptions.length,
-          maxLength: config.sample_text_max_length,
-        });
-      } catch (error) {
-        console.error('❌ 加载 TTS 配置失败:', error);
-        // 使用默认配置
-        const defaultLocales = mapLocaleCodesToOptions(['en-US', 'zh-CN', 'zh-TW', 'ja-JP', 'ko-KR']);
-        setAvailableLocales(defaultLocales);
-        setSelectedLocale(defaultLocales[0]);
-      } finally {
-        setIsLoadingConfig(false);
-      }
-    };
+    console.log('✅ TTS 配置加载成功:', {
+      locales: localeOptions.length,
+      maxLength: maxLength,
+    });
 
-    loadConfig();
+    setIsLoadingConfig(false);
   }, []);
 
   // ==================== 事件处理 ====================

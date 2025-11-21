@@ -30,22 +30,6 @@ model anonymous_users {
   @@index([user_id], map: "idx_anonymous_users_user_id")
 }
 
-model configs {
-  key         String    @unique(map: "ix_configs_key") @db.VarChar(255)
-  value       Json
-  description String?
-  config_type String?   @db.VarChar(50)
-  version     Int
-  is_active   Boolean
-  id          Int       @id(map: "pk_configs") @default(autoincrement())
-  created_at  DateTime  @default(now()) @db.Timestamptz(6)
-  updated_at  DateTime? @default(now()) @db.Timestamptz(6)
-
-  @@index([config_type], map: "ix_configs_config_type")
-  @@index([is_active], map: "ix_configs_is_active")
-  @@index([value], map: "ix_configs_value_gin", type: Gin)
-}
-
 model credit_history {
   user_id     String    @db.VarChar(255)
   amount      Int

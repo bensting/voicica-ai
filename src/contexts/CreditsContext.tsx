@@ -109,7 +109,8 @@ export function CreditsProvider({ children }: CreditsProviderProps) {
 
   // 等待认证完成后再获取积分
   // 使用 useRef 追踪上一次的 user.uid，避免重复请求
-  const lastUserIdRef = useRef<string | null>(null);
+  // 使用特殊标记 'NOT_INITIALIZED' 区分"未初始化"和"匿名用户(null)"
+  const lastUserIdRef = useRef<string | null | 'NOT_INITIALIZED'>('NOT_INITIALIZED');
 
   useEffect(() => {
     // 只在认证状态确定后（authLoading = false）才获取积分
@@ -117,8 +118,8 @@ export function CreditsProvider({ children }: CreditsProviderProps) {
 
     const currentUserId = user?.uid ?? null;
 
-    // 如果用户没变化，不重复请求
-    if (currentUserId === lastUserIdRef.current) {
+    // 如果用户没变化，不重复请求（但首次必须请求）
+    if (lastUserIdRef.current !== 'NOT_INITIALIZED' && currentUserId === lastUserIdRef.current) {
       return;
     }
 

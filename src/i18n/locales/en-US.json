@@ -31,6 +31,8 @@
     "generationHistory": "Generation History"
   },
   "pricing": {
+    "pageTitle": "Plans & Pricing of AI-Voice-Labs",
+    "pageSubtitle": "AI-Voice-Labs offers a variety of purchase plans to better meet your needs.",
     "loading": "Loading pricing plans...",
     "error": "Failed to load pricing plans. Please try again later.",
     "retry": "Retry",
@@ -42,7 +44,11 @@
     "renewalAt": "Renewal at",
     "freeForEveryone": "Free for everyone",
     "mostPopular": "Most Popular",
-    "autoRenew": "Auto-renew. Cancel at any time."
+    "autoRenew": "Auto-renew. Cancel at any time.",
+    "loginRequired": "Login Required",
+    "loginRequiredDesc": "Please sign in to purchase a subscription plan",
+    "cancel": "Cancel",
+    "signIn": "Sign In"
   },
   "upgrade": {
     "header": {

@@ -21,20 +21,8 @@ export const INFO_LINKS: FooterLink[] = [
     href: '/terms',
   },
   {
-    labelKey: 'footer.info.cookie',
-    href: '/cookie-policy',
-  },
-  {
     labelKey: 'footer.info.privacy',
     href: '/privacy',
-  },
-  {
-    labelKey: 'footer.info.refund',
-    href: '/refund',
-  },
-  {
-    labelKey: 'footer.info.partner',
-    href: '/partner',
   },
 ];
 
@@ -43,10 +31,6 @@ export const ABOUT_LINKS: FooterLink[] = [
   {
     labelKey: 'footer.about.aboutUs',
     href: '/about',
-  },
-  {
-    labelKey: 'footer.about.contact',
-    href: '/contact',
   },
   {
     labelKey: 'footer.about.faqs',

@@ -6,6 +6,7 @@
 import Stripe from 'stripe';
 import { getCurrentUser } from '@/lib/auth-firebase';
 import prisma from '@/lib/prisma';
+import { getPlanByProductId } from '@/config/subscription';
 
 // Initialize Stripe
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
@@ -31,16 +32,10 @@ export async function createStripeCheckout(request: StripeCheckoutRequest): Prom
   const user = await getCurrentUser();
   const userId = user.uid;
 
-  // 获取订阅计划
-  const plan = await prisma.subscription_plans.findFirst({
-    where: {
-      product_id: request.product_id,
-      platform: 'stripe',
-      active: true,
-    },
-  });
+  // 从配置文件获取订阅计划
+  const plan = getPlanByProductId(request.product_id);
 
-  if (!plan) {
+  if (!plan || !plan.active) {
     throw new Error(`订阅计划不存在: ${request.product_id}`);
   }
 
@@ -184,20 +179,14 @@ export async function getStripePrices(productId: string): Promise<Array<{
   billing_type: 'recurring' | 'one_time';
   billing_period: string | null;
 }>> {
-  // 从数据库获取订阅计划的价格信息
-  const plan = await prisma.subscription_plans.findFirst({
-    where: {
-      product_id: productId,
-      platform: 'stripe',
-      active: true,
-    },
-  });
+  // 从配置文件获取订阅计划的价格信息
+  const plan = getPlanByProductId(productId);
 
-  if (!plan) {
+  if (!plan || !plan.active) {
     return [];
   }
 
-  const priceData = (plan.discounted_price || plan.price) as Record<string, number> | null;
+  const priceData = plan.discounted_price || plan.price;
   if (!priceData) {
     return [];
   }
@@ -209,6 +198,6 @@ export async function getStripePrices(productId: string): Promise<Array<{
     currency: currency.toLowerCase(),
     active: true,
     billing_type: plan.billing_period ? 'recurring' : 'one_time',
-    billing_period: plan.billing_period,
+    billing_period: plan.billing_period ?? null,
   }));
 }

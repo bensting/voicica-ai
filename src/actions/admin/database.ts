@@ -203,8 +203,8 @@ export async function syncSubscriptionPlans(): Promise<SyncResult> {
 
   try {
     // 从配置文件读取订阅计划
-    const { getAllPlans } = await import('@/config/subscription');
-    const plans = getAllPlans();
+    const { getAllActivePlans } = await import('@/config/subscription');
+    const plans = getAllActivePlans();
 
     // 这里可以实现将配置同步到数据库的逻辑
     // 目前订阅计划完全从配置文件读取，不需要数据库表
@@ -350,7 +350,7 @@ export async function runPrismaGenerate(): Promise<MigrationResult> {
   try {
     console.log('🔄 开始执行 prisma generate...');
 
-    const { stdout, stderr } = await execAsync('npx prisma generate', {
+    const { stdout } = await execAsync('npx prisma generate', {
       cwd: process.cwd(),
       timeout: 60000, // 1分钟超时
     });

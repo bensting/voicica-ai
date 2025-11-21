@@ -75,7 +75,7 @@ export default function VoicesManagementPage() {
     setSyncing('all');
     let totalInserted = 0;
     let totalSkipped = 0;
-    let failedLocales: string[] = [];
+    const failedLocales: string[] = [];
 
     for (const item of locales) {
       if (item.canSync) {
@@ -88,7 +88,7 @@ export default function VoicesManagementPage() {
             failedLocales.push(item.locale);
           }
           setSyncResults((prev) => ({ ...prev, [item.locale]: result }));
-        } catch (error) {
+        } catch {
           failedLocales.push(item.locale);
         }
       }
@@ -490,8 +490,8 @@ export default function VoicesManagementPage() {
         <ul className="text-sm text-blue-700 space-y-1">
           <li>• 语音数据从 <strong>Azure TTS API</strong> 获取，按语言区域（locale）分组显示</li>
           <li>• 同步操作只会<strong>插入新语音</strong>，不会更新已存在的语音数据</li>
-          <li>• "Azure 数量"表示 Azure TTS 服务可用的语音数量</li>
-          <li>• "数据库数量"表示当前数据库中的语音数量</li>
+          <li>• 「Azure 数量」表示 Azure TTS 服务可用的语音数量</li>
+          <li>• 「数据库数量」表示当前数据库中的语音数量</li>
         </ul>
       </div>
     </div>

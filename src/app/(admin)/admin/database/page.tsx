@@ -253,7 +253,7 @@ export default function DatabaseSyncPage() {
           </div>
         ) : (
           <p className="text-gray-500 text-center py-4">
-            点击"刷新统计"查看数据库表信息
+            点击「刷新统计」查看数据库表信息
           </p>
         )}
       </div>

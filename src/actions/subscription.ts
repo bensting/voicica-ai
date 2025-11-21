@@ -62,10 +62,8 @@ export async function getPlansByProductId(
  * 从配置文件读取
  */
 export async function getSubscriptionPlan(
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   _platform: string,
   productId: string,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   _basePlanId: string | null
 ): Promise<SubscriptionPlan | null> {
   const plan = getPlanByProductId(productId);

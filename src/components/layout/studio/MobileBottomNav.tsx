@@ -2,7 +2,7 @@
 
 import { useRouter, usePathname } from 'next/navigation';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { mobileBottomNavItems } from '@/config/mobileBottomNavConfig';
+import { getEnabledNavItems } from '@/config/mobileBottomNav';
 
 /**
  * Mobile Bottom Navigation
@@ -27,7 +27,7 @@ export default function MobileBottomNav() {
     <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-40 lg:hidden">
       <div className="flex items-center justify-around px-2 py-2">
         {/* Navigation Items */}
-        {mobileBottomNavItems.map((item) => {
+        {getEnabledNavItems().map((item) => {
           const isActive = pathname === item.href || pathname.startsWith(item.href + '/');
           return (
             <button

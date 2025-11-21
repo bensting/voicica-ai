@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { studioMenuCategories } from '@/config/studioMenuConfig';
+import { studioMenuCategories } from '@/config/studioMenu';
 
 interface StudioSidebarProps {
   /** 桌面端不需要，移动端需要控制打开/关闭 */

@@ -149,6 +149,7 @@ export function useGenerationHistory({
 
   // Fetch records from API
   const fetchRecords = useCallback(async () => {
+    console.log('[useGenerationHistory] fetchRecords called');
     try {
       setLoading(true);
       setError(null);
@@ -191,7 +192,7 @@ export function useGenerationHistory({
       setTotal(response.total);
       setTotalPages(response.total_pages);
     } catch (err) {
-      console.error('❌ Error fetching TTS records:', err);
+      console.error('[useGenerationHistory] Error fetching TTS records:', err);
       setError('Failed to load generation history. Please try again later.');
       setGenerations([]);
       setTotal(0);
@@ -223,11 +224,9 @@ export function useGenerationHistory({
   // Poll single record status with retry limit and timeout handling
   const pollRecordStatus = useCallback(async (recordId: string) => {
     try {
-      console.log(`🔄 [useGenerationHistory] Polling record ${recordId}`);
-
       const numericId = parseInt(recordId, 10);
       if (isNaN(numericId)) {
-        console.error(`❌ [useGenerationHistory] Invalid record ID: ${recordId}`);
+        console.error('[useGenerationHistory] Invalid record ID:', recordId);
         clearRecordPolling(recordId);
         return;
       }
@@ -246,7 +245,6 @@ export function useGenerationHistory({
 
       // 如果状态从处理中变为完成，触发回调
       if (wasProcessing && isCompleted && onTaskCompleted) {
-        console.log(`💰 [useGenerationHistory] 任务 ${recordId} 完成，刷新积分`);
         onTaskCompleted();
       }
 
@@ -266,11 +264,8 @@ export function useGenerationHistory({
 
         // 如果任务超过5分钟,立即触发后台检查
         if (taskAgeMinutes > TIMEOUT_THRESHOLD_MINUTES) {
-          console.warn(`⚠️ [useGenerationHistory] Task ${recordId} has been running for ${taskAgeMinutes.toFixed(1)} minutes, triggering timeout check`);
-
           try {
             const result = await checkAndHandleStuckTask(numericId);
-            console.log(`✅ [useGenerationHistory] Timeout check completed for record ${recordId}:`, result.message);
 
             // 更新记录状态
             const timeoutUpdatedGeneration = convertTtsRecordToGeneration(result.record);
@@ -280,13 +275,8 @@ export function useGenerationHistory({
 
             // 停止轮询
             clearRecordPolling(recordId);
-
-            // 如果任务被标记为失败,显示通知
-            if (result.handled && result.newStatus === 'FAILURE') {
-              console.error(`❌ [useGenerationHistory] Task ${recordId} marked as failed: ${result.message}`);
-            }
           } catch (backendErr) {
-            console.error(`❌ [useGenerationHistory] Timeout check failed for record ${recordId}:`, backendErr);
+            console.error('[useGenerationHistory] Timeout check failed:', recordId, backendErr);
             // 即使后端检查失败,也停止轮询
             clearRecordPolling(recordId);
           }
@@ -303,10 +293,9 @@ export function useGenerationHistory({
       } else {
         // Record completed or failed, stop polling
         clearRecordPolling(recordId);
-        console.log(`✅ [useGenerationHistory] Record ${recordId} completed with status ${record.status}`);
       }
     } catch (err) {
-      console.error(`❌ [useGenerationHistory] Error polling record ${recordId}:`, err);
+      console.error('[useGenerationHistory] Error polling record:', recordId, err);
 
       // Increment retry count
       const currentRetries = pollingRetryCountRef.current.get(recordId) || 0;
@@ -314,15 +303,10 @@ export function useGenerationHistory({
 
       // Check if max retries exceeded - trigger backend check
       if (newRetries >= MAX_RETRY_ATTEMPTS) {
-        console.warn(`⚠️ [useGenerationHistory] Max retry attempts (${MAX_RETRY_ATTEMPTS}) reached for record ${recordId}`);
-        console.log(`🔧 [useGenerationHistory] Triggering backend timeout check for record ${recordId}`);
-
         try {
           // 调用后端检查任务是否超时
           const numericId = parseInt(recordId, 10);
           const result = await checkAndHandleStuckTask(numericId);
-
-          console.log(`✅ [useGenerationHistory] Backend check completed for record ${recordId}:`, result.message);
 
           // 更新记录状态
           const updatedGeneration = convertTtsRecordToGeneration(result.record);
@@ -332,14 +316,8 @@ export function useGenerationHistory({
 
           // 停止轮询
           clearRecordPolling(recordId);
-
-          // 如果任务被标记为失败，显示通知
-          if (result.handled && result.newStatus === 'FAILURE') {
-            console.error(`❌ [useGenerationHistory] Task ${recordId} marked as failed: ${result.message}`);
-            // TODO: 可以在这里显示用户友好的通知
-          }
         } catch (backendErr) {
-          console.error(`❌ [useGenerationHistory] Backend timeout check failed for record ${recordId}:`, backendErr);
+          console.error('[useGenerationHistory] Backend timeout check failed:', recordId, backendErr);
           // 即使后端检查失败，也停止轮询，避免无限循环
           clearRecordPolling(recordId);
         }
@@ -349,7 +327,6 @@ export function useGenerationHistory({
 
       // Update retry count and continue polling
       pollingRetryCountRef.current.set(recordId, newRetries);
-      console.log(`🔄 [useGenerationHistory] Retry ${newRetries}/${MAX_RETRY_ATTEMPTS} for record ${recordId}`);
 
       const timer = setTimeout(() => {
         void pollRecordStatus(recordId);
@@ -366,37 +343,25 @@ export function useGenerationHistory({
     };
   }, [clearAllPolling]);
 
-  // Handle user login/logout and fetch records when filters change
+  // Track if initial fetch has been done
+  const hasFetchedRef = useRef(false);
+
+  // Handle initial fetch and user login/logout
   // Wait for auth to complete before fetching to avoid duplicate queries
   useEffect(() => {
     // Don't fetch if still checking authentication status
-    if (authLoading) {
-      console.log('🔄 [useGenerationHistory] 等待认证完成，跳过 fetchRecords');
-      return;
-    }
-
-    console.log('🔄 [useGenerationHistory] useEffect 触发 fetchRecords', { user: !!user, authLoading });
+    if (authLoading) return;
 
     // Fetch records for both authenticated and anonymous users
-    // API client will handle authentication automatically:
-    // - Authenticated users: use Firebase token
-    // - Anonymous users: use device fingerprint
-
-    // User is logged in, fetch records
+    hasFetchedRef.current = true;
     void fetchRecords();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, authLoading]); // 移除 fetchRecords 依赖，避免无限循环
 
-  // Fetch records when page, filters, or status changes
+  // Fetch records when page, filters, or status changes (skip initial render)
   useEffect(() => {
-    if (authLoading) return;
-
-    console.log('🔄 [useGenerationHistory] Filters/Page changed, fetching records', {
-      currentPage,
-      selectedStatus,
-      startDate,
-      endDate
-    });
+    // Skip if auth is still loading or if initial fetch hasn't happened yet
+    if (authLoading || !hasFetchedRef.current) return;
 
     void fetchRecords();
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -417,7 +382,6 @@ export function useGenerationHistory({
     // Start polling for new processing records
     processingRecords.forEach(gen => {
       if (!currentlyPolling.has(gen.id)) {
-        console.log(`🔄 [useGenerationHistory] Starting polling for record ${gen.id}`);
         void pollRecordStatus(gen.id);
       }
     });
@@ -426,7 +390,6 @@ export function useGenerationHistory({
     const processingIds = new Set(processingRecords.map(gen => gen.id));
     currentlyPolling.forEach(recordId => {
       if (!processingIds.has(recordId)) {
-        console.log(`⏹️ [useGenerationHistory] Stopping polling for record ${recordId}`);
         clearRecordPolling(recordId);
       }
     });
@@ -458,17 +421,16 @@ export function useGenerationHistory({
         onConfirm: async () => {
           setConfirmDialog(prev => ({ ...prev, isOpen: false }));
           try {
-            const result = await batchDeleteTtsRecords(allMatchingIds);
-            console.log(`✅ Batch delete completed: ${result.deleted} deleted, ${result.failed} failed`);
+            await batchDeleteTtsRecords(allMatchingIds);
             await fetchRecords();
           } catch (err) {
-            console.error('❌ Error clearing all records:', err);
+            console.error('[useGenerationHistory] Error clearing all records:', err);
             window.alert('Failed to clear all records. Please try again.');
           }
         },
       });
     } catch (err) {
-      console.error('❌ Error fetching records for deletion:', err);
+      console.error('[useGenerationHistory] Error fetching records for deletion:', err);
       window.alert('Failed to fetch records. Please try again.');
     }
   }, [selectedStatus, startDate, endDate, fetchRecords]);
@@ -483,10 +445,9 @@ export function useGenerationHistory({
         setConfirmDialog(prev => ({ ...prev, isOpen: false }));
         try {
           await deleteTtsRecord(id);
-          console.log(`✅ Record ${id} deleted successfully`);
           await fetchRecords();
         } catch (err) {
-          console.error(`❌ Error deleting record ${id}:`, err);
+          console.error('[useGenerationHistory] Error deleting record:', id, err);
           window.alert(t ? t('studio.deleteDialog.deleteFailedAlert') : 'Failed to delete record. Please try again.');
         }
       },
@@ -504,9 +465,8 @@ export function useGenerationHistory({
 
       const filename = `tts-${id}.mp3`;
       await downloadAudio(generation.audioUrl, filename);
-      console.log(`✅ Audio ${id} downloaded successfully`);
     } catch (err) {
-      console.error(`❌ Error downloading audio ${id}:`, err);
+      console.error('[useGenerationHistory] Error downloading audio:', id, err);
       window.alert('Failed to download audio. Please try again.');
     }
   }, [generations]);

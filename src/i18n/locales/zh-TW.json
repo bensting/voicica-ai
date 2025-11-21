@@ -362,6 +362,8 @@
     "female": "女",
     "neutral": "中性",
     "proBasic": "專業版/基礎版",
+    "usedOnly": "已使用",
+    "noUsedVoices": "暫無使用記錄",
     "noVoicesFound": "未找到語音",
     "loadMoreVoices": "載入更多語音",
     "searchLanguages": "搜尋語言..."

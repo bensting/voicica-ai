@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { listVoices } from '@/actions/voice';
+import { listVoices, getUsedVoiceNames } from '@/actions/voice';
 import type { Voice } from '@/types/voice';
 import type { LocaleOption } from '@/types/config';
 
@@ -27,13 +27,13 @@ interface UseVoicesReturn {
   selectedLanguage: LocaleOption | null;
   setSelectedLanguage: (language: LocaleOption | null) => void;
 
-  // Tag filter state
-  selectedTagId: string;
-  setSelectedTagId: (tagId: string) => void;
-
   // Gender filter state
   selectedGender: string;
   setSelectedGender: (gender: string) => void;
+
+  // Used only filter state
+  usedOnly: boolean;
+  setUsedOnly: (usedOnly: boolean) => void;
 
   // Audio playback state
   playingVoiceId: string | null;
@@ -71,15 +71,23 @@ export function useVoices({ authLoading }: UseVoicesProps): UseVoicesReturn {
   // Language filter state
   const [selectedLanguage, setSelectedLanguage] = useState<LocaleOption | null>(null);
 
-  // Tag filter state
-  const [selectedTagId, setSelectedTagId] = useState('all');
-
   // Gender filter state
   const [selectedGender, setSelectedGender] = useState<string>('all');
+
+  // Used only filter state
+  const [usedOnly, setUsedOnly] = useState(false);
+  const [usedVoiceNames, setUsedVoiceNames] = useState<string[]>([]);
 
   // Audio player state
   const [playingVoiceId, setPlayingVoiceId] = useState<string | null>(null);
   const [audioElement, setAudioElement] = useState<HTMLAudioElement | null>(null);
+
+  // Load used voice names when usedOnly filter is enabled
+  useEffect(() => {
+    if (usedOnly && usedVoiceNames.length === 0) {
+      void getUsedVoiceNames().then(setUsedVoiceNames);
+    }
+  }, [usedOnly, usedVoiceNames.length]);
 
   // Load voices (initial load or refresh)
   const loadVoices = useCallback(async () => {
@@ -94,7 +102,6 @@ export function useVoices({ authLoading }: UseVoicesProps): UseVoicesReturn {
         page_size: number;
         locale?: string;
         gender?: string;
-        tag?: string;
       } = {
         is_active: true,
         page: 1,
@@ -109,10 +116,6 @@ export function useVoices({ authLoading }: UseVoicesProps): UseVoicesReturn {
         params.gender = selectedGender;
       }
 
-      if (selectedTagId !== 'all' && selectedTagId !== 'my-clone' && selectedTagId !== 'used') {
-        params.tag = selectedTagId;
-      }
-
       const response = await listVoices(params);
 
       setVoices(response.voices as Voice[]);
@@ -125,7 +128,7 @@ export function useVoices({ authLoading }: UseVoicesProps): UseVoicesReturn {
     } finally {
       setLoading(false);
     }
-  }, [selectedLanguage, selectedGender, selectedTagId, pageSize]);
+  }, [selectedLanguage, selectedGender, pageSize]);
 
   // Load more voices (pagination)
   const loadMoreVoices = useCallback(async () => {
@@ -142,7 +145,6 @@ export function useVoices({ authLoading }: UseVoicesProps): UseVoicesReturn {
         page_size: number;
         locale?: string;
         gender?: string;
-        tag?: string;
       } = {
         is_active: true,
         page: nextPage,
@@ -157,10 +159,6 @@ export function useVoices({ authLoading }: UseVoicesProps): UseVoicesReturn {
         params.gender = selectedGender;
       }
 
-      if (selectedTagId !== 'all' && selectedTagId !== 'my-clone' && selectedTagId !== 'used') {
-        params.tag = selectedTagId;
-      }
-
       const response = await listVoices(params);
 
       setVoices((prev) => [...prev, ...(response.voices as Voice[])]);
@@ -172,7 +170,7 @@ export function useVoices({ authLoading }: UseVoicesProps): UseVoicesReturn {
     } finally {
       setLoadingMore(false);
     }
-  }, [loadingMore, currentPage, totalPages, selectedLanguage, selectedGender, selectedTagId, pageSize]);
+  }, [loadingMore, currentPage, totalPages, selectedLanguage, selectedGender, pageSize]);
 
   // Initial load and reload when filters change
   // Wait for authentication to complete before loading voices
@@ -189,13 +187,22 @@ export function useVoices({ authLoading }: UseVoicesProps): UseVoicesReturn {
     void loadVoices();
   }, [loadVoices, authLoading]);
 
-  // Filter voices based on search query (client-side only)
-  // Other filters (language, gender, tag) are handled by API
+  // Filter voices based on search query and usedOnly (client-side)
+  // Other filters (language, gender) are handled by API
   const filteredVoices = voices.filter((voice) => {
     // Search filter (client-side for better UX)
     if (searchQuery) {
       const voiceName = voice.display_name.toLowerCase();
       if (!voiceName.includes(searchQuery.toLowerCase())) {
+        return false;
+      }
+    }
+
+    // Used only filter (client-side)
+    // When usedOnly is enabled, only show voices that user has used
+    // If user has never used any voice, this will correctly show empty list
+    if (usedOnly) {
+      if (!usedVoiceNames.includes(voice.name)) {
         return false;
       }
     }
@@ -241,13 +248,13 @@ export function useVoices({ authLoading }: UseVoicesProps): UseVoicesReturn {
     selectedLanguage,
     setSelectedLanguage,
 
-    // Tag filter state
-    selectedTagId,
-    setSelectedTagId,
-
     // Gender filter state
     selectedGender,
     setSelectedGender,
+
+    // Used only filter state
+    usedOnly,
+    setUsedOnly,
 
     // Audio playback state
     playingVoiceId,

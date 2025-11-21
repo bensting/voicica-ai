@@ -1,9 +1,3 @@
-
-
-
-
-
-
 {
   "common": {
     "brand": "AI Voice Labs",
@@ -284,6 +278,8 @@
     "female": "Female",
     "neutral": "Neutral",
     "proBasic": "Pro/Basic",
+    "usedOnly": "Used",
+    "noUsedVoices": "No usage history",
     "noVoicesFound": "No voices found",
     "loadMoreVoices": "Load More Voices",
     "searchLanguages": "Search languages...",

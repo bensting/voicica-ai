@@ -6,6 +6,7 @@
  * 使用服务端缓存优化查询性能
  */
 import prisma from '@/lib/prisma';
+import { getCurrentUser } from '@/lib/auth-firebase';
 import type { Voice, VoiceListResponse, VoiceFilters } from '@/types/voice';
 
 // 从 Prisma Client 获取 voices 类型
@@ -297,4 +298,28 @@ export async function searchVoicesByTags(
  */
 export async function refreshVoiceCache(): Promise<void> {
   await loadVoicesIntoCache();
+}
+
+/**
+ * 获取当前用户已使用的语音名称列表
+ *
+ * 从 tts_records 表中查询用户使用过的不重复 voice_name
+ */
+export async function getUsedVoiceNames(): Promise<string[]> {
+  try {
+    const user = await getCurrentUser();
+    const userId = user.uid;
+
+    // 查询用户使用过的不重复 voice_name
+    const records = await prisma.tts_records.findMany({
+      where: { user_id: userId },
+      select: { voice_name: true },
+      distinct: ['voice_name'],
+    });
+
+    return records.map(r => r.voice_name);
+  } catch {
+    // 未登录或查询失败返回空数组
+    return [];
+  }
 }

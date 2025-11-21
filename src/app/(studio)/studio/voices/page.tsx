@@ -6,7 +6,6 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 import { useStudio } from '@/contexts/StudioContext';
 import LanguageSelectorModal from '@/components/common/LanguageSelectorModal';
-import VoiceTagSelector from '@/components/features/studio/voices/VoiceTagSelector';
 import VoiceSearchBar from '@/components/features/studio/voices/VoiceSearchBar';
 import VoiceFilters from '@/components/features/studio/voices/VoiceFilters';
 import VoiceList from '@/components/features/studio/voices/VoiceList';
@@ -44,10 +43,10 @@ export default function VoicesPage() {
     setSearchQuery,
     selectedLanguage,
     setSelectedLanguage,
-    selectedTagId,
-    setSelectedTagId,
     selectedGender,
     setSelectedGender,
+    usedOnly,
+    setUsedOnly,
     playingVoiceId,
     handlePlayVoice,
     loadMoreVoices,
@@ -154,53 +153,45 @@ export default function VoicesPage() {
         onSelect={handleLanguageSelect}
       />
 
-      {/* ========== 内容区域：左侧标签 + 右侧（上部筛选器 + 下部列表）========== */}
-      <div className="flex-1 flex overflow-hidden min-h-0">
-        {/* 左侧标签选择器 - 固定，自适应内容宽度 */}
-        <div className="flex-shrink-0 border-r border-gray-200">
-          <VoiceTagSelector
-            selectedTagId={selectedTagId}
-            onTagSelect={setSelectedTagId}
-          />
-        </div>
+      {/* ========== 内容区域：筛选器 + 列表 ========== */}
+      <div className="flex-1 flex flex-col overflow-hidden min-h-0">
+        {/* Filters */}
+        <VoiceFilters
+          selectedGender={selectedGender}
+          onGenderChange={setSelectedGender}
+          usedOnly={usedOnly}
+          onUsedOnlyChange={setUsedOnly}
+        />
 
-        {/* 右侧区域 - 占据剩余空间 */}
-        <div className="flex-1 flex flex-col overflow-hidden min-w-0">
-          {/* Filters */}
-          <VoiceFilters
-            selectedGender={selectedGender}
-            onGenderChange={setSelectedGender}
-          />
+        {/* Voice List with Infinite Scroll */}
+        <div className="flex-1 overflow-y-auto bg-gray-50" onScroll={handleScroll}>
+          <div className="p-4 pb-20 lg:p-6 lg:pb-6">
+            <VoiceList
+              voices={filteredVoices}
+              loading={loading}
+              error={error}
+              playingVoiceId={playingVoiceId}
+              locale={locale}
+              getVoiceName={getVoiceName}
+              onPlayVoice={handlePlayVoice}
+              onSelectVoice={handleSelectVoice}
+              onRetry={refreshVoices}
+              usedOnly={usedOnly}
+            />
 
-          {/* Voice List with Infinite Scroll */}
-          <div className="flex-1 overflow-y-auto bg-gray-50" onScroll={handleScroll}>
-            <div className="p-4 pb-20 lg:p-6 lg:pb-6">
-              <VoiceList
-                voices={filteredVoices}
-                loading={loading}
-                error={error}
-                playingVoiceId={playingVoiceId}
-                locale={locale}
-                getVoiceName={getVoiceName}
-                onPlayVoice={handlePlayVoice}
-                onSelectVoice={handleSelectVoice}
-                onRetry={refreshVoices}
-              />
+            {/* Loading more indicator */}
+            {loadingMore && (
+              <div className="flex justify-center py-4">
+                <div className="text-sm text-gray-500">Loading more voices...</div>
+              </div>
+            )}
 
-              {/* Loading more indicator */}
-              {loadingMore && (
-                <div className="flex justify-center py-4">
-                  <div className="text-sm text-gray-500">Loading more voices...</div>
-                </div>
-              )}
-
-              {/* End of list indicator */}
-              {!loading && !loadingMore && !hasMore && filteredVoices.length > 0 && (
-                <div className="flex justify-center py-4">
-                  <div className="text-xs text-gray-400">All voices loaded ({total} total)</div>
-                </div>
-              )}
-            </div>
+            {/* End of list indicator */}
+            {!loading && !loadingMore && !hasMore && filteredVoices.length > 0 && (
+              <div className="flex justify-center py-4">
+                <div className="text-xs text-gray-400">All voices loaded ({total} total)</div>
+              </div>
+            )}
           </div>
         </div>
       </div>

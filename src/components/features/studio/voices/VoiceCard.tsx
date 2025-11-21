@@ -1,7 +1,9 @@
+import { useState } from 'react';
 import Image from 'next/image';
 import { Play, Pause, ArrowRight, User, UserRound } from 'lucide-react';
 import * as FlagIcons from 'country-flag-icons/react/3x2';
 import type { Voice } from '@/types/voice';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface VoiceCardProps {
   voice: Voice;
@@ -21,6 +23,17 @@ export default function VoiceCard({
   onPlay,
   onSelect,
 }: VoiceCardProps) {
+  const { t } = useLanguage();
+  // Selected style state (local for now, functionality to be added later)
+  const [selectedStyle, setSelectedStyle] = useState<string | null>(null);
+
+  // Get style label with i18n
+  const getStyleLabel = (style: string) => {
+    const translated = t(`voiceStyles.${style}`);
+    // If translation not found, t() returns the key, so check and return original style
+    return translated === `voiceStyles.${style}` ? style : translated;
+  };
+
   // Get country code from locale
   const getCountryCode = (locale: string): string => {
     const countryMap: Record<string, string> = {
@@ -95,11 +108,32 @@ export default function VoiceCard({
 
       {/* Voice information */}
       <div className="flex-1 min-w-0">
-        <h3 className="text-sm font-semibold text-gray-900 truncate">{voiceName}</h3>
-        <div className="flex items-center gap-1.5 text-xs">
-          {getFlagIcon(voice.locale)}
-          {getGenderIcon(voice.gender)}
+        <div className="flex items-center gap-2 mb-1">
+          <h3 className="text-sm font-semibold text-gray-900 truncate">{voiceName}</h3>
+          <div className="flex items-center gap-1 text-xs">
+            {getFlagIcon(voice.locale)}
+            {getGenderIcon(voice.gender)}
+          </div>
         </div>
+
+        {/* Style list */}
+        {voice.style_list && voice.style_list.length > 0 && (
+          <div className="flex flex-wrap gap-1">
+            {voice.style_list.map((style) => (
+              <button
+                key={style}
+                onClick={() => setSelectedStyle(selectedStyle === style ? null : style)}
+                className={`px-2 py-0.5 text-xs rounded-full transition-colors ${
+                  selectedStyle === style
+                    ? 'bg-purple-100 text-purple-700 border border-purple-300'
+                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                }`}
+              >
+                {getStyleLabel(style)}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Select button */}

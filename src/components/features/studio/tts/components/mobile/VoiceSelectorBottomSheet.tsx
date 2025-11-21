@@ -8,7 +8,6 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 import { useVoices } from '@/components/features/studio/voices/hooks/useVoices';
 import VoiceSearchBar from '@/components/features/studio/voices/VoiceSearchBar';
-import VoiceTagSelector from '@/components/features/studio/voices/VoiceTagSelector';
 import VoiceFilters from '@/components/features/studio/voices/VoiceFilters';
 import VoiceList from '@/components/features/studio/voices/VoiceList';
 import LanguageSelectorModal from '@/components/common/LanguageSelectorModal';
@@ -47,10 +46,10 @@ export default function VoiceSelectorBottomSheet({
     setSearchQuery,
     selectedLanguage,
     setSelectedLanguage,
-    selectedTagId,
-    setSelectedTagId,
     selectedGender,
     setSelectedGender,
+    usedOnly,
+    setUsedOnly,
     playingVoiceId,
     handlePlayVoice,
     loadingMore,
@@ -171,56 +170,48 @@ export default function VoiceSelectorBottomSheet({
         </div>
 
         {/* Content Area */}
-        <div className="flex-1 flex overflow-hidden min-h-0">
-          {/* Left: Tag Selector */}
-          <div className="flex-shrink-0 border-r border-gray-200">
-            <VoiceTagSelector
-              selectedTagId={selectedTagId}
-              onTagSelect={setSelectedTagId}
+        <div className="flex-1 flex flex-col overflow-hidden min-h-0">
+          {/* Filters */}
+          <div className="flex-shrink-0">
+            <VoiceFilters
+              selectedGender={selectedGender}
+              onGenderChange={setSelectedGender}
+              usedOnly={usedOnly}
+              onUsedOnlyChange={setUsedOnly}
             />
           </div>
 
-          {/* Right: Filters + List */}
-          <div className="flex-1 flex flex-col overflow-hidden min-w-0">
-            {/* Filters */}
-            <div className="flex-shrink-0">
-              <VoiceFilters
-                selectedGender={selectedGender}
-                onGenderChange={setSelectedGender}
+          {/* Voice List */}
+          <div className="flex-1 overflow-y-auto bg-gray-50" onScroll={handleScroll}>
+            <div className="p-4 pb-6">
+              <VoiceList
+                voices={filteredVoices}
+                loading={loading}
+                error={error}
+                playingVoiceId={playingVoiceId}
+                locale={locale}
+                getVoiceName={getVoiceName}
+                onPlayVoice={handlePlayVoice}
+                onSelectVoice={handleSelectVoice}
+                onRetry={refreshVoices}
+                usedOnly={usedOnly}
               />
-            </div>
 
-            {/* Voice List */}
-            <div className="flex-1 overflow-y-auto bg-gray-50" onScroll={handleScroll}>
-              <div className="p-4 pb-6">
-                <VoiceList
-                  voices={filteredVoices}
-                  loading={loading}
-                  error={error}
-                  playingVoiceId={playingVoiceId}
-                  locale={locale}
-                  getVoiceName={getVoiceName}
-                  onPlayVoice={handlePlayVoice}
-                  onSelectVoice={handleSelectVoice}
-                  onRetry={refreshVoices}
-                />
+              {/* Loading more indicator */}
+              {loadingMore && (
+                <div className="flex justify-center py-4">
+                  <div className="text-sm text-gray-500">{t('common.loading')}</div>
+                </div>
+              )}
 
-                {/* Loading more indicator */}
-                {loadingMore && (
-                  <div className="flex justify-center py-4">
-                    <div className="text-sm text-gray-500">{t('common.loading')}</div>
+              {/* End of list */}
+              {!loading && !loadingMore && !hasMore && filteredVoices.length > 0 && (
+                <div className="flex justify-center py-4">
+                  <div className="text-xs text-gray-400">
+                    {t('voiceFilters.allVoicesLoaded').replace('{{total}}', String(total))}
                   </div>
-                )}
-
-                {/* End of list */}
-                {!loading && !loadingMore && !hasMore && filteredVoices.length > 0 && (
-                  <div className="flex justify-center py-4">
-                    <div className="text-xs text-gray-400">
-                      {t('voiceFilters.allVoicesLoaded').replace('{{total}}', String(total))}
-                    </div>
-                  </div>
-                )}
-              </div>
+                </div>
+              )}
             </div>
           </div>
         </div>

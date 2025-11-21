@@ -53,6 +53,8 @@ interface UseGenerationHistoryProps {
   accumulateData?: boolean; // For infinite scroll on mobile
   defaultStatus?: TaskStatus | TaskStatus[] | null; // 默认状态过滤
   onTaskCompleted?: () => void; // 任务完成时的回调（用于刷新积分）
+  // 国际化翻译函数
+  t?: (key: string) => string;
 }
 
 interface UseGenerationHistoryReturn {
@@ -101,6 +103,7 @@ export function useGenerationHistory({
   accumulateData = false,
   defaultStatus = TaskStatus.SUCCESS,
   onTaskCompleted,
+  t,
 }: UseGenerationHistoryProps): UseGenerationHistoryReturn {
   // Data state
   const [loading, setLoading] = useState(true);
@@ -474,8 +477,8 @@ export function useGenerationHistory({
   const handleDeleteGeneration = useCallback((id: string) => {
     setConfirmDialog({
       isOpen: true,
-      title: 'Delete Speech Generation',
-      message: 'Are you sure you want to delete this speech generation? This action cannot be undone and the audio file will be permanently removed.',
+      title: t ? t('studio.deleteDialog.title') : 'Delete Speech Generation',
+      message: t ? t('studio.deleteDialog.message') : 'Are you sure you want to delete this speech generation? This action cannot be undone and the audio file will be permanently removed.',
       onConfirm: async () => {
         setConfirmDialog(prev => ({ ...prev, isOpen: false }));
         try {
@@ -484,11 +487,11 @@ export function useGenerationHistory({
           await fetchRecords();
         } catch (err) {
           console.error(`❌ Error deleting record ${id}:`, err);
-          window.alert('Failed to delete record. Please try again.');
+          window.alert(t ? t('studio.deleteDialog.deleteFailedAlert') : 'Failed to delete record. Please try again.');
         }
       },
     });
-  }, [fetchRecords]);
+  }, [fetchRecords, t]);
 
   // Handle download generation
   const handleDownloadGeneration = useCallback(async (id: string) => {

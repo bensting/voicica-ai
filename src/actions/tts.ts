@@ -157,9 +157,9 @@ export async function createTtsTask(request: TtsRequest): Promise<TtsTaskStatus>
           text: request.text,
           voice_name: request.voice_name,
           language: request.language || null,
-          speed: request.speed || 1.0,
-          pitch: request.pitch || 1,
-          volume: request.volume || 1,
+          speed: request.speed ?? 1.0,      // 0.5 - 2.0，默认 1.0 倍速
+          pitch: request.pitch ?? 50,       // 1 - 100，默认 50（中间值）
+          volume: request.volume ?? 50,     // 1 - 100，默认 50（中间值）
           credits_cost: requiredCredits,
           is_anonymous: isAnonymous,
         },
@@ -178,9 +178,9 @@ export async function createTtsTask(request: TtsRequest): Promise<TtsTaskStatus>
         text: request.text,
         voice_name: request.voice_name,
         language: request.language || null,
-        speed: request.speed || 1.0,
-        pitch: request.pitch || 1,
-        volume: request.volume || 1,
+        speed: request.speed ?? 1.0,      // 0.5 - 2.0，默认 1.0 倍速
+        pitch: request.pitch ?? 50,       // 1 - 100，默认 50（中间值）
+        volume: request.volume ?? 50,     // 1 - 100，默认 50（中间值）
         credits_cost: requiredCredits,
         character_count: characterCount,
         status: 'PENDING',
@@ -200,9 +200,9 @@ export async function createTtsTask(request: TtsRequest): Promise<TtsTaskStatus>
         text: request.text,
         voiceName: request.voice_name,
         language: request.language || undefined,
-        speed: request.speed || 1.0,
-        pitch: request.pitch || 1,
-        volume: request.volume || 1,
+        speed: request.speed ?? 1.0,      // 0.5 - 2.0，默认 1.0 倍速
+        pitch: request.pitch ?? 50,       // 1 - 100，默认 50（中间值）
+        volume: request.volume ?? 50,     // 1 - 100，默认 50（中间值）
         creditsCost: requiredCredits,
         isAnonymous,
       },

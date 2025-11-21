@@ -10,13 +10,14 @@ export type ProductType = 'text_to_speech' | 'voice_cloning';
 
 interface UsePricingByTypeOptions {
   productType: ProductType;
+  includeFreePlan?: boolean; // 是否包含 Free 计划，默认 false（用于升级弹窗），true 用于 pricing 页面
 }
 
 /**
  * Custom hook for managing pricing plans data and state by product type
  * Supports both text_to_speech and voice_clone subscription types
  */
-export function usePricingByType({ productType }: UsePricingByTypeOptions) {
+export function usePricingByType({ productType, includeFreePlan = false }: UsePricingByTypeOptions) {
   const { locale, isReady } = useLanguage();
   const [cycle, setCycle] = useState<BillingCycle>('monthly');
   const [plans, setPlans] = useState<PricingPlan[]>([]);
@@ -60,17 +61,17 @@ export function usePricingByType({ productType }: UsePricingByTypeOptions) {
     fetchPlans();
   }, [locale, isReady, productType]);
 
-  // Return all plans sorted by sort_order, excluding Free plan
+  // Return all plans sorted by sort_order
   const currentPlans = useMemo(() => {
     if (!plans || plans.length === 0) return [];
 
     console.log('All plans:', plans);
 
-    // Filter out Free plan and sort by sort_order
+    // Filter out Free plan if not included, then sort by sort_order
     return [...plans]
-      .filter((plan) => plan.plan_name !== 'Free')
+      .filter((plan) => includeFreePlan || plan.plan_name !== 'Free')
       .sort((a, b) => a.sort_order - b.sort_order);
-  }, [plans]);
+  }, [plans, includeFreePlan]);
 
   const handleCycleChange = (newCycle: BillingCycle) => {
     setCycle(newCycle);

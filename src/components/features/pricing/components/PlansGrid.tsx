@@ -40,6 +40,9 @@ export default function PlansGrid({ plans, cycle, onCycleChange }: PlansGridProp
     return 'lg:grid-cols-4';
   };
 
+  // Debug: 打印计划数据，检查 is_popular 字段
+  console.log('Plans data:', plans.map(p => ({ name: p.plan_name, is_popular: p.is_popular })));
+
   return (
     <div className={`grid grid-cols-1 md:grid-cols-2 ${getGridCols()} gap-6 max-w-7xl mx-auto`}>
       {plans.map((plan, index) => (

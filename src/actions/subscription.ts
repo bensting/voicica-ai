@@ -7,145 +7,72 @@ import Stripe from 'stripe';
 import prisma from '@/lib/prisma';
 import { getCurrentUser } from '@/lib/auth-firebase';
 import type { SubscriptionPlan, UserSubscription, UserSubscriptionListResponse } from '@/types/subscription';
+import {
+  getPlans,
+  getPlanByProductId,
+  convertToLegacyFormat,
+  type Platform,
+  type ProductType,
+} from '@/config/subscription';
 
 // Initialize Stripe
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
 /**
  * 获取订阅计划列表
+ *
+ * 从配置文件读取，不再查询数据库
  */
 export async function getSubscriptionPlans(params?: {
   platform?: string;
   product_type?: string;
   active_only?: boolean;
 }): Promise<SubscriptionPlan[]> {
-  const { platform, product_type, active_only = true } = params || {};
+  const { platform = 'stripe', product_type = 'text_to_speech', active_only = true } = params || {};
 
-  const where: Record<string, unknown> = {};
+  // 从配置文件获取计划
+  const plans = getPlans(platform as Platform, product_type as ProductType, active_only);
 
-  if (active_only) {
-    where.active = true;
-  }
-
-  if (platform) {
-    where.platform = platform;
-  }
-
-  const plans = await prisma.subscription_plans.findMany({
-    where,
-    orderBy: { sort_order: 'asc' },
-  });
-
-  // 按 product_type 筛选
-  let filtered = plans;
-  if (product_type) {
-    filtered = plans.filter((p) => p.product_type === product_type);
-  }
-
-  return filtered.map((p) => ({
-    id: p.id,
-    platform: p.platform,
-    product_type: p.product_type,
-    product_id: p.product_id,
-    base_plan_id: p.base_plan_id,
-    plan_name: p.plan_name,
-    display_name: p.display_name as Record<string, string>,
-    features: p.features as Record<string, string[]>,
-    credits_per_cycle: p.credits_per_cycle,
-    cycle_days: p.cycle_days,
-    active: p.active,
-    sort_order: p.sort_order,
-    price: p.price as Record<string, number>,
-    discounted_price: p.discounted_price as Record<string, number>,
-    billing_period: p.billing_period,
-    enable_first_month_coupon: p.enable_first_month_coupon,
-    first_month_coupon_id: p.first_month_coupon_id,
-  }));
+  // 转换为兼容格式
+  return plans.map(convertToLegacyFormat);
 }
 
 /**
  * 根据产品 ID 获取订阅计划
+ *
+ * 从配置文件读取
  */
 export async function getPlansByProductId(
   productId: string,
-  activeOnly: boolean = true
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  _activeOnly: boolean = true
 ): Promise<SubscriptionPlan[]> {
-  const where: Record<string, unknown> = {
-    product_id: productId,
-  };
+  const plan = getPlanByProductId(productId);
 
-  if (activeOnly) {
-    where.active = true;
+  if (!plan) {
+    return [];
   }
 
-  const plans = await prisma.subscription_plans.findMany({
-    where,
-    orderBy: { sort_order: 'asc' },
-  });
-
-  return plans.map((p) => ({
-    id: p.id,
-    platform: p.platform,
-    product_type: p.product_type,
-    product_id: p.product_id,
-    base_plan_id: p.base_plan_id,
-    plan_name: p.plan_name,
-    display_name: p.display_name as Record<string, string>,
-    features: p.features as Record<string, string[]>,
-    credits_per_cycle: p.credits_per_cycle,
-    cycle_days: p.cycle_days,
-    active: p.active,
-    sort_order: p.sort_order,
-    price: p.price as Record<string, number>,
-    discounted_price: p.discounted_price as Record<string, number>,
-    billing_period: p.billing_period,
-    enable_first_month_coupon: p.enable_first_month_coupon,
-    first_month_coupon_id: p.first_month_coupon_id,
-  }));
+  return [convertToLegacyFormat(plan)];
 }
 
 /**
  * 获取单个订阅计划
+ *
+ * 从配置文件读取
  */
 export async function getSubscriptionPlan(
-  platform: string,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  _platform: string,
   productId: string,
-  basePlanId: string | null
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  _basePlanId: string | null
 ): Promise<SubscriptionPlan | null> {
-  const where: Record<string, unknown> = {
-    platform,
-    product_id: productId,
-  };
-
-  if (basePlanId && basePlanId !== 'null') {
-    where.base_plan_id = basePlanId;
-  } else {
-    where.base_plan_id = null;
-  }
-
-  const plan = await prisma.subscription_plans.findFirst({ where });
+  const plan = getPlanByProductId(productId);
 
   if (!plan) return null;
 
-  return {
-    id: plan.id,
-    platform: plan.platform,
-    product_type: plan.product_type,
-    product_id: plan.product_id,
-    base_plan_id: plan.base_plan_id,
-    plan_name: plan.plan_name,
-    display_name: plan.display_name as Record<string, string>,
-    features: plan.features as Record<string, string[]>,
-    credits_per_cycle: plan.credits_per_cycle,
-    cycle_days: plan.cycle_days,
-    active: plan.active,
-    sort_order: plan.sort_order,
-    price: plan.price as Record<string, number>,
-    discounted_price: plan.discounted_price as Record<string, number>,
-    billing_period: plan.billing_period,
-    enable_first_month_coupon: plan.enable_first_month_coupon,
-    first_month_coupon_id: plan.first_month_coupon_id,
-  };
+  return convertToLegacyFormat(plan);
 }
 
 /**

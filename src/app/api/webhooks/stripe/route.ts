@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import prisma from '@/lib/prisma';
+import { getPlanByProductId } from '@/config/subscription';
 
 // Initialize Stripe
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
@@ -66,15 +67,31 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session, eventId
     return;
   }
 
-  // 获取订阅计划
-  const plan = await prisma.subscription_plans.findFirst({
-    where: { product_id: productId, active: true },
-  });
+  // 从配置文件获取订阅计划信息
+  const configPlan = getPlanByProductId(productId);
 
-  if (!plan) {
-    console.error(`❌ 找不到订阅计划: ${productId}`);
+  if (!configPlan || !configPlan.active) {
+    console.error(`❌ 配置文件中找不到订阅计划: ${productId}`);
     return;
   }
+
+  // 从数据库获取 plan ID（用于外键关联）
+  // 注意：数据库中的 subscription_plans 表仍需保留，用于外键约束
+  const dbPlan = await prisma.subscription_plans.findFirst({
+    where: { product_id: productId, active: true },
+    select: { id: true },
+  });
+
+  if (!dbPlan) {
+    console.error(`❌ 数据库中找不到订阅计划: ${productId}，请确保数据库和配置文件同步`);
+    return;
+  }
+
+  // 合并使用配置文件的计划信息和数据库的 ID
+  const plan = {
+    ...configPlan,
+    id: dbPlan.id, // 使用数据库的整数 ID
+  };
 
   // 获取金额和货币（从 line items 或 session）
   const lineItem = session.line_items?.data?.[0];

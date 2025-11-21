@@ -69,8 +69,8 @@ export default function StudioTopNav({
               width={200}
               height={28}
               priority
-              className="h-7 w-auto"
-              style={{ width: 'auto' }}
+              className="h-7"
+              style={{ width: 'auto', height: 'auto', maxHeight: '28px' }}
             />
           </Link>
         </div>

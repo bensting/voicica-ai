@@ -11,6 +11,7 @@ interface VoiceCardProps {
   isPlaying: boolean;
   onPlay: (voice: Voice) => void;
   onSelect: (voice: Voice) => void;
+  priority?: boolean; // For LCP optimization - set true for above-the-fold images
 }
 
 /**
@@ -22,6 +23,7 @@ export default function VoiceCard({
   isPlaying,
   onPlay,
   onSelect,
+  priority = false,
 }: VoiceCardProps) {
   const { t } = useLanguage();
   // Selected style state (local for now, functionality to be added later)
@@ -86,6 +88,7 @@ export default function VoiceCard({
             width={48}
             height={48}
             className="w-12 h-12 rounded-full object-cover"
+            priority={priority}
           />
         ) : (
           <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-400 to-pink-400 flex items-center justify-center text-white text-sm font-bold">

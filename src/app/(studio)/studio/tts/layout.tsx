@@ -1,7 +1,6 @@
 'use client';
 
 import MobileBottomNav from '@/components/layout/studio/MobileBottomNav';
-import { CreditsProvider } from '@/contexts/CreditsContext';
 
 /**
  * TTS Layout
@@ -9,7 +8,8 @@ import { CreditsProvider } from '@/contexts/CreditsContext';
  * Provides desktop/mobile specific layouts for TTS pages:
  * - Desktop: Standard content layout
  * - Mobile: Content with bottom navigation bar and appropriate padding
- * - Credits: Provides credits data (refreshed after operations)
+ *
+ * Note: CreditsProvider is already in root layout, no need to duplicate here
  */
 export default function TTSLayout({
   children,
@@ -17,7 +17,7 @@ export default function TTSLayout({
   children: React.ReactNode;
 }) {
   return (
-    <CreditsProvider>
+    <>
       {/* ========== 桌面端布局 (lg+) ========== */}
       <div className="hidden lg:block">
         {children}
@@ -35,6 +35,6 @@ export default function TTSLayout({
         {/* Mobile Bottom Navigation */}
         <MobileBottomNav />
       </div>
-    </CreditsProvider>
+    </>
   );
 }

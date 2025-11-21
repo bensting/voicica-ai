@@ -50,7 +50,7 @@ export default function Home() {
     <div className="min-h-screen">
       {/* Hero Section */}
       <Hero
-        brandName="Voice-Labs"
+        brandName="AI-Voice-Labs"
         title={t('home.heroTitle')}
         highlight={t('home.heroTitleHighlight')}
         description={t('home.heroDescription')}

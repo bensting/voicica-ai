@@ -69,8 +69,8 @@ export default function AudioSettingsModal({ isOpen, onClose }: AudioSettingsMod
   ];
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/50">
-      <div className="w-full max-w-md bg-white rounded-t-3xl shadow-xl">
+    <div className="fixed inset-0 z-50 flex items-end bg-black/50" onClick={onClose}>
+      <div className="w-full bg-white rounded-t-3xl shadow-xl safe-area-bottom" onClick={(e) => e.stopPropagation()}>
         {/* Header with tabs */}
         <div className="flex items-center justify-between border-b border-gray-200 px-4 pt-4">
           <div className="flex space-x-2">

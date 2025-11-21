@@ -1,6 +1,7 @@
 'use client';
 
 import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import ConfirmDialog from '@/components/ui/ConfirmDialog';
 import PageLoading from '@/components/ui/PageLoading';
 import DesktopView from '@/components/features/studio/generation-history/DesktopView';
@@ -16,6 +17,7 @@ import { useGenerationHistory } from '@/components/features/studio/generation-hi
  */
 export default function GenerationHistoryPage() {
   const { user, loading: authLoading } = useFirebaseAuth();
+  const { t } = useLanguage();
 
   // Use custom hook for all business logic
   const {
@@ -41,7 +43,8 @@ export default function GenerationHistoryPage() {
   } = useGenerationHistory({
     user,
     authLoading,
-    accumulateData: true // Enable infinite scroll for both mobile and desktop
+    accumulateData: true, // Enable infinite scroll for both mobile and desktop
+    t, // 传入翻译函数
   });
 
   // Show loading while checking auth or initial data loading

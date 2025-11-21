@@ -285,6 +285,13 @@
       "VOICE_NOT_FOUND": "语音模型不存在：{{voiceName}}",
       "INTERNAL_ERROR": "服务器内部错误"
     },
+    "deleteDialog": {
+      "title": "删除语音生成",
+      "message": "确定要删除这个语音生成吗？此操作无法撤销，音频文件将被永久删除。",
+      "confirmButton": "删除",
+      "cancelButton": "取消",
+      "deleteFailedAlert": "删除失败，请重试。"
+    },
     "menu": {
       "home": "首页",
       "creationHub": "创作中心",

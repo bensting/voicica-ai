@@ -2,11 +2,12 @@
 
 /**
  * 语音管理 Server Actions
+ * 从 Azure TTS API 获取语音列表，同步到数据库
  */
 import { headers } from 'next/headers';
 import { auth as adminAuth } from '@/lib/firebase-admin';
 import prisma from '@/lib/prisma';
-import { mapLocaleToOption } from '@/utils/localeMapper';
+import { getLocaleInfo } from '@/utils/localeMapper';
 
 // 管理员白名单
 const ADMIN_EMAILS = ['admin@ai-voice-labs.com', 'bensting19@gmail.com'];
@@ -14,7 +15,7 @@ const ADMIN_EMAILS = ['admin@ai-voice-labs.com', 'bensting19@gmail.com'];
 interface LocaleStats {
   locale: string;
   localeName: string;
-  apiCount: number;
+  azureCount: number;
   dbCount: number;
   canSync: boolean;
 }
@@ -26,21 +27,22 @@ interface SyncResult {
   skipped?: number;
 }
 
-interface ApiVoice {
-  name: string;
-  provider: string;
-  locale: string;
-  country: string;
-  role: string;
-  gender: string;
-  avatar_url: string;
-  voice_sample_url: string;
-  voice_sample_text: string;
-  tags: string[];
-  style_list: string[];
-  is_active: boolean;
-  sort_order: number;
-  display_name?: string;
+/**
+ * Azure TTS 返回的语音信息
+ */
+interface AzureVoice {
+  Name: string;
+  DisplayName: string;
+  LocalName: string;
+  ShortName: string;
+  Gender: string;
+  Locale: string;
+  LocaleName: string;
+  StyleList?: string[];
+  SampleRateHertz: string;
+  VoiceType: string;
+  Status: string;
+  WordsPerMinute?: string;
 }
 
 /**
@@ -69,25 +71,46 @@ async function verifyAdminWithoutDb(): Promise<void> {
 }
 
 /**
- * 从后端 API 获取所有语音
+ * 从 Azure TTS API 获取所有语音列表
+ * https://learn.microsoft.com/en-us/azure/ai-services/speech-service/rest-text-to-speech?tabs=streaming#get-a-list-of-voices
  */
-async function fetchVoicesFromApi(): Promise<ApiVoice[]> {
-  const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000';
-  const response = await fetch(`${apiUrl}/api/v1/voices`, {
+async function fetchVoicesFromAzure(): Promise<AzureVoice[]> {
+  const apiKey = process.env.MICROSOFT_TTS_API_KEY;
+  const region = process.env.MICROSOFT_TTS_REGION || 'southeastasia';
+
+  if (!apiKey) {
+    throw new Error('未配置 MICROSOFT_TTS_API_KEY');
+  }
+
+  const url = `https://${region}.tts.speech.microsoft.com/cognitiveservices/voices/list`;
+
+  const response = await fetch(url, {
+    method: 'GET',
+    headers: {
+      'Ocp-Apim-Subscription-Key': apiKey,
+    },
     cache: 'no-store',
   });
 
   if (!response.ok) {
-    throw new Error(`API 请求失败: ${response.status}`);
+    throw new Error(`Azure API 请求失败: ${response.status}`);
   }
 
-  const voices = await response.json();
+  const voices: AzureVoice[] = await response.json();
 
   if (!Array.isArray(voices)) {
-    throw new Error('API 返回数据格式错误');
+    throw new Error('Azure API 返回数据格式错误');
   }
 
   return voices;
+}
+
+/**
+ * 从 locale 中提取国家代码（如 en-US -> US）
+ */
+function getCountryFromLocale(locale: string): string {
+  const parts = locale.split('-');
+  return parts.length > 1 ? parts[parts.length - 1].toUpperCase() : '';
 }
 
 /**
@@ -97,13 +120,13 @@ export async function getVoiceStatsByLocale(): Promise<LocaleStats[]> {
   await verifyAdminWithoutDb();
 
   try {
-    // 从 API 获取所有语音
-    const apiVoices = await fetchVoicesFromApi();
+    // 从 Azure API 获取所有语音
+    const azureVoices = await fetchVoicesFromAzure();
 
-    // 按 locale 分组统计 API 数量
-    const apiCountByLocale: Record<string, number> = {};
-    for (const voice of apiVoices) {
-      apiCountByLocale[voice.locale] = (apiCountByLocale[voice.locale] || 0) + 1;
+    // 按 locale 分组统计 Azure 数量
+    const azureCountByLocale: Record<string, number> = {};
+    for (const voice of azureVoices) {
+      azureCountByLocale[voice.Locale] = (azureCountByLocale[voice.Locale] || 0) + 1;
     }
 
     // 从数据库统计每个 locale 的数量
@@ -119,23 +142,23 @@ export async function getVoiceStatsByLocale(): Promise<LocaleStats[]> {
 
     // 合并所有 locale
     const allLocales = new Set([
-      ...Object.keys(apiCountByLocale),
+      ...Object.keys(azureCountByLocale),
       ...Object.keys(dbCountByLocale),
     ]);
 
     // 构建结果
     const result: LocaleStats[] = [];
     for (const locale of allLocales) {
-      const apiCount = apiCountByLocale[locale] || 0;
+      const azureCount = azureCountByLocale[locale] || 0;
       const dbCount = dbCountByLocale[locale] || 0;
-      const localeOption = mapLocaleToOption(locale);
+      const localeOption = getLocaleInfo(locale);
 
       result.push({
         locale,
         localeName: localeOption?.name || locale,
-        apiCount,
+        azureCount,
         dbCount,
-        canSync: apiCount > dbCount,
+        canSync: azureCount > dbCount,
       });
     }
 
@@ -155,8 +178,8 @@ export async function getVoiceStatsByLocale(): Promise<LocaleStats[]> {
 export async function getVoiceLocales(): Promise<string[]> {
   await verifyAdminWithoutDb();
 
-  const apiVoices = await fetchVoicesFromApi();
-  const locales = new Set(apiVoices.map((v) => v.locale));
+  const azureVoices = await fetchVoicesFromAzure();
+  const locales = new Set(azureVoices.map((v) => v.Locale));
   return Array.from(locales).sort();
 }
 
@@ -169,9 +192,9 @@ export async function syncVoicesByLocale(locale: string): Promise<SyncResult> {
   try {
     console.log(`🔄 开始同步 locale: ${locale}`);
 
-    // 从 API 获取该 locale 的语音
-    const apiVoices = await fetchVoicesFromApi();
-    const localeVoices = apiVoices.filter((v) => v.locale === locale);
+    // 从 Azure API 获取该 locale 的语音
+    const azureVoices = await fetchVoicesFromAzure();
+    const localeVoices = azureVoices.filter((v) => v.Locale === locale);
 
     if (localeVoices.length === 0) {
       return {
@@ -182,7 +205,7 @@ export async function syncVoicesByLocale(locale: string): Promise<SyncResult> {
       };
     }
 
-    // 获取数据库中已存在的语音名称
+    // 获取数据库中已存在的语音名称（使用 ShortName 作为唯一标识）
     const existingVoices = await prisma.voices.findMany({
       where: { locale },
       select: { name: true },
@@ -194,27 +217,28 @@ export async function syncVoicesByLocale(locale: string): Promise<SyncResult> {
     let skipped = 0;
 
     for (const voice of localeVoices) {
-      if (existingNames.has(voice.name)) {
+      // 使用 ShortName 作为数据库中的 name（如 en-US-JennyNeural）
+      if (existingNames.has(voice.ShortName)) {
         skipped++;
         continue;
       }
 
       await prisma.voices.create({
         data: {
-          name: voice.name,
-          provider: voice.provider,
-          locale: voice.locale,
-          country: voice.country,
-          role: voice.role,
-          gender: voice.gender,
-          avatar_url: voice.avatar_url,
-          voice_sample_url: voice.voice_sample_url,
-          voice_sample_text: voice.voice_sample_text,
-          tags: voice.tags || [],
-          style_list: voice.style_list || [],
-          is_active: voice.is_active ?? true,
-          sort_order: voice.sort_order ?? 0,
-          display_name: voice.display_name,
+          name: voice.ShortName,
+          provider: 'microsoft',
+          locale: voice.Locale,
+          country: getCountryFromLocale(voice.Locale),
+          role: voice.VoiceType || 'Neural',
+          gender: voice.Gender,
+          avatar_url: '', // Azure 不提供头像
+          voice_sample_url: '', // 需要单独生成
+          voice_sample_text: '',
+          tags: [],
+          style_list: voice.StyleList || [],
+          is_active: voice.Status === 'GA', // GA = Generally Available
+          sort_order: 0,
+          display_name: voice.DisplayName,
         },
       });
       inserted++;

@@ -2,6 +2,7 @@
   "common": {
     "brand": "AI Voice Labs",
     "cancel": "ยกเลิก",
+    "close": "ปิด",
     "retry": "ลองใหม่",
     "loading": "กำลังโหลด..."
   },
@@ -25,6 +26,8 @@
     "generationHistory": "ประวัติการสร้าง"
   },
   "pricing": {
+    "pageTitle": "แผนและราคาของ AI-Voice-Labs",
+    "pageSubtitle": "AI-Voice-Labs มีแผนการซื้อหลากหลายเพื่อตอบสนองความต้องการของคุณได้ดียิ่งขึ้น",
     "loading": "กำลังโหลดแผนราคา...",
     "error": "โหลดแผนราคาไม่สำเร็จ กรุณาลองใหม่อีกครั้ง",
     "retry": "ลองอีกครั้ง",
@@ -36,7 +39,11 @@
     "renewalAt": "ต่ออายุที่",
     "freeForEveryone": "ฟรีสำหรับทุกคน",
     "mostPopular": "ยอดนิยมสูงสุด",
-    "autoRenew": "ต่ออายุอัตโนมัติ ยกเลิกได้ทุกเมื่อ"
+    "autoRenew": "ต่ออายุอัตโนมัติ ยกเลิกได้ทุกเมื่อ",
+    "loginRequired": "ต้องเข้าสู่ระบบ",
+    "loginRequiredDesc": "กรุณาเข้าสู่ระบบเพื่อซื้อแผนสมาชิก",
+    "cancel": "ยกเลิก",
+    "signIn": "เข้าสู่ระบบ"
   },
   "upgrade": {
     "header": {
@@ -111,6 +118,8 @@
     "clearAll": "ล้างทั้งหมด",
     "noGenerations": "ยังไม่มีการสร้าง",
     "noGenerationsDescription": "การสร้างเสียงของคุณจะปรากฏที่นี่เมื่อคุณเริ่มสร้าง",
+    "allRecordsLoaded": "โหลดข้อมูลทั้งหมดแล้ว",
+    "total": "ทั้งหมด",
     "filters": {
       "status": "สถานะ",
       "dateRange": "วันที่",
@@ -169,6 +178,16 @@
     "credits": "เครดิต",
     "selectVoice": "เลือกเสียง",
     "generating": "กำลังสร้าง...",
+    "welcomeTitle": "ยินดีต้อนรับสู่สตูดิโอ",
+    "welcomeSubtitle": "เลือกเครื่องมือเพื่อเริ่มสร้างสรรค์เนื้อหาที่น่าทึ่ง",
+    "ttsDescription": "แปลงข้อความเป็นเสียงพูดที่เป็นธรรมชาติด้วยเสียง AI ขั้นสูง",
+    "moreToolsComing": "เครื่องมือเพิ่มเติมเร็วๆ นี้",
+    "generationComplete": "สร้างเสร็จสมบูรณ์",
+    "generationFailed": "การสร้างล้มเหลว",
+    "processingMessage": "กำลังสร้างเสียงของคุณ กรุณารอสักครู่...",
+    "successMessage": "สร้างเสียงสำเร็จ!",
+    "generatingTip": "อาจใช้เวลาสักครู่ คุณสามารถปิดหน้านี้และตรวจสอบในประวัติการสร้างภายหลัง",
+    "successTip": "เสียงของคุณพร้อมแล้ว! คุณสามารถดาวน์โหลดหรือเล่นได้เลย",
     "taskProgress": "ความคืบหน้า",
     "recentAuditions": "การสร้างล่าสุด",
     "allRecords": "บันทึกทั้งหมด",
@@ -181,7 +200,17 @@
       "taskNoId": "ส่งงานไม่สำเร็จ ไม่มี ID งาน",
       "queryTaskFailed": "ตรวจสอบสถานะไม่สำเร็จ กรุณารีเฟรช",
       "generationFailed": "สร้างไม่สำเร็จ กรุณาลองใหม่",
-      "unknownTaskStatus": "สถานะไม่ชัดเจน กรุณาลองใหม่"
+      "unknownTaskStatus": "สถานะไม่ชัดเจน กรุณาลองใหม่",
+      "INSUFFICIENT_CREDITS": "เครดิตไม่เพียงพอ ต้องการ: {{required}}, ปัจจุบัน: {{current}}",
+      "UNAUTHORIZED": "ไม่ได้รับอนุญาต กรุณาเข้าสู่ระบบ",
+      "NO_AUTH_INFO": "ไม่มีข้อมูลการยืนยันตัวตน",
+      "TASK_NOT_FOUND": "ไม่พบงาน: {{taskId}}",
+      "TASK_CREATION_FAILED": "สร้างงานไม่สำเร็จ",
+      "VALIDATION_ERROR": "ข้อผิดพลาดการตรวจสอบ: {{field}}",
+      "TEXT_TOO_LONG": "ข้อความยาวเกินไป ความยาวสูงสุด: {{maxLength}}, ปัจจุบัน: {{currentLength}}",
+      "RESOURCE_NOT_FOUND": "ไม่พบ {{resource}}: {{id}}",
+      "VOICE_NOT_FOUND": "ไม่พบโมเดลเสียง: {{voiceName}}",
+      "INTERNAL_ERROR": "ข้อผิดพลาดภายในเซิร์ฟเวอร์"
     },
     "deleteDialog": {
       "title": "ลบการสร้างเสียง",
@@ -201,15 +230,43 @@
       "speechToSpeech": "เสียงเป็นเสียง",
       "voiceCloning": "โคลนเสียง",
       "voiceoverStudio": "สตูดิโอพากย์เสียง",
+      "aiSong": "เพลง AI",
+      "aiMusicMovie": "AI เพลงหนัง",
+      "musicHistory": "ประวัติเพลง",
       "aiMusic": "เพลง AI",
       "aiCover": "คัฟเวอร์ AI",
-      "musicTools": "เครื่องมือเพลง"
+      "musicTools": "เครื่องมือเพลง",
+      "account": "บัญชี"
     },
     "mobileNav": {
       "tts": "TTS",
       "voices": "เสียง",
       "clone": "โคลน",
       "history": "ประวัติ"
+    },
+    "audioSettings": {
+      "title": "ตั้งค่าเสียง",
+      "speed": {
+        "title": "ความเร็วการพูด",
+        "description": "ปรับความเร็วในการพูด",
+        "current": "ความเร็วปัจจุบัน"
+      },
+      "volume": {
+        "title": "ระดับเสียง",
+        "description": "ตั้งค่าระดับเสียง",
+        "current": "ระดับเสียงปัจจุบัน"
+      },
+      "pitch": {
+        "title": "ระดับเสียงสูง-ต่ำ",
+        "description": "ปรับระดับเสียงโดยรวม",
+        "current": "ระดับปัจจุบัน",
+        "deep": "ทุ้ม",
+        "dull": "เรียบ",
+        "consistent": "สม่ำเสมอ",
+        "bright": "สดใส",
+        "crisp": "คมชัด"
+      },
+      "save": "บันทึก"
     }
   },
   "voiceFilters": {
@@ -229,7 +286,8 @@
     "noUsedVoices": "ไม่มีประวัติการใช้งาน",
     "noVoicesFound": "ไม่พบเสียง",
     "loadMoreVoices": "โหลดเพิ่ม",
-    "searchLanguages": "ค้นหาภาษา..."
+    "searchLanguages": "ค้นหาภาษา...",
+    "allVoicesLoaded": "โหลดเสียงทั้งหมดแล้ว ({{total}} รายการ)"
   },
   "voices": {
     "tags": {
@@ -380,6 +438,12 @@
     "titlePrefix": "Voice-Labs.AI",
     "titleHighlight": "ผลิตภัณฑ์ยอดนิยม",
     "titleSuffix": "ที่คุณไม่ควรพลาด 👍"
+  },
+  "pwa": {
+    "updateAvailable": "มีเวอร์ชันใหม่",
+    "updateDescription": "มีเวอร์ชันใหม่ของแอปพลิเคชัน คลิกอัปเดตเพื่อรับฟีเจอร์และการปรับปรุงล่าสุด",
+    "update": "อัปเดตเลย",
+    "later": "ภายหลัง"
   },
   "countries": {
     "CN": "จีน",

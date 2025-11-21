@@ -111,6 +111,94 @@ const SAMPLE_TEXTS: Record<string, string> = {
   // 匈牙利语
   'hu-HU': 'Egy szép napos reggelen a kiscica nyújtózkodott és boldogan mondta: „Micsoda csodálatos nap vár ránk!"',
 
+  // 南亚语言
+  // 孟加拉语（孟加拉国）
+  'bn-BD': 'এক সুন্দর রোদেলা সকালে, ছোট্ট বিড়ালছানা শরীর টানটান করে আনন্দে বলল: "আজকের দিনটা কী চমৎকার হবে!"',
+  // 孟加拉语（印度）
+  'bn-IN': 'এক সুন্দর রোদেলা সকালে, ছোট্ট বিড়ালছানা শরীর টানটান করে আনন্দে বলল: "আজকের দিনটা কী চমৎকার হবে!"',
+  // 古吉拉特语
+  'gu-IN': 'એક સુંદર તડકાવાળી સવારે, નાનું બિલાડીનું બચ્ચું ખેંચાઈને ખુશીથી બોલ્યું: "આજનો દિવસ કેટલો અદ્ભુત હશે!"',
+  // 卡纳达语
+  'kn-IN': 'ಒಂದು ಸುಂದರ ಬಿಸಿಲಿನ ಬೆಳಿಗ್ಗೆ, ಪುಟ್ಟ ಬೆಕ್ಕಿನ ಮರಿ ಮೈ ಮುರಿದು ಸಂತೋಷದಿಂದ ಹೇಳಿತು: "ಇಂದು ಎಂತಹ ಅದ್ಭುತ ದಿನ!"',
+  // 马拉地语
+  'mr-IN': 'एका सुंदर सूर्यप्रकाशित सकाळी, लहान मांजराचे पिल्लू अंग ताणून आनंदाने म्हणाले: "आजचा दिवस किती छान असेल!"',
+  // 泰米尔语
+  'ta-IN': 'ஒரு அழகான வெயில் நிறைந்த காலையில், சிறிய பூனைக்குட்டி உடலை நீட்டி மகிழ்ச்சியுடன் சொன்னது: "இன்று என்ன அற்புதமான நாள்!"',
+  // 泰卢固语
+  'te-IN': 'ఒక అందమైన ఎండ ఉదయం, చిన్న పిల్లి పిల్ల ఒళ్ళు విరుచుకుని సంతోషంగా చెప్పింది: "ఈ రోజు ఎంత అద్భుతంగా ఉంటుంది!"',
+  // 阿萨姆语
+  'as-IN': 'এটা ধুনীয়া ৰ\'দঘাই পুৱাত, সৰু মেকুৰী পোৱালীটোৱে গা টানি আনন্দেৰে ক\'লে: "আজিৰ দিনটো কিমান সুন্দৰ হ\'ব!"',
+  // 旁遮普语
+  'pa-IN': 'ਇੱਕ ਸੁੰਦਰ ਧੁੱਪ ਵਾਲੀ ਸਵੇਰ, ਛੋਟੀ ਬਿੱਲੀ ਦੇ ਬੱਚੇ ਨੇ ਅੰਗੜਾਈ ਲੈ ਕੇ ਖੁਸ਼ੀ ਨਾਲ ਕਿਹਾ: "ਅੱਜ ਦਾ ਦਿਨ ਕਿੰਨਾ ਸ਼ਾਨਦਾਰ ਹੋਵੇਗਾ!"',
+
+  // 中亚/西亚语言
+  // 阿塞拜疆语
+  'az-AZ': 'Gözəl günəşli bir səhər, balaca pişik gərnəşib sevinclə dedi: "Bu gün necə də gözəl bir gün olacaq!"',
+  // 波斯语
+  'fa-IR': 'در یک صبح آفتابی زیبا، بچه گربه کش و قوسی رفت و با خوشحالی گفت: «امروز چه روز فوق‌العاده‌ای خواهد بود!»',
+  // 哈萨克语
+  'kk-KZ': 'Бір әдемі шуақты таңда, кішкентай мысық баласы керіліп, қуана айтты: «Бүгін қандай керемет күн болады!»',
+
+  // 东欧语言
+  // 保加利亚语
+  'bg-BG': 'В една прекрасна слънчева сутрин, малкото котенце се протегна и каза радостно: „Какъв чудесен ден ни очаква!"',
+  // 波斯尼亚语
+  'bs-BA': 'Jednog lijepog sunčanog jutra, mače se protegnulo i radosno reklo: „Kakav divan dan nas čeka!"',
+  // 克罗地亚语
+  'hr-HR': 'Jednog lijepog sunčanog jutra, mače se protegnulo i radosno reklo: „Kakav divan dan nas čeka!"',
+  // 拉脱维亚语
+  'lv-LV': 'Kādā skaistā saulainā rītā kaķēns izstiepās un priecīgi teica: „Kāda brīnišķīga diena mūs gaida!"',
+  // 斯洛文尼亚语
+  'sl-SI': 'Nekega lepega sončnega jutra se je mucek pretegnil in veselo rekel: „Kakšen čudovit dan nas čaka!"',
+  // 斯洛伐克语
+  'sk-SK': 'Jedného krásneho slnečného rána sa mačiatko pretiahlo a radostne povedalo: „Aký nádherný deň nás čaká!"',
+  // 立陶宛语
+  'lt-LT': 'Vieną gražų saulėtą rytą kačiukas pasitempė ir linksmai pasakė: „Koks nuostabus diena mūsų laukia!"',
+
+  // 西欧/其他语言
+  // 加泰罗尼亚语
+  'ca-ES': 'Un bell matí assolellat, el gatet es va estirar i va dir amb alegria: «Quin dia tan meravellós ens espera!»',
+  // 威尔士语
+  'cy-GB': 'Un bore heulog hyfryd, ymestynnodd y gath fach a dweud yn llawen: "Am ddiwrnod gwych sydd o\'n blaenau!"',
+  // 巴斯克语
+  'eu-ES': 'Goiz eguzkitsu eder batean, katu txikiak gorputza luzatu eta pozik esan zuen: "Zer egun zoragarria izango den!"',
+  // 爱尔兰语
+  'ga-IE': 'Maidin bhreá ghréine, shín an puisín beag é féin agus dúirt go sona: "A leithéid de lá iontach atá romhainn!"',
+  // 加利西亚语
+  'gl-ES': 'Unha fermosa mañá soleada, o gatiño estirouse e dixo con alegría: «Que día tan marabilloso nos espera!»',
+  // 冰岛语
+  'is-IS': 'Einn fallegan sólríkan morgun teygði kettlingurinn úr sér og sagði glaður: „Hvílíkur dásamlegur dagur bíður okkar!"',
+  // 马耳他语
+  'mt-MT': 'F\'għodwa sabiħa u xemxija, il-qattus żgħir tmedd u qal bil-ferħ: "X\'jum sabiħ qed jistenniena!"',
+  // 爱沙尼亚语
+  'et-EE': 'Ühel ilusal päikeselisel hommikul sirutas kassipoeg end ja ütles rõõmsalt: „Milline imeline päev meid ees ootab!"',
+
+  // 东南亚/非洲语言
+  // 菲律宾语
+  'fil-PH': 'Isang magandang maaraw na umaga, nag-unat ang munting kuting at masayang nagsabi: "Ang ganda ng araw na ito!"',
+  // 斯瓦希里语
+  'sw-KE': 'Asubuhi moja nzuri yenye jua, paka mdogo alijikunja na kusema kwa furaha: "Leo itakuwa siku nzuri sana!"',
+  // 斯瓦希里语（坦桑尼亚）
+  'sw-TZ': 'Asubuhi moja nzuri yenye jua, paka mdogo alijikunja na kusema kwa furaha: "Leo itakuwa siku nzuri sana!"',
+
+  // 其他语言
+  // 因纽特语（加拿大）
+  'iu-Cans-CA': 'ᐅᓪᓛᒃᑯᑦ ᓯᕿᓂᖅᑕᓕᒃ, ᐱᓯᑦᑎᐊᖅ ᑎᓂᓪᓚᕆᐊᓘᓚᐅᖅᑐᖅ.',
+  // 蒙古语
+  'mn-MN': 'Нэгэн үзэсгэлэнт нартай өглөө, бяцхан муур сунжирч, баяртайгаар хэлэв: "Өнөөдөр ямар гайхалтай өдөр болох вэ!"',
+  // 尼泊尔语
+  'ne-NP': 'एक सुन्दर घाम लागेको बिहानी, सानो बिरालोको बच्चाले अंगालो मार्दै खुशीले भन्यो: "आजको दिन कति राम्रो हुनेछ!"',
+  // 僧伽罗语
+  'si-LK': 'එක ලස්සන අව්ව සහිත උදෑසනක, පොඩි පූසා ඇඟ ඇදගෙන සතුටින් කිව්වා: "අද කොතරම් අපූරු දවසක් වේවි!"',
+  // 乌尔都语
+  'ur-PK': 'ایک خوبصورت دھوپ والی صبح، چھوٹی بلی کے بچے نے انگڑائی لی اور خوشی سے کہا: "آج کا دن کتنا شاندار ہوگا!"',
+  // 阿姆哈拉语
+  'am-ET': 'በአንድ ውብ ፀሐያማ ጠዋት፣ ትንሿ ድመት ተዘርግታ በደስታ ተናገረች፡ "ዛሬ እንዴት ድንቅ ቀን ይሆናል!"',
+  // 阿非利卡语
+  'af-ZA': 'Op \'n pragtige sonnige oggend het die katjie gerek en bly gesê: "Wat \'n wonderlike dag wag vir ons!"',
+  // 祖鲁语
+  'zu-ZA': 'Ngolunye usuku oluhle olushisayo ekuseni, ikati elincane lazilula lathi ngenjabulo: "Yeka usuku oluhle olusemkantini!"',
+
   // 默认（英语）
   'default': 'Once upon a time, on a beautiful sunny morning, a little kitten stretched and said happily: "What a wonderful day awaits us!"',
 };
@@ -556,6 +644,7 @@ export async function regenerateAllAvatars(): Promise<SyncResult> {
  * 当精确 locale 没有配置时，使用同语系的默认文本
  */
 const LANG_FALLBACKS: Record<string, string> = {
+  // 主要语言
   'zh': 'zh-CN',
   'en': 'en-US',
   'es': 'es-ES',
@@ -585,6 +674,47 @@ const LANG_FALLBACKS: Record<string, string> = {
   'uk': 'uk-UA',
   'ro': 'ro-RO',
   'hu': 'hu-HU',
+  // 南亚语言
+  'bn': 'bn-BD',
+  'gu': 'gu-IN',
+  'kn': 'kn-IN',
+  'mr': 'mr-IN',
+  'ta': 'ta-IN',
+  'te': 'te-IN',
+  'as': 'as-IN',
+  'pa': 'pa-IN',
+  'ne': 'ne-NP',
+  'si': 'si-LK',
+  'ur': 'ur-PK',
+  // 中亚/西亚语言
+  'az': 'az-AZ',
+  'fa': 'fa-IR',
+  'kk': 'kk-KZ',
+  // 东欧语言
+  'bg': 'bg-BG',
+  'bs': 'bs-BA',
+  'hr': 'hr-HR',
+  'lv': 'lv-LV',
+  'sl': 'sl-SI',
+  'sk': 'sk-SK',
+  'lt': 'lt-LT',
+  // 西欧/其他语言
+  'ca': 'ca-ES',
+  'cy': 'cy-GB',
+  'eu': 'eu-ES',
+  'ga': 'ga-IE',
+  'gl': 'gl-ES',
+  'is': 'is-IS',
+  'mt': 'mt-MT',
+  'et': 'et-EE',
+  // 东南亚/非洲语言
+  'fil': 'fil-PH',
+  'sw': 'sw-KE',
+  'af': 'af-ZA',
+  'zu': 'zu-ZA',
+  'am': 'am-ET',
+  // 其他语言
+  'mn': 'mn-MN',
 };
 
 /**

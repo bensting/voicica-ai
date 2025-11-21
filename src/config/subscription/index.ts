@@ -4,17 +4,25 @@
  * 根据环境变量自动选择开发或生产配置
  */
 
-import { subscriptionPlans as devPlans } from './plans.development';
-import { subscriptionPlans as prodPlans } from './plans.production';
-import type { SubscriptionPlanConfig, SubscriptionPlansConfig, Platform, ProductType } from './types';
+import { subscriptionPlans as devPlans, productTypeTabs as devTabs } from './plans.development';
+import { subscriptionPlans as prodPlans, productTypeTabs as prodTabs } from './plans.production';
+import type { SubscriptionPlanConfig, SubscriptionPlansConfig, Platform, ProductType, ProductTypeTabConfig, ProductTypeTabsConfig } from './types';
 
 // 根据环境选择配置
 const isProduction = process.env.NODE_ENV === 'production';
 export const subscriptionPlans: SubscriptionPlansConfig = isProduction ? prodPlans : devPlans;
+export const productTypeTabs: ProductTypeTabsConfig = isProduction ? prodTabs : devTabs;
 
 // 导出类型
-export type { SubscriptionPlanConfig, SubscriptionPlansConfig, Platform, ProductType };
+export type { SubscriptionPlanConfig, SubscriptionPlansConfig, Platform, ProductType, ProductTypeTabConfig, ProductTypeTabsConfig };
 export type { PlanName, BillingPeriod } from './types';
+
+/**
+ * 获取启用的产品类型 Tab 列表
+ */
+export function getEnabledProductTypeTabs(): ProductTypeTabConfig[] {
+  return productTypeTabs.filter(tab => tab.enabled);
+}
 
 /**
  * 获取指定平台和产品类型的订阅计划列表

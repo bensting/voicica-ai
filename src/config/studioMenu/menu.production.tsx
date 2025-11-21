@@ -1,17 +1,10 @@
 /**
- * Studio 侧边栏菜单配置
+ * Studio 侧边栏菜单配置 - 生产环境
  *
- * 定义 Studio 页面所有功能模块的菜单项
+ * 生产环境只显示已上线的功能
  */
 
-export interface StudioMenuItemConfig {
-  id: string;
-  labelKey: string; // i18n 翻译键
-  href: string;
-  icon: React.ReactNode;
-  category?: string; // 菜单分类
-  enabled?: boolean; // 是否启用，默认为 true
-}
+import type { StudioMenuItemConfig } from './types';
 
 export const studioMenuItems: StudioMenuItemConfig[] = [
   // 主要功能
@@ -26,7 +19,7 @@ export const studioMenuItems: StudioMenuItemConfig[] = [
     ),
   },
 
-  // Voiceover AI
+  // Voiceover AI - 生产环境只启用 TTS
   {
     id: 'text-to-speech',
     labelKey: 'studio.menu.textToSpeech',
@@ -44,7 +37,7 @@ export const studioMenuItems: StudioMenuItemConfig[] = [
     labelKey: 'studio.menu.voiceCloning',
     href: '/studio/clone',
     category: 'voiceover',
-    enabled: true,
+    enabled: false, // 生产环境暂未上线
     icon: (
       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
@@ -64,13 +57,13 @@ export const studioMenuItems: StudioMenuItemConfig[] = [
     ),
   },
 
-  // Music AI
+  // Music AI - 生产环境暂未上线
   {
     id: 'ai-song',
     labelKey: 'studio.menu.aiSong',
     href: '/studio/ai-song',
     category: 'music',
-    enabled: true,
+    enabled: false,
     icon: (
       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
@@ -82,7 +75,7 @@ export const studioMenuItems: StudioMenuItemConfig[] = [
     labelKey: 'studio.menu.aiMusicMovie',
     href: '/studio/ai-music-movie',
     category: 'music',
-    enabled: true,
+    enabled: false,
     icon: (
       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 4v16M17 4v16M3 8h4m10 0h4M3 12h18M3 16h4m10 0h4M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z" />
@@ -94,19 +87,37 @@ export const studioMenuItems: StudioMenuItemConfig[] = [
     labelKey: 'studio.menu.musicHistory',
     href: '/studio/music-history',
     category: 'music',
-    enabled: true,
+    enabled: false,
     icon: (
       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
       </svg>
     ),
   },
-];
 
-// 按分类组织的菜单项（只包含启用的项）
-export const studioMenuCategories = {
-  main: studioMenuItems.filter(item => !item.category && (item.enabled !== false)),
-  video: studioMenuItems.filter(item => item.category === 'video' && (item.enabled !== false)),
-  voiceover: studioMenuItems.filter(item => item.category === 'voiceover' && (item.enabled !== false)),
-  music: studioMenuItems.filter(item => item.category === 'music' && (item.enabled !== false)),
-};
+  // Account (我的账户)
+  {
+    id: 'my-subscription',
+    labelKey: 'settings.menu.mySubscription',
+    href: '/studio/settings/my-subscription',
+    category: 'account',
+    enabled: true,
+    icon: (
+      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7" />
+      </svg>
+    ),
+  },
+  {
+    id: 'my-account',
+    labelKey: 'settings.menu.myProfile',
+    href: '/studio/settings/my-account',
+    category: 'account',
+    enabled: true,
+    icon: (
+      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+      </svg>
+    ),
+  },
+];

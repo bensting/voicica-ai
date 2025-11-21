@@ -9,7 +9,24 @@
  * 注意：Product ID 是 Stripe 测试模式的 ID
  */
 
-import type { SubscriptionPlansConfig } from './types';
+import type { SubscriptionPlansConfig, ProductTypeTabsConfig } from './types';
+
+/**
+ * 产品类型 Tab 配置 - 开发环境
+ * 开发环境显示所有产品类型（包括未上线的）
+ */
+export const productTypeTabs: ProductTypeTabsConfig = [
+  {
+    type: 'text_to_speech',
+    labelKey: 'upgrade.tabs.textToVoice',
+    enabled: true,
+  },
+  {
+    type: 'voice_cloning',
+    labelKey: 'upgrade.tabs.voiceClone',
+    enabled: true, // 开发环境启用，便于测试
+  },
+];
 
 export const subscriptionPlans: SubscriptionPlansConfig = {
   stripe: {

@@ -96,3 +96,17 @@ export interface SubscriptionPlansConfig {
     voice_cloning: SubscriptionPlanConfig[];
   };
 }
+
+/**
+ * 产品类型 Tab 配置
+ */
+export interface ProductTypeTabConfig {
+  type: ProductType;
+  labelKey: string; // i18n 翻译键
+  enabled: boolean; // 是否启用
+}
+
+/**
+ * 产品类型 Tab 列表配置
+ */
+export type ProductTypeTabsConfig = ProductTypeTabConfig[];

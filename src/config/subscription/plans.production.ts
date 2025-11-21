@@ -117,7 +117,7 @@ export const subscriptionPlans: SubscriptionPlansConfig = {
         discounted_price: { USD: 9.99, CNY: 68, TWD: 299, THB: 349 },
         billing_period: 'month',
         enable_first_month_coupon: false,
-        first_month_coupon_id: true,
+        first_month_coupon_id: null,
         active: true,
         sort_order: 1,
       },
@@ -178,6 +178,7 @@ export const subscriptionPlans: SubscriptionPlansConfig = {
         first_month_coupon_id: null,
         active: true,
         sort_order: 2,
+        is_popular: true,
       },
 
       // Plus 计划 (月付)

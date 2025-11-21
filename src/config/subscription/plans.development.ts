@@ -178,6 +178,7 @@ export const subscriptionPlans: SubscriptionPlansConfig = {
         first_month_coupon_id: null,
         active: true,
         sort_order: 2,
+        is_popular: true,
       },
 
       // Plus 计划 (月付) - 测试模式

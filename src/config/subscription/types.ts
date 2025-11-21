@@ -48,19 +48,19 @@ export interface SubscriptionPlanConfig {
   credits_per_cycle: number; // 每周期给予的积分
   cycle_days: number; // 周期天数 (30 = 月, 365 = 年)
 
-  // 价格（多币种）
+  // 价格（多币种，USD 必填，其他可选）
   price: {
     USD: number;
-    CNY: number;
-    TWD: number;
+    CNY?: number;
+    TWD?: number;
     THB?: number;
   };
 
   // 折扣价格（可选）
   discounted_price?: {
     USD: number;
-    CNY: number;
-    TWD: number;
+    CNY?: number;
+    TWD?: number;
     THB?: number;
   };
 
@@ -74,6 +74,9 @@ export interface SubscriptionPlanConfig {
   // 状态
   active: boolean;
   sort_order: number;
+
+  // 推荐标签（如 "最受欢迎"）
+  is_popular?: boolean;
 }
 
 /**

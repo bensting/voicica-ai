@@ -176,6 +176,7 @@ export default function VoicesPage() {
               onPlayVoice={handlePlayVoice}
               onSelectVoice={handleSelectVoice}
               onRetry={refreshVoices}
+              usedOnly={usedOnly}
             />
 
             {/* Loading more indicator */}

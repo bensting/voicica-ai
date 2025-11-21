@@ -9,7 +9,24 @@
  * 重要：修改此文件前请确认价格和 Product ID 正确！
  */
 
-import type { SubscriptionPlansConfig } from './types';
+import type { SubscriptionPlansConfig, ProductTypeTabsConfig } from './types';
+
+/**
+ * 产品类型 Tab 配置 - 生产环境
+ * 生产环境只显示已上线的产品类型
+ */
+export const productTypeTabs: ProductTypeTabsConfig = [
+  {
+    type: 'text_to_speech',
+    labelKey: 'upgrade.tabs.textToVoice',
+    enabled: true,
+  },
+  {
+    type: 'voice_cloning',
+    labelKey: 'upgrade.tabs.voiceClone',
+    enabled: false, // 生产环境暂未上线
+  },
+];
 
 export const subscriptionPlans: SubscriptionPlansConfig = {
   stripe: {

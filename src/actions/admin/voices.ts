@@ -8,6 +8,112 @@ import { headers } from 'next/headers';
 import { auth as adminAuth } from '@/lib/firebase-admin';
 import prisma from '@/lib/prisma';
 import { getLocaleInfo } from '@/utils/localeMapper';
+import { synthesizeSpeech } from '@/lib/services/azure-tts';
+import { uploadAudio } from '@/lib/services/r2-storage';
+
+/**
+ * 各语言的示例文本（讲故事风格，展示语音表现力）
+ */
+const SAMPLE_TEXTS: Record<string, string> = {
+  // 中文
+  'zh-CN': '在一个阳光明媚的早晨，小猫咪伸了个懒腰，打了个哈欠说："今天又是美好的一天呀！"',
+  'zh-TW': '在一個陽光明媚的早晨，小貓咪伸了個懶腰，打了個哈欠說：「今天又是美好的一天呀！」',
+  'zh-HK': '喺一個陽光燦爛嘅朝早，小貓咪伸咗個懶腰，打咗個喊露話：「今日又係美好嘅一日呀！」',
+
+  // 英语
+  'en-US': 'Once upon a time, in a land far away, there lived a curious little fox who loved to explore. "What an amazing adventure!" she exclaimed with joy.',
+  'en-GB': 'Once upon a time, in a land far away, there lived a curious little fox who loved to explore. "What an amazing adventure!" she exclaimed with joy.',
+  'en-AU': 'Once upon a time, in a land far away, there lived a curious little fox who loved to explore. "What an amazing adventure!" she exclaimed with joy.',
+  'en-IN': 'Once upon a time, in a land far away, there lived a curious little fox who loved to explore. "What an amazing adventure!" she exclaimed with joy.',
+
+  // 日语
+  'ja-JP': 'ある晴れた朝、子猫がのびをして言いました。「今日も楽しい一日になりそう！わくわくするね！」',
+
+  // 韩语
+  'ko-KR': '어느 화창한 아침, 아기 고양이가 기지개를 켜며 말했어요. "오늘도 정말 신나는 하루가 될 것 같아!"',
+
+  // 法语
+  'fr-FR': 'Par une belle matinée ensoleillée, le petit chat s\'étira et dit avec enthousiasme : « Quelle merveilleuse journée nous attend ! »',
+  'fr-CA': 'Par une belle matinée ensoleillée, le petit chat s\'étira et dit avec enthousiasme : « Quelle merveilleuse journée nous attend ! »',
+
+  // 西班牙语
+  'es-ES': 'En una hermosa mañana soleada, el gatito se estiró y exclamó con alegría: "¡Qué día tan maravilloso nos espera!"',
+  'es-MX': 'En una hermosa mañana soleada, el gatito se estiró y exclamó con alegría: "¡Qué día tan maravilloso nos espera!"',
+
+  // 德语
+  'de-DE': 'An einem wunderschönen Morgen streckte sich das Kätzchen und rief fröhlich: „Was für ein wundervoller Tag wird das heute!"',
+  'de-AT': 'An einem wunderschönen Morgen streckte sich das Kätzchen und rief fröhlich: „Was für ein wundervoller Tag wird das heute!"',
+
+  // 意大利语
+  'it-IT': 'In una bella mattina di sole, il gattino si stiracchiò e disse con gioia: "Che giornata meravigliosa ci aspetta!"',
+
+  // 葡萄牙语
+  'pt-BR': 'Numa bela manhã ensolarada, o gatinho se espreguiçou e disse com alegria: "Que dia maravilhoso nos espera!"',
+  'pt-PT': 'Numa bela manhã ensolarada, o gatinho espreguiçou-se e disse com alegria: «Que dia maravilhoso nos espera!»',
+
+  // 俄语
+  'ru-RU': 'Однажды солнечным утром котёнок потянулся и радостно сказал: «Какой чудесный день нас ждёт!»',
+
+  // 阿拉伯语
+  'ar-SA': 'في صباح مشمس جميل، تمطى القط الصغير وقال بفرح: "يا له من يوم رائع ينتظرنا!"',
+
+  // 印地语
+  'hi-IN': 'एक खूबसूरत धूप भरी सुबह, छोटी बिल्ली ने अंगड़ाई ली और खुशी से कहा: "आज का दिन कितना शानदार होने वाला है!"',
+
+  // 泰语
+  'th-TH': 'ในเช้าวันที่แดดสดใส ลูกแมวยืดตัวและพูดอย่างมีความสุขว่า "วันนี้จะเป็นวันที่วิเศษมากเลย!"',
+
+  // 越南语
+  'vi-VN': 'Vào một buổi sáng đầy nắng, chú mèo con vươn vai và nói với niềm vui: "Hôm nay sẽ là một ngày tuyệt vời!"',
+
+  // 印尼语
+  'id-ID': 'Di pagi yang cerah, anak kucing meregangkan badannya dan berkata dengan gembira: "Hari ini pasti akan menjadi hari yang indah!"',
+
+  // 马来语
+  'ms-MY': 'Pada suatu pagi yang cerah, anak kucing meregangkan badannya dan berkata dengan gembira: "Hari ini pasti akan menjadi hari yang indah!"',
+
+  // 荷兰语
+  'nl-NL': 'Op een mooie zonnige ochtend rekte het katje zich uit en zei vrolijk: "Wat een prachtige dag staat ons te wachten!"',
+
+  // 波兰语
+  'pl-PL': 'Pewnego słonecznego poranka kotek przeciągnął się i powiedział radośnie: „Co za wspaniały dzień nas czeka!"',
+
+  // 土耳其语
+  'tr-TR': 'Güneşli bir sabah, yavru kedi gerinip neşeyle söyledi: "Bugün ne harika bir gün olacak!"',
+
+  // 瑞典语
+  'sv-SE': 'En vacker solig morgon sträckte sig kattungen och sa glatt: "Vilken underbar dag som väntar oss!"',
+
+  // 挪威语
+  'nb-NO': 'En vakker solrik morgen strakte kattungen seg og sa glad: "For en fantastisk dag som venter oss!"',
+
+  // 丹麦语
+  'da-DK': 'En smuk solrig morgen strakte killingen sig og sagde glad: "Sikke en vidunderlig dag der venter os!"',
+
+  // 芬兰语
+  'fi-FI': 'Kauniina aurinkoisena aamuna kissanpentu venytteli ja sanoi iloisesti: "Mikä ihana päivä meitä odottaa!"',
+
+  // 捷克语
+  'cs-CZ': 'Jednoho krásného slunečného rána se koťátko protáhlo a radostně řeklo: „Jaký nádherný den nás čeká!"',
+
+  // 希腊语
+  'el-GR': 'Ένα όμορφο ηλιόλουστο πρωί, το γατάκι τεντώθηκε και είπε χαρούμενα: «Τι υπέροχη μέρα μας περιμένει!»',
+
+  // 希伯来语
+  'he-IL': 'בבוקר שמשי יפה, החתלתול התמתח ואמר בשמחה: "איזה יום נפלא מחכה לנו!"',
+
+  // 乌克兰语
+  'uk-UA': 'Одного сонячного ранку кошеня потягнулося і радісно сказало: «Який чудовий день на нас чекає!»',
+
+  // 罗马尼亚语
+  'ro-RO': 'Într-o dimineață frumoasă și însorită, pisicuța s-a întins și a spus cu bucurie: „Ce zi minunată ne așteaptă!"',
+
+  // 匈牙利语
+  'hu-HU': 'Egy szép napos reggelen a kiscica nyújtózkodott és boldogan mondta: „Micsoda csodálatos nap vár ránk!"',
+
+  // 默认（英语）
+  'default': 'Once upon a time, on a beautiful sunny morning, a little kitten stretched and said happily: "What a wonderful day awaits us!"',
+};
 
 // 管理员白名单
 const ADMIN_EMAILS = ['admin@ai-voice-labs.com', 'bensting19@gmail.com'];
@@ -18,6 +124,7 @@ interface LocaleStats {
   azureCount: number;
   dbCount: number;
   avatarCount: number;
+  sampleCount: number;
   canSync: boolean;
 }
 
@@ -156,6 +263,20 @@ export async function getVoiceStatsByLocale(): Promise<LocaleStats[]> {
       avatarCountByLocale[stat.locale] = stat._count.locale;
     }
 
+    // 统计每个 locale 有样本的语音数量
+    const sampleStats = await prisma.voices.groupBy({
+      by: ['locale'],
+      where: {
+        voice_sample_url: { not: '' },
+      },
+      _count: { locale: true },
+    });
+
+    const sampleCountByLocale: Record<string, number> = {};
+    for (const stat of sampleStats) {
+      sampleCountByLocale[stat.locale] = stat._count.locale;
+    }
+
     // 合并所有 locale
     const allLocales = new Set([
       ...Object.keys(azureCountByLocale),
@@ -168,6 +289,7 @@ export async function getVoiceStatsByLocale(): Promise<LocaleStats[]> {
       const azureCount = azureCountByLocale[locale] || 0;
       const dbCount = dbCountByLocale[locale] || 0;
       const avatarCount = avatarCountByLocale[locale] || 0;
+      const sampleCount = sampleCountByLocale[locale] || 0;
       const localeOption = getLocaleInfo(locale);
 
       result.push({
@@ -176,6 +298,7 @@ export async function getVoiceStatsByLocale(): Promise<LocaleStats[]> {
         azureCount,
         dbCount,
         avatarCount,
+        sampleCount,
         canSync: azureCount > dbCount,
       });
     }
@@ -414,6 +537,262 @@ export async function regenerateAllAvatars(): Promise<SyncResult> {
     return {
       success: false,
       message: error instanceof Error ? error.message : '重新生成失败',
+    };
+  }
+}
+
+/**
+ * 语系 fallback 映射
+ * 当精确 locale 没有配置时，使用同语系的默认文本
+ */
+const LANG_FALLBACKS: Record<string, string> = {
+  'zh': 'zh-CN',
+  'en': 'en-US',
+  'es': 'es-ES',
+  'fr': 'fr-FR',
+  'de': 'de-DE',
+  'pt': 'pt-BR',
+  'ar': 'ar-SA',
+  'ja': 'ja-JP',
+  'ko': 'ko-KR',
+  'it': 'it-IT',
+  'ru': 'ru-RU',
+  'hi': 'hi-IN',
+  'th': 'th-TH',
+  'vi': 'vi-VN',
+  'id': 'id-ID',
+  'ms': 'ms-MY',
+  'nl': 'nl-NL',
+  'pl': 'pl-PL',
+  'tr': 'tr-TR',
+  'sv': 'sv-SE',
+  'nb': 'nb-NO',
+  'da': 'da-DK',
+  'fi': 'fi-FI',
+  'cs': 'cs-CZ',
+  'el': 'el-GR',
+  'he': 'he-IL',
+  'uk': 'uk-UA',
+  'ro': 'ro-RO',
+  'hu': 'hu-HU',
+};
+
+/**
+ * 获取语言对应的示例文本
+ * 如果没有配置，返回 null 表示不支持
+ */
+function getSampleText(locale: string): string | null {
+  // 精确匹配
+  if (SAMPLE_TEXTS[locale]) {
+    return SAMPLE_TEXTS[locale];
+  }
+
+  // 语系匹配：zh-XX 用 zh-CN，en-XX 用 en-US 等
+  const lang = locale.split('-')[0];
+  const fallbackLocale = LANG_FALLBACKS[lang];
+
+  if (fallbackLocale && SAMPLE_TEXTS[fallbackLocale]) {
+    return SAMPLE_TEXTS[fallbackLocale];
+  }
+
+  // 没有配置的语言返回 null，跳过生成
+  return null;
+}
+
+/**
+ * 为指定 locale 的语音生成样本音频
+ * 只生成 voice_sample_url 为空的语音
+ */
+export async function generateVoiceSamples(locale: string): Promise<SyncResult> {
+  await verifyAdminWithoutDb();
+
+  try {
+    console.log(`🎤 开始生成 ${locale} 的语音样本...`);
+
+    // 获取该 locale 下没有样本的语音
+    const voicesWithoutSample = await prisma.voices.findMany({
+      where: {
+        locale,
+        voice_sample_url: '',
+      },
+      select: {
+        id: true,
+        name: true,
+        locale: true,
+      },
+    });
+
+    if (voicesWithoutSample.length === 0) {
+      return {
+        success: true,
+        message: `${locale} 所有语音已有样本，无需生成`,
+        updated: 0,
+      };
+    }
+
+    const sampleText = getSampleText(locale);
+
+    // 如果没有配置该语言的示例文本，跳过
+    if (!sampleText) {
+      return {
+        success: true,
+        message: `${locale} 暂不支持生成样本（未配置示例文本）`,
+        updated: 0,
+      };
+    }
+
+    let updated = 0;
+    let failed = 0;
+
+    for (const voice of voicesWithoutSample) {
+      try {
+        console.log(`🎙️ 生成样本: ${voice.name}`);
+
+        // 调用 Azure TTS 生成音频
+        const ttsResult = await synthesizeSpeech({
+          text: sampleText,
+          voiceName: voice.name,
+          language: voice.locale,
+        });
+
+        // 上传到 R2
+        const fileName = `${voice.name}.mp3`;
+        const audioUrl = await uploadAudio(
+          ttsResult.audioData,
+          fileName,
+          'audio/mpeg',
+          'voice-samples'
+        );
+
+        // 更新数据库
+        await prisma.voices.update({
+          where: { id: voice.id },
+          data: {
+            voice_sample_url: audioUrl,
+            voice_sample_text: sampleText,
+          },
+        });
+
+        updated++;
+        console.log(`✅ 样本生成成功: ${voice.name}`);
+      } catch (error) {
+        failed++;
+        console.error(`❌ 样本生成失败: ${voice.name}`, error);
+      }
+    }
+
+    console.log(`✅ ${locale} 语音样本生成完成: 成功 ${updated}, 失败 ${failed}`);
+
+    return {
+      success: failed === 0,
+      message: failed === 0
+        ? `生成完成`
+        : `部分失败: 成功 ${updated}, 失败 ${failed}`,
+      updated,
+    };
+  } catch (error) {
+    console.error(`❌ 生成 ${locale} 语音样本失败:`, error);
+    return {
+      success: false,
+      message: error instanceof Error ? error.message : '生成失败',
+    };
+  }
+}
+
+/**
+ * 批量生成所有语音样本
+ * 只生成 voice_sample_url 为空的语音
+ */
+export async function generateAllVoiceSamples(): Promise<SyncResult> {
+  await verifyAdminWithoutDb();
+
+  try {
+    console.log('🎤 开始批量生成所有语音样本...');
+
+    // 获取所有没有样本的语音
+    const voicesWithoutSample = await prisma.voices.findMany({
+      where: {
+        voice_sample_url: '',
+      },
+      select: {
+        id: true,
+        name: true,
+        locale: true,
+      },
+    });
+
+    if (voicesWithoutSample.length === 0) {
+      return {
+        success: true,
+        message: '所有语音已有样本，无需生成',
+        updated: 0,
+      };
+    }
+
+    let updated = 0;
+    let failed = 0;
+    let skipped = 0;
+
+    for (const voice of voicesWithoutSample) {
+      try {
+        const sampleText = getSampleText(voice.locale);
+
+        // 如果没有配置该语言的示例文本，跳过
+        if (!sampleText) {
+          skipped++;
+          console.log(`⏭️ 跳过（无示例文本）: ${voice.name}`);
+          continue;
+        }
+
+        console.log(`🎙️ 生成样本: ${voice.name}`);
+
+        // 调用 Azure TTS 生成音频
+        const ttsResult = await synthesizeSpeech({
+          text: sampleText,
+          voiceName: voice.name,
+          language: voice.locale,
+        });
+
+        // 上传到 R2
+        const fileName = `${voice.name}.mp3`;
+        const audioUrl = await uploadAudio(
+          ttsResult.audioData,
+          fileName,
+          'audio/mpeg',
+          'voice-samples'
+        );
+
+        // 更新数据库
+        await prisma.voices.update({
+          where: { id: voice.id },
+          data: {
+            voice_sample_url: audioUrl,
+            voice_sample_text: sampleText,
+          },
+        });
+
+        updated++;
+        console.log(`✅ 样本生成成功: ${voice.name}`);
+      } catch (error) {
+        failed++;
+        console.error(`❌ 样本生成失败: ${voice.name}`, error);
+      }
+    }
+
+    console.log(`✅ 批量语音样本生成完成: 成功 ${updated}, 失败 ${failed}, 跳过 ${skipped}`);
+
+    return {
+      success: failed === 0,
+      message: failed === 0
+        ? `生成完成`
+        : `部分失败: 成功 ${updated}, 失败 ${failed}`,
+      updated,
+    };
+  } catch (error) {
+    console.error('❌ 批量生成语音样本失败:', error);
+    return {
+      success: false,
+      message: error instanceof Error ? error.message : '生成失败',
     };
   }
 }

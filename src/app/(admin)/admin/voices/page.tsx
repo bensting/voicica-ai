@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { syncVoicesByLocale, getVoiceStatsByLocale, syncVoiceAvatars, regenerateAllAvatars } from '@/actions/admin/voices';
+import { syncVoicesByLocale, getVoiceStatsByLocale, syncVoiceAvatars, regenerateAllAvatars, generateVoiceSamples, generateAllVoiceSamples } from '@/actions/admin/voices';
 
 interface LocaleStats {
   locale: string;
@@ -9,6 +9,7 @@ interface LocaleStats {
   azureCount: number;
   dbCount: number;
   avatarCount: number;
+  sampleCount: number;
   canSync: boolean;
 }
 
@@ -154,6 +155,50 @@ export default function VoicesManagementPage() {
     }
   };
 
+  // 生成指定 locale 的语音样本
+  const handleGenerateSamples = async (locale: string) => {
+    setSyncing(`sample-${locale}`);
+    try {
+      const result = await generateVoiceSamples(locale);
+      setSyncResults((prev) => ({ ...prev, [`sample-${locale}`]: result }));
+      if (result.success) {
+        await loadLocales();
+      }
+    } catch (error) {
+      setSyncResults((prev) => ({
+        ...prev,
+        [`sample-${locale}`]: {
+          success: false,
+          message: error instanceof Error ? error.message : '生成失败',
+        },
+      }));
+    } finally {
+      setSyncing(null);
+    }
+  };
+
+  // 批量生成所有语音样本
+  const handleGenerateAllSamples = async () => {
+    setSyncing('samples-all');
+    try {
+      const result = await generateAllVoiceSamples();
+      setSyncResults((prev) => ({ ...prev, 'samples-all': result }));
+      if (result.success) {
+        await loadLocales();
+      }
+    } catch (error) {
+      setSyncResults((prev) => ({
+        ...prev,
+        'samples-all': {
+          success: false,
+          message: error instanceof Error ? error.message : '生成失败',
+        },
+      }));
+    } finally {
+      setSyncing(null);
+    }
+  };
+
   return (
     <div>
       {/* 页面标题 */}
@@ -235,6 +280,38 @@ export default function VoicesManagementPage() {
         )}
       </div>
 
+      {/* 语音样本生成 */}
+      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-lg font-semibold text-gray-900">语音样本</h2>
+            <p className="text-sm text-gray-600 mt-1">使用 Azure TTS 为语音生成试听样本（上传到 R2）</p>
+          </div>
+          <button
+            onClick={handleGenerateAllSamples}
+            disabled={syncing !== null}
+            className="px-6 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {syncing === 'samples-all' ? '生成中...' : '批量生成样本'}
+          </button>
+        </div>
+        {syncResults['samples-all'] && (
+          <div className={`mt-4 p-3 rounded-lg text-sm ${
+            syncResults['samples-all'].success ? 'bg-green-50 text-green-800' : 'bg-red-50 text-red-800'
+          }`}>
+            <div className="font-medium">
+              {syncResults['samples-all'].success ? '✓ 生成完成' : '✗ 生成失败'}
+            </div>
+            <div className="mt-1">{syncResults['samples-all'].message}</div>
+            {syncResults['samples-all'].updated !== undefined && (
+              <div className="mt-1 text-xs opacity-80">
+                生成: {syncResults['samples-all'].updated}
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+
       {/* 语言列表 */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
         <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
@@ -270,6 +347,9 @@ export default function VoicesManagementPage() {
                     头像数量
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    样本数量
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     状态
                   </th>
                   <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -301,6 +381,17 @@ export default function VoicesManagementPage() {
                         </span>
                       )}
                     </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm">
+                      {item.dbCount === 0 ? (
+                        <span className="text-gray-400">-</span>
+                      ) : item.sampleCount === item.dbCount ? (
+                        <span className="text-green-600">{item.sampleCount}</span>
+                      ) : (
+                        <span className="text-yellow-600">
+                          {item.sampleCount}/{item.dbCount}
+                        </span>
+                      )}
+                    </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       {item.azureCount === item.dbCount ? (
                         <span className="px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">
@@ -316,7 +407,7 @@ export default function VoicesManagementPage() {
                         </span>
                       )}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right">
+                    <td className="px-6 py-4 whitespace-nowrap text-right space-x-2">
                       <button
                         onClick={() => handleSync(item.locale)}
                         disabled={syncing !== null || !item.canSync}
@@ -326,15 +417,26 @@ export default function VoicesManagementPage() {
                             : 'bg-gray-100 text-gray-400 cursor-not-allowed'
                         } disabled:opacity-50`}
                       >
-                        {syncing === item.locale ? '同步中...' : '同步'}
+                        {syncing === item.locale ? '...' : '同步'}
                       </button>
-                      {syncResults[item.locale] && (
+                      <button
+                        onClick={() => handleGenerateSamples(item.locale)}
+                        disabled={syncing !== null || item.dbCount === 0 || item.sampleCount === item.dbCount}
+                        className={`px-3 py-1 text-sm rounded-lg transition-colors ${
+                          item.dbCount > 0 && item.sampleCount < item.dbCount
+                            ? 'bg-teal-600 text-white hover:bg-teal-700'
+                            : 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                        } disabled:opacity-50`}
+                      >
+                        {syncing === `sample-${item.locale}` ? '...' : '样本'}
+                      </button>
+                      {(syncResults[item.locale] || syncResults[`sample-${item.locale}`]) && (
                         <div className={`mt-2 text-xs ${
-                          syncResults[item.locale].success ? 'text-green-600' : 'text-red-600'
+                          (syncResults[`sample-${item.locale}`] || syncResults[item.locale])?.success ? 'text-green-600' : 'text-red-600'
                         }`}>
-                          {syncResults[item.locale].success
-                            ? `+${syncResults[item.locale].inserted || 0}`
-                            : '失败'}
+                          {syncResults[`sample-${item.locale}`]
+                            ? (syncResults[`sample-${item.locale}`].success ? `+${syncResults[`sample-${item.locale}`].updated || 0}` : '失败')
+                            : (syncResults[item.locale]?.success ? `+${syncResults[item.locale].inserted || 0}` : '失败')}
                         </div>
                       )}
                     </td>

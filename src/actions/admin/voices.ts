@@ -17,6 +17,7 @@ interface LocaleStats {
   localeName: string;
   azureCount: number;
   dbCount: number;
+  avatarCount: number;
   canSync: boolean;
 }
 
@@ -141,6 +142,20 @@ export async function getVoiceStatsByLocale(): Promise<LocaleStats[]> {
       dbCountByLocale[stat.locale] = stat._count.locale;
     }
 
+    // 统计每个 locale 有头像的语音数量
+    const avatarStats = await prisma.voices.groupBy({
+      by: ['locale'],
+      where: {
+        avatar_url: { not: '' },
+      },
+      _count: { locale: true },
+    });
+
+    const avatarCountByLocale: Record<string, number> = {};
+    for (const stat of avatarStats) {
+      avatarCountByLocale[stat.locale] = stat._count.locale;
+    }
+
     // 合并所有 locale
     const allLocales = new Set([
       ...Object.keys(azureCountByLocale),
@@ -152,6 +167,7 @@ export async function getVoiceStatsByLocale(): Promise<LocaleStats[]> {
     for (const locale of allLocales) {
       const azureCount = azureCountByLocale[locale] || 0;
       const dbCount = dbCountByLocale[locale] || 0;
+      const avatarCount = avatarCountByLocale[locale] || 0;
       const localeOption = getLocaleInfo(locale);
 
       result.push({
@@ -159,6 +175,7 @@ export async function getVoiceStatsByLocale(): Promise<LocaleStats[]> {
         localeName: localeOption?.name || locale,
         azureCount,
         dbCount,
+        avatarCount,
         canSync: azureCount > dbCount,
       });
     }

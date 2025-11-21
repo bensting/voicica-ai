@@ -34,10 +34,8 @@ export default function DeviceFingerprintProvider() {
           .join('; ');
 
         document.cookie = cookieOptions;
-
-        console.log('✅ [DeviceFingerprintProvider] 设备指纹已设置到 cookie');
       } catch (error) {
-        console.error('❌ [DeviceFingerprintProvider] 设备指纹初始化失败:', error);
+        console.error('[DeviceFingerprintProvider] 设备指纹初始化失败:', error);
       }
     };
 

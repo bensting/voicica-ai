@@ -58,8 +58,6 @@ export function useTTSGenerator(
 
         // Only update if it's a different voice
         if (!selectedVoice || selectedVoice.id !== preSelectedVoice.id) {
-          console.log('✅ [useTTSGenerator] Loaded pre-selected voice from Voices Gallery:', preSelectedVoice.name);
-
           // Clear the module-level cache in MobileTTSPage to prevent it from using old default voice
           if (typeof window !== 'undefined') {
             sessionStorage.setItem('clearVoiceCache', 'true');
@@ -73,7 +71,7 @@ export function useTTSGenerator(
         // Clear after applying
         sessionStorage.removeItem('ttsPreSelectedVoice');
       } catch (err) {
-        console.error('❌ Failed to parse pre-selected voice:', err);
+        console.error('[useTTSGenerator] Failed to parse pre-selected voice:', err);
         sessionStorage.removeItem('ttsPreSelectedVoice');
       }
     }
@@ -110,21 +108,14 @@ export function useTTSGenerator(
     // 保存完整的语音对象到 localStorage，记住用户的选择
     try {
       localStorage.setItem('lastSelectedVoice', JSON.stringify(voice));
-      console.log('💾 [useTTSGenerator] Saved last selected voice:', voice.display_name, voice.id);
     } catch (err) {
-      console.error('Failed to save voice to localStorage:', err);
+      console.error('[useTTSGenerator] Failed to save voice to localStorage:', err);
     }
   }, []);
 
   // 生成音频（提交任务，polling 由 useGenerationHistory 处理）
   const handleGenerate = useCallback(async () => {
-    console.log('🎤 [useTTSGenerator] ========== handleGenerate 开始 ==========');
-    console.log('🎤 [useTTSGenerator] canGenerate:', canGenerate);
-    console.log('🎤 [useTTSGenerator] selectedVoice:', selectedVoice);
-    console.log('🎤 [useTTSGenerator] text length:', text.length);
-
     if (!canGenerate || !selectedVoice) {
-      console.error('❌ [useTTSGenerator] 验证失败:', { canGenerate, hasVoice: !!selectedVoice, textLength: text.length });
       setError(t('studio.errors.selectTextAndVoice'));
       return;
     }
@@ -134,15 +125,7 @@ export function useTTSGenerator(
       setError(null);
       setAudioUrl(null);
 
-      console.log('🎤 [useTTSGenerator] 开始生成音频', {
-        text,
-        voice: selectedVoice.name,
-        language: selectedVoice.locale,
-        audioSettings,
-      });
-
       // 调用 Server Action 提交任务（使用 AudioSettings Context 中的音频参数）
-      console.log('📤 [useTTSGenerator] 调用 createTtsTask...');
       const result = await createTtsTask({
         text,
         voice_name: selectedVoice.name,
@@ -152,18 +135,8 @@ export function useTTSGenerator(
         volume: audioSettings.volume,
       });
 
-      console.log('✅ [useTTSGenerator] 任务提交结果:', result);
-      console.log('📊 [useTTSGenerator] 结果详情:', {
-        status: result.status,
-        task_id: result.task_id,
-        error: result.error,
-        errorCode: result.errorCode,
-      });
-
       // 检查是否返回错误（业务逻辑错误，如积分不足）
       if (result.status === 'FAILURE' && result.errorCode) {
-        console.error('❌ [useTTSGenerator] 任务失败:', result.errorCode, result.errorData);
-
         // 根据错误码使用国际化消息
         const errorKey = `studio.errors.${result.errorCode}`;
 
@@ -177,24 +150,17 @@ export function useTTSGenerator(
         return;
       }
 
-      console.log('✅ [useTTSGenerator] 任务已提交，task_id:', result.task_id);
-
       // Task submitted successfully
       // The generation history hook will poll for updates
       // and the record will appear in the list immediately with PENDING/PROCESSING status
       setIsGenerating(false);
 
       // 调用成功回调（用于刷新积分等）
-      console.log('🔔 [useTTSGenerator] 准备调用 onTaskSubmitted 回调');
       if (options?.onTaskSubmitted) {
-        console.log('✅ [useTTSGenerator] 调用 onTaskSubmitted 回调');
         options.onTaskSubmitted();
-      } else {
-        console.warn('⚠️ [useTTSGenerator] 没有 onTaskSubmitted 回调');
       }
-      console.log('🎤 [useTTSGenerator] ========== handleGenerate 结束 ==========');
     } catch (err: unknown) {
-      console.error('❌ [useTTSGenerator] 提交任务失败（异常）', err);
+      console.error('[useTTSGenerator] Task submit failed:', err);
 
       // 处理未预期的异常（网络错误、服务器崩溃等）
       if (err instanceof Error) {

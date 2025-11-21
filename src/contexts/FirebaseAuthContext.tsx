@@ -41,8 +41,6 @@ export function FirebaseAuthProvider({ children }: { children: React.ReactNode }
   // 监听认证状态变化
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
-      console.log('🔥 [FirebaseAuth] Auth state changed:', firebaseUser?.uid);
-
       if (firebaseUser) {
         // 获取 ID Token
         const idToken = await firebaseUser.getIdToken();
@@ -54,15 +52,12 @@ export function FirebaseAuthProvider({ children }: { children: React.ReactNode }
         const isProduction = window.location.protocol === 'https:';
         const secureCookie = isProduction ? 'Secure; ' : '';
         document.cookie = `firebase-token=${idToken}; path=/; max-age=3600; SameSite=Strict; ${secureCookie}`;
-
-        console.log('✅ [FirebaseAuth] Token cookie 已设置', { isProduction });
       } else {
         setUser(null);
         setToken(null);
 
         // 清除 token cookie
         document.cookie = 'firebase-token=; path=/; max-age=0';
-        console.log('🗑️ [FirebaseAuth] Token cookie 已清除');
       }
 
       setLoading(false);
@@ -84,10 +79,8 @@ export function FirebaseAuthProvider({ children }: { children: React.ReactNode }
         const isProduction = window.location.protocol === 'https:';
         const secureCookie = isProduction ? 'Secure; ' : '';
         document.cookie = `firebase-token=${idToken}; path=/; max-age=3600; SameSite=Strict; ${secureCookie}`;
-
-        console.log('🔄 [FirebaseAuth] Token 已刷新', { isProduction });
       } catch (error) {
-        console.error('❌ [FirebaseAuth] Token 刷新失败:', error);
+        console.error('[FirebaseAuth] Token 刷新失败:', error);
       }
     };
 
@@ -105,9 +98,8 @@ export function FirebaseAuthProvider({ children }: { children: React.ReactNode }
         prompt: 'select_account',
       });
       await signInWithPopup(auth, provider);
-      console.log('✅ [FirebaseAuth] Google 登录成功');
     } catch (error) {
-      console.error('❌ [FirebaseAuth] Google 登录失败:', error);
+      console.error('[FirebaseAuth] Google 登录失败:', error);
       throw error;
     }
   }, []);
@@ -117,9 +109,8 @@ export function FirebaseAuthProvider({ children }: { children: React.ReactNode }
     try {
       const provider = new TwitterAuthProvider();
       await signInWithPopup(auth, provider);
-      console.log('✅ [FirebaseAuth] Twitter 登录成功');
     } catch (error) {
-      console.error('❌ [FirebaseAuth] Twitter 登录失败:', error);
+      console.error('[FirebaseAuth] Twitter 登录失败:', error);
       throw error;
     }
   }, []);
@@ -131,9 +122,8 @@ export function FirebaseAuthProvider({ children }: { children: React.ReactNode }
       provider.addScope('email');
       provider.addScope('name');
       await signInWithPopup(auth, provider);
-      console.log('✅ [FirebaseAuth] Apple 登录成功');
     } catch (error) {
-      console.error('❌ [FirebaseAuth] Apple 登录失败:', error);
+      console.error('[FirebaseAuth] Apple 登录失败:', error);
       throw error;
     }
   }, []);
@@ -142,9 +132,8 @@ export function FirebaseAuthProvider({ children }: { children: React.ReactNode }
   const signOut = useCallback(async () => {
     try {
       await firebaseSignOut(auth);
-      console.log('✅ [FirebaseAuth] 登出成功');
     } catch (error) {
-      console.error('❌ [FirebaseAuth] 登出失败:', error);
+      console.error('[FirebaseAuth] 登出失败:', error);
       throw error;
     }
   }, []);

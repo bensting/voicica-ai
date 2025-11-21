@@ -110,9 +110,6 @@ export async function getMySubscriptions(params?: {
     where,
     orderBy: { created_at: 'desc' },
     take: 100,
-    include: {
-      subscription_plans: true,
-    },
   });
 
   // 查询活跃订阅
@@ -122,9 +119,6 @@ export async function getMySubscriptions(params?: {
       user_id: userId,
       status: 'ACTIVE',
       end_date: { gte: now },
-    },
-    include: {
-      subscription_plans: true,
     },
   });
 
@@ -137,10 +131,12 @@ export async function getMySubscriptions(params?: {
       daysRemaining = Math.max(0, Math.floor((sub.end_date.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)));
     }
 
+    // 从配置文件获取 display_name
+    const plan = getPlanByProductId(sub.product_id);
+
     return {
       id: String(sub.id),
       user_id: sub.user_id,
-      subscription_plan_id: String(sub.subscription_plan_id),
       product_id: sub.product_id,
       product_type: sub.product_type,
       platform: sub.platform,
@@ -152,7 +148,7 @@ export async function getMySubscriptions(params?: {
       currency: sub.currency ?? undefined,
       auto_renew: sub.auto_renew,
       created_at: sub.created_at.toISOString(),
-      display_name: sub.subscription_plans?.display_name as Record<string, string> | null,
+      display_name: plan?.display_name ?? null,
       is_active: isActive,
       days_remaining: daysRemaining,
       external_subscription_id: sub.external_subscription_id,
@@ -180,9 +176,6 @@ export async function getMyActiveSubscription(): Promise<UserSubscription | null
       status: 'ACTIVE',
       end_date: { gte: now },
     },
-    include: {
-      subscription_plans: true,
-    },
   });
 
   if (!activeSubscription) {
@@ -194,10 +187,12 @@ export async function getMyActiveSubscription(): Promise<UserSubscription | null
     Math.floor((activeSubscription.end_date.getTime() - now.getTime()) / (1000 * 60 * 60 * 24))
   );
 
+  // 从配置文件获取 display_name
+  const plan = getPlanByProductId(activeSubscription.product_id);
+
   return {
     id: String(activeSubscription.id),
     user_id: activeSubscription.user_id,
-    subscription_plan_id: String(activeSubscription.subscription_plan_id),
     product_id: activeSubscription.product_id,
     product_type: activeSubscription.product_type,
     platform: activeSubscription.platform,
@@ -209,7 +204,7 @@ export async function getMyActiveSubscription(): Promise<UserSubscription | null
     currency: activeSubscription.currency ?? undefined,
     auto_renew: activeSubscription.auto_renew,
     created_at: activeSubscription.created_at.toISOString(),
-    display_name: activeSubscription.subscription_plans?.display_name as Record<string, string> | null,
+    display_name: plan?.display_name ?? null,
     is_active: true,
     days_remaining: daysRemaining,
     external_subscription_id: activeSubscription.external_subscription_id,

@@ -83,7 +83,6 @@ export interface StripeVerifyResponse {
 export interface UserSubscription {
   id: string;
   user_id: string;
-  subscription_plan_id?: string;
   product_id: string;
   product_type: string | null;
   platform: string | null;

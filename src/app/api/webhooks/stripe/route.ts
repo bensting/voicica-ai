@@ -68,30 +68,12 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session, eventId
   }
 
   // 从配置文件获取订阅计划信息
-  const configPlan = getPlanByProductId(productId);
+  const plan = getPlanByProductId(productId);
 
-  if (!configPlan || !configPlan.active) {
-    console.error(`❌ 配置文件中找不到订阅计划: ${productId}`);
+  if (!plan || !plan.active) {
+    console.error(`❌ 找不到订阅计划: ${productId}`);
     return;
   }
-
-  // 从数据库获取 plan ID（用于外键关联）
-  // 注意：数据库中的 subscription_plans 表仍需保留，用于外键约束
-  const dbPlan = await prisma.subscription_plans.findFirst({
-    where: { product_id: productId, active: true },
-    select: { id: true },
-  });
-
-  if (!dbPlan) {
-    console.error(`❌ 数据库中找不到订阅计划: ${productId}，请确保数据库和配置文件同步`);
-    return;
-  }
-
-  // 合并使用配置文件的计划信息和数据库的 ID
-  const plan = {
-    ...configPlan,
-    id: dbPlan.id, // 使用数据库的整数 ID
-  };
 
   // 获取金额和货币（从 line items 或 session）
   const lineItem = session.line_items?.data?.[0];
@@ -134,11 +116,10 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session, eventId
     subscription_id: stripeSubscriptionId,
   });
 
-  // 创建订阅记录
+  // 创建订阅记录（不再依赖 subscription_plans 表，使用 product_id 关联配置文件）
   const subscription = await prisma.user_subscriptions.create({
     data: {
       user_id: userId,
-      subscription_plan_id: plan.id,
       product_id: productId,
       product_type: plan.product_type,
       platform: 'stripe',
@@ -218,9 +199,6 @@ async function handleInvoicePaid(invoice: Stripe.Invoice, eventId: string) {
       external_subscription_id: subscriptionId,
       platform: 'stripe',
     },
-    include: {
-      subscription_plans: true,
-    },
   });
 
   if (!subscription) {
@@ -228,7 +206,13 @@ async function handleInvoicePaid(invoice: Stripe.Invoice, eventId: string) {
     return;
   }
 
-  const plan = subscription.subscription_plans;
+  // 从配置文件获取订阅计划信息
+  const plan = getPlanByProductId(subscription.product_id);
+  if (!plan) {
+    console.error(`❌ 找不到订阅计划: ${subscription.product_id}`);
+    return;
+  }
+
   const oldStatus = subscription.status;
 
   // 更新订阅日期

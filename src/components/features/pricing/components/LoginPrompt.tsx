@@ -1,6 +1,8 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+import { useLanguage } from '@/contexts/LanguageContext';
+import LoginModal from '@/components/features/auth/LoginModal';
 
 interface LoginPromptProps {
   isOpen: boolean;
@@ -10,17 +12,33 @@ interface LoginPromptProps {
 /**
  * 登录提示模态框
  * 当用户未登录时点击购买按钮，显示此提示
+ * 点击登录后弹出登录模态框，登录成功后留在当前页面
  */
 export default function LoginPrompt({ isOpen, onClose }: LoginPromptProps) {
-  const router = useRouter();
+  const { t } = useLanguage();
+  const [showLoginModal, setShowLoginModal] = useState(false);
 
-  if (!isOpen) return null;
+  if (!isOpen && !showLoginModal) return null;
 
   const handleLogin = () => {
-    // 导航到登录页面，并在登录成功后返回当前页面
-    const returnUrl = encodeURIComponent(window.location.pathname);
-    router.push(`/login?returnUrl=${returnUrl}`);
+    // 关闭当前提示，显示登录模态框
+    onClose();
+    setShowLoginModal(true);
   };
+
+  const handleLoginModalClose = () => {
+    setShowLoginModal(false);
+  };
+
+  // 如果登录模态框打开，只显示登录模态框
+  if (showLoginModal) {
+    return (
+      <LoginModal
+        isOpen={showLoginModal}
+        onClose={handleLoginModalClose}
+      />
+    );
+  }
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
@@ -41,8 +59,8 @@ export default function LoginPrompt({ isOpen, onClose }: LoginPromptProps) {
           </div>
 
           {/* 标题和描述 */}
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Login Required</h2>
-          <p className="text-gray-600 mb-6">Please sign in to purchase a subscription plan</p>
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">{t('pricing.loginRequired')}</h2>
+          <p className="text-gray-600 mb-6">{t('pricing.loginRequiredDesc')}</p>
 
           {/* 按钮 */}
           <div className="flex gap-3">
@@ -50,13 +68,13 @@ export default function LoginPrompt({ isOpen, onClose }: LoginPromptProps) {
               onClick={onClose}
               className="flex-1 px-4 py-2 border-2 border-gray-300 text-gray-700 rounded-xl font-semibold hover:border-gray-400 transition-colors"
             >
-              Cancel
+              {t('pricing.cancel')}
             </button>
             <button
               onClick={handleLogin}
               className="flex-1 px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl font-semibold hover:from-purple-700 hover:to-pink-700 transition-colors"
             >
-              Sign In
+              {t('pricing.signIn')}
             </button>
           </div>
         </div>

@@ -1,6 +1,7 @@
- 'use client';
+'use client';
 
 import { PricingPlans, usePricing } from '@/components/features/pricing';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 /**
  * Pricing Page
@@ -10,6 +11,7 @@ import { PricingPlans, usePricing } from '@/components/features/pricing';
 export default function PricingPage() {
   // Use custom hook for all business logic
   const { cycle, plans, loading, error, onCycleChange } = usePricing();
+  const { t } = useLanguage();
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -17,10 +19,10 @@ export default function PricingPage() {
       <div className="bg-white border-b border-gray-200 pt-20">
         <div className="max-w-7xl mx-auto px-4 py-12 text-center">
           <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-            Plans & Pricing of AI-Voice-Labs
+            {t('pricing.pageTitle')}
           </h1>
           <p className="text-lg md:text-xl text-gray-600">
-            AI-Voice-Labs offers a variety of purchase plans to better meet your needs.
+            {t('pricing.pageSubtitle')}
           </p>
         </div>
       </div>

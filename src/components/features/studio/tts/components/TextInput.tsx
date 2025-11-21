@@ -42,13 +42,18 @@ export default function TextInput({
   onClear,
 }: TextInputProps) {
   const { t } = useLanguage();
+  // 初始值设为 true，等 hydration 完成后再根据 value 决定是否显示
   const [showExamples, setShowExamples] = useState(true);
   // Track if component has mounted (client-side only)
   const [hasMounted, setHasMounted] = useState(false);
 
   useEffect(() => {
     setHasMounted(true);
-  }, []);
+    // hydration 完成后，如果有值则隐藏示例
+    if (value && value.length > 0) {
+      setShowExamples(false);
+    }
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Get example buttons from i18n
   const EXAMPLE_BUTTONS: ExampleButton[] = [
@@ -154,7 +159,8 @@ export default function TextInput({
         </div>
 
         {/* Floating Example Buttons - 悬浮在底部栏上方 */}
-        {showExamples && (
+        {/* 只有在客户端 hydration 完成后才显示，避免 SSR 不匹配 */}
+        {hasMounted && showExamples && (
           <div className="absolute bottom-full left-0 right-0 mb-2 px-2">
             <div className="bg-white/95 backdrop-blur-sm rounded-xl shadow-lg border border-purple-100 p-2">
               {/* 移动端：两行布局，桌面端：单行布局 */}

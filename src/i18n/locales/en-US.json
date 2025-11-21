@@ -22,7 +22,8 @@
     "subscription": "Subscription",
     "profile": "Profile",
     "login": "Login",
-    "logout": "Logout"
+    "logout": "Logout",
+    "myStudio": "My Studio"
   },
   "nav": {
     "studio": "Studio",

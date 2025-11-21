@@ -16,7 +16,8 @@
     "subscription": "訂閱",
     "profile": "個人資料",
     "login": "登入",
-    "logout": "登出"
+    "logout": "登出",
+    "myStudio": "我的工作室"
   },
   "nav": {
     "studio": "工作室",

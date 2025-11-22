@@ -146,9 +146,11 @@ export default function MyAccountPage() {
 
       {/* Form Fields */}
       <div className="space-y-6">
-        {/* Profile Picture */}
+        {/* Profile Picture with User Info */}
         <ProfilePictureUpload
           currentPhoto={profile?.photo_url}
+          userName={profile?.name}
+          email={profile?.email}
           onPhotoChange={(url) => handleInputChange('photo_url', url)}
           onUploadSuccess={refreshProfile}
         />
@@ -159,16 +161,6 @@ export default function MyAccountPage() {
           value={formData.name}
           onChange={(value) => handleInputChange('name', value)}
           placeholder="Enter your name"
-        />
-
-        {/* Email Address */}
-        <FormField
-          label={t('settings.basicInfo.email')}
-          value={formData.email}
-          onChange={(value) => handleInputChange('email', value)}
-          placeholder="Enter your email"
-          type="email"
-          disabled
         />
 
         {/* Phone */}

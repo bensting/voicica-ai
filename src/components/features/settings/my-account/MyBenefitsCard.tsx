@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useCallback } from 'react';
+import Link from 'next/link';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 interface MyBenefitsCardProps {
@@ -16,6 +17,8 @@ function CreditItem({
   label,
   value,
   valueColor = 'text-purple-600',
+  historyLink,
+  historyText,
 }: {
   icon: React.ReactNode;
   iconBg: string;
@@ -23,6 +26,8 @@ function CreditItem({
   label: string;
   value: number;
   valueColor?: string;
+  historyLink?: string;
+  historyText?: string;
 }) {
   return (
     <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
@@ -32,9 +37,19 @@ function CreditItem({
         </div>
         <span className="text-gray-700 font-medium">{label}</span>
       </div>
-      <span className={`text-2xl font-bold ${valueColor}`}>
-        {value.toLocaleString()}
-      </span>
+      <div className="flex items-center gap-4">
+        <span className={`text-2xl font-bold ${valueColor}`}>
+          {value.toLocaleString()}
+        </span>
+        {historyLink && (
+          <Link
+            href={historyLink}
+            className="text-sm text-purple-600 hover:text-purple-700 hover:underline whitespace-nowrap"
+          >
+            {historyText || 'View History'}
+          </Link>
+        )}
+      </div>
     </div>
   );
 }

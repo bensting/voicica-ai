@@ -1,6 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import { DollarSign, Headphones, Shield, RefreshCw } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 
@@ -94,17 +95,16 @@ export default function CTA({
       </div>
 
       <div className="relative z-10 max-w-6xl mx-auto text-center">
-        {/* Brand Name */}
-        <div className="mb-4">
-          <h3 className="text-2xl md:text-4xl font-bold text-white inline-flex items-center gap-1">
-            {brandName}
-            <span className="inline-flex items-center">
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-300 to-pink-300">
-                .com
-              </span>
-              <sup className="text-xs text-white/70 ml-1">®</sup>
-            </span>
-          </h3>
+        {/* Brand Logo */}
+        <div className="mb-6 flex items-center justify-center">
+          <Image
+            src="/logo/voice-labs-logo-light.svg"
+            alt="AI-Voice-Labs.com"
+            width={280}
+            height={40}
+            priority
+            className="h-10 md:h-12 lg:h-14 w-auto"
+          />
         </div>
 
         {/* Main Title */}

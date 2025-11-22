@@ -457,6 +457,20 @@
     "update": "อัปเดตเลย",
     "later": "ภายหลัง"
   },
+  "creditHistory": {
+    "title": "ประวัติเครดิต",
+    "empty": "ยังไม่มีประวัติเครดิต",
+    "date": "วันที่",
+    "description": "รายละเอียด",
+    "type": "ประเภท",
+    "amount": "เครดิต",
+    "pagination": "หน้า {{current}} จาก {{total}}",
+    "productType": {
+      "textToSpeech": "แปลงข้อความเป็นเสียง",
+      "voiceCloning": "โคลนเสียง",
+      "other": "อื่นๆ"
+    }
+  },
   "countries": {
     "CN": "จีน",
     "TW": "ไต้หวัน",

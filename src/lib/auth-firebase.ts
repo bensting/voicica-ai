@@ -87,17 +87,29 @@ async function createOrUpdateFirebaseUser(decodedToken: {
     console.log(`🔄 [Firebase Auth] 用户信息已更新: ${decodedToken.uid}`);
   } else {
     // 创建新用户
+    const initialCredits = appConfig.credits.registered_user;
+
     await prisma.users.create({
       data: {
         user_id: decodedToken.uid,
         email: decodedToken.email || `${decodedToken.uid}@firebase.user`,
         name: decodedToken.name || 'Firebase User',
         photo_url: decodedToken.picture,
-        credits: appConfig.credits.registered_user,
+        credits: initialCredits,
         total_credits_used: 0,
       },
     });
-    console.log(`✅ [Firebase Auth] 新用户已创建: ${decodedToken.uid}`);
+
+    // 记录初始积分到积分历史表
+    await prisma.credit_history.create({
+      data: {
+        user_id: decodedToken.uid,
+        amount: initialCredits,
+        description: '新用户注册赠送积分',
+      },
+    });
+
+    console.log(`✅ [Firebase Auth] 新用户已创建: ${decodedToken.uid}, 赠送积分: ${initialCredits}`);
   }
 }
 
@@ -164,6 +176,7 @@ async function createOrGetAnonymousUser(
   // 创建新匿名用户
   const expiresAt = new Date();
   expiresAt.setDate(expiresAt.getDate() + appConfig.anonymous_user.expiry_days);
+  const initialCredits = appConfig.credits.anonymous_user;
 
   anonUser = await prisma.anonymous_users.create({
     data: {
@@ -171,7 +184,7 @@ async function createOrGetAnonymousUser(
       device_fingerprint: deviceFingerprint,
       ip_address: ipAddress,
       user_agent: userAgent,
-      credits: appConfig.credits.anonymous_user,
+      credits: initialCredits,
       total_credits_used: 0,
       is_anonymous: true,
       expires_at: expiresAt,
@@ -179,7 +192,16 @@ async function createOrGetAnonymousUser(
     },
   });
 
-  console.log(`✅ 新匿名用户创建: ${anonymousUserId}, 初始积分: ${appConfig.credits.anonymous_user}`);
+  // 记录初始积分到积分历史表
+  await prisma.credit_history.create({
+    data: {
+      user_id: anonymousUserId,
+      amount: initialCredits,
+      description: '匿名用户初始赠送积分',
+    },
+  });
+
+  console.log(`✅ 新匿名用户创建: ${anonymousUserId}, 初始积分: ${initialCredits}`);
   return { user_id: anonUser.user_id, credits: anonUser.credits };
 }
 

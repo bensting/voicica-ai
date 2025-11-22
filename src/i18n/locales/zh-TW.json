@@ -102,6 +102,9 @@
     },
     "basicInfo": {
       "title": "基本資訊",
+      "profilePicture": "頭像",
+      "profilePictureHint": "PNG 或 JPG 格式，建議使用等寬等高的圖片",
+      "uploading": "上傳中...",
       "nameSurname": "姓名",
       "email": "電子郵件地址",
       "phone": "電話"

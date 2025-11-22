@@ -102,6 +102,9 @@
     },
     "basicInfo": {
       "title": "基本信息",
+      "profilePicture": "头像",
+      "profilePictureHint": "PNG 或 JPG 格式，建议使用等宽等高的图片",
+      "uploading": "上传中...",
       "nameSurname": "姓名",
       "email": "邮箱地址",
       "phone": "电话"

@@ -102,6 +102,9 @@
     },
     "basicInfo": {
       "title": "Basic Info",
+      "profilePicture": "Profile Picture",
+      "profilePictureHint": "PNG or JPG, images with equal width and height are recommended",
+      "uploading": "Uploading...",
       "nameSurname": "Name & Surname",
       "email": "Email Address",
       "phone": "Phone"

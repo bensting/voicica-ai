@@ -102,6 +102,9 @@
     },
     "basicInfo": {
       "title": "ข้อมูลพื้นฐาน",
+      "profilePicture": "รูปโปรไฟล์",
+      "profilePictureHint": "PNG หรือ JPG แนะนำให้ใช้รูปที่มีความกว้างและความสูงเท่ากัน",
+      "uploading": "กำลังอัปโหลด...",
       "nameSurname": "ชื่อและนามสกุล",
       "email": "อีเมล",
       "phone": "เบอร์โทรศัพท์"

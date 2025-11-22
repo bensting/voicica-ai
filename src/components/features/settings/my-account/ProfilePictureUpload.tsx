@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import { uploadAvatar } from '@/actions/user';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface ProfilePictureUploadProps {
   currentPhoto?: string | null;
@@ -11,6 +12,7 @@ interface ProfilePictureUploadProps {
 }
 
 export default function ProfilePictureUpload({ currentPhoto, onPhotoChange, onUploadSuccess }: ProfilePictureUploadProps) {
+  const { t } = useLanguage();
   const [isUploading, setIsUploading] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
@@ -104,13 +106,13 @@ export default function ProfilePictureUpload({ currentPhoto, onPhotoChange, onUp
       {/* Label and Description */}
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">
-          Profile Picture
+          {t('settings.basicInfo.profilePicture')}
         </label>
         <p className="text-sm text-gray-500">
-          PNG or JPG, images with equal width and height are recommended
+          {t('settings.basicInfo.profilePictureHint')}
         </p>
         {isUploading && (
-          <p className="text-sm text-blue-600 mt-1">Uploading...</p>
+          <p className="text-sm text-blue-600 mt-1">{t('settings.basicInfo.uploading')}</p>
         )}
       </div>
     </div>

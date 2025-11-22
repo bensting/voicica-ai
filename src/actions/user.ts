@@ -7,7 +7,7 @@ import prisma from '@/lib/prisma';
 import { getCurrentUser, getUserOrAnonymous } from '@/lib/auth-firebase';
 import { uploadImage } from '@/lib/services/r2-storage';
 import { v4 as uuidv4 } from 'uuid';
-import type { UserProfile, CreditsInfo, CreditHistoryItem, CreditHistoryResponse } from '@/types/user';
+import type { UserProfile, CreditsInfo, CreditHistoryResponse } from '@/types/user';
 
 /**
  * 获取当前用户资料

@@ -3,6 +3,7 @@
 import { useState, useRef } from 'react';
 import { Volume2, VolumeX } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { GradientButton } from '@/components/ui';
 
 interface ActionButton {
   text: string;
@@ -97,7 +98,7 @@ export default function Hero({
             {brandName}{''}
             <span className="inline-flex items-center">
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">
-                .AI
+                .com
               </span>
               <sup className="text-xs text-white/70 ml-1">®</sup>
             </span>
@@ -134,18 +135,15 @@ export default function Hero({
         {/* Action Buttons */}
         <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
           {actionButtons.map((button, index) => (
-            <button
+            <GradientButton
               key={index}
               onClick={button.onClick}
-              className="group relative w-full sm:w-auto min-w-[280px] px-8 py-5 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-500 hover:to-purple-600 text-white rounded-2xl font-semibold text-lg transition-all duration-300 shadow-xl hover:shadow-2xl hover:scale-105 flex items-center justify-center gap-3"
+              size="lg"
+              className="w-full sm:w-auto min-w-[280px] py-5 rounded-2xl"
             >
               <span>{button.text}</span>
-              {button.icon && (
-                <span className="transition-transform group-hover:translate-x-1">
-                  {button.icon}
-                </span>
-              )}
-            </button>
+              {button.icon}
+            </GradientButton>
           ))}
         </div>
       </div>

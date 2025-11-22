@@ -1,8 +1,10 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import { DollarSign, Headphones, Shield, RefreshCw } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { GradientButton } from '@/components/ui';
 
 interface CTAFeature {
   icon: React.ReactNode;
@@ -30,7 +32,7 @@ interface CTAProps {
  * and feature highlights. Designed to convert visitors into users.
  */
 export default function CTA({
-  brandName = 'AI Voice Labs',
+  brandName = 'AI-Voice-Labs',
   titleKey,
   buttons,
   features,
@@ -94,90 +96,70 @@ export default function CTA({
       </div>
 
       <div className="relative z-10 max-w-6xl mx-auto text-center">
-        {/* Brand Name */}
-        <div className="mb-6">
-          <h3 className="text-4xl md:text-5xl font-bold text-white inline-flex items-center gap-2">
-            {brandName}
-            <span className="inline-flex items-center">
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-300 to-pink-300">
-                AI
-              </span>
-              <sup className="text-xs text-white/70 ml-1">®</sup>
-            </span>
-          </h3>
+        {/* Brand Logo */}
+        <div className="mb-6 flex items-center justify-center">
+          <Image
+            src="/logo/voice-labs-logo-light.svg"
+            alt="AI-Voice-Labs.com"
+            width={250}
+            height={40}
+            priority
+            className="h-10 md:h-12 lg:h-14 w-auto"
+          />
         </div>
 
         {/* Main Title */}
-        <h2 className="text-2xl md:text-4xl lg:text-5xl font-bold text-white mb-12 leading-tight max-w-4xl mx-auto">
+        <h2 className="text-lg md:text-2xl lg:text-3xl font-bold text-white mb-10 leading-tight max-w-4xl mx-auto">
           {t(titleKey)}
         </h2>
 
         {/* Action Buttons */}
         <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16">
-          {ctaButtons.map((button, index) => (
-            <button
-              key={index}
-              onClick={() => handleButtonClick(button)}
-              className={`
-                group relative px-8 py-4 rounded-full font-semibold text-lg
-                transition-all duration-300 shadow-xl hover:shadow-2xl hover:scale-105
-                min-w-[240px] flex items-center justify-center gap-2
-                ${
-                  button.variant === 'primary'
-                    ? 'bg-gradient-to-r from-pink-500 to-purple-500 text-white hover:from-pink-400 hover:to-purple-400'
-                    : 'bg-transparent border-2 border-pink-400 text-pink-200 hover:bg-pink-500/10'
-                }
-              `}
-            >
-              <span>{t(button.labelKey)}</span>
-              {button.variant === 'secondary' && (
-                <span className="transition-transform group-hover:translate-x-1">→</span>
-              )}
-            </button>
-          ))}
+          {ctaButtons.map((button, index) =>
+            button.variant === 'primary' ? (
+              <GradientButton
+                key={index}
+                size="lg"
+                className="min-w-[240px]"
+                onClick={() => handleButtonClick(button)}
+              >
+                {t(button.labelKey)}
+              </GradientButton>
+            ) : (
+              <button
+                key={index}
+                onClick={() => handleButtonClick(button)}
+                className="group relative px-10 py-4 rounded-xl font-bold text-lg
+                  transition-all duration-300 hover:scale-105
+                  min-w-[240px] flex items-center justify-center gap-2
+                  bg-transparent border-2 border-pink-400 text-pink-200 hover:bg-pink-500/10"
+              >
+                <span>{t(button.labelKey)}</span>
+                <span className="transition-transform group-hover:translate-x-1">&rarr;</span>
+              </button>
+            )
+          )}
         </div>
 
         {/* Features Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-5xl mx-auto">
-          {ctaFeatures.map((feature, index) => (
-            <div
-              key={index}
-              className="flex items-center justify-center gap-3 text-white/90 hover:text-white transition-colors"
-            >
-              <div className="flex-shrink-0 w-10 h-10 rounded-full bg-white/10 flex items-center justify-center backdrop-blur-sm">
-                {feature.icon}
+        <div className="flex justify-center">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {ctaFeatures.map((feature, index) => (
+              <div
+                key={index}
+                className="flex items-center gap-3 text-white/90 hover:text-white transition-colors"
+              >
+                <div className="flex-shrink-0 w-10 h-10 rounded-full bg-white/10 flex items-center justify-center backdrop-blur-sm">
+                  {feature.icon}
+                </div>
+                <span className="text-sm md:text-base font-medium text-left">
+                  {t(feature.labelKey)}
+                </span>
               </div>
-              <span className="text-sm md:text-base font-medium">
-                {t(feature.labelKey)}
-              </span>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </div>
-
-      {/* CSS for animations */}
-      <style jsx>{`
-        @keyframes blob {
-          0%, 100% {
-            transform: translate(0, 0) scale(1);
-          }
-          33% {
-            transform: translate(30px, -50px) scale(1.1);
-          }
-          66% {
-            transform: translate(-20px, 20px) scale(0.9);
-          }
-        }
-        .animate-blob {
-          animation: blob 7s infinite;
-        }
-        .animation-delay-2000 {
-          animation-delay: 2s;
-        }
-        .animation-delay-4000 {
-          animation-delay: 4s;
-        }
-      `}</style>
     </section>
   );
 }

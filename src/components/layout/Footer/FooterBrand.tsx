@@ -1,35 +1,36 @@
 'use client';
 
+import Image from 'next/image';
 import { useLanguage } from '@/contexts/LanguageContext';
 import LanguageSwitcher from '@/components/layout/Navbar/LanguageSwitcher';
 
 /**
  * Footer Brand Section
  *
- * Displays brand name, tagline, and language switcher
+ * Displays brand logo, tagline, and language switcher
  */
 export default function FooterBrand() {
   const { t } = useLanguage();
 
   return (
-    <div className="space-y-6">
-      {/* Brand */}
+    <div className="space-y-4">
+      {/* Brand Logo */}
       <div>
-        <h3 className="text-2xl md:text-3xl font-bold text-white mb-2">
-          {t('common.brand')}
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">
-            AI
-          </span>
-          <sup className="text-xs text-gray-400 ml-1">®</sup>
-        </h3>
-        <p className="text-sm text-gray-400">
+        <Image
+          src="/logo/voice-labs-logo-light.svg"
+          alt="AI-Voice-Labs.com"
+          width={225}
+          height={40}
+          className="h-8 md:h-9 w-auto"
+        />
+        <p className="text-sm text-gray-400 mt-2">
           {t('footer.tagline')}
         </p>
       </div>
 
       {/* Language Selector */}
       <div>
-        <LanguageSwitcher theme="dark" variant="full" />
+        <LanguageSwitcher theme="light" variant="full" dropdownPosition="up" />
       </div>
     </div>
   );

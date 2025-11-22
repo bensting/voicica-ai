@@ -48,10 +48,13 @@ export default function LoginButton() {
         <span className="hidden sm:inline">{t('navbar.login')}</span>
       </button>
 
-      <LoginModal
-        isOpen={isLoginModalOpen}
-        onClose={() => setIsLoginModalOpen(false)}
-      />
+      {/* 只在打开时渲染 Modal，避免 useSearchParams 在静态生成时报错 */}
+      {isLoginModalOpen && (
+        <LoginModal
+          isOpen={isLoginModalOpen}
+          onClose={() => setIsLoginModalOpen(false)}
+        />
+      )}
     </>
   );
 }

@@ -20,14 +20,14 @@ export default function TTSProductInfo() {
     <div className="flex flex-col justify-between">
       {/* Icon and Title */}
       <div>
-        <div className="flex items-center gap-3 mb-6">
-          <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-lg flex items-center justify-center">
-            <Mic className="w-7 h-7 text-white" />
+        <div className="flex items-center gap-3 mb-4">
+          <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-500 rounded-lg flex items-center justify-center">
+            <Mic className="w-5 h-5 text-white" />
           </div>
-          <h3 className="text-2xl font-bold text-white">{t('ttsSamples.productInfo.title')}</h3>
+          <h3 className="text-lg font-bold text-white">{t('ttsSamples.productInfo.title')}</h3>
         </div>
 
-        <h4 className="text-3xl font-bold text-white mb-6">
+        <h4 className="text-xl md:text-2xl font-bold text-white mb-6 leading-tight">
           {t('ttsSamples.productInfo.headline.prefix')}{' '}
           <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">
             {t('ttsSamples.productInfo.headline.highlight')}

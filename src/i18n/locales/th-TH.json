@@ -107,8 +107,11 @@
       "phone": "เบอร์โทรศัพท์"
     },
     "actions": {
+      "save": "บันทึก",
       "saveChanges": "บันทึกการเปลี่ยนแปลง",
-      "cancel": "ยกเลิก"
+      "cancel": "ยกเลิก",
+      "saveSuccess": "บันทึกสำเร็จ",
+      "saveFailed": "บันทึกไม่สำเร็จ กรุณาลองใหม่"
     }
   },
   "generationHistory": {

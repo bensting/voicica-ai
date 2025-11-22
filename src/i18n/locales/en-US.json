@@ -107,8 +107,11 @@
       "phone": "Phone"
     },
     "actions": {
+      "save": "Save",
       "saveChanges": "Save Changes",
-      "cancel": "Cancel"
+      "cancel": "Cancel",
+      "saveSuccess": "Saved successfully",
+      "saveFailed": "Save failed, please try again"
     }
   },
   "generationHistory": {

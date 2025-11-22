@@ -7,7 +7,7 @@ import prisma from '@/lib/prisma';
 import { getCurrentUser, getUserOrAnonymous } from '@/lib/auth-firebase';
 import { uploadImage } from '@/lib/services/r2-storage';
 import { v4 as uuidv4 } from 'uuid';
-import type { UserProfile, CreditsInfo } from '@/types/user';
+import type { UserProfile, CreditsInfo, CreditHistoryItem, CreditHistoryResponse } from '@/types/user';
 
 /**
  * 获取当前用户资料
@@ -302,4 +302,58 @@ export async function getUnifiedCredits(): Promise<CreditsInfo> {
       expires_at: null,
     };
   }
+}
+
+/**
+ * 获取积分历史记录
+ *
+ * @param page - 页码（从1开始）
+ * @param pageSize - 每页数量
+ * @param productType - 可选，按产品类型筛选
+ */
+export async function getCreditHistory(
+  page: number = 1,
+  pageSize: number = 20,
+  productType?: string
+): Promise<CreditHistoryResponse> {
+  const authUser = await getCurrentUser();
+
+  const where = {
+    user_id: authUser.uid,
+    ...(productType && { product_type: productType }),
+  };
+
+  // 并行获取总数和数据
+  const [total, items] = await Promise.all([
+    prisma.credit_history.count({ where }),
+    prisma.credit_history.findMany({
+      where,
+      orderBy: { created_at: 'desc' },
+      skip: (page - 1) * pageSize,
+      take: pageSize,
+      select: {
+        id: true,
+        amount: true,
+        description: true,
+        product_type: true,
+        task_id: true,
+        created_at: true,
+      },
+    }),
+  ]);
+
+  return {
+    items: items.map((item) => ({
+      id: item.id,
+      amount: item.amount,
+      description: item.description,
+      product_type: item.product_type,
+      task_id: item.task_id,
+      created_at: item.created_at.toISOString(),
+    })),
+    total,
+    page,
+    pageSize,
+    hasMore: page * pageSize < total,
+  };
 }

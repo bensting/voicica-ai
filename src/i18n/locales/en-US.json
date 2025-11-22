@@ -457,6 +457,20 @@
     "update": "Update now",
     "later": "Later"
   },
+  "creditHistory": {
+    "title": "Credit History",
+    "empty": "No credit history yet",
+    "date": "Date",
+    "description": "Description",
+    "type": "Type",
+    "amount": "Credits",
+    "pagination": "Page {{current}} of {{total}}",
+    "productType": {
+      "textToSpeech": "Text to Speech",
+      "voiceCloning": "Voice Cloning",
+      "other": "Other"
+    }
+  },
   "countries": {
     "CN": "China",
     "TW": "Taiwan",

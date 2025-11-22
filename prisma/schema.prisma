@@ -31,18 +31,20 @@ model anonymous_users {
 }
 
 model credit_history {
-  user_id     String    @db.VarChar(255)
-  amount      Int
-  task_id     String?   @db.VarChar(255)
-  description String
-  id          Int       @id(map: "pk_credit_history") @default(autoincrement())
-  created_at  DateTime  @default(now()) @db.Timestamptz(6)
-  updated_at  DateTime? @updatedAt @db.Timestamptz(6)
+  user_id      String    @db.VarChar(255)
+  amount       Int
+  task_id      String?   @db.VarChar(255)
+  description  String
+  product_type String?   @db.VarChar(50) // text_to_speech, subscription, signup_bonus, etc.
+  id           Int       @id(map: "pk_credit_history") @default(autoincrement())
+  created_at   DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at   DateTime? @updatedAt @db.Timestamptz(6)
 
   @@index([created_at], map: "idx_credit_history_created_at")
   @@index([task_id], map: "idx_credit_history_task_id")
   @@index([user_id, created_at], map: "idx_credit_history_user_created")
   @@index([user_id], map: "idx_credit_history_user_id")
+  @@index([product_type], map: "idx_credit_history_product_type")
 }
 
 model task_queue {

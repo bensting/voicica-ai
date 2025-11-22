@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { DollarSign, Headphones, Shield, RefreshCw } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { GradientButton } from '@/components/ui';
 
 interface CTAFeature {
   icon: React.ReactNode;
@@ -114,27 +115,30 @@ export default function CTA({
 
         {/* Action Buttons */}
         <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16">
-          {ctaButtons.map((button, index) => (
-            <button
-              key={index}
-              onClick={() => handleButtonClick(button)}
-              className={`
-                group relative px-8 py-4 rounded-full font-semibold text-lg
-                transition-all duration-300 shadow-xl hover:shadow-2xl hover:scale-105
-                min-w-[240px] flex items-center justify-center gap-2
-                ${
-                  button.variant === 'primary'
-                    ? 'bg-gradient-to-r from-pink-500 to-purple-500 text-white hover:from-pink-400 hover:to-purple-400'
-                    : 'bg-transparent border-2 border-pink-400 text-pink-200 hover:bg-pink-500/10'
-                }
-              `}
-            >
-              <span>{t(button.labelKey)}</span>
-              {button.variant === 'secondary' && (
-                <span className="transition-transform group-hover:translate-x-1">→</span>
-              )}
-            </button>
-          ))}
+          {ctaButtons.map((button, index) =>
+            button.variant === 'primary' ? (
+              <GradientButton
+                key={index}
+                size="lg"
+                className="min-w-[240px]"
+                onClick={() => handleButtonClick(button)}
+              >
+                {t(button.labelKey)}
+              </GradientButton>
+            ) : (
+              <button
+                key={index}
+                onClick={() => handleButtonClick(button)}
+                className="group relative px-10 py-4 rounded-xl font-bold text-lg
+                  transition-all duration-300 hover:scale-105
+                  min-w-[240px] flex items-center justify-center gap-2
+                  bg-transparent border-2 border-pink-400 text-pink-200 hover:bg-pink-500/10"
+              >
+                <span>{t(button.labelKey)}</span>
+                <span className="transition-transform group-hover:translate-x-1">&rarr;</span>
+              </button>
+            )
+          )}
         </div>
 
         {/* Features Grid */}
@@ -156,30 +160,6 @@ export default function CTA({
           </div>
         </div>
       </div>
-
-      {/* CSS for animations */}
-      <style jsx>{`
-        @keyframes blob {
-          0%, 100% {
-            transform: translate(0, 0) scale(1);
-          }
-          33% {
-            transform: translate(30px, -50px) scale(1.1);
-          }
-          66% {
-            transform: translate(-20px, 20px) scale(0.9);
-          }
-        }
-        .animate-blob {
-          animation: blob 7s infinite;
-        }
-        .animation-delay-2000 {
-          animation-delay: 2s;
-        }
-        .animation-delay-4000 {
-          animation-delay: 4s;
-        }
-      `}</style>
     </section>
   );
 }

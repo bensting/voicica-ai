@@ -107,8 +107,11 @@
       "phone": "电话"
     },
     "actions": {
+      "save": "保存",
       "saveChanges": "保存更改",
-      "cancel": "取消"
+      "cancel": "取消",
+      "saveSuccess": "保存成功",
+      "saveFailed": "保存失败，请重试"
     }
   },
   "generationHistory": {

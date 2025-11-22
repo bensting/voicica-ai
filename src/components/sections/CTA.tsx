@@ -138,20 +138,22 @@ export default function CTA({
         </div>
 
         {/* Features Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-5xl mx-auto">
-          {ctaFeatures.map((feature, index) => (
-            <div
-              key={index}
-              className="flex items-center justify-center gap-3 text-white/90 hover:text-white transition-colors"
-            >
-              <div className="flex-shrink-0 w-10 h-10 rounded-full bg-white/10 flex items-center justify-center backdrop-blur-sm">
-                {feature.icon}
+        <div className="flex justify-center">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {ctaFeatures.map((feature, index) => (
+              <div
+                key={index}
+                className="flex items-center gap-3 text-white/90 hover:text-white transition-colors"
+              >
+                <div className="flex-shrink-0 w-10 h-10 rounded-full bg-white/10 flex items-center justify-center backdrop-blur-sm">
+                  {feature.icon}
+                </div>
+                <span className="text-sm md:text-base font-medium text-left">
+                  {t(feature.labelKey)}
+                </span>
               </div>
-              <span className="text-sm md:text-base font-medium">
-                {t(feature.labelKey)}
-              </span>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </div>
 

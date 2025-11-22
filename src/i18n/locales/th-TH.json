@@ -119,7 +119,8 @@
     "benefits": {
       "title": "สิทธิประโยชน์ของฉัน",
       "voiceCredits": "เครดิตเสียง",
-      "refresh": "รีเฟรช"
+      "refresh": "รีเฟรช",
+      "viewHistory": "ดูประวัติ"
     }
   },
   "generationHistory": {

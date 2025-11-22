@@ -119,7 +119,8 @@
     "benefits": {
       "title": "My Benefits",
       "voiceCredits": "Voice Credits",
-      "refresh": "Refresh"
+      "refresh": "Refresh",
+      "viewHistory": "View History"
     }
   },
   "generationHistory": {

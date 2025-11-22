@@ -119,7 +119,8 @@
     "benefits": {
       "title": "我的權益",
       "voiceCredits": "語音積分",
-      "refresh": "重新整理"
+      "refresh": "重新整理",
+      "viewHistory": "查看歷史"
     }
   },
   "generationHistory": {

@@ -2,6 +2,7 @@
 
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
+import { useUser } from '@/contexts/UserContext';
 import { ReactNode } from 'react';
 
 /**
@@ -10,19 +11,23 @@ import { ReactNode } from 'react';
  * 策略：使用 CSS opacity 隐藏内容，直到以下条件都满足：
  * - 语言文件加载完成
  * - 用户认证状态检查完成
+ * - 用户资料加载完成（已登录用户）
  *
  * 这样可以避免：
  * - 闪现翻译 key
  * - 用户登录状态闪烁
+ * - 积分数据延迟显示
  * - 不会阻塞 SSR
  * - 平滑过渡效果
  */
 export default function LanguageLoadingWrapper({ children }: { children: ReactNode }) {
   const { isReady: isLanguageReady } = useLanguage();
-  const { loading: isAuthLoading } = useFirebaseAuth();
+  const { user, loading: isAuthLoading } = useFirebaseAuth();
+  const { loading: isProfileLoading } = useUser();
 
-  // 同时等待语言和认证状态
-  const isAppReady = isLanguageReady && !isAuthLoading;
+  // 同时等待语言、认证状态、以及用户资料（已登录用户）
+  // 匿名用户不需要等待 profile
+  const isAppReady = isLanguageReady && !isAuthLoading && (!user || !isProfileLoading);
 
   return (
     <>

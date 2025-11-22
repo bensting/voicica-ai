@@ -120,6 +120,8 @@ export default function MyBenefitsCard({ credits, onRefresh }: MyBenefitsCardPro
           label={t('settings.benefits.voiceCredits')}
           value={credits}
           valueColor="text-purple-600"
+          historyLink="/studio/settings/credit-history"
+          historyText={t('settings.benefits.viewHistory')}
         />
 
         {/* 未来可以添加更多积分类型，例如：

@@ -29,7 +29,7 @@ export default function FooterBrand() {
 
       {/* Language Selector */}
       <div>
-        <LanguageSwitcher theme="dark" variant="full" />
+        <LanguageSwitcher theme="light" variant="full" dropdownPosition="up" />
       </div>
     </div>
   );

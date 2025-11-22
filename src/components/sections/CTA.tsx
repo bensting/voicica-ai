@@ -30,7 +30,7 @@ interface CTAProps {
  * and feature highlights. Designed to convert visitors into users.
  */
 export default function CTA({
-  brandName = 'AI Voice Labs',
+  brandName = 'AI-Voice-Labs',
   titleKey,
   buttons,
   features,
@@ -100,7 +100,7 @@ export default function CTA({
             {brandName}
             <span className="inline-flex items-center">
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-300 to-pink-300">
-                AI
+                .com
               </span>
               <sup className="text-xs text-white/70 ml-1">®</sup>
             </span>

@@ -7,12 +7,15 @@ interface LanguageSwitcherProps {
   theme?: 'light' | 'dark';
   variant?: 'full' | 'compact';
   showArrow?: boolean;
+  /** 下拉菜单弹出方向 */
+  dropdownPosition?: 'up' | 'down';
 }
 
 export default function LanguageSwitcher({
   theme = 'light',
   variant = 'full',
-  showArrow = true
+  showArrow = true,
+  dropdownPosition = 'down'
 }: LanguageSwitcherProps = {}) {
   const { locale, setLocale, isReady } = useLanguage();
   const [isOpen, setIsOpen] = useState(false);
@@ -41,10 +44,15 @@ export default function LanguageSwitcher({
     : 'text-white hover:text-purple-400';
 
   // 弹出层统一白色背景
-  const dropdownStyles = 'bg-white border-gray-200';
-  const itemStyles = 'hover:bg-purple-50 text-gray-700';
+  const dropdownStyles = 'bg-white border-gray-200 shadow-xl';
+  const itemStyles = 'text-gray-700 hover:bg-purple-100 hover:text-purple-700';
   const activeItemStyles = 'bg-purple-50 text-purple-600 font-medium';
   const subTextStyles = 'text-gray-500';
+
+  // 下拉菜单位置样式
+  const positionStyles = dropdownPosition === 'up'
+    ? 'bottom-full mb-2 left-0'
+    : 'top-full mt-2 right-0';
 
   return (
     <div className="relative" ref={dropdownRef}>
@@ -80,7 +88,7 @@ export default function LanguageSwitcher({
 
       {/* 下拉菜单 */}
       {isOpen && (
-        <div className={`absolute right-0 mt-2 w-48 rounded-lg shadow-lg border py-1 z-50 ${dropdownStyles}`}>
+        <div className={`absolute w-48 rounded-lg border py-1 z-50 ${positionStyles} ${dropdownStyles}`}>
           {locales.map((loc) => (
             <button
               key={loc.code}

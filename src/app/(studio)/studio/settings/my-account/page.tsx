@@ -1,6 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 import { useUser } from '@/contexts/UserContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import ProfilePictureUpload from '@/components/features/settings/my-account/ProfilePictureUpload';
@@ -9,6 +11,8 @@ import PhoneField from '@/components/features/settings/my-account/PhoneField';
 import ActionButtons from '@/components/features/settings/my-account/ActionButtons';
 
 export default function MyAccountPage() {
+  const router = useRouter();
+  const { user, loading: authLoading } = useFirebaseAuth();
   const { profile, loading } = useUser();
   const { t } = useLanguage();
   const [formData, setFormData] = useState({
@@ -17,6 +21,14 @@ export default function MyAccountPage() {
     phone: '',
     countryCode: '+66'
   });
+
+  // 检查登录状态，未登录则重定向到登录页
+  useEffect(() => {
+    if (!authLoading && !user) {
+      const currentPath = window.location.pathname;
+      router.push(`/studio/login?returnUrl=${encodeURIComponent(currentPath)}`);
+    }
+  }, [user, authLoading, router]);
 
   // 当 profile 加载完成后，更新表单数据
   useEffect(() => {
@@ -52,7 +64,8 @@ export default function MyAccountPage() {
     });
   };
 
-  if (loading) {
+  // 认证加载中或数据加载中，显示加载状态
+  if (authLoading || loading) {
     return (
       <div className="animate-pulse">
         <div className="bg-white rounded-lg p-6">
@@ -63,6 +76,11 @@ export default function MyAccountPage() {
         </div>
       </div>
     );
+  }
+
+  // 未登录，不渲染内容（等待重定向）
+  if (!user) {
+    return null;
   }
 
   return (

@@ -38,7 +38,7 @@ export default function StudioTTSPage() {
   const { locale, isReady: isLocaleReady, t } = useLanguage();
   const { user, loading: authLoading } = useFirebaseAuth();
   const { setTitle } = useStudio();
-  const { credits, refreshCredits } = useCredits();
+  const { credits, loading: creditsLoading, refreshCredits } = useCredits();
   const [isAudioModalOpen, setIsAudioModalOpen] = useState(false);
   const [isVoiceSelectorOpen, setIsVoiceSelectorOpen] = useState(false);
   const [isGeneratingModalOpen, setIsGeneratingModalOpen] = useState(false);
@@ -236,6 +236,7 @@ export default function StudioTTSPage() {
               availableCharacters={availableCharacters}
               disabled={isGenerating}
               remainingCredits={credits}
+              creditsLoading={creditsLoading}
               onClear={handleClearText}
             />
           </div>
@@ -311,6 +312,7 @@ export default function StudioTTSPage() {
                   isGenerating={isGenerating}
                   canGenerate={canGenerate}
                   remainingCredits={credits}
+                  creditsLoading={creditsLoading}
                   onClear={handleClearText}
                 />
               </div>

@@ -27,7 +27,7 @@ export default function LoginButton() {
 
   // 已登录显示用户菜单
   if (user) {
-    return <UserMenu />;
+    return <UserMenu size="sm" />;
   }
 
   // 未登录显示 Login 按钮（移动端和桌面端都使用 Modal）

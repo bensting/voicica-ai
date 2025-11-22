@@ -3,7 +3,7 @@ import Image from 'next/image';
 
 export default function Logo() {
   return (
-    <Link href="/" className="flex items-center hover:opacity-80 transition-opacity">
+    <Link href="/" className="flex items-center hover:opacity-80 transition-opacity md:-ml-2">
       <Image
         src="/logo/voice-labs-logo-dark.svg"
         alt="AI-Voice-Labs.com"

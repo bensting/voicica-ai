@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 
@@ -12,37 +12,20 @@ import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
  * - 检测是否为回访用户
  * - 支持 returnUrl 参数，登录成功后返回原页面
  *
- * @param options.redirectOnLogin - 登录成功后是否自动重定向（默认 true）
- * @param options.defaultReturnUrl - 默认重定向地址（默认 '/studio/tts'）
+ * 注意：此 hook 使用了 useSearchParams，使用它的组件需要条件渲染
+ * 避免在静态生成时调用（如 Modal 组件应在打开时才渲染）
  */
-interface UseLoginOptions {
-  redirectOnLogin?: boolean;
-  defaultReturnUrl?: string;
-}
-
-export function useLogin(options: UseLoginOptions = {}) {
-  const { redirectOnLogin = true, defaultReturnUrl = '/studio/tts' } = options;
-
+export function useLogin() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isReturningUser, setIsReturningUser] = useState(false);
 
   const { user, signInWithGoogle, signInWithApple, signInWithTwitter } = useFirebaseAuth();
   const router = useRouter();
-
-  // 安全地获取 searchParams，在 Modal 场景下可能不需要
-  let searchParamsValue: URLSearchParams | null = null;
-  try {
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    searchParamsValue = useSearchParams();
-  } catch {
-    // 在非页面组件中可能会失败，忽略
-  }
+  const searchParams = useSearchParams();
 
   // 获取登录成功后的重定向地址
-  const returnUrl = useMemo(() => {
-    return searchParamsValue?.get('returnUrl') || defaultReturnUrl;
-  }, [searchParamsValue, defaultReturnUrl]);
+  const returnUrl = searchParams.get('returnUrl') || '/studio/tts';
 
   // 检测回访用户
   useEffect(() => {

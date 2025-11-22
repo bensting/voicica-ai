@@ -95,8 +95,8 @@ export default function CTA({
 
       <div className="relative z-10 max-w-6xl mx-auto text-center">
         {/* Brand Name */}
-        <div className="mb-6">
-          <h3 className="text-4xl md:text-5xl font-bold text-white inline-flex items-center gap-2">
+        <div className="mb-4">
+          <h3 className="text-2xl md:text-4xl font-bold text-white inline-flex items-center gap-1">
             {brandName}
             <span className="inline-flex items-center">
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-300 to-pink-300">
@@ -108,7 +108,7 @@ export default function CTA({
         </div>
 
         {/* Main Title */}
-        <h2 className="text-2xl md:text-4xl lg:text-5xl font-bold text-white mb-12 leading-tight max-w-4xl mx-auto">
+        <h2 className="text-lg md:text-2xl lg:text-3xl font-bold text-white mb-10 leading-tight max-w-4xl mx-auto">
           {t(titleKey)}
         </h2>
 

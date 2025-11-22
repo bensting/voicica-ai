@@ -10,11 +10,12 @@ import ProfilePictureUpload from '@/components/features/settings/my-account/Prof
 import FormField from '@/components/features/settings/my-account/FormField';
 import PhoneField from '@/components/features/settings/my-account/PhoneField';
 import ActionButtons from '@/components/features/settings/my-account/ActionButtons';
+import MyBenefitsCard from '@/components/features/settings/my-account/MyBenefitsCard';
 
 export default function MyAccountPage() {
   const router = useRouter();
   const { user, loading: authLoading } = useFirebaseAuth();
-  const { profile, loading, refreshProfile } = useUser();
+  const { profile, loading, refreshProfile, refreshProfileSilent } = useUser();
   const { t } = useLanguage();
   const [formData, setFormData] = useState({
     name: '',
@@ -122,9 +123,17 @@ export default function MyAccountPage() {
   }
 
   return (
-    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-      {/* Section Header */}
-      <div className="flex items-center gap-3 mb-6">
+    <div className="space-y-6">
+      {/* My Benefits Card */}
+      <MyBenefitsCard
+        credits={profile?.credits ?? 0}
+        onRefresh={refreshProfileSilent}
+      />
+
+      {/* Basic Info Card */}
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+        {/* Section Header */}
+        <div className="flex items-center gap-3 mb-6">
         <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
           <svg className="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
@@ -172,14 +181,15 @@ export default function MyAccountPage() {
         />
       </div>
 
-      {/* Action Buttons */}
-      <ActionButtons
-        onSave={handleSave}
-        onCancel={handleCancel}
-        saveText={t('settings.actions.save')}
-        cancelText={t('settings.actions.cancel')}
-        isLoading={isSaving}
-      />
+        {/* Action Buttons */}
+        <ActionButtons
+          onSave={handleSave}
+          onCancel={handleCancel}
+          saveText={t('settings.actions.save')}
+          cancelText={t('settings.actions.cancel')}
+          isLoading={isSaving}
+        />
+      </div>
     </div>
   );
 }

@@ -115,6 +115,11 @@
       "cancel": "取消",
       "saveSuccess": "保存成功",
       "saveFailed": "保存失败，请重试"
+    },
+    "benefits": {
+      "title": "我的权益",
+      "voiceCredits": "语音积分",
+      "refresh": "刷新"
     }
   },
   "generationHistory": {

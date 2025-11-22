@@ -115,6 +115,11 @@
       "cancel": "ยกเลิก",
       "saveSuccess": "บันทึกสำเร็จ",
       "saveFailed": "บันทึกไม่สำเร็จ กรุณาลองใหม่"
+    },
+    "benefits": {
+      "title": "สิทธิประโยชน์ของฉัน",
+      "voiceCredits": "เครดิตเสียง",
+      "refresh": "รีเฟรช"
     }
   },
   "generationHistory": {

@@ -115,6 +115,11 @@
       "cancel": "Cancel",
       "saveSuccess": "Saved successfully",
       "saveFailed": "Save failed, please try again"
+    },
+    "benefits": {
+      "title": "My Benefits",
+      "voiceCredits": "Voice Credits",
+      "refresh": "Refresh"
     }
   },
   "generationHistory": {

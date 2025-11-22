@@ -1,6 +1,5 @@
 'use client';
 
-import { useLanguage } from '@/contexts/LanguageContext';
 import FooterBrand from './FooterBrand';
 import FooterLinks from './FooterLinks';
 import { FOOTER_SECTIONS } from '@/config/footerConfig';
@@ -15,8 +14,6 @@ import { FOOTER_SECTIONS } from '@/config/footerConfig';
  * 4. Star Products Links
  */
 export default function Footer() {
-  const { t } = useLanguage();
-
   return (
     <footer className="bg-gray-900 text-gray-300 py-12 md:py-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -37,7 +34,7 @@ export default function Footer() {
         {/* Copyright */}
         <div className="mt-12 pt-8 border-t border-gray-800 text-center text-sm text-gray-500">
           <p>
-            &copy; {new Date().getFullYear()} {t('common.brand')}. {t('footer.copyright')}
+            &copy; {new Date().getFullYear()} AI-Voice-Labs.com. All rights reserved.
           </p>
           {process.env.NEXT_PUBLIC_APP_VERSION && (
             <p className="mt-2 text-xs text-gray-600">

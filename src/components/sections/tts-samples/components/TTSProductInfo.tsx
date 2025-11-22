@@ -27,7 +27,7 @@ export default function TTSProductInfo() {
           <h3 className="text-lg font-bold text-white">{t('ttsSamples.productInfo.title')}</h3>
         </div>
 
-        <h4 className="text-xl md:text-2xl font-bold text-white mb-6 leading-tight">
+        <h4 className="text-lg md:text-xl font-bold text-white mb-5 leading-snug">
           {t('ttsSamples.productInfo.headline.prefix')}{' '}
           <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">
             {t('ttsSamples.productInfo.headline.highlight')}

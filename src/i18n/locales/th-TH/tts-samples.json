@@ -36,6 +36,13 @@
       "unlockTitle": "ทดลองใช้เสียงเพิ่มเติมฟรี",
       "unlockSubtitle": "เสียง AI กว่า 3200+",
       "noVoices": "ไม่มีเสียงสำหรับภาษานี้"
+    },
+    "demoPanel": {
+      "textPlaceholder": "ป้อนข้อความเพื่อแปลงเป็นเสียง...",
+      "enhanceVoice": "ปรับปรุงเสียง",
+      "listenButton": "ฟัง",
+      "playingButton": "กำลังเล่น...",
+      "loadingConfig": "กำลังโหลดการตั้งค่า..."
     }
   }
 }

@@ -100,7 +100,7 @@ export default function CTA({
           <Image
             src="/logo/voice-labs-logo-light.svg"
             alt="AI-Voice-Labs.com"
-            width={280}
+            width={250}
             height={40}
             priority
             className="h-10 md:h-12 lg:h-14 w-auto"

@@ -161,6 +161,7 @@ model users {
   email              String?              @db.VarChar(255)
   name               String?              @db.VarChar(255)
   photo_url          String?              @db.VarChar(500)
+  phone              String?              @db.VarChar(20)
   credits            Int
   total_credits_used Int
   id                 Int                  @id(map: "pk_users") @default(autoincrement())

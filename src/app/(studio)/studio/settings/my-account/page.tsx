@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 import { useUser } from '@/contexts/UserContext';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { updateUserProfile } from '@/actions/user';
 import ProfilePictureUpload from '@/components/features/settings/my-account/ProfilePictureUpload';
 import FormField from '@/components/features/settings/my-account/FormField';
 import PhoneField from '@/components/features/settings/my-account/PhoneField';
@@ -13,14 +14,16 @@ import ActionButtons from '@/components/features/settings/my-account/ActionButto
 export default function MyAccountPage() {
   const router = useRouter();
   const { user, loading: authLoading } = useFirebaseAuth();
-  const { profile, loading } = useUser();
+  const { profile, loading, refreshProfile } = useUser();
   const { t } = useLanguage();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     phone: '',
-    countryCode: '+66'
+    countryCode: '+66',
+    photo_url: ''
   });
+  const [isSaving, setIsSaving] = useState(false);
 
   // 检查登录状态，未登录则重定向到登录页
   useEffect(() => {
@@ -30,14 +33,27 @@ export default function MyAccountPage() {
     }
   }, [user, authLoading, router]);
 
+  // 解析电话号码为国家代码和号码
+  const parsePhone = (phone: string | null) => {
+    if (!phone) return { countryCode: '+86', phoneNumber: '' };
+    // 尝试匹配国家代码
+    const match = phone.match(/^(\+\d{1,4})(.*)$/);
+    if (match) {
+      return { countryCode: match[1], phoneNumber: match[2] };
+    }
+    return { countryCode: '+86', phoneNumber: phone };
+  };
+
   // 当 profile 加载完成后，更新表单数据
   useEffect(() => {
     if (profile) {
+      const { countryCode, phoneNumber } = parsePhone(profile.phone || null);
       setFormData({
         name: profile.name || '',
         email: profile.email || '',
-        phone: '',
-        countryCode: '+66'
+        phone: phoneNumber,
+        countryCode: countryCode,
+        photo_url: profile.photo_url || ''
       });
     }
   }, [profile]);
@@ -49,19 +65,43 @@ export default function MyAccountPage() {
     }));
   };
 
-  const handleSave = () => {
-    // TODO: Implement save functionality
-    console.log('Saving settings:', formData);
+  const handleSave = async () => {
+    setIsSaving(true);
+    try {
+      // 组合完整电话号码
+      const fullPhone = formData.phone
+        ? `${formData.countryCode}${formData.phone.replace(/^0+/, '')}`
+        : undefined;
+
+      await updateUserProfile({
+        name: formData.name || undefined,
+        phone: fullPhone,
+      });
+
+      // 刷新用户资料
+      await refreshProfile();
+
+      alert(t('settings.actions.saveSuccess') || 'Changes saved successfully!');
+    } catch (error) {
+      console.error('Error saving profile:', error);
+      alert(t('settings.actions.saveFailed') || 'Failed to save changes. Please try again.');
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const handleCancel = () => {
     // Reset form to original values
-    setFormData({
-      name: profile?.name || '',
-      email: profile?.email || '',
-      phone: '',
-      countryCode: '+66'
-    });
+    if (profile) {
+      const { countryCode, phoneNumber } = parsePhone(profile.phone || null);
+      setFormData({
+        name: profile.name || '',
+        email: profile.email || '',
+        phone: phoneNumber,
+        countryCode: countryCode,
+        photo_url: profile.photo_url || ''
+      });
+    }
   };
 
   // 认证加载中或数据加载中，显示加载状态
@@ -139,6 +179,7 @@ export default function MyAccountPage() {
         onCancel={handleCancel}
         saveText={t('settings.actions.saveChanges')}
         cancelText={t('settings.actions.cancel')}
+        isLoading={isSaving}
       />
     </div>
   );

@@ -93,8 +93,8 @@ export default function Hero({
       {/* Content */}
       <div className="relative z-10 max-w-7xl mx-auto px-4 py-20 text-center">
         {/* Brand Name */}
-        <div className="mb-8">
-          <h2 className="text-2xl md:text-3xl font-bold text-white">
+        <div className="mb-6">
+          <h2 className="text-xl md:text-2xl font-bold text-white">
             {brandName}{''}
             <span className="inline-flex items-center">
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">
@@ -106,17 +106,17 @@ export default function Hero({
         </div>
 
         {/* Main Title */}
-        <h1 className={`font-bold text-white mb-6 ${
+        <h1 className={`font-bold text-white mb-4 ${
           isThaiLang
-            ? 'text-3xl sm:text-4xl md:text-5xl lg:text-6xl leading-snug'
-            : 'text-4xl md:text-5xl lg:text-7xl leading-tight'
+            ? 'text-2xl sm:text-3xl md:text-4xl lg:text-5xl leading-snug'
+            : 'text-3xl md:text-4xl lg:text-5xl leading-tight'
         }`}>
           <span className="block">{title}</span>
           <span className={`block relative ${isThaiLang ? 'break-all px-2' : 'overflow-hidden'}`}>
             <span className={`text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-400 to-purple-500 ${
               isThaiLang
                 ? ''
-                : 'animate-text-reveal text-3xl md:text-4xl lg:text-6xl'
+                : 'animate-text-reveal text-2xl md:text-3xl lg:text-4xl'
             }`}>
               {highlight}
             </span>
@@ -124,22 +124,22 @@ export default function Hero({
         </h1>
 
         {/* Description */}
-        <p className={`text-white/90 max-w-4xl mx-auto mb-12 leading-relaxed ${
+        <p className={`text-white/90 max-w-3xl mx-auto mb-10 leading-relaxed ${
           isThaiLang
-            ? 'text-base sm:text-lg md:text-xl lg:text-xl'
-            : 'text-lg md:text-xl lg:text-2xl'
+            ? 'text-sm sm:text-base md:text-lg'
+            : 'text-base md:text-lg lg:text-xl'
         }`}>
           {description}
         </p>
 
         {/* Action Buttons */}
-        <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
+        <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
           {actionButtons.map((button, index) => (
             <GradientButton
               key={index}
               onClick={button.onClick}
-              size="lg"
-              className="w-full sm:w-auto min-w-[280px] py-5 rounded-2xl"
+              size="md"
+              className="w-full sm:w-auto min-w-[240px] py-4 rounded-xl"
             >
               <span>{button.text}</span>
               {button.icon}

@@ -9,6 +9,7 @@ export interface UserProfile {
   email: string | null;
   name: string | null;
   photo_url: string | null;
+  phone: string | null; // 电话号码（含国家代码）
   credits: number;
   total_credits_used: number;
 

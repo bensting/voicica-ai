@@ -7,9 +7,10 @@ import { uploadAvatar } from '@/actions/user';
 interface ProfilePictureUploadProps {
   currentPhoto?: string | null;
   onPhotoChange: (url: string) => void;
+  onUploadSuccess?: () => void;
 }
 
-export default function ProfilePictureUpload({ currentPhoto, onPhotoChange }: ProfilePictureUploadProps) {
+export default function ProfilePictureUpload({ currentPhoto, onPhotoChange, onUploadSuccess }: ProfilePictureUploadProps) {
   const [isUploading, setIsUploading] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
@@ -45,6 +46,8 @@ export default function ProfilePictureUpload({ currentPhoto, onPhotoChange }: Pr
       if (result.success && result.url) {
         onPhotoChange(result.url);
         setPreviewUrl(null); // 清除本地预览，使用服务器 URL
+        // 触发上传成功回调，刷新用户数据
+        onUploadSuccess?.();
       } else {
         alert(result.message || 'Failed to upload image');
         setPreviewUrl(null); // 上传失败，恢复原头像

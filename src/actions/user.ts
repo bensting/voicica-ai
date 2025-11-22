@@ -61,15 +61,42 @@ export async function updateUserProfile(data: {
 }): Promise<UserProfile> {
   const authUser = await getCurrentUser();
 
+  console.log(`🔄 [User] 更新用户资料: ${authUser.uid}`, data);
+
+  // 构建更新数据，只更新传入的字段
+  const updateData: { name?: string; photo_url?: string; phone?: string; updated_at: Date } = {
+    updated_at: new Date(),
+  };
+
+  // 只有当字段被明确传入时才更新（包括空字符串）
+  if (data.name !== undefined) {
+    updateData.name = data.name;
+  }
+  if (data.photo_url !== undefined) {
+    updateData.photo_url = data.photo_url;
+  }
+  if (data.phone !== undefined) {
+    updateData.phone = data.phone;
+  }
+
+  console.log(`📝 [User] 实际更新数据:`, updateData);
+
+  // 先查询确认用户存在
+  const existingUser = await prisma.users.findUnique({
+    where: { user_id: authUser.uid },
+  });
+  console.log(`🔍 [User] 查询到现有用户:`, existingUser ? `id=${existingUser.id}, name=${existingUser.name}` : '未找到');
+
+  if (!existingUser) {
+    throw new Error(`用户不存在: ${authUser.uid}`);
+  }
+
   const user = await prisma.users.update({
     where: { user_id: authUser.uid },
-    data: {
-      name: data.name,
-      photo_url: data.photo_url,
-      phone: data.phone,
-      updated_at: new Date(),
-    },
+    data: updateData,
   });
+
+  console.log(`✅ [User] 用户资料已更新: ${authUser.uid}, name=${user.name}, phone=${user.phone}, photo_url=${user.photo_url}`);
 
   return {
     id: user.id,

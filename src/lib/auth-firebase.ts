@@ -8,6 +8,7 @@ import { headers } from 'next/headers';
 import { auth as adminAuth } from './firebase-admin';
 import prisma from './prisma';
 import crypto from 'crypto';
+import { appConfig } from '@/config/appConfig';
 
 export interface AuthUser {
   uid: string;
@@ -21,11 +22,6 @@ export interface UnifiedUser {
   is_anonymous: boolean;
 }
 
-// 匿名用户默认积分
-const DEFAULT_ANONYMOUS_CREDITS = 1000;
-
-// 匿名用户过期天数
-const ANONYMOUS_USER_EXPIRY_DAYS = 30;
 
 /**
  * 从 HTTP Header 获取 Firebase ID Token 并验证
@@ -95,7 +91,7 @@ async function createOrUpdateFirebaseUser(decodedToken: {
         email: decodedToken.email || `${decodedToken.uid}@firebase.user`,
         name: decodedToken.name || 'Firebase User',
         photo_url: decodedToken.picture,
-        credits: 1000, // 新用户初始积分
+        credits: appConfig.credits.registered_user,
         total_credits_used: 0,
       },
     });
@@ -165,7 +161,7 @@ async function createOrGetAnonymousUser(
 
   // 创建新匿名用户
   const expiresAt = new Date();
-  expiresAt.setDate(expiresAt.getDate() + ANONYMOUS_USER_EXPIRY_DAYS);
+  expiresAt.setDate(expiresAt.getDate() + appConfig.anonymous_user.expiry_days);
 
   anonUser = await prisma.anonymous_users.create({
     data: {
@@ -173,7 +169,7 @@ async function createOrGetAnonymousUser(
       device_fingerprint: deviceFingerprint,
       ip_address: ipAddress,
       user_agent: userAgent,
-      credits: DEFAULT_ANONYMOUS_CREDITS,
+      credits: appConfig.credits.anonymous_user,
       total_credits_used: 0,
       is_anonymous: true,
       expires_at: expiresAt,
@@ -181,7 +177,7 @@ async function createOrGetAnonymousUser(
     },
   });
 
-  console.log(`✅ 新匿名用户创建: ${anonymousUserId}, 初始积分: ${DEFAULT_ANONYMOUS_CREDITS}`);
+  console.log(`✅ 新匿名用户创建: ${anonymousUserId}, 初始积分: ${appConfig.credits.anonymous_user}`);
   return { user_id: anonUser.user_id, credits: anonUser.credits };
 }
 

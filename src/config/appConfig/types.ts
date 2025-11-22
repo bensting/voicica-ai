@@ -23,9 +23,29 @@ export interface TtsSamplesConfig {
 }
 
 /**
+ * 用户积分配置
+ */
+export interface CreditsConfig {
+  /** 匿名用户初始积分 */
+  anonymous_user: number;
+  /** 注册用户初始积分 */
+  registered_user: number;
+}
+
+/**
+ * 匿名用户配置
+ */
+export interface AnonymousUserConfig {
+  /** 匿名用户过期天数 */
+  expiry_days: number;
+}
+
+/**
  * 应用配置
  */
 export interface AppConfig {
   voice_cost: VoiceCostConfig;
   tts_samples: TtsSamplesConfig;
+  credits: CreditsConfig;
+  anonymous_user: AnonymousUserConfig;
 }

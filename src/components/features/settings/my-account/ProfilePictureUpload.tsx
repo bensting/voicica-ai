@@ -7,11 +7,13 @@ import { useLanguage } from '@/contexts/LanguageContext';
 
 interface ProfilePictureUploadProps {
   currentPhoto?: string | null;
+  userName?: string | null;
+  email?: string | null;
   onPhotoChange: (url: string) => void;
   onUploadSuccess?: () => void;
 }
 
-export default function ProfilePictureUpload({ currentPhoto, onPhotoChange, onUploadSuccess }: ProfilePictureUploadProps) {
+export default function ProfilePictureUpload({ currentPhoto, userName, email, onPhotoChange, onUploadSuccess }: ProfilePictureUploadProps) {
   const { t } = useLanguage();
   const [isUploading, setIsUploading] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -103,16 +105,26 @@ export default function ProfilePictureUpload({ currentPhoto, onPhotoChange, onUp
         </div>
       </div>
 
-      {/* Label and Description */}
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
-          {t('settings.basicInfo.profilePicture')}
-        </label>
-        <p className="text-sm text-gray-500">
+      {/* User Info */}
+      <div className="flex-1">
+        {/* Name and Email */}
+        {(userName || email) && (
+          <div className="mb-2">
+            {userName && (
+              <p className="text-base font-medium text-gray-900">{userName}</p>
+            )}
+            {email && (
+              <p className="text-sm text-gray-500">{email}</p>
+            )}
+          </div>
+        )}
+
+        {/* Upload Hint */}
+        <p className="text-xs text-gray-400">
           {t('settings.basicInfo.profilePictureHint')}
         </p>
         {isUploading && (
-          <p className="text-sm text-blue-600 mt-1">{t('settings.basicInfo.uploading')}</p>
+          <p className="text-xs text-blue-600 mt-1">{t('settings.basicInfo.uploading')}</p>
         )}
       </div>
     </div>

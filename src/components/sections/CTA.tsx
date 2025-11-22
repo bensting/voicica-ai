@@ -46,7 +46,6 @@ export default function CTA({
       labelKey: 'cta.getStarted',
       href: '/studio/tts',
       variant: 'primary',
-      openInNewWindow: true,
     },
     {
       labelKey: 'cta.viewPricing',

@@ -102,13 +102,25 @@
     },
     "basicInfo": {
       "title": "Basic Info",
+      "profilePicture": "Profile Picture",
+      "profilePictureHint": "PNG or JPG, images with equal width and height are recommended",
+      "uploading": "Uploading...",
       "nameSurname": "Name & Surname",
       "email": "Email Address",
       "phone": "Phone"
     },
     "actions": {
+      "save": "Save",
       "saveChanges": "Save Changes",
-      "cancel": "Cancel"
+      "cancel": "Cancel",
+      "saveSuccess": "Saved successfully",
+      "saveFailed": "Save failed, please try again"
+    },
+    "benefits": {
+      "title": "My Benefits",
+      "voiceCredits": "Voice Credits",
+      "refresh": "Refresh",
+      "viewHistory": "View History"
     }
   },
   "generationHistory": {
@@ -444,6 +456,20 @@
     "updateDescription": "A new version of the app is available. Click update to get the latest features and improvements.",
     "update": "Update now",
     "later": "Later"
+  },
+  "creditHistory": {
+    "title": "Credit History",
+    "empty": "No credit history yet",
+    "date": "Date",
+    "description": "Description",
+    "type": "Type",
+    "amount": "Credits",
+    "pagination": "Page {{current}} of {{total}}",
+    "productType": {
+      "textToSpeech": "Text to Speech",
+      "voiceCloning": "Voice Cloning",
+      "other": "Other"
+    }
   },
   "countries": {
     "CN": "China",

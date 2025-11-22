@@ -2,14 +2,21 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
+import { uploadAvatar } from '@/actions/user';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface ProfilePictureUploadProps {
   currentPhoto?: string | null;
+  userName?: string | null;
+  email?: string | null;
   onPhotoChange: (url: string) => void;
+  onUploadSuccess?: () => void;
 }
 
-export default function ProfilePictureUpload({ currentPhoto, onPhotoChange }: ProfilePictureUploadProps) {
+export default function ProfilePictureUpload({ currentPhoto, userName, email, onPhotoChange, onUploadSuccess }: ProfilePictureUploadProps) {
+  const { t } = useLanguage();
   const [isUploading, setIsUploading] = useState(false);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -27,33 +34,53 @@ export default function ProfilePictureUpload({ currentPhoto, onPhotoChange }: Pr
       return;
     }
 
+    // 先显示本地预览
+    const localPreviewUrl = URL.createObjectURL(file);
+    setPreviewUrl(localPreviewUrl);
+
     setIsUploading(true);
 
     try {
-      // TODO: Implement actual file upload to your storage service
-      // For now, create a local URL for preview
-      const url = URL.createObjectURL(file);
-      onPhotoChange(url);
+      // 上传到服务器
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const result = await uploadAvatar(formData);
+
+      if (result.success && result.url) {
+        onPhotoChange(result.url);
+        setPreviewUrl(null); // 清除本地预览，使用服务器 URL
+        // 触发上传成功回调，刷新用户数据
+        onUploadSuccess?.();
+      } else {
+        alert(result.message || 'Failed to upload image');
+        setPreviewUrl(null); // 上传失败，恢复原头像
+      }
     } catch (error) {
       console.error('Error uploading file:', error);
       alert('Failed to upload image. Please try again.');
+      setPreviewUrl(null);
     } finally {
       setIsUploading(false);
     }
   };
+
+  // 显示的图片：优先本地预览 > 当前头像
+  const displayPhoto = previewUrl || currentPhoto;
 
   return (
     <div className="flex items-center gap-4">
       {/* Profile Picture */}
       <div className="relative">
         <div className="w-20 h-20 rounded-full bg-purple-100 flex items-center justify-center overflow-hidden">
-          {currentPhoto ? (
+          {displayPhoto ? (
             <Image
-              src={currentPhoto}
+              src={displayPhoto}
               alt="Profile"
               width={80}
               height={80}
               className="w-full h-full object-cover"
+              unoptimized={previewUrl !== null}
             />
           ) : (
             <svg className="w-8 h-8 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -78,16 +105,26 @@ export default function ProfilePictureUpload({ currentPhoto, onPhotoChange }: Pr
         </div>
       </div>
 
-      {/* Label and Description */}
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
-          Profile Picture
-        </label>
-        <p className="text-sm text-gray-500">
-          PNG or JPG, images with equal width and height are recommended
+      {/* User Info */}
+      <div className="flex-1">
+        {/* Name and Email */}
+        {(userName || email) && (
+          <div className="mb-2">
+            {userName && (
+              <p className="text-base font-medium text-gray-900">{userName}</p>
+            )}
+            {email && (
+              <p className="text-sm text-gray-500">{email}</p>
+            )}
+          </div>
+        )}
+
+        {/* Upload Hint */}
+        <p className="text-xs text-gray-400">
+          {t('settings.basicInfo.profilePictureHint')}
         </p>
         {isUploading && (
-          <p className="text-sm text-blue-600 mt-1">Uploading...</p>
+          <p className="text-xs text-blue-600 mt-1">{t('settings.basicInfo.uploading')}</p>
         )}
       </div>
     </div>

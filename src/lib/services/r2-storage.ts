@@ -74,6 +74,49 @@ export async function uploadAudio(
 }
 
 /**
+ * 上传图片到 R2（用于头像等）
+ */
+export async function uploadImage(
+  imageData: Buffer,
+  fileName: string,
+  contentType: string = 'image/jpeg',
+  folder: string = 'avatars'
+): Promise<string> {
+  const bucketName = process.env.CLOUDFLARE_R2_BUCKET_NAME;
+  const publicUrl = process.env.CLOUDFLARE_R2_PUBLIC_URL;
+
+  if (!bucketName) {
+    throw new Error('CLOUDFLARE_R2_BUCKET_NAME 未配置');
+  }
+
+  const client = getS3Client();
+  const key = `${folder}/${fileName}`;
+
+  console.log(`📤 R2 上传图片: ${key}, 大小: ${imageData.length} bytes`);
+
+  await client.send(
+    new PutObjectCommand({
+      Bucket: bucketName,
+      Key: key,
+      Body: imageData,
+      ContentType: contentType,
+    })
+  );
+
+  // 生成公开 URL
+  let url: string;
+  if (publicUrl) {
+    url = `${publicUrl.replace(/\/$/, '')}/${key}`;
+  } else {
+    const accountId = process.env.CLOUDFLARE_R2_ACCOUNT_ID;
+    url = `https://${bucketName}.${accountId}.r2.dev/${key}`;
+  }
+
+  console.log(`✅ R2 图片上传成功: ${url}`);
+  return url;
+}
+
+/**
  * 删除 R2 中的音频
  */
 export async function deleteAudio(filePath: string): Promise<boolean> {

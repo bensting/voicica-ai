@@ -8,6 +8,9 @@ import { headers } from 'next/headers';
 import { auth as adminAuth } from './firebase-admin';
 import prisma from './prisma';
 import crypto from 'crypto';
+import { v4 as uuidv4 } from 'uuid';
+import { appConfig } from '@/config/appConfig';
+import { ProductType } from '@/config/credit';
 
 export interface AuthUser {
   uid: string;
@@ -21,11 +24,6 @@ export interface UnifiedUser {
   is_anonymous: boolean;
 }
 
-// 匿名用户默认积分
-const DEFAULT_ANONYMOUS_CREDITS = 1000;
-
-// 匿名用户过期天数
-const ANONYMOUS_USER_EXPIRY_DAYS = 30;
 
 /**
  * 从 HTTP Header 获取 Firebase ID Token 并验证
@@ -76,30 +74,46 @@ async function createOrUpdateFirebaseUser(decodedToken: {
   });
 
   if (existingUser) {
-    // 更新用户信息
+    // 只更新 email（email 以 Firebase 为准），name 和 photo_url 保留用户自己设置的值
+    // 只有当数据库中为空时才用 Firebase 的值填充
     await prisma.users.update({
       where: { user_id: decodedToken.uid },
       data: {
         email: decodedToken.email || existingUser.email,
-        name: decodedToken.name || existingUser.name,
-        photo_url: decodedToken.picture || existingUser.photo_url,
+        // 保留用户自己设置的 name 和 photo_url，只有为空时才用 Firebase 填充
+        name: existingUser.name || decodedToken.name,
+        photo_url: existingUser.photo_url || decodedToken.picture,
         updated_at: new Date(),
       },
     });
     console.log(`🔄 [Firebase Auth] 用户信息已更新: ${decodedToken.uid}`);
   } else {
     // 创建新用户
+    const initialCredits = appConfig.credits.registered_user;
+
     await prisma.users.create({
       data: {
         user_id: decodedToken.uid,
         email: decodedToken.email || `${decodedToken.uid}@firebase.user`,
         name: decodedToken.name || 'Firebase User',
         photo_url: decodedToken.picture,
-        credits: 1000, // 新用户初始积分
+        credits: initialCredits,
         total_credits_used: 0,
       },
     });
-    console.log(`✅ [Firebase Auth] 新用户已创建: ${decodedToken.uid}`);
+
+    // 记录初始积分到积分历史表
+    await prisma.credit_history.create({
+      data: {
+        user_id: decodedToken.uid,
+        task_id: `signup_${uuidv4()}`,
+        amount: initialCredits,
+        description: '新用户注册赠送积分',
+        product_type: ProductType.TEXT_TO_SPEECH,
+      },
+    });
+
+    console.log(`✅ [Firebase Auth] 新用户已创建: ${decodedToken.uid}, 赠送积分: ${initialCredits}`);
   }
 }
 
@@ -165,7 +179,8 @@ async function createOrGetAnonymousUser(
 
   // 创建新匿名用户
   const expiresAt = new Date();
-  expiresAt.setDate(expiresAt.getDate() + ANONYMOUS_USER_EXPIRY_DAYS);
+  expiresAt.setDate(expiresAt.getDate() + appConfig.anonymous_user.expiry_days);
+  const initialCredits = appConfig.credits.anonymous_user;
 
   anonUser = await prisma.anonymous_users.create({
     data: {
@@ -173,7 +188,7 @@ async function createOrGetAnonymousUser(
       device_fingerprint: deviceFingerprint,
       ip_address: ipAddress,
       user_agent: userAgent,
-      credits: DEFAULT_ANONYMOUS_CREDITS,
+      credits: initialCredits,
       total_credits_used: 0,
       is_anonymous: true,
       expires_at: expiresAt,
@@ -181,7 +196,18 @@ async function createOrGetAnonymousUser(
     },
   });
 
-  console.log(`✅ 新匿名用户创建: ${anonymousUserId}, 初始积分: ${DEFAULT_ANONYMOUS_CREDITS}`);
+  // 记录初始积分到积分历史表
+  await prisma.credit_history.create({
+    data: {
+      user_id: anonymousUserId,
+      task_id: `anon_signup_${uuidv4()}`,
+      amount: initialCredits,
+      description: '匿名用户初始赠送积分',
+      product_type: ProductType.TEXT_TO_SPEECH,
+    },
+  });
+
+  console.log(`✅ 新匿名用户创建: ${anonymousUserId}, 初始积分: ${initialCredits}`);
   return { user_id: anonUser.user_id, credits: anonUser.credits };
 }
 

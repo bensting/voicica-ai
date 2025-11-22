@@ -5,6 +5,7 @@ import { inngest } from '../client';
 import prisma from '@/lib/prisma';
 import { synthesizeSpeech } from '@/lib/services/azure-tts';
 import { uploadAudio } from '@/lib/services/r2-storage';
+import { ProductType } from '@/config/credit';
 
 export const processTtsTask = inngest.createFunction(
   {
@@ -123,6 +124,7 @@ export const processTtsTask = inngest.createFunction(
               amount: -creditsCost, // 负数表示扣减
               task_id: taskId,
               description: `TTS生成: ${text.substring(0, 30)}${text.length > 30 ? '...' : ''}`,
+              product_type: ProductType.TEXT_TO_SPEECH,
             },
           });
 
@@ -264,6 +266,7 @@ export const processTtsTask = inngest.createFunction(
                 amount: creditsCost, // 正数表示退还
                 task_id: taskId,
                 description: `TTS任务失败，积分退还`,
+                product_type: ProductType.TEXT_TO_SPEECH,
               },
             });
 

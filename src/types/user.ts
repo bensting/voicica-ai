@@ -9,6 +9,7 @@ export interface UserProfile {
   email: string | null;
   name: string | null;
   photo_url: string | null;
+  phone: string | null; // 电话号码（含国家代码）
   credits: number;
   total_credits_used: number;
 
@@ -31,4 +32,23 @@ export interface CreditsInfo {
   total_used: number;
   is_anonymous: boolean;
   expires_at: string | null;
+}
+
+// 积分历史记录
+export interface CreditHistoryItem {
+  id: number;
+  amount: number;
+  description: string;
+  product_type: string | null;
+  task_id: string | null;
+  created_at: string;
+}
+
+// 积分历史响应
+export interface CreditHistoryResponse {
+  items: CreditHistoryItem[];
+  total: number;
+  page: number;
+  pageSize: number;
+  hasMore: boolean;
 }

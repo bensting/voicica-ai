@@ -10,6 +10,7 @@ import prisma from './prisma';
 import crypto from 'crypto';
 import { v4 as uuidv4 } from 'uuid';
 import { appConfig } from '@/config/appConfig';
+import { ProductType } from '@/config/credit';
 
 export interface AuthUser {
   uid: string;
@@ -108,6 +109,7 @@ async function createOrUpdateFirebaseUser(decodedToken: {
         task_id: `signup_${uuidv4()}`,
         amount: initialCredits,
         description: '新用户注册赠送积分',
+        product_type: ProductType.TEXT_TO_SPEECH,
       },
     });
 
@@ -201,6 +203,7 @@ async function createOrGetAnonymousUser(
       task_id: `anon_signup_${uuidv4()}`,
       amount: initialCredits,
       description: '匿名用户初始赠送积分',
+      product_type: ProductType.TEXT_TO_SPEECH,
     },
   });
 

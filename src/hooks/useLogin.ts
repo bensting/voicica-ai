@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 
 /**
@@ -10,6 +10,10 @@ import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
  * - 处理登录逻辑
  * - 处理已登录用户重定向
  * - 检测是否为回访用户
+ * - 支持 returnUrl 参数，登录成功后返回原页面
+ *
+ * 注意：此 hook 使用了 useSearchParams，使用它的组件需要条件渲染
+ * 避免在静态生成时调用（如 Modal 组件应在打开时才渲染）
  */
 export function useLogin() {
   const [loading, setLoading] = useState(false);
@@ -18,6 +22,10 @@ export function useLogin() {
 
   const { user, signInWithGoogle, signInWithApple, signInWithTwitter } = useFirebaseAuth();
   const router = useRouter();
+  const searchParams = useSearchParams();
+
+  // 获取登录成功后的重定向地址
+  const returnUrl = searchParams.get('returnUrl') || '/studio/tts';
 
   // 检测回访用户
   useEffect(() => {
@@ -32,10 +40,10 @@ export function useLogin() {
   // 已登录用户自动重定向
   useEffect(() => {
     if (user) {
-      console.log('🔄 useLogin: 用户已登录，重定向到 studio');
-      router.push('/studio/tts');
+      console.log('🔄 useLogin: 用户已登录，重定向到', returnUrl);
+      router.push(returnUrl);
     }
-  }, [user, router]);
+  }, [user, router, returnUrl]);
 
   // 统一的登录处理函数
   const handleLogin = async (provider: 'google' | 'apple' | 'twitter') => {
@@ -47,7 +55,9 @@ export function useLogin() {
       // 记录访问历史
       localStorage.setItem('hasVisited', 'true');
 
-      // Firebase Auth 登录
+      // Firebase Auth 登录（弹窗方式）
+      // 登录成功后 onAuthStateChanged 会触发，更新 user 状态
+      // useEffect 监听到 user 变化后会自动重定向
       switch (provider) {
         case 'google':
           await signInWithGoogle();
@@ -60,15 +70,9 @@ export function useLogin() {
           break;
       }
 
-      // 登录成功,保存邮箱
-      if (user?.email) {
-        localStorage.setItem('lastLoginEmail', user.email);
-      }
-
-      // 登录成功后自动跳转
-      console.log('✅ useLogin: 登录成功，准备跳转');
+      // 登录成功，等待 onAuthStateChanged 触发后 useEffect 会处理重定向
+      console.log('✅ useLogin: 登录成功，等待状态更新后重定向');
       setLoading(false);
-      router.push('/studio/tts');
     } catch (err) {
       const error = err as { code?: string; message?: string };
 

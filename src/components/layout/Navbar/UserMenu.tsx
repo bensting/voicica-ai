@@ -85,11 +85,13 @@ export default function UserMenu({ size = 'md' }: UserMenuProps = {}) {
           </div>
         </button>
 
-        {/* 登录模态框 */}
-        <LoginModal
-          isOpen={isLoginModalOpen}
-          onClose={() => setIsLoginModalOpen(false)}
-        />
+        {/* 登录模态框 - 只在打开时渲染，避免 useSearchParams 在静态生成时报错 */}
+        {isLoginModalOpen && (
+          <LoginModal
+            isOpen={isLoginModalOpen}
+            onClose={() => setIsLoginModalOpen(false)}
+          />
+        )}
       </>
     );
   }

@@ -10,6 +10,7 @@ interface UserContextType {
   loading: boolean;
   error: string | null;
   refreshProfile: () => Promise<void>;
+  refreshProfileSilent: () => Promise<void>;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -62,6 +63,23 @@ export function UserProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  // 静默刷新用户资料（不显示 loading 状态）
+  const fetchProfileSilent = async () => {
+    if (!user) {
+      return;
+    }
+
+    try {
+      console.log('📡 UserContext: 静默刷新用户数据');
+      const userData = await getCurrentUserProfile();
+      console.log('✅ UserContext: 静默刷新成功', userData);
+      setProfile(userData);
+    } catch (err) {
+      console.error('❌ UserContext: 静默刷新失败', err);
+      // 静默刷新失败时不改变状态，保持现有数据
+    }
+  };
+
   // 等待认证完成后再获取用户数据
   useEffect(() => {
     // 只在认证状态确定后才执行
@@ -85,6 +103,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
         loading,
         error,
         refreshProfile: fetchProfile,
+        refreshProfileSilent: fetchProfileSilent,
       }}
     >
       {children}

@@ -169,6 +169,7 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session, eventId
       amount: plan.credits_per_cycle,
       description: `订阅购买: ${plan.plan_name}`,
       task_id: `subscription_${subscription.id}`,
+      product_type: plan.product_type,
     },
   });
 
@@ -260,6 +261,7 @@ async function handleInvoicePaid(invoice: Stripe.Invoice, eventId: string) {
       amount: plan.credits_per_cycle,
       description: `订阅续费: ${plan.plan_name}`,
       task_id: `subscription_${subscription.id}_renewal`,
+      product_type: plan.product_type,
     },
   });
 

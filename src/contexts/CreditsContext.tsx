@@ -41,6 +41,25 @@ export function CreditsProvider({ children }: CreditsProviderProps) {
   // 标记是否使用本地覆盖值（用于乐观更新）
   const [localOverride, setLocalOverride] = useState<number | null>(null);
 
+  // 获取匿名用户积分
+  const fetchAnonymousCredits = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const response = await getUnifiedCredits();
+      setCredits(response.credits);
+    } catch (err) {
+      const error = err as Error;
+      if (error.message !== '未提供认证信息' && error.message !== '未登录') {
+        console.error('[CreditsContext] Failed to fetch anonymous credits:', err);
+        setError('Failed to fetch credits');
+      }
+      setCredits(0);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
   // 已登录用户：直接从 UserContext 的 profile 获取积分
   // 这样避免了重复的 API 请求
   useEffect(() => {
@@ -64,28 +83,7 @@ export function CreditsProvider({ children }: CreditsProviderProps) {
     if (!user && !authLoading) {
       fetchAnonymousCredits();
     }
-  }, [user, profile, authLoading, profileLoading, localOverride]);
-
-  // 获取匿名用户积分
-  const fetchAnonymousCredits = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      const response = await getUnifiedCredits();
-      if (localOverride === null) {
-        setCredits(response.credits);
-      }
-    } catch (err) {
-      const error = err as Error;
-      if (error.message !== '未提供认证信息' && error.message !== '未登录') {
-        console.error('[CreditsContext] Failed to fetch anonymous credits:', err);
-        setError('Failed to fetch credits');
-      }
-      setCredits(0);
-    } finally {
-      setLoading(false);
-    }
-  };
+  }, [user, profile, authLoading, profileLoading, localOverride, fetchAnonymousCredits]);
 
   // 刷新积分（供外部调用）
   const refreshCredits = useCallback(async () => {
@@ -99,7 +97,7 @@ export function CreditsProvider({ children }: CreditsProviderProps) {
       // 匿名用户：重新获取
       await fetchAnonymousCredits();
     }
-  }, [user, refreshProfile]);
+  }, [user, refreshProfile, fetchAnonymousCredits]);
 
   // 本地扣减积分（乐观更新）
   const deductCredits = useCallback((amount: number) => {

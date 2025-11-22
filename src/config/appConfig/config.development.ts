@@ -28,4 +28,19 @@ export const appConfig: AppConfig = {
     ],
     sample_text_max_length: 200,
   },
+
+  /**
+   * 用户积分配置
+   */
+  credits: {
+    anonymous_user: 500,
+    registered_user: 1000,
+  },
+
+  /**
+   * 匿名用户配置
+   */
+  anonymous_user: {
+    expiry_days: 30,
+  },
 };

@@ -102,13 +102,25 @@
     },
     "basicInfo": {
       "title": "ข้อมูลพื้นฐาน",
+      "profilePicture": "รูปโปรไฟล์",
+      "profilePictureHint": "PNG หรือ JPG แนะนำให้ใช้รูปที่มีความกว้างและความสูงเท่ากัน",
+      "uploading": "กำลังอัปโหลด...",
       "nameSurname": "ชื่อและนามสกุล",
       "email": "อีเมล",
       "phone": "เบอร์โทรศัพท์"
     },
     "actions": {
+      "save": "บันทึก",
       "saveChanges": "บันทึกการเปลี่ยนแปลง",
-      "cancel": "ยกเลิก"
+      "cancel": "ยกเลิก",
+      "saveSuccess": "บันทึกสำเร็จ",
+      "saveFailed": "บันทึกไม่สำเร็จ กรุณาลองใหม่"
+    },
+    "benefits": {
+      "title": "สิทธิประโยชน์ของฉัน",
+      "voiceCredits": "เครดิตเสียง",
+      "refresh": "รีเฟรช",
+      "viewHistory": "ดูประวัติ"
     }
   },
   "generationHistory": {
@@ -444,6 +456,20 @@
     "updateDescription": "มีเวอร์ชันใหม่ของแอปพลิเคชัน คลิกอัปเดตเพื่อรับฟีเจอร์และการปรับปรุงล่าสุด",
     "update": "อัปเดตเลย",
     "later": "ภายหลัง"
+  },
+  "creditHistory": {
+    "title": "ประวัติเครดิต",
+    "empty": "ยังไม่มีประวัติเครดิต",
+    "date": "วันที่",
+    "description": "รายละเอียด",
+    "type": "ประเภท",
+    "amount": "เครดิต",
+    "pagination": "หน้า {{current}} จาก {{total}}",
+    "productType": {
+      "textToSpeech": "แปลงข้อความเป็นเสียง",
+      "voiceCloning": "โคลนเสียง",
+      "other": "อื่นๆ"
+    }
   },
   "countries": {
     "CN": "จีน",

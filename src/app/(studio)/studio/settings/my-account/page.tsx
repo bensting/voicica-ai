@@ -73,18 +73,16 @@ export default function MyAccountPage() {
         ? `${formData.countryCode}${formData.phone.replace(/^0+/, '')}`
         : undefined;
 
+      // 始终传递 name，即使是空字符串也要更新
       await updateUserProfile({
-        name: formData.name || undefined,
+        name: formData.name,
         phone: fullPhone,
       });
 
       // 刷新用户资料
       await refreshProfile();
-
-      alert(t('settings.actions.saveSuccess') || 'Changes saved successfully!');
     } catch (error) {
       console.error('Error saving profile:', error);
-      alert(t('settings.actions.saveFailed') || 'Failed to save changes. Please try again.');
     } finally {
       setIsSaving(false);
     }
@@ -143,6 +141,7 @@ export default function MyAccountPage() {
         <ProfilePictureUpload
           currentPhoto={profile?.photo_url}
           onPhotoChange={(url) => handleInputChange('photo_url', url)}
+          onUploadSuccess={refreshProfile}
         />
 
         {/* Name & Surname */}
@@ -177,7 +176,7 @@ export default function MyAccountPage() {
       <ActionButtons
         onSave={handleSave}
         onCancel={handleCancel}
-        saveText={t('settings.actions.saveChanges')}
+        saveText={t('settings.actions.save')}
         cancelText={t('settings.actions.cancel')}
         isLoading={isSaving}
       />

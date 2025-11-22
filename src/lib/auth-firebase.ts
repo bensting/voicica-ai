@@ -72,13 +72,15 @@ async function createOrUpdateFirebaseUser(decodedToken: {
   });
 
   if (existingUser) {
-    // 更新用户信息
+    // 只更新 email（email 以 Firebase 为准），name 和 photo_url 保留用户自己设置的值
+    // 只有当数据库中为空时才用 Firebase 的值填充
     await prisma.users.update({
       where: { user_id: decodedToken.uid },
       data: {
         email: decodedToken.email || existingUser.email,
-        name: decodedToken.name || existingUser.name,
-        photo_url: decodedToken.picture || existingUser.photo_url,
+        // 保留用户自己设置的 name 和 photo_url，只有为空时才用 Firebase 填充
+        name: existingUser.name || decodedToken.name,
+        photo_url: existingUser.photo_url || decodedToken.picture,
         updated_at: new Date(),
       },
     });

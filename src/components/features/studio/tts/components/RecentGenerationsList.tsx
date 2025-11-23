@@ -178,8 +178,8 @@ export default function RecentGenerationsList({
                   </button>
 
                   {/* Text Content */}
-                  <div className="flex-1 min-w-0 flex items-center gap-2">
-                    <p className="text-sm text-gray-900 truncate">{gen.text}</p>
+                  <div className="flex items-center gap-2 flex-shrink-0" style={{ width: '45%' }}>
+                    <p className="text-sm text-gray-900 truncate flex-1 min-w-0">{gen.text}</p>
                     {gen.style && gen.style !== 'default' && (
                       <span className="flex-shrink-0 px-1.5 py-0.5 text-xs bg-purple-100 text-purple-600 rounded">
                         {t(`voiceStyles.${gen.style}`)}

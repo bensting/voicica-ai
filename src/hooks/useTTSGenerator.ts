@@ -38,6 +38,7 @@ export function useTTSGenerator(
   });
 
   const [selectedVoice, setSelectedVoice] = useState<Voice | null>(null);
+  const [selectedStyle, setSelectedStyle] = useState<string | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [audioUrl, setAudioUrl] = useState<string | null>(null);
@@ -100,14 +101,20 @@ export function useTTSGenerator(
     [maxCharacters]
   );
 
-  // 处理语音选择
-  const handleVoiceSelect = useCallback((voice: Voice) => {
+  // 处理语音选择（支持同时选择风格）
+  const handleVoiceSelect = useCallback((voice: Voice, style: string | null = null) => {
     setSelectedVoice(voice);
+    setSelectedStyle(style);
     setError(null);
 
-    // 保存完整的语音对象到 localStorage，记住用户的选择
+    // 保存完整的语音对象和风格到 localStorage，记住用户的选择
     try {
       localStorage.setItem('lastSelectedVoice', JSON.stringify(voice));
+      if (style) {
+        localStorage.setItem('lastSelectedStyle', style);
+      } else {
+        localStorage.removeItem('lastSelectedStyle');
+      }
     } catch (err) {
       console.error('[useTTSGenerator] Failed to save voice to localStorage:', err);
     }
@@ -198,6 +205,7 @@ export function useTTSGenerator(
     // 状态
     text,
     selectedVoice,
+    selectedStyle,
     isGenerating,
     error,
     audioUrl,

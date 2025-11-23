@@ -16,7 +16,7 @@ import LanguageSelectorModal from '@/components/common/LanguageSelectorModal';
 
 interface VoiceSelectorProps {
   selectedVoice: Voice | null;
-  onSelect: (voice: Voice) => void;
+  onSelect: (voice: Voice, style: string | null) => void;
   disabled?: boolean;
 }
 

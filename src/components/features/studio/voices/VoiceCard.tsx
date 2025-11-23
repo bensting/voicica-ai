@@ -10,7 +10,7 @@ interface VoiceCardProps {
   voiceName: string;
   isPlaying: boolean;
   onPlay: (voice: Voice) => void;
-  onSelect: (voice: Voice) => void;
+  onSelect: (voice: Voice, style: string | null) => void;
   priority?: boolean; // For LCP optimization - set true for above-the-fold images
 }
 
@@ -141,7 +141,7 @@ export default function VoiceCard({
 
       {/* Select button */}
       <button
-        onClick={() => onSelect(voice)}
+        onClick={() => onSelect(voice, selectedStyle)}
         className="w-8 h-8 rounded-lg border border-gray-200 hover:border-purple-500 hover:bg-purple-50 flex items-center justify-center flex-shrink-0 transition-colors group"
       >
         <ArrowRight className="w-4 h-4 text-gray-400 group-hover:text-purple-600 transition-colors" />

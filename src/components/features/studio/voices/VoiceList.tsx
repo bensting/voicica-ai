@@ -10,7 +10,7 @@ interface VoiceListProps {
   locale: string;
   getVoiceName: (voice: Voice) => string;
   onPlayVoice: (voice: Voice) => void;
-  onSelectVoice: (voice: Voice) => void;
+  onSelectVoice: (voice: Voice, style: string | null) => void;
   // Pagination props
   loadingMore?: boolean;
   hasMore?: boolean;

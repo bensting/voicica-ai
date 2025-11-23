@@ -617,7 +617,6 @@ export async function clearVoiceSamples(locale: string): Promise<SyncResult> {
     const result = await prisma.voices.updateMany({
       where: {
         locale,
-        is_active: true,
       },
       data: {
         voice_sample_url: {},

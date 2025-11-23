@@ -3,6 +3,7 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { ChevronDown, Play, Pause } from 'lucide-react';
 import type { Voice } from '@/types/voice';
+import { getVoiceSampleUrl } from '@/types/voice';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 interface VoiceSelectorProps {
@@ -83,7 +84,8 @@ export default function VoiceSelector({
   const handlePlaySample = (voice: Voice, event: React.MouseEvent) => {
     event.stopPropagation();
 
-    if (!voice.voice_sample_url) return;
+    const sampleUrl = getVoiceSampleUrl(voice);
+    if (!sampleUrl) return;
 
     // 如果正在播放同一个语音，则暂停
     if (playingVoiceId === voice.id) {
@@ -99,7 +101,7 @@ export default function VoiceSelector({
     }
 
     // 创建新的音频对象并播放
-    const audio = new Audio(voice.voice_sample_url);
+    const audio = new Audio(sampleUrl);
     audioRef.current = audio;
     setPlayingVoiceId(voice.id || null);
 
@@ -221,7 +223,7 @@ export default function VoiceSelector({
                   <div className="text-xs text-gray-400 truncate">{getVoiceDescription(voice)}</div>
                 </div>
                 {/* 试听按钮 */}
-                {voice.voice_sample_url && (
+                {getVoiceSampleUrl(voice) && (
                   <button
                     className="w-8 h-8 flex items-center justify-center bg-gray-600 hover:bg-purple-600 rounded-full transition-colors flex-shrink-0"
                     onClick={(e) => handlePlaySample(voice, e)}

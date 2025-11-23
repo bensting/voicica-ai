@@ -183,7 +183,7 @@ model voices {
   role              String    @db.VarChar(50)
   gender            String    @db.VarChar(20)
   avatar_url        String
-  voice_sample_url  String
+  voice_sample_url  Json      @db.Json // {style: url} 格式，如 {"default": "https://...", "calm": "https://..."}
   voice_sample_text String
   tags              Json      @db.Json
   style_list        Json      @db.Json

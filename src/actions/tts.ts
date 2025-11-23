@@ -14,6 +14,7 @@ export interface TtsRequest {
   text: string;
   voice_name: string;
   language?: string;
+  style?: string; // 语音风格，如 "calm", "cheerful" 等
   speed?: number;
   pitch?: number;
   volume?: number;
@@ -157,6 +158,7 @@ export async function createTtsTask(request: TtsRequest): Promise<TtsTaskStatus>
           text: request.text,
           voice_name: request.voice_name,
           language: request.language || null,
+          style: request.style || null,     // 语音风格
           speed: request.speed ?? 1.0,      // 0.5 - 2.0，默认 1.0 倍速
           pitch: request.pitch ?? 50,       // 1 - 100，默认 50（中间值）
           volume: request.volume ?? 50,     // 1 - 100，默认 50（中间值）
@@ -200,6 +202,7 @@ export async function createTtsTask(request: TtsRequest): Promise<TtsTaskStatus>
         text: request.text,
         voiceName: request.voice_name,
         language: request.language || undefined,
+        style: request.style || undefined, // 语音风格
         speed: request.speed ?? 1.0,      // 0.5 - 2.0，默认 1.0 倍速
         pitch: request.pitch ?? 50,       // 1 - 100，默认 50（中间值）
         volume: request.volume ?? 50,     // 1 - 100，默认 50（中间值）

@@ -137,6 +137,7 @@ export function useTTSGenerator(
         text,
         voice_name: selectedVoice.name,
         language: selectedVoice.locale,
+        style: selectedStyle || undefined, // 语音风格
         speed: audioSettings.speed,
         pitch: audioSettings.pitch,
         volume: audioSettings.volume,
@@ -178,7 +179,7 @@ export function useTTSGenerator(
 
       setIsGenerating(false);
     }
-  }, [canGenerate, selectedVoice, text, audioSettings, t, options]);
+  }, [canGenerate, selectedVoice, selectedStyle, text, audioSettings, t, options]);
 
   // 清空文本输入
   const handleClearText = useCallback(() => {

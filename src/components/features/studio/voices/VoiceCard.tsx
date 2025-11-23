@@ -9,7 +9,7 @@ interface VoiceCardProps {
   voice: Voice;
   voiceName: string;
   isPlaying: boolean;
-  onPlay: (voice: Voice) => void;
+  onPlay: (voice: Voice, style: string | null) => void;
   onSelect: (voice: Voice, style: string | null) => void;
   priority?: boolean; // For LCP optimization - set true for above-the-fold images
 }
@@ -98,7 +98,7 @@ export default function VoiceCard({
 
         {/* Play button overlay */}
         <button
-          onClick={() => onPlay(voice)}
+          onClick={() => onPlay(voice, selectedStyle)}
           className="absolute inset-0 flex items-center justify-center bg-black/20 hover:bg-black/40 rounded-full transition-all active:scale-95"
         >
           {isPlaying ? (

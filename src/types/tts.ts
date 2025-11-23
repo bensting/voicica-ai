@@ -61,6 +61,7 @@ export interface Generation {
   voiceName?: string;
   voiceDisplayName?: string; // 语音显示名称
   voiceAvatar?: string; // 语音头像 URL
+  style?: string | null; // 语音风格
 }
 
 // TTS 生成请求参数

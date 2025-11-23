@@ -30,6 +30,7 @@ function convertTtsRecordToGeneration(record: TtsRecord): Generation {
     voiceName: record.voice_name,
     voiceDisplayName: record.voice?.display_name ?? undefined,
     voiceAvatar: record.voice?.avatar_url ?? undefined,
+    style: record.style ?? undefined,
   };
 }
 

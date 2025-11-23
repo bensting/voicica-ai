@@ -72,6 +72,7 @@ model tts_records {
   text            String
   voice_name      String    @db.VarChar(255)
   language        String?   @db.VarChar(20)
+  style           String?   @db.VarChar(50)
   speed           Float
   pitch           Int
   volume          Int

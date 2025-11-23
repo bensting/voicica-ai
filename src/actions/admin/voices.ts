@@ -621,7 +621,7 @@ export async function clearVoiceSamples(locale: string): Promise<SyncResult> {
       },
       data: {
         voice_sample_url: {},
-        voice_sample_text: null,
+        voice_sample_text: '',
       },
     });
 

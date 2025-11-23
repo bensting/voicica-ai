@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { listVoices, getUsedVoiceNames } from '@/actions/voice';
 import type { Voice } from '@/types/voice';
+import { getVoiceSampleUrl } from '@/types/voice';
 import type { LocaleOption } from '@/types/config';
 
 interface UseVoicesProps {
@@ -223,7 +224,8 @@ export function useVoices({ authLoading }: UseVoicesProps): UseVoicesReturn {
     } else {
       // Stop previous and play new
       audioElement?.pause();
-      const audio = new Audio(voice.voice_sample_url);
+      const sampleUrl = getVoiceSampleUrl(voice);
+      const audio = new Audio(sampleUrl);
       audio.play();
       audio.onended = () => setPlayingVoiceId(null);
       setAudioElement(audio);

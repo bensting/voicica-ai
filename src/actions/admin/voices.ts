@@ -7,6 +7,7 @@
 import { headers } from 'next/headers';
 import { auth as adminAuth } from '@/lib/firebase-admin';
 import prisma from '@/lib/prisma';
+import { Prisma } from '@prisma/client';
 import { getLocaleInfo } from '@/utils/localeMapper';
 import { synthesizeSpeech } from '@/lib/services/azure-tts';
 import { uploadAudio } from '@/lib/services/r2-storage';
@@ -171,10 +172,14 @@ export async function getVoiceStatsByLocale(): Promise<LocaleStats[]> {
     }
 
     // 统计每个 locale 有样本的语音数量
+    // JSON 格式：检查 voice_sample_url 是否包含 default 键
     const sampleStats = await prisma.voices.groupBy({
       by: ['locale'],
       where: {
-        voice_sample_url: { not: '' },
+        voice_sample_url: {
+          path: ['default'],
+          not: Prisma.JsonNull,
+        },
       },
       _count: { locale: true },
     });
@@ -280,7 +285,7 @@ export async function syncVoicesByLocale(locale: string): Promise<SyncResult> {
           role: voice.VoiceType || 'Neural',
           gender: voice.Gender.toLowerCase(),
           avatar_url: '', // Azure 不提供头像
-          voice_sample_url: '', // 需要单独生成
+          voice_sample_url: {}, // JSON 格式，需要单独生成
           voice_sample_text: '',
           tags: [],
           style_list: voice.StyleList && voice.StyleList.length > 0
@@ -460,11 +465,16 @@ export async function generateVoiceSamples(locale: string): Promise<SyncResult> 
   try {
     console.log(`🎤 开始生成 ${locale} 的语音样本...`);
 
-    // 获取该 locale 下没有样本的语音
+    // 获取该 locale 下没有样本的语音（JSON 格式：没有 default 键）
     const voicesWithoutSample = await prisma.voices.findMany({
       where: {
         locale,
-        voice_sample_url: '',
+        NOT: {
+          voice_sample_url: {
+            path: ['default'],
+            not: Prisma.JsonNull,
+          },
+        },
       },
       select: {
         id: true,
@@ -515,11 +525,11 @@ export async function generateVoiceSamples(locale: string): Promise<SyncResult> 
           'voice-samples'
         );
 
-        // 更新数据库
+        // 更新数据库（使用 JSON 格式：{ default: url }）
         await prisma.voices.update({
           where: { id: voice.id },
           data: {
-            voice_sample_url: audioUrl,
+            voice_sample_url: { default: audioUrl },
             voice_sample_text: sampleText,
           },
         });
@@ -560,10 +570,15 @@ export async function generateAllVoiceSamples(): Promise<SyncResult> {
   try {
     console.log('🎤 开始批量生成所有语音样本...');
 
-    // 获取所有没有样本的语音
+    // 获取所有没有样本的语音（JSON 格式：没有 default 键）
     const voicesWithoutSample = await prisma.voices.findMany({
       where: {
-        voice_sample_url: '',
+        NOT: {
+          voice_sample_url: {
+            path: ['default'],
+            not: Prisma.JsonNull,
+          },
+        },
       },
       select: {
         id: true,
@@ -613,11 +628,11 @@ export async function generateAllVoiceSamples(): Promise<SyncResult> {
           'voice-samples'
         );
 
-        // 更新数据库
+        // 更新数据库（使用 JSON 格式：{ default: url }）
         await prisma.voices.update({
           where: { id: voice.id },
           data: {
-            voice_sample_url: audioUrl,
+            voice_sample_url: { default: audioUrl },
             voice_sample_text: sampleText,
           },
         });

@@ -29,6 +29,15 @@ export default function VoicesManagementPage() {
   const [loading, setLoading] = useState(true);
   const [syncing, setSyncing] = useState<string | null>(null);
   const [syncResults, setSyncResults] = useState<Record<string, SyncResult>>({});
+  const [localeFilter, setLocaleFilter] = useState<string>('');
+
+  // 过滤后的 locales
+  const filteredLocales = locales.filter(item => {
+    if (!localeFilter) return true;
+    const search = localeFilter.toLowerCase();
+    return item.locale.toLowerCase().includes(search) ||
+           item.localeName.toLowerCase().includes(search);
+  });
 
   // 加载 locale 列表和统计
   const loadLocales = async () => {
@@ -351,7 +360,21 @@ export default function VoicesManagementPage() {
       {/* 语言列表 */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
         <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-gray-900">语言区域列表</h2>
+          <div className="flex items-center gap-4">
+            <h2 className="text-lg font-semibold text-gray-900">语言区域列表</h2>
+            <input
+              type="text"
+              placeholder="搜索语言区域..."
+              value={localeFilter}
+              onChange={(e) => setLocaleFilter(e.target.value)}
+              className="px-3 py-1.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent w-48"
+            />
+            {localeFilter && (
+              <span className="text-sm text-gray-500">
+                {filteredLocales.length}/{locales.length}
+              </span>
+            )}
+          </div>
           <button
             onClick={loadLocales}
             disabled={loading}
@@ -394,7 +417,7 @@ export default function VoicesManagementPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
-                {locales.map((item) => (
+                {filteredLocales.map((item) => (
                   <tr key={item.locale} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="font-medium text-gray-900">{item.locale}</div>
@@ -457,9 +480,9 @@ export default function VoicesManagementPage() {
                       </button>
                       <button
                         onClick={() => handleGenerateSamples(item.locale)}
-                        disabled={syncing !== null || item.dbCount === 0 || item.sampleCount === item.dbCount}
+                        disabled={syncing !== null || item.dbCount === 0}
                         className={`px-3 py-1 text-sm rounded-lg transition-colors ${
-                          item.dbCount > 0 && item.sampleCount < item.dbCount
+                          item.dbCount > 0
                             ? 'bg-teal-600 text-white hover:bg-teal-700'
                             : 'bg-gray-100 text-gray-400 cursor-not-allowed'
                         } disabled:opacity-50`}

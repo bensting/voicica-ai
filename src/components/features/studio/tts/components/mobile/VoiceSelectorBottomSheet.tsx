@@ -17,7 +17,7 @@ interface VoiceSelectorBottomSheetProps {
   isOpen: boolean;
   onClose: () => void;
   selectedVoice: Voice | null;
-  onSelect: (voice: Voice) => void;
+  onSelect: (voice: Voice, style: string | null) => void;
 }
 
 /**
@@ -105,8 +105,8 @@ export default function VoiceSelectorBottomSheet({
     }
   };
 
-  const handleSelectVoice = (voice: Voice) => {
-    onSelect(voice);
+  const handleSelectVoice = (voice: Voice, style: string | null) => {
+    onSelect(voice, style);
     onClose();
   };
 

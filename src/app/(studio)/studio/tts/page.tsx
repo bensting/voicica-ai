@@ -65,6 +65,7 @@ export default function StudioTTSPage() {
   const {
     text,
     selectedVoice,
+    selectedStyle,
     isGenerating,
     error,
     audioUrl,
@@ -245,6 +246,7 @@ export default function StudioTTSPage() {
           <div className="flex-shrink-0">
             <VoiceSelectButton
               voice={selectedVoice}
+              selectedStyle={selectedStyle}
               onClick={handleVoiceSelectorOpen}
               disabled={isGenerating}
             />
@@ -290,6 +292,7 @@ export default function StudioTTSPage() {
                 <div className="flex-1 ml-[calc(33.333%+0.75rem)]">
                   <VoiceSelectButton
                     voice={selectedVoice}
+                    selectedStyle={selectedStyle}
                     onClick={() => {
                       // TODO: 可以滚动到右侧或打开模态框
                       console.log('Open voice selector');

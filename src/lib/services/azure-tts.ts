@@ -8,6 +8,7 @@ export interface TtsRequest {
   text: string;
   voiceName: string;
   language?: string;
+  style?: string; // 语音风格，如 "calm", "cheerful" 等
   speed?: number;
   pitch?: number;
   volume?: number;
@@ -21,12 +22,14 @@ export interface TtsResult {
 
 /**
  * 构建 SSML (Speech Synthesis Markup Language)
+ * 支持 Azure 特有的 mstts:express-as 标签用于设置语音风格
  */
 function buildSsml(request: TtsRequest): string {
   const {
     text,
     voiceName,
     language = 'en-US',
+    style,
     speed = 1.0,   // 0.5 - 2.0，默认 1.0 倍速
     pitch = 50,    // 1 - 100，默认 50（中间值）
     volume = 50,   // 1 - 100，默认 50（中间值）
@@ -44,11 +47,17 @@ function buildSsml(request: TtsRequest): string {
   // 音量：前端 1-100，直接使用
   const volumeVal = Math.round(volume);
 
-  return `<speak version="1.0" xmlns="http://www.w3.org/2001/10/synthesis" xml:lang="${language}">
+  // 构建内容部分（带或不带 style）
+  const prosodyContent = `<prosody rate="${rateStr}" pitch="${pitchStr}" volume="${volumeVal}">${text}</prosody>`;
+
+  // 如果指定了 style 且不是 default，使用 mstts:express-as 包裹
+  const voiceContent = style && style !== 'default'
+    ? `<mstts:express-as style="${style}">${prosodyContent}</mstts:express-as>`
+    : prosodyContent;
+
+  return `<speak version="1.0" xmlns="http://www.w3.org/2001/10/synthesis" xmlns:mstts="https://www.w3.org/2001/mstts" xml:lang="${language}">
     <voice name="${voiceName}">
-      <prosody rate="${rateStr}" pitch="${pitchStr}" volume="${volumeVal}">
-        ${text}
-      </prosody>
+      ${voiceContent}
     </voice>
   </speak>`;
 }
@@ -82,7 +91,7 @@ export async function synthesizeSpeech(request: TtsRequest): Promise<TtsResult> 
   const endpoint = `https://${region}.tts.speech.microsoft.com/cognitiveservices/v1`;
   const ssml = buildSsml(request);
 
-  console.log(`🎤 Azure TTS: 开始合成, voice=${request.voiceName}, text_len=${request.text.length}`);
+  console.log(`🎤 Azure TTS: 开始合成, voice=${request.voiceName}, style=${request.style || 'default'}, text_len=${request.text.length}`);
 
   const response = await fetch(endpoint, {
     method: 'POST',

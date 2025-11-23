@@ -9,8 +9,8 @@ interface VoiceListProps {
   playingVoiceId: string | null;
   locale: string;
   getVoiceName: (voice: Voice) => string;
-  onPlayVoice: (voice: Voice) => void;
-  onSelectVoice: (voice: Voice) => void;
+  onPlayVoice: (voice: Voice, style: string | null) => void;
+  onSelectVoice: (voice: Voice, style: string | null) => void;
   // Pagination props
   loadingMore?: boolean;
   hasMore?: boolean;

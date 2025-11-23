@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { listVoices, getUsedVoiceNames } from '@/actions/voice';
 import type { Voice } from '@/types/voice';
+import { getVoiceSampleUrl } from '@/types/voice';
 import type { LocaleOption } from '@/types/config';
 
 interface UseVoicesProps {
@@ -37,7 +38,7 @@ interface UseVoicesReturn {
 
   // Audio playback state
   playingVoiceId: string | null;
-  handlePlayVoice: (voice: Voice) => void;
+  handlePlayVoice: (voice: Voice, style?: string | null) => void;
 
   // Actions
   refreshVoices: () => Promise<void>;
@@ -215,7 +216,7 @@ export function useVoices({ authLoading }: UseVoicesProps): UseVoicesReturn {
   });
 
   // Handle audio playback
-  const handlePlayVoice = useCallback((voice: Voice) => {
+  const handlePlayVoice = useCallback((voice: Voice, style?: string | null) => {
     if (playingVoiceId === voice.id) {
       // Pause current
       audioElement?.pause();
@@ -223,7 +224,8 @@ export function useVoices({ authLoading }: UseVoicesProps): UseVoicesReturn {
     } else {
       // Stop previous and play new
       audioElement?.pause();
-      const audio = new Audio(voice.voice_sample_url);
+      const sampleUrl = getVoiceSampleUrl(voice, style);
+      const audio = new Audio(sampleUrl);
       audio.play();
       audio.onended = () => setPlayingVoiceId(null);
       setAudioElement(audio);

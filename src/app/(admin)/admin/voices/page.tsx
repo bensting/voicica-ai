@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { syncVoicesByLocale, getVoiceStatsByLocale, syncVoiceAvatars, regenerateAllAvatars, generateVoiceSamples, generateAllVoiceSamples, updateAllVoices } from '@/actions/admin/voices';
+import { syncVoicesByLocale, getVoiceStatsByLocale, syncVoiceAvatars, regenerateAllAvatars, generateVoiceSamples, generateAllVoiceSamples, clearVoiceSamples, updateAllVoices } from '@/actions/admin/voices';
 
 interface LocaleStats {
   locale: string;
@@ -30,6 +30,12 @@ export default function VoicesManagementPage() {
   const [syncing, setSyncing] = useState<string | null>(null);
   const [syncResults, setSyncResults] = useState<Record<string, SyncResult>>({});
   const [localeFilter, setLocaleFilter] = useState<string>('');
+  const [confirmDialog, setConfirmDialog] = useState<{
+    isOpen: boolean;
+    title: string;
+    message: string;
+    onConfirm: () => void;
+  }>({ isOpen: false, title: '', message: '', onConfirm: () => {} });
 
   // 过滤后的 locales
   const filteredLocales = locales.filter(item => {
@@ -206,6 +212,36 @@ export default function VoicesManagementPage() {
     } finally {
       setSyncing(null);
     }
+  };
+
+  // 清空指定 locale 的语音样本
+  const handleClearSamples = (locale: string) => {
+    setConfirmDialog({
+      isOpen: true,
+      title: '清空语音样本',
+      message: `确定要清空 ${locale} 的所有语音样本吗？此操作不可撤销。`,
+      onConfirm: async () => {
+        setConfirmDialog(prev => ({ ...prev, isOpen: false }));
+        setSyncing(`clear-${locale}`);
+        try {
+          const result = await clearVoiceSamples(locale);
+          setSyncResults((prev) => ({ ...prev, [`clear-${locale}`]: result }));
+          if (result.success) {
+            await loadLocales();
+          }
+        } catch (error) {
+          setSyncResults((prev) => ({
+            ...prev,
+            [`clear-${locale}`]: {
+              success: false,
+              message: error instanceof Error ? error.message : '清空失败',
+            },
+          }));
+        } finally {
+          setSyncing(null);
+        }
+      },
+    });
   };
 
   // 更新所有语音数据
@@ -487,15 +523,28 @@ export default function VoicesManagementPage() {
                             : 'bg-gray-100 text-gray-400 cursor-not-allowed'
                         } disabled:opacity-50`}
                       >
-                        {syncing === `sample-${item.locale}` ? '...' : '样本'}
+                        {syncing === `sample-${item.locale}` ? '...' : '生成'}
                       </button>
-                      {(syncResults[item.locale] || syncResults[`sample-${item.locale}`]) && (
+                      <button
+                        onClick={() => handleClearSamples(item.locale)}
+                        disabled={syncing !== null || item.sampleCount === 0}
+                        className={`px-3 py-1 text-sm rounded-lg transition-colors ${
+                          item.sampleCount > 0
+                            ? 'bg-red-600 text-white hover:bg-red-700'
+                            : 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                        } disabled:opacity-50`}
+                      >
+                        {syncing === `clear-${item.locale}` ? '...' : '清空'}
+                      </button>
+                      {(syncResults[item.locale] || syncResults[`sample-${item.locale}`] || syncResults[`clear-${item.locale}`]) && (
                         <div className={`mt-2 text-xs ${
-                          (syncResults[`sample-${item.locale}`] || syncResults[item.locale])?.success ? 'text-green-600' : 'text-red-600'
+                          (syncResults[`clear-${item.locale}`] || syncResults[`sample-${item.locale}`] || syncResults[item.locale])?.success ? 'text-green-600' : 'text-red-600'
                         }`}>
-                          {syncResults[`sample-${item.locale}`]
-                            ? (syncResults[`sample-${item.locale}`].success ? `+${syncResults[`sample-${item.locale}`].updated || 0}` : '失败')
-                            : (syncResults[item.locale]?.success ? `+${syncResults[item.locale].inserted || 0}` : '失败')}
+                          {syncResults[`clear-${item.locale}`]
+                            ? (syncResults[`clear-${item.locale}`].success ? `清空 ${syncResults[`clear-${item.locale}`].updated || 0}` : '失败')
+                            : syncResults[`sample-${item.locale}`]
+                              ? (syncResults[`sample-${item.locale}`].success ? `+${syncResults[`sample-${item.locale}`].updated || 0}` : '失败')
+                              : (syncResults[item.locale]?.success ? `+${syncResults[item.locale].inserted || 0}` : '失败')}
                         </div>
                       )}
                     </td>
@@ -517,6 +566,38 @@ export default function VoicesManagementPage() {
           <li>• 「数据库数量」表示当前数据库中的语音数量</li>
         </ul>
       </div>
+
+      {/* 自定义确认框 */}
+      {confirmDialog.isOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div
+            className="fixed inset-0 bg-black/50"
+            onClick={() => setConfirmDialog(prev => ({ ...prev, isOpen: false }))}
+          />
+          <div className="relative bg-white rounded-xl shadow-xl p-6 max-w-md w-full mx-4">
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">
+              {confirmDialog.title}
+            </h3>
+            <p className="text-gray-600 mb-6">
+              {confirmDialog.message}
+            </p>
+            <div className="flex justify-end gap-3">
+              <button
+                onClick={() => setConfirmDialog(prev => ({ ...prev, isOpen: false }))}
+                className="px-4 py-2 text-sm text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+              >
+                取消
+              </button>
+              <button
+                onClick={confirmDialog.onConfirm}
+                className="px-4 py-2 text-sm text-white bg-red-600 rounded-lg hover:bg-red-700 transition-colors"
+              >
+                确定清空
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -606,6 +606,42 @@ export async function generateAllVoiceSamples(): Promise<SyncResult> {
 }
 
 /**
+ * 清空指定 locale 的语音样本
+ */
+export async function clearVoiceSamples(locale: string): Promise<SyncResult> {
+  await verifyAdminWithoutDb();
+
+  try {
+    console.log(`🗑️ 开始清空 ${locale} 的语音样本...`);
+
+    const result = await prisma.voices.updateMany({
+      where: {
+        locale,
+        is_active: true,
+      },
+      data: {
+        voice_sample_url: {},
+        voice_sample_text: '',
+      },
+    });
+
+    console.log(`✅ ${locale} 语音样本已清空: ${result.count} 个语音`);
+
+    return {
+      success: true,
+      message: `已清空 ${result.count} 个语音的样本`,
+      updated: result.count,
+    };
+  } catch (error) {
+    console.error(`❌ 清空 ${locale} 语音样本失败:`, error);
+    return {
+      success: false,
+      message: error instanceof Error ? error.message : '清空失败',
+    };
+  }
+}
+
+/**
  * 更新所有已存在的语音数据
  * 从 Azure API 获取最新数据，更新以下字段：
  * - gender: 转小写

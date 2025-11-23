@@ -55,6 +55,7 @@ export interface TtsRecord {
   text: string;
   voice_name: string;
   language: string | null;
+  style: string | null;
   speed: number;
   pitch: number;
   volume: number;
@@ -180,6 +181,7 @@ export async function createTtsTask(request: TtsRequest): Promise<TtsTaskStatus>
         text: request.text,
         voice_name: request.voice_name,
         language: request.language || null,
+        style: request.style || null,     // 语音风格
         speed: request.speed ?? 1.0,      // 0.5 - 2.0，默认 1.0 倍速
         pitch: request.pitch ?? 50,       // 1 - 100，默认 50（中间值）
         volume: request.volume ?? 50,     // 1 - 100，默认 50（中间值）
@@ -321,6 +323,7 @@ export async function getTtsRecords(limit: number = 50): Promise<TtsRecord[]> {
     text: r.text,
     voice_name: r.voice_name,
     language: r.language,
+    style: r.style,
     speed: r.speed,
     pitch: r.pitch,
     volume: r.volume,
@@ -410,6 +413,7 @@ export async function queryTtsRecords(params: {
       text: r.text,
       voice_name: r.voice_name,
       language: r.language,
+      style: r.style,
       speed: r.speed,
       pitch: r.pitch,
       volume: r.volume,
@@ -478,6 +482,7 @@ export async function getTtsRecordById(recordId: number): Promise<TtsRecord> {
     text: record.text,
     voice_name: record.voice_name,
     language: record.language,
+    style: record.style,
     speed: record.speed,
     pitch: record.pitch,
     volume: record.volume,
@@ -604,6 +609,7 @@ export async function getTtsRecordByTaskId(taskId: string): Promise<TtsRecord> {
     text: record.text,
     voice_name: record.voice_name,
     language: record.language,
+    style: record.style,
     speed: record.speed,
     pitch: record.pitch,
     volume: record.volume,
@@ -667,6 +673,7 @@ export async function checkAndHandleStuckTask(
         text: record.text,
         voice_name: record.voice_name,
         language: record.language,
+        style: record.style,
         speed: record.speed,
         pitch: record.pitch,
         volume: record.volume,
@@ -747,6 +754,7 @@ export async function checkAndHandleStuckTask(
         text: updatedRecord.text,
         voice_name: updatedRecord.voice_name,
         language: updatedRecord.language,
+        style: updatedRecord.style,
         speed: updatedRecord.speed,
         pitch: updatedRecord.pitch,
         volume: updatedRecord.volume,
@@ -778,6 +786,7 @@ export async function checkAndHandleStuckTask(
       text: record.text,
       voice_name: record.voice_name,
       language: record.language,
+      style: record.style,
       speed: record.speed,
       pitch: record.pitch,
       volume: record.volume,

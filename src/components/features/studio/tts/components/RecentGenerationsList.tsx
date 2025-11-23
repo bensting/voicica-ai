@@ -178,12 +178,17 @@ export default function RecentGenerationsList({
                   </button>
 
                   {/* Text Content */}
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm text-gray-900 truncate">{gen.text}</p>
+                  <div className="flex items-center gap-2 flex-shrink-0" style={{ width: '45%' }}>
+                    <p className="text-sm text-gray-900 truncate flex-1 min-w-0">{gen.text}</p>
+                    {gen.style && gen.style !== 'default' && (
+                      <span className="flex-shrink-0 px-1.5 py-0.5 text-xs bg-purple-100 text-purple-600 rounded">
+                        {t(`voiceStyles.${gen.style}`)}
+                      </span>
+                    )}
                   </div>
 
                   {/* Voice Info */}
-                  <div className="flex items-center gap-2 flex-shrink-0">
+                  <div className="flex items-center gap-2 flex-shrink-0 w-28">
                     {gen.voiceAvatar ? (
                       <Image
                         src={gen.voiceAvatar}
@@ -197,11 +202,11 @@ export default function RecentGenerationsList({
                         <span className="text-xs text-purple-600">🎤</span>
                       </div>
                     )}
-                    <span className="text-xs text-gray-600">{gen.voiceDisplayName || gen.voiceName}</span>
+                    <span className="text-xs text-gray-600 truncate">{gen.voiceDisplayName || gen.voiceName}</span>
                   </div>
 
                   {/* Duration or Progress */}
-                  <div className="text-xs flex-shrink-0 min-w-[3.5rem] text-right">
+                  <div className="text-xs flex-shrink-0 w-12 text-right">
                     {isProcessing ? (
                       <span className="text-purple-600 font-medium">{progress}%</span>
                     ) : gen.duration ? (

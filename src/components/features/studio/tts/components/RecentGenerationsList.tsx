@@ -188,7 +188,7 @@ export default function RecentGenerationsList({
                   </div>
 
                   {/* Voice Info */}
-                  <div className="flex items-center gap-2 flex-shrink-0">
+                  <div className="flex items-center gap-2 flex-shrink-0 w-28">
                     {gen.voiceAvatar ? (
                       <Image
                         src={gen.voiceAvatar}
@@ -202,11 +202,11 @@ export default function RecentGenerationsList({
                         <span className="text-xs text-purple-600">🎤</span>
                       </div>
                     )}
-                    <span className="text-xs text-gray-600">{gen.voiceDisplayName || gen.voiceName}</span>
+                    <span className="text-xs text-gray-600 truncate">{gen.voiceDisplayName || gen.voiceName}</span>
                   </div>
 
                   {/* Duration or Progress */}
-                  <div className="text-xs flex-shrink-0 min-w-[3.5rem] text-right">
+                  <div className="text-xs flex-shrink-0 w-12 text-right">
                     {isProcessing ? (
                       <span className="text-purple-600 font-medium">{progress}%</span>
                     ) : gen.duration ? (

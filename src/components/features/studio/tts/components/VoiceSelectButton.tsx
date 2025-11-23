@@ -8,6 +8,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 
 interface VoiceSelectButtonProps {
   voice: Voice | null;
+  selectedStyle?: string | null;
   onClick: () => void;
   disabled?: boolean;
   size?: 'small' | 'medium' | 'large';
@@ -25,6 +26,7 @@ interface VoiceSelectButtonProps {
  */
 export default function VoiceSelectButton({
   voice,
+  selectedStyle,
   onClick,
   disabled = false,
   size = 'large',
@@ -32,6 +34,15 @@ export default function VoiceSelectButton({
   className = '',
 }: VoiceSelectButtonProps) {
   const { t } = useLanguage();
+
+  // Get style label with i18n (defaults to "default" if no style selected)
+  const getStyleLabel = (style: string | null | undefined): string => {
+    // 翻译文件的 key 是小写的，需要转换
+    const styleKey = style || 'default';
+    const translated = t(`voiceStyles.${styleKey}`);
+    // If translation not found, t() returns the key, so check and return original style
+    return translated === `voiceStyles.${styleKey}` ? styleKey : translated;
+  };
 
   // Size configurations
   const sizeConfig = {
@@ -159,8 +170,16 @@ export default function VoiceSelectButton({
         </div>
       </div>
 
-      {/* Arrow Icon */}
-      <ChevronRight className={`text-gray-400 flex-shrink-0 ${config.icon}`} />
+      {/* Style Badge & Arrow Icon */}
+      <div className="flex items-center gap-2 flex-shrink-0">
+        {/* Style Badge - only show when voice is selected */}
+        {voice && (
+          <span className="px-2 py-0.5 text-xs rounded-full bg-purple-100 text-purple-700">
+            {getStyleLabel(selectedStyle)}
+          </span>
+        )}
+        <ChevronRight className={`text-gray-400 ${config.icon}`} />
+      </div>
     </button>
   );
 }

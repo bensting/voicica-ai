@@ -20,6 +20,7 @@ export const processTtsTask = inngest.createFunction(
       text,
       voiceName,
       language,
+      style,
       speed,
       pitch,
       volume,
@@ -162,11 +163,12 @@ export const processTtsTask = inngest.createFunction(
 
       // Step 6: 调用 Azure TTS 生成音频
       const ttsResult = await step.run('synthesize-speech', async () => {
-        console.log(`🎤 调用 Azure TTS: ${voiceName}`);
+        console.log(`🎤 调用 Azure TTS: ${voiceName}, style: ${style || 'default'}`);
         const result = await synthesizeSpeech({
           text,
           voiceName,
           language: language || voice.locale,
+          style: style || undefined, // 语音风格
           speed,
           pitch,
           volume,

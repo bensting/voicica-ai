@@ -109,7 +109,7 @@ function toVoice(model: NonNullable<voices>): Voice {
     role: model.role,
     gender: model.gender as 'male' | 'female' | 'neutral',
     avatar_url: model.avatar_url,
-    voice_sample_url: model.voice_sample_url,
+    voice_sample_url: (model.voice_sample_url as Record<string, string>) || {},
     voice_sample_text: model.voice_sample_text,
     tags: model.tags as string[],
     style_list: model.style_list as string[],

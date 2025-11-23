@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { syncVoicesByLocale, getVoiceStatsByLocale, syncVoiceAvatars, regenerateAllAvatars, generateVoiceSamples, generateAllVoiceSamples, updateAllVoices } from '@/actions/admin/voices';
+import { syncVoicesByLocale, getVoiceStatsByLocale, syncVoiceAvatars, regenerateAllAvatars, generateVoiceSamples, generateAllVoiceSamples, clearVoiceSamples, updateAllVoices } from '@/actions/admin/voices';
 
 interface LocaleStats {
   locale: string;
@@ -201,6 +201,31 @@ export default function VoicesManagementPage() {
         'samples-all': {
           success: false,
           message: error instanceof Error ? error.message : '生成失败',
+        },
+      }));
+    } finally {
+      setSyncing(null);
+    }
+  };
+
+  // 清空指定 locale 的语音样本
+  const handleClearSamples = async (locale: string) => {
+    if (!confirm(`确定要清空 ${locale} 的所有语音样本吗？`)) {
+      return;
+    }
+    setSyncing(`clear-${locale}`);
+    try {
+      const result = await clearVoiceSamples(locale);
+      setSyncResults((prev) => ({ ...prev, [`clear-${locale}`]: result }));
+      if (result.success) {
+        await loadLocales();
+      }
+    } catch (error) {
+      setSyncResults((prev) => ({
+        ...prev,
+        [`clear-${locale}`]: {
+          success: false,
+          message: error instanceof Error ? error.message : '清空失败',
         },
       }));
     } finally {
@@ -487,15 +512,28 @@ export default function VoicesManagementPage() {
                             : 'bg-gray-100 text-gray-400 cursor-not-allowed'
                         } disabled:opacity-50`}
                       >
-                        {syncing === `sample-${item.locale}` ? '...' : '样本'}
+                        {syncing === `sample-${item.locale}` ? '...' : '生成'}
                       </button>
-                      {(syncResults[item.locale] || syncResults[`sample-${item.locale}`]) && (
+                      <button
+                        onClick={() => handleClearSamples(item.locale)}
+                        disabled={syncing !== null || item.sampleCount === 0}
+                        className={`px-3 py-1 text-sm rounded-lg transition-colors ${
+                          item.sampleCount > 0
+                            ? 'bg-red-600 text-white hover:bg-red-700'
+                            : 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                        } disabled:opacity-50`}
+                      >
+                        {syncing === `clear-${item.locale}` ? '...' : '清空'}
+                      </button>
+                      {(syncResults[item.locale] || syncResults[`sample-${item.locale}`] || syncResults[`clear-${item.locale}`]) && (
                         <div className={`mt-2 text-xs ${
-                          (syncResults[`sample-${item.locale}`] || syncResults[item.locale])?.success ? 'text-green-600' : 'text-red-600'
+                          (syncResults[`clear-${item.locale}`] || syncResults[`sample-${item.locale}`] || syncResults[item.locale])?.success ? 'text-green-600' : 'text-red-600'
                         }`}>
-                          {syncResults[`sample-${item.locale}`]
-                            ? (syncResults[`sample-${item.locale}`].success ? `+${syncResults[`sample-${item.locale}`].updated || 0}` : '失败')
-                            : (syncResults[item.locale]?.success ? `+${syncResults[item.locale].inserted || 0}` : '失败')}
+                          {syncResults[`clear-${item.locale}`]
+                            ? (syncResults[`clear-${item.locale}`].success ? `清空 ${syncResults[`clear-${item.locale}`].updated || 0}` : '失败')
+                            : syncResults[`sample-${item.locale}`]
+                              ? (syncResults[`sample-${item.locale}`].success ? `+${syncResults[`sample-${item.locale}`].updated || 0}` : '失败')
+                              : (syncResults[item.locale]?.success ? `+${syncResults[item.locale].inserted || 0}` : '失败')}
                         </div>
                       )}
                     </td>

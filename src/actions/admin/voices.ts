@@ -456,68 +456,82 @@ export async function regenerateAllAvatars(): Promise<SyncResult> {
 }
 
 /**
- * 为指定 locale 的语音生成样本音频
- * 只生成 voice_sample_url 为空的语音
+ * 核心函数：为语音生成样本音频
+ * 遍历每个语音的 style_list，为缺失样本的 style 生成音频
+ * @param locale 可选，指定 locale 则只处理该 locale 的语音
  */
-export async function generateVoiceSamples(locale: string): Promise<SyncResult> {
-  await verifyAdminWithoutDb();
+async function generateVoiceSamplesCore(locale?: string): Promise<SyncResult> {
+  const label = locale || '全部';
+  console.log(`🎤 开始生成 ${label} 的语音样本（支持多风格）...`);
 
-  try {
-    console.log(`🎤 开始生成 ${locale} 的语音样本...`);
+  // 获取活跃语音，包含 style_list 和 voice_sample_url
+  const voices = await prisma.voices.findMany({
+    where: {
+      is_active: true,
+      ...(locale ? { locale } : {}),
+    },
+    select: {
+      id: true,
+      name: true,
+      locale: true,
+      style_list: true,
+      voice_sample_url: true,
+    },
+  });
 
-    // 获取该 locale 下没有样本的语音（JSON 格式：没有 default 键）
-    const voicesWithoutSample = await prisma.voices.findMany({
-      where: {
-        locale,
-        NOT: {
-          voice_sample_url: {
-            path: ['default'],
-            not: Prisma.JsonNull,
-          },
-        },
-      },
-      select: {
-        id: true,
-        name: true,
-        locale: true,
-      },
-    });
+  if (voices.length === 0) {
+    return {
+      success: true,
+      message: `${label} 没有找到活跃语音`,
+      updated: 0,
+    };
+  }
 
-    if (voicesWithoutSample.length === 0) {
-      return {
-        success: true,
-        message: `${locale} 所有语音已有样本，无需生成`,
-        updated: 0,
-      };
-    }
+  let generatedCount = 0;
+  let failedCount = 0;
+  let skippedCount = 0;
 
-    const sampleText = getSampleText(locale);
+  for (const voice of voices) {
+    const sampleText = getSampleText(voice.locale);
 
-    // 如果没有配置该语言的示例文本，跳过
+    // 如果没有配置该语言的示例文本，跳过整个语音
     if (!sampleText) {
-      return {
-        success: true,
-        message: `${locale} 暂不支持生成样本（未配置示例文本）`,
-        updated: 0,
-      };
+      skippedCount++;
+      continue;
     }
 
-    let updated = 0;
-    let failed = 0;
+    const styleList = (voice.style_list as string[]) || ['default'];
+    const existingSamples = (voice.voice_sample_url as Record<string, string>) || {};
 
-    for (const voice of voicesWithoutSample) {
+    // 找出缺失样本的 styles
+    const missingStyles = styleList.filter(style => !existingSamples[style]);
+
+    if (missingStyles.length === 0) {
+      // 该语音所有 style 都已有样本
+      continue;
+    }
+
+    console.log(`🎙️ ${voice.name}: 需要生成 ${missingStyles.length} 个风格样本 [${missingStyles.join(', ')}]`);
+
+    // 为每个缺失的 style 生成样本
+    const newSamples: Record<string, string> = { ...existingSamples };
+
+    for (const style of missingStyles) {
       try {
-        console.log(`🎙️ 生成样本: ${voice.name}`);
+        console.log(`  🎤 生成 ${voice.name} - ${style}...`);
 
-        // 调用 Azure TTS 生成音频
+        // 调用 Azure TTS 生成音频（传入 style）
         const ttsResult = await synthesizeSpeech({
           text: sampleText,
           voiceName: voice.name,
           language: voice.locale,
+          style: style === 'default' ? undefined : style,
         });
 
-        // 上传到 R2
-        const fileName = `${voice.name}.mp3`;
+        // 上传到 R2，文件名包含 style
+        const fileName = style === 'default'
+          ? `${voice.name}.mp3`
+          : `${voice.name}_${style}.mp3`;
         const audioUrl = await uploadAudio(
           ttsResult.audioData,
           fileName,
@@ -525,32 +539,46 @@ export async function generateVoiceSamples(locale: string): Promise<SyncResult> 
           'voice-samples'
         );
 
-        // 更新数据库（使用 JSON 格式：{ default: url }）
-        await prisma.voices.update({
-          where: { id: voice.id },
-          data: {
-            voice_sample_url: { default: audioUrl },
-            voice_sample_text: sampleText,
-          },
-        });
-
-        updated++;
-        console.log(`✅ 样本生成成功: ${voice.name}`);
+        newSamples[style] = audioUrl;
+        generatedCount++;
+        console.log(`  ✅ ${voice.name} - ${style} 生成成功`);
       } catch (error) {
-        failed++;
-        console.error(`❌ 样本生成失败: ${voice.name}`, error);
+        failedCount++;
+        console.error(`  ❌ ${voice.name} - ${style} 生成失败:`, error);
       }
     }
 
-    console.log(`✅ ${locale} 语音样本生成完成: 成功 ${updated}, 失败 ${failed}`);
+    // 更新数据库（合并新生成的样本）
+    if (Object.keys(newSamples).length > Object.keys(existingSamples).length) {
+      await prisma.voices.update({
+        where: { id: voice.id },
+        data: {
+          voice_sample_url: newSamples,
+          voice_sample_text: sampleText,
+        },
+      });
+    }
+  }
 
-    return {
-      success: failed === 0,
-      message: failed === 0
-        ? `生成完成`
-        : `部分失败: 成功 ${updated}, 失败 ${failed}`,
-      updated,
-    };
+  console.log(`✅ ${label} 语音样本生成完成: 生成 ${generatedCount}, 失败 ${failedCount}, 跳过 ${skippedCount}`);
+
+  return {
+    success: failedCount === 0,
+    message: failedCount === 0
+      ? `生成完成: ${generatedCount} 个样本`
+      : `部分失败: 成功 ${generatedCount}, 失败 ${failedCount}`,
+    updated: generatedCount,
+  };
+}
+
+/**
+ * 为指定 locale 的语音生成样本音频
+ */
+export async function generateVoiceSamples(locale: string): Promise<SyncResult> {
+  await verifyAdminWithoutDb();
+
+  try {
+    return await generateVoiceSamplesCore(locale);
   } catch (error) {
     console.error(`❌ 生成 ${locale} 语音样本失败:`, error);
     return {
@@ -562,116 +590,12 @@ export async function generateVoiceSamples(locale: string): Promise<SyncResult> 
 
 /**
  * 批量生成所有语音样本
- * 遍历每个语音的 style_list，为缺失样本的 style 生成音频
  */
 export async function generateAllVoiceSamples(): Promise<SyncResult> {
   await verifyAdminWithoutDb();
 
   try {
-    console.log('🎤 开始批量生成所有语音样本（支持多风格）...');
-
-    // 获取所有活跃语音，包含 style_list 和 voice_sample_url
-    const allVoices = await prisma.voices.findMany({
-      where: { is_active: true },
-      select: {
-        id: true,
-        name: true,
-        locale: true,
-        style_list: true,
-        voice_sample_url: true,
-      },
-    });
-
-    if (allVoices.length === 0) {
-      return {
-        success: true,
-        message: '没有找到活跃语音',
-        updated: 0,
-      };
-    }
-
-    let generatedCount = 0;
-    let failedCount = 0;
-    let skippedCount = 0;
-
-    for (const voice of allVoices) {
-      const sampleText = getSampleText(voice.locale);
-
-      // 如果没有配置该语言的示例文本，跳过整个语音
-      if (!sampleText) {
-        skippedCount++;
-        continue;
-      }
-
-      const styleList = (voice.style_list as string[]) || ['default'];
-      const existingSamples = (voice.voice_sample_url as Record<string, string>) || {};
-
-      // 找出缺失样本的 styles
-      const missingStyles = styleList.filter(style => !existingSamples[style]);
-
-      if (missingStyles.length === 0) {
-        // 该语音所有 style 都已有样本
-        continue;
-      }
-
-      console.log(`🎙️ ${voice.name}: 需要生成 ${missingStyles.length} 个风格样本 [${missingStyles.join(', ')}]`);
-
-      // 为每个缺失的 style 生成样本
-      const newSamples: Record<string, string> = { ...existingSamples };
-
-      for (const style of missingStyles) {
-        try {
-          console.log(`  🎤 生成 ${voice.name} - ${style}...`);
-
-          // 调用 Azure TTS 生成音频（传入 style）
-          const ttsResult = await synthesizeSpeech({
-            text: sampleText,
-            voiceName: voice.name,
-            language: voice.locale,
-            style: style === 'default' ? undefined : style,
-          });
-
-          // 上传到 R2，文件名包含 style
-          const fileName = style === 'default'
-            ? `${voice.name}.mp3`
-            : `${voice.name}_${style}.mp3`;
-          const audioUrl = await uploadAudio(
-            ttsResult.audioData,
-            fileName,
-            'audio/mpeg',
-            'voice-samples'
-          );
-
-          newSamples[style] = audioUrl;
-          generatedCount++;
-          console.log(`  ✅ ${voice.name} - ${style} 生成成功`);
-        } catch (error) {
-          failedCount++;
-          console.error(`  ❌ ${voice.name} - ${style} 生成失败:`, error);
-        }
-      }
-
-      // 更新数据库（合并新生成的样本）
-      if (Object.keys(newSamples).length > Object.keys(existingSamples).length) {
-        await prisma.voices.update({
-          where: { id: voice.id },
-          data: {
-            voice_sample_url: newSamples,
-            voice_sample_text: sampleText,
-          },
-        });
-      }
-    }
-
-    console.log(`✅ 批量语音样本生成完成: 生成 ${generatedCount}, 失败 ${failedCount}, 跳过 ${skippedCount} 个语音`);
-
-    return {
-      success: failedCount === 0,
-      message: failedCount === 0
-        ? `生成完成: ${generatedCount} 个样本`
-        : `部分失败: 成功 ${generatedCount}, 失败 ${failedCount}`,
-      updated: generatedCount,
-    };
+    return await generateVoiceSamplesCore();
   } catch (error) {
     console.error('❌ 批量生成语音样本失败:', error);
     return {

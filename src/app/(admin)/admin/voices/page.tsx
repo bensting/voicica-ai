@@ -457,9 +457,9 @@ export default function VoicesManagementPage() {
                       </button>
                       <button
                         onClick={() => handleGenerateSamples(item.locale)}
-                        disabled={syncing !== null || item.dbCount === 0 || item.sampleCount === item.dbCount}
+                        disabled={syncing !== null || item.dbCount === 0}
                         className={`px-3 py-1 text-sm rounded-lg transition-colors ${
-                          item.dbCount > 0 && item.sampleCount < item.dbCount
+                          item.dbCount > 0
                             ? 'bg-teal-600 text-white hover:bg-teal-700'
                             : 'bg-gray-100 text-gray-400 cursor-not-allowed'
                         } disabled:opacity-50`}

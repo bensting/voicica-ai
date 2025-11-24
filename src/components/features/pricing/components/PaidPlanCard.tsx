@@ -303,12 +303,26 @@ export default function PaidPlanCard({ plan }: PaidPlanCardProps) {
         {/* 功能列表 */}
         {plan.features && plan.features.length > 0 && (
           <div className="mb-4 space-y-2">
-            {plan.features.map((feature, index) => (
-              <div key={index} className="flex items-start gap-2 text-sm text-gray-700">
-                <span className="text-purple-600 mt-0.5">•</span>
-                <span>{feature[locale] || feature.en || feature['zh-CN'] || ''}</span>
-              </div>
-            ))}
+            {plan.features.map((feature, index) => {
+              const text = feature[locale] || feature.en || feature['zh-CN'] || '';
+              // 使用正则匹配数字（包括逗号分隔的数字）
+              const parts = text.split(/(\d[\d,]*)/g);
+
+              return (
+                <div key={index} className="flex items-start gap-2 text-sm text-gray-700">
+                  <span className="text-purple-600 mt-0.5">•</span>
+                  <span>
+                    {parts.map((part, i) =>
+                      /\d/.test(part) ? (
+                        <span key={i} className="text-blue-600 font-semibold">{part}</span>
+                      ) : (
+                        <span key={i}>{part}</span>
+                      )
+                    )}
+                  </span>
+                </div>
+              );
+            })}
           </div>
         )}
 

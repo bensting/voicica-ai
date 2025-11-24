@@ -1,6 +1,10 @@
 'use client';
 
+import { useState } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
+import CategoryTabs from '@/components/common/CategoryTabs';
+import { ProductCategoryType, getDefaultCategory } from '@/config/productCategory';
+import { getCreditsUsageByCategory } from '@/config/creditsUsage';
 
 interface CreditsUsageModalProps {
   isOpen: boolean;
@@ -10,12 +14,16 @@ interface CreditsUsageModalProps {
 /**
  * 积分使用规则弹窗
  *
- * TODO: 完善积分使用规则内容
+ * 从配置文件读取多语言数据，根据选中的分类显示对应的积分规则
  */
 export default function CreditsUsageModal({ isOpen, onClose }: CreditsUsageModalProps) {
-  const { t } = useLanguage();
+  const { t, locale } = useLanguage();
+  const [activeCategory, setActiveCategory] = useState<ProductCategoryType>(getDefaultCategory());
 
   if (!isOpen) return null;
+
+  // 获取当前分类的积分规则数据
+  const categoryData = getCreditsUsageByCategory(locale, activeCategory);
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
@@ -26,23 +34,23 @@ export default function CreditsUsageModal({ isOpen, onClose }: CreditsUsageModal
       />
 
       {/* 弹窗内容 */}
-      <div className="relative bg-white rounded-2xl shadow-xl max-w-2xl w-full mx-4 max-h-[80vh] overflow-hidden">
+      <div className="relative bg-white rounded-2xl shadow-xl max-w-2xl lg:max-w-4xl w-full mx-4 max-h-[80vh] overflow-hidden">
         {/* 头部 */}
         <div className="bg-gradient-to-r from-purple-900 to-purple-800 p-6 text-white">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            {/* 装饰图标 */}
+            <div className="w-12 h-12 bg-purple-700/50 rounded-lg flex items-center justify-center shrink-0">
+              <svg className="w-6 h-6 text-purple-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+              </svg>
+            </div>
             <div>
-              <h2 className="text-xl font-bold text-purple-300">
+              <h2 className="text-xl font-bold text-white">
                 {t('pricing.creditsUsageGuide.title')}
               </h2>
               <p className="text-sm text-purple-200 mt-1">
                 {t('pricing.creditsUsageGuide.subtitle')}
               </p>
-            </div>
-            {/* 装饰图标 */}
-            <div className="w-16 h-16 bg-purple-700/50 rounded-lg flex items-center justify-center">
-              <svg className="w-8 h-8 text-purple-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-              </svg>
             </div>
           </div>
         </div>
@@ -59,15 +67,12 @@ export default function CreditsUsageModal({ isOpen, onClose }: CreditsUsageModal
 
         {/* 内容区域 */}
         <div className="p-6 overflow-y-auto max-h-[60vh]">
-          {/* 功能分类标签 - TODO: 根据实际产品功能完善 */}
-          <div className="flex flex-wrap gap-2 mb-6">
-            <button className="px-4 py-2 bg-gray-900 text-white rounded-full text-sm font-medium">
-              AI Voice
-            </button>
-            <button className="px-4 py-2 bg-gray-100 text-gray-700 rounded-full text-sm font-medium hover:bg-gray-200">
-              Text to Speech
-            </button>
-          </div>
+          {/* 产品分类标签 */}
+          <CategoryTabs
+            value={activeCategory}
+            onChange={setActiveCategory}
+            className="mb-6"
+          />
 
           {/* 积分规则表格 */}
           <div className="space-y-4">
@@ -77,26 +82,40 @@ export default function CreditsUsageModal({ isOpen, onClose }: CreditsUsageModal
               <span>{t('pricing.creditsUsageGuide.creditsRequired')}</span>
             </div>
 
-            {/* 规则列表 - TODO: 从配置读取 */}
-            <div className="bg-gray-50 rounded-xl overflow-hidden">
-              <div className="p-4 font-medium text-gray-900 bg-gray-100">
-                Text to Speech
+            {/* 规则列表 - 从配置读取 */}
+            {categoryData && (
+              <div className="bg-gray-50 rounded-xl overflow-hidden">
+                {/* 分类标题 */}
+                <div className="p-4 font-medium text-gray-900 bg-gray-100">
+                  {categoryData.name}
+                </div>
+                {/* 功能列表 */}
+                <div className="divide-y divide-gray-200">
+                  {categoryData.features.map((feature, index) => (
+                    <div key={index} className="p-4">
+                      <div className="flex justify-between items-start">
+                        <span className="text-gray-700">{feature.name}</span>
+                        <span className="text-gray-900 font-medium shrink-0 ml-4">
+                          {feature.cost}
+                        </span>
+                      </div>
+                      {feature.description && (
+                        <p className="text-sm text-gray-500 mt-2">
+                          {feature.description}
+                        </p>
+                      )}
+                    </div>
+                  ))}
+                </div>
               </div>
-              <div className="divide-y divide-gray-200">
-                <div className="flex justify-between p-4">
-                  <span className="text-gray-700">{t('pricing.creditsUsageGuide.standardVoice')}</span>
-                  <span className="text-gray-900 font-medium">1/100 chars</span>
-                </div>
-                <div className="flex justify-between p-4">
-                  <span className="text-gray-700">{t('pricing.creditsUsageGuide.premiumVoice')}</span>
-                  <span className="text-gray-900 font-medium">2/100 chars</span>
-                </div>
-                <div className="flex justify-between p-4">
-                  <span className="text-gray-700">{t('pricing.creditsUsageGuide.clonedVoice')}</span>
-                  <span className="text-gray-900 font-medium">3/100 chars</span>
-                </div>
+            )}
+
+            {/* 无数据提示 */}
+            {!categoryData && (
+              <div className="text-center py-8 text-gray-500">
+                {t('common.loading')}
               </div>
-            </div>
+            )}
           </div>
         </div>
       </div>

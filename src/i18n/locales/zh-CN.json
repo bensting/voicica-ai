@@ -6,6 +6,11 @@
     "retry": "重试",
     "loading": "加载中..."
   },
+  "productCategory": {
+    "aiVideo": "AI 视频",
+    "aiMusic": "AI 音乐",
+    "aiVoice": "AI 语音"
+  },
   "navbar": {
     "explore": "探索",
     "pricing": "定价",
@@ -26,8 +31,8 @@
     "generationHistory": "生成历史"
   },
   "pricing": {
-    "pageTitle": "AI-Voice-Labs 套餐与定价",
-    "pageSubtitle": "AI-Voice-Labs 提供多种购买方案，更好地满足您的需求。",
+    "pageTitle": "AI Voice Labs 套餐与定价",
+    "pageSubtitle": "AI Voice Labs 提供多种购买方案，更好地满足您的需求。",
     "loading": "正在加载价格方案...",
     "error": "加载价格方案失败，请稍后重试。",
     "retry": "重试",

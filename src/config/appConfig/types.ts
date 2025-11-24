@@ -3,12 +3,21 @@
  */
 
 /**
- * 语音成本配置 - 不同语音类型每字符扣除的积分
+ * 语音成本配置
+ *
+ * 计费规则：每 unit_chars 个字符消耗对应积分，不足 unit_chars 也按一个单位计算
+ * 例如：unit_chars=100, standard=1 时，101个字符消耗2积分
  */
 export interface VoiceCostConfig {
+  /** 计费单位（字符数），默认100 */
+  unit_chars: number;
+  /** 标准语音每单位消耗积分 */
   standard: number;
+  /** 专业语音每单位消耗积分 */
   professional: number;
+  /** 特殊语音每单位消耗积分 */
   special: number;
+  /** 克隆语音每单位消耗积分 */
   clone: number;
 }
 

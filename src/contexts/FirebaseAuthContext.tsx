@@ -42,22 +42,29 @@ export function FirebaseAuthProvider({ children }: { children: React.ReactNode }
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       if (firebaseUser) {
-        // 获取 ID Token
-        const idToken = await firebaseUser.getIdToken();
+        // 强制刷新 token，确保获取最新的有效 token
+        const idToken = await firebaseUser.getIdToken(true);
+
+        // 先设置 cookie，确保服务端能验证 token
+        try {
+          await fetch('/api/auth/set-token', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ token: idToken }),
+          });
+        } catch (err) {
+          console.error('[FirebaseAuth] 设置 cookie 失败:', err);
+        }
+
+        // cookie 设置完成后，再更新状态（这样 UserContext 获取数据时 cookie 已就绪）
         setUser(firebaseUser);
         setToken(idToken);
-
-        // 保存 token 到 cookie，供 middleware 使用
-        // 生产环境 (HTTPS) 需要 Secure 标志
-        const isProduction = window.location.protocol === 'https:';
-        const secureCookie = isProduction ? 'Secure; ' : '';
-        document.cookie = `firebase-token=${idToken}; path=/; max-age=3600; SameSite=Strict; ${secureCookie}`;
       } else {
         setUser(null);
         setToken(null);
 
         // 清除 token cookie
-        document.cookie = 'firebase-token=; path=/; max-age=0';
+        fetch('/api/auth/set-token', { method: 'DELETE' }).catch(() => {});
       }
 
       setLoading(false);
@@ -75,10 +82,13 @@ export function FirebaseAuthProvider({ children }: { children: React.ReactNode }
         const idToken = await user.getIdToken(true); // force refresh
         setToken(idToken);
 
-        // 更新 cookie (生产环境需要 Secure 标志)
-        const isProduction = window.location.protocol === 'https:';
-        const secureCookie = isProduction ? 'Secure; ' : '';
-        document.cookie = `firebase-token=${idToken}; path=/; max-age=3600; SameSite=Strict; ${secureCookie}`;
+        // 通过 API 更新 cookie
+        await fetch('/api/auth/set-token', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ token: idToken }),
+        });
+        console.log('🔐 [FirebaseAuth] Token 定时刷新成功');
       } catch (error) {
         console.error('[FirebaseAuth] Token 刷新失败:', error);
       }

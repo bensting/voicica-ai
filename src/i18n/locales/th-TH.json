@@ -31,8 +31,12 @@
     "loading": "กำลังโหลดแผนราคา...",
     "error": "โหลดแผนราคาไม่สำเร็จ กรุณาลองใหม่อีกครั้ง",
     "retry": "ลองอีกครั้ง",
+    "week": "สัปดาห์",
     "month": "เดือน",
     "year": "ปี",
+    "perDay": "ต่อวัน",
+    "creditsPerCycle": "เครดิตต่อรอบ",
+    "creditsUsageRules": "กฎการใช้เครดิต",
     "buyNow": "ซื้อเลย",
     "tryItFree": "ทดลองใช้ฟรี",
     "processing": "กำลังดำเนินการ...",
@@ -43,7 +47,16 @@
     "loginRequired": "ต้องเข้าสู่ระบบ",
     "loginRequiredDesc": "กรุณาเข้าสู่ระบบเพื่อซื้อแผนสมาชิก",
     "cancel": "ยกเลิก",
-    "signIn": "เข้าสู่ระบบ"
+    "signIn": "เข้าสู่ระบบ",
+    "creditsUsageGuide": {
+      "title": "คู่มือการใช้เครดิต",
+      "subtitle": "ด้านล่างนี้คือเครดิตที่ต้องการสำหรับแต่ละฟีเจอร์",
+      "feature": "ฟีเจอร์",
+      "creditsRequired": "เครดิตที่ต้องการ",
+      "standardVoice": "เสียงมาตรฐาน",
+      "premiumVoice": "เสียงพรีเมียม",
+      "clonedVoice": "เสียงโคลน"
+    }
   },
   "upgrade": {
     "header": {

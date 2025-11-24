@@ -1,10 +1,9 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { X, Crown } from 'lucide-react';
 import { PricingPlans } from '@/components/features/pricing';
-import { usePricingByType, ProductType } from '@/components/features/pricing/hooks/usePricingByType';
-import ProductTypeTabs from '@/components/features/pricing/components/ProductTypeTabs';
+import { usePricingByType } from '@/components/features/pricing/hooks/usePricingByType';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 interface UpgradeModalProps {
@@ -17,25 +16,13 @@ interface UpgradeModalProps {
  *
  * Desktop: Modal overlay with pricing plans
  * Mobile: Full screen view with pricing plans
+ * 统一订阅方案，不区分产品类型
  */
 export default function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
   const { t } = useLanguage();
-  const [productType, setProductType] = useState<ProductType>('text_to_speech');
 
   // Use custom hook for all business logic
-  const { cycle, plans, loading, error, onCycleChange } = usePricingByType({ productType });
-
-  const handleProductTypeChange = (type: ProductType) => {
-    setProductType(type);
-  };
-
-  // Get page title based on product type
-  const getPageTitle = () => {
-    if (productType === 'text_to_speech') {
-      return t('upgrade.title.textToVoice');
-    }
-    return t('upgrade.title.voiceClone');
-  };
+  const { cycle, plans, loading, error, onCycleChange } = usePricingByType();
 
   // Handle ESC key to close modal
   useEffect(() => {
@@ -102,16 +89,6 @@ export default function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
 
         {/* Content - Scrollable */}
         <div className="flex-1 overflow-y-auto px-4 py-6 lg:px-6 lg:py-8">
-          {/* Product Type Tabs */}
-          <div className="mb-6">
-            <ProductTypeTabs activeType={productType} onChange={handleProductTypeChange} />
-          </div>
-
-          {/* Section Title */}
-          <h3 className="text-xl lg:text-2xl font-bold text-gray-900 mb-6 text-center">
-            {getPageTitle()}
-          </h3>
-
           {/* Pricing Plans */}
           <PricingPlans
             plans={plans}

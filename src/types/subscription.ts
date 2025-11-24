@@ -5,50 +5,43 @@
 // 平台类型
 export type Platform = 'google' | 'apple' | 'stripe';
 
-// 订阅计划基础模型
-export interface SubscriptionPlan {
-  id: number | string;
+// 计费周期类型
+export type BillingPeriod = 'week' | 'month' | 'year';
+export type BillingCycle = 'weekly' | 'monthly' | 'yearly';
+
+// 积分档位配置
+export interface CreditTier {
+  credits: number;
+  price: {
+    USD: number;
+    CNY?: number;
+    TWD?: number;
+    THB?: number;
+  };
+  discounted_price?: {
+    USD: number;
+    CNY?: number;
+    TWD?: number;
+    THB?: number;
+  };
+  product_id?: string;
+}
+
+// 前端使用的计划展示类型
+export interface PricingPlan {
+  id: string;
   platform: string;
-  product_type?: string;
-  product_id: string;
-  base_plan_id?: string | null;
-  plan_name: string; // 计划名称 (Free, Basic, Premium, Plus)
-  payment_link?: string;
+  plan_name: string; // 计划名称 (Starter, Creator, Pro)
   display_name: Record<string, string>;
-  features: Record<string, string[]>;
-  credits_per_cycle: number;
+  billing_period: BillingPeriod;
   cycle_days: number;
+  credit_tiers: CreditTier[]; // 每个档位包含 product_id
+  enable_first_month_coupon?: boolean;
+  first_month_coupon_label?: Record<string, string>;
+  is_popular?: boolean;
   active: boolean;
   sort_order: number;
-  created_at?: string;
-  updated_at?: string;
-  // 价格字段（后端直接返回，key 为货币代码，value 为价格）
-  price?: Record<string, number>; // 例如: { "CNY": 34, "TWD": 149, "USD": 4.99 }
-  discounted_price?: Record<string, number>; // 折扣价格
-  billing_period?: string; // 计费周期
-  enable_first_month_coupon?: boolean;
-  first_month_coupon_id?: string | null;
-  is_popular?: boolean; // 是否显示"最受欢迎"标签
 }
-
-// 计费周期枚举（与后端保持一致）
-export type BillingPeriod = 'month' | 'year' | 'one_time';
-
-// 价格信息
-export interface PriceInfo {
-  price: number; // 价格（分）
-  currency: string; // 货币代码 (USD, CNY, EUR, GBP)
-  billing_type: string; // 计费类型 (recurring, one-time)
-  billing_period: BillingPeriod; // 计费周期 (month, year, one_time)
-}
-
-// 前端使用的计划展示类型（包含价格信息）
-export interface PricingPlan extends SubscriptionPlan {
-  priceInfo?: PriceInfo; // 价格信息（可选，Free 计划没有价格）
-}
-
-// 计费周期类型
-export type BillingCycle = 'monthly' | 'yearly';
 
 // 订阅状态枚举 - 与后端保持一致
 export enum SubscriptionStatus {

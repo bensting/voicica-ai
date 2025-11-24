@@ -5,7 +5,7 @@ import { inngest } from '../client';
 import prisma from '@/lib/prisma';
 import { synthesizeSpeech } from '@/lib/services/azure-tts';
 import { uploadAudio } from '@/lib/services/r2-storage';
-import { ProductType } from '@/config/credit';
+import { ProductType } from '@/config/productType';
 
 export const processTtsTask = inngest.createFunction(
   {

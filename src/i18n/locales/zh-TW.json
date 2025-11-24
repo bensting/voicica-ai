@@ -31,8 +31,12 @@
     "loading": "正在載入價格方案...",
     "error": "載入價格方案失敗，請稍後重試。",
     "retry": "重試",
+    "week": "週",
     "month": "月",
     "year": "年",
+    "perDay": "每天",
+    "creditsPerCycle": "積分/週期",
+    "creditsUsageRules": "積分使用規則",
     "buyNow": "立即購買",
     "tryItFree": "免費試用",
     "processing": "處理中...",
@@ -43,7 +47,16 @@
     "loginRequired": "需要登入",
     "loginRequiredDesc": "請登入後購買訂閱套餐",
     "cancel": "取消",
-    "signIn": "登入"
+    "signIn": "登入",
+    "creditsUsageGuide": {
+      "title": "積分使用指南",
+      "subtitle": "以下是各功能所需的積分。",
+      "feature": "功能",
+      "creditsRequired": "所需積分",
+      "standardVoice": "標準語音",
+      "premiumVoice": "高級語音",
+      "clonedVoice": "克隆語音"
+    }
   },
   "upgrade": {
     "header": {

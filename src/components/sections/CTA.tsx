@@ -32,7 +32,6 @@ interface CTAProps {
  * and feature highlights. Designed to convert visitors into users.
  */
 export default function CTA({
-  brandName = 'AI-Voice-Labs',
   titleKey,
   buttons,
   features,

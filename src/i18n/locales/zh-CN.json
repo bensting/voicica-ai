@@ -31,8 +31,12 @@
     "loading": "正在加载价格方案...",
     "error": "加载价格方案失败，请稍后重试。",
     "retry": "重试",
+    "week": "周",
     "month": "月",
     "year": "年",
+    "perDay": "每天",
+    "creditsPerCycle": "积分/周期",
+    "creditsUsageRules": "积分使用规则",
     "buyNow": "立即购买",
     "tryItFree": "免费试用",
     "processing": "处理中...",
@@ -43,7 +47,16 @@
     "loginRequired": "需要登录",
     "loginRequiredDesc": "请登录后购买订阅套餐",
     "cancel": "取消",
-    "signIn": "登录"
+    "signIn": "登录",
+    "creditsUsageGuide": {
+      "title": "积分使用指南",
+      "subtitle": "以下是各功能所需的积分。",
+      "feature": "功能",
+      "creditsRequired": "所需积分",
+      "standardVoice": "标准语音",
+      "premiumVoice": "高级语音",
+      "clonedVoice": "克隆语音"
+    }
   },
   "upgrade": {
     "header": {

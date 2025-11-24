@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 import { useSubscriptionManager } from '@/components/features/settings/my-subscription/hooks/useSubscriptionManager';
 import SectionHeader from '@/components/features/settings/my-subscription/SectionHeader';
-import SubscriptionTabs from '@/components/features/settings/my-subscription/SubscriptionTabs';
 import LoadingState from '@/components/features/settings/my-subscription/LoadingState';
 import ErrorState from '@/components/features/settings/my-subscription/ErrorState';
 import EmptyState from '@/components/features/settings/my-subscription/EmptyState';
@@ -15,8 +14,6 @@ export default function MySubscriptionPage() {
   const router = useRouter();
   const { user, loading: authLoading } = useFirebaseAuth();
   const {
-    activeTab,
-    setActiveTab,
     data,
     loading,
     error,
@@ -35,10 +32,10 @@ export default function MySubscriptionPage() {
     }
   }, [user, authLoading, router]);
 
-  // Tab 切换时重新获取数据
+  // 获取订阅数据
   useEffect(() => {
-    void fetchSubscriptions(activeTab);
-  }, [activeTab, fetchSubscriptions]);
+    void fetchSubscriptions();
+  }, [fetchSubscriptions]);
 
   // 认证加载中，显示加载状态
   if (authLoading) {
@@ -59,9 +56,6 @@ export default function MySubscriptionPage() {
       {/* Section Header */}
       <SectionHeader />
 
-      {/* Tabs */}
-      <SubscriptionTabs activeTab={activeTab} onTabChange={setActiveTab} />
-
       {/* Content - Scrollable */}
       <div className="flex-1 overflow-y-auto">
         {loading ? (
@@ -69,7 +63,7 @@ export default function MySubscriptionPage() {
         ) : error ? (
           <ErrorState
             error={error}
-            onRetry={() => fetchSubscriptions(activeTab)}
+            onRetry={() => fetchSubscriptions()}
           />
         ) : data?.subscriptions.length === 0 ? (
           <EmptyState />

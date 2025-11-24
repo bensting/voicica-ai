@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { PricingPlan } from '@/types/subscription';
 import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 import { createStripeCheckout } from '@/actions/payment';
@@ -8,6 +8,8 @@ import { BillingCycle } from '../hooks/usePricing';
 import { getCurrencySymbol, getCurrencyFromLocale } from '@/config/currency';
 import { useLanguage } from '@/contexts/LanguageContext';
 import LoginPrompt from './LoginPrompt';
+import CreditsSlider from './CreditsSlider';
+import CreditsUsageModal from './CreditsUsageModal';
 
 interface PaidPlanCardProps {
   plan: PricingPlan;
@@ -15,72 +17,98 @@ interface PaidPlanCardProps {
   cycle: BillingCycle;
 }
 
-const Feature = ({ children, isNegative = false }: { children: React.ReactNode; isNegative?: boolean }) => (
-  <li className="flex items-start gap-2 text-sm">
-    <span className={`mt-0.5 inline-flex h-4 w-4 flex-shrink-0 items-center justify-center ${isNegative ? 'text-gray-300' : 'text-purple-600'}`}>
-      <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-        {isNegative ? (
-          <path d="M6 18L18 6M6 6l12 12" />
-        ) : (
-          <path d="M5 13l4 4L19 7" />
-        )}
-      </svg>
-    </span>
-    <span className={isNegative ? 'text-gray-400' : 'text-gray-700'}>{children}</span>
-  </li>
-);
-
-export default function PaidPlanCard({ plan, isRecommended = false }: PaidPlanCardProps) {
+export default function PaidPlanCard({ plan }: PaidPlanCardProps) {
   const { user } = useFirebaseAuth();
   const { locale, t } = useLanguage();
   const [isLoading, setIsLoading] = useState(false);
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
+  const [showCreditsUsageModal, setShowCreditsUsageModal] = useState(false);
+
+  // 积分档位状态（默认选中中间档位）
+  const hasCreditTiers = plan.credit_tiers && plan.credit_tiers.length > 0;
+  const defaultTierIndex = hasCreditTiers ? Math.floor((plan.credit_tiers!.length - 1) / 2) : 0;
+  const [selectedTierIndex, setSelectedTierIndex] = useState(defaultTierIndex);
+
+  // 获取当前选中的档位
+  const currentTier = useMemo(() => {
+    if (hasCreditTiers) {
+      return plan.credit_tiers![selectedTierIndex];
+    }
+    return null;
+  }, [hasCreditTiers, plan.credit_tiers, selectedTierIndex]);
+
+  // 获取用户偏好的货币
+  const preferredCurrency = getCurrencyFromLocale(locale);
 
   // 格式化价格显示
-  const formatPrice = () => {
-    // 如果没有价格信息，返回 null
-    if (!plan.price && !plan.discounted_price) return null;
+  const priceInfo = useMemo(() => {
+    // 使用当前选中的档位价格
+    if (!currentTier) return null;
 
-    // 获取用户偏好的货币
-    const preferredCurrency = getCurrencyFromLocale(locale);
+    const price = currentTier.price;
+    const discountedPrice = currentTier.discounted_price;
+
+    if (!price && !discountedPrice) return null;
 
     // 确定要使用的货币
-    const availableCurrencies = Object.keys(plan.discounted_price || plan.price || {});
+    const availableCurrencies = Object.keys(discountedPrice || price || {});
     let selectedCurrency = preferredCurrency;
 
-    // 如果用户偏好货币不可用，尝试 USD
     if (!availableCurrencies.includes(selectedCurrency)) {
       selectedCurrency = 'USD';
     }
-
-    // 如果 USD 也不可用，使用第一个可用货币
     if (!availableCurrencies.includes(selectedCurrency) && availableCurrencies.length > 0) {
       selectedCurrency = availableCurrencies[0];
     }
 
-    // 获取原价和折扣价
-    const originalPrice = plan.price?.[selectedCurrency];
-    const discountedPrice = plan.discounted_price?.[selectedCurrency];
+    const originalPrice = price?.[selectedCurrency as keyof typeof price];
+    const discountPrice = discountedPrice?.[selectedCurrency as keyof typeof discountedPrice];
+    const displayPrice = discountPrice ?? originalPrice;
 
-    // 优先显示折扣价，如果没有折扣价则显示原价
-    const displayPrice = discountedPrice ?? originalPrice;
-
-    // 如果最终还是没有价格，返回 null
     if (displayPrice === undefined) return null;
 
     return {
       display: displayPrice.toFixed(2),
       currency: selectedCurrency,
       originalPrice: originalPrice,
-      discountedPrice: discountedPrice,
+      discountedPrice: discountPrice,
     };
-  };
+  }, [currentTier, preferredCurrency]);
 
-  const priceInfo = formatPrice();
+  // 计算每日价格
+  const perDayPrice = useMemo(() => {
+    if (!priceInfo?.discountedPrice && !priceInfo?.originalPrice) return null;
+    const price = priceInfo.discountedPrice ?? priceInfo.originalPrice ?? 0;
+    const days = plan.cycle_days || 7; // 默认7天
+    return (price / days).toFixed(2);
+  }, [priceInfo, plan.cycle_days]);
+
+  // 获取当前积分数
+  const currentCredits = useMemo(() => {
+    if (currentTier) {
+      return currentTier.credits;
+    }
+    // 如果没有选中档位，使用第一个档位的积分数
+    if (hasCreditTiers && plan.credit_tiers!.length > 0) {
+      return plan.credit_tiers![0].credits;
+    }
+    return 0;
+  }, [currentTier, hasCreditTiers, plan.credit_tiers]);
+
+  // 获取当前 product_id（从选中的档位获取）
+  const currentProductId = useMemo(() => {
+    if (currentTier?.product_id) {
+      return currentTier.product_id;
+    }
+    // 如果没有选中档位，使用第一个档位的 product_id
+    if (hasCreditTiers && plan.credit_tiers[0]?.product_id) {
+      return plan.credit_tiers[0].product_id;
+    }
+    return null;
+  }, [currentTier, hasCreditTiers, plan.credit_tiers]);
 
   // 获取计划名称（根据当前语言）
   const getPlanName = () => {
-    // 优先使用当前语言，然后回退到英文，最后使用任何可用的语言
     return plan.display_name?.[locale] ||
            plan.display_name?.en ||
            plan.display_name?.['zh-CN'] ||
@@ -88,30 +116,39 @@ export default function PaidPlanCard({ plan, isRecommended = false }: PaidPlanCa
            'Plan';
   };
 
-  // 获取功能列表（根据当前语言）
-  const getFeatures = () => {
-    // 优先使用当前语言，然后回退到英文
-    return plan.features?.[locale] ||
-           plan.features?.en ||
-           plan.features?.['zh-CN'] ||
-           Object.values(plan.features || {})[0] ||
-           [];
+  // 获取首月优惠标签（根据当前语言）
+  const getCouponLabel = () => {
+    if (!plan.enable_first_month_coupon || !plan.first_month_coupon_label) return null;
+    return plan.first_month_coupon_label[locale] ||
+           plan.first_month_coupon_label.en ||
+           plan.first_month_coupon_label['zh-CN'] ||
+           null;
+  };
+
+  // 获取计费周期文本
+  const getBillingPeriodText = () => {
+    switch (plan.billing_period) {
+      case 'week':
+        return t('pricing.week');
+      case 'year':
+        return t('pricing.year');
+      default:
+        return t('pricing.month');
+    }
   };
 
   // 处理升级按钮点击
   const handleUpgrade = async () => {
     console.log('🔵 [handleUpgrade] Start - Plan:', plan.plan_name);
-    console.log('🔵 [handleUpgrade] Product ID:', plan.product_id);
+    console.log('🔵 [handleUpgrade] Product ID:', currentProductId);
     console.log('🔵 [handleUpgrade] User:', user?.uid || 'Not logged in');
 
-    // 检查是否有 product_id
-    if (!plan.product_id) {
+    if (!currentProductId) {
       console.error('❌ Product ID not found');
       alert('Product information is not available. Please try again later.');
       return;
     }
 
-    // 如果用户未登录，显示登录提示
     if (!user) {
       setShowLoginPrompt(true);
       return;
@@ -120,172 +157,176 @@ export default function PaidPlanCard({ plan, isRecommended = false }: PaidPlanCa
     setIsLoading(true);
 
     try {
-      // 获取回调 URL
       const successUrl = process.env.NEXT_PUBLIC_PAYMENT_SUCCESS_URL || `${window.location.origin}/payment/success`;
       const cancelUrl = process.env.NEXT_PUBLIC_PAYMENT_CANCEL_URL || `${window.location.origin}/pricing`;
-      console.log('📡 [handleUpgrade] Success URL:', successUrl);
-      console.log('📡 [handleUpgrade] Cancel URL:', cancelUrl);
-
-      // 获取当前计划的货币
       const currency = priceInfo?.currency?.toLowerCase() || 'usd';
-      console.log('📡 [handleUpgrade] Currency:', currency);
 
       const requestData = {
-        product_id: plan.product_id,
+        product_id: currentProductId,
         currency: currency,
         success_url: successUrl,
         cancel_url: cancelUrl,
       };
-      console.log('📡 [handleUpgrade] Request data:', JSON.stringify(requestData, null, 2));
 
       const data = await createStripeCheckout(requestData);
-      console.log('✅ [handleUpgrade] Stripe API response:', JSON.stringify(data, null, 2));
 
-      // 检查响应数据
       if (!data || typeof data !== 'object') {
-        console.error('❌ [handleUpgrade] Invalid response data:', data);
         throw new Error('Invalid response from payment provider');
       }
 
-      console.log('✅ [handleUpgrade] Checkout session created successfully');
-      console.log('✅ [handleUpgrade] Checkout URL:', data.checkout_url);
-
-      // 跳转到支付页面
       if (data.checkout_url) {
-        // 检测设备类型
         const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-        console.log('📱 [handleUpgrade] Device type:', isMobile ? 'Mobile' : 'Desktop');
 
         if (isMobile) {
-          // 移动端：同窗口跳转
-          console.log('🔄 [handleUpgrade] Redirecting in same window (mobile)');
           window.location.href = data.checkout_url;
         } else {
-          // 桌面端：新标签页打开
-          console.log('🔄 [handleUpgrade] Opening in new tab (desktop)');
           const newWindow = window.open(data.checkout_url, '_blank');
-
-          // 检查是否被浏览器拦截
           if (!newWindow || newWindow.closed || typeof newWindow.closed === 'undefined') {
-            console.warn('⚠️ [handleUpgrade] Popup blocked, falling back to same window');
             window.location.href = data.checkout_url;
           } else {
-            console.log('✅ [handleUpgrade] New tab opened successfully');
             setIsLoading(false);
           }
         }
       } else {
-        console.error('❌ [handleUpgrade] Checkout URL missing in response');
         throw new Error('Checkout URL not returned');
       }
     } catch (error) {
       console.error('❌ [handleUpgrade] Error:', error);
-      if (error instanceof Error) {
-        console.error('❌ [handleUpgrade] Error message:', error.message);
-        console.error('❌ [handleUpgrade] Error stack:', error.stack);
-      }
       alert(error instanceof Error ? error.message : 'Failed to start checkout process. Please try again.');
       setIsLoading(false);
     }
   };
 
+  const couponLabel = getCouponLabel();
+
   return (
     <>
-      {/* 登录提示模态框 */}
       <LoginPrompt
         isOpen={showLoginPrompt}
         onClose={() => setShowLoginPrompt(false)}
       />
+      <CreditsUsageModal
+        isOpen={showCreditsUsageModal}
+        onClose={() => setShowCreditsUsageModal(false)}
+      />
 
-      <div
-        className={`relative rounded-2xl border-2 p-6 flex flex-col ${
-          isRecommended
-            ? 'border-purple-400 bg-purple-50 shadow-lg'
-            : 'border-gray-200 bg-white hover:border-purple-200 transition-colors'
-        }`}
+      <div className={`relative rounded-2xl p-6 flex flex-col transition-colors ${
+        plan.is_popular
+          ? 'border-2 border-transparent bg-gradient-to-b from-purple-100 to-white shadow-lg'
+          : 'border-2 border-gray-200 bg-white hover:border-purple-200'
+      }`}
+        style={plan.is_popular ? {
+          background: 'linear-gradient(white, white) padding-box, linear-gradient(to bottom, #a855f7, #e9d5ff) border-box',
+        } : undefined}
       >
-      {/* Most Popular Badge */}
-      {isRecommended && (
-        <div className="absolute -top-3 -right-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white text-xs font-bold px-4 py-1.5 rounded-full shadow-md transform rotate-12">
-          {t('pricing.mostPopular')}
-        </div>
-      )}
-
-      {/* Plan Name */}
-      <div className="text-center mb-4">
-        <h3 className="text-xl font-bold text-gray-900">{getPlanName()}</h3>
-      </div>
-
-      {/* Price */}
-      <div className="text-center mb-6">
-        {priceInfo ? (
-          <>
-            {/* 主价格行：划掉的原价（如果有折扣）+ 当前价格 */}
-            <div className="flex items-center justify-center gap-2 mb-1 flex-wrap">
-              {priceInfo.originalPrice && priceInfo.discountedPrice && priceInfo.originalPrice !== priceInfo.discountedPrice && (
-                <span className="text-lg text-gray-400 line-through whitespace-nowrap">
-                  {getCurrencySymbol(priceInfo.currency)}
-                  {priceInfo.originalPrice.toFixed(2)}
-                </span>
-              )}
-              <div className="text-3xl font-bold text-gray-900 whitespace-nowrap">
-                {getCurrencySymbol(priceInfo.currency)}
-                {priceInfo.display}
-                <span className="text-lg font-normal text-gray-600">
-                  /{plan.billing_period === 'year' ? t('pricing.year') : t('pricing.month')}
-                </span>
-              </div>
+        {/* Most Popular 标签 - 斜角效果 */}
+        {plan.is_popular && (
+          <div className="absolute -top-2 -right-2 rotate-12">
+            <div className="bg-gradient-to-r from-purple-500 to-pink-500 text-white text-xs font-bold px-4 py-1.5 rounded-full shadow-md">
+              {t('pricing.mostPopular')}
             </div>
-            {/* Renewal 提示 */}
-            {priceInfo.originalPrice && (
-              <div className="text-sm text-gray-500">
-                {t('pricing.renewalAt')} {getCurrencySymbol(priceInfo.currency)}
-                {priceInfo.originalPrice.toFixed(2)}
+          </div>
+        )}
+
+        {/* 折扣标签 */}
+        {couponLabel && (
+          <div className="absolute -top-3 left-4">
+            <div className="bg-gradient-to-r from-pink-500 to-purple-500 text-white text-xs font-bold px-4 py-1.5 rounded-full shadow-md flex items-center gap-1">
+              <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M5 2a2 2 0 00-2 2v14l3.5-2 3.5 2 3.5-2 3.5 2V4a2 2 0 00-2-2H5zm2.5 3a1.5 1.5 0 100 3 1.5 1.5 0 000-3zm6.207.293a1 1 0 00-1.414 0l-6 6a1 1 0 101.414 1.414l6-6a1 1 0 000-1.414zM12.5 10a1.5 1.5 0 100 3 1.5 1.5 0 000-3z" clipRule="evenodd" />
+              </svg>
+              {couponLabel}
+            </div>
+          </div>
+        )}
+
+        {/* Plan Name */}
+        <div className="mb-4 mt-2">
+          <h3 className="text-xl font-bold text-gray-900">{getPlanName()}</h3>
+        </div>
+
+        {/* Price Section - 新布局 */}
+        <div className="mb-4">
+          {priceInfo ? (
+            <>
+              {/* 主价格行：大价格在左，划线价在右 */}
+              <div className="flex items-baseline gap-2">
+                <span className="text-3xl font-bold text-gray-900">
+                  {getCurrencySymbol(priceInfo.currency)}{priceInfo.display}
+                </span>
+                <span className="text-lg text-gray-600">
+                  /{getBillingPeriodText()}
+                </span>
+                {priceInfo.originalPrice && priceInfo.discountedPrice && priceInfo.originalPrice !== priceInfo.discountedPrice && (
+                  <span className="text-base text-gray-400 line-through ml-1">
+                    {getCurrencySymbol(priceInfo.currency)}{priceInfo.originalPrice.toFixed(2)}
+                  </span>
+                )}
               </div>
-            )}
-          </>
-        ) : (
-          <div className="text-gray-500">Price not available</div>
-        )}
-      </div>
+              {/* 每日价格 */}
+              {perDayPrice && (
+                <div className="text-sm text-gray-500 mt-1">
+                  {getCurrencySymbol(priceInfo.currency)}{perDayPrice} {t('pricing.perDay')}
+                </div>
+              )}
+            </>
+          ) : (
+            <div className="text-gray-500">Price not available</div>
+          )}
+        </div>
 
-      {/* CTA Button */}
-      <button
-        onClick={handleUpgrade}
-        disabled={!plan.product_id || isLoading}
-        className={`w-full rounded-xl font-semibold py-3 mb-6 transition-colors ${
-          isRecommended || plan.product_id
-            ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white hover:from-purple-700 hover:to-pink-700 disabled:opacity-50'
-            : 'bg-gray-100 text-gray-400 cursor-not-allowed'
-        }`}
-      >
-        {isLoading ? (
-          <span className="flex items-center justify-center gap-2">
-            <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24" fill="none">
-              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+        {/* 积分滑块 */}
+        {hasCreditTiers && (
+          <div className="mb-6">
+            <CreditsSlider
+              tiers={plan.credit_tiers!}
+              selectedIndex={selectedTierIndex}
+              onChange={setSelectedTierIndex}
+            />
+          </div>
+        )}
+
+        {/* 当前积分显示（无滑块时） */}
+        {!hasCreditTiers && (
+          <div className="text-sm text-gray-600 mb-4">
+            {currentCredits.toLocaleString()} {t('pricing.creditsPerCycle')}
+          </div>
+        )}
+
+        {/* CTA Button */}
+        <button
+          onClick={handleUpgrade}
+          disabled={!currentProductId || isLoading}
+          className="w-full rounded-xl font-semibold py-3 mb-4 transition-colors bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:from-purple-600 hover:to-pink-600 disabled:opacity-50"
+        >
+          {isLoading ? (
+            <span className="flex items-center justify-center gap-2">
+              <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24" fill="none">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+              </svg>
+              {t('pricing.processing')}
+            </span>
+          ) : (
+            t('pricing.buyNow')
+          )}
+        </button>
+
+        {/* Credits Usage Rules 链接 */}
+        <button
+          onClick={() => setShowCreditsUsageModal(true)}
+          className="flex items-center justify-between w-full text-sm text-purple-600 hover:text-purple-700 transition-colors py-2"
+        >
+          <span className="flex items-center gap-1">
+            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
             </svg>
-            {t('pricing.processing')}
+            {t('pricing.creditsUsageRules')}
           </span>
-        ) : (
-          t('pricing.buyNow')
-        )}
-      </button>
-
-      {/* Features */}
-      <ul className="space-y-3 flex-grow">
-        {getFeatures().map((feature, idx) => {
-          const isNegative = feature.toLowerCase().includes('not supported') ||
-                            feature.toLowerCase().includes('no ') ||
-                            feature.toLowerCase().includes('limited');
-          return <Feature key={idx} isNegative={isNegative}>{feature}</Feature>;
-        })}
-      </ul>
-
-      {/* Auto-renew notice */}
-      <div className="text-xs text-gray-500 text-center mt-6 pt-4 border-t border-gray-200">
-        {t('pricing.autoRenew')}
-      </div>
+          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+          </svg>
+        </button>
       </div>
     </>
   );

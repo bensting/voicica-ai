@@ -6,7 +6,7 @@
 import Stripe from 'stripe';
 import { getCurrentUser } from '@/lib/auth-firebase';
 import prisma from '@/lib/prisma';
-import { getPlanByProductId } from '@/config/subscription';
+import { getCreditTierByProductId } from '@/config/subscription';
 
 // Initialize Stripe
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
@@ -32,17 +32,19 @@ export async function createStripeCheckout(request: StripeCheckoutRequest): Prom
   const user = await getCurrentUser();
   const userId = user.uid;
 
-  // 从配置文件获取订阅计划
-  const plan = getPlanByProductId(request.product_id);
+  // 从配置文件获取订阅计划和档位
+  const result = getCreditTierByProductId(request.product_id);
 
-  if (!plan || !plan.active) {
+  if (!result || !result.plan.active) {
     throw new Error(`订阅计划不存在: ${request.product_id}`);
   }
 
+  const { plan, tier } = result;
+
   // 确定货币和价格
   const currency = (request.currency || 'usd').toLowerCase();
-  const priceData = plan.discounted_price as Record<string, number> | null;
-  const originalPriceData = plan.price as Record<string, number> | null;
+  const priceData = tier.discounted_price as Record<string, number> | undefined;
+  const originalPriceData = tier.price as Record<string, number>;
 
   // 优先使用折扣价，没有则使用原价
   const priceMap = priceData || originalPriceData;
@@ -84,11 +86,11 @@ export async function createStripeCheckout(request: StripeCheckoutRequest): Prom
           unit_amount: unitAmountInCents,
           product_data: {
             name: (plan.display_name as Record<string, string>)?.en || plan.plan_name,
-            description: `${plan.credits_per_cycle} credits for ${plan.cycle_days} days`,
+            description: `${tier.credits} credits for ${plan.cycle_days} days`,
           },
           ...(plan.billing_period && {
             recurring: {
-              interval: plan.billing_period === 'year' ? 'year' : 'month',
+              interval: plan.billing_period === 'year' ? 'year' : plan.billing_period === 'week' ? 'week' : 'month',
             },
           }),
         },
@@ -101,7 +103,7 @@ export async function createStripeCheckout(request: StripeCheckoutRequest): Prom
       user_id: userId,
       product_id: request.product_id,
       plan_id: String(plan.id),
-      credits: String(plan.credits_per_cycle),
+      credits: String(tier.credits),
     },
     ...(appUser?.email && {
       customer_email: appUser.email,
@@ -180,20 +182,21 @@ export async function getStripePrices(productId: string): Promise<Array<{
   billing_period: string | null;
 }>> {
   // 从配置文件获取订阅计划的价格信息
-  const plan = getPlanByProductId(productId);
+  const result = getCreditTierByProductId(productId);
 
-  if (!plan || !plan.active) {
+  if (!result || !result.plan.active) {
     return [];
   }
 
-  const priceData = plan.discounted_price || plan.price;
+  const { plan, tier } = result;
+  const priceData = tier.discounted_price || tier.price;
   if (!priceData) {
     return [];
   }
 
   // 转换为价格数组
   return Object.entries(priceData).map(([currency, amount]) => ({
-    id: `${plan.product_id}_${currency}`,
+    id: `${productId}_${currency}`,
     unit_amount: Math.round(amount * 100),
     currency: currency.toLowerCase(),
     active: true,

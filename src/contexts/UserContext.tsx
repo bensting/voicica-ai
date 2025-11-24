@@ -29,8 +29,8 @@ export function UserProvider({ children }: { children: ReactNode }) {
   const [error, setError] = useState<string | null>(null);
   const { user, loading: authLoading } = useFirebaseAuth();
 
-  // 获取用户资料
-  const fetchProfile = async () => {
+  // 获取用户资料（带重试机制）
+  const fetchProfile = async (retryCount = 0) => {
     if (!user) {
       setProfile(null);
       return;
@@ -50,9 +50,16 @@ export function UserProvider({ children }: { children: ReactNode }) {
       const error = err as Error;
       console.error('❌ UserContext: 后端 API 调用失败', error);
 
-      // 如果是"未登录"错误，不设置为错误状态（可能是竞态条件或 token 未就绪）
+      // 如果是"未登录"错误，可能是 cookie 还未就绪，自动重试一次
+      if (error.message === '未登录' && retryCount < 2) {
+        console.log(`⚠️ UserContext: Token 可能尚未就绪，${retryCount + 1} 秒后重试...`);
+        setTimeout(() => {
+          fetchProfile(retryCount + 1);
+        }, (retryCount + 1) * 500);
+        return;
+      }
+
       if (error.message === '未登录') {
-        console.log('⚠️ UserContext: Token 可能尚未就绪，将在下次重试');
         setProfile(null);
         setError(null);
       } else {
@@ -86,7 +93,11 @@ export function UserProvider({ children }: { children: ReactNode }) {
     if (!authLoading) {
       if (user) {
         console.log('👤 认证完成，获取用户数据...');
-        fetchProfile();
+        // 延迟一小段时间确保 cookie 已设置
+        const timer = setTimeout(() => {
+          fetchProfile();
+        }, 100);
+        return () => clearTimeout(timer);
       } else {
         console.log('👤 认证完成，用户未登录');
         setProfile(null);

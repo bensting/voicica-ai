@@ -8,6 +8,7 @@ import { getUserOrAnonymous } from '@/lib/auth-firebase';
 import { v4 as uuidv4 } from 'uuid';
 import { inngest } from '@/lib/inngest/client';
 import { InsufficientCreditsError, errorToResponse } from '@/lib/errors';
+import { calculateVoiceCost} from '@/config/appConfig';
 
 // 类型定义
 export interface TtsRequest {
@@ -80,16 +81,20 @@ export interface TtsRecordsQueryResponse {
   total_pages: number;
 }
 
-// 积分计算（简化版，实际可能需要更复杂的逻辑）
+/**
+ * 计算 TTS 积分消耗
+ *
+ * 计费规则：每 100 个字符消耗对应积分，不足 100 也按一个单位计算
+ * 例如：100 字符消耗 1 积分，101 字符消耗 2 积分
+ *
+ * @param text 待转换文本
+ * @param _voiceName 语音名称（预留，用于未来支持不同语音类型）
+ */
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-async function calculateCreditsCost(text: string, _voiceName: string): Promise<number> {
-  // 基础：每个字符 1 积分
-  const baseCost = text.length;
-
-  // TODO: 根据语音类型调整价格
-  // 例如：Premium 语音可能需要更多积分
-
-  return baseCost;
+function calculateCreditsCost(text: string, _voiceName: string): number {
+  // 目前 TTS 统一使用 standard 类型计费
+  // TODO: 未来可根据 voiceName 查询语音类型（standard/professional/special/clone）
+  return calculateVoiceCost(text.length, 'standard');
 }
 
 // 检查用户积分

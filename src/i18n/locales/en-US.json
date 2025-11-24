@@ -182,6 +182,24 @@
       "reasonPlaceholder": "Tell us why you're canceling...",
       "confirm": "Confirm",
       "canceling": "Canceling..."
+    },
+    "mySubscription": {
+      "activeSection": "Active",
+      "inactiveSection": "Cancelled/Expired",
+      "emptyTitle": "No Subscriptions",
+      "emptyDesc": "You don't have any subscriptions yet.",
+      "retry": "Retry",
+      "validUntil": "Valid until:",
+      "daysLeft": "days left",
+      "credits": "credits",
+      "cancelButton": "Cancel Subscription",
+      "status": {
+        "TRIAL": "Trial",
+        "ACTIVE": "Active",
+        "EXPIRED": "Expired",
+        "CANCELLED": "Cancelled",
+        "SUSPENDED": "Suspended"
+      }
     }
   },
   "studio": {

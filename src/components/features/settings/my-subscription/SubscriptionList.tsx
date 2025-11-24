@@ -1,3 +1,4 @@
+import { useLanguage } from '@/contexts/LanguageContext';
 import type { UserSubscriptionListResponse } from '@/types/subscription';
 import SubscriptionCard from './SubscriptionCard';
 
@@ -8,36 +9,53 @@ interface SubscriptionListProps {
 }
 
 export default function SubscriptionList({ data, onCancel, cancelingId }: SubscriptionListProps) {
+  const { t } = useLanguage();
+
+  // 按状态分组订阅
+  const activeSubscriptions = data.subscriptions.filter(
+    (sub) => sub.status.toUpperCase() === 'ACTIVE'
+  );
+  const inactiveSubscriptions = data.subscriptions.filter(
+    (sub) => sub.status.toUpperCase() !== 'ACTIVE'
+  );
+
   return (
     <div className="space-y-6">
-      {/* Active Subscription */}
-      {data.active_subscription && (
+      {/* Active */}
+      {activeSubscriptions.length > 0 && (
         <div className="mb-8">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Active Subscription</h3>
-          <SubscriptionCard
-            subscription={data.active_subscription}
-            isActive
-            onCancel={onCancel}
-            isCanceling={cancelingId === data.active_subscription.id}
-          />
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('subscription.mySubscription.activeSection')}</h3>
+          <div className="space-y-4">
+            {activeSubscriptions.map((subscription) => (
+              <SubscriptionCard
+                key={subscription.id}
+                subscription={subscription}
+                isActive
+                onCancel={onCancel}
+                isCanceling={cancelingId === subscription.id}
+              />
+            ))}
+          </div>
         </div>
       )}
 
-      {/* Subscription History */}
-      <div>
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">Subscription History</h3>
-        <div className="space-y-4">
-          {data.subscriptions.map((subscription) => (
-            <SubscriptionCard
-              key={subscription.id}
-              subscription={subscription}
-              isActive={false}
-              onCancel={onCancel}
-              isCanceling={cancelingId === subscription.id}
-            />
-          ))}
+      {/* 已取消/已过期 */}
+      {inactiveSubscriptions.length > 0 && (
+        <div>
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('subscription.mySubscription.inactiveSection')}</h3>
+          <div className="space-y-4">
+            {inactiveSubscriptions.map((subscription) => (
+              <SubscriptionCard
+                key={subscription.id}
+                subscription={subscription}
+                isActive={false}
+                onCancel={onCancel}
+                isCanceling={cancelingId === subscription.id}
+              />
+            ))}
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

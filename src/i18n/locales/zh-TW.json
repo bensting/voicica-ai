@@ -182,6 +182,24 @@
       "reasonPlaceholder": "告訴我們您取消的原因...",
       "confirm": "確認",
       "canceling": "取消中..."
+    },
+    "mySubscription": {
+      "activeSection": "生效中",
+      "inactiveSection": "已取消/已過期",
+      "emptyTitle": "暫無訂閱",
+      "emptyDesc": "您還沒有任何訂閱記錄。",
+      "retry": "重試",
+      "validUntil": "有效期至：",
+      "daysLeft": "天後到期",
+      "credits": "積分",
+      "cancelButton": "取消訂閱",
+      "status": {
+        "TRIAL": "試用中",
+        "ACTIVE": "生效中",
+        "EXPIRED": "已過期",
+        "CANCELLED": "已取消",
+        "SUSPENDED": "已暫停"
+      }
     }
   },
   "languages": {

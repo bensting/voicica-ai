@@ -172,13 +172,13 @@ export async function getVoiceStatsByLocale(): Promise<LocaleStats[]> {
     }
 
     // 统计每个 locale 有样本的语音数量
-    // JSON 格式：检查 voice_sample_url 是否包含 default 键
+    // 检查 voice_sample_url JSON 中是否有 default 键
     const sampleStats = await prisma.voices.groupBy({
       by: ['locale'],
       where: {
         voice_sample_url: {
           path: ['default'],
-          not: Prisma.JsonNull,
+          not: Prisma.DbNull,
         },
       },
       _count: { locale: true },
@@ -285,7 +285,7 @@ export async function syncVoicesByLocale(locale: string): Promise<SyncResult> {
           role: voice.VoiceType || 'Neural',
           gender: voice.Gender.toLowerCase(),
           avatar_url: '', // Azure 不提供头像
-          voice_sample_url: {}, // JSON 格式，需要单独生成
+          voice_sample_url: {}, // JSON 格式 {style: url}，需要单独生成
           voice_sample_text: '',
           tags: [],
           style_list: voice.StyleList && voice.StyleList.length > 0
@@ -501,7 +501,7 @@ async function generateVoiceSamplesCore(locale?: string): Promise<SyncResult> {
     }
 
     const styleList = (voice.style_list as string[]) || ['default'];
-    const existingSamples = (voice.voice_sample_url as Record<string, string>) || {};
+    const existingSamples = (voice.voice_sample_url as Record<string, string> | null) || {};
 
     // 找出缺失样本的 styles
     const missingStyles = styleList.filter(style => !existingSamples[style]);

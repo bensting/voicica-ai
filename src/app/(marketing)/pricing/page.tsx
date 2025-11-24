@@ -18,12 +18,12 @@ export default function PricingPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header Section */}
-      <div className="bg-white border-b border-gray-200 pt-20">
-        <div className="max-w-7xl mx-auto px-4 py-12 text-center">
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+      <div className="bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900 pt-20">
+        <div className="max-w-7xl mx-auto px-4 py-16 text-center">
+          <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
             {t('pricing.pageTitle')}
           </h1>
-          <p className="text-lg md:text-xl text-gray-600">
+          <p className="text-lg md:text-xl text-gray-300">
             {t('pricing.pageSubtitle')}
           </p>
         </div>

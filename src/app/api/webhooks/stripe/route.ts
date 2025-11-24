@@ -124,7 +124,10 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session, eventId
         endDate = new Date(currentPeriodEnd * 1000);
         console.log(`📅 从 Stripe 获取订阅周期: ${now.toISOString()} - ${endDate.toISOString()}`);
       } else {
-        throw new Error('Missing current_period_end in subscription item');
+        // 缺少周期信息，使用 cycle_days 计算
+        console.warn('⚠️ Stripe 订阅缺少 current_period_end，使用 cycle_days 计算');
+        endDate = new Date(now);
+        endDate.setDate(endDate.getDate() + plan.cycle_days);
       }
     } catch (error) {
       console.error('⚠️ 获取 Stripe 订阅失败，使用 cycle_days 计算:', error);
@@ -198,7 +201,7 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session, eventId
     stripeEventType: 'checkout.session.completed',
     amount: amount || undefined,
     currency: currency || undefined,
-    creditsChange: plan.credits_per_cycle,
+    creditsChange: tier.credits,
     metadata: {
       session_id: session.id,
       plan_name: plan.plan_name,
@@ -248,13 +251,14 @@ async function handleInvoicePaid(invoice: Stripe.Invoice, eventId: string) {
     return;
   }
 
-  // 从配置文件获取订阅计划信息
-  const plan = getPlanByProductId(subscription.product_id);
-  if (!plan) {
+  // 从配置文件获取订阅计划和档位信息
+  const result = getCreditTierByProductId(subscription.product_id);
+  if (!result) {
     console.error(`❌ 找不到订阅计划: ${subscription.product_id}`);
     return;
   }
 
+  const { plan, tier } = result;
   const oldStatus = subscription.status;
 
   // 更新订阅日期
@@ -275,7 +279,7 @@ async function handleInvoicePaid(invoice: Stripe.Invoice, eventId: string) {
   await prisma.users.update({
     where: { user_id: subscription.user_id },
     data: {
-      credits: { increment: plan.credits_per_cycle },
+      credits: { increment: tier.credits },
     },
   });
 
@@ -283,14 +287,14 @@ async function handleInvoicePaid(invoice: Stripe.Invoice, eventId: string) {
   await prisma.credit_history.create({
     data: {
       user_id: subscription.user_id,
-      amount: plan.credits_per_cycle,
+      amount: tier.credits,
       description: `订阅续费: ${plan.plan_name}`,
       task_id: `subscription_${subscription.id}_renewal`,
-      product_type: plan.product_type,
+      product_type: null,
     },
   });
 
-  console.log(`✅ 订阅已续费: ${subscription.id}, 积分: +${plan.credits_per_cycle}`);
+  console.log(`✅ 订阅已续费: ${subscription.id}, 积分: +${tier.credits}`);
 
   // 记录历史
   await recordSubscriptionHistory({
@@ -303,7 +307,7 @@ async function handleInvoicePaid(invoice: Stripe.Invoice, eventId: string) {
     stripeEventType: 'invoice.paid',
     amount: invoice.amount_paid,
     currency: invoice.currency.toUpperCase(),
-    creditsChange: plan.credits_per_cycle,
+    creditsChange: tier.credits,
     metadata: {
       invoice_id: invoice.id,
       new_end_date: newEndDate.toISOString(),

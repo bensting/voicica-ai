@@ -210,7 +210,19 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session, eventId
  * 订阅续费成功后触发
  */
 async function handleInvoicePaid(invoice: Stripe.Invoice, eventId: string) {
-  console.log('💰 处理 invoice.paid:', invoice.id);
+  console.log('💰 处理 invoice.paid:', invoice.id, 'billing_reason:', invoice.billing_reason);
+
+  // 只处理续费发票，初次订阅由 checkout.session.completed 处理
+  if (invoice.billing_reason === 'subscription_create') {
+    console.log('⏭️ 初次订阅发票，由 checkout.session.completed 处理，跳过');
+    return;
+  }
+
+  // 只处理周期续费
+  if (invoice.billing_reason !== 'subscription_cycle') {
+    console.log(`⏭️ 非续费发票 (${invoice.billing_reason})，跳过`);
+    return;
+  }
 
   // 从 line items 获取订阅 ID
   const lineItem = invoice.lines?.data?.[0];

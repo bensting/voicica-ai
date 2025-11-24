@@ -4,4 +4,3 @@ export { default as UpgradeModal } from './UpgradeModal';
 export { usePricing } from './hooks/usePricing';
 export { usePricingByType } from './hooks/usePricingByType';
 export type { BillingCycle } from './hooks/usePricing';
-export type { ProductType } from './hooks/usePricingByType';

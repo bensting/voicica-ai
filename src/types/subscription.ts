@@ -25,6 +25,8 @@ export interface CreditTier {
     THB?: number;
   };
   product_id?: string;
+  // 是否为默认选中的档位
+  default?: boolean;
 }
 
 // 前端使用的计划展示类型

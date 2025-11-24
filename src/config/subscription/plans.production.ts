@@ -39,6 +39,7 @@ export const subscriptionPlans: SubscriptionPlansConfig = {
           price: { USD: 19.99 },
           discounted_price: { USD: 9.99 },
           product_id: 'prod_starter_3000',
+          default: true,
         },
         {
           credits: 4500,
@@ -47,12 +48,18 @@ export const subscriptionPlans: SubscriptionPlansConfig = {
           product_id: 'prod_starter_4500',
         },
       ],
-      enable_first_month_coupon: false,
+      enable_first_month_coupon: true,
+      first_month_coupon_label: {
+        en: 'First Week 50% OFF',
+        'zh-CN': '首周5折',
+        'zh-TW': '首週5折',
+        'th-TH': 'สัปดาห์แรก ลด 50%',
+      },
       active: true,
       sort_order: 1,
     },
 
-    // Creator (周付)
+    // Creator (月付)
     {
       id: 'stripe_creator_weekly',
       platform: 'stripe',
@@ -63,20 +70,21 @@ export const subscriptionPlans: SubscriptionPlansConfig = {
         'zh-TW': '創作者版',
         'th-TH': 'ครีเอเตอร์',
       },
-      billing_period: 'week',
-      cycle_days: 7,
+      billing_period: 'month',
+      cycle_days: 30,
       credit_tiers: [
         {
           credits: 3750,
           price: { USD: 17.99 },
           discounted_price: { USD: 8.99 },
           product_id: 'prod_creator_15000',
+          default: true,
         },
         {
           credits: 30000,
           price: { USD: 35.99 },
           discounted_price: { USD: 17.99 },
-          product_id: 'prod_creator_50000',
+          product_id: 'prod_creator_30000',
         },
         {
           credits: 50000,
@@ -87,9 +95,9 @@ export const subscriptionPlans: SubscriptionPlansConfig = {
       ],
       enable_first_month_coupon: true,
       first_month_coupon_label: {
-        en: 'First Week 50% OFF',
-        'zh-CN': '首周5折',
-        'zh-TW': '首週5折',
+        en: 'First Month 50% OFF',
+        'zh-CN': '首月5折',
+        'zh-TW': '首月5折',
         'th-TH': 'สัปดาห์แรก ลด 50%',
       },
       active: true,
@@ -104,8 +112,8 @@ export const subscriptionPlans: SubscriptionPlansConfig = {
       display_name: {
         en: 'Pro Plan',
         'zh-CN': '专业版',
-        'zh-TW': '专业版',
-        'th-TH': 'ครีเอเตอร์',
+        'zh-TW': '專業版',
+        'th-TH': 'แผนโปร',
       },
       billing_period: 'year',
       cycle_days: 365,
@@ -114,19 +122,20 @@ export const subscriptionPlans: SubscriptionPlansConfig = {
           credits: 30000,
           price: { USD: 199.99 },
           discounted_price: { USD: 99.99 },
-          product_id: 'prod_creator_15000',
+          product_id: 'prod_pro_30000',
         },
         {
           credits: 45000,
           price: { USD: 299.99 },
           discounted_price: { USD: 149.99 },
-          product_id: 'prod_SQTMPjT6NKY2IU',
+          product_id: 'prod_pro_45000',
+          default: true,
         },
         {
           credits: 60000,
           price: { USD: 399.99 },
           discounted_price: { USD: 199.99 },
-          product_id: 'prod_creator_50000',
+          product_id: 'prod_pro_60000',
         },
       ],
       enable_first_month_coupon: false,

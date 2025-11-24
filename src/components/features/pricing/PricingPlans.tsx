@@ -1,6 +1,7 @@
 'use client';
 
 import PlansGrid from './components/PlansGrid';
+import PlanCardSkeleton from './components/PlanCardSkeleton';
 import { PricingPlan } from '@/types/subscription';
 import { BillingCycle } from './hooks/usePricing';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -30,15 +31,13 @@ export default function PricingPlans({
 }: PricingPlansProps) {
   const { t } = useLanguage();
 
-  // Loading state
+  // Loading state - 显示骨架屏
   if (loading) {
     return (
-      <div className="flex justify-center items-center py-20">
-        <div className="flex flex-col items-center gap-3">
-          {/* Spinning loader */}
-          <div className="w-12 h-12 border-4 border-purple-200 border-t-purple-600 rounded-full animate-spin"></div>
-          <div className="text-gray-500">{t('pricing.loading')}</div>
-        </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <PlanCardSkeleton />
+        <PlanCardSkeleton />
+        <PlanCardSkeleton />
       </div>
     );
   }
@@ -62,6 +61,18 @@ export default function PricingPlans({
     <div>
       {/* Plans Grid */}
       <PlansGrid plans={plans} cycle={cycle} onCycleChange={onCycleChange} />
+
+      {/* Notes */}
+      <div className="mt-8 py-4 bg-gray-50 rounded-lg">
+        <p className="text-center text-gray-600 text-sm flex items-center justify-center gap-2">
+          <svg className="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <span>
+            <strong>{t('pricing.notes')}</strong> {t('pricing.creditsNote')}
+          </span>
+        </p>
+      </div>
     </div>
   );
 }

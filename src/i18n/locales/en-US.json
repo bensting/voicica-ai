@@ -42,6 +42,8 @@
     "perDay": "per day",
     "creditsPerCycle": "credits per cycle",
     "creditsUsageRules": "Credits Usage Rules",
+    "notes": "Notes:",
+    "creditsNote": "Credits can be used in all tools on AI Voice Labs.",
     "buyNow": "Buy Now",
     "tryItFree": "Try it Free",
     "processing": "Processing...",

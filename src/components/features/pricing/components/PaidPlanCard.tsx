@@ -210,10 +210,27 @@ export default function PaidPlanCard({ plan, isRecommended = false }: PaidPlanCa
         onClose={() => setShowCreditsUsageModal(false)}
       />
 
-      <div className="relative rounded-2xl border-2 border-gray-200 bg-white p-6 flex flex-col hover:border-purple-200 transition-colors">
+      <div className={`relative rounded-2xl p-6 flex flex-col transition-colors ${
+        plan.is_popular
+          ? 'border-2 border-transparent bg-gradient-to-b from-purple-100 to-white shadow-lg'
+          : 'border-2 border-gray-200 bg-white hover:border-purple-200'
+      }`}
+        style={plan.is_popular ? {
+          background: 'linear-gradient(white, white) padding-box, linear-gradient(to bottom, #a855f7, #e9d5ff) border-box',
+        } : undefined}
+      >
+        {/* Most Popular 标签 - 斜角效果 */}
+        {plan.is_popular && (
+          <div className="absolute -top-2 -right-2 rotate-12">
+            <div className="bg-gradient-to-r from-purple-500 to-pink-500 text-white text-xs font-bold px-4 py-1.5 rounded-full shadow-md">
+              {t('pricing.mostPopular')}
+            </div>
+          </div>
+        )}
+
         {/* 折扣标签 */}
         {couponLabel && (
-          <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+          <div className="absolute -top-3 left-4">
             <div className="bg-gradient-to-r from-pink-500 to-purple-500 text-white text-xs font-bold px-4 py-1.5 rounded-full shadow-md flex items-center gap-1">
               <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M5 2a2 2 0 00-2 2v14l3.5-2 3.5 2 3.5-2 3.5 2V4a2 2 0 00-2-2H5zm2.5 3a1.5 1.5 0 100 3 1.5 1.5 0 000-3zm6.207.293a1 1 0 00-1.414 0l-6 6a1 1 0 101.414 1.414l6-6a1 1 0 000-1.414zM12.5 10a1.5 1.5 0 100 3 1.5 1.5 0 000-3z" clipRule="evenodd" />

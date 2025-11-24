@@ -47,12 +47,18 @@ export const subscriptionPlans: SubscriptionPlansConfig = {
           product_id: 'prod_starter_4500',
         },
       ],
-      enable_first_month_coupon: false,
+      enable_first_month_coupon: true,
+      first_month_coupon_label: {
+        en: 'First Week 50% OFF',
+        'zh-CN': '首周5折',
+        'zh-TW': '首週5折',
+        'th-TH': 'สัปดาห์แรก ลด 50%',
+      },
       active: true,
       sort_order: 1,
     },
 
-    // Starter (周付)
+    // Creator (月付)
     {
       id: 'stripe_creator_weekly',
       platform: 'stripe',
@@ -63,8 +69,8 @@ export const subscriptionPlans: SubscriptionPlansConfig = {
         'zh-TW': '創作者版',
         'th-TH': 'ครีเอเตอร์',
       },
-      billing_period: 'week',
-      cycle_days: 7,
+      billing_period: 'month',
+      cycle_days: 30,
       credit_tiers: [
         {
           credits: 3750,
@@ -87,9 +93,9 @@ export const subscriptionPlans: SubscriptionPlansConfig = {
       ],
       enable_first_month_coupon: true,
       first_month_coupon_label: {
-        en: 'First Week 50% OFF',
-        'zh-CN': '首周5折',
-        'zh-TW': '首週5折',
+        en: 'First Month 50% OFF',
+        'zh-CN': '首月5折',
+        'zh-TW': '首月5折',
         'th-TH': 'สัปดาห์แรก ลด 50%',
       },
       active: true,

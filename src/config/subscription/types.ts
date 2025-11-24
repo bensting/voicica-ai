@@ -9,7 +9,7 @@ export type Platform = 'stripe' | 'google' | 'apple';
 export type BillingPeriod = 'week' | 'month' | 'year';
 
 // 计划名称
-export type PlanName = 'Mini' | 'Starter' | 'Creator';
+export type PlanName = 'Mini' | 'Starter' | 'Creator' | 'Pro';
 
 /**
  * 积分档位配置
@@ -41,10 +41,6 @@ export interface SubscriptionPlanConfig {
   platform: Platform;
   plan_name: PlanName;
 
-  // Stripe/Google/Apple 产品标识（默认档位的 Product ID）
-  product_id: string;
-  base_plan_id?: string | null; // Google Play 基础计划 ID
-
   // 显示信息（多语言）
   display_name: {
     en: string;
@@ -57,7 +53,7 @@ export interface SubscriptionPlanConfig {
   billing_period: BillingPeriod;
   cycle_days: number; // 周期天数 (7 = 周, 30 = 月, 365 = 年)
 
-  // 积分档位（必填，用于滑块选择不同积分量）
+  // 积分档位（必填，每个档位包含积分数、价格和 product_id）
   credit_tiers: CreditTier[];
 
   // 首月优惠

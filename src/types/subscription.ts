@@ -31,12 +31,11 @@ export interface CreditTier {
 export interface PricingPlan {
   id: string;
   platform: string;
-  plan_name: string; // 计划名称 (Mini, Starter, Creator)
-  product_id: string;
+  plan_name: string; // 计划名称 (Starter, Creator, Pro)
   display_name: Record<string, string>;
   billing_period: BillingPeriod;
   cycle_days: number;
-  credit_tiers: CreditTier[];
+  credit_tiers: CreditTier[]; // 每个档位包含 product_id
   enable_first_month_coupon?: boolean;
   first_month_coupon_label?: Record<string, string>;
   is_popular?: boolean;

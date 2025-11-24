@@ -95,13 +95,17 @@ export default function PaidPlanCard({ plan, isRecommended = false }: PaidPlanCa
     return 0;
   }, [currentTier, hasCreditTiers, plan.credit_tiers]);
 
-  // 获取当前 product_id
+  // 获取当前 product_id（从选中的档位获取）
   const currentProductId = useMemo(() => {
     if (currentTier?.product_id) {
       return currentTier.product_id;
     }
-    return plan.product_id;
-  }, [currentTier, plan.product_id]);
+    // 如果没有选中档位，使用第一个档位的 product_id
+    if (hasCreditTiers && plan.credit_tiers[0]?.product_id) {
+      return plan.credit_tiers[0].product_id;
+    }
+    return null;
+  }, [currentTier, hasCreditTiers, plan.credit_tiers]);
 
   // 获取计划名称（根据当前语言）
   const getPlanName = () => {

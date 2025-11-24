@@ -38,19 +38,13 @@ export function getPlans(
 
 /**
  * 根据 Product ID 获取订阅计划
+ * 在 credit_tiers 中查找匹配的 product_id
  */
 export function getPlanByProductId(productId: string): SubscriptionPlanConfig | null {
   for (const platform of Object.keys(subscriptionPlans) as Platform[]) {
     const plans = subscriptionPlans[platform];
     if (!plans) continue;
 
-    // 先检查计划级别的 product_id
-    const found = plans.find((plan) => plan.product_id === productId);
-    if (found) {
-      return found;
-    }
-
-    // 再检查 credit_tiers 中的 product_id
     for (const plan of plans) {
       const tierMatch = plan.credit_tiers.find((tier) => tier.product_id === productId);
       if (tierMatch) {

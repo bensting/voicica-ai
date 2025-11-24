@@ -5,19 +5,20 @@ import { getSubscriptionPlans } from '@/actions/subscription';
 import { PricingPlan } from '@/types/subscription';
 import { useLanguage } from '@/contexts/LanguageContext';
 
-export type BillingCycle = 'monthly' | 'yearly';
+export type BillingCycle = 'weekly' | 'monthly' | 'yearly';
 
 /**
  * Custom hook for managing pricing plans data and state
+ * 统一订阅方案，不区分产品类型
  */
 export function usePricing() {
   const { locale, isReady } = useLanguage();
-  const [cycle, setCycle] = useState<BillingCycle>('monthly');
+  const [cycle, setCycle] = useState<BillingCycle>('weekly');
   const [plans, setPlans] = useState<PricingPlan[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Fetch subscription plans from API
+  // Fetch subscription plans from config
   useEffect(() => {
     // 等待 LanguageContext 初始化完成
     if (!isReady) {
@@ -28,21 +29,16 @@ export function usePricing() {
         setLoading(true);
         setError(null);
 
-        // 使用 Stripe 作为支付平台
-        const paymentProvider = 'stripe';
-        console.log(`Fetching plans for payment provider: ${paymentProvider}`);
+        console.log('Fetching subscription plans...');
 
-        // 使用 product_type 参数直接获取 text_to_speech 类型的计划
-        // Server Action 会返回包含所有必要信息（包括价格）的完整计划数据
+        // 获取所有活跃计划
         const data = await getSubscriptionPlans({
-          platform: paymentProvider,
-          product_type: 'text_to_speech',
+          platform: 'stripe',
           active_only: true
         }) as unknown as PricingPlan[];
 
-        console.log('Fetched text_to_speech plans:', data);
+        console.log('Fetched plans:', data);
 
-        // 直接使用后端返回的完整数据，无需额外查询价格信息
         setPlans(data);
       } catch (err) {
         console.error('Failed to fetch subscription plans:', err);
@@ -55,7 +51,7 @@ export function usePricing() {
     fetchPlans();
   }, [locale, isReady]);
 
-  // Return all plans sorted by sort_order (不按周期过滤)
+  // Return all plans sorted by sort_order
   const currentPlans = useMemo(() => {
     if (!plans || plans.length === 0) return [];
 

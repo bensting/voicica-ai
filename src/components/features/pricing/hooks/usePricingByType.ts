@@ -5,26 +5,24 @@ import { getSubscriptionPlans } from '@/actions/subscription';
 import { PricingPlan } from '@/types/subscription';
 import { useLanguage } from '@/contexts/LanguageContext';
 
-export type BillingCycle = 'monthly' | 'yearly';
-export type ProductType = 'text_to_speech' | 'voice_cloning';
+export type BillingCycle = 'weekly' | 'monthly' | 'yearly';
 
-interface UsePricingByTypeOptions {
-  productType: ProductType;
-  includeFreePlan?: boolean; // 是否包含 Free 计划，默认 false（用于升级弹窗），true 用于 pricing 页面
+interface UsePricingOptions {
+  includeFreePlan?: boolean; // 是否包含 Free 计划，默认 false
 }
 
 /**
- * Custom hook for managing pricing plans data and state by product type
- * Supports both text_to_speech and voice_clone subscription types
+ * Custom hook for managing pricing plans data and state
+ * 统一订阅方案，不区分产品类型
  */
-export function usePricingByType({ productType, includeFreePlan = false }: UsePricingByTypeOptions) {
+export function usePricingByType({ includeFreePlan = false }: UsePricingOptions = {}) {
   const { locale, isReady } = useLanguage();
-  const [cycle, setCycle] = useState<BillingCycle>('monthly');
+  const [cycle, setCycle] = useState<BillingCycle>('weekly');
   const [plans, setPlans] = useState<PricingPlan[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Fetch subscription plans from API
+  // Fetch subscription plans from config
   useEffect(() => {
     // 等待 LanguageContext 初始化完成
     if (!isReady) {
@@ -35,20 +33,16 @@ export function usePricingByType({ productType, includeFreePlan = false }: UsePr
         setLoading(true);
         setError(null);
 
-        // 使用 Stripe 作为支付平台
-        const paymentProvider = 'stripe';
-        console.log(`Fetching plans for payment provider: ${paymentProvider}, product type: ${productType}`);
+        console.log('Fetching subscription plans...');
 
-        // 使用 product_type 参数获取对应类型的计划
+        // 获取所有活跃计划
         const data = await getSubscriptionPlans({
-          platform: paymentProvider,
-          product_type: productType,
+          platform: 'stripe',
           active_only: true
         }) as unknown as PricingPlan[];
 
-        console.log(`Fetched ${productType} plans:`, data);
+        console.log('Fetched plans:', data);
 
-        // 直接使用后端返回的完整数据
         setPlans(data);
       } catch (err) {
         console.error('Failed to fetch subscription plans:', err);
@@ -59,7 +53,7 @@ export function usePricingByType({ productType, includeFreePlan = false }: UsePr
     };
 
     fetchPlans();
-  }, [locale, isReady, productType]);
+  }, [locale, isReady]);
 
   // Return all plans sorted by sort_order
   const currentPlans = useMemo(() => {

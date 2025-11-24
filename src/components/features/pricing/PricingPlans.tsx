@@ -64,7 +64,7 @@ export default function PricingPlans({
       <PlansGrid plans={plans} cycle={cycle} onCycleChange={onCycleChange} />
 
       {/* Notes */}
-      <div className="mt-8 py-4 bg-gray-50 rounded-lg">
+      <div className="mt-8 py-4 bg-gray-100 rounded-lg">
         <p className="text-center text-gray-600 text-sm flex items-center justify-center gap-2">
           <Lightbulb className="w-4 h-4 text-amber-500" />
           <span>

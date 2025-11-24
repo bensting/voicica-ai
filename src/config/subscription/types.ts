@@ -30,6 +30,8 @@ export interface CreditTier {
   };
   // 每个档位可以有不同的 Stripe Product ID
   product_id?: string;
+  // 是否为默认选中的档位
+  default?: boolean;
 }
 
 /**

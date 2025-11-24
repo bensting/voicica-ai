@@ -24,9 +24,16 @@ export default function PaidPlanCard({ plan }: PaidPlanCardProps) {
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
   const [showCreditsUsageModal, setShowCreditsUsageModal] = useState(false);
 
-  // 积分档位状态（默认选中中间档位）
+  // 积分档位状态（优先使用配置中的 default，否则选中中间档位）
   const hasCreditTiers = plan.credit_tiers && plan.credit_tiers.length > 0;
-  const defaultTierIndex = hasCreditTiers ? Math.floor((plan.credit_tiers!.length - 1) / 2) : 0;
+  const defaultTierIndex = useMemo(() => {
+    if (!hasCreditTiers) return 0;
+    // 查找配置中标记为 default 的档位
+    const defaultIndex = plan.credit_tiers!.findIndex(tier => tier.default);
+    if (defaultIndex !== -1) return defaultIndex;
+    // 回退到中间档位
+    return Math.floor((plan.credit_tiers!.length - 1) / 2);
+  }, [hasCreditTiers, plan.credit_tiers]);
   const [selectedTierIndex, setSelectedTierIndex] = useState(defaultTierIndex);
 
   // 获取当前选中的档位

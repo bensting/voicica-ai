@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import prisma from '@/lib/prisma';
-import { getPlanByProductId } from '@/config/subscription';
+import { getCreditTierByProductId } from '@/config/subscription';
 
 // 延迟初始化 Stripe，避免构建时因缺少环境变量而失败
 let _stripe: Stripe | null = null;
@@ -83,13 +83,15 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session, eventId
     return;
   }
 
-  // 从配置文件获取订阅计划信息
-  const plan = getPlanByProductId(productId);
+  // 从配置文件获取订阅计划和档位信息
+  const result = getCreditTierByProductId(productId);
 
-  if (!plan || !plan.active) {
+  if (!result || !result.plan.active) {
     console.error(`❌ 找不到订阅计划: ${productId}`);
     return;
   }
+
+  const { plan, tier } = result;
 
   // 获取金额和货币（从 line items 或 session）
   const lineItem = session.line_items?.data?.[0];
@@ -148,7 +150,7 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session, eventId
     data: {
       user_id: userId,
       product_id: productId,
-      product_type: plan.product_type,
+      product_type: null,
       platform: 'stripe',
       external_transaction_id: session.id,
       external_subscription_id: stripeSubscriptionId,
@@ -156,7 +158,7 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session, eventId
       status: 'ACTIVE',
       start_date: now,
       end_date: endDate,
-      credits_allocated: plan.credits_per_cycle,
+      credits_allocated: tier.credits,
       amount: amount,
       currency: currency,
       auto_renew: isSubscription,
@@ -169,7 +171,7 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session, eventId
   await prisma.users.update({
     where: { user_id: userId },
     data: {
-      credits: { increment: plan.credits_per_cycle },
+      credits: { increment: tier.credits },
     },
   });
 
@@ -177,14 +179,14 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session, eventId
   await prisma.credit_history.create({
     data: {
       user_id: userId,
-      amount: plan.credits_per_cycle,
+      amount: tier.credits,
       description: `订阅购买: ${plan.plan_name}`,
       task_id: `subscription_${subscription.id}`,
-      product_type: plan.product_type,
+      product_type: null,
     },
   });
 
-  console.log(`✅ 订阅已创建: ${subscription.id}, 积分: +${plan.credits_per_cycle}`);
+  console.log(`✅ 订阅已创建: ${subscription.id}, 积分: +${tier.credits}`);
 
   // 记录历史
   await recordSubscriptionHistory({

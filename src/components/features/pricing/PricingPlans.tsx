@@ -1,5 +1,6 @@
 'use client';
 
+import { Lightbulb } from 'lucide-react';
 import PlansGrid from './components/PlansGrid';
 import PlanCardSkeleton from './components/PlanCardSkeleton';
 import { PricingPlan } from '@/types/subscription';
@@ -65,9 +66,7 @@ export default function PricingPlans({
       {/* Notes */}
       <div className="mt-8 py-4 bg-gray-50 rounded-lg">
         <p className="text-center text-gray-600 text-sm flex items-center justify-center gap-2">
-          <svg className="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
+          <Lightbulb className="w-4 h-4 text-amber-500" />
           <span>
             <strong>{t('pricing.notes')}</strong> {t('pricing.creditsNote')}
           </span>

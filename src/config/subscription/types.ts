@@ -5,9 +5,6 @@
 // 支持的平台
 export type Platform = 'stripe' | 'google' | 'apple';
 
-// 产品类型
-export type ProductType = 'text_to_speech' | 'voice_cloning';
-
 // 计费周期
 export type BillingPeriod = 'week' | 'month' | 'year';
 
@@ -15,13 +12,33 @@ export type BillingPeriod = 'week' | 'month' | 'year';
 export type PlanName = 'Free' | 'Mini' | 'Starter' | 'Creator';
 
 /**
+ * 积分档位配置
+ */
+export interface CreditTier {
+  credits: number;
+  price: {
+    USD: number;
+    CNY?: number;
+    TWD?: number;
+    THB?: number;
+  };
+  discounted_price?: {
+    USD: number;
+    CNY?: number;
+    TWD?: number;
+    THB?: number;
+  };
+  // 每个档位可以有不同的 Stripe Product ID
+  product_id?: string;
+}
+
+/**
  * 订阅计划配置
  */
 export interface SubscriptionPlanConfig {
   // 基础信息
-  id: string; // 唯一标识符，格式: {platform}_{product_type}_{plan_name}
+  id: string; // 唯一标识符，格式: {platform}_{plan_name}
   platform: Platform;
-  product_type: ProductType | null;
   plan_name: PlanName;
 
   // Stripe/Google/Apple 产品标识
@@ -36,25 +53,9 @@ export interface SubscriptionPlanConfig {
     'th-TH'?: string;
   };
 
-  // 标语（多语言，可选）
-  tagline?: {
-    en: string;
-    'zh-CN': string;
-    'zh-TW': string;
-    'th-TH'?: string;
-  };
-
-  // 功能列表（多语言）
-  features: {
-    en: string[];
-    'zh-CN': string[];
-    'zh-TW': string[];
-    'th-TH'?: string[];
-  };
-
   // 积分和周期
   credits_per_cycle: number; // 每周期给予的积分
-  cycle_days: number; // 周期天数 (30 = 月, 365 = 年)
+  cycle_days: number; // 周期天数 (7 = 周, 30 = 月, 365 = 年)
 
   // 价格（多币种，USD 必填，其他可选）
   price: {
@@ -81,6 +82,15 @@ export interface SubscriptionPlanConfig {
   // 首月优惠
   enable_first_month_coupon?: boolean;
   first_month_coupon_id?: string | null;
+  first_month_coupon_label?: {
+    en: string;
+    'zh-CN': string;
+    'zh-TW': string;
+    'th-TH'?: string;
+  };
+
+  // 积分档位（可选，用于滑块选择不同积分量）
+  credit_tiers?: CreditTier[];
 
   // 状态
   active: boolean;
@@ -91,33 +101,10 @@ export interface SubscriptionPlanConfig {
 }
 
 /**
- * 按平台和产品类型组织的计划配置
+ * 按平台组织的计划配置（统一订阅方案）
  */
 export interface SubscriptionPlansConfig {
-  stripe: {
-    text_to_speech: SubscriptionPlanConfig[];
-    voice_cloning: SubscriptionPlanConfig[];
-  };
-  google?: {
-    text_to_speech: SubscriptionPlanConfig[];
-    voice_cloning: SubscriptionPlanConfig[];
-  };
-  apple?: {
-    text_to_speech: SubscriptionPlanConfig[];
-    voice_cloning: SubscriptionPlanConfig[];
-  };
+  stripe: SubscriptionPlanConfig[];
+  google?: SubscriptionPlanConfig[];
+  apple?: SubscriptionPlanConfig[];
 }
-
-/**
- * 产品类型 Tab 配置
- */
-export interface ProductTypeTabConfig {
-  type: ProductType;
-  labelKey: string; // i18n 翻译键
-  enabled: boolean; // 是否启用
-}
-
-/**
- * 产品类型 Tab 列表配置
- */
-export type ProductTypeTabsConfig = ProductTypeTabConfig[];

@@ -37,11 +37,7 @@ export default function MySubscriptionPage() {
 
   // Tab 切换时重新获取数据
   useEffect(() => {
-    if (activeTab === 'all') {
-      void fetchSubscriptions();
-    } else {
-      void fetchSubscriptions(activeTab);
-    }
+    void fetchSubscriptions(activeTab);
   }, [activeTab, fetchSubscriptions]);
 
   // 认证加载中，显示加载状态
@@ -73,7 +69,7 @@ export default function MySubscriptionPage() {
         ) : error ? (
           <ErrorState
             error={error}
-            onRetry={() => fetchSubscriptions(activeTab === 'all' ? undefined : activeTab)}
+            onRetry={() => fetchSubscriptions(activeTab)}
           />
         ) : data?.subscriptions.length === 0 ? (
           <EmptyState />

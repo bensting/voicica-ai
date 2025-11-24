@@ -10,10 +10,10 @@ interface SubscriptionListProps {
 export default function SubscriptionList({ data, onCancel, cancelingId }: SubscriptionListProps) {
   return (
     <div className="space-y-6">
-      {/* Active Subscription */}
+      {/* Active */}
       {data.active_subscription && (
         <div className="mb-8">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Active Subscription</h3>
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">Active</h3>
           <SubscriptionCard
             subscription={data.active_subscription}
             isActive
@@ -23,9 +23,9 @@ export default function SubscriptionList({ data, onCancel, cancelingId }: Subscr
         </div>
       )}
 
-      {/* Subscription History */}
+      {/* 已取消/已过期 */}
       <div>
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">Subscription History</h3>
+        <h3 className="text-lg font-semibold text-gray-900 mb-4">已取消/已过期</h3>
         <div className="space-y-4">
           {data.subscriptions.map((subscription) => (
             <SubscriptionCard

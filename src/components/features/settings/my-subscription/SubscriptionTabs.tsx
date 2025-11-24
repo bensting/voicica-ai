@@ -1,4 +1,4 @@
-type TabType = 'all' | 'text_to_speech' | 'voice_cloning';
+type TabType = 'text_to_speech' | 'voice_cloning';
 
 interface Tab {
   id: TabType;
@@ -11,7 +11,6 @@ interface SubscriptionTabsProps {
 }
 
 const tabs: Tab[] = [
-  { id: 'all', label: 'All' },
   { id: 'text_to_speech', label: 'Text to Voice' },
   { id: 'voice_cloning', label: 'Voice Clone' },
 ];

@@ -3,11 +3,11 @@ import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 import { getMySubscriptions, cancelSubscription } from '@/actions/subscription';
 import type { UserSubscriptionListResponse } from '@/types/subscription';
 
-type TabType = 'all' | 'text_to_speech' | 'voice_cloning';
+type TabType = 'text_to_speech' | 'voice_cloning';
 
 export function useSubscriptionManager() {
   const { user, loading: authLoading } = useFirebaseAuth();
-  const [activeTab, setActiveTab] = useState<TabType>('all');
+  const [activeTab, setActiveTab] = useState<TabType>('text_to_speech');
   const [data, setData] = useState<UserSubscriptionListResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -50,7 +50,7 @@ export function useSubscriptionManager() {
       await cancelSubscription(subscriptionId, reason ? { cancellation_reason: reason } : undefined);
 
       // 重新获取订阅列表
-      await fetchSubscriptions(activeTab === 'all' ? undefined : activeTab);
+      await fetchSubscriptions(activeTab);
 
       return { success: true };
     } catch (err: unknown) {

@@ -32,6 +32,13 @@ export interface CreditTier {
   product_id?: string;
   // 是否为默认选中的档位
   default?: boolean;
+  // 功能列表（多语言）- 每个档位可以有不同的功能
+  features?: Array<{
+    en: string;
+    'zh-CN': string;
+    'zh-TW': string;
+    'th-TH'?: string;
+  }>;
 }
 
 /**

@@ -13,11 +13,6 @@ export default function SubscriptionTabs({ activeTab, onTabChange }: Subscriptio
   const { t } = useLanguage();
   const enabledTabs = getEnabledProductTypeTabs();
 
-  // 如果只有一个 tab，不显示 tabs
-  if (enabledTabs.length <= 1) {
-    return null;
-  }
-
   return (
     <div className="border-b border-gray-200 mb-4">
       <nav className="flex gap-4">

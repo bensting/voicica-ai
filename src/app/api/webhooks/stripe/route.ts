@@ -107,12 +107,23 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session, eventId
   let endDate: Date;
 
   if (isSubscription && stripeSubscriptionId) {
-    // 订阅模式：从 Stripe 获取周期结束时间
+    // 订阅模式：从 Stripe 获取周期结束时间（新版 API 中周期信息在 items.data 中）
     try {
       const stripeSubscription = await getStripe().subscriptions.retrieve(stripeSubscriptionId);
-      const currentPeriodEnd = (stripeSubscription as unknown as { current_period_end: number }).current_period_end;
-      endDate = new Date(currentPeriodEnd * 1000);
-      console.log(`📅 从 Stripe 获取订阅周期: ${now.toISOString()} - ${endDate.toISOString()}`);
+      const subscriptionItem = stripeSubscription.items.data[0];
+      console.log('🔍 Stripe Subscription Item:', JSON.stringify({
+        id: stripeSubscription.id,
+        status: stripeSubscription.status,
+        current_period_start: subscriptionItem?.current_period_start,
+        current_period_end: subscriptionItem?.current_period_end,
+      }, null, 2));
+      const currentPeriodEnd = subscriptionItem?.current_period_end;
+      if (typeof currentPeriodEnd === 'number' && currentPeriodEnd > 0) {
+        endDate = new Date(currentPeriodEnd * 1000);
+        console.log(`📅 从 Stripe 获取订阅周期: ${now.toISOString()} - ${endDate.toISOString()}`);
+      } else {
+        throw new Error('Missing current_period_end in subscription item');
+      }
     } catch (error) {
       console.error('⚠️ 获取 Stripe 订阅失败，使用 cycle_days 计算:', error);
       endDate = new Date(now);
@@ -323,8 +334,12 @@ async function handleSubscriptionUpdated(stripeSubscription: Stripe.Subscription
       break;
   }
 
-  // 获取 Stripe 的周期结束时间
-  const currentPeriodEnd = (stripeSubscription as unknown as { current_period_end: number }).current_period_end;
+  // 获取 Stripe 的周期结束时间（新版 API 中周期信息在 items.data 中）
+  const subscriptionItem = stripeSubscription.items.data[0];
+  const currentPeriodEnd = subscriptionItem?.current_period_end;
+  const endDate = typeof currentPeriodEnd === 'number' && currentPeriodEnd > 0
+    ? new Date(currentPeriodEnd * 1000)
+    : subscription.end_date;
 
   await prisma.user_subscriptions.update({
     where: { id: subscription.id },
@@ -332,12 +347,12 @@ async function handleSubscriptionUpdated(stripeSubscription: Stripe.Subscription
       status: newStatus,
       cancel_at_period_end: stripeSubscription.cancel_at_period_end,
       // 同步 Stripe 的周期结束时间
-      end_date: new Date(currentPeriodEnd * 1000),
+      end_date: endDate,
       updated_at: new Date(),
     },
   });
 
-  console.log(`✅ 订阅状态已更新: ${oldStatus} -> ${newStatus}, end_date: ${new Date(currentPeriodEnd * 1000).toISOString()}`);
+  console.log(`✅ 订阅状态已更新: ${oldStatus} -> ${newStatus}, end_date: ${endDate.toISOString()}`);
 
   // 记录历史
   await recordSubscriptionHistory({

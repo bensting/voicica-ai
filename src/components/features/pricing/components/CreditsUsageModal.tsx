@@ -37,20 +37,20 @@ export default function CreditsUsageModal({ isOpen, onClose }: CreditsUsageModal
       <div className="relative bg-white rounded-2xl shadow-xl max-w-2xl lg:max-w-4xl w-full mx-4 max-h-[80vh] overflow-hidden">
         {/* 头部 */}
         <div className="bg-gradient-to-r from-purple-900 to-purple-800 p-6 text-white">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            {/* 装饰图标 */}
+            <div className="w-12 h-12 bg-purple-700/50 rounded-lg flex items-center justify-center shrink-0">
+              <svg className="w-6 h-6 text-purple-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+              </svg>
+            </div>
             <div>
-              <h2 className="text-xl font-bold text-purple-300">
+              <h2 className="text-xl font-bold text-white">
                 {t('pricing.creditsUsageGuide.title')}
               </h2>
               <p className="text-sm text-purple-200 mt-1">
                 {t('pricing.creditsUsageGuide.subtitle')}
               </p>
-            </div>
-            {/* 装饰图标 */}
-            <div className="w-16 h-16 bg-purple-700/50 rounded-lg flex items-center justify-center">
-              <svg className="w-8 h-8 text-purple-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-              </svg>
             </div>
           </div>
         </div>

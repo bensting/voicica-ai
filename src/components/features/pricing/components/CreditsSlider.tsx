@@ -24,9 +24,9 @@ export default function CreditsSlider({ tiers, selectedIndex, onChange }: Credit
   if (tiers.length === 0) return null;
 
   return (
-    <div className="w-full py-2">
+    <div className="w-[85%] mx-auto py-2">
       {/* 滑块轨道 */}
-      <div className="relative h-2.5 bg-gray-200 rounded-full">
+      <div className="relative h-3.5 bg-gray-200 rounded-full">
         {/* 已选择部分的渐变填充 */}
         <div
           className="absolute h-full bg-gradient-to-r from-purple-500 to-pink-500 rounded-full transition-all duration-200"

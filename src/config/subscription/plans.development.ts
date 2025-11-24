@@ -50,9 +50,9 @@ export const subscriptionPlans: SubscriptionPlansConfig = {
       ],
       enable_first_month_coupon: true,
       first_month_coupon_label: {
-        en: 'First Week 50% OFF',
-        'zh-CN': '首周5折',
-        'zh-TW': '首週5折',
+        en: '50% OFF',
+        'zh-CN': '5折',
+        'zh-TW': '5折',
         'th-TH': 'สัปดาห์แรก ลด 50%',
       },
       features: [

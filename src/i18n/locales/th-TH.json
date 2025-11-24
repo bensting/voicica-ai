@@ -182,6 +182,24 @@
       "reasonPlaceholder": "บอกเราว่าทำไมคุณถึงยกเลิก...",
       "confirm": "ยืนยัน",
       "canceling": "กำลังยกเลิก..."
+    },
+    "mySubscription": {
+      "activeSection": "ใช้งานอยู่",
+      "inactiveSection": "ยกเลิกแล้ว/หมดอายุ",
+      "emptyTitle": "ไม่มีแพ็กเกจ",
+      "emptyDesc": "คุณยังไม่มีแพ็กเกจใดๆ",
+      "retry": "ลองใหม่",
+      "validUntil": "ใช้ได้ถึง:",
+      "daysLeft": "วันที่เหลือ",
+      "credits": "เครดิต",
+      "cancelButton": "ยกเลิกแพ็กเกจ",
+      "status": {
+        "TRIAL": "ทดลองใช้",
+        "ACTIVE": "ใช้งานอยู่",
+        "EXPIRED": "หมดอายุ",
+        "CANCELLED": "ยกเลิกแล้ว",
+        "SUSPENDED": "ระงับ"
+      }
     }
   },
   "studio": {

@@ -1,6 +1,9 @@
 'use client';
 
+import { useState } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
+import CategoryTabs from '@/components/common/CategoryTabs';
+import { ProductCategoryType, getDefaultCategory } from '@/config/productCategory';
 
 interface CreditsUsageModalProps {
   isOpen: boolean;
@@ -14,6 +17,7 @@ interface CreditsUsageModalProps {
  */
 export default function CreditsUsageModal({ isOpen, onClose }: CreditsUsageModalProps) {
   const { t } = useLanguage();
+  const [activeCategory, setActiveCategory] = useState<ProductCategoryType>(getDefaultCategory());
 
   if (!isOpen) return null;
 
@@ -59,15 +63,12 @@ export default function CreditsUsageModal({ isOpen, onClose }: CreditsUsageModal
 
         {/* 内容区域 */}
         <div className="p-6 overflow-y-auto max-h-[60vh]">
-          {/* 功能分类标签 - TODO: 根据实际产品功能完善 */}
-          <div className="flex flex-wrap gap-2 mb-6">
-            <button className="px-4 py-2 bg-gray-900 text-white rounded-full text-sm font-medium">
-              AI Voice
-            </button>
-            <button className="px-4 py-2 bg-gray-100 text-gray-700 rounded-full text-sm font-medium hover:bg-gray-200">
-              Text to Speech
-            </button>
-          </div>
+          {/* 产品分类标签 */}
+          <CategoryTabs
+            value={activeCategory}
+            onChange={setActiveCategory}
+            className="mb-6"
+          />
 
           {/* 积分规则表格 */}
           <div className="space-y-4">

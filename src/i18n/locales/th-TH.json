@@ -6,6 +6,11 @@
     "retry": "ลองใหม่",
     "loading": "กำลังโหลด..."
   },
+  "productCategory": {
+    "aiVideo": "AI วิดีโอ",
+    "aiMusic": "AI เพลง",
+    "aiVoice": "AI เสียง"
+  },
   "navbar": {
     "explore": "สำรวจ",
     "pricing": "แผนราคา",

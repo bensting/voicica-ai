@@ -6,6 +6,11 @@
     "retry": "Retry",
     "loading": "Loading..."
   },
+  "productCategory": {
+    "aiVideo": "AI Video",
+    "aiMusic": "AI Music",
+    "aiVoice": "AI Voice"
+  },
   "navbar": {
     "explore": "Explore",
     "pricing": "Pricing",

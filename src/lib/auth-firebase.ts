@@ -10,7 +10,7 @@ import prisma from './prisma';
 import crypto from 'crypto';
 import { v4 as uuidv4 } from 'uuid';
 import { appConfig } from '@/config/appConfig';
-import { ProductType } from '@/config/credit';
+import { ProductType } from '@/config/productType';
 
 export interface AuthUser {
   uid: string;

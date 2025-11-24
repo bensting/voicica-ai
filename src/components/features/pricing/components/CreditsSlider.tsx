@@ -21,42 +21,33 @@ export default function CreditsSlider({ tiers, selectedIndex, onChange }: Credit
     return (selectedIndex / (tiers.length - 1)) * 100;
   }, [tiers.length, selectedIndex]);
 
-  // 格式化积分显示
-  const formatCredits = (credits: number) => {
-    if (credits >= 1000) {
-      return `${(credits / 1000).toFixed(credits % 1000 === 0 ? 0 : 1)}k`;
-    }
-    return credits.toString();
-  };
-
   if (tiers.length === 0) return null;
 
   return (
     <div className="w-full py-2">
       {/* 滑块轨道 */}
-      <div className="relative h-2 bg-gray-200 rounded-full">
-        {/* 已选择部分的填充 */}
+      <div className="relative h-2.5 bg-gray-200 rounded-full">
+        {/* 已选择部分的渐变填充 */}
         <div
-          className="absolute h-full bg-gradient-to-r from-purple-500 to-purple-400 rounded-full transition-all duration-200"
+          className="absolute h-full bg-gradient-to-r from-purple-500 to-pink-500 rounded-full transition-all duration-200"
           style={{ width: `${sliderPosition}%` }}
-        />
-
-        {/* 滑块手柄 */}
-        <div
-          className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-5 h-5 bg-white border-2 border-purple-500 rounded-full shadow-md cursor-pointer transition-all duration-200 hover:scale-110"
-          style={{ left: `${sliderPosition}%` }}
         />
 
         {/* 刻度点 */}
         {tiers.map((_, index) => {
           const position = tiers.length <= 1 ? 50 : (index / (tiers.length - 1)) * 100;
-          const isSelected = index <= selectedIndex;
+          const isBeforeOrSelected = index <= selectedIndex;
+          const isSelected = index === selectedIndex;
           return (
             <button
               key={index}
               type="button"
-              className={`absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-3 h-3 rounded-full transition-all duration-200 ${
-                isSelected ? 'bg-purple-500' : 'bg-gray-300'
+              className={`absolute top-1/2 -translate-y-1/2 -translate-x-1/2 rounded-full transition-all duration-200 ${
+                isSelected
+                  ? 'w-4 h-4 bg-white border-2 border-purple-500 shadow-md'
+                  : isBeforeOrSelected
+                    ? 'w-2.5 h-2.5 bg-pink-500'
+                    : 'w-2.5 h-2.5 bg-gray-300'
               }`}
               style={{ left: `${position}%` }}
               onClick={() => onChange(index)}
@@ -66,24 +57,20 @@ export default function CreditsSlider({ tiers, selectedIndex, onChange }: Credit
       </div>
 
       {/* 积分标签 */}
-      <div className="relative mt-3 h-6">
+      <div className="relative mt-4 flex justify-between">
         {tiers.map((tier, index) => {
-          const position = tiers.length <= 1 ? 50 : (index / (tiers.length - 1)) * 100;
           const isSelected = index === selectedIndex;
           return (
             <button
               key={index}
               type="button"
-              className={`absolute -translate-x-1/2 text-sm font-medium transition-colors ${
-                isSelected ? 'text-gray-900' : 'text-gray-500'
+              className={`text-sm transition-colors ${
+                isSelected ? 'text-gray-900 font-medium' : 'text-gray-400'
               }`}
-              style={{ left: `${position}%` }}
               onClick={() => onChange(index)}
             >
-              {formatCredits(tier.credits)}
-              {isSelected && (
-                <span className="block text-xs text-gray-500">Credits</span>
-              )}
+              {tier.credits.toLocaleString()}
+              {isSelected && <span className="ml-1">Credits</span>}
             </button>
           );
         })}

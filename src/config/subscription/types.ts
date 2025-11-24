@@ -9,10 +9,10 @@ export type Platform = 'stripe' | 'google' | 'apple';
 export type ProductType = 'text_to_speech' | 'voice_cloning';
 
 // 计费周期
-export type BillingPeriod = 'month' | 'year';
+export type BillingPeriod = 'week' | 'month' | 'year';
 
 // 计划名称
-export type PlanName = 'Free' | 'Basic' | 'Premium' | 'Plus';
+export type PlanName = 'Free' | 'Mini' | 'Starter' | 'Creator';
 
 /**
  * 订阅计划配置
@@ -21,7 +21,7 @@ export interface SubscriptionPlanConfig {
   // 基础信息
   id: string; // 唯一标识符，格式: {platform}_{product_type}_{plan_name}
   platform: Platform;
-  product_type: ProductType;
+  product_type: ProductType | null;
   plan_name: PlanName;
 
   // Stripe/Google/Apple 产品标识
@@ -30,6 +30,14 @@ export interface SubscriptionPlanConfig {
 
   // 显示信息（多语言）
   display_name: {
+    en: string;
+    'zh-CN': string;
+    'zh-TW': string;
+    'th-TH'?: string;
+  };
+
+  // 标语（多语言，可选）
+  tagline?: {
     en: string;
     'zh-CN': string;
     'zh-TW': string;
@@ -63,6 +71,9 @@ export interface SubscriptionPlanConfig {
     TWD?: number;
     THB?: number;
   };
+
+  // 折扣标签（如 "40% OFF"）
+  discount_label?: string;
 
   // 计费周期
   billing_period?: BillingPeriod;

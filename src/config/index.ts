@@ -2,6 +2,6 @@
  * Configuration exports
  */
 
-export * from './credit';
+export * from './productType';
 export * from './currency';
 export * from './navigation';

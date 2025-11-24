@@ -17,7 +17,7 @@ export default function SubscriptionCard({
   isCanceling,
 }: SubscriptionCardProps) {
   const [showCancelDialog, setShowCancelDialog] = useState(false);
-  const { locale } = useLanguage();
+  const { locale, t } = useLanguage();
 
   // 状态标签样式
   const getStatusBadge = (status: UserSubscription['status']) => {
@@ -137,15 +137,15 @@ export default function SubscriptionCard({
                   {getDisplayName()}
                 </h4>
                 <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusBadge(subscription.status)}`}>
-                  {subscription.status}
+                  {t(`subscription.mySubscription.status.${(subscription.status as string).toUpperCase()}`)}
                 </span>
               </div>
               {/* 有效期 */}
               {subscription.end_date && (
                 <p className="text-sm text-gray-600">
-                  Valid until: {formatDate(subscription.end_date)}
+                  {t('subscription.mySubscription.validUntil')} {formatDate(subscription.end_date)}
                   {subscription.days_remaining !== undefined && subscription.days_remaining !== null && (
-                    <span className="ml-2 text-gray-500">({subscription.days_remaining} days left)</span>
+                    <span className="ml-2 text-gray-500">({subscription.days_remaining} {t('subscription.mySubscription.daysLeft')})</span>
                   )}
                 </p>
               )}
@@ -160,7 +160,7 @@ export default function SubscriptionCard({
                 {formatPrice(subscription.amount, subscription.currency)}
               </div>
               <p className="text-xs text-gray-500">
-                {subscription.credits_allocated.toLocaleString()} credits
+                {subscription.credits_allocated.toLocaleString()} {t('subscription.mySubscription.credits')}
               </p>
             </div>
 
@@ -171,7 +171,7 @@ export default function SubscriptionCard({
                 disabled={isCanceling}
                 className="px-4 py-2 text-sm font-medium text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
               >
-                {isCanceling ? 'Canceling...' : 'Cancel Subscription'}
+                {isCanceling ? t('subscription.cancel.canceling') : t('subscription.mySubscription.cancelButton')}
               </button>
             )}
           </div>
@@ -190,15 +190,15 @@ export default function SubscriptionCard({
                     {getDisplayName()}
                   </h4>
                   <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusBadge(subscription.status)}`}>
-                    {subscription.status}
+                    {t(`subscription.mySubscription.status.${(subscription.status as string).toUpperCase()}`)}
                   </span>
                 </div>
                 {/* 有效期 */}
                 {subscription.end_date && (
                   <p className="text-xs text-gray-600">
-                    Valid until: {formatDate(subscription.end_date)}
+                    {t('subscription.mySubscription.validUntil')} {formatDate(subscription.end_date)}
                     {subscription.days_remaining !== undefined && subscription.days_remaining !== null && (
-                      <span className="block text-gray-500">({subscription.days_remaining} days left)</span>
+                      <span className="block text-gray-500">({subscription.days_remaining} {t('subscription.mySubscription.daysLeft')})</span>
                     )}
                   </p>
                 )}
@@ -211,7 +211,7 @@ export default function SubscriptionCard({
                 {formatPrice(subscription.amount, subscription.currency)}
               </div>
               <p className="text-xs text-gray-500">
-                {subscription.credits_allocated.toLocaleString()} credits
+                {subscription.credits_allocated.toLocaleString()} {t('subscription.mySubscription.credits')}
               </p>
             </div>
           </div>
@@ -223,7 +223,7 @@ export default function SubscriptionCard({
               disabled={isCanceling}
               className="w-full px-4 py-2 text-sm font-medium text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {isCanceling ? 'Canceling...' : 'Cancel Subscription'}
+              {isCanceling ? t('subscription.cancel.canceling') : t('subscription.mySubscription.cancelButton')}
             </button>
           )}
         </div>

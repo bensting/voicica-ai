@@ -37,7 +37,28 @@ export default function VoiceSelectorBottomSheet({
   const { user, loading: authLoading } = useFirebaseAuth();
   const [isLanguageModalOpen, setIsLanguageModalOpen] = useState(false);
 
-  // Use voices hook
+  // Get all locale options
+  const availableLanguages = getAllLocaleOptions();
+
+  // 计算初始语言（在 hook 调用前确定，避免后续修改触发重新加载）
+  const getInitialLanguage = () => {
+    const savedLanguageCode = localStorage.getItem('voiceLanguageFilter');
+    if (savedLanguageCode && savedLanguageCode !== 'all') {
+      const savedLanguage = availableLanguages.find(lang => lang.code === savedLanguageCode);
+      if (savedLanguage) return savedLanguage;
+    }
+
+    // 使用当前语言
+    const currentLanguage = availableLanguages.find(lang => lang.code === locale);
+    if (currentLanguage) return currentLanguage;
+
+    // 默认英语
+    return availableLanguages.find(lang => lang.code === 'en-US') || null;
+  };
+
+  const [initialLanguage] = useState(getInitialLanguage);
+
+  // Use voices hook - 传入初始语言避免后续修改
   const {
     filteredVoices,
     loading,
@@ -57,44 +78,7 @@ export default function VoiceSelectorBottomSheet({
     loadMoreVoices,
     refreshVoices,
     total,
-  } = useVoices({ locale, user, authLoading });
-
-  // Get all locale options
-  const availableLanguages = getAllLocaleOptions();
-
-  // Initialize language selection
-  useEffect(() => {
-    if (!isOpen) return;
-
-    const savedLanguageCode = localStorage.getItem('voiceLanguageFilter');
-    if (savedLanguageCode) {
-      if (savedLanguageCode === 'all') {
-        if (selectedLanguage !== null) {
-          setSelectedLanguage(null);
-        }
-        return;
-      }
-
-      const savedLanguage = availableLanguages.find(lang => lang.code === savedLanguageCode);
-      if (savedLanguage && selectedLanguage?.code !== savedLanguageCode) {
-        setSelectedLanguage(savedLanguage);
-        return;
-      }
-    }
-
-    if (!savedLanguageCode && selectedLanguage === null) {
-      const currentLanguage = availableLanguages.find(lang => lang.code === locale);
-      if (currentLanguage) {
-        setSelectedLanguage(currentLanguage);
-        return;
-      }
-
-      const defaultLanguage = availableLanguages.find(lang => lang.code === 'en-US');
-      if (defaultLanguage) {
-        setSelectedLanguage(defaultLanguage);
-      }
-    }
-  }, [isOpen, availableLanguages, locale, selectedLanguage, setSelectedLanguage]);
+  } = useVoices({ locale, user, authLoading, initialLanguage });
 
   const handleLanguageSelect = (language: LocaleOption | null) => {
     setSelectedLanguage(language);

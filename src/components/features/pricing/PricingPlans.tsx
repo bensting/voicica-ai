@@ -1,6 +1,8 @@
 'use client';
 
+import { Lightbulb } from 'lucide-react';
 import PlansGrid from './components/PlansGrid';
+import PlanCardSkeleton from './components/PlanCardSkeleton';
 import { PricingPlan } from '@/types/subscription';
 import { BillingCycle } from './hooks/usePricing';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -30,15 +32,13 @@ export default function PricingPlans({
 }: PricingPlansProps) {
   const { t } = useLanguage();
 
-  // Loading state
+  // Loading state - 显示骨架屏
   if (loading) {
     return (
-      <div className="flex justify-center items-center py-20">
-        <div className="flex flex-col items-center gap-3">
-          {/* Spinning loader */}
-          <div className="w-12 h-12 border-4 border-purple-200 border-t-purple-600 rounded-full animate-spin"></div>
-          <div className="text-gray-500">{t('pricing.loading')}</div>
-        </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <PlanCardSkeleton />
+        <PlanCardSkeleton />
+        <PlanCardSkeleton />
       </div>
     );
   }
@@ -62,6 +62,16 @@ export default function PricingPlans({
     <div>
       {/* Plans Grid */}
       <PlansGrid plans={plans} cycle={cycle} onCycleChange={onCycleChange} />
+
+      {/* Notes */}
+      <div className="mt-8 py-4 bg-gray-100 rounded-lg">
+        <p className="text-center text-gray-600 text-sm flex items-center justify-center gap-2">
+          <Lightbulb className="w-4 h-4 text-amber-500" />
+          <span>
+            <strong>{t('pricing.notes')}</strong> {t('pricing.creditsNote')}
+          </span>
+        </p>
+      </div>
     </div>
   );
 }

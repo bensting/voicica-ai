@@ -1,13 +1,13 @@
 /**
- * 生产环境订阅计划配置
+ * 开发环境订阅计划配置
  *
  * 特点：
- * - 使用 Stripe 生产模式的 Product ID
- * - 正式价格
- * - 用于线上环境
+ * - 使用 Stripe 测试模式的 Product ID
+ * - 与生产环境相同的配置（便于测试）
+ * - 用于本地开发和测试环境
  * - 统一订阅方案，不区分产品类型
  *
- * 重要：修改此文件前请确认价格和 Product ID 正确！
+ * 注意：Product ID 是 Stripe 测试模式的 ID
  */
 
 import type { SubscriptionPlansConfig } from './types';
@@ -77,20 +77,20 @@ export const subscriptionPlans: SubscriptionPlansConfig = {
           credits: 3750,
           price: { USD: 17.99 },
           discounted_price: { USD: 8.99 },
-          product_id: 'prod_creator_15000',
+          product_id: 'prod_creator_3750',
           default: true,
         },
         {
-          credits: 30000,
+          credits: 7500,
           price: { USD: 35.99 },
           discounted_price: { USD: 17.99 },
-          product_id: 'prod_creator_30000',
+          product_id: 'prod_creator_3750',
         },
         {
-          credits: 50000,
+          credits: 11250,
           price: { USD: 53.99 },
           discounted_price: { USD: 26.99 },
-          product_id: 'prod_creator_50000',
+          product_id: 'prod_creator_11250',
         },
       ],
       enable_first_month_coupon: true,

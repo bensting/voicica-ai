@@ -42,6 +42,8 @@
     "perDay": "每天",
     "creditsPerCycle": "积分/周期",
     "creditsUsageRules": "积分使用规则",
+    "notes": "提示：",
+    "creditsNote": "积分可用于 AI Voice Labs 上的所有工具。",
     "buyNow": "立即购买",
     "tryItFree": "免费试用",
     "processing": "处理中...",

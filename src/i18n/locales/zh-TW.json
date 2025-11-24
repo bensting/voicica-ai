@@ -42,6 +42,8 @@
     "perDay": "每天",
     "creditsPerCycle": "積分/週期",
     "creditsUsageRules": "積分使用規則",
+    "notes": "提示：",
+    "creditsNote": "積分可用於 AI Voice Labs 上的所有工具。",
     "buyNow": "立即購買",
     "tryItFree": "免費試用",
     "processing": "處理中...",

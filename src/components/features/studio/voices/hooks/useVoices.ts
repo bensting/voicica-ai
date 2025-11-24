@@ -8,6 +8,7 @@ interface UseVoicesProps {
   locale: string;
   user: { uid: string } | null;
   authLoading: boolean;
+  initialLanguage?: LocaleOption | null; // 初始语言，避免后续修改触发重新加载
 }
 
 interface UseVoicesReturn {
@@ -53,7 +54,7 @@ interface UseVoicesReturn {
  * - Search and filtering
  * - Audio playback
  */
-export function useVoices({ authLoading }: UseVoicesProps): UseVoicesReturn {
+export function useVoices({ authLoading, initialLanguage }: UseVoicesProps): UseVoicesReturn {
   // Voices data state
   const [voices, setVoices] = useState<Voice[]>([]);
   const [loading, setLoading] = useState(true);
@@ -69,8 +70,8 @@ export function useVoices({ authLoading }: UseVoicesProps): UseVoicesReturn {
   // Search state
   const [searchQuery, setSearchQuery] = useState('');
 
-  // Language filter state
-  const [selectedLanguage, setSelectedLanguage] = useState<LocaleOption | null>(null);
+  // Language filter state - 使用初始语言或 null
+  const [selectedLanguage, setSelectedLanguage] = useState<LocaleOption | null>(initialLanguage ?? null);
 
   // Gender filter state
   const [selectedGender, setSelectedGender] = useState<string>('all');
@@ -190,7 +191,8 @@ export function useVoices({ authLoading }: UseVoicesProps): UseVoicesReturn {
     // - Authenticated users: use Firebase token
     // - Anonymous users: use device fingerprint
     void loadVoices();
-  }, [loadVoices, authLoading]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedLanguage, selectedGender, usedOnly, authLoading]); // 直接依赖 filter 值，避免 loadVoices 引用变化导致多次请求
 
   // Filter voices based on search query and usedOnly (client-side)
   // Other filters (language, gender) are handled by API

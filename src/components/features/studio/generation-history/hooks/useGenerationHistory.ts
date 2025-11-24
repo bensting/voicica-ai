@@ -346,12 +346,33 @@ export function useGenerationHistory({
 
   // Track if initial fetch has been done
   const hasFetchedRef = useRef(false);
+  // Track previous user to detect login/logout
+  const prevUserRef = useRef<string | null | undefined>(undefined);
 
   // Handle initial fetch and user login/logout
   // Wait for auth to complete before fetching to avoid duplicate queries
   useEffect(() => {
     // Don't fetch if still checking authentication status
     if (authLoading) return;
+
+    const currentUserId = user?.uid ?? null;
+    const prevUserId = prevUserRef.current;
+
+    // 检测用户变化（登录/登出）
+    const userChanged = prevUserId !== undefined && prevUserId !== currentUserId;
+    if (userChanged) {
+      console.log('[useGenerationHistory] User changed, clearing data', { prevUserId, currentUserId });
+      // 用户变化时，清空数据和轮询
+      setGenerations([]);
+      setTotal(0);
+      setTotalPages(0);
+      setCurrentPage(1);
+      clearAllPolling();
+      previousStatusRef.current.clear();
+    }
+
+    // 更新 prevUserRef
+    prevUserRef.current = currentUserId;
 
     // Fetch records for both authenticated and anonymous users
     hasFetchedRef.current = true;

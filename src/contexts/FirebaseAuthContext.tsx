@@ -60,11 +60,16 @@ export function FirebaseAuthProvider({ children }: { children: React.ReactNode }
         setUser(firebaseUser);
         setToken(idToken);
       } else {
+        // 先清除 token cookie，确保后续请求不会携带旧 token
+        try {
+          await fetch('/api/auth/set-token', { method: 'DELETE' });
+        } catch (err) {
+          console.error('[FirebaseAuth] 清除 cookie 失败:', err);
+        }
+
+        // cookie 清除完成后再更新状态
         setUser(null);
         setToken(null);
-
-        // 清除 token cookie
-        fetch('/api/auth/set-token', { method: 'DELETE' }).catch(() => {});
       }
 
       setLoading(false);

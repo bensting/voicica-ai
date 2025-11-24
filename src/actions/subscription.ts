@@ -6,13 +6,13 @@
 import Stripe from 'stripe';
 import prisma from '@/lib/prisma';
 import { getCurrentUser } from '@/lib/auth-firebase';
-import type { SubscriptionPlan, UserSubscription, UserSubscriptionListResponse } from '@/types/subscription';
+import type { UserSubscription, UserSubscriptionListResponse } from '@/types/subscription';
 import {
   getPlans,
   getPlanByProductId,
-  convertToLegacyFormat,
+  getCreditTierByProductId,
   type Platform,
-  type ProductType,
+  type SubscriptionPlanConfig,
 } from '@/config/subscription';
 
 // Initialize Stripe
@@ -25,16 +25,12 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
  */
 export async function getSubscriptionPlans(params?: {
   platform?: string;
-  product_type?: string;
   active_only?: boolean;
-}): Promise<SubscriptionPlan[]> {
-  const { platform = 'stripe', product_type = 'text_to_speech', active_only = true } = params || {};
+}): Promise<SubscriptionPlanConfig[]> {
+  const { platform = 'stripe', active_only = true } = params || {};
 
   // 从配置文件获取计划
-  const plans = getPlans(platform as Platform, product_type as ProductType, active_only);
-
-  // 转换为兼容格式
-  return plans.map(convertToLegacyFormat);
+  return getPlans(platform as Platform, active_only);
 }
 
 /**
@@ -43,17 +39,15 @@ export async function getSubscriptionPlans(params?: {
  * 从配置文件读取
  */
 export async function getPlansByProductId(
-  productId: string,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  _activeOnly: boolean = true
-): Promise<SubscriptionPlan[]> {
+  productId: string
+): Promise<SubscriptionPlanConfig[]> {
   const plan = getPlanByProductId(productId);
 
   if (!plan) {
     return [];
   }
 
-  return [convertToLegacyFormat(plan)];
+  return [plan];
 }
 
 /**
@@ -63,12 +57,15 @@ export async function getPlansByProductId(
  */
 export async function getSubscriptionPlan(
   productId: string
-): Promise<SubscriptionPlan | null> {
-  const plan = getPlanByProductId(productId);
+): Promise<SubscriptionPlanConfig | null> {
+  return getPlanByProductId(productId);
+}
 
-  if (!plan) return null;
-
-  return convertToLegacyFormat(plan);
+/**
+ * 根据产品 ID 获取积分档位信息
+ */
+export async function getCreditTierInfo(productId: string) {
+  return getCreditTierByProductId(productId);
 }
 
 /**

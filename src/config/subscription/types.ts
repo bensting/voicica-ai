@@ -9,7 +9,7 @@ export type Platform = 'stripe' | 'google' | 'apple';
 export type BillingPeriod = 'week' | 'month' | 'year';
 
 // 计划名称
-export type PlanName = 'Free' | 'Mini' | 'Starter' | 'Creator';
+export type PlanName = 'Mini' | 'Starter' | 'Creator';
 
 /**
  * 积分档位配置
@@ -41,8 +41,8 @@ export interface SubscriptionPlanConfig {
   platform: Platform;
   plan_name: PlanName;
 
-  // Stripe/Google/Apple 产品标识
-  product_id: string; // Stripe Product ID 或 Google/Apple 产品 ID
+  // Stripe/Google/Apple 产品标识（默认档位的 Product ID）
+  product_id: string;
   base_plan_id?: string | null; // Google Play 基础计划 ID
 
   // 显示信息（多语言）
@@ -53,44 +53,21 @@ export interface SubscriptionPlanConfig {
     'th-TH'?: string;
   };
 
-  // 积分和周期
-  credits_per_cycle: number; // 每周期给予的积分
+  // 计费周期
+  billing_period: BillingPeriod;
   cycle_days: number; // 周期天数 (7 = 周, 30 = 月, 365 = 年)
 
-  // 价格（多币种，USD 必填，其他可选）
-  price: {
-    USD: number;
-    CNY?: number;
-    TWD?: number;
-    THB?: number;
-  };
-
-  // 折扣价格（可选）
-  discounted_price?: {
-    USD: number;
-    CNY?: number;
-    TWD?: number;
-    THB?: number;
-  };
-
-  // 折扣标签（如 "40% OFF"）
-  discount_label?: string;
-
-  // 计费周期
-  billing_period?: BillingPeriod;
+  // 积分档位（必填，用于滑块选择不同积分量）
+  credit_tiers: CreditTier[];
 
   // 首月优惠
   enable_first_month_coupon?: boolean;
-  first_month_coupon_id?: string | null;
   first_month_coupon_label?: {
     en: string;
     'zh-CN': string;
     'zh-TW': string;
     'th-TH'?: string;
   };
-
-  // 积分档位（可选，用于滑块选择不同积分量）
-  credit_tiers?: CreditTier[];
 
   // 状态
   active: boolean;

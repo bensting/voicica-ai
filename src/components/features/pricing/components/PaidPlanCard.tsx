@@ -42,10 +42,11 @@ export default function PaidPlanCard({ plan, isRecommended = false }: PaidPlanCa
 
   // 格式化价格显示
   const priceInfo = useMemo(() => {
-    // 如果有积分档位，使用当前档位的价格
-    const priceSource = currentTier || plan;
-    const price = priceSource.price;
-    const discountedPrice = priceSource.discounted_price;
+    // 使用当前选中的档位价格
+    if (!currentTier) return null;
+
+    const price = currentTier.price;
+    const discountedPrice = currentTier.discounted_price;
 
     if (!price && !discountedPrice) return null;
 
@@ -72,7 +73,7 @@ export default function PaidPlanCard({ plan, isRecommended = false }: PaidPlanCa
       originalPrice: originalPrice,
       discountedPrice: discountPrice,
     };
-  }, [currentTier, plan, preferredCurrency]);
+  }, [currentTier, preferredCurrency]);
 
   // 计算每日价格
   const perDayPrice = useMemo(() => {
@@ -87,8 +88,12 @@ export default function PaidPlanCard({ plan, isRecommended = false }: PaidPlanCa
     if (currentTier) {
       return currentTier.credits;
     }
-    return plan.credits_per_cycle;
-  }, [currentTier, plan.credits_per_cycle]);
+    // 如果没有选中档位，使用第一个档位的积分数
+    if (hasCreditTiers && plan.credit_tiers!.length > 0) {
+      return plan.credit_tiers![0].credits;
+    }
+    return 0;
+  }, [currentTier, hasCreditTiers, plan.credit_tiers]);
 
   // 获取当前 product_id
   const currentProductId = useMemo(() => {

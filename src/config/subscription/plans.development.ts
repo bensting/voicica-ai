@@ -14,7 +14,7 @@ import type { SubscriptionPlansConfig } from './types';
 
 export const subscriptionPlans: SubscriptionPlansConfig = {
   stripe: [
-    // Mini Plan (周付) - 测试模式
+    // Mini Plan (周付)
     {
       id: 'stripe_mini_weekly',
       platform: 'stripe',
@@ -26,18 +26,34 @@ export const subscriptionPlans: SubscriptionPlansConfig = {
         'zh-TW': '迷你計劃',
         'th-TH': 'แผนมินิ',
       },
-      credits_per_cycle: 1500,
-      cycle_days: 7,
-      price: { USD: 9.99 },
-      discounted_price: { USD: 4.99 },
       billing_period: 'week',
+      cycle_days: 7,
+      credit_tiers: [
+        {
+          credits: 500,
+          price: { USD: 4.99 },
+          discounted_price: { USD: 2.49 },
+          product_id: 'prod_mini_500',
+        },
+        {
+          credits: 1000,
+          price: { USD: 7.99 },
+          discounted_price: { USD: 3.99 },
+          product_id: 'prod_mini_1000',
+        },
+        {
+          credits: 1500,
+          price: { USD: 9.99 },
+          discounted_price: { USD: 4.99 },
+          product_id: 'prod_SQTKEFPeGUz3TA',
+        },
+      ],
       enable_first_month_coupon: false,
-      first_month_coupon_id: null,
       active: true,
       sort_order: 1,
     },
 
-    // Starter (周付) - 测试模式，带积分档位滑块
+    // Starter (周付)
     {
       id: 'stripe_starter_weekly',
       platform: 'stripe',
@@ -49,19 +65,8 @@ export const subscriptionPlans: SubscriptionPlansConfig = {
         'zh-TW': '入門計劃',
         'th-TH': 'แผนสตาร์ทเตอร์',
       },
-      credits_per_cycle: 3000,
-      cycle_days: 7,
-      price: { USD: 19.99 },
-      discounted_price: { USD: 9.99 },
       billing_period: 'week',
-      enable_first_month_coupon: true,
-      first_month_coupon_id: null,
-      first_month_coupon_label: {
-        en: 'First Week 50% OFF',
-        'zh-CN': '首周5折',
-        'zh-TW': '首週5折',
-        'th-TH': 'สัปดาห์แรก ลด 50%',
-      },
+      cycle_days: 7,
       credit_tiers: [
         {
           credits: 1500,
@@ -82,11 +87,18 @@ export const subscriptionPlans: SubscriptionPlansConfig = {
           product_id: 'prod_starter_4500',
         },
       ],
+      enable_first_month_coupon: true,
+      first_month_coupon_label: {
+        en: 'First Week 50% OFF',
+        'zh-CN': '首周5折',
+        'zh-TW': '首週5折',
+        'th-TH': 'สัปดาห์แรก ลด 50%',
+      },
       active: true,
       sort_order: 2,
     },
 
-    // Creator (年付) - 测试模式
+    // Creator (年付)
     {
       id: 'stripe_creator_yearly',
       platform: 'stripe',
@@ -98,16 +110,32 @@ export const subscriptionPlans: SubscriptionPlansConfig = {
         'zh-TW': '創作者版',
         'th-TH': 'ครีเอเตอร์',
       },
-      credits_per_cycle: 30000,
-      cycle_days: 365,
-      price: { USD: 199.99 },
-      discounted_price: { USD: 99.99 },
       billing_period: 'year',
+      cycle_days: 365,
+      credit_tiers: [
+        {
+          credits: 15000,
+          price: { USD: 99.99 },
+          discounted_price: { USD: 49.99 },
+          product_id: 'prod_creator_15000',
+        },
+        {
+          credits: 30000,
+          price: { USD: 199.99 },
+          discounted_price: { USD: 99.99 },
+          product_id: 'prod_SQTMPjT6NKY2IU',
+        },
+        {
+          credits: 50000,
+          price: { USD: 299.99 },
+          discounted_price: { USD: 149.99 },
+          product_id: 'prod_creator_50000',
+        },
+      ],
       enable_first_month_coupon: false,
-      first_month_coupon_id: null,
+      is_popular: true,
       active: true,
       sort_order: 3,
-      is_popular: true,
     },
   ],
 };

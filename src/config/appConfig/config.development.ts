@@ -6,9 +6,11 @@ import type { AppConfig } from './types';
 
 export const appConfig: AppConfig = {
   /**
-   * 语音成本配置 - 不同语音类型每字符扣除的积分
+   * 语音成本配置
+   * 计费规则：每 unit_chars 个字符消耗对应积分，不足也按一个单位计算
    */
   voice_cost: {
+    unit_chars: 100,
     standard: 1,
     professional: 1,
     special: 2,
@@ -33,8 +35,8 @@ export const appConfig: AppConfig = {
    * 用户积分配置
    */
   credits: {
-    anonymous_user: 500,
-    registered_user: 1000,
+    anonymous_user: 5,
+    registered_user: 10,
   },
 
   /**

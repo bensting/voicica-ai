@@ -6,6 +6,11 @@
     "retry": "重試",
     "loading": "載入中..."
   },
+  "productCategory": {
+    "aiVideo": "AI 影片",
+    "aiMusic": "AI 音樂",
+    "aiVoice": "AI 語音"
+  },
   "navbar": {
     "explore": "探索",
     "pricing": "定價",

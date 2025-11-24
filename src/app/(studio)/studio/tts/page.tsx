@@ -61,7 +61,8 @@ export default function StudioTTSPage() {
   // 这里不需要再主动调用 refreshCredits，避免重复请求
 
   // TTS Generator logic
-  const maxCharacters = 500;
+  // 字符限制：匿名用户 500，注册用户 2000
+  const maxCharacters = user ? 2000 : 500;
   const {
     text,
     selectedVoice,

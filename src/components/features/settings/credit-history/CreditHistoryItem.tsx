@@ -53,11 +53,15 @@ export function CreditHistoryItem({ item }: CreditHistoryItemProps) {
   const typeConfig = getProductTypeConfig(item.product_type);
 
   return (
-    <div className="px-6 py-4 hover:bg-gray-50/50 transition-colors">
+    <div className={`bg-white rounded-xl border p-4 hover:shadow-md transition-all ${
+      isPositive ? 'border-green-100 hover:border-green-200' : 'border-red-100 hover:border-red-200'
+    }`}>
       <div className="flex items-center gap-4">
         {/* 图标 */}
-        <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${
-          isPositive ? 'bg-green-100' : 'bg-red-100'
+        <div className={`w-11 h-11 rounded-xl flex items-center justify-center shrink-0 ${
+          isPositive
+            ? 'bg-gradient-to-br from-green-50 to-green-100'
+            : 'bg-gradient-to-br from-red-50 to-red-100'
         }`}>
           {isPositive ? (
             <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -75,8 +79,8 @@ export function CreditHistoryItem({ item }: CreditHistoryItemProps) {
           <p className="text-gray-900 font-medium truncate">
             {item.description}
           </p>
-          <div className="flex items-center gap-2 mt-1">
-            <span className="text-sm text-gray-500">
+          <div className="flex items-center gap-2 mt-1.5">
+            <span className="text-xs text-gray-400">
               {formatDate(item.created_at)}
             </span>
             <span className={`inline-flex items-center px-2 py-0.5 text-xs font-medium rounded-full border ${typeConfig.bgColor} ${typeConfig.textColor} ${typeConfig.borderColor}`}>
@@ -86,7 +90,7 @@ export function CreditHistoryItem({ item }: CreditHistoryItemProps) {
         </div>
 
         {/* 积分数量 */}
-        <div className={`text-lg font-bold shrink-0 ${
+        <div className={`text-xl font-bold shrink-0 ${
           isPositive ? 'text-green-600' : 'text-red-600'
         }`}>
           {isPositive ? '+' : ''}

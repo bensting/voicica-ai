@@ -43,7 +43,7 @@ export default function CreditHistoryPage() {
       )}
 
       {/* 历史列表 */}
-      <div className="flex-1 min-h-0 bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden flex flex-col">
+      <div className="flex-1 min-h-0 bg-gray-50/50 rounded-xl border border-gray-100 overflow-hidden flex flex-col">
         <CreditHistoryList
           items={items}
           loadingMore={loadingMore}

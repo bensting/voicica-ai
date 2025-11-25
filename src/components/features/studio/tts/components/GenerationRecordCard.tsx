@@ -2,9 +2,10 @@
 
 import { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
-import { Download, Trash2, Play, Pause } from 'lucide-react';
+import { Download, Trash2, Play, Pause, Share2 } from 'lucide-react';
 import type { Generation } from '@/types/tts';
 import { TaskStatus } from '@/types/tts';
+import ShareModal from '@/components/ui/ShareModal';
 
 interface GenerationRecordCardProps {
   generation: Generation;
@@ -30,6 +31,7 @@ export default function GenerationRecordCard({
 }: GenerationRecordCardProps) {
   const [playingId, setPlayingId] = useState<string | null>(null);
   const [playProgress, setPlayProgress] = useState(0); // 播放进度 0-100
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   const isProcessing = generation.status === TaskStatus.PROCESSING || generation.status === TaskStatus.PENDING;
@@ -205,6 +207,15 @@ export default function GenerationRecordCard({
               <Download className="w-5 h-5" />
               下载
             </button>
+            {generation.shareId && (
+              <button
+                onClick={() => setIsShareModalOpen(true)}
+                className="flex-1 py-3 bg-purple-50 text-purple-600 font-medium rounded-xl hover:bg-purple-100 transition-colors flex items-center justify-center gap-2"
+              >
+                <Share2 className="w-5 h-5" />
+                分享
+              </button>
+            )}
             <button
               onClick={(e) => {
                 e.stopPropagation();
@@ -216,6 +227,16 @@ export default function GenerationRecordCard({
               删除
             </button>
           </div>
+        )}
+
+        {/* Share Modal */}
+        {generation.shareId && (
+          <ShareModal
+            isOpen={isShareModalOpen}
+            onClose={() => setIsShareModalOpen(false)}
+            shareId={generation.shareId}
+            text={generation.text}
+          />
         )}
       </div>
     );
@@ -298,6 +319,18 @@ export default function GenerationRecordCard({
       {/* Action Buttons */}
       {showActions && (
         <>
+          {/* Share Button */}
+          {generation.shareId && (
+            <button
+              onClick={() => setIsShareModalOpen(true)}
+              className="p-2 text-gray-400 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition-colors flex-shrink-0"
+              title="Share"
+              disabled={isProcessing || !generation.audioUrl}
+            >
+              <Share2 className="w-4 h-4" />
+            </button>
+          )}
+
           {/* Download Button */}
           <button
             onClick={() => onDownload(generation.id)}
@@ -320,6 +353,16 @@ export default function GenerationRecordCard({
             <Trash2 className="w-4 h-4" />
           </button>
         </>
+      )}
+
+      {/* Share Modal */}
+      {generation.shareId && (
+        <ShareModal
+          isOpen={isShareModalOpen}
+          onClose={() => setIsShareModalOpen(false)}
+          shareId={generation.shareId}
+          text={generation.text}
+        />
       )}
     </div>
   );

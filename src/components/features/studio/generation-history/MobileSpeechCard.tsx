@@ -4,7 +4,7 @@ import { useState, useRef, useEffect, memo, useCallback } from 'react';
 import { Trash2, ChevronDown, ChevronUp } from 'lucide-react';
 import MobileAudioPlayer from './MobileAudioPlayer';
 import TextExpandModal from './TextExpandModal';
-import ShareModal from './ShareModal';
+import ShareModal from '@/components/ui/ShareModal';
 import { getStatusLabel, getStatusColor } from '@/types/tts';
 import type { Generation } from '@/types/tts';
 

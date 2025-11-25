@@ -2,6 +2,8 @@
 
 import { useEffect, useState, useRef } from 'react';
 import Image from 'next/image';
+import { Share2 } from 'lucide-react';
+import ShareModal from '@/components/ui/ShareModal';
 
 interface AudioPlayerModalProps {
   isOpen: boolean;
@@ -9,6 +11,8 @@ interface AudioPlayerModalProps {
   audioUrl: string;
   voiceName?: string;
   voiceAvatar?: string;
+  shareId?: string;
+  text?: string;
 }
 
 /**
@@ -22,9 +26,12 @@ export default function AudioPlayerModal({
   audioUrl,
   voiceName = '晓臻',
   voiceAvatar,
+  shareId,
+  text,
 }: AudioPlayerModalProps) {
   const [isAnimating, setIsAnimating] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const audioRef = useRef<HTMLAudioElement>(null);
 
   useEffect(() => {
@@ -235,9 +242,30 @@ export default function AudioPlayerModal({
               </svg>
               <span>匯出</span>
             </a>
+
+            {/* 分享按钮 */}
+            {shareId && text && (
+              <button
+                onClick={() => setIsShareModalOpen(true)}
+                className="flex-1 h-12 flex items-center justify-center gap-2 bg-white border-2 border-purple-200 text-purple-600 font-semibold rounded-full hover:bg-purple-50 transition-colors shadow-sm"
+              >
+                <Share2 className="w-5 h-5" />
+                <span>分享</span>
+              </button>
+            )}
           </div>
         </div>
       </div>
+
+      {/* Share Modal */}
+      {shareId && text && (
+        <ShareModal
+          isOpen={isShareModalOpen}
+          onClose={() => setIsShareModalOpen(false)}
+          shareId={shareId}
+          text={text}
+        />
+      )}
     </>
   );
 }

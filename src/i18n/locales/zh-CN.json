@@ -505,7 +505,8 @@
     "description": "描述",
     "type": "类型",
     "amount": "积分",
-    "pagination": "第 {{current}} 页 / 共 {{total}} 页",
+    "scrollToLoadMore": "向下滑动加载更多",
+    "allLoaded": "所有记录已加载完毕",
     "productType": {
       "textToSpeech": "语音合成",
       "voiceCloning": "语音克隆",

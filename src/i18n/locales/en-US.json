@@ -505,7 +505,8 @@
     "description": "Description",
     "type": "Type",
     "amount": "Credits",
-    "pagination": "Page {{current}} of {{total}}",
+    "scrollToLoadMore": "Scroll down to load more",
+    "allLoaded": "All records loaded",
     "productType": {
       "textToSpeech": "Text to Speech",
       "voiceCloning": "Voice Cloning",

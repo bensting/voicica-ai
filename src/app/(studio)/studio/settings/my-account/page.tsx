@@ -164,50 +164,47 @@ export default function MyAccountPage() {
           />
 
           {/* Right: Credits Display */}
-          <div className="flex items-center gap-3">
-            <div className="flex flex-col items-end gap-2">
-              <div className="flex items-center gap-2 bg-gradient-to-br from-yellow-50 to-yellow-100 px-4 py-3 rounded-xl border border-yellow-200">
-                <CreditsIcon className="w-8 h-8 text-yellow-600" />
-                <div>
-                  <p className="text-xs text-gray-600 font-medium">
-                    {t('settings.benefits.credits')}
-                  </p>
+          <div className="flex flex-col items-end gap-2">
+            <div className="flex items-center gap-2 bg-gradient-to-br from-yellow-50 to-yellow-100 px-4 py-3 rounded-xl border border-yellow-200">
+              <CreditsIcon className="w-8 h-8 text-yellow-600" />
+              <div>
+                <p className="text-xs text-gray-600 font-medium">
+                  {t('settings.benefits.credits')}
+                </p>
+                <div className="flex items-center gap-2">
                   <p className="text-2xl font-bold text-gray-900">
                     {(profile?.credits ?? 0).toLocaleString()}
                   </p>
+                  <button
+                    onClick={handleRefresh}
+                    disabled={isRefreshing}
+                    className="p-1 text-gray-400 hover:text-gray-600 hover:bg-yellow-200/50 rounded-md transition-all disabled:opacity-50"
+                    title={t('settings.benefits.refresh')}
+                  >
+                    <svg
+                      className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`}
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                      />
+                    </svg>
+                  </button>
                 </div>
               </div>
-
-              <div className="flex items-center gap-2">
-                <Link
-                  href="/studio/settings/credit-history"
-                  className="text-sm font-medium text-purple-600 hover:text-purple-700 hover:underline"
-                >
-                  {t('settings.benefits.viewHistory')}
-                </Link>
-
-                <button
-                  onClick={handleRefresh}
-                  disabled={isRefreshing}
-                  className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-all disabled:opacity-50"
-                  title={t('settings.benefits.refresh')}
-                >
-                  <svg
-                    className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`}
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-                    />
-                  </svg>
-                </button>
-              </div>
             </div>
+
+            <Link
+              href="/studio/settings/credit-history"
+              className="text-sm font-medium text-purple-600 hover:text-purple-700 hover:underline"
+            >
+              {t('settings.benefits.viewHistory')}
+            </Link>
           </div>
         </div>
 

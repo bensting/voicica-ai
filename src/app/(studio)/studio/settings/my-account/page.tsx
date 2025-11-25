@@ -155,7 +155,7 @@ export default function MyAccountPage() {
         {/* Profile Picture with User Info and Credits */}
         <div className="flex flex-col lg:flex-row gap-4 lg:gap-6">
           {/* Left: Profile Picture and User Info */}
-          <div className="flex-1">
+          <div className="flex-1 flex items-center bg-gradient-to-br from-gray-50 to-gray-100 px-4 py-4 rounded-xl border border-gray-200">
             <ProfilePictureUpload
               currentPhoto={profile?.photo_url}
               userName={profile?.name}

@@ -6,31 +6,12 @@ import { X, ExternalLink, Copy, Check } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 import { useLogin } from '@/hooks/useLogin';
+import { isInAppBrowser, openInExternalBrowser } from '@/config/inAppBrowser';
 import SocialLoginButton, {
   GoogleIcon,
   AppleIcon,
   TwitterIcon,
 } from './SocialLoginButton';
-
-/**
- * 检测是否在应用内浏览器（WebView）中
- * Google 和部分 OAuth 提供商禁止在 WebView 中登录
- */
-function isInAppBrowser(): boolean {
-  if (typeof window === 'undefined') return false;
-
-  const ua = navigator.userAgent.toLowerCase();
-  return (
-    ua.includes('line') ||
-    ua.includes('wechat') ||
-    ua.includes('micromessenger') ||
-    ua.includes('fban') || // Facebook App
-    ua.includes('fbav') || // Facebook App
-    ua.includes('instagram') ||
-    // 通用检测：standalone webview
-    (ua.includes('mobile') && !ua.includes('safari') && ua.includes('applewebkit') && !ua.includes('chrome'))
-  );
-}
 
 interface LoginModalProps {
   isOpen: boolean;
@@ -86,30 +67,6 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
     }
   };
 
-  // 在外部浏览器中打开
-  const handleOpenInBrowser = () => {
-    const currentUrl = window.location.href;
-    const ua = navigator.userAgent.toLowerCase();
-
-    // LINE 浏览器 - 使用特殊参数
-    if (ua.includes('line')) {
-      // 方法1: 添加 openExternalBrowser 参数
-      const separator = currentUrl.includes('?') ? '&' : '?';
-      window.location.href = `${currentUrl}${separator}openExternalBrowser=1`;
-      return;
-    }
-
-    // 其他应用 - 尝试使用 intent scheme (Android) 或直接打开
-    // Android Intent
-    if (/android/i.test(ua)) {
-      const intentUrl = `intent://${currentUrl.replace(/^https?:\/\//, '')}#Intent;scheme=https;end`;
-      window.location.href = intentUrl;
-      return;
-    }
-
-    // iOS Safari - 尝试 window.open
-    window.open(currentUrl, '_system');
-  };
 
   if (!isOpen) return null;
 
@@ -177,7 +134,7 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
 
               {/* 主按钮：在浏览器中打开 */}
               <button
-                onClick={handleOpenInBrowser}
+                onClick={openInExternalBrowser}
                 className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors font-medium"
               >
                 <ExternalLink className="w-5 h-5" />

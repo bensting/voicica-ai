@@ -1,8 +1,8 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { X } from 'lucide-react';
+import { X, ExternalLink, Copy, Check } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 import { useLogin } from '@/hooks/useLogin';
@@ -11,6 +11,26 @@ import SocialLoginButton, {
   AppleIcon,
   TwitterIcon,
 } from './SocialLoginButton';
+
+/**
+ * 检测是否在应用内浏览器（WebView）中
+ * Google 和部分 OAuth 提供商禁止在 WebView 中登录
+ */
+function isInAppBrowser(): boolean {
+  if (typeof window === 'undefined') return false;
+
+  const ua = navigator.userAgent.toLowerCase();
+  return (
+    ua.includes('line') ||
+    ua.includes('wechat') ||
+    ua.includes('micromessenger') ||
+    ua.includes('fban') || // Facebook App
+    ua.includes('fbav') || // Facebook App
+    ua.includes('instagram') ||
+    // 通用检测：standalone webview
+    (ua.includes('mobile') && !ua.includes('safari') && ua.includes('applewebkit') && !ua.includes('chrome'))
+  );
+}
 
 interface LoginModalProps {
   isOpen: boolean;
@@ -27,6 +47,13 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
   const { t } = useLanguage();
   const { loading, error, handleLogin } = useLogin();
   const { user } = useFirebaseAuth();
+  const [isWebView, setIsWebView] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+  // 检测 WebView
+  useEffect(() => {
+    setIsWebView(isInAppBrowser());
+  }, []);
 
   // 登录成功后自动关闭模态框
   useEffect(() => {
@@ -47,6 +74,17 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
     document.addEventListener('keydown', handleEscape);
     return () => document.removeEventListener('keydown', handleEscape);
   }, [isOpen, onClose]);
+
+  // 复制链接
+  const handleCopyLink = async () => {
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.error('复制失败:', err);
+    }
+  };
 
   if (!isOpen) return null;
 
@@ -95,54 +133,96 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
             <p className="text-gray-600">{t('login.welcome')}</p>
           </div>
 
-          {/* 错误提示 */}
-          {error && (
-            <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm">
-              {error}
+          {/* WebView 提示 */}
+          {isWebView ? (
+            <div className="space-y-4">
+              <div className="p-4 bg-amber-50 border border-amber-200 rounded-lg">
+                <div className="flex items-start gap-3">
+                  <ExternalLink className="w-5 h-5 text-amber-600 mt-0.5 flex-shrink-0" />
+                  <div>
+                    <p className="text-amber-800 font-medium text-sm">
+                      {t('login.webviewTitle')}
+                    </p>
+                    <p className="text-amber-700 text-xs mt-1">
+                      {t('login.webviewDescription')}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <button
+                onClick={handleCopyLink}
+                className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors font-medium"
+              >
+                {copied ? (
+                  <>
+                    <Check className="w-5 h-5" />
+                    {t('login.linkCopied')}
+                  </>
+                ) : (
+                  <>
+                    <Copy className="w-5 h-5" />
+                    {t('login.copyLink')}
+                  </>
+                )}
+              </button>
+
+              <p className="text-center text-xs text-gray-500">
+                {t('login.webviewHint')}
+              </p>
             </div>
+          ) : (
+            <>
+              {/* 错误提示 */}
+              {error && (
+                <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm">
+                  {error}
+                </div>
+              )}
+
+              {/* 登录按钮组 */}
+              <div className="space-y-3 mb-6">
+                <SocialLoginButton
+                  provider="google"
+                  onClick={() => handleLogin('google')}
+                  disabled={loading}
+                  icon={<GoogleIcon />}
+                >
+                  {t('login.signInWithGoogle')}
+                </SocialLoginButton>
+
+                <SocialLoginButton
+                  provider="apple"
+                  onClick={() => handleLogin('apple')}
+                  disabled={loading}
+                  icon={<AppleIcon />}
+                >
+                  {t('login.signInWithApple')}
+                </SocialLoginButton>
+
+                <SocialLoginButton
+                  provider="twitter"
+                  onClick={() => handleLogin('twitter')}
+                  disabled={loading}
+                  icon={<TwitterIcon />}
+                >
+                  {t('login.signInWithX')}
+                </SocialLoginButton>
+              </div>
+
+              {/* 服务条款 */}
+              <p className="text-center text-xs text-gray-500">
+                {t('login.termsPrefix')}{' '}
+                <a href="/terms" className="text-purple-600 hover:underline">
+                  {t('login.terms')}
+                </a>{' '}
+                {t('login.termsAnd')}{' '}
+                <a href="/privacy" className="text-purple-600 hover:underline">
+                  {t('login.privacy')}
+                </a>
+              </p>
+            </>
           )}
-
-          {/* 登录按钮组 */}
-          <div className="space-y-3 mb-6">
-            <SocialLoginButton
-              provider="google"
-              onClick={() => handleLogin('google')}
-              disabled={loading}
-              icon={<GoogleIcon />}
-            >
-              {t('login.signInWithGoogle')}
-            </SocialLoginButton>
-
-            <SocialLoginButton
-              provider="apple"
-              onClick={() => handleLogin('apple')}
-              disabled={loading}
-              icon={<AppleIcon />}
-            >
-              {t('login.signInWithApple')}
-            </SocialLoginButton>
-
-            <SocialLoginButton
-              provider="twitter"
-              onClick={() => handleLogin('twitter')}
-              disabled={loading}
-              icon={<TwitterIcon />}
-            >
-              {t('login.signInWithX')}
-            </SocialLoginButton>
-          </div>
-
-          {/* 服务条款 */}
-          <p className="text-center text-xs text-gray-500">
-            {t('login.termsPrefix')}{' '}
-            <a href="/terms" className="text-purple-600 hover:underline">
-              {t('login.terms')}
-            </a>{' '}
-            {t('login.termsAnd')}{' '}
-            <a href="/privacy" className="text-purple-600 hover:underline">
-              {t('login.privacy')}
-            </a>
-          </p>
         </div>
       </div>
     </div>

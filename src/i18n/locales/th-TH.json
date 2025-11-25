@@ -138,6 +138,7 @@
     },
     "benefits": {
       "title": "สิทธิประโยชน์ของฉัน",
+      "credits": "เครดิต",
       "voiceCredits": "เครดิตเสียง",
       "refresh": "รีเฟรช",
       "viewHistory": "ดูประวัติ"

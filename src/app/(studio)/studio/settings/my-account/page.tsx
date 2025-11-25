@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 import { useUser } from '@/contexts/UserContext';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -10,7 +11,7 @@ import ProfilePictureUpload from '@/components/features/settings/my-account/Prof
 import FormField from '@/components/features/settings/my-account/FormField';
 import PhoneField from '@/components/features/settings/my-account/PhoneField';
 import ActionButtons from '@/components/features/settings/my-account/ActionButtons';
-import MyBenefitsCard from '@/components/features/settings/my-account/MyBenefitsCard';
+import CreditsIcon from '@/components/icons/CreditsIcon';
 
 export default function MyAccountPage() {
   const router = useRouter();
@@ -25,6 +26,7 @@ export default function MyAccountPage() {
     photo_url: ''
   });
   const [isSaving, setIsSaving] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   // 检查登录状态，未登录则重定向到登录页
   useEffect(() => {
@@ -103,6 +105,16 @@ export default function MyAccountPage() {
     }
   };
 
+  const handleRefresh = async () => {
+    if (isRefreshing) return;
+    setIsRefreshing(true);
+    try {
+      await refreshProfileSilent();
+    } finally {
+      setIsRefreshing(false);
+    }
+  };
+
   // 认证加载中或数据加载中，显示加载状态
   if (authLoading || loading) {
     return (
@@ -124,36 +136,80 @@ export default function MyAccountPage() {
 
   return (
     <div className="space-y-6">
-      {/* My Benefits Card */}
-      <MyBenefitsCard
-        credits={profile?.credits ?? 0}
-        onRefresh={refreshProfileSilent}
-      />
-
       {/* Basic Info Card */}
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
         {/* Section Header */}
         <div className="flex items-center gap-3 mb-6">
-        <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
-          <svg className="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-          </svg>
+          <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
+            <svg className="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+            </svg>
+          </div>
+          <h2 className="text-xl font-semibold text-gray-900">
+            {t('settings.basicInfo.title')}
+          </h2>
         </div>
-        <h2 className="text-xl font-semibold text-gray-900">
-          {t('settings.basicInfo.title')}
-        </h2>
-      </div>
 
       {/* Form Fields */}
       <div className="space-y-6">
-        {/* Profile Picture with User Info */}
-        <ProfilePictureUpload
-          currentPhoto={profile?.photo_url}
-          userName={profile?.name}
-          email={profile?.email}
-          onPhotoChange={(url) => handleInputChange('photo_url', url)}
-          onUploadSuccess={refreshProfile}
-        />
+        {/* Profile Picture with User Info and Credits */}
+        <div className="flex items-start justify-between gap-6">
+          {/* Left: Profile Picture and User Info */}
+          <ProfilePictureUpload
+            currentPhoto={profile?.photo_url}
+            userName={profile?.name}
+            email={profile?.email}
+            onPhotoChange={(url) => handleInputChange('photo_url', url)}
+            onUploadSuccess={refreshProfile}
+          />
+
+          {/* Right: Credits Display */}
+          <div className="flex items-center gap-3">
+            <div className="flex flex-col items-end gap-2">
+              <div className="flex items-center gap-2 bg-gradient-to-br from-yellow-50 to-yellow-100 px-4 py-3 rounded-xl border border-yellow-200">
+                <CreditsIcon className="w-8 h-8 text-yellow-600" />
+                <div>
+                  <p className="text-xs text-gray-600 font-medium">
+                    {t('settings.benefits.credits')}
+                  </p>
+                  <p className="text-2xl font-bold text-gray-900">
+                    {(profile?.credits ?? 0).toLocaleString()}
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <Link
+                  href="/studio/settings/credit-history"
+                  className="text-sm font-medium text-purple-600 hover:text-purple-700 hover:underline"
+                >
+                  {t('settings.benefits.viewHistory')}
+                </Link>
+
+                <button
+                  onClick={handleRefresh}
+                  disabled={isRefreshing}
+                  className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-all disabled:opacity-50"
+                  title={t('settings.benefits.refresh')}
+                >
+                  <svg
+                    className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`}
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                    />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
 
         {/* Name & Surname */}
         <FormField

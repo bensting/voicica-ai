@@ -138,6 +138,7 @@
     },
     "benefits": {
       "title": "My Benefits",
+      "credits": "Credits",
       "voiceCredits": "Voice Credits",
       "refresh": "Refresh",
       "viewHistory": "View History"

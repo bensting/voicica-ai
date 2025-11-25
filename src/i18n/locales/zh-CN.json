@@ -138,6 +138,7 @@
     },
     "benefits": {
       "title": "我的权益",
+      "credits": "积分",
       "voiceCredits": "语音积分",
       "refresh": "刷新",
       "viewHistory": "查看历史"

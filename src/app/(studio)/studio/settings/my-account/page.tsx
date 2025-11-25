@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 import { useUser } from '@/contexts/UserContext';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -10,7 +11,7 @@ import ProfilePictureUpload from '@/components/features/settings/my-account/Prof
 import FormField from '@/components/features/settings/my-account/FormField';
 import PhoneField from '@/components/features/settings/my-account/PhoneField';
 import ActionButtons from '@/components/features/settings/my-account/ActionButtons';
-import MyBenefitsCard from '@/components/features/settings/my-account/MyBenefitsCard';
+import CreditsIcon from '@/components/icons/CreditsIcon';
 
 export default function MyAccountPage() {
   const router = useRouter();
@@ -25,6 +26,7 @@ export default function MyAccountPage() {
     photo_url: ''
   });
   const [isSaving, setIsSaving] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   // 检查登录状态，未登录则重定向到登录页
   useEffect(() => {
@@ -103,14 +105,71 @@ export default function MyAccountPage() {
     }
   };
 
+  const handleRefresh = async () => {
+    if (isRefreshing) return;
+    setIsRefreshing(true);
+    try {
+      await refreshProfileSilent();
+    } finally {
+      setIsRefreshing(false);
+    }
+  };
+
   // 认证加载中或数据加载中，显示加载状态
   if (authLoading || loading) {
     return (
       <div className="animate-pulse">
-        <div className="bg-white rounded-lg p-6">
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+          {/* Section Header Skeleton */}
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-8 h-8 bg-gray-200 rounded-lg"></div>
+            <div className="h-6 bg-gray-200 rounded w-28"></div>
+          </div>
+
           <div className="space-y-6">
-            <div className="h-4 bg-gray-200 rounded w-32"></div>
-            <div className="h-32 bg-gray-200 rounded"></div>
+            {/* Profile and Credits Cards Skeleton */}
+            <div className="flex flex-col lg:flex-row gap-4 lg:gap-6">
+              {/* Left: Profile Card Skeleton */}
+              <div className="flex-1 flex items-center gap-4 bg-gray-50 px-4 py-4 rounded-xl border border-gray-200">
+                <div className="w-20 h-20 bg-gray-200 rounded-full shrink-0"></div>
+                <div className="flex-1 space-y-2">
+                  <div className="h-5 bg-gray-200 rounded w-24"></div>
+                  <div className="h-4 bg-gray-200 rounded w-40"></div>
+                  <div className="h-3 bg-gray-200 rounded w-56"></div>
+                </div>
+              </div>
+
+              {/* Right: Credits Card Skeleton */}
+              <div className="flex-1 flex items-center gap-3 bg-yellow-50 px-4 py-4 rounded-xl border border-yellow-200">
+                <div className="w-12 h-12 bg-yellow-200 rounded-lg shrink-0"></div>
+                <div className="flex-1 space-y-2">
+                  <div className="h-3 bg-yellow-200 rounded w-16"></div>
+                  <div className="h-7 bg-yellow-200 rounded w-28"></div>
+                  <div className="h-3 bg-yellow-200 rounded w-20"></div>
+                </div>
+              </div>
+            </div>
+
+            {/* Name Field Skeleton */}
+            <div className="space-y-2">
+              <div className="h-4 bg-gray-200 rounded w-32"></div>
+              <div className="h-10 bg-gray-100 rounded-lg border border-gray-200"></div>
+            </div>
+
+            {/* Phone Field Skeleton */}
+            <div className="space-y-2">
+              <div className="h-4 bg-gray-200 rounded w-20"></div>
+              <div className="flex gap-2">
+                <div className="w-24 h-10 bg-gray-100 rounded-lg border border-gray-200"></div>
+                <div className="flex-1 h-10 bg-gray-100 rounded-lg border border-gray-200"></div>
+              </div>
+            </div>
+          </div>
+
+          {/* Action Buttons Skeleton */}
+          <div className="flex justify-end gap-3 mt-6">
+            <div className="w-20 h-10 bg-gray-200 rounded-lg"></div>
+            <div className="w-20 h-10 bg-purple-200 rounded-lg"></div>
           </div>
         </div>
       </div>
@@ -123,37 +182,78 @@ export default function MyAccountPage() {
   }
 
   return (
-    <div className="space-y-6">
-      {/* My Benefits Card */}
-      <MyBenefitsCard
-        credits={profile?.credits ?? 0}
-        onRefresh={refreshProfileSilent}
-      />
-
+    <div className="h-full overflow-y-auto">
+      <div className="space-y-6">
       {/* Basic Info Card */}
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
         {/* Section Header */}
         <div className="flex items-center gap-3 mb-6">
-        <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
-          <svg className="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-          </svg>
+          <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
+            <svg className="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+            </svg>
+          </div>
+          <h2 className="text-xl font-semibold text-gray-900">
+            {t('settings.basicInfo.title')}
+          </h2>
         </div>
-        <h2 className="text-xl font-semibold text-gray-900">
-          {t('settings.basicInfo.title')}
-        </h2>
-      </div>
 
       {/* Form Fields */}
       <div className="space-y-6">
-        {/* Profile Picture with User Info */}
-        <ProfilePictureUpload
-          currentPhoto={profile?.photo_url}
-          userName={profile?.name}
-          email={profile?.email}
-          onPhotoChange={(url) => handleInputChange('photo_url', url)}
-          onUploadSuccess={refreshProfile}
-        />
+        {/* Profile Picture with User Info and Credits */}
+        <div className="flex flex-col lg:flex-row gap-4 lg:gap-6">
+          {/* Left: Profile Picture and User Info */}
+          <div className="flex-1 flex items-center bg-gradient-to-br from-gray-50 to-gray-100 px-4 py-4 rounded-xl border border-gray-200">
+            <ProfilePictureUpload
+              currentPhoto={profile?.photo_url}
+              userName={profile?.name}
+              email={profile?.email}
+              onPhotoChange={(url) => handleInputChange('photo_url', url)}
+              onUploadSuccess={refreshProfile}
+            />
+          </div>
+
+          {/* Right: Credits Display */}
+          <div className="flex-1 flex items-center gap-3 bg-gradient-to-br from-yellow-50 to-yellow-100 px-4 py-4 rounded-xl border border-yellow-200">
+            <CreditsIcon className="w-12 h-12 text-yellow-600 shrink-0" />
+            <div className="flex-1">
+              <p className="text-xs text-gray-600 font-medium">
+                {t('settings.benefits.credits')}
+              </p>
+              <div className="flex items-center gap-2">
+                <p className="text-2xl font-bold text-gray-900">
+                  {(profile?.credits ?? 0).toLocaleString()}
+                </p>
+                <button
+                  onClick={handleRefresh}
+                  disabled={isRefreshing}
+                  className="p-1 text-gray-400 hover:text-gray-600 hover:bg-yellow-200/50 rounded-md transition-all disabled:opacity-50"
+                  title={t('settings.benefits.refresh')}
+                >
+                  <svg
+                    className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`}
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                    />
+                  </svg>
+                </button>
+              </div>
+              <Link
+                href="/studio/settings/credit-history"
+                className="text-xs font-medium text-yellow-700 hover:text-yellow-800 hover:underline"
+              >
+                {t('settings.benefits.viewHistory')}
+              </Link>
+            </div>
+          </div>
+        </div>
 
         {/* Name & Surname */}
         <FormField
@@ -181,6 +281,7 @@ export default function MyAccountPage() {
           cancelText={t('settings.actions.cancel')}
           isLoading={isSaving}
         />
+      </div>
       </div>
     </div>
   );

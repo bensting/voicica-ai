@@ -138,6 +138,7 @@
     },
     "benefits": {
       "title": "我的權益",
+      "credits": "積分",
       "voiceCredits": "語音積分",
       "refresh": "重新整理",
       "viewHistory": "查看歷史"
@@ -484,7 +485,8 @@
     "description": "描述",
     "type": "類型",
     "amount": "積分",
-    "pagination": "第 {{current}} 頁 / 共 {{total}} 頁",
+    "scrollToLoadMore": "向下滑動載入更多",
+    "allLoaded": "所有記錄已載入完畢",
     "productType": {
       "textToSpeech": "語音合成",
       "voiceCloning": "語音克隆",

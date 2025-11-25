@@ -22,9 +22,10 @@ export const appConfig: AppConfig = {
    */
   tts_samples: {
     sample_locales: [
+      'en-US',
       'zh-CN',
       'zh-TW',
-      'en-US',
+      'th-TH',
       'ja-JP',
       'ko-KR',
     ],

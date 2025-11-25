@@ -153,20 +153,22 @@ export default function MyAccountPage() {
       {/* Form Fields */}
       <div className="space-y-6">
         {/* Profile Picture with User Info and Credits */}
-        <div className="flex items-start justify-between gap-6">
+        <div className="flex flex-col lg:flex-row gap-4 lg:gap-6">
           {/* Left: Profile Picture and User Info */}
-          <ProfilePictureUpload
-            currentPhoto={profile?.photo_url}
-            userName={profile?.name}
-            email={profile?.email}
-            onPhotoChange={(url) => handleInputChange('photo_url', url)}
-            onUploadSuccess={refreshProfile}
-          />
+          <div className="flex-1">
+            <ProfilePictureUpload
+              currentPhoto={profile?.photo_url}
+              userName={profile?.name}
+              email={profile?.email}
+              onPhotoChange={(url) => handleInputChange('photo_url', url)}
+              onUploadSuccess={refreshProfile}
+            />
+          </div>
 
           {/* Right: Credits Display */}
-          <div className="flex items-center gap-3 bg-gradient-to-br from-yellow-50 to-yellow-100 px-4 py-3 rounded-xl border border-yellow-200">
-            <CreditsIcon className="w-10 h-10 text-yellow-600" />
-            <div>
+          <div className="flex-1 flex items-center gap-3 bg-gradient-to-br from-yellow-50 to-yellow-100 px-4 py-4 rounded-xl border border-yellow-200">
+            <CreditsIcon className="w-12 h-12 text-yellow-600 shrink-0" />
+            <div className="flex-1">
               <p className="text-xs text-gray-600 font-medium">
                 {t('settings.benefits.credits')}
               </p>

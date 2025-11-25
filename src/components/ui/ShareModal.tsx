@@ -122,11 +122,11 @@ export default function ShareModal({ isOpen, onClose, shareId, text, type = 'tts
                 type="text"
                 value={shareUrl}
                 readOnly
-                className="flex-1 px-3 py-2 text-sm bg-gray-100 border border-gray-200 rounded-lg text-gray-600"
+                className="flex-1 min-w-0 px-3 py-2 text-sm bg-gray-100 border border-gray-200 rounded-lg text-gray-600 truncate"
               />
               <button
                 onClick={handleCopy}
-                className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 ${
+                className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 whitespace-nowrap flex-shrink-0 ${
                   copied
                     ? 'bg-green-500 text-white'
                     : 'bg-purple-600 text-white hover:bg-purple-700'
@@ -134,12 +134,12 @@ export default function ShareModal({ isOpen, onClose, shareId, text, type = 'tts
               >
                 {copied ? (
                   <>
-                    <Check className="w-4 h-4" />
+                    <Check className="w-4 h-4 flex-shrink-0" />
                     {t('share.copied')}
                   </>
                 ) : (
                   <>
-                    <Copy className="w-4 h-4" />
+                    <Copy className="w-4 h-4 flex-shrink-0" />
                     {t('share.copy')}
                   </>
                 )}

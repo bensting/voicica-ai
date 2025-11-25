@@ -130,7 +130,7 @@ export default function SharePageClient({ record }: SharePageClientProps) {
         {/* Main Content Card */}
         <div className="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
           {/* Text Content */}
-          <div className="p-6 md:p-8 border-b border-gray-100">
+          <div className="p-6 md:p-8 border-b border-gray-100 max-h-[40vh] overflow-y-auto">
             <p className="text-gray-900 text-lg leading-relaxed whitespace-pre-wrap">
               {record.text}
             </p>

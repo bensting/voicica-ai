@@ -1,12 +1,11 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 import { getCreditHistory } from '@/actions/user';
-import type { CreditHistoryItem, CreditHistoryResponse } from '@/types/user';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import type { CreditHistoryItem } from '@/types/user';
 import CreditsIcon from '@/components/icons/CreditsIcon';
 
 /**
@@ -17,33 +16,85 @@ export default function CreditHistoryPage() {
   const { user, loading: authLoading } = useFirebaseAuth();
   const router = useRouter();
 
-  const [data, setData] = useState<CreditHistoryResponse | null>(null);
+  const [items, setItems] = useState<CreditHistoryItem[]>([]);
+  const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
   const pageSize = 20;
+  const observerRef = useRef<IntersectionObserver | null>(null);
+  const loadMoreRef = useRef<HTMLDivElement>(null);
 
   // 获取积分历史
-  const fetchHistory = useCallback(async (pageNum: number) => {
+  const fetchHistory = useCallback(async (pageNum: number, isLoadMore = false) => {
     try {
-      setLoading(true);
+      if (isLoadMore) {
+        setLoadingMore(true);
+      } else {
+        setLoading(true);
+      }
       setError(null);
+
       const result = await getCreditHistory(pageNum, pageSize);
-      setData(result);
+
+      if (isLoadMore) {
+        setItems(prev => [...prev, ...result.items]);
+      } else {
+        setItems(result.items);
+      }
+
+      setTotal(result.total);
+      setHasMore(pageNum * pageSize < result.total);
     } catch (err) {
       console.error('获取积分历史失败:', err);
       setError(err instanceof Error ? err.message : '获取数据失败');
     } finally {
       setLoading(false);
+      setLoadingMore(false);
     }
   }, []);
 
   // 初始加载
   useEffect(() => {
     if (!authLoading && user) {
-      fetchHistory(page);
+      fetchHistory(1);
     }
-  }, [authLoading, user, page, fetchHistory]);
+  }, [authLoading, user, fetchHistory]);
+
+  // 加载更多
+  const loadMore = useCallback(() => {
+    if (!loadingMore && hasMore) {
+      const nextPage = page + 1;
+      setPage(nextPage);
+      fetchHistory(nextPage, true);
+    }
+  }, [loadingMore, hasMore, page, fetchHistory]);
+
+  // Intersection Observer 监听滚动到底部
+  useEffect(() => {
+    if (loading) return;
+
+    observerRef.current = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasMore && !loadingMore) {
+          loadMore();
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    if (loadMoreRef.current) {
+      observerRef.current.observe(loadMoreRef.current);
+    }
+
+    return () => {
+      if (observerRef.current) {
+        observerRef.current.disconnect();
+      }
+    };
+  }, [loading, hasMore, loadingMore, loadMore]);
 
   // 未登录重定向
   useEffect(() => {
@@ -130,8 +181,6 @@ export default function CreditHistoryPage() {
     );
   }
 
-  const totalPages = data ? Math.ceil(data.total / pageSize) : 0;
-
   return (
     <div className="space-y-6">
       {/* 页面标题 */}
@@ -152,9 +201,9 @@ export default function CreditHistoryPage() {
             <h1 className="text-xl font-bold text-gray-900">
               {t('creditHistory.title')}
             </h1>
-            {data && (
+            {total > 0 && (
               <p className="text-sm text-gray-500">
-                {data.total} {t('generationHistory.total')}
+                {total} {t('generationHistory.total')}
               </p>
             )}
           </div>
@@ -173,7 +222,7 @@ export default function CreditHistoryPage() {
 
       {/* 历史列表 */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-        {data?.items.length === 0 ? (
+        {items.length === 0 ? (
           <div className="p-12 text-center">
             <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
               <CreditsIcon className="w-8 h-8 text-gray-400" />
@@ -184,7 +233,7 @@ export default function CreditHistoryPage() {
           <>
             {/* 列表项 */}
             <div className="divide-y divide-gray-100">
-              {data?.items.map((item: CreditHistoryItem) => {
+              {items.map((item: CreditHistoryItem) => {
                 const typeConfig = getProductTypeConfig(item.product_type);
                 const isPositive = item.amount > 0;
 
@@ -237,63 +286,25 @@ export default function CreditHistoryPage() {
               })}
             </div>
 
-            {/* 分页 */}
-            {totalPages > 1 && (
-              <div className="flex items-center justify-between px-6 py-4 border-t bg-gray-50/50">
-                <div className="text-sm text-gray-500">
-                  {t('creditHistory.pagination', {
-                    current: page,
-                    total: totalPages,
-                  })}
+            {/* 加载更多触发器 */}
+            <div ref={loadMoreRef} className="px-6 py-4 border-t border-gray-100">
+              {loadingMore ? (
+                <div className="flex items-center justify-center gap-2 text-gray-500">
+                  <svg className="w-5 h-5 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                  </svg>
+                  <span className="text-sm">{t('common.loading')}</span>
                 </div>
-                <div className="flex items-center gap-1">
-                  <button
-                    onClick={() => setPage((p) => Math.max(1, p - 1))}
-                    disabled={page === 1 || loading}
-                    className="p-2 hover:bg-gray-200 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                  >
-                    <ChevronLeft className="w-5 h-5" />
-                  </button>
-
-                  {/* 页码按钮 */}
-                  {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                    let pageNum;
-                    if (totalPages <= 5) {
-                      pageNum = i + 1;
-                    } else if (page <= 3) {
-                      pageNum = i + 1;
-                    } else if (page >= totalPages - 2) {
-                      pageNum = totalPages - 4 + i;
-                    } else {
-                      pageNum = page - 2 + i;
-                    }
-
-                    return (
-                      <button
-                        key={pageNum}
-                        onClick={() => setPage(pageNum)}
-                        disabled={loading}
-                        className={`w-8 h-8 text-sm font-medium rounded-lg transition-colors ${
-                          page === pageNum
-                            ? 'bg-purple-600 text-white'
-                            : 'hover:bg-gray-200 text-gray-700'
-                        }`}
-                      >
-                        {pageNum}
-                      </button>
-                    );
-                  })}
-
-                  <button
-                    onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                    disabled={page === totalPages || loading}
-                    className="p-2 hover:bg-gray-200 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                  >
-                    <ChevronRight className="w-5 h-5" />
-                  </button>
+              ) : hasMore ? (
+                <div className="text-center text-sm text-gray-400">
+                  {t('generationHistory.allRecordsLoaded').replace('所有记录已加载完毕', '向下滑动加载更多')}
                 </div>
-              </div>
-            )}
+              ) : (
+                <div className="text-center text-sm text-gray-400">
+                  {t('generationHistory.allRecordsLoaded')}
+                </div>
+              )}
+            </div>
           </>
         )}
       </div>

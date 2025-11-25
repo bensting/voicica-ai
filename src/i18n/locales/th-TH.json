@@ -505,7 +505,8 @@
     "description": "รายละเอียด",
     "type": "ประเภท",
     "amount": "เครดิต",
-    "pagination": "หน้า {{current}} จาก {{total}}",
+    "scrollToLoadMore": "เลื่อนลงเพื่อโหลดเพิ่มเติม",
+    "allLoaded": "โหลดข้อมูลทั้งหมดแล้ว",
     "productType": {
       "textToSpeech": "แปลงข้อความเป็นเสียง",
       "voiceCloning": "โคลนเสียง",

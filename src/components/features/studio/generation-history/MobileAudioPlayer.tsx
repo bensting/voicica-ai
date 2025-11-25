@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { Download } from 'lucide-react';
+import { Download, Share2 } from 'lucide-react';
 import Image from 'next/image';
 
 interface MobileAudioPlayerProps {
@@ -10,6 +10,7 @@ interface MobileAudioPlayerProps {
   isPlaying: boolean;
   onPlay: () => void;
   onDownload: () => void;
+  onShare?: () => void;
   voiceAvatar?: string;
   voiceName?: string;
   voiceDisplayName?: string;
@@ -21,6 +22,7 @@ export default function MobileAudioPlayer({
   isPlaying,
   onPlay,
   onDownload,
+  onShare,
   voiceAvatar,
   voiceName,
   voiceDisplayName
@@ -156,6 +158,17 @@ export default function MobileAudioPlayer({
           </span>
         </div>
       </div>
+
+      {/* Share Button */}
+      {onShare && (
+        <button
+          onClick={onShare}
+          className="flex-shrink-0 p-2 text-gray-600 hover:text-purple-600 hover:bg-purple-50 rounded-full transition-colors"
+          title="Share"
+        >
+          <Share2 className="w-5 h-5" />
+        </button>
+      )}
 
       {/* Download Button */}
       <button

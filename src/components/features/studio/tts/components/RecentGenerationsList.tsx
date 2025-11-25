@@ -150,7 +150,7 @@ export default function RecentGenerationsList({
               return (
                 <div
                   key={gen.id}
-                  className={`flex items-center gap-3 p-3 rounded-lg hover:shadow-sm transition-all ${
+                  className={`flex items-center gap-2 p-3 rounded-lg hover:shadow-sm transition-all ${
                     isProcessing
                       ? 'bg-purple-50 border-2 border-purple-200'
                       : 'bg-white border border-gray-200 hover:border-purple-300'
@@ -177,18 +177,18 @@ export default function RecentGenerationsList({
                     )}
                   </button>
 
-                  {/* Text Content */}
-                  <div className="flex items-center gap-2 flex-shrink-0" style={{ width: '45%' }}>
-                    <p className="text-sm text-gray-900 truncate flex-1 min-w-0">{gen.text}</p>
+                  {/* Text Content - 自适应宽度 */}
+                  <div className="flex items-center gap-2 min-w-0 flex-1">
+                    <p className="text-sm text-gray-900 truncate">{gen.text}</p>
                     {gen.style && gen.style !== 'default' && (
-                      <span className="flex-shrink-0 px-1.5 py-0.5 text-xs bg-purple-100 text-purple-600 rounded">
+                      <span className="hidden sm:inline-block flex-shrink-0 px-1.5 py-0.5 text-xs bg-purple-100 text-purple-600 rounded">
                         {t(`voiceStyles.${gen.style}`)}
                       </span>
                     )}
                   </div>
 
-                  {/* Voice Info */}
-                  <div className="flex items-center gap-2 flex-shrink-0 w-28">
+                  {/* Voice Info - 窄屏隐藏名字 */}
+                  <div className="flex items-center gap-1.5 flex-shrink-0">
                     {gen.voiceAvatar ? (
                       <Image
                         src={gen.voiceAvatar}
@@ -202,11 +202,11 @@ export default function RecentGenerationsList({
                         <span className="text-xs text-purple-600">🎤</span>
                       </div>
                     )}
-                    <span className="text-xs text-gray-600 truncate">{gen.voiceDisplayName || gen.voiceName}</span>
+                    <span className="hidden lg:inline text-xs text-gray-600 truncate max-w-20">{gen.voiceDisplayName || gen.voiceName}</span>
                   </div>
 
                   {/* Duration or Progress */}
-                  <div className="text-xs flex-shrink-0 w-12 text-right">
+                  <div className="text-xs flex-shrink-0 w-10 text-right">
                     {isProcessing ? (
                       <span className="text-purple-600 font-medium">{progress}%</span>
                     ) : gen.duration ? (
@@ -216,8 +216,8 @@ export default function RecentGenerationsList({
                     )}
                   </div>
 
-                  {/* Progress Bar */}
-                  <div className="w-32 h-1 bg-gray-200 rounded-full flex-shrink-0 overflow-hidden">
+                  {/* Progress Bar - 窄屏隐藏 */}
+                  <div className="hidden md:block w-24 lg:w-32 h-1 bg-gray-200 rounded-full flex-shrink-0 overflow-hidden">
                     <div
                       className={`h-full rounded-full transition-all ${
                         isProcessing ? 'bg-purple-600 duration-500' : 'bg-purple-400 duration-100'
@@ -235,7 +235,7 @@ export default function RecentGenerationsList({
                   {/* Download Button */}
                   <button
                     onClick={() => onDownload(gen.id)}
-                    className="p-2 text-gray-400 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition-colors flex-shrink-0"
+                    className="p-1.5 text-gray-400 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition-colors flex-shrink-0"
                     title="Download"
                     disabled={isProcessing || !gen.audioUrl}
                   >
@@ -248,7 +248,7 @@ export default function RecentGenerationsList({
                       e.stopPropagation();
                       onDelete(gen.id);
                     }}
-                    className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors flex-shrink-0"
+                    className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors flex-shrink-0"
                     title="Delete"
                   >
                     <Trash2 className="w-4 h-4" />

@@ -519,6 +519,19 @@
       "other": "其他"
     }
   },
+  "share": {
+    "title": "分享",
+    "modalTitle": "分享语音",
+    "linkLabel": "分享链接",
+    "copy": "复制链接",
+    "copied": "已复制",
+    "moreOptions": "更多分享选项",
+    "download": "下载音频",
+    "characters": "个字符",
+    "ctaTitle": "创建您自己的 AI 语音",
+    "ctaDescription": "使用 AI Voice Labs 将文字转换为自然流畅的语音。",
+    "tryNow": "立即试用"
+  },
   "countries": {
     "CN": "中国",
     "TW": "台湾",

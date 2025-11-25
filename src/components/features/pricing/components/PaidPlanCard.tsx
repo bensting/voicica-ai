@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { PricingPlan } from '@/types/subscription';
 import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 import { createStripeCheckout } from '@/actions/payment';
@@ -35,6 +35,20 @@ export default function PaidPlanCard({ plan }: PaidPlanCardProps) {
     return Math.floor((plan.credit_tiers!.length - 1) / 2);
   }, [hasCreditTiers, plan.credit_tiers]);
   const [selectedTierIndex, setSelectedTierIndex] = useState(defaultTierIndex);
+
+  // 监听页面可见性变化，用户从 Stripe 返回时重置 loading 状态
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        setIsLoading(false);
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, []);
 
   // 获取当前选中的档位
   const currentTier = useMemo(() => {

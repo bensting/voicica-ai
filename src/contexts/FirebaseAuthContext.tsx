@@ -22,29 +22,8 @@ import {
   type User,
   type AuthProvider,
 } from 'firebase/auth';
-
-/**
- * 检测是否在应用内浏览器（LINE、微信、Facebook 等）
- * 这些浏览器通常会阻止弹出窗口
- */
-function isInAppBrowser(): boolean {
-  if (typeof window === 'undefined') return false;
-
-  const ua = navigator.userAgent.toLowerCase();
-  return (
-    ua.includes('line') ||
-    ua.includes('wechat') ||
-    ua.includes('micromessenger') ||
-    ua.includes('fban') || // Facebook App
-    ua.includes('fbav') || // Facebook App
-    ua.includes('instagram') ||
-    ua.includes('twitter') ||
-    // 通用检测：standalone webview
-    (ua.includes('mobile') && !ua.includes('safari') && ua.includes('applewebkit'))
-  );
-}
-
 import { auth } from '@/lib/firebase';
+import { isInAppBrowser } from '@/config/inAppBrowser';
 
 interface FirebaseAuthContextType {
   user: User | null;

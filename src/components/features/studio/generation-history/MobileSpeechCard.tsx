@@ -4,6 +4,7 @@ import { useState, useRef, useEffect, memo, useCallback } from 'react';
 import { Trash2, ChevronDown, ChevronUp } from 'lucide-react';
 import MobileAudioPlayer from './MobileAudioPlayer';
 import TextExpandModal from './TextExpandModal';
+import ShareModal from '@/components/ui/ShareModal';
 import { getStatusLabel, getStatusColor } from '@/types/tts';
 import type { Generation } from '@/types/tts';
 
@@ -22,6 +23,7 @@ interface MobileSpeechCardProps {
 function MobileSpeechCard({ generation, onDelete, onDownload }: MobileSpeechCardProps) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isTextExpanded, setIsTextExpanded] = useState(false);
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [isTruncated, setIsTruncated] = useState(false);
   const textRef = useRef<HTMLParagraphElement>(null);
 
@@ -36,6 +38,14 @@ function MobileSpeechCard({ generation, onDelete, onDownload }: MobileSpeechCard
 
   const handleCloseModal = useCallback(() => {
     setIsTextExpanded(false);
+  }, []);
+
+  const handleOpenShare = useCallback(() => {
+    setIsShareModalOpen(true);
+  }, []);
+
+  const handleCloseShare = useCallback(() => {
+    setIsShareModalOpen(false);
   }, []);
 
   // Check if text is truncated - debounced for better performance
@@ -125,6 +135,7 @@ function MobileSpeechCard({ generation, onDelete, onDownload }: MobileSpeechCard
           isPlaying={isPlaying}
           onPlay={handleTogglePlay}
           onDownload={onDownload}
+          onShare={generation.shareId ? handleOpenShare : undefined}
           voiceAvatar={generation.voiceAvatar}
           voiceName={generation.voiceName}
           voiceDisplayName={generation.voiceDisplayName}
@@ -138,6 +149,16 @@ function MobileSpeechCard({ generation, onDelete, onDownload }: MobileSpeechCard
         text={generation.text}
         onClose={handleCloseModal}
       />
+
+      {/* Share Modal */}
+      {generation.shareId && (
+        <ShareModal
+          isOpen={isShareModalOpen}
+          onClose={handleCloseShare}
+          shareId={generation.shareId}
+          text={generation.text}
+        />
+      )}
     </>
   );
 }

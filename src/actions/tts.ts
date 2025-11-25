@@ -6,9 +6,18 @@
 import prisma from '@/lib/prisma';
 import { getUserOrAnonymous } from '@/lib/auth-firebase';
 import { v4 as uuidv4 } from 'uuid';
+import { nanoid } from 'nanoid';
 import { inngest } from '@/lib/inngest/client';
 import { InsufficientCreditsError, errorToResponse } from '@/lib/errors';
 import { calculateVoiceCost} from '@/config/appConfig';
+
+/**
+ * 生成分享短码
+ * 使用 nanoid 生成 8 位 URL 安全的随机字符串
+ */
+function generateShareId(): string {
+  return nanoid(8);
+}
 
 // 类型定义
 export interface TtsRequest {
@@ -70,7 +79,25 @@ export interface TtsRecord {
   error_message: string | null;
   created_at: Date;
   completed_at: Date | null;
+  share_id: string | null;
   voice?: TtsRecordVoice | null;
+}
+
+/**
+ * 公开分享记录接口（用于分享页面展示）
+ */
+export interface SharedTtsRecord {
+  share_id: string;
+  text: string;
+  audio_url: string;
+  duration: number;
+  character_count: number;
+  created_at: Date;
+  voice: {
+    name: string;
+    display_name: string | null;
+    avatar_url: string;
+  } | null;
 }
 
 export interface TtsRecordsQueryResponse {
@@ -177,8 +204,9 @@ export async function createTtsTask(request: TtsRequest): Promise<TtsTaskStatus>
       },
     });
 
-    // 5. 创建 TTS 记录
+    // 5. 创建 TTS 记录（同时生成分享短码）
     const characterCount = request.text.length;
+    const shareId = generateShareId();
     await prisma.tts_records.create({
       data: {
         user_id: userId,
@@ -195,6 +223,7 @@ export async function createTtsTask(request: TtsRequest): Promise<TtsTaskStatus>
         status: 'PENDING',
         progress: 0,
         format: 'mp3',
+        share_id: shareId,
       },
     });
 
@@ -342,6 +371,7 @@ export async function getTtsRecords(limit: number = 50): Promise<TtsRecord[]> {
     error_message: r.error_message,
     created_at: r.created_at,
     completed_at: r.completed_at,
+    share_id: r.share_id,
   }));
 }
 
@@ -432,6 +462,7 @@ export async function queryTtsRecords(params: {
       error_message: r.error_message,
       created_at: r.created_at,
       completed_at: r.completed_at,
+      share_id: r.share_id,
       voice: voice ? {
         id: voice.id,
         name: voice.name,
@@ -501,6 +532,7 @@ export async function getTtsRecordById(recordId: number): Promise<TtsRecord> {
     error_message: record.error_message,
     created_at: record.created_at,
     completed_at: record.completed_at,
+    share_id: record.share_id,
     voice: voice ? {
       id: voice.id,
       name: voice.name,
@@ -628,6 +660,7 @@ export async function getTtsRecordByTaskId(taskId: string): Promise<TtsRecord> {
     error_message: record.error_message,
     created_at: record.created_at,
     completed_at: record.completed_at,
+    share_id: record.share_id,
   };
 }
 
@@ -692,6 +725,7 @@ export async function checkAndHandleStuckTask(
         error_message: record.error_message,
         created_at: record.created_at,
         completed_at: record.completed_at,
+        share_id: record.share_id,
       },
     };
   }
@@ -773,6 +807,7 @@ export async function checkAndHandleStuckTask(
         error_message: updatedRecord.error_message,
         created_at: updatedRecord.created_at,
         completed_at: updatedRecord.completed_at,
+        share_id: updatedRecord.share_id,
       },
     };
   }
@@ -805,6 +840,44 @@ export async function checkAndHandleStuckTask(
       error_message: record.error_message,
       created_at: record.created_at,
       completed_at: record.completed_at,
+      share_id: record.share_id,
     },
+  };
+}
+
+/**
+ * 根据分享 ID 获取公开的 TTS 记录
+ *
+ * 这是一个公开 API，不需要用户认证
+ * 只返回必要的公开信息，不包含用户 ID 等敏感数据
+ */
+export async function getSharedTtsRecord(shareId: string): Promise<SharedTtsRecord | null> {
+  // 根据 share_id 查询记录
+  const record = await prisma.tts_records.findUnique({
+    where: { share_id: shareId },
+  });
+
+  // 记录不存在或状态不是成功
+  if (!record || record.status !== 'SUCCESS' || !record.audio_url) {
+    return null;
+  }
+
+  // 查询语音信息
+  const voice = await prisma.voices.findFirst({
+    where: { name: record.voice_name },
+  });
+
+  return {
+    share_id: shareId,
+    text: record.text,
+    audio_url: record.audio_url,
+    duration: record.duration || 0,
+    character_count: record.character_count,
+    created_at: record.created_at,
+    voice: voice ? {
+      name: voice.name,
+      display_name: voice.display_name,
+      avatar_url: voice.avatar_url,
+    } : null,
   };
 }

@@ -119,10 +119,57 @@ export default function MyAccountPage() {
   if (authLoading || loading) {
     return (
       <div className="animate-pulse">
-        <div className="bg-white rounded-lg p-6">
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+          {/* Section Header Skeleton */}
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-8 h-8 bg-gray-200 rounded-lg"></div>
+            <div className="h-6 bg-gray-200 rounded w-28"></div>
+          </div>
+
           <div className="space-y-6">
-            <div className="h-4 bg-gray-200 rounded w-32"></div>
-            <div className="h-32 bg-gray-200 rounded"></div>
+            {/* Profile and Credits Cards Skeleton */}
+            <div className="flex flex-col lg:flex-row gap-4 lg:gap-6">
+              {/* Left: Profile Card Skeleton */}
+              <div className="flex-1 flex items-center gap-4 bg-gray-50 px-4 py-4 rounded-xl border border-gray-200">
+                <div className="w-20 h-20 bg-gray-200 rounded-full shrink-0"></div>
+                <div className="flex-1 space-y-2">
+                  <div className="h-5 bg-gray-200 rounded w-24"></div>
+                  <div className="h-4 bg-gray-200 rounded w-40"></div>
+                  <div className="h-3 bg-gray-200 rounded w-56"></div>
+                </div>
+              </div>
+
+              {/* Right: Credits Card Skeleton */}
+              <div className="flex-1 flex items-center gap-3 bg-yellow-50 px-4 py-4 rounded-xl border border-yellow-200">
+                <div className="w-12 h-12 bg-yellow-200 rounded-lg shrink-0"></div>
+                <div className="flex-1 space-y-2">
+                  <div className="h-3 bg-yellow-200 rounded w-16"></div>
+                  <div className="h-7 bg-yellow-200 rounded w-28"></div>
+                  <div className="h-3 bg-yellow-200 rounded w-20"></div>
+                </div>
+              </div>
+            </div>
+
+            {/* Name Field Skeleton */}
+            <div className="space-y-2">
+              <div className="h-4 bg-gray-200 rounded w-32"></div>
+              <div className="h-10 bg-gray-100 rounded-lg border border-gray-200"></div>
+            </div>
+
+            {/* Phone Field Skeleton */}
+            <div className="space-y-2">
+              <div className="h-4 bg-gray-200 rounded w-20"></div>
+              <div className="flex gap-2">
+                <div className="w-24 h-10 bg-gray-100 rounded-lg border border-gray-200"></div>
+                <div className="flex-1 h-10 bg-gray-100 rounded-lg border border-gray-200"></div>
+              </div>
+            </div>
+          </div>
+
+          {/* Action Buttons Skeleton */}
+          <div className="flex justify-end gap-3 mt-6">
+            <div className="w-20 h-10 bg-gray-200 rounded-lg"></div>
+            <div className="w-20 h-10 bg-purple-200 rounded-lg"></div>
           </div>
         </div>
       </div>

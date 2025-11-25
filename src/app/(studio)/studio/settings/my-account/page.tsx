@@ -182,7 +182,8 @@ export default function MyAccountPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="h-full overflow-y-auto">
+      <div className="space-y-6">
       {/* Basic Info Card */}
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
         {/* Section Header */}
@@ -280,6 +281,7 @@ export default function MyAccountPage() {
           cancelText={t('settings.actions.cancel')}
           isLoading={isSaving}
         />
+      </div>
       </div>
     </div>
   );

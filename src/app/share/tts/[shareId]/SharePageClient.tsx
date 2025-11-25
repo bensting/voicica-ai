@@ -104,26 +104,19 @@ export default function SharePageClient({ record }: SharePageClientProps) {
       {/* Hidden audio element */}
       <audio ref={audioRef} src={record.audio_url} preload="metadata" />
 
-      <div className="max-w-2xl mx-auto px-4 py-8 md:py-16">
+      <div className="max-w-2xl mx-auto px-4 py-4 md:py-8">
         {/* Logo Header */}
-        <div className="text-center mb-8">
-          <Link href="/" className="inline-flex items-center gap-2">
-            <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-purple-700 rounded-xl flex items-center justify-center">
-              <svg
-                className="w-6 h-6 text-white"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"
-                />
-              </svg>
-            </div>
-            <span className="text-xl font-bold text-gray-900">AI Voice Labs</span>
+        <div className="text-center mb-4">
+          <Link href="/" className="inline-block hover:opacity-80 transition-opacity">
+            <Image
+              src="/logo/voice-labs-logo-dark.svg"
+              alt="AI Voice Labs"
+              width={160}
+              height={28}
+              priority
+              className="h-7 w-auto"
+              style={{ width: 'auto' }}
+            />
           </Link>
         </div>
 
@@ -211,32 +204,24 @@ export default function SharePageClient({ record }: SharePageClientProps) {
           </div>
         </div>
 
-        {/* CTA Section */}
-        <div className="mt-8 p-6 bg-gradient-to-r from-purple-50 to-pink-50 rounded-2xl border border-purple-100">
-          <div className="text-center">
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">
-              {t('share.ctaTitle')}
-            </h3>
-            <p className="text-gray-600 mb-4">
-              {t('share.ctaDescription')}
-            </p>
+        {/* CTA Section - Compact */}
+        <div className="mt-4 p-4 bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl border border-purple-100">
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex-1 min-w-0">
+              <h3 className="text-base font-semibold text-gray-900">
+                {t('share.ctaTitle')}
+              </h3>
+              <p className="text-sm text-gray-600 truncate">
+                {t('share.ctaDescription')}
+              </p>
+            </div>
             <Link
               href="/studio/tts"
-              className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-medium rounded-xl hover:from-purple-600 hover:to-pink-600 transition-colors"
+              className="flex-shrink-0 px-5 py-2.5 bg-gradient-to-r from-purple-500 to-pink-500 text-white text-sm font-medium rounded-xl hover:from-purple-600 hover:to-pink-600 transition-colors"
             >
               {t('share.tryNow')}
             </Link>
           </div>
-        </div>
-
-        {/* Footer */}
-        <div className="mt-8 text-center text-sm text-gray-500">
-          <p>
-            Powered by{' '}
-            <Link href="/" className="text-purple-600 hover:underline">
-              AI Voice Labs
-            </Link>
-          </p>
         </div>
       </div>
     </div>

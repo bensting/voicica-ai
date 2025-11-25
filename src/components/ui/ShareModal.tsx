@@ -5,18 +5,21 @@ import { createPortal } from 'react-dom';
 import { X, Copy, Check, Share2 } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 
+type ShareType = 'tts' | 'clone' | 'edit';
+
 interface ShareModalProps {
   isOpen: boolean;
   onClose: () => void;
   shareId: string;
   text: string;
+  type?: ShareType; // 分享类型，默认 tts
 }
 
 /**
  * 分享弹窗组件
  * 显示分享链接并提供复制功能
  */
-export default function ShareModal({ isOpen, onClose, shareId, text }: ShareModalProps) {
+export default function ShareModal({ isOpen, onClose, shareId, text, type = 'tts' }: ShareModalProps) {
   const { t } = useLanguage();
   const [copied, setCopied] = useState(false);
   const [shareUrl, setShareUrl] = useState('');
@@ -24,9 +27,9 @@ export default function ShareModal({ isOpen, onClose, shareId, text }: ShareModa
   // 生成分享链接
   useEffect(() => {
     if (typeof window !== 'undefined' && shareId) {
-      setShareUrl(`${window.location.origin}/share/${shareId}`);
+      setShareUrl(`${window.location.origin}/share/${type}/${shareId}`);
     }
-  }, [shareId]);
+  }, [shareId, type]);
 
   // 复制链接
   const handleCopy = async () => {

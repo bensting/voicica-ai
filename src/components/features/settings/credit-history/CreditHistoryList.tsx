@@ -25,16 +25,16 @@ export function CreditHistoryList({
   }
 
   return (
-    <div className="flex-1 overflow-y-auto">
+    <div className="flex-1 overflow-y-auto p-4">
       {/* 列表项 */}
-      <div className="divide-y divide-gray-100">
+      <div className="space-y-3">
         {items.map((item) => (
           <CreditHistoryItem key={item.id} item={item} />
         ))}
       </div>
 
       {/* 加载更多触发器 */}
-      <div ref={loadMoreRef} className="px-6 py-4 border-t border-gray-100">
+      <div ref={loadMoreRef} className="py-4 mt-2">
         {loadingMore ? (
           <div className="flex items-center justify-center gap-2 text-gray-500">
             <svg className="w-5 h-5 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">

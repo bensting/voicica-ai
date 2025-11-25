@@ -90,7 +90,13 @@
     "termsPrefix": "繼續即表示您同意我們的",
     "terms": "服務條款",
     "termsAnd": "和",
-    "privacy": "隱私政策"
+    "privacy": "隱私政策",
+    "webviewTitle": "請在瀏覽器中開啟",
+    "webviewDescription": "目前應用程式內建瀏覽器不支援第三方登入，請點擊下方按鈕在瀏覽器中開啟。",
+    "openInBrowser": "在瀏覽器中開啟",
+    "copyLink": "複製連結",
+    "linkCopied": "已複製",
+    "webviewHint": "如果按鈕無效，請複製連結後手動貼到瀏覽器"
   },
   "home": {
     "heroTitle": "一站式 AI 語音解決方案",

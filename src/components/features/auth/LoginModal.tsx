@@ -86,6 +86,31 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
     }
   };
 
+  // 在外部浏览器中打开
+  const handleOpenInBrowser = () => {
+    const currentUrl = window.location.href;
+    const ua = navigator.userAgent.toLowerCase();
+
+    // LINE 浏览器 - 使用特殊参数
+    if (ua.includes('line')) {
+      // 方法1: 添加 openExternalBrowser 参数
+      const separator = currentUrl.includes('?') ? '&' : '?';
+      window.location.href = `${currentUrl}${separator}openExternalBrowser=1`;
+      return;
+    }
+
+    // 其他应用 - 尝试使用 intent scheme (Android) 或直接打开
+    // Android Intent
+    if (/android/i.test(ua)) {
+      const intentUrl = `intent://${currentUrl.replace(/^https?:\/\//, '')}#Intent;scheme=https;end`;
+      window.location.href = intentUrl;
+      return;
+    }
+
+    // iOS Safari - 尝试 window.open
+    window.open(currentUrl, '_system');
+  };
+
   if (!isOpen) return null;
 
   const modalContent = (
@@ -150,18 +175,28 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
                 </div>
               </div>
 
+              {/* 主按钮：在浏览器中打开 */}
+              <button
+                onClick={handleOpenInBrowser}
+                className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors font-medium"
+              >
+                <ExternalLink className="w-5 h-5" />
+                {t('login.openInBrowser')}
+              </button>
+
+              {/* 备用：复制链接 */}
               <button
                 onClick={handleCopyLink}
-                className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors font-medium"
+                className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-sm"
               >
                 {copied ? (
                   <>
-                    <Check className="w-5 h-5" />
+                    <Check className="w-4 h-4" />
                     {t('login.linkCopied')}
                   </>
                 ) : (
                   <>
-                    <Copy className="w-5 h-5" />
+                    <Copy className="w-4 h-4" />
                     {t('login.copyLink')}
                   </>
                 )}

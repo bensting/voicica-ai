@@ -92,10 +92,11 @@
     "termsAnd": "和",
     "privacy": "隐私政策",
     "webviewTitle": "请在浏览器中打开",
-    "webviewDescription": "当前应用内浏览器不支持第三方登录，请复制链接后在 Safari、Chrome 等浏览器中打开。",
+    "webviewDescription": "当前应用内浏览器不支持第三方登录，请点击下方按钮在浏览器中打开。",
+    "openInBrowser": "在浏览器中打开",
     "copyLink": "复制链接",
     "linkCopied": "已复制",
-    "webviewHint": "复制后打开手机浏览器，粘贴链接即可登录"
+    "webviewHint": "如果按钮无效，请复制链接后手动粘贴到浏览器"
   },
   "home": {
     "heroTitle": "一站式 AI 语音解决方案",

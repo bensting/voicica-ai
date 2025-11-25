@@ -208,6 +208,8 @@
       "inactiveSection": "已取消/已過期",
       "emptyTitle": "暫無訂閱",
       "emptyDesc": "您還沒有任何訂閱記錄。",
+      "noActiveSubscriptions": "暫無生效中的訂閱",
+      "noInactiveSubscriptions": "暫無已取消或已過期的訂閱",
       "retry": "重試",
       "validUntil": "有效期至：",
       "daysLeft": "天後到期",

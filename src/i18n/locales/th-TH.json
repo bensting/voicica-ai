@@ -208,6 +208,8 @@
       "inactiveSection": "ยกเลิกแล้ว/หมดอายุ",
       "emptyTitle": "ไม่มีแพ็กเกจ",
       "emptyDesc": "คุณยังไม่มีแพ็กเกจใดๆ",
+      "noActiveSubscriptions": "ไม่มีแพ็กเกจที่ใช้งานอยู่",
+      "noInactiveSubscriptions": "ไม่มีแพ็กเกจที่ยกเลิกหรือหมดอายุ",
       "retry": "ลองใหม่",
       "validUntil": "ใช้ได้ถึง:",
       "daysLeft": "วันที่เหลือ",

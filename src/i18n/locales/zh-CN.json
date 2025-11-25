@@ -208,6 +208,8 @@
       "inactiveSection": "已取消/已过期",
       "emptyTitle": "暂无订阅",
       "emptyDesc": "您还没有任何订阅记录。",
+      "noActiveSubscriptions": "暂无生效中的订阅",
+      "noInactiveSubscriptions": "暂无已取消或已过期的订阅",
       "retry": "重试",
       "validUntil": "有效期至：",
       "daysLeft": "天后到期",

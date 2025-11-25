@@ -208,6 +208,8 @@
       "inactiveSection": "Cancelled/Expired",
       "emptyTitle": "No Subscriptions",
       "emptyDesc": "You don't have any subscriptions yet.",
+      "noActiveSubscriptions": "No active subscriptions",
+      "noInactiveSubscriptions": "No cancelled or expired subscriptions",
       "retry": "Retry",
       "validUntil": "Valid until:",
       "daysLeft": "days left",

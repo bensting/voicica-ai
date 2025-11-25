@@ -76,31 +76,31 @@ export default function CreditsUsageModal({ isOpen, onClose }: CreditsUsageModal
 
           {/* 积分规则表格 */}
           <div className="space-y-4">
-            {/* 表头 */}
-            <div className="flex justify-between text-sm text-gray-500 px-4">
+            {/* 表头 - 优化样式 */}
+            <div className="flex justify-between text-sm font-semibold text-gray-600 px-5 pb-2 border-b-2 border-gray-200">
               <span>{t('pricing.creditsUsageGuide.feature')}</span>
               <span>{t('pricing.creditsUsageGuide.creditsRequired')}</span>
             </div>
 
             {/* 规则列表 - 从配置读取 */}
             {categoryData && (
-              <div className="bg-gray-50 rounded-xl overflow-hidden">
-                {/* 分类标题 */}
-                <div className="p-4 font-medium text-gray-900 bg-gray-100">
+              <div className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm">
+                {/* 分类标题 - 增强样式 */}
+                <div className="px-5 py-3 font-semibold text-gray-900 bg-gradient-to-r from-gray-50 to-gray-100 border-b border-gray-200">
                   {categoryData.name}
                 </div>
-                {/* 功能列表 */}
-                <div className="divide-y divide-gray-200">
+                {/* 功能列表 - 添加悬停效果 */}
+                <div className="divide-y divide-gray-100">
                   {categoryData.features.map((feature, index) => (
-                    <div key={index} className="p-4">
-                      <div className="flex justify-between items-start">
-                        <span className="text-gray-700">{feature.name}</span>
-                        <span className="text-gray-900 font-medium shrink-0 ml-4">
+                    <div key={index} className="px-5 py-4 hover:bg-purple-50/30 transition-colors">
+                      <div className="flex justify-between items-start gap-4">
+                        <span className="text-gray-800 font-medium flex-1">{feature.name}</span>
+                        <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold bg-purple-100 text-purple-700 shrink-0">
                           {feature.cost}
                         </span>
                       </div>
                       {feature.description && (
-                        <p className="text-sm text-gray-500 mt-2">
+                        <p className="text-sm text-gray-500 mt-2.5 leading-relaxed">
                           {feature.description}
                         </p>
                       )}

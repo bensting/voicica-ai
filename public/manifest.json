@@ -1,8 +1,8 @@
 {
-  "name": "AI Voice Labs",
-  "short_name": "AI Voice Labs",
+  "name": "Voicica AI",
+  "short_name": "Voicica AI",
   "version": "0.1.1",
-  "description": "One Stop AI Voice Solution for Speech & Cloned Voice",
+  "description": "One Stop AI Solution for Video, Music, and Voiceover",
   "theme_color": "#9333ea",
   "background_color": "#ffffff",
   "display": "standalone",

@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "About Us - AI Voice Labs",
-  description: "Learn about AI Voice Labs - Your trusted platform for AI-powered voice generation and text-to-speech solutions.",
+  title: "About Us - Voicica AI",
+  description: "Learn about Voicica AI - Your trusted platform for AI-powered voice generation and text-to-speech solutions.",
 };
 
 export default function AboutPage() {
@@ -11,7 +11,7 @@ export default function AboutPage() {
     <div className="font-sans min-h-screen p-8 pb-20 sm:p-20">
       <main className="max-w-4xl mx-auto">
         <h1 className="text-3xl sm:text-4xl font-bold mb-8 text-center">
-          About AI Voice Labs
+          About Voicica AI
         </h1>
 
         <div className="space-y-8 text-sm sm:text-base leading-relaxed">
@@ -28,7 +28,7 @@ export default function AboutPage() {
               Our Mission
             </h2>
             <p className="text-gray-700 dark:text-gray-300">
-              At AI Voice Labs, we believe everyone deserves access to professional-quality voice synthesis. Our mission is to democratize AI voice technology, making it accessible, affordable, and easy to use for creators, businesses, and individuals worldwide.
+              At Voicica AI, we believe everyone deserves access to professional-quality voice synthesis. Our mission is to democratize AI voice technology, making it accessible, affordable, and easy to use for creators, businesses, and individuals worldwide.
             </p>
           </section>
 
@@ -68,7 +68,7 @@ export default function AboutPage() {
           {/* Why Choose Us */}
           <section>
             <h2 className="text-xl sm:text-2xl font-semibold mb-4">
-              Why Choose AI Voice Labs?
+              Why Choose Voicica AI?
             </h2>
             <ul className="space-y-3 text-gray-700 dark:text-gray-300">
               <li className="flex items-start gap-3">

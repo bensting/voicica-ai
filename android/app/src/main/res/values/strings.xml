@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Voicica AI</string>
+    <string name="title_activity_main">Voicica AI</string>
+    <string name="package_name">ai.voicica.app</string>
+    <string name="custom_url_scheme">ai.voicica.app</string>
+</resources>

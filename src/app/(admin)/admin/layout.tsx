@@ -4,9 +4,7 @@ import { ReactNode, useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
-
-// 管理员白名单（可以后续改为从配置读取）
-const ADMIN_EMAILS = ['admin@voicica.ai', 'bensting19@gmail.com'];
+import { ADMIN_EMAILS } from '@/config/admin';
 
 // 导航菜单配置
 const NAV_ITEMS = [

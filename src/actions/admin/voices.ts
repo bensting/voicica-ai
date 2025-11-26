@@ -12,9 +12,7 @@ import { getLocaleInfo } from '@/utils/localeMapper';
 import { synthesizeSpeech } from '@/lib/services/azure-tts';
 import { uploadAudio } from '@/lib/services/r2-storage';
 import { getSampleText } from '@/config/voiceSampleTexts';
-
-// 管理员白名单
-const ADMIN_EMAILS = ['admin@ai-voice-labs.com', 'bensting19@gmail.com'];
+import { ADMIN_EMAILS } from '@/config/admin';
 
 interface LocaleStats {
   locale: string;

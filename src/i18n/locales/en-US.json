@@ -1,6 +1,6 @@
 {
   "common": {
-    "brand": "AI Voice Labs",
+    "brand": "Voicica AI",
     "cancel": "Cancel",
     "close": "Close",
     "retry": "Retry",
@@ -31,8 +31,8 @@
     "generationHistory": "Generation History"
   },
   "pricing": {
-    "pageTitle": "Plans & Pricing of AI-Voice-Labs",
-    "pageSubtitle": "AI-Voice-Labs offers a variety of purchase plans to better meet your needs.",
+    "pageTitle": "Plans & Pricing of Voicica AI",
+    "pageSubtitle": "Voicica AI offers a variety of purchase plans to better meet your needs.",
     "loading": "Loading pricing plans...",
     "error": "Failed to load pricing plans. Please try again later.",
     "retry": "Retry",
@@ -43,7 +43,7 @@
     "creditsPerCycle": "credits per cycle",
     "creditsUsageRules": "Credits Usage Rules",
     "notes": "Notes:",
-    "creditsNote": "Credits can be used in all tools on AI Voice Labs.",
+    "creditsNote": "Credits can be used in all tools on Voicica AI.",
     "buyNow": "Buy Now",
     "tryItFree": "Try it Free",
     "processing": "Processing...",
@@ -80,7 +80,7 @@
     }
   },
   "login": {
-    "title": "AI Voice Labs",
+    "title": "Voicica AI",
     "welcome": "Welcome",
     "welcomeBack": "Welcome back",
     "signInWithGoogle": "Sign in with Google",
@@ -98,11 +98,11 @@
     "heroDescription": "Everything you need to create high-quality videos with music and voiceovers in one place. No technical skills required. Bring your best ideas to life in Voicica now.",
     "exploreVoices": "Explore Voices",
     "viewPricing": "View Pricing",
-    "whyChoose": "Why Choose AI Voice Labs?",
+    "whyChoose": "Why Choose Voicica AI?",
     "getStarted": "Get Started",
     "learnMore": "Learn More",
     "readyTitle": "Ready to Get Started?",
-    "readyDescription": "Join thousands of users creating amazing voice content with AI Voice Labs.",
+    "readyDescription": "Join thousands of users creating amazing voice content with Voicica AI.",
     "startCreating": "Start Creating Now"
   },
   "language": {
@@ -488,7 +488,7 @@
     }
   },
   "ttsSamples": {
-    "titlePrefix": "AI Voice Labs's",
+    "titlePrefix": "Voicica AI's",
     "titleHighlight": "Star Product",
     "titleSuffix": "You Can't Miss 👍"
   },
@@ -523,7 +523,7 @@
     "download": "Download Audio",
     "characters": "characters",
     "ctaTitle": "Create Your Own AI Voice",
-    "ctaDescription": "Convert text to natural-sounding speech with AI Voice Labs.",
+    "ctaDescription": "Convert text to natural-sounding speech with Voicica AI.",
     "tryNow": "Try Now"
   },
   "countries": {

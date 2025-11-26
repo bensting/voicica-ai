@@ -9,11 +9,9 @@ import { headers } from 'next/headers';
 import { auth as adminAuth } from '@/lib/firebase-admin';
 import prisma from '@/lib/prisma';
 import { getCurrentUser } from '@/lib/auth-firebase';
+import { ADMIN_EMAILS } from '@/config/admin';
 
 const execAsync = promisify(exec);
-
-// 管理员白名单
-const ADMIN_EMAILS = ['admin@ai-voice-labs.com', 'bensting19@gmail.com'];
 
 interface SyncResult {
   success: boolean;

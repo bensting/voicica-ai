@@ -1,6 +1,6 @@
 {
   "common": {
-    "brand": "AI 语音实验室",
+    "brand": "Voicica AI",
     "cancel": "取消",
     "close": "关闭",
     "retry": "重试",
@@ -31,8 +31,8 @@
     "generationHistory": "生成历史"
   },
   "pricing": {
-    "pageTitle": "AI Voice Labs 套餐与定价",
-    "pageSubtitle": "AI Voice Labs 提供多种购买方案，更好地满足您的需求。",
+    "pageTitle": "Voicica AI 套餐与定价",
+    "pageSubtitle": "Voicica AI 提供多种购买方案，更好地满足您的需求。",
     "loading": "正在加载价格方案...",
     "error": "加载价格方案失败，请稍后重试。",
     "retry": "重试",
@@ -43,7 +43,7 @@
     "creditsPerCycle": "积分/周期",
     "creditsUsageRules": "积分使用规则",
     "notes": "提示：",
-    "creditsNote": "积分可用于 AI Voice Labs 上的所有工具。",
+    "creditsNote": "积分可用于 Voicica AI 上的所有工具。",
     "buyNow": "立即购买",
     "tryItFree": "免费试用",
     "processing": "处理中...",

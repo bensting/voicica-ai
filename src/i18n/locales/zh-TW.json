@@ -31,8 +31,8 @@
     "generationHistory": "生成歷史"
   },
   "pricing": {
-    "pageTitle": "AI-Voice-Labs 套餐與定價",
-    "pageSubtitle": "AI-Voice-Labs 提供多種購買方案，更好地滿足您的需求。",
+    "pageTitle": "Voicica AI 套餐與定價",
+    "pageSubtitle": "Voicica AI 提供多種購買方案，更好地滿足您的需求。",
     "loading": "正在載入價格方案...",
     "error": "載入價格方案失敗，請稍後重試。",
     "retry": "重試",
@@ -43,7 +43,7 @@
     "creditsPerCycle": "積分/週期",
     "creditsUsageRules": "積分使用規則",
     "notes": "提示：",
-    "creditsNote": "積分可用於 AI Voice Labs 上的所有工具。",
+    "creditsNote": "積分可用於 Voicica AI 上的所有工具。",
     "buyNow": "立即購買",
     "tryItFree": "免費試用",
     "processing": "處理中...",
@@ -80,7 +80,7 @@
     }
   },
   "login": {
-    "title": "AI 語音實驗室",
+    "title": "Voicica AI",
     "welcome": "歡迎",
     "welcomeBack": "歡迎回來",
     "signInWithGoogle": "使用 Google 登入",
@@ -104,11 +104,11 @@
     "heroDescription": "在一個平台上擁有創建高品質影片、音樂和配音所需的一切。無需技術技能。立即在 Voicica 中將您的最佳創意變為現實。",
     "exploreVoices": "探索語音",
     "viewPricing": "查看定價",
-    "whyChoose": "為什麼選擇 AI 語音實驗室？",
+    "whyChoose": "為什麼選擇 Voicica AI？",
     "getStarted": "開始使用",
     "learnMore": "了解更多",
     "readyTitle": "準備好開始了嗎？",
-    "readyDescription": "加入成千上萬的用戶，使用 AI 語音實驗室創建精彩的語音內容。",
+    "readyDescription": "加入成千上萬的用戶，使用 Voicica AI 創建精彩的語音內容。",
     "startCreating": "立即開始創建"
   },
   "language": {
@@ -474,7 +474,7 @@
     }
   },
   "ttsSamples": {
-    "titlePrefix": "Voice-Labs.AI 的",
+    "titlePrefix": "Voicica AI 的",
     "titleHighlight": "明星產品",
     "titleSuffix": "不容錯過 👍"
   },
@@ -509,7 +509,7 @@
     "download": "下載音訊",
     "characters": "個字元",
     "ctaTitle": "創建您自己的 AI 語音",
-    "ctaDescription": "使用 AI Voice Labs 將文字轉換為自然流暢的語音。",
+    "ctaDescription": "使用 Voicica AI 將文字轉換為自然流暢的語音。",
     "tryNow": "立即試用"
   },
   "countries": {

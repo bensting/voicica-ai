@@ -5,7 +5,7 @@ import { TTSProductInfo, TTSDemoPanel } from './components';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 /**
- * TTS Samples Section - AI Voice Labs Style
+ * TTS Samples Section - Voicica AI Style
  *
  * 展示 TTS 功能，采用深色主题设计：
  * - 左侧：产品介绍、功能列表、CTA 按钮

@@ -100,7 +100,7 @@ export async function synthesizeSpeech(request: TtsRequest): Promise<TtsResult> 
       'Content-Type': 'application/ssml+xml',
       // 使用 48kHz 192kbps MP3 格式，更高质量，iOS/Android 完美兼容
       'X-Microsoft-OutputFormat': 'audio-48khz-192kbitrate-mono-mp3',
-      'User-Agent': 'ai-voice-labs',
+      'User-Agent': 'voicica-ai',
     },
     body: ssml,
   });

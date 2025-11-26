@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Terms and Conditions - AI Voice Labs",
-  description: "AI Voice Labs Terms and Conditions",
+  title: "Terms and Conditions - Voicica AI",
+  description: "Voicica AI Terms and Conditions",
 };
 
 export default function TermsAndConditions() {
@@ -20,7 +20,7 @@ export default function TermsAndConditions() {
               Last Updated: {new Date().toLocaleDateString("en-US")}
             </p>
             <p>
-              Welcome to AI Voice Labs. By accessing or using our services, you agree to be bound by these Terms and Conditions. Please read them carefully before using our platform.
+              Welcome to Voicica AI. By accessing or using our services, you agree to be bound by these Terms and Conditions. Please read them carefully before using our platform.
             </p>
           </section>
 
@@ -29,7 +29,7 @@ export default function TermsAndConditions() {
               1. Acceptance of Terms
             </h2>
             <p>
-              By creating an account, accessing, or using AI Voice Labs services, you acknowledge that you have read, understood, and agree to be bound by these Terms and Conditions and our Privacy Policy. If you do not agree to these terms, you may not use our services.
+              By creating an account, accessing, or using Voicica AI services, you acknowledge that you have read, understood, and agree to be bound by these Terms and Conditions and our Privacy Policy. If you do not agree to these terms, you may not use our services.
             </p>
           </section>
 
@@ -38,7 +38,7 @@ export default function TermsAndConditions() {
               2. Service Description
             </h2>
             <p className="mb-3">
-              AI Voice Labs provides AI-powered voice generation services. Our services include but are not limited to:
+              Voicica AI provides AI-powered voice generation services. Our services include but are not limited to:
             </p>
             <ul className="list-disc list-inside space-y-2 ml-4">
               <li>Text-to-speech conversion using AI technology</li>
@@ -131,7 +131,7 @@ export default function TermsAndConditions() {
               7. Intellectual Property Rights
             </h2>
             <p className="mb-3">
-              <strong>Our Rights:</strong> All content, features, and functionality of AI Voice Labs, including but not limited to software, text, graphics, logos, and audio, are owned by AI Voice Labs or our licensors and are protected by copyright, trademark, and other intellectual property laws.
+              <strong>Our Rights:</strong> All content, features, and functionality of Voicica AI, including but not limited to software, text, graphics, logos, and audio, are owned by Voicica AI or our licensors and are protected by copyright, trademark, and other intellectual property laws.
             </p>
             <p className="mb-3">
               <strong>Your Rights:</strong> You retain ownership of the content you input into our services. By using our services, you grant us a limited license to process your content solely for the purpose of providing our services.
@@ -169,7 +169,7 @@ export default function TermsAndConditions() {
               10. Limitation of Liability
             </h2>
             <p className="mb-3">
-              To the maximum extent permitted by law, AI Voice Labs and its affiliates, officers, employees, agents, and licensors shall not be liable for:
+              To the maximum extent permitted by law, Voicica AI and its affiliates, officers, employees, agents, and licensors shall not be liable for:
             </p>
             <ul className="list-disc list-inside space-y-2 ml-4">
               <li>Any indirect, incidental, special, consequential, or punitive damages</li>
@@ -197,7 +197,7 @@ export default function TermsAndConditions() {
               12. Indemnification
             </h2>
             <p>
-              You agree to indemnify, defend, and hold harmless AI Voice Labs and its affiliates, officers, employees, agents, and licensors from any claims, liabilities, damages, losses, and expenses, including reasonable attorneys&apos; fees, arising out of or in any way connected with your access to or use of our services, your violation of these Terms, or your infringement of any rights of another party.
+              You agree to indemnify, defend, and hold harmless Voicica AI and its affiliates, officers, employees, agents, and licensors from any claims, liabilities, damages, losses, and expenses, including reasonable attorneys&apos; fees, arising out of or in any way connected with your access to or use of our services, your violation of these Terms, or your infringement of any rights of another party.
             </p>
           </section>
 
@@ -255,7 +255,7 @@ export default function TermsAndConditions() {
               17. Entire Agreement
             </h2>
             <p>
-              These Terms, together with our Privacy Policy and any other legal notices published by us on our services, constitute the entire agreement between you and AI Voice Labs concerning our services.
+              These Terms, together with our Privacy Policy and any other legal notices published by us on our services, constitute the entire agreement between you and Voicica AI concerning our services.
             </p>
           </section>
 
@@ -267,7 +267,7 @@ export default function TermsAndConditions() {
               If you have any questions, comments, or concerns regarding these Terms, please contact us:
             </p>
             <ul className="list-none space-y-2 ml-4">
-              <li>Email: support@ai-voice-labs.com</li>
+              <li>Email: support@voicica.ai</li>
               <li>Address: 30 N Gould St, STE R, Sheridan, WY 82801, USA</li>
             </ul>
           </section>

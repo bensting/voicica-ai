@@ -4,15 +4,13 @@
  * 语音管理 Server Actions
  * 从 Azure TTS API 获取语音列表，同步到数据库
  */
-import { headers } from 'next/headers';
-import { auth as adminAuth } from '@/lib/firebase-admin';
 import prisma from '@/lib/prisma';
 import { Prisma } from '@prisma/client';
 import { getLocaleInfo } from '@/utils/localeMapper';
 import { synthesizeSpeech } from '@/lib/services/azure-tts';
 import { uploadAudio } from '@/lib/services/r2-storage';
 import { getSampleText } from '@/config/voiceSampleTexts';
-import { ADMIN_EMAILS } from '@/config/admin';
+import { verifyAdminWithoutDb } from '@/lib/auth-admin';
 
 interface LocaleStats {
   locale: string;
@@ -48,31 +46,6 @@ interface AzureVoice {
   VoiceType: string;
   Status: string;
   WordsPerMinute?: string;
-}
-
-/**
- * 验证管理员权限（不查询数据库）
- */
-async function verifyAdminWithoutDb(): Promise<void> {
-  const headersList = await headers();
-  const authHeader = headersList.get('authorization');
-
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    throw new Error('未登录');
-  }
-
-  const token = authHeader.substring(7);
-
-  try {
-    const decodedToken = await adminAuth.verifyIdToken(token);
-
-    if (!decodedToken.email || !ADMIN_EMAILS.includes(decodedToken.email)) {
-      throw new Error('无权限访问');
-    }
-  } catch (error) {
-    console.error('❌ [Admin] 验证失败:', error);
-    throw new Error('验证失败');
-  }
 }
 
 /**

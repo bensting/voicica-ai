@@ -2,7 +2,7 @@ import { Inngest } from 'inngest';
 
 // Create Inngest client
 export const inngest = new Inngest({
-  id: 'ai-voice-labs',
+  id: 'voicica-ai',
   // Event key for sending events (required in production)
   eventKey: process.env.INNGEST_EVENT_KEY,
   // Optional: Add event schemas for type safety

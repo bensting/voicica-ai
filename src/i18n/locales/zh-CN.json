@@ -1,6 +1,6 @@
 {
   "common": {
-    "brand": "AI 语音实验室",
+    "brand": "Voicica AI",
     "cancel": "取消",
     "close": "关闭",
     "retry": "重试",
@@ -31,8 +31,8 @@
     "generationHistory": "生成历史"
   },
   "pricing": {
-    "pageTitle": "AI Voice Labs 套餐与定价",
-    "pageSubtitle": "AI Voice Labs 提供多种购买方案，更好地满足您的需求。",
+    "pageTitle": "Voicica AI 套餐与定价",
+    "pageSubtitle": "Voicica AI 提供多种购买方案，更好地满足您的需求。",
     "loading": "正在加载价格方案...",
     "error": "加载价格方案失败，请稍后重试。",
     "retry": "重试",
@@ -43,7 +43,7 @@
     "creditsPerCycle": "积分/周期",
     "creditsUsageRules": "积分使用规则",
     "notes": "提示：",
-    "creditsNote": "积分可用于 AI Voice Labs 上的所有工具。",
+    "creditsNote": "积分可用于 Voicica AI 上的所有工具。",
     "buyNow": "立即购买",
     "tryItFree": "免费试用",
     "processing": "处理中...",
@@ -80,7 +80,7 @@
     }
   },
   "login": {
-    "title": "AI 语音实验室",
+    "title": "Voicica AI",
     "welcome": "欢迎",
     "welcomeBack": "欢迎回来",
     "signInWithGoogle": "使用 Google 登录",
@@ -99,16 +99,16 @@
     "webviewHint": "如果按钮无效，请复制链接后手动粘贴到浏览器"
   },
   "home": {
-    "heroTitle": "一站式 AI 语音解决方案",
-    "heroTitleHighlight": "语音合成与语音克隆",
-    "heroDescription": "在一个平台上拥有创建高质量配音视频所需的一切。无需技术技能。立即在 Voice-Labs.AI 中将您的最佳创意变为现实。",
+    "heroTitle": "一站式 AI 解决方案",
+    "heroTitleHighlight": "视频、音乐和配音",
+    "heroDescription": "在一个平台上拥有创建高质量视频、音乐和配音所需的一切。无需技术技能。立即在 Voicica 中将您的最佳创意变为现实。",
     "exploreVoices": "探索语音",
     "viewPricing": "查看定价",
-    "whyChoose": "为什么选择 AI 语音实验室？",
+    "whyChoose": "为什么选择 Voicica AI？",
     "getStarted": "开始使用",
     "learnMore": "了解更多",
     "readyTitle": "准备好开始了吗？",
-    "readyDescription": "加入成千上万的用户，使用 AI 语音实验室创建精彩的语音内容。",
+    "readyDescription": "加入成千上万的用户，使用 Voicica AI 创建精彩的语音内容。",
     "startCreating": "立即开始创建"
   },
   "language": {
@@ -494,7 +494,7 @@
     }
   },
   "ttsSamples": {
-    "titlePrefix": "AI Voice Labs 的",
+    "titlePrefix": "Voicica AI 的",
     "titleHighlight": "明星产品",
     "titleSuffix": "不容错过 👍"
   },
@@ -529,7 +529,7 @@
     "download": "下载音频",
     "characters": "个字符",
     "ctaTitle": "创建您自己的 AI 语音",
-    "ctaDescription": "使用 AI Voice Labs 将文字转换为自然流畅的语音。",
+    "ctaDescription": "使用 Voicica AI 将文字转换为自然流畅的语音。",
     "tryNow": "立即试用"
   },
   "countries": {

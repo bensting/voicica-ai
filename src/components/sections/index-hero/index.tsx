@@ -27,7 +27,7 @@ interface HeroProps {
  * 带视频/图片背景的大型 Hero 区域，支持多个 CTA 按钮
  */
 export default function Hero({
-  brandName = 'AI Voice Labs',
+  brandName = 'Voicica',
   title,
   highlight,
   description,
@@ -98,7 +98,7 @@ export default function Hero({
             {brandName}{''}
             <span className="inline-flex items-center">
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">
-                .com
+                .AI
               </span>
               <sup className="text-xs text-white/70 ml-1">®</sup>
             </span>

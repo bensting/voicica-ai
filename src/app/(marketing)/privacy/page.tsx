@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Privacy Policy - AI Voices Labs",
-  description: "AI Voices Labs Privacy Policy",
+  title: "Privacy Policy - Voicica AI",
+  description: "Voicica AI Privacy Policy",
 };
 
 export default function PrivacyPolicy() {
@@ -20,7 +20,7 @@ export default function PrivacyPolicy() {
               Last Updated: {new Date().toLocaleDateString("en-US")}
             </p>
             <p>
-              Welcome to AI Voices Labs. We take your privacy seriously. This Privacy Policy explains how we collect, use, store, and protect your personal information.
+              Welcome to Voicica AI. We take your privacy seriously. This Privacy Policy explains how we collect, use, store, and protect your personal information.
             </p>
           </section>
 
@@ -123,10 +123,10 @@ export default function PrivacyPolicy() {
             <p className="mb-3">
               If you wish to delete your account and associated data, please send an email to{" "}
               <a
-                href="mailto:support@ai-voice-labs.com"
+                href="mailto:support@voicica.ai"
                 className="text-blue-600 dark:text-blue-400 hover:underline"
               >
-                support@ai-voice-labs.com
+                support@voicica.ai
               </a>
               {" "}with your account deletion request. We will process your request within 7 business days.
             </p>
@@ -170,7 +170,7 @@ export default function PrivacyPolicy() {
               If you have any questions, comments, or requests regarding this Privacy Policy, please contact us:
             </p>
             <ul className="list-none space-y-2 ml-4">
-              <li>Email: privacy@ai-voice-labs.com</li>
+              <li>Email: privacy@voicica.ai</li>
               <li>Address: 30 N Gould St, STE R, Sheridan, WY 82801, USA</li>
             </ul>
           </section>

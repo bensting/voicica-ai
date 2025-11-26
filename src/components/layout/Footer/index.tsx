@@ -34,7 +34,7 @@ export default function Footer() {
         {/* Copyright */}
         <div className="mt-12 pt-8 border-t border-gray-800 text-center text-sm text-gray-500">
           <p>
-            &copy; {new Date().getFullYear()} AI-Voice-Labs.com. All rights reserved.
+            &copy; {new Date().getFullYear()} Voicica.AI | All rights reserved.
           </p>
           {process.env.NEXT_PUBLIC_APP_VERSION && (
             <p className="mt-2 text-xs text-gray-600">

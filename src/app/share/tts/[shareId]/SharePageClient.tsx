@@ -110,7 +110,7 @@ export default function SharePageClient({ record }: SharePageClientProps) {
           <Link href="/" className="inline-block hover:opacity-80 transition-opacity">
             <Image
               src="/logo/voice-labs-logo-dark.svg"
-              alt="AI Voice Labs"
+              alt="Voicica AI"
               width={160}
               height={28}
               priority

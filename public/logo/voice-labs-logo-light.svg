@@ -39,5 +39,5 @@
 
   <!-- 品牌文字 - Voicica.AI -->
   <text x="38" y="29" font-family="Poppins, sans-serif" font-weight="700" font-size="24" fill="url(#brandGradient)">Voicica</text>
-  <text x="126" y="29" font-family="Poppins, sans-serif" font-weight="700" font-size="24" fill="url(#aiGradient)">.AI</text>
+  <text x="122" y="29" font-family="Poppins, sans-serif" font-weight="700" font-size="24" fill="url(#aiGradient)">.AI</text>
 </svg>

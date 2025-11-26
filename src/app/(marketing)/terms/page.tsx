@@ -267,7 +267,7 @@ export default function TermsAndConditions() {
               If you have any questions, comments, or concerns regarding these Terms, please contact us:
             </p>
             <ul className="list-none space-y-2 ml-4">
-              <li>Email: support@ai-voice-labs.com</li>
+              <li>Email: support@voicica.ai</li>
               <li>Address: 30 N Gould St, STE R, Sheridan, WY 82801, USA</li>
             </ul>
           </section>

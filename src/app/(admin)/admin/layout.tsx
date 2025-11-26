@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 
 // 管理员白名单（可以后续改为从配置读取）
-const ADMIN_EMAILS = ['admin@ai-voice-labs.com', 'bensting19@gmail.com'];
+const ADMIN_EMAILS = ['admin@voicica.ai', 'bensting19@gmail.com'];
 
 // 导航菜单配置
 const NAV_ITEMS = [

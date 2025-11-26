@@ -71,10 +71,10 @@ export default function RefundPolicy() {
               <li>
                 Send an email to{" "}
                 <a
-                  href="mailto:support@ai-voice-labs.com"
+                  href="mailto:support@voicica.ai"
                   className="text-blue-600 dark:text-blue-400 hover:underline"
                 >
-                  support@ai-voice-labs.com
+                  support@voicica.ai
                 </a>
               </li>
               <li>Include your account email address and order/transaction ID</li>
@@ -206,10 +206,10 @@ export default function RefundPolicy() {
             <p className="mt-3">
               Please contact our support team at{" "}
               <a
-                href="mailto:support@ai-voice-labs.com"
+                href="mailto:support@voicica.ai"
                 className="text-blue-600 dark:text-blue-400 hover:underline"
               >
-                support@ai-voice-labs.com
+                support@voicica.ai
               </a>
               {" "}to discuss such situations.
             </p>
@@ -259,13 +259,13 @@ export default function RefundPolicy() {
               <li>
                 Email:{" "}
                 <a
-                  href="mailto:support@ai-voice-labs.com"
+                  href="mailto:support@voicica.ai"
                   className="text-blue-600 dark:text-blue-400 hover:underline"
                 >
-                  support@ai-voice-labs.com
+                  support@voicica.ai
                 </a>
               </li>
-              <li>Billing Email: billing@ai-voice-labs.com</li>
+              <li>Billing Email: billing@voicica.ai</li>
               <li>Address: 30 N Gould St, STE R, Sheridan, WY 82801, USA</li>
             </ul>
             <p className="mt-4 text-sm text-gray-600 dark:text-gray-400">

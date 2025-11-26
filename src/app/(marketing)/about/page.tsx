@@ -18,7 +18,7 @@ export default function AboutPage() {
           {/* Introduction */}
           <section>
             <p className="text-lg text-gray-700 dark:text-gray-300 mb-6">
-              Welcome to <strong>ai-voice-labs.com</strong> — your premier destination for cutting-edge AI voice generation technology.
+              Welcome to <strong>voicica.ai</strong> — your premier destination for cutting-edge AI voice generation technology.
             </p>
           </section>
 
@@ -119,19 +119,19 @@ export default function AboutPage() {
               <li>
                 <strong>Email:</strong>{" "}
                 <a
-                  href="mailto:support@ai-voice-labs.com"
+                  href="mailto:support@voicica.ai"
                   className="text-purple-600 dark:text-purple-400 hover:underline"
                 >
-                  support@ai-voice-labs.com
+                  support@voicica.ai
                 </a>
               </li>
               <li>
                 <strong>Website:</strong>{" "}
                 <a
-                  href="https://ai-voice-labs.com"
+                  href="https://voicica.ai"
                   className="text-purple-600 dark:text-purple-400 hover:underline"
                 >
-                  ai-voice-labs.com
+                  voicica.ai
                 </a>
               </li>
             </ul>

@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Refund Policy - AI Voice Labs",
-  description: "AI Voice Labs Refund Policy",
+  title: "Refund Policy - Voicica AI",
+  description: "Voicica AI Refund Policy",
 };
 
 export default function RefundPolicy() {
@@ -20,7 +20,7 @@ export default function RefundPolicy() {
               Last Updated: {new Date().toLocaleDateString("en-US")}
             </p>
             <p>
-              At AI Voice Labs, we strive to provide excellent service and customer satisfaction. This Refund Policy explains our policies regarding refunds, cancellations, and subscription management.
+              At Voicica AI, we strive to provide excellent service and customer satisfaction. This Refund Policy explains our policies regarding refunds, cancellations, and subscription management.
             </p>
           </section>
 
@@ -29,7 +29,7 @@ export default function RefundPolicy() {
               1. Subscription Overview
             </h2>
             <p className="mb-3">
-              AI Voice Labs offers various subscription plans with different features and pricing:
+              Voicica AI offers various subscription plans with different features and pricing:
             </p>
             <ul className="list-disc list-inside space-y-2 ml-4">
               <li>

@@ -6,7 +6,7 @@ export default function Logo() {
     <Link href="/" className="flex items-center hover:opacity-80 transition-opacity">
       <Image
         src="/logo/voice-labs-logo-dark.svg"
-        alt="AI-Voice-Labs.com"
+        alt="Voicica.AI"
         width={200}
         height={32}
         priority

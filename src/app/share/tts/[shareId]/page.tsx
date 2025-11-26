@@ -18,7 +18,7 @@ export async function generateMetadata({ params }: SharePageProps): Promise<Meta
 
   if (!record) {
     return {
-      title: 'Content Not Found - AI Voice Labs',
+      title: 'Content Not Found - Voicica AI',
     };
   }
 

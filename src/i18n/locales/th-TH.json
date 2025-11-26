@@ -31,8 +31,8 @@
     "generationHistory": "ประวัติการสร้าง"
   },
   "pricing": {
-    "pageTitle": "แผนและราคาของ AI Voice Labs",
-    "pageSubtitle": "AI Voice Labs มีแผนการซื้อหลากหลายเพื่อตอบสนองความต้องการของคุณได้ดียิ่งขึ้น",
+    "pageTitle": "แผนและราคาของ Voicica AI",
+    "pageSubtitle": "Voicica AI มีแผนการซื้อหลากหลายเพื่อตอบสนองความต้องการของคุณได้ดียิ่งขึ้น",
     "loading": "กำลังโหลดแผนราคา...",
     "error": "โหลดแผนราคาไม่สำเร็จ กรุณาลองใหม่อีกครั้ง",
     "retry": "ลองอีกครั้ง",
@@ -43,7 +43,7 @@
     "creditsPerCycle": "เครดิตต่อรอบ",
     "creditsUsageRules": "กฎการใช้เครดิต",
     "notes": "หมายเหตุ:",
-    "creditsNote": "เครดิตสามารถใช้ได้กับทุกเครื่องมือบน AI Voice Labs",
+    "creditsNote": "เครดิตสามารถใช้ได้กับทุกเครื่องมือบน Voicica AI",
     "buyNow": "ซื้อเลย",
     "tryItFree": "ทดลองใช้ฟรี",
     "processing": "กำลังดำเนินการ...",
@@ -80,7 +80,7 @@
     }
   },
   "login": {
-    "title": "AI Voice Labs",
+    "title": "Voicica AI",
     "welcome": "ยินดีต้อนรับ",
     "welcomeBack": "ยินดีต้อนรับกลับมา",
     "signInWithGoogle": "เข้าสู่ระบบด้วย Google",
@@ -98,11 +98,11 @@
     "heroDescription": "ทุกสิ่งที่คุณต้องการในการสร้างวิดีโอคุณภาพสูงพร้อมเพลงและพากย์เสียงในที่เดียว ไม่ต้องมีทักษะทางเทคนิค นำความคิดที่ดีที่สุดของคุณมาสู่ชีวิตใน Voicica ตอนนี้",
     "exploreVoices": "สำรวจเสียง",
     "viewPricing": "ดูแผนราคา",
-    "whyChoose": "ทำไมต้องเลือก AI Voice Labs?",
+    "whyChoose": "ทำไมต้องเลือก Voicica AI?",
     "getStarted": "เริ่มต้นใช้งาน",
     "learnMore": "เรียนรู้เพิ่มเติม",
     "readyTitle": "พร้อมที่จะเริ่มต้นหรือยัง?",
-    "readyDescription": "เข้าร่วมกับผู้ใช้หลายพันคนที่สร้างเนื้อหาเสียงที่น่าทึ่งด้วย AI Voice Labs",
+    "readyDescription": "เข้าร่วมกับผู้ใช้หลายพันคนที่สร้างเนื้อหาเสียงที่น่าทึ่งด้วย Voicica AI",
     "startCreating": "เริ่มสร้างตอนนี้"
   },
   "language": {
@@ -488,7 +488,7 @@
     }
   },
   "ttsSamples": {
-    "titlePrefix": "AI Voice Labs",
+    "titlePrefix": "Voicica AI",
     "titleHighlight": "ผลิตภัณฑ์ยอดนิยม",
     "titleSuffix": "ที่คุณไม่ควรพลาด 👍"
   },
@@ -523,7 +523,7 @@
     "download": "ดาวน์โหลดเสียง",
     "characters": "ตัวอักษร",
     "ctaTitle": "สร้างเสียง AI ของคุณเอง",
-    "ctaDescription": "แปลงข้อความเป็นเสียงพูดที่เป็นธรรมชาติด้วย AI Voice Labs",
+    "ctaDescription": "แปลงข้อความเป็นเสียงพูดที่เป็นธรรมชาติด้วย Voicica AI",
     "tryNow": "ลองเลย"
   },
   "countries": {

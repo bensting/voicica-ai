@@ -80,7 +80,7 @@
     }
   },
   "login": {
-    "title": "AI 语音实验室",
+    "title": "Voicica AI",
     "welcome": "欢迎",
     "welcomeBack": "欢迎回来",
     "signInWithGoogle": "使用 Google 登录",
@@ -104,11 +104,11 @@
     "heroDescription": "在一个平台上拥有创建高质量视频、音乐和配音所需的一切。无需技术技能。立即在 Voicica 中将您的最佳创意变为现实。",
     "exploreVoices": "探索语音",
     "viewPricing": "查看定价",
-    "whyChoose": "为什么选择 AI 语音实验室？",
+    "whyChoose": "为什么选择 Voicica AI？",
     "getStarted": "开始使用",
     "learnMore": "了解更多",
     "readyTitle": "准备好开始了吗？",
-    "readyDescription": "加入成千上万的用户，使用 AI 语音实验室创建精彩的语音内容。",
+    "readyDescription": "加入成千上万的用户，使用 Voicica AI 创建精彩的语音内容。",
     "startCreating": "立即开始创建"
   },
   "language": {
@@ -494,7 +494,7 @@
     }
   },
   "ttsSamples": {
-    "titlePrefix": "AI Voice Labs 的",
+    "titlePrefix": "Voicica AI 的",
     "titleHighlight": "明星产品",
     "titleSuffix": "不容错过 👍"
   },
@@ -529,7 +529,7 @@
     "download": "下载音频",
     "characters": "个字符",
     "ctaTitle": "创建您自己的 AI 语音",
-    "ctaDescription": "使用 AI Voice Labs 将文字转换为自然流畅的语音。",
+    "ctaDescription": "使用 Voicica AI 将文字转换为自然流畅的语音。",
     "tryNow": "立即试用"
   },
   "countries": {

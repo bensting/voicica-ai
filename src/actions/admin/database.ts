@@ -5,11 +5,8 @@
  */
 import { exec } from 'child_process';
 import { promisify } from 'util';
-import { headers } from 'next/headers';
-import { auth as adminAuth } from '@/lib/firebase-admin';
 import prisma from '@/lib/prisma';
-import { getCurrentUser } from '@/lib/auth-firebase';
-import { ADMIN_EMAILS } from '@/config/admin';
+import { verifyAdmin, verifyAdminWithoutDb } from '@/lib/auth-admin';
 
 const execAsync = promisify(exec);
 
@@ -29,44 +26,6 @@ interface TableStats {
   displayName: string;
   count: number;
   lastUpdated?: string;
-}
-
-/**
- * 验证管理员权限（不查询数据库，仅验证 Firebase token）
- * 用于数据库迁移等操作，此时数据库表可能还不存在
- */
-async function verifyAdminWithoutDb(): Promise<void> {
-  const headersList = await headers();
-  const authHeader = headersList.get('authorization');
-
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    throw new Error('未登录');
-  }
-
-  const token = authHeader.substring(7);
-
-  try {
-    const decodedToken = await adminAuth.verifyIdToken(token);
-
-    if (!decodedToken.email || !ADMIN_EMAILS.includes(decodedToken.email)) {
-      throw new Error('无权限访问');
-    }
-
-    console.log('✅ [Admin] 管理员验证通过:', decodedToken.email);
-  } catch (error) {
-    console.error('❌ [Admin] 验证失败:', error);
-    throw new Error('验证失败');
-  }
-}
-
-/**
- * 验证管理员权限（需要数据库）
- */
-async function verifyAdmin(): Promise<void> {
-  const user = await getCurrentUser();
-  if (!user.email || !ADMIN_EMAILS.includes(user.email)) {
-    throw new Error('无权限访问');
-  }
 }
 
 /**

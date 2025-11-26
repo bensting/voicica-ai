@@ -64,3 +64,11 @@ merge_to_main.bat
 # Windows special device files (should not be created as regular files)
 nul
 NUL
+
+# Capacitor native projects (build artifacts)
+/ios/App/App/public
+/ios/App/Pods
+/android/app/src/main/assets/public
+/android/.gradle
+/android/app/build
+/android/build

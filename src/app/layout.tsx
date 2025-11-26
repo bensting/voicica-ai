@@ -11,6 +11,7 @@ import InstallPrompt from "@/components/features/pwa/InstallPrompt";
 import PWAUpdatePrompt from "@/components/layout/PWAUpdatePrompt";
 import LanguageLoadingWrapper from "@/components/providers/LanguageLoadingWrapper";
 import DeviceFingerprintProvider from "@/components/providers/DeviceFingerprintProvider";
+import CapacitorProvider from "@/components/providers/CapacitorProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -66,6 +67,7 @@ export default function RootLayout({
                 <LanguageLoadingWrapper>
                   <AudioSettingsProvider>
                     <DeviceFingerprintProvider />
+                    <CapacitorProvider />
                     {children}
                     <InstallPrompt />
                     <PWAUpdatePrompt />

@@ -91,14 +91,27 @@ export default function TikTokDownloaderPage() {
               {t('tiktokDownloader.urlLabel')}
             </label>
             <div className="flex gap-2">
-              <input
-                type="text"
-                value={url}
-                onChange={(e) => setUrl(e.target.value)}
-                placeholder={t('tiktokDownloader.urlPlaceholder')}
-                className="flex-1 px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none text-sm"
-                disabled={loading}
-              />
+              <div className="relative flex-1">
+                <input
+                  type="text"
+                  value={url}
+                  onChange={(e) => setUrl(e.target.value)}
+                  placeholder={t('tiktokDownloader.urlPlaceholder')}
+                  className="w-full px-4 py-3 pr-10 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none text-sm"
+                  disabled={loading}
+                />
+                {url && !loading && (
+                  <button
+                    type="button"
+                    onClick={() => { setUrl(''); setVideoInfo(null); setError(null); }}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-gray-400 hover:text-gray-600 transition-colors"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                )}
+              </div>
               <button
                 onClick={handleParse}
                 disabled={loading || !url.trim()}
@@ -229,15 +242,28 @@ export default function TikTokDownloaderPage() {
               {t('tiktokDownloader.urlLabel')}
             </label>
             <div className="flex gap-3">
-              <input
-                type="text"
-                value={url}
-                onChange={(e) => setUrl(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && handleParse()}
-                placeholder={t('tiktokDownloader.urlPlaceholder')}
-                className="flex-1 px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none"
-                disabled={loading}
-              />
+              <div className="relative flex-1">
+                <input
+                  type="text"
+                  value={url}
+                  onChange={(e) => setUrl(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && handleParse()}
+                  placeholder={t('tiktokDownloader.urlPlaceholder')}
+                  className="w-full px-4 py-3 pr-10 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none"
+                  disabled={loading}
+                />
+                {url && !loading && (
+                  <button
+                    type="button"
+                    onClick={() => { setUrl(''); setVideoInfo(null); setError(null); }}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-gray-400 hover:text-gray-600 transition-colors"
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                )}
+              </div>
               <button
                 onClick={handleParse}
                 disabled={loading || !url.trim()}

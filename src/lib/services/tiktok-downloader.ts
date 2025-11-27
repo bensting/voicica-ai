@@ -5,8 +5,9 @@
  * 此文件仅保留客户端使用的工具函数
  */
 
-// 后端 API 地址（用于构建下载 URL）
-const API_BASE_URL = 'https://tools-api.voicica.ai';
+// 后端 API 地址（用于构建下载和代理 URL）
+// 从环境变量获取，支持本地开发和生产环境
+const API_BASE_URL = process.env.NEXT_PUBLIC_TOOLS_API_URL || 'https://tools-api.voicica.ai';
 
 /**
  * 获取代理下载 URL
@@ -39,6 +40,16 @@ export function getProxyDownloadUrl(
 export function getProxyStreamUrl(videoId: string, streamUrl: string): string {
   const encodedUrl = btoa(streamUrl);
   return `${API_BASE_URL}/api/v1/proxy/stream/${videoId}?url=${encodedUrl}`;
+}
+
+/**
+ * 获取代理缩略图 URL
+ * @param videoId 视频 ID
+ * @param thumbnailUrl 原始缩略图 URL
+ */
+export function getProxyThumbnailUrl(videoId: string, thumbnailUrl: string): string {
+  const encodedUrl = btoa(thumbnailUrl);
+  return `${API_BASE_URL}/api/v1/proxy/thumbnail/${videoId}?url=${encodedUrl}`;
 }
 
 /**

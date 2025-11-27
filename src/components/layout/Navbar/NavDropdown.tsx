@@ -64,8 +64,8 @@ export default function NavDropdown({ dropdown, mobile = false, onLinkClick }: N
                     className="flex items-start gap-3 py-2 text-gray-300 hover:text-purple-400 transition-colors"
                   >
                     {Icon && (
-                      <div className="flex-shrink-0 w-8 h-8 bg-gray-800 rounded-lg flex items-center justify-center">
-                        <Icon className="w-4 h-4" />
+                      <div className="flex-shrink-0 w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center">
+                        <Icon className="w-4 h-4 text-gray-700" />
                       </div>
                     )}
                     <div>
@@ -84,11 +84,13 @@ export default function NavDropdown({ dropdown, mobile = false, onLinkClick }: N
   }
 
   return (
-    <div ref={dropdownRef} className="relative">
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-1 text-white hover:text-purple-400 transition-colors font-medium"
-      >
+    <div
+      ref={dropdownRef}
+      className="relative"
+      onMouseEnter={() => setIsOpen(true)}
+      onMouseLeave={() => setIsOpen(false)}
+    >
+      <button className="flex items-center gap-1 text-white hover:text-purple-400 transition-colors font-medium">
         <span>{t(dropdown.labelKey)}</span>
         <svg
           className={`w-4 h-4 transition-transform ${isOpen ? 'rotate-180' : ''}`}
@@ -101,32 +103,34 @@ export default function NavDropdown({ dropdown, mobile = false, onLinkClick }: N
       </button>
 
       {isOpen && (
-        <div className="absolute top-full left-0 mt-2 p-2 bg-gray-900 rounded-xl shadow-xl border border-gray-800 min-w-[280px]">
-          {dropdown.items
-            .filter((item) => item.enabled !== false)
-            .map((item) => {
-              const Icon = item.icon;
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  onClick={handleLinkClick}
-                  className="flex items-start gap-3 px-3 py-3 rounded-lg text-gray-300 hover:text-white hover:bg-gray-800 transition-colors"
-                >
-                  {Icon && (
-                    <div className="flex-shrink-0 w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center">
-                      <Icon className="w-5 h-5" />
-                    </div>
-                  )}
-                  <div>
-                    <div className="font-medium">{t(item.labelKey)}</div>
-                    {item.descriptionKey && (
-                      <div className="text-sm text-gray-500">{t(item.descriptionKey)}</div>
+        <div className="absolute top-full left-0 pt-2">
+          <div className="p-2 bg-white rounded-xl shadow-xl border border-gray-100 min-w-[280px]">
+            {dropdown.items
+              .filter((item) => item.enabled !== false)
+              .map((item) => {
+                const Icon = item.icon;
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    onClick={handleLinkClick}
+                    className="flex items-start gap-3 px-3 py-3 rounded-lg text-gray-700 hover:text-gray-900 hover:bg-gray-50 transition-colors"
+                  >
+                    {Icon && (
+                      <div className="flex-shrink-0 w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
+                        <Icon className="w-5 h-5 text-gray-600" />
+                      </div>
                     )}
-                  </div>
-                </Link>
-              );
-            })}
+                    <div>
+                      <div className="font-medium">{t(item.labelKey)}</div>
+                      {item.descriptionKey && (
+                        <div className="text-sm text-gray-500">{t(item.descriptionKey)}</div>
+                      )}
+                    </div>
+                  </Link>
+                );
+              })}
+          </div>
         </div>
       )}
     </div>

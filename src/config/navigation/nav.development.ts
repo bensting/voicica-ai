@@ -29,6 +29,7 @@ export const navigationConfig: NavigationConfig = {
     {
       id: 'free-tools',
       labelKey: 'nav.freeTools',
+      insertAfter: '/studio/tts', // Insert after Studio link
       items: [
         {
           href: '/studio/tiktok-downloader',

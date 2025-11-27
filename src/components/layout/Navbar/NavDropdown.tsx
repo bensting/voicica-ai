@@ -38,7 +38,7 @@ export default function NavDropdown({ dropdown, mobile = false, onLinkClick }: N
       <div className="py-2">
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className="flex items-center justify-between w-full text-white hover:text-purple-400 transition-colors font-medium py-2"
+          className="flex items-center justify-between w-full text-gray-900 hover:text-purple-600 transition-colors font-medium py-2"
         >
           <span>{t(dropdown.labelKey)}</span>
           <svg
@@ -61,7 +61,7 @@ export default function NavDropdown({ dropdown, mobile = false, onLinkClick }: N
                     key={item.href}
                     href={item.href}
                     onClick={handleLinkClick}
-                    className="flex items-start gap-3 py-2 text-gray-300 hover:text-purple-400 transition-colors"
+                    className="flex items-start gap-3 py-2 text-gray-700 hover:text-purple-600 transition-colors"
                   >
                     {Icon && (
                       <div className="flex-shrink-0 w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center">

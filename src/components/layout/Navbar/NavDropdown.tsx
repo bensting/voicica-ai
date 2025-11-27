@@ -109,8 +109,8 @@ export default function NavDropdown({ dropdown, mobile = false, onLinkClick }: N
       />
 
       {isOpen && (
-        <div className="absolute top-full left-0 pt-2">
-          <div className="p-2 bg-white rounded-xl shadow-xl border border-gray-100 min-w-[280px]">
+        <div className="absolute top-full left-0">
+          <div className="p-3 bg-gray-100 shadow-xl border border-gray-200 border-t-0 min-w-[320px]">
             {dropdown.items
               .filter((item) => item.enabled !== false)
               .map((item) => {
@@ -120,10 +120,10 @@ export default function NavDropdown({ dropdown, mobile = false, onLinkClick }: N
                     key={item.href}
                     href={item.href}
                     onClick={handleLinkClick}
-                    className="flex items-start gap-3 px-3 py-3 rounded-lg text-gray-700 hover:text-gray-900 hover:bg-gray-50 transition-colors"
+                    className="flex items-start gap-3 px-4 py-3 text-gray-700 hover:text-gray-900 hover:bg-white transition-colors"
                   >
                     {Icon && (
-                      <div className="flex-shrink-0 w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
+                      <div className="flex-shrink-0 w-10 h-10 bg-white rounded-lg flex items-center justify-center">
                         <Icon className="w-5 h-5 text-gray-600" />
                       </div>
                     )}

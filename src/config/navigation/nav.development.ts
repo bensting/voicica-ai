@@ -2,6 +2,7 @@
  * Navigation configuration for development environment
  */
 
+import { Download } from 'lucide-react';
 import type { NavigationConfig } from './types';
 
 export const navigationConfig: NavigationConfig = {
@@ -32,6 +33,8 @@ export const navigationConfig: NavigationConfig = {
         {
           href: '/studio/tiktok-downloader',
           labelKey: 'nav.tiktokDownloader',
+          descriptionKey: 'nav.tiktokDownloaderDesc',
+          icon: Download,
         },
       ],
     },

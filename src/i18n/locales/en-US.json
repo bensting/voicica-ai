@@ -30,7 +30,8 @@
     "faq": "FAQ",
     "generationHistory": "Generation History",
     "freeTools": "Free Tools",
-    "tiktokDownloader": "TikTok Downloader"
+    "tiktokDownloader": "TikTok Downloader",
+    "tiktokDownloaderDesc": "Download TikTok videos without watermark"
   },
   "pricing": {
     "pageTitle": "Plans & Pricing of Voicica AI",

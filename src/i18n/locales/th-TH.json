@@ -30,7 +30,8 @@
     "faq": "คำถามที่พบบ่อย",
     "generationHistory": "ประวัติการสร้าง",
     "freeTools": "เครื่องมือฟรี",
-    "tiktokDownloader": "ดาวน์โหลด TikTok"
+    "tiktokDownloader": "ดาวน์โหลด TikTok",
+    "tiktokDownloaderDesc": "ดาวน์โหลดวิดีโอ TikTok โดยไม่มีลายน้ำ"
   },
   "pricing": {
     "pageTitle": "แผนและราคาของ Voicica AI",

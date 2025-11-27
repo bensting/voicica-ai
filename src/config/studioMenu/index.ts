@@ -23,6 +23,7 @@ export const studioMenuCategories: StudioMenuCategories = {
   video: studioMenuItems.filter(item => item.category === 'video' && (item.enabled !== false)),
   voiceover: studioMenuItems.filter(item => item.category === 'voiceover' && (item.enabled !== false)),
   music: studioMenuItems.filter(item => item.category === 'music' && (item.enabled !== false)),
+  tools: studioMenuItems.filter(item => item.category === 'tools' && (item.enabled !== false)),
   account: studioMenuItems.filter(item => item.category === 'account' && (item.enabled !== false)),
 };
 

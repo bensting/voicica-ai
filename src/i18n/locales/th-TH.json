@@ -28,7 +28,10 @@
     "studio": "สตูดิโอ",
     "pricing": "แผนราคา",
     "faq": "คำถามที่พบบ่อย",
-    "generationHistory": "ประวัติการสร้าง"
+    "generationHistory": "ประวัติการสร้าง",
+    "freeTools": "เครื่องมือฟรี",
+    "tiktokDownloader": "ดาวน์โหลด TikTok",
+    "tiktokDownloaderDesc": "ดาวน์โหลดวิดีโอ TikTok โดยไม่มีลายน้ำ"
   },
   "pricing": {
     "pageTitle": "แผนและราคาของ Voicica AI",
@@ -289,6 +292,7 @@
       "aiMusic": "เพลง AI",
       "aiCover": "คัฟเวอร์ AI",
       "musicTools": "เครื่องมือเพลง",
+      "tiktokDownloader": "ดาวน์โหลด TikTok",
       "account": "บัญชี"
     },
     "mobileNav": {
@@ -525,6 +529,49 @@
     "ctaTitle": "สร้างเสียง AI ของคุณเอง",
     "ctaDescription": "แปลงข้อความเป็นเสียงพูดที่เป็นธรรมชาติด้วย Voicica AI",
     "tryNow": "ลองเลย"
+  },
+  "tiktokDownloader": {
+    "title": "ดาวน์โหลดวิดีโอ TikTok",
+    "subtitle": "ดาวน์โหลดวิดีโอ TikTok คุณภาพสูงโดยไม่มีลายน้ำ",
+    "inputPlaceholder": "วางลิงก์วิดีโอ TikTok ที่นี่...",
+    "parse": "แยกวิเคราะห์",
+    "parsing": "กำลังแยกวิเคราะห์",
+    "doNotClose": "กรุณาอย่าปิดหน้านี้",
+    "download": "ดาวน์โหลด",
+    "downloading": "กำลังดาวน์โหลด...",
+    "preview": "ดูตัวอย่าง",
+    "videoInfo": "ข้อมูลวิดีโอ",
+    "author": "ผู้สร้าง",
+    "duration": "ความยาว",
+    "quality": "คุณภาพ",
+    "selectQuality": "เลือกคุณภาพ",
+    "fileSize": "ขนาดไฟล์",
+    "noWatermark": "ไม่มีลายน้ำ",
+    "withWatermark": "มีลายน้ำ",
+    "hdQuality": "คุณภาพ HD",
+    "sdQuality": "คุณภาพ SD",
+    "audioOnly": "เสียงเท่านั้น",
+    "errors": {
+      "invalidUrl": "กรุณากรอกลิงก์ TikTok ที่ถูกต้อง",
+      "parseFailed": "แยกวิเคราะห์วิดีโอไม่สำเร็จ กรุณาลองใหม่",
+      "downloadFailed": "ดาวน์โหลดไม่สำเร็จ กรุณาลองใหม่",
+      "networkError": "เครือข่ายขัดข้อง กรุณาตรวจสอบการเชื่อมต่อ",
+      "videoNotFound": "ไม่พบวิดีโอหรือวิดีโอถูกลบไปแล้ว",
+      "regionRestricted": "วิดีโอนี้ถูกจำกัดในภูมิภาคของคุณ"
+    },
+    "tips": {
+      "title": "วิธีใช้งาน",
+      "step1": "คัดลอกลิงก์วิดีโอ TikTok",
+      "step2": "วางลิงก์ในกล่องด้านบน",
+      "step3": "คลิก \"แยกวิเคราะห์\" และเลือกคุณภาพ",
+      "step4": "คลิก \"ดาวน์โหลด\" เพื่อบันทึกวิดีโอ"
+    },
+    "features": {
+      "fast": "ดาวน์โหลดเร็ว",
+      "free": "ฟรี 100%",
+      "noLogin": "ไม่ต้องเข้าสู่ระบบ",
+      "unlimited": "ไม่จำกัด"
+    }
   },
   "countries": {
     "CN": "จีน",

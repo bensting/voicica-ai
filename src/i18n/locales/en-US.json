@@ -28,7 +28,10 @@
     "studio": "Studio",
     "pricing": "Pricing",
     "faq": "FAQ",
-    "generationHistory": "Generation History"
+    "generationHistory": "Generation History",
+    "freeTools": "Free Tools",
+    "tiktokDownloader": "TikTok Downloader",
+    "tiktokDownloaderDesc": "Download TikTok videos without watermark"
   },
   "pricing": {
     "pageTitle": "Plans & Pricing of Voicica AI",
@@ -289,7 +292,8 @@
       "aiMusic": "AI Music",
       "aiCover": "AI Cover",
       "musicTools": "Music Tools",
-      "account": "Account"
+      "account": "Account",
+      "tiktokDownloader": "TikTok Downloader"
     },
     "mobileNav": {
       "tts": "TTS",
@@ -525,6 +529,25 @@
     "ctaTitle": "Create Your Own AI Voice",
     "ctaDescription": "Convert text to natural-sounding speech with Voicica AI.",
     "tryNow": "Try Now"
+  },
+  "tiktokDownloader": {
+    "title": "TikTok Video Downloader",
+    "subtitle": "Download TikTok videos without watermark for free",
+    "urlLabel": "TikTok Video URL",
+    "urlPlaceholder": "Paste TikTok video link here...",
+    "parseButton": "Parse",
+    "parsing": "Parsing",
+    "doNotClose": "Please do not close this page",
+    "downloadButton": "Download Video",
+    "selectQuality": "Select Quality",
+    "untitled": "Untitled Video",
+    "emptyTitle": "Download TikTok Videos",
+    "emptyDescription": "Paste a TikTok video URL above to start downloading. Supports all TikTok video formats.",
+    "errors": {
+      "emptyUrl": "Please enter a TikTok video URL",
+      "invalidUrl": "Invalid TikTok URL. Please enter a valid TikTok video link.",
+      "parseFailed": "Failed to parse video. Please check the URL and try again."
+    }
   },
   "countries": {
     "CN": "China",

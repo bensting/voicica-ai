@@ -28,7 +28,10 @@
     "studio": "工作室",
     "pricing": "定价",
     "faq": "常见问题",
-    "generationHistory": "生成历史"
+    "generationHistory": "生成历史",
+    "freeTools": "免费工具",
+    "tiktokDownloader": "TikTok 下载",
+    "tiktokDownloaderDesc": "下载无水印 TikTok 视频"
   },
   "pricing": {
     "pageTitle": "Voicica AI 套餐与定价",
@@ -379,7 +382,8 @@
       "aiMusic": "AI 音乐",
       "aiCover": "AI 翻唱",
       "musicTools": "音乐工具",
-      "account": "我的账户"
+      "account": "我的账户",
+      "tiktokDownloader": "TikTok 下载"
     },
     "mobileNav": {
       "tts": "文字转语音",
@@ -531,6 +535,25 @@
     "ctaTitle": "创建您自己的 AI 语音",
     "ctaDescription": "使用 Voicica AI 将文字转换为自然流畅的语音。",
     "tryNow": "立即试用"
+  },
+  "tiktokDownloader": {
+    "title": "TikTok 视频下载",
+    "subtitle": "免费下载无水印 TikTok 视频",
+    "urlLabel": "TikTok 视频链接",
+    "urlPlaceholder": "在此粘贴 TikTok 视频链接...",
+    "parseButton": "解析",
+    "parsing": "正在解析中",
+    "doNotClose": "请勿关闭页面",
+    "downloadButton": "下载视频",
+    "selectQuality": "选择画质",
+    "untitled": "无标题视频",
+    "emptyTitle": "下载 TikTok 视频",
+    "emptyDescription": "在上方粘贴 TikTok 视频链接即可开始下载，支持所有 TikTok 视频格式。",
+    "errors": {
+      "emptyUrl": "请输入 TikTok 视频链接",
+      "invalidUrl": "无效的 TikTok 链接，请输入正确的 TikTok 视频链接。",
+      "parseFailed": "解析视频失败，请检查链接后重试。"
+    }
   },
   "countries": {
     "CN": "中国",

@@ -4,4 +4,4 @@
 
 export * from './productType';
 export * from './currency';
-export * from './navigation';
+export * from './navigation/index';

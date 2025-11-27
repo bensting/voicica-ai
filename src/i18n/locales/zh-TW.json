@@ -28,7 +28,10 @@
     "studio": "工作室",
     "pricing": "定價",
     "faq": "常見問題",
-    "generationHistory": "生成歷史"
+    "generationHistory": "生成歷史",
+    "freeTools": "免費工具",
+    "tiktokDownloader": "TikTok 下載",
+    "tiktokDownloaderDesc": "下載無浮水印 TikTok 影片"
   },
   "pricing": {
     "pageTitle": "Voicica AI 套餐與定價",
@@ -379,7 +382,8 @@
       "aiMusic": "AI 音樂",
       "aiCover": "AI 翻唱",
       "musicTools": "音樂工具",
-      "account": "我的帳戶"
+      "account": "我的帳戶",
+      "tiktokDownloader": "TikTok 下載"
     },
     "mobileNav": {
       "tts": "文字轉語音",
@@ -511,6 +515,25 @@
     "ctaTitle": "創建您自己的 AI 語音",
     "ctaDescription": "使用 Voicica AI 將文字轉換為自然流暢的語音。",
     "tryNow": "立即試用"
+  },
+  "tiktokDownloader": {
+    "title": "TikTok 影片下載",
+    "subtitle": "免費下載無浮水印 TikTok 影片",
+    "urlLabel": "TikTok 影片連結",
+    "urlPlaceholder": "在此貼上 TikTok 影片連結...",
+    "parseButton": "解析",
+    "parsing": "正在解析中",
+    "doNotClose": "請勿關閉頁面",
+    "downloadButton": "下載影片",
+    "selectQuality": "選擇畫質",
+    "untitled": "無標題影片",
+    "emptyTitle": "下載 TikTok 影片",
+    "emptyDescription": "在上方貼上 TikTok 影片連結即可開始下載，支援所有 TikTok 影片格式。",
+    "errors": {
+      "emptyUrl": "請輸入 TikTok 影片連結",
+      "invalidUrl": "無效的 TikTok 連結，請輸入正確的 TikTok 影片連結。",
+      "parseFailed": "解析影片失敗，請檢查連結後重試。"
+    }
   },
   "countries": {
     "CN": "中國",

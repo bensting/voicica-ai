@@ -72,7 +72,7 @@ export default function Navbar() {
 
         {/* Mobile Menu */}
         {mobileMenuOpen && (
-          <div className="md:hidden py-4 border-t border-gray-800">
+          <div className="md:hidden absolute top-16 left-0 right-0 bg-white shadow-xl py-2 px-4 max-h-[calc(100vh-4rem)] overflow-y-auto">
             <NavLinks mobile onLinkClick={() => setMobileMenuOpen(false)} />
           </div>
         )}

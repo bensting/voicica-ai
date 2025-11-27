@@ -2,7 +2,7 @@
  * Navigation configuration for development environment
  */
 
-import { Download } from 'lucide-react';
+import TikTokIcon from '@/components/icons/TikTokIcon';
 import type { NavigationConfig } from './types';
 
 export const navigationConfig: NavigationConfig = {
@@ -29,12 +29,13 @@ export const navigationConfig: NavigationConfig = {
     {
       id: 'free-tools',
       labelKey: 'nav.freeTools',
+      insertAfter: '/studio/tts', // Insert after Studio link
       items: [
         {
           href: '/studio/tiktok-downloader',
           labelKey: 'nav.tiktokDownloader',
           descriptionKey: 'nav.tiktokDownloaderDesc',
-          icon: Download,
+          icon: TikTokIcon,
         },
       ],
     },

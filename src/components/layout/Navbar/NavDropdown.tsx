@@ -35,14 +35,16 @@ export default function NavDropdown({ dropdown, mobile = false, onLinkClick }: N
 
   if (mobile) {
     return (
-      <div className="py-2">
+      <div className="border-b border-gray-100 last:border-b-0">
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className="flex items-center justify-between w-full text-white hover:text-purple-400 transition-colors font-medium py-2"
+          className={`flex items-center justify-between w-full py-3 transition-colors font-medium ${
+            isOpen ? 'text-purple-600' : 'text-gray-900 hover:text-purple-600'
+          }`}
         >
           <span>{t(dropdown.labelKey)}</span>
           <svg
-            className={`w-4 h-4 transition-transform ${isOpen ? 'rotate-180' : ''}`}
+            className={`w-4 h-4 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -50,8 +52,12 @@ export default function NavDropdown({ dropdown, mobile = false, onLinkClick }: N
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
           </svg>
         </button>
-        {isOpen && (
-          <div className="pl-4 mt-2 space-y-1">
+        <div
+          className={`overflow-hidden transition-all duration-200 ${
+            isOpen ? 'max-h-96 opacity-100 pb-3' : 'max-h-0 opacity-0'
+          }`}
+        >
+          <div className="bg-gray-50 rounded-xl p-2">
             {dropdown.items
               .filter((item) => item.enabled !== false)
               .map((item) => {
@@ -61,24 +67,24 @@ export default function NavDropdown({ dropdown, mobile = false, onLinkClick }: N
                     key={item.href}
                     href={item.href}
                     onClick={handleLinkClick}
-                    className="flex items-start gap-3 py-2 text-gray-300 hover:text-purple-400 transition-colors"
+                    className="flex items-center gap-3 p-3 rounded-lg text-gray-700 hover:bg-white hover:text-purple-600 transition-colors"
                   >
                     {Icon && (
-                      <div className="flex-shrink-0 w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center">
-                        <Icon className="w-4 h-4 text-gray-700" />
+                      <div className="flex-shrink-0 w-10 h-10 bg-white rounded-lg flex items-center justify-center shadow-sm">
+                        <Icon className="w-5 h-5 text-gray-900" />
                       </div>
                     )}
-                    <div>
-                      <div className="font-medium">{t(item.labelKey)}</div>
+                    <div className="flex-1 min-w-0">
+                      <div className="font-medium text-gray-900">{t(item.labelKey)}</div>
                       {item.descriptionKey && (
-                        <div className="text-sm text-gray-500">{t(item.descriptionKey)}</div>
+                        <div className="text-xs text-gray-500 truncate">{t(item.descriptionKey)}</div>
                       )}
                     </div>
                   </Link>
                 );
               })}
           </div>
-        )}
+        </div>
       </div>
     );
   }
@@ -124,7 +130,7 @@ export default function NavDropdown({ dropdown, mobile = false, onLinkClick }: N
                   >
                     {Icon && (
                       <div className="flex-shrink-0 w-10 h-10 bg-white rounded-lg flex items-center justify-center">
-                        <Icon className="w-5 h-5 text-gray-600" />
+                        <Icon className="w-5 h-5 text-gray-900" />
                       </div>
                     )}
                     <div>

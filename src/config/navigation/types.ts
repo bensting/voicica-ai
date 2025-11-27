@@ -24,6 +24,7 @@ export interface NavDropdown {
   labelKey: string;
   items: NavDropdownItem[];
   enabled?: boolean;
+  insertAfter?: string; // href of the link after which this dropdown should appear
 }
 
 export interface NavigationConfig {

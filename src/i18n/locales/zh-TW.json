@@ -383,6 +383,7 @@
       "aiCover": "AI 翻唱",
       "musicTools": "音樂工具",
       "account": "我的帳戶",
+      "tools": "免費工具",
       "tiktokDownloader": "TikTok 下載"
     },
     "mobileNav": {
@@ -525,6 +526,7 @@
     "parsing": "正在解析中",
     "doNotClose": "請勿關閉頁面",
     "downloadButton": "下載影片",
+    "downloading": "下載中...",
     "selectQuality": "選擇畫質",
     "untitled": "無標題影片",
     "emptyTitle": "下載 TikTok 影片",

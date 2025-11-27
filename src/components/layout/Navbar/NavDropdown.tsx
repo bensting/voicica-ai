@@ -86,11 +86,11 @@ export default function NavDropdown({ dropdown, mobile = false, onLinkClick }: N
   return (
     <div
       ref={dropdownRef}
-      className="relative"
+      className="relative h-16 flex items-center"
       onMouseEnter={() => setIsOpen(true)}
       onMouseLeave={() => setIsOpen(false)}
     >
-      <button className="relative flex items-center gap-1 text-white hover:text-purple-400 transition-colors font-medium pb-1">
+      <button className="flex items-center gap-1 text-white hover:text-purple-400 transition-colors font-medium">
         <span>{t(dropdown.labelKey)}</span>
         <svg
           className={`w-4 h-4 transition-transform ${isOpen ? 'rotate-180' : ''}`}
@@ -100,16 +100,16 @@ export default function NavDropdown({ dropdown, mobile = false, onLinkClick }: N
         >
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
         </svg>
-        {/* Purple underline indicator */}
-        <span
-          className={`absolute bottom-0 left-0 right-0 h-0.5 bg-purple-500 transition-transform origin-left ${
-            isOpen ? 'scale-x-100' : 'scale-x-0'
-          }`}
-        />
       </button>
+      {/* Purple underline indicator at navbar bottom */}
+      <span
+        className={`absolute bottom-0 left-0 right-0 h-0.5 bg-purple-500 transition-transform origin-left ${
+          isOpen ? 'scale-x-100' : 'scale-x-0'
+        }`}
+      />
 
       {isOpen && (
-        <div className="absolute top-full left-0 pt-3">
+        <div className="absolute top-full left-0 pt-2">
           <div className="p-2 bg-white rounded-xl shadow-xl border border-gray-100 min-w-[280px]">
             {dropdown.items
               .filter((item) => item.enabled !== false)

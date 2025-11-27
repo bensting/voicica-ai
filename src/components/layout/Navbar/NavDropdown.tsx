@@ -71,7 +71,7 @@ export default function NavDropdown({ dropdown, mobile = false, onLinkClick }: N
                   >
                     {Icon && (
                       <div className="flex-shrink-0 w-10 h-10 bg-white rounded-lg flex items-center justify-center shadow-sm">
-                        <Icon className="w-5 h-5 text-purple-600" />
+                        <Icon className="w-5 h-5 text-gray-900" />
                       </div>
                     )}
                     <div className="flex-1 min-w-0">
@@ -130,7 +130,7 @@ export default function NavDropdown({ dropdown, mobile = false, onLinkClick }: N
                   >
                     {Icon && (
                       <div className="flex-shrink-0 w-10 h-10 bg-white rounded-lg flex items-center justify-center">
-                        <Icon className="w-5 h-5 text-gray-600" />
+                        <Icon className="w-5 h-5 text-gray-900" />
                       </div>
                     )}
                     <div>

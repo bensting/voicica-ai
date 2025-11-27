@@ -6,11 +6,11 @@ import { useStudio } from '@/contexts/StudioContext';
 import TikTokIcon from '@/components/icons/TikTokIcon';
 import {
   parseVideoUrl,
-  getProxyDownloadUrl,
   type ParseResponse,
   type VideoFormat,
 } from '@/actions/video-downloader';
 import {
+  getProxyDownloadUrl,
   isTikTokUrl,
   formatFileSize,
   formatDuration,
@@ -75,28 +75,26 @@ export default function TikTokDownloaderPage() {
   }, [url, t]);
 
   // 下载视频
-  const handleDownload = useCallback(async () => {
+  const handleDownload = useCallback(() => {
     if (!videoInfo || !selectedFormat?.url || downloading) return;
 
     setDownloading(true);
 
-    try {
-      const filename = `${videoInfo.title || videoInfo.video_id}.mp4`;
-      const downloadUrl = await getProxyDownloadUrl(videoInfo.video_id, selectedFormat.url, filename);
+    const filename = `${videoInfo.title || videoInfo.video_id}.mp4`;
+    const downloadUrl = getProxyDownloadUrl(videoInfo.video_id, selectedFormat.url, filename);
 
-      // 创建隐藏的 a 标签并触发下载
-      const a = document.createElement('a');
-      a.href = downloadUrl;
-      a.download = filename;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-    } finally {
-      // 延迟重置下载状态，给用户反馈
-      setTimeout(() => {
-        setDownloading(false);
-      }, 2000);
-    }
+    // 创建隐藏的 a 标签并触发下载
+    const a = document.createElement('a');
+    a.href = downloadUrl;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+
+    // 延迟重置下载状态，给用户反馈
+    setTimeout(() => {
+      setDownloading(false);
+    }, 2000);
   }, [videoInfo, selectedFormat, downloading]);
 
   return (

@@ -93,38 +93,3 @@ export async function parseVideoUrl(url: string): Promise<ParseResult> {
     };
   }
 }
-
-/**
- * 获取代理下载 URL
- *
- * 用于 TikTok 视频下载（需要代理绕过防盗链）
- */
-export async function getProxyDownloadUrl(
-  videoId: string,
-  downloadUrl: string,
-  filename?: string
-): Promise<string> {
-  const encodedUrl = Buffer.from(downloadUrl).toString('base64');
-  const params = new URLSearchParams({
-    url: encodedUrl,
-  });
-
-  if (filename) {
-    params.set('filename', filename);
-  }
-
-  return `${API_BASE_URL}/api/v1/proxy/download/${videoId}?${params.toString()}`;
-}
-
-/**
- * 获取代理流式播放 URL
- *
- * 用于 TikTok 视频预览播放
- */
-export async function getProxyStreamUrl(
-  videoId: string,
-  streamUrl: string
-): Promise<string> {
-  const encodedUrl = Buffer.from(streamUrl).toString('base64');
-  return `${API_BASE_URL}/api/v1/proxy/stream/${videoId}?url=${encodedUrl}`;
-}

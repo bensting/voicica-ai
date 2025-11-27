@@ -5,6 +5,42 @@
  * 此文件仅保留客户端使用的工具函数
  */
 
+// 后端 API 地址（用于构建下载 URL）
+const API_BASE_URL = 'https://tools-api.voicica.ai';
+
+/**
+ * 获取代理下载 URL
+ * @param videoId 视频 ID
+ * @param downloadUrl 原始下载 URL
+ * @param filename 下载文件名
+ */
+export function getProxyDownloadUrl(
+  videoId: string,
+  downloadUrl: string,
+  filename?: string
+): string {
+  const encodedUrl = btoa(downloadUrl);
+  const params = new URLSearchParams({
+    url: encodedUrl,
+  });
+
+  if (filename) {
+    params.set('filename', filename);
+  }
+
+  return `${API_BASE_URL}/api/v1/proxy/download/${videoId}?${params.toString()}`;
+}
+
+/**
+ * 获取代理流式播放 URL
+ * @param videoId 视频 ID
+ * @param streamUrl 原始流 URL
+ */
+export function getProxyStreamUrl(videoId: string, streamUrl: string): string {
+  const encodedUrl = btoa(streamUrl);
+  return `${API_BASE_URL}/api/v1/proxy/stream/${videoId}?url=${encodedUrl}`;
+}
+
 /**
  * 检测是否为有效的 TikTok URL
  */

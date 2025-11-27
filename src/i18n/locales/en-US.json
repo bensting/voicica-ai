@@ -31,7 +31,9 @@
     "generationHistory": "Generation History",
     "freeTools": "Free Tools",
     "tiktokDownloader": "TikTok Downloader",
-    "tiktokDownloaderDesc": "Download TikTok videos without watermark"
+    "tiktokDownloaderDesc": "Download TikTok videos without watermark",
+    "youtubeDownloader": "YouTube Downloader",
+    "youtubeDownloaderDesc": "Download YouTube videos and audio"
   },
   "pricing": {
     "pageTitle": "Plans & Pricing of Voicica AI",
@@ -294,7 +296,8 @@
       "musicTools": "Music Tools",
       "account": "Account",
       "tools": "Free Tools",
-      "tiktokDownloader": "TikTok Downloader"
+      "tiktokDownloader": "TikTok Downloader",
+      "youtubeDownloader": "YouTube Downloader"
     },
     "mobileNav": {
       "tts": "TTS",
@@ -548,6 +551,31 @@
     "errors": {
       "emptyUrl": "Please enter a TikTok video URL",
       "invalidUrl": "Invalid TikTok URL. Please enter a valid TikTok video link.",
+      "parseFailed": "Failed to parse video. Please check the URL and try again."
+    }
+  },
+  "youtubeDownloader": {
+    "title": "YouTube Video Downloader",
+    "subtitle": "Download YouTube videos and audio for free",
+    "urlLabel": "YouTube Video URL",
+    "urlPlaceholder": "Paste YouTube video link here...",
+    "parseButton": "Parse",
+    "parsing": "Parsing",
+    "doNotClose": "Please do not close this page",
+    "downloadButton": "Download",
+    "downloading": "Downloading...",
+    "selectQuality": "Select Quality",
+    "untitled": "Untitled Video",
+    "emptyTitle": "Download YouTube Videos",
+    "emptyDescription": "Paste a YouTube video URL above to start downloading. Supports video and audio formats.",
+    "tabs": {
+      "videoWithAudio": "Video",
+      "videoOnly": "Video Only",
+      "audioOnly": "Audio Only"
+    },
+    "errors": {
+      "emptyUrl": "Please enter a YouTube video URL",
+      "invalidUrl": "Invalid YouTube URL. Please enter a valid YouTube video link.",
       "parseFailed": "Failed to parse video. Please check the URL and try again."
     }
   },

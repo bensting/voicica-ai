@@ -31,7 +31,9 @@
     "generationHistory": "生成历史",
     "freeTools": "免费工具",
     "tiktokDownloader": "TikTok 下载",
-    "tiktokDownloaderDesc": "下载无水印 TikTok 视频"
+    "tiktokDownloaderDesc": "下载无水印 TikTok 视频",
+    "youtubeDownloader": "YouTube 下载",
+    "youtubeDownloaderDesc": "下载 YouTube 视频和音频"
   },
   "pricing": {
     "pageTitle": "Voicica AI 套餐与定价",
@@ -384,7 +386,8 @@
       "musicTools": "音乐工具",
       "account": "我的账户",
       "tools": "免费工具",
-      "tiktokDownloader": "TikTok 下载"
+      "tiktokDownloader": "TikTok 下载",
+      "youtubeDownloader": "YouTube 下载"
     },
     "mobileNav": {
       "tts": "文字转语音",
@@ -554,6 +557,31 @@
     "errors": {
       "emptyUrl": "请输入 TikTok 视频链接",
       "invalidUrl": "无效的 TikTok 链接，请输入正确的 TikTok 视频链接。",
+      "parseFailed": "解析视频失败，请检查链接后重试。"
+    }
+  },
+  "youtubeDownloader": {
+    "title": "YouTube 视频下载",
+    "subtitle": "免费下载 YouTube 视频和音频",
+    "urlLabel": "YouTube 视频链接",
+    "urlPlaceholder": "在此粘贴 YouTube 视频链接...",
+    "parseButton": "解析",
+    "parsing": "正在解析中",
+    "doNotClose": "请勿关闭页面",
+    "downloadButton": "下载",
+    "downloading": "下载中...",
+    "selectQuality": "选择画质",
+    "untitled": "无标题视频",
+    "emptyTitle": "下载 YouTube 视频",
+    "emptyDescription": "在上方粘贴 YouTube 视频链接即可开始下载，支持视频和音频格式。",
+    "tabs": {
+      "videoWithAudio": "视频",
+      "videoOnly": "仅视频",
+      "audioOnly": "仅音频"
+    },
+    "errors": {
+      "emptyUrl": "请输入 YouTube 视频链接",
+      "invalidUrl": "无效的 YouTube 链接，请输入正确的 YouTube 视频链接。",
       "parseFailed": "解析视频失败，请检查链接后重试。"
     }
   },

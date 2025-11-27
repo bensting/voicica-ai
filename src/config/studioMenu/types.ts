@@ -11,12 +11,13 @@ export interface StudioMenuItemConfig {
   enabled?: boolean; // 是否启用，默认为 true
 }
 
-export type MenuCategory = 'main' | 'video' | 'voiceover' | 'music' | 'account';
+export type MenuCategory = 'main' | 'video' | 'voiceover' | 'music' | 'tools' | 'account';
 
 export interface StudioMenuCategories {
   main: StudioMenuItemConfig[];
   video: StudioMenuItemConfig[];
   voiceover: StudioMenuItemConfig[];
   music: StudioMenuItemConfig[];
+  tools: StudioMenuItemConfig[];
   account: StudioMenuItemConfig[];
 }

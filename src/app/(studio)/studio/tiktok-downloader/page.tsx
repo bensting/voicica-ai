@@ -24,6 +24,7 @@ export default function TikTokDownloaderPage() {
 
   const [url, setUrl] = useState('');
   const [loading, setLoading] = useState(false);
+  const [downloading, setDownloading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [videoInfo, setVideoInfo] = useState<ParseResponse | null>(null);
   const [selectedFormat, setSelectedFormat] = useState<VideoFormat | null>(null);
@@ -57,8 +58,8 @@ export default function TikTokDownloaderPage() {
       // 自动选择最佳格式（优先选择 play_direct）
       const bestFormat = result.formats.find(f => f.format_id === 'play_direct') || result.formats[0];
       setSelectedFormat(bestFormat);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : t('tiktokDownloader.errors.parseFailed'));
+    } catch {
+      setError(t('tiktokDownloader.errors.parseFailed'));
     } finally {
       setLoading(false);
     }
@@ -66,7 +67,9 @@ export default function TikTokDownloaderPage() {
 
   // 下载视频
   const handleDownload = useCallback(() => {
-    if (!videoInfo || !selectedFormat?.url) return;
+    if (!videoInfo || !selectedFormat?.url || downloading) return;
+
+    setDownloading(true);
 
     const filename = `${videoInfo.title || videoInfo.video_id}.mp4`;
     const downloadUrl = getProxyDownloadUrl(videoInfo.video_id, selectedFormat.url, filename);
@@ -78,7 +81,12 @@ export default function TikTokDownloaderPage() {
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
-  }, [videoInfo, selectedFormat]);
+
+    // 延迟重置下载状态，给用户反馈
+    setTimeout(() => {
+      setDownloading(false);
+    }, 2000);
+  }, [videoInfo, selectedFormat, downloading]);
 
   return (
     <>
@@ -215,13 +223,25 @@ export default function TikTokDownloaderPage() {
               {/* 下载按钮 */}
               <button
                 onClick={handleDownload}
-                disabled={!selectedFormat?.url}
+                disabled={!selectedFormat?.url || downloading}
                 className="w-full py-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl font-semibold hover:from-purple-700 hover:to-pink-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2"
               >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                </svg>
-                {t('tiktokDownloader.downloadButton')}
+                {downloading ? (
+                  <>
+                    <svg className="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                    </svg>
+                    {t('tiktokDownloader.downloading')}
+                  </>
+                ) : (
+                  <>
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                    </svg>
+                    {t('tiktokDownloader.downloadButton')}
+                  </>
+                )}
               </button>
             </div>
           )}
@@ -401,13 +421,25 @@ export default function TikTokDownloaderPage() {
                 {/* 下载按钮 */}
                 <button
                   onClick={handleDownload}
-                  disabled={!selectedFormat?.url}
+                  disabled={!selectedFormat?.url || downloading}
                   className="px-8 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl font-semibold hover:from-purple-700 hover:to-pink-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center gap-2 shadow-lg hover:shadow-xl flex-shrink-0"
                 >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                  </svg>
-                  {t('tiktokDownloader.downloadButton')}
+                  {downloading ? (
+                    <>
+                      <svg className="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                      </svg>
+                      {t('tiktokDownloader.downloading')}
+                    </>
+                  ) : (
+                    <>
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                      </svg>
+                      {t('tiktokDownloader.downloadButton')}
+                    </>
+                  )}
                 </button>
               </div>
             </div>

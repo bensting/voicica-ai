@@ -75,16 +75,19 @@ export default function NavLinks({ mobile = false, onLinkClick }: NavLinksProps 
 
   if (mobile) {
     return (
-      <div className="flex flex-col space-y-1">
-        {orderedItems.map((item) => {
+      <div className="flex flex-col">
+        {orderedItems.map((item, index) => {
           if (item.type === 'link') {
             const link = item.data;
+            const isLast = index === orderedItems.length - 1;
             return (
               <Link
                 key={link.href}
                 href={link.href}
                 onClick={getClickHandler(link.type, link.sectionId, link.openInNewWindow, link.href)}
-                className="text-gray-900 hover:text-purple-600 transition-colors font-medium py-2"
+                className={`text-gray-900 hover:text-purple-600 transition-colors font-medium py-3 ${
+                  !isLast ? 'border-b border-gray-100' : ''
+                }`}
               >
                 {t(link.labelKey)}
               </Link>

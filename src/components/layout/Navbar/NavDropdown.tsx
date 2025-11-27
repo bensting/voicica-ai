@@ -51,19 +51,32 @@ export default function NavDropdown({ dropdown, mobile = false, onLinkClick }: N
           </svg>
         </button>
         {isOpen && (
-          <div className="pl-4 mt-2 space-y-2">
+          <div className="pl-4 mt-2 space-y-1">
             {dropdown.items
               .filter((item) => item.enabled !== false)
-              .map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  onClick={handleLinkClick}
-                  className="block text-gray-300 hover:text-purple-400 transition-colors py-1"
-                >
-                  {t(item.labelKey)}
-                </Link>
-              ))}
+              .map((item) => {
+                const Icon = item.icon;
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    onClick={handleLinkClick}
+                    className="flex items-start gap-3 py-2 text-gray-300 hover:text-purple-400 transition-colors"
+                  >
+                    {Icon && (
+                      <div className="flex-shrink-0 w-8 h-8 bg-gray-800 rounded-lg flex items-center justify-center">
+                        <Icon className="w-4 h-4" />
+                      </div>
+                    )}
+                    <div>
+                      <div className="font-medium">{t(item.labelKey)}</div>
+                      {item.descriptionKey && (
+                        <div className="text-sm text-gray-500">{t(item.descriptionKey)}</div>
+                      )}
+                    </div>
+                  </Link>
+                );
+              })}
           </div>
         )}
       </div>
@@ -88,19 +101,32 @@ export default function NavDropdown({ dropdown, mobile = false, onLinkClick }: N
       </button>
 
       {isOpen && (
-        <div className="absolute top-full left-0 mt-2 py-2 bg-gray-900 rounded-lg shadow-xl border border-gray-800 min-w-[180px]">
+        <div className="absolute top-full left-0 mt-2 p-2 bg-gray-900 rounded-xl shadow-xl border border-gray-800 min-w-[280px]">
           {dropdown.items
             .filter((item) => item.enabled !== false)
-            .map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                onClick={handleLinkClick}
-                className="block px-4 py-2 text-gray-300 hover:text-white hover:bg-gray-800 transition-colors"
-              >
-                {t(item.labelKey)}
-              </Link>
-            ))}
+            .map((item) => {
+              const Icon = item.icon;
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  onClick={handleLinkClick}
+                  className="flex items-start gap-3 px-3 py-3 rounded-lg text-gray-300 hover:text-white hover:bg-gray-800 transition-colors"
+                >
+                  {Icon && (
+                    <div className="flex-shrink-0 w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center">
+                      <Icon className="w-5 h-5" />
+                    </div>
+                  )}
+                  <div>
+                    <div className="font-medium">{t(item.labelKey)}</div>
+                    {item.descriptionKey && (
+                      <div className="text-sm text-gray-500">{t(item.descriptionKey)}</div>
+                    )}
+                  </div>
+                </Link>
+              );
+            })}
         </div>
       )}
     </div>

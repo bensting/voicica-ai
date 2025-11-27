@@ -14,7 +14,8 @@ export interface NavLink {
 export interface NavDropdownItem {
   href: string;
   labelKey: string;
-  icon?: React.ReactNode;
+  descriptionKey?: string; // i18n key for description
+  icon?: React.ComponentType<{ className?: string }>;
   enabled?: boolean;
 }
 

@@ -298,12 +298,12 @@ export default function TikTokDownloaderPage() {
 
           {/* 视频信息 */}
           {videoInfo && (
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden p-6">
               {/* 视频信息卡片 */}
-              <div className="flex gap-6 p-6">
+              <div className="flex gap-5 items-start">
                 {/* 缩略图 */}
                 {videoInfo.thumbnail_url && (
-                  <div className="w-32 h-44 flex-shrink-0 rounded-xl overflow-hidden bg-black">
+                  <div className="w-24 h-32 flex-shrink-0 rounded-xl overflow-hidden bg-black shadow-md">
                     <img
                       src={videoInfo.thumbnail_url}
                       alt={videoInfo.title}
@@ -311,71 +311,70 @@ export default function TikTokDownloaderPage() {
                     />
                   </div>
                 )}
-                {/* 视频信息和下载 */}
-                <div className="flex-1 flex flex-col gap-4">
-                  {/* 标题和作者 */}
-                  <div>
-                    <h3 className="font-semibold text-gray-900 text-lg mb-2 line-clamp-2">
-                      {videoInfo.title || t('tiktokDownloader.untitled')}
-                    </h3>
-                    <div className="flex items-center gap-4 text-sm text-gray-500">
-                      {videoInfo.author && (
-                        <span className="flex items-center gap-1">
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                          </svg>
-                          @{videoInfo.author}
-                        </span>
-                      )}
-                      {videoInfo.duration_seconds && (
-                        <span className="flex items-center gap-1">
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                          </svg>
-                          {formatDuration(videoInfo.duration_seconds)}
-                        </span>
-                      )}
-                    </div>
+                {/* 视频信息 */}
+                <div className="flex-1 min-w-0">
+                  <h3 className="font-semibold text-gray-900 text-base line-clamp-2 mb-2">
+                    {videoInfo.title || t('tiktokDownloader.untitled')}
+                  </h3>
+                  <div className="flex items-center gap-3 text-sm text-gray-500">
+                    {videoInfo.author && (
+                      <span className="flex items-center gap-1">
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        </svg>
+                        @{videoInfo.author}
+                      </span>
+                    )}
+                    {videoInfo.duration_seconds && (
+                      <span className="flex items-center gap-1">
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        {formatDuration(videoInfo.duration_seconds)}
+                      </span>
+                    )}
                   </div>
-
-                  {/* 格式选择 */}
-                  <div>
-                    <h4 className="font-medium text-gray-900 mb-3">{t('tiktokDownloader.selectQuality')}</h4>
-                    <div className="flex flex-wrap gap-2">
-                      {videoInfo.formats.map((format) => (
-                        <button
-                          key={format.format_id}
-                          onClick={() => setSelectedFormat(format)}
-                          className={`px-4 py-2 rounded-xl border transition-colors ${
-                            selectedFormat?.format_id === format.format_id
-                              ? 'border-purple-500 bg-purple-50 text-purple-700'
-                              : 'border-gray-200 hover:border-purple-300'
-                          }`}
-                        >
-                          <span className="font-medium">{format.quality}</span>
-                          {format.note && (
-                            <span className="text-xs text-gray-500 ml-1">({format.note})</span>
-                          )}
-                          {format.filesize && (
-                            <span className="text-xs text-gray-400 ml-2">{formatFileSize(format.filesize)}</span>
-                          )}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* 下载按钮 */}
-                  <button
-                    onClick={handleDownload}
-                    disabled={!selectedFormat?.url}
-                    className="w-full py-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl font-semibold hover:from-purple-700 hover:to-pink-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2 shadow-lg hover:shadow-xl"
-                  >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                    </svg>
-                    {t('tiktokDownloader.downloadButton')}
-                  </button>
                 </div>
+              </div>
+
+              {/* 分隔线 */}
+              <div className="border-t border-gray-100 my-5" />
+
+              {/* 格式选择和下载 */}
+              <div className="flex items-center justify-between gap-4">
+                <div className="flex items-center gap-3">
+                  <span className="text-sm font-medium text-gray-700">{t('tiktokDownloader.selectQuality')}</span>
+                  <div className="flex flex-wrap gap-2">
+                    {videoInfo.formats.map((format) => (
+                      <button
+                        key={format.format_id}
+                        onClick={() => setSelectedFormat(format)}
+                        className={`px-3 py-1.5 rounded-lg text-sm border transition-colors ${
+                          selectedFormat?.format_id === format.format_id
+                            ? 'border-purple-500 bg-purple-50 text-purple-700'
+                            : 'border-gray-200 hover:border-purple-300 text-gray-600'
+                        }`}
+                      >
+                        <span className="font-medium">{format.quality}</span>
+                        {format.note && (
+                          <span className="text-xs text-gray-400 ml-1">({format.note})</span>
+                        )}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* 下载按钮 */}
+                <button
+                  onClick={handleDownload}
+                  disabled={!selectedFormat?.url}
+                  className="px-8 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl font-semibold hover:from-purple-700 hover:to-pink-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center gap-2 shadow-lg hover:shadow-xl flex-shrink-0"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                  </svg>
+                  {t('tiktokDownloader.downloadButton')}
+                </button>
               </div>
             </div>
           )}

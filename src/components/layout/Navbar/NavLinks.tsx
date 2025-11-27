@@ -3,8 +3,9 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { MouseEvent } from 'react';
-import { NAV_LINKS } from '@/config/navigation';
+import { NAV_LINKS, NAV_DROPDOWNS } from '@/config/navigation/index';
 import { useLanguage } from '@/contexts/LanguageContext';
+import NavDropdown from './NavDropdown';
 
 interface NavLinksProps {
   mobile?: boolean;
@@ -47,7 +48,7 @@ export default function NavLinks({ mobile = false, onLinkClick }: NavLinksProps 
 
   if (mobile) {
     return (
-      <div className="flex flex-col space-y-3">
+      <div className="flex flex-col space-y-1">
         {NAV_LINKS.map((link) => (
           <Link
             key={link.href}
@@ -57,6 +58,9 @@ export default function NavLinks({ mobile = false, onLinkClick }: NavLinksProps 
           >
             {t(link.labelKey)}
           </Link>
+        ))}
+        {NAV_DROPDOWNS.map((dropdown) => (
+          <NavDropdown key={dropdown.id} dropdown={dropdown} mobile onLinkClick={onLinkClick} />
         ))}
       </div>
     );
@@ -73,6 +77,9 @@ export default function NavLinks({ mobile = false, onLinkClick }: NavLinksProps 
         >
           {t(link.labelKey)}
         </Link>
+      ))}
+      {NAV_DROPDOWNS.map((dropdown) => (
+        <NavDropdown key={dropdown.id} dropdown={dropdown} />
       ))}
     </div>
   );

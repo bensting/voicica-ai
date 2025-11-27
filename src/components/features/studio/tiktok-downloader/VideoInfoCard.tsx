@@ -5,7 +5,7 @@
  */
 
 import type { ParseResponse } from '@/actions/video-downloader';
-import { formatDuration, getProxyThumbnailUrl } from '@/lib/services/tiktok-downloader';
+import { formatDuration } from '@/lib/services/tiktok-downloader';
 
 interface VideoInfoCardProps {
   videoInfo: ParseResponse;
@@ -14,10 +14,8 @@ interface VideoInfoCardProps {
 }
 
 export default function VideoInfoCard({ videoInfo, untitledText, variant = 'mobile' }: VideoInfoCardProps) {
-  // 使用代理的缩略图 URL
-  const thumbnailUrl = videoInfo.thumbnail_url
-    ? getProxyThumbnailUrl(videoInfo.video_id, videoInfo.thumbnail_url)
-    : null;
+  // TikTok 缩略图可以直接访问，不需要代理
+  const thumbnailUrl = videoInfo.thumbnail_url;
   if (variant === 'mobile') {
     return (
       <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">

@@ -5,13 +5,15 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { useStudio } from '@/contexts/StudioContext';
 import TikTokIcon from '@/components/icons/TikTokIcon';
 import {
-  parseVideo,
+  parseVideoUrl,
   getProxyDownloadUrl,
+  type ParseResponse,
+  type VideoFormat,
+} from '@/actions/video-downloader';
+import {
   isTikTokUrl,
   formatFileSize,
   formatDuration,
-  type ParseResponse,
-  type VideoFormat,
 } from '@/lib/services/tiktok-downloader';
 
 /**
@@ -53,11 +55,17 @@ export default function TikTokDownloaderPage() {
     setSelectedFormat(null);
 
     try {
-      const result = await parseVideo(url);
-      setVideoInfo(result);
+      const result = await parseVideoUrl(url);
+
+      if (!result.success || !result.data) {
+        setError(result.error || t('tiktokDownloader.errors.parseFailed'));
+        return;
+      }
+
+      setVideoInfo(result.data);
 
       // 自动选择最佳格式（优先选择 play_direct）
-      const bestFormat = result.formats.find(f => f.format_id === 'play_direct') || result.formats[0];
+      const bestFormat = result.data.formats.find(f => f.format_id === 'play_direct') || result.data.formats[0];
       setSelectedFormat(bestFormat);
     } catch {
       setError(t('tiktokDownloader.errors.parseFailed'));
@@ -67,26 +75,28 @@ export default function TikTokDownloaderPage() {
   }, [url, t]);
 
   // 下载视频
-  const handleDownload = useCallback(() => {
+  const handleDownload = useCallback(async () => {
     if (!videoInfo || !selectedFormat?.url || downloading) return;
 
     setDownloading(true);
 
-    const filename = `${videoInfo.title || videoInfo.video_id}.mp4`;
-    const downloadUrl = getProxyDownloadUrl(videoInfo.video_id, selectedFormat.url, filename);
+    try {
+      const filename = `${videoInfo.title || videoInfo.video_id}.mp4`;
+      const downloadUrl = await getProxyDownloadUrl(videoInfo.video_id, selectedFormat.url, filename);
 
-    // 创建隐藏的 a 标签并触发下载
-    const a = document.createElement('a');
-    a.href = downloadUrl;
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-
-    // 延迟重置下载状态，给用户反馈
-    setTimeout(() => {
-      setDownloading(false);
-    }, 2000);
+      // 创建隐藏的 a 标签并触发下载
+      const a = document.createElement('a');
+      a.href = downloadUrl;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    } finally {
+      // 延迟重置下载状态，给用户反馈
+      setTimeout(() => {
+        setDownloading(false);
+      }, 2000);
+    }
   }, [videoInfo, selectedFormat, downloading]);
 
   return (

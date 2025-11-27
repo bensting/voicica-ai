@@ -5,14 +5,16 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { useStudio } from '@/contexts/StudioContext';
 import YouTubeIcon from '@/components/icons/YouTubeIcon';
 import {
-  parseVideo,
+  parseVideoUrl,
+  type ParseResponse,
+  type VideoFormat,
+} from '@/actions/video-downloader';
+import {
   isYouTubeUrl,
   getGroupedFormats,
   formatFileSize,
   formatDuration,
   getFormatExtension,
-  type ParseResponse,
-  type VideoFormat,
   type FormatType,
 } from '@/lib/services/youtube-downloader';
 
@@ -78,11 +80,17 @@ export default function YouTubeDownloaderPage() {
     setSelectedFormat(null);
 
     try {
-      const result = await parseVideo(url);
-      setVideoInfo(result);
+      const result = await parseVideoUrl(url);
+
+      if (!result.success || !result.data) {
+        setError(result.error || t('youtubeDownloader.errors.parseFailed'));
+        return;
+      }
+
+      setVideoInfo(result.data);
 
       // 获取分组格式
-      const grouped = getGroupedFormats(result.formats);
+      const grouped = getGroupedFormats(result.data.formats);
 
       // 自动选择第一个有音频的视频格式
       if (grouped.videoWithAudio.length > 0) {

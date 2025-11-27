@@ -5,7 +5,7 @@
  */
 
 import type { ParseResponse } from '@/actions/video-downloader';
-import { formatDuration } from '@/lib/services/tiktok-downloader';
+import { formatDuration, getProxyThumbnailUrl } from '@/lib/services/tiktok-downloader';
 
 interface VideoInfoCardProps {
   videoInfo: ParseResponse;
@@ -14,15 +14,19 @@ interface VideoInfoCardProps {
 }
 
 export default function VideoInfoCard({ videoInfo, untitledText, variant = 'mobile' }: VideoInfoCardProps) {
+  // 使用代理的缩略图 URL
+  const thumbnailUrl = videoInfo.thumbnail_url
+    ? getProxyThumbnailUrl(videoInfo.video_id, videoInfo.thumbnail_url)
+    : null;
   if (variant === 'mobile') {
     return (
       <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
         <div className="flex gap-4 p-4">
           {/* 缩略图 */}
-          {videoInfo.thumbnail_url && (
+          {thumbnailUrl && (
             <div className="w-20 h-28 flex-shrink-0 rounded-lg overflow-hidden bg-black">
               <img
-                src={videoInfo.thumbnail_url}
+                src={thumbnailUrl}
                 alt={videoInfo.title}
                 className="w-full h-full object-cover"
               />
@@ -50,10 +54,10 @@ export default function VideoInfoCard({ videoInfo, untitledText, variant = 'mobi
   return (
     <div className="flex gap-5 items-start">
       {/* 缩略图 */}
-      {videoInfo.thumbnail_url && (
+      {thumbnailUrl && (
         <div className="w-24 h-32 flex-shrink-0 rounded-xl overflow-hidden bg-black shadow-md">
           <img
-            src={videoInfo.thumbnail_url}
+            src={thumbnailUrl}
             alt={videoInfo.title}
             className="w-full h-full object-cover"
           />

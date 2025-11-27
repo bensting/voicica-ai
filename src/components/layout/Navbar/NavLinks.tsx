@@ -66,9 +66,25 @@ export default function NavLinks({ mobile = false, onLinkClick }: NavLinksProps 
     );
   }
 
+  // Render first link (Studio), then dropdowns, then remaining links
+  const firstLink = NAV_LINKS[0];
+  const remainingLinks = NAV_LINKS.slice(1);
+
   return (
     <div className="hidden md:flex items-center space-x-8">
-      {NAV_LINKS.map((link) => (
+      {firstLink && (
+        <Link
+          href={firstLink.href}
+          onClick={getClickHandler(firstLink.type, firstLink.sectionId, firstLink.openInNewWindow, firstLink.href)}
+          className="text-white hover:text-purple-400 transition-colors font-medium"
+        >
+          {t(firstLink.labelKey)}
+        </Link>
+      )}
+      {NAV_DROPDOWNS.map((dropdown) => (
+        <NavDropdown key={dropdown.id} dropdown={dropdown} />
+      ))}
+      {remainingLinks.map((link) => (
         <Link
           key={link.href}
           href={link.href}
@@ -77,9 +93,6 @@ export default function NavLinks({ mobile = false, onLinkClick }: NavLinksProps 
         >
           {t(link.labelKey)}
         </Link>
-      ))}
-      {NAV_DROPDOWNS.map((dropdown) => (
-        <NavDropdown key={dropdown.id} dropdown={dropdown} />
       ))}
     </div>
   );

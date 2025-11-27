@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useStudio } from '@/contexts/StudioContext';
+import TikTokIcon from '@/components/icons/TikTokIcon';
 import {
   parseVideo,
   getProxyDownloadUrl,
@@ -249,10 +250,8 @@ export default function TikTokDownloaderPage() {
           {/* 空状态 */}
           {!loading && !videoInfo && !error && (
             <div className="flex-1 flex flex-col items-center justify-center text-center py-12">
-              <div className="w-20 h-20 bg-purple-100 rounded-full flex items-center justify-center mb-4">
-                <svg className="w-10 h-10 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                </svg>
+              <div className="w-20 h-20 bg-gradient-to-br from-purple-100 to-pink-100 rounded-full flex items-center justify-center mb-4">
+                <TikTokIcon className="w-10 h-10 text-gray-900" />
               </div>
               <h3 className="text-lg font-medium text-gray-900 mb-2">{t('tiktokDownloader.emptyTitle')}</h3>
               <p className="text-gray-500 text-sm max-w-xs">{t('tiktokDownloader.emptyDescription')}</p>
@@ -268,7 +267,10 @@ export default function TikTokDownloaderPage() {
       <div className="hidden lg:flex flex-col bg-gradient-to-b from-white to-purple-50 lg:h-[calc(100vh-60px)] overflow-hidden">
         <div className="w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1 flex flex-col min-h-0 overflow-y-auto">
           {/* 标题 */}
-          <div className="text-center mb-8">
+          <div className="text-center mb-8 bg-white rounded-2xl shadow-sm border border-gray-200 p-8">
+            <div className="w-16 h-16 bg-gradient-to-br from-purple-100 to-pink-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+              <TikTokIcon className="w-8 h-8 text-gray-900" />
+            </div>
             <h1 className="text-3xl font-bold text-gray-900 mb-2">{t('tiktokDownloader.title')}</h1>
             <p className="text-gray-500">{t('tiktokDownloader.subtitle')}</p>
           </div>
@@ -448,10 +450,8 @@ export default function TikTokDownloaderPage() {
           {/* 空状态 */}
           {!loading && !videoInfo && !error && (
             <div className="flex-1 flex flex-col items-center justify-center text-center">
-              <div className="w-24 h-24 bg-purple-100 rounded-full flex items-center justify-center mb-6">
-                <svg className="w-12 h-12 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                </svg>
+              <div className="w-24 h-24 bg-gradient-to-br from-purple-100 to-pink-100 rounded-full flex items-center justify-center mb-6">
+                <TikTokIcon className="w-12 h-12 text-gray-900" />
               </div>
               <h3 className="text-xl font-semibold text-gray-900 mb-2">{t('tiktokDownloader.emptyTitle')}</h3>
               <p className="text-gray-500 max-w-md">{t('tiktokDownloader.emptyDescription')}</p>

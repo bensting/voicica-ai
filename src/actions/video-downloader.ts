@@ -35,8 +35,8 @@ export interface ParseResult {
   error?: string;
 }
 
-// 后端 API 地址（服务端环境变量，不暴露给客户端）
-const API_BASE_URL = process.env.TOOLS_API_URL || 'https://tools-api.voicica.ai';
+// 后端 API 地址（从环境变量获取）
+const API_BASE_URL = process.env.NEXT_PUBLIC_TOOLS_API_URL || 'https://tools-api.voicica.ai';
 
 /**
  * 解析视频 URL（统一入口）

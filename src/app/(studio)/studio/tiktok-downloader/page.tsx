@@ -129,6 +129,23 @@ export default function TikTokDownloaderPage() {
             </div>
           </div>
 
+          {/* 解析中提示 */}
+          {loading && (
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
+              <div className="flex flex-col items-center justify-center py-4">
+                <div className="flex items-center gap-1 mb-3">
+                  <span className="text-gray-700 font-medium">{t('tiktokDownloader.parsing')}</span>
+                  <span className="flex gap-1">
+                    <span className="w-1.5 h-1.5 bg-purple-600 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                    <span className="w-1.5 h-1.5 bg-purple-600 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                    <span className="w-1.5 h-1.5 bg-purple-600 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                  </span>
+                </div>
+                <p className="text-sm text-gray-500">{t('tiktokDownloader.doNotClose')}</p>
+              </div>
+            </div>
+          )}
+
           {/* 错误提示 */}
           {error && (
             <div className="p-3 bg-red-50 border border-red-200 rounded-xl">
@@ -288,6 +305,23 @@ export default function TikTokDownloaderPage() {
               </button>
             </div>
           </div>
+
+          {/* 解析中提示 */}
+          {loading && (
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8 mb-6">
+              <div className="flex flex-col items-center justify-center">
+                <div className="flex items-center gap-1.5 mb-3">
+                  <span className="text-gray-700 font-medium text-lg">{t('tiktokDownloader.parsing')}</span>
+                  <span className="flex gap-1">
+                    <span className="w-2 h-2 bg-purple-600 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                    <span className="w-2 h-2 bg-purple-600 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                    <span className="w-2 h-2 bg-purple-600 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                  </span>
+                </div>
+                <p className="text-gray-500">{t('tiktokDownloader.doNotClose')}</p>
+              </div>
+            </div>
+          )}
 
           {/* 错误提示 */}
           {error && (

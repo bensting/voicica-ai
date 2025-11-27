@@ -31,7 +31,9 @@
     "generationHistory": "生成歷史",
     "freeTools": "免費工具",
     "tiktokDownloader": "TikTok 下載",
-    "tiktokDownloaderDesc": "下載無浮水印 TikTok 影片"
+    "tiktokDownloaderDesc": "下載無浮水印 TikTok 影片",
+    "youtubeDownloader": "YouTube 下載",
+    "youtubeDownloaderDesc": "下載 YouTube 影片和音訊"
   },
   "pricing": {
     "pageTitle": "Voicica AI 套餐與定價",
@@ -384,7 +386,8 @@
       "musicTools": "音樂工具",
       "account": "我的帳戶",
       "tools": "免費工具",
-      "tiktokDownloader": "TikTok 下載"
+      "tiktokDownloader": "TikTok 下載",
+      "youtubeDownloader": "YouTube 下載"
     },
     "mobileNav": {
       "tts": "文字轉語音",
@@ -534,6 +537,32 @@
     "errors": {
       "emptyUrl": "請輸入 TikTok 影片連結",
       "invalidUrl": "無效的 TikTok 連結，請輸入正確的 TikTok 影片連結。",
+      "parseFailed": "解析影片失敗，請檢查連結後重試。"
+    }
+  },
+  "youtubeDownloader": {
+    "title": "YouTube 影片下載",
+    "subtitle": "免費下載 YouTube 影片和音訊",
+    "urlLabel": "YouTube 影片連結",
+    "urlPlaceholder": "在此貼上 YouTube 影片連結...",
+    "parseButton": "解析",
+    "parsing": "正在解析中",
+    "doNotClose": "請勿關閉頁面",
+    "downloadButton": "下載",
+    "downloading": "下載中...",
+    "selectFormat": "選擇格式",
+    "untitled": "無標題影片",
+    "emptyTitle": "下載 YouTube 影片",
+    "emptyDescription": "在上方貼上 YouTube 影片連結即可開始下載，支援多種影片和音訊格式。",
+    "tabs": {
+      "videoWithAudio": "影片",
+      "videoOnly": "僅影片",
+      "audioOnly": "僅音訊"
+    },
+    "noFormats": "此類型暫無可用格式",
+    "errors": {
+      "emptyUrl": "請輸入 YouTube 影片連結",
+      "invalidUrl": "無效的 YouTube 連結，請輸入正確的 YouTube 影片連結。",
       "parseFailed": "解析影片失敗，請檢查連結後重試。"
     }
   },

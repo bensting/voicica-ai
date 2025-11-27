@@ -3,6 +3,7 @@
  */
 
 import TikTokIcon from '@/components/icons/TikTokIcon';
+import YouTubeIcon from '@/components/icons/YouTubeIcon';
 import type { NavigationConfig } from './types';
 
 export const navigationConfig: NavigationConfig = {
@@ -36,6 +37,12 @@ export const navigationConfig: NavigationConfig = {
           labelKey: 'nav.tiktokDownloader',
           descriptionKey: 'nav.tiktokDownloaderDesc',
           icon: TikTokIcon,
+        },
+        {
+          href: '/studio/youtube-downloader',
+          labelKey: 'nav.youtubeDownloader',
+          descriptionKey: 'nav.youtubeDownloaderDesc',
+          icon: YouTubeIcon,
         },
       ],
     },

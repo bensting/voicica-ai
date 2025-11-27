@@ -6,6 +6,7 @@
 
 import type { StudioMenuItemConfig } from './types';
 import TikTokIcon from '@/components/icons/TikTokIcon';
+import YouTubeIcon from '@/components/icons/YouTubeIcon';
 
 export const studioMenuItems: StudioMenuItemConfig[] = [
   // 主要功能
@@ -66,6 +67,14 @@ export const studioMenuItems: StudioMenuItemConfig[] = [
     category: 'tools',
     enabled: true,
     icon: <TikTokIcon className="w-5 h-5" />,
+  },
+  {
+    id: 'youtube-downloader',
+    labelKey: 'studio.menu.youtubeDownloader',
+    href: '/studio/youtube-downloader',
+    category: 'tools',
+    enabled: true,
+    icon: <YouTubeIcon className="w-5 h-5" />,
   },
 
   // Music AI - 生产环境暂未上线

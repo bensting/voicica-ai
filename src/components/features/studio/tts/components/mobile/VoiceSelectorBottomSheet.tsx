@@ -125,15 +125,15 @@ export default function VoiceSelectorBottomSheet({
       {/* Mobile Fullscreen Voice Selector */}
       <div className="fixed inset-0 z-50 bg-white flex flex-col animate-slide-up">
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-gray-200 flex-shrink-0 bg-white">
-          <h2 className="text-lg font-semibold text-gray-900">
+        <div className="flex items-center justify-between p-4 border-b-2 border-purple-100 flex-shrink-0 bg-gradient-to-r from-white to-purple-50/30">
+          <h2 className="text-xl font-bold text-gray-900 tracking-tight">
             {t('studio.selectVoice')}
           </h2>
           <button
             onClick={onClose}
-            className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors"
+            className="w-9 h-9 flex items-center justify-center rounded-full hover:bg-purple-100 transition-colors"
           >
-            <X className="w-5 h-5 text-gray-500" />
+            <X className="w-5 h-5 text-gray-600" />
           </button>
         </div>
 

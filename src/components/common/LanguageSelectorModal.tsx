@@ -95,7 +95,7 @@ export default function LanguageSelectorModal({
       {/* 模态框 - 从底部弹出 */}
       <div className="fixed inset-x-0 bottom-0 z-50 animate-slideUp">
         <div
-          className="bg-white rounded-t-3xl shadow-2xl w-full h-[65vh] flex flex-col"
+          className="bg-pink-50 rounded-t-3xl shadow-2xl w-full h-[65vh] flex flex-col"
           onClick={(e) => e.stopPropagation()}
         >
           {/* 拖动指示器 */}
@@ -115,7 +115,7 @@ export default function LanguageSelectorModal({
           </div>
 
           {/* 搜索框 */}
-          <div className="px-6 py-4 border-b border-gray-200">
+          <div className="px-6 py-4 border-b border-pink-100">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
               <input
@@ -123,7 +123,7 @@ export default function LanguageSelectorModal({
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder={searchPlaceholder}
-                className="w-full h-10 pl-10 pr-4 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+                className="w-full h-10 pl-10 pr-4 bg-white/60 border border-pink-100 rounded-lg text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
                 autoFocus
               />
             </div>

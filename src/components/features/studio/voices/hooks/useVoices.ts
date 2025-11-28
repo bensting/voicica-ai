@@ -82,6 +82,7 @@ export function useVoices({ authLoading, initialLanguage }: UseVoicesProps): Use
 
   // Audio player state
   const [playingVoiceId, setPlayingVoiceId] = useState<string | null>(null);
+  const [playingStyle, setPlayingStyle] = useState<string | null>(null);
   const [audioElement, setAudioElement] = useState<HTMLAudioElement | null>(null);
 
   // Load used voice names when usedOnly filter is enabled
@@ -219,21 +220,31 @@ export function useVoices({ authLoading, initialLanguage }: UseVoicesProps): Use
 
   // Handle audio playback
   const handlePlayVoice = useCallback((voice: Voice, style?: string | null) => {
-    if (playingVoiceId === voice.id) {
-      // Pause current
+    const currentStyle = style ?? null;
+
+    // 判断是否是同一个语音和风格
+    const isSameVoiceAndStyle = playingVoiceId === voice.id && playingStyle === currentStyle;
+
+    if (isSameVoiceAndStyle) {
+      // 暂停当前播放
       audioElement?.pause();
       setPlayingVoiceId(null);
+      setPlayingStyle(null);
     } else {
-      // Stop previous and play new
+      // 停止之前的音频并播放新的
       audioElement?.pause();
-      const sampleUrl = getVoiceSampleUrl(voice, style);
+      const sampleUrl = getVoiceSampleUrl(voice, currentStyle);
       const audio = new Audio(sampleUrl);
       audio.play();
-      audio.onended = () => setPlayingVoiceId(null);
+      audio.onended = () => {
+        setPlayingVoiceId(null);
+        setPlayingStyle(null);
+      };
       setAudioElement(audio);
       setPlayingVoiceId(voice.id);
+      setPlayingStyle(currentStyle);
     }
-  }, [audioElement, playingVoiceId]);
+  }, [audioElement, playingVoiceId, playingStyle]);
 
   // Calculate hasMore
   const hasMore = currentPage < totalPages;

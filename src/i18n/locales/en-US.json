@@ -509,7 +509,14 @@
     "updateAvailable": "New version available",
     "updateDescription": "A new version of the app is available. Click update to get the latest features and improvements.",
     "update": "Update now",
-    "later": "Later"
+    "later": "Later",
+    "installShortcut": "Install App",
+    "installTitle": "Install Application",
+    "installDescription": "Install this application on your device for quick and easy access, even when offline.",
+    "install": "Install",
+    "feature1": "Fast access from your desktop or home screen",
+    "feature2": "Works offline with cached content",
+    "feature3": "Lightweight, no app store needed"
   },
   "creditHistory": {
     "title": "Credit History",

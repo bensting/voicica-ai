@@ -495,7 +495,14 @@
     "updateAvailable": "發現新版本",
     "updateDescription": "應用程式有新版本可用。點擊更新以獲取最新功能和改進。",
     "update": "立即更新",
-    "later": "稍後"
+    "later": "稍後",
+    "installShortcut": "安裝應用",
+    "installTitle": "安裝應用",
+    "installDescription": "將此應用安裝到您的裝置上,即使離線也能快速輕鬆存取。",
+    "install": "安裝",
+    "feature1": "從桌面或主畫面快速存取",
+    "feature2": "支援離線存取快取內容",
+    "feature3": "輕量級,無需應用程式商店"
   },
   "creditHistory": {
     "title": "積分歷史",

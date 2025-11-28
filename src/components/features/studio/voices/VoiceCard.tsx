@@ -228,7 +228,13 @@ export default function VoiceCard({
             {voice.style_list.map((style) => (
               <button
                 key={style}
-                onClick={() => setSelectedStyle(selectedStyle === style ? null : style)}
+                onClick={() => {
+                  // 切换选中状态
+                  const newStyle = selectedStyle === style ? null : style;
+                  setSelectedStyle(newStyle);
+                  // 自动播放该风格的语音样例
+                  onPlay(voice, newStyle);
+                }}
                 className={`px-2 py-0.5 text-xs rounded-full transition-colors ${
                   selectedStyle === style
                     ? 'bg-purple-100 text-purple-700 border border-purple-300'

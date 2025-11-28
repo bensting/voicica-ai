@@ -4,7 +4,10 @@
     "cancel": "ยกเลิก",
     "close": "ปิด",
     "retry": "ลองใหม่",
-    "loading": "กำลังโหลด..."
+    "loading": "กำลังโหลด...",
+    "download": "ดาวน์โหลด",
+    "share": "แชร์",
+    "delete": "ลบ"
   },
   "productCategory": {
     "aiVideo": "AI วิดีโอ",
@@ -250,6 +253,8 @@
     "taskProgress": "ความคืบหน้า",
     "recentAuditions": "การสร้างล่าสุด",
     "allRecords": "บันทึกทั้งหมด",
+    "progress": "ความคืบหน้า",
+    "duration": "ระยะเวลา",
     "errors": {
       "selectTextAndVoice": "กรุณาป้อนข้อความและเลือกเสียง",
       "invalidParams": "พารามิเตอร์ไม่ถูกต้อง กรุณาตรวจสอบ",

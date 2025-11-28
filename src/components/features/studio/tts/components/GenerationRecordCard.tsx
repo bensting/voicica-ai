@@ -6,6 +6,7 @@ import { Download, Trash2, Play, Pause, Share2 } from 'lucide-react';
 import type { Generation } from '@/types/tts';
 import { TaskStatus } from '@/types/tts';
 import ShareModal from '@/components/ui/ShareModal';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface GenerationRecordCardProps {
   generation: Generation;
@@ -29,6 +30,7 @@ export default function GenerationRecordCard({
   showActions = true,
   size = 'normal',
 }: GenerationRecordCardProps) {
+  const { t } = useLanguage();
   const [playingId, setPlayingId] = useState<string | null>(null);
   const [playProgress, setPlayProgress] = useState(0); // 播放进度 0-100
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
@@ -179,7 +181,7 @@ export default function GenerationRecordCard({
 
           {/* 右侧：时长/进度 */}
           <div className="text-right">
-            <span className="text-xs text-gray-500 block">{isProcessing ? '生成进度' : '时长'}</span>
+            <span className="text-xs text-gray-500 block">{isProcessing ? t('studio.progress') : t('studio.duration')}</span>
             <span className={`${config.progressText} font-semibold ${isProcessing ? 'text-purple-600' : 'text-gray-700'}`}>
               {isProcessing ? `${progress}%` : generation.duration ? `${generation.duration}s` : '-'}
             </span>
@@ -205,7 +207,7 @@ export default function GenerationRecordCard({
               disabled={!generation.audioUrl}
             >
               <Download className="w-5 h-5" />
-              下载
+              {t('common.download')}
             </button>
             {generation.shareId && (
               <button
@@ -213,7 +215,7 @@ export default function GenerationRecordCard({
                 className="flex-1 py-3 bg-purple-50 text-purple-600 font-medium rounded-xl hover:bg-purple-100 transition-colors flex items-center justify-center gap-2"
               >
                 <Share2 className="w-5 h-5" />
-                分享
+                {t('common.share')}
               </button>
             )}
             <button
@@ -224,7 +226,7 @@ export default function GenerationRecordCard({
               className="flex-1 py-3 bg-gray-50 text-gray-600 font-medium rounded-xl hover:bg-red-50 hover:text-red-600 transition-colors flex items-center justify-center gap-2"
             >
               <Trash2 className="w-5 h-5" />
-              删除
+              {t('common.delete')}
             </button>
           </div>
         )}

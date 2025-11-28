@@ -4,7 +4,10 @@
     "cancel": "Cancel",
     "close": "Close",
     "retry": "Retry",
-    "loading": "Loading..."
+    "loading": "Loading...",
+    "download": "Download",
+    "share": "Share",
+    "delete": "Delete"
   },
   "productCategory": {
     "aiVideo": "AI Video",
@@ -247,6 +250,8 @@
     "generatingTip": "This may take a few seconds. You can close this and check later in Generation History.",
     "successTip": "Your audio is ready! You can download or play it now.",
     "taskProgress": "Progress",
+    "progress": "Progress",
+    "duration": "Duration",
     "recentAuditions": "Recent auditions",
     "allRecords": "All records",
     "errors": {

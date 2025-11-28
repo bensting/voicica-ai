@@ -4,7 +4,10 @@
     "cancel": "取消",
     "close": "关闭",
     "retry": "重试",
-    "loading": "加载中..."
+    "loading": "加载中...",
+    "download": "下载",
+    "share": "分享",
+    "delete": "删除"
   },
   "productCategory": {
     "aiVideo": "AI 视频",
@@ -339,6 +342,8 @@
     "taskProgress": "进度",
     "recentAuditions": "最近生成",
     "allRecords": "全部记录",
+    "progress": "生成进度",
+    "duration": "时长",
     "errors": {
       "selectTextAndVoice": "请输入文本并选择语音",
       "invalidParams": "请求参数错误，请检查输入",

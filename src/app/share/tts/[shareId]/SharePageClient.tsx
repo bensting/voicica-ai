@@ -92,9 +92,16 @@ export default function SharePageClient({ record }: SharePageClientProps) {
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
-  // 格式化日期
+  // 格式化日期 - 使用固定格式避免 hydration 错误
   const formatDate = (date: Date) => {
-    return new Date(date).toLocaleString();
+    const d = new Date(date);
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    const hours = String(d.getHours()).padStart(2, '0');
+    const minutes = String(d.getMinutes()).padStart(2, '0');
+    const seconds = String(d.getSeconds()).padStart(2, '0');
+    return `${year}/${month}/${day} ${hours}:${minutes}:${seconds}`;
   };
 
   const voiceDisplayName = record.voice?.display_name || record.voice?.name || 'AI Voice';

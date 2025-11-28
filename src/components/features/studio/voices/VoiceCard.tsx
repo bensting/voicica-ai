@@ -38,26 +38,129 @@ export default function VoiceCard({
 
   // Get country code from locale
   const getCountryCode = (locale: string): string => {
+    // 完整的 locale 映射表
     const countryMap: Record<string, string> = {
+      // 中文
       'zh-CN': 'CN',
       'zh-TW': 'TW',
+      'zh-HK': 'HK',
+      // 英语
       'en-US': 'US',
       'en-GB': 'GB',
+      'en-AU': 'AU',
+      'en-CA': 'CA',
+      'en-IN': 'IN',
+      'en-IE': 'IE',
+      'en-NZ': 'NZ',
+      'en-ZA': 'ZA',
+      // 日语
       'ja-JP': 'JP',
+      // 韩语
       'ko-KR': 'KR',
+      // 西班牙语
       'es-ES': 'ES',
+      'es-MX': 'MX',
+      'es-AR': 'AR',
+      'es-CO': 'CO',
+      // 法语
       'fr-FR': 'FR',
+      'fr-CA': 'CA',
+      'fr-BE': 'BE',
+      'fr-CH': 'CH',
+      // 德语
       'de-DE': 'DE',
+      'de-AT': 'AT',
+      'de-CH': 'CH',
+      // 意大利语
       'it-IT': 'IT',
+      // 葡萄牙语
       'pt-BR': 'BR',
+      'pt-PT': 'PT',
+      // 俄语
       'ru-RU': 'RU',
+      // 阿拉伯语
+      'ar-SA': 'SA',
+      'ar-AE': 'AE',
+      'ar-EG': 'EG',
+      'ar-BH': 'BH',
+      'ar-DZ': 'DZ',
+      'ar-IQ': 'IQ',
+      'ar-JO': 'JO',
+      'ar-KW': 'KW',
+      'ar-LB': 'LB',
+      'ar-LY': 'LY',
+      'ar-MA': 'MA',
+      'ar-OM': 'OM',
+      'ar-QA': 'QA',
+      'ar-SY': 'SY',
+      'ar-TN': 'TN',
+      'ar-YE': 'YE',
+      // 其他语言
+      'nl-NL': 'NL',
+      'nl-BE': 'BE',
+      'pl-PL': 'PL',
+      'tr-TR': 'TR',
+      'sv-SE': 'SE',
+      'no-NO': 'NO',
+      'da-DK': 'DK',
+      'fi-FI': 'FI',
+      'el-GR': 'GR',
+      'cs-CZ': 'CZ',
+      'hu-HU': 'HU',
+      'ro-RO': 'RO',
+      'th-TH': 'TH',
+      'vi-VN': 'VN',
+      'id-ID': 'ID',
+      'ms-MY': 'MY',
+      'fil-PH': 'PH',
+      'uk-UA': 'UA',
+      'bg-BG': 'BG',
+      'hr-HR': 'HR',
+      'sk-SK': 'SK',
+      'sl-SI': 'SI',
+      'et-EE': 'EE',
+      'lv-LV': 'LV',
+      'lt-LT': 'LT',
+      'he-IL': 'IL',
+      'hi-IN': 'IN',
+      'bn-IN': 'IN',
+      'ta-IN': 'IN',
+      'te-IN': 'IN',
+      'mr-IN': 'IN',
+      'gu-IN': 'IN',
+      'kn-IN': 'IN',
+      'ml-IN': 'IN',
+      'ur-PK': 'PK',
+      'fa-IR': 'IR',
+      'am-ET': 'ET',
+      'af-ZA': 'ZA',
+      'sw-KE': 'KE',
+      'zu-ZA': 'ZA',
     };
-    return countryMap[locale] || 'UN';
+
+    // 如果有精确匹配，返回映射的国家代码
+    if (countryMap[locale]) {
+      return countryMap[locale];
+    }
+
+    // 否则尝试从 locale 中提取国家代码（例如 "ar-SA" -> "SA"）
+    const parts = locale.split('-');
+    if (parts.length === 2) {
+      return parts[1].toUpperCase();
+    }
+
+    // 如果无法提取，返回 null（不显示国旗）
+    return '';
   };
 
   // Get Flag Icon component
   const getFlagIcon = (locale: string) => {
     const countryCode = getCountryCode(locale);
+
+    if (!countryCode) {
+      return <span className="text-xs">🌐</span>;
+    }
+
     const FlagComponent = (FlagIcons as Record<string, React.ComponentType<{ className?: string }>>)[countryCode];
 
     if (FlagComponent) {
@@ -125,7 +228,13 @@ export default function VoiceCard({
             {voice.style_list.map((style) => (
               <button
                 key={style}
-                onClick={() => setSelectedStyle(selectedStyle === style ? null : style)}
+                onClick={() => {
+                  // 切换选中状态
+                  const newStyle = selectedStyle === style ? null : style;
+                  setSelectedStyle(newStyle);
+                  // 自动播放该风格的语音样例
+                  onPlay(voice, newStyle);
+                }}
                 className={`px-2 py-0.5 text-xs rounded-full transition-colors ${
                   selectedStyle === style
                     ? 'bg-purple-100 text-purple-700 border border-purple-300'
@@ -142,9 +251,9 @@ export default function VoiceCard({
       {/* Select button */}
       <button
         onClick={() => onSelect(voice, selectedStyle)}
-        className="w-8 h-8 rounded-lg border border-gray-200 hover:border-purple-500 hover:bg-purple-50 flex items-center justify-center flex-shrink-0 transition-colors group"
+        className="w-9 h-9 rounded-lg bg-purple-100 hover:bg-purple-600 border-2 border-purple-300 hover:border-purple-600 flex items-center justify-center flex-shrink-0 transition-all shadow-sm hover:shadow-md group"
       >
-        <ArrowRight className="w-4 h-4 text-gray-400 group-hover:text-purple-600 transition-colors" />
+        <ArrowRight className="w-5 h-5 text-purple-600 group-hover:text-white transition-colors" />
       </button>
     </div>
   );

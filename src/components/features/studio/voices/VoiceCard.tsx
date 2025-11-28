@@ -142,9 +142,9 @@ export default function VoiceCard({
       {/* Select button */}
       <button
         onClick={() => onSelect(voice, selectedStyle)}
-        className="w-8 h-8 rounded-lg border border-gray-200 hover:border-purple-500 hover:bg-purple-50 flex items-center justify-center flex-shrink-0 transition-colors group"
+        className="w-9 h-9 rounded-lg bg-purple-100 hover:bg-purple-600 border-2 border-purple-300 hover:border-purple-600 flex items-center justify-center flex-shrink-0 transition-all shadow-sm hover:shadow-md group"
       >
-        <ArrowRight className="w-4 h-4 text-gray-400 group-hover:text-purple-600 transition-colors" />
+        <ArrowRight className="w-5 h-5 text-purple-600 group-hover:text-white transition-colors" />
       </button>
     </div>
   );

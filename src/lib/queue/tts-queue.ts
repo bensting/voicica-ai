@@ -43,7 +43,7 @@ export const ttsQueue = {
       try {
         console.log('[Queue] 📤 使用 QStash 提交任务:', payload.taskId);
 
-        const callbackUrl = `https://${process.env.VERCEL_URL || 'voicica.ai'}/api/queue/tts`;
+        const callbackUrl = `https://${process.env.QSTASH_NEXT_CALL_BACK_URL || 'voicica.ai'}/api/queue/tts`;
 
         const result = await qstashClient.publishJSON({
           url: callbackUrl,

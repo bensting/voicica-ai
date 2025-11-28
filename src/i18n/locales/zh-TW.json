@@ -502,7 +502,13 @@
     "install": "安裝",
     "feature1": "從桌面或主畫面快速存取",
     "feature2": "支援離線存取快取內容",
-    "feature3": "輕量級,無需應用程式商店"
+    "feature3": "輕量級,無需應用程式商店",
+    "iosInstructions": "安裝步驟：",
+    "iosStep1": "點擊分享按鈕",
+    "iosStep1b": "（位於 Safari 底部）",
+    "iosStep2": "滾動並點擊「加入主畫面」",
+    "iosStep3": "點擊右上角的「加入」",
+    "gotIt": "知道了"
   },
   "creditHistory": {
     "title": "積分歷史",

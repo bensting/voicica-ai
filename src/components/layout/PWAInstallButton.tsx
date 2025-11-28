@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Download, X } from 'lucide-react';
+import { Download, X, Share } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 interface BeforeInstallPromptEvent extends Event {
@@ -14,15 +14,30 @@ export default function PWAInstallButton() {
   const [showButton, setShowButton] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const [showInstallDialog, setShowInstallDialog] = useState(false);
+  const [isIOS, setIsIOS] = useState(false);
   const { t } = useLanguage();
 
   useEffect(() => {
-    // 检查是否已经安装
-    if (window.matchMedia('(display-mode: standalone)').matches) {
+    // 检查是否已经安装（standalone 模式）
+    const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
+    const navigatorWithStandalone = window.navigator as Navigator & { standalone?: boolean };
+    const isIOSStandalone = ('standalone' in window.navigator) && navigatorWithStandalone.standalone;
+
+    if (isStandalone || isIOSStandalone) {
       return;
     }
 
-    // 监听 beforeinstallprompt 事件
+    // 检测 iOS 设备
+    const windowWithMSStream = window as Window & { MSStream?: unknown };
+    const isIOSDevice = /iPad|iPhone|iPod/.test(navigator.userAgent) && !windowWithMSStream.MSStream;
+    setIsIOS(isIOSDevice);
+
+    // iOS 设备始终显示按钮（因为需要手动引导）
+    if (isIOSDevice) {
+      setShowButton(true);
+    }
+
+    // Android: 监听 beforeinstallprompt 事件
     const handleBeforeInstallPrompt = (e: Event) => {
       e.preventDefault();
       setDeferredPrompt(e as BeforeInstallPromptEvent);
@@ -138,8 +153,44 @@ export default function PWAInstallButton() {
                   'Install this application on your device for quick and easy access, even when offline.'}
               </p>
 
-              {/* 功能特点 */}
-              <div className="space-y-3 mb-6">
+              {/* iOS 安装步骤 */}
+              {isIOS && (
+                <div className="space-y-3 mb-6 bg-purple-50 rounded-xl p-4">
+                  <p className="text-sm font-semibold text-purple-900 mb-3">
+                    {t('pwa.iosInstructions') || 'Installation Steps:'}
+                  </p>
+                  <div className="flex items-start gap-3">
+                    <div className="w-6 h-6 rounded-full bg-purple-600 flex items-center justify-center flex-shrink-0 text-white text-xs font-bold">
+                      1
+                    </div>
+                    <p className="text-sm text-gray-700 flex-1">
+                      {t('pwa.iosStep1') || 'Tap the Share button'}{' '}
+                      <Share className="w-4 h-4 inline text-purple-600" />{' '}
+                      {t('pwa.iosStep1b') || 'at the bottom of Safari'}
+                    </p>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <div className="w-6 h-6 rounded-full bg-purple-600 flex items-center justify-center flex-shrink-0 text-white text-xs font-bold">
+                      2
+                    </div>
+                    <p className="text-sm text-gray-700 flex-1">
+                      {t('pwa.iosStep2') || 'Scroll and tap "Add to Home Screen"'}
+                    </p>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <div className="w-6 h-6 rounded-full bg-purple-600 flex items-center justify-center flex-shrink-0 text-white text-xs font-bold">
+                      3
+                    </div>
+                    <p className="text-sm text-gray-700 flex-1">
+                      {t('pwa.iosStep3') || 'Tap "Add" in the top right corner'}
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              {/* Android 功能特点 */}
+              {!isIOS && (
+                <div className="space-y-3 mb-6">
                 <div className="flex items-start gap-3">
                   <div className="w-5 h-5 rounded-full bg-purple-100 flex items-center justify-center flex-shrink-0 mt-0.5">
                     <svg className="w-3 h-3 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
@@ -189,22 +240,34 @@ export default function PWAInstallButton() {
                   </div>
                 </div>
               </div>
+              )}
 
               {/* 按钮 */}
-              <div className="flex gap-3">
+              {isIOS ? (
+                // iOS: 只显示"Got it"按钮
                 <button
                   onClick={handleCancel}
-                  className="flex-1 px-4 py-3 bg-gray-100 text-gray-700 rounded-xl font-medium hover:bg-gray-200 transition-colors"
+                  className="w-full px-4 py-3 bg-gradient-to-r from-purple-600 to-purple-700 text-white rounded-xl font-medium hover:from-purple-700 hover:to-purple-800 transition-all shadow-lg hover:shadow-xl"
                 >
-                  {t('common.cancel') || 'Cancel'}
+                  {t('pwa.gotIt') || 'Got it'}
                 </button>
-                <button
-                  onClick={handleInstall}
-                  className="flex-1 px-4 py-3 bg-gradient-to-r from-purple-600 to-purple-700 text-white rounded-xl font-medium hover:from-purple-700 hover:to-purple-800 transition-all shadow-lg hover:shadow-xl"
-                >
-                  {t('pwa.install') || 'Install'}
-                </button>
-              </div>
+              ) : (
+                // Android: 显示"Cancel"和"Install"按钮
+                <div className="flex gap-3">
+                  <button
+                    onClick={handleCancel}
+                    className="flex-1 px-4 py-3 bg-gray-100 text-gray-700 rounded-xl font-medium hover:bg-gray-200 transition-colors"
+                  >
+                    {t('common.cancel') || 'Cancel'}
+                  </button>
+                  <button
+                    onClick={handleInstall}
+                    className="flex-1 px-4 py-3 bg-gradient-to-r from-purple-600 to-purple-700 text-white rounded-xl font-medium hover:from-purple-700 hover:to-purple-800 transition-all shadow-lg hover:shadow-xl"
+                  >
+                    {t('pwa.install') || 'Install'}
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         </div>

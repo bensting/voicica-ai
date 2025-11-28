@@ -515,7 +515,20 @@
     "updateAvailable": "发现新版本",
     "updateDescription": "应用有新版本可用。点击更新以获取最新功能和改进。",
     "update": "立即更新",
-    "later": "稍后"
+    "later": "稍后",
+    "installShortcut": "安装应用",
+    "installTitle": "安装应用",
+    "installDescription": "将此应用安装到您的设备上,即使离线也能快速轻松访问。",
+    "install": "安装",
+    "feature1": "从桌面或主屏幕快速访问",
+    "feature2": "支持离线访问缓存内容",
+    "feature3": "轻量级,无需应用商店",
+    "iosInstructions": "安装步骤：",
+    "iosStep1": "点击分享按钮",
+    "iosStep1b": "（位于 Safari 底部）",
+    "iosStep2": "滚动并点击「添加到主屏幕」",
+    "iosStep3": "点击右上角的「添加」",
+    "gotIt": "知道了"
   },
   "creditHistory": {
     "title": "积分历史",

@@ -198,24 +198,24 @@ export default function GenerationRecordCard({
           />
         </div>
 
-        {/* Action Buttons - full width */}
+        {/* Action Buttons - full width, icon only */}
         {showActions && !isProcessing && (
           <div className="flex gap-3 pt-2">
             <button
               onClick={() => onDownload(generation.id)}
-              className="flex-1 py-3 bg-purple-50 text-purple-600 font-medium rounded-xl hover:bg-purple-100 transition-colors flex items-center justify-center gap-2"
+              className="flex-1 py-3 bg-purple-50 text-purple-600 font-medium rounded-xl hover:bg-purple-100 transition-colors flex items-center justify-center"
               disabled={!generation.audioUrl}
+              title={t('common.download')}
             >
               <Download className="w-5 h-5" />
-              {t('common.download')}
             </button>
             {generation.shareId && (
               <button
                 onClick={() => setIsShareModalOpen(true)}
-                className="flex-1 py-3 bg-purple-50 text-purple-600 font-medium rounded-xl hover:bg-purple-100 transition-colors flex items-center justify-center gap-2"
+                className="flex-1 py-3 bg-purple-50 text-purple-600 font-medium rounded-xl hover:bg-purple-100 transition-colors flex items-center justify-center"
+                title={t('common.share')}
               >
                 <Share2 className="w-5 h-5" />
-                {t('common.share')}
               </button>
             )}
             <button
@@ -223,10 +223,10 @@ export default function GenerationRecordCard({
                 e.stopPropagation();
                 onDelete(generation.id);
               }}
-              className="flex-1 py-3 bg-gray-50 text-gray-600 font-medium rounded-xl hover:bg-red-50 hover:text-red-600 transition-colors flex items-center justify-center gap-2"
+              className="flex-1 py-3 bg-gray-50 text-gray-600 font-medium rounded-xl hover:bg-red-50 hover:text-red-600 transition-colors flex items-center justify-center"
+              title={t('common.delete')}
             >
               <Trash2 className="w-5 h-5" />
-              {t('common.delete')}
             </button>
           </div>
         )}

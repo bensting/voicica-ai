@@ -41,29 +41,30 @@ export default function PWAInstallButton() {
     console.log('[PWA Install Button] iOS Device:', isIOSDevice);
     console.log('[PWA Install Button] User Agent:', navigator.userAgent);
 
-    // 显示按钮（所有设备）
-    setShowButton(true);
-    console.log('[PWA Install Button] Showing button');
+    // 显示按钮逻辑：区分开发环境和生产环境
+    const isDevelopment = process.env.NODE_ENV === 'development';
 
-    // Android/Desktop: 如果 5 秒内事件没有触发，隐藏按钮（可能已安装）
-    let hideButtonTimer: NodeJS.Timeout | null = null;
-
-    if (!isIOSDevice) {
-      hideButtonTimer = setTimeout(() => {
-        console.log('[PWA Install Button] ⏰ Timeout: beforeinstallprompt not fired, hiding button (likely already installed)');
-        setShowButton(false);
-      }, 5000);
+    if (isDevelopment) {
+      // 开发环境：总是显示按钮（方便测试）
+      setShowButton(true);
+      console.log('[PWA Install Button] Development mode: always showing button');
+    } else {
+      // 生产环境：iOS 总是显示，Android/Desktop 等待事件触发
+      if (isIOSDevice) {
+        setShowButton(true);
+        console.log('[PWA Install Button] iOS device: showing button');
+      } else {
+        console.log('[PWA Install Button] Production mode: waiting for beforeinstallprompt event');
+        // Android/Desktop 初始隐藏，等待事件触发
+      }
     }
 
     // Android/Desktop: 监听 beforeinstallprompt 事件
     const handleBeforeInstallPrompt = (e: Event) => {
       e.preventDefault();
       console.log('[PWA Install Button] ✅ beforeinstallprompt event fired!');
-      if (hideButtonTimer) {
-        clearTimeout(hideButtonTimer);
-        hideButtonTimer = null;
-      }
       setDeferredPrompt(e as BeforeInstallPromptEvent);
+      setShowButton(true); // 事件触发时显示按钮
     };
 
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
@@ -78,9 +79,6 @@ export default function PWAInstallButton() {
     window.addEventListener('appinstalled', handleAppInstalled);
 
     return () => {
-      if (hideButtonTimer) {
-        clearTimeout(hideButtonTimer);
-      }
       window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
       window.removeEventListener('appinstalled', handleAppInstalled);
     };

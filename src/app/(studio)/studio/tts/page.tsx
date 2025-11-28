@@ -43,6 +43,7 @@ export default function StudioTTSPage() {
   const [isVoiceSelectorOpen, setIsVoiceSelectorOpen] = useState(false);
   const [isGeneratingModalOpen, setIsGeneratingModalOpen] = useState(false);
   const [isAudioSettingsOpen, setIsAudioSettingsOpen] = useState(false);
+  const [userClosedGeneratingModal, setUserClosedGeneratingModal] = useState(false); // 追踪用户是否手动关闭
 
   // 检测是否为移动端（在 useState 初始化，避免 useEffect）
   const [isMobile] = useState(() => {
@@ -80,8 +81,20 @@ export default function StudioTTSPage() {
     onTaskSubmitted: () => {
       console.log('🔄 [TTSPage] 任务成功提交，300ms 后刷新记录和积分');
       setTimeout(() => {
-        void fetchRecords();
-        void refreshCredits();
+        console.log('⏰ [TTSPage] 300ms 超时触发，开始刷新');
+        console.log('📋 [TTSPage] 调用 fetchRecords');
+        void fetchRecords().then(() => {
+          console.log('✅ [TTSPage] fetchRecords 完成');
+        }).catch((err) => {
+          console.error('❌ [TTSPage] fetchRecords 失败:', err);
+        });
+
+        console.log('💰 [TTSPage] 调用 refreshCredits');
+        void refreshCredits().then(() => {
+          console.log('✅ [TTSPage] refreshCredits 完成');
+        }).catch((err) => {
+          console.error('❌ [TTSPage] refreshCredits 失败:', err);
+        });
       }, 300);
     },
   });
@@ -186,8 +199,8 @@ export default function StudioTTSPage() {
     const latestRecord = generations[0];
     const isProcessing = latestRecord.status === TaskStatus.PROCESSING || latestRecord.status === TaskStatus.PENDING;
 
-    // 如果最新记录是处理中状态，打开弹窗
-    if (isProcessing && !isGeneratingModalOpen) {
+    // 如果最新记录是处理中状态 且 用户没有手动关闭弹窗，则打开弹窗
+    if (isProcessing && !isGeneratingModalOpen && !userClosedGeneratingModal) {
       console.log('📱 [TTSPage] 检测到处理中的任务，打开弹窗', {
         id: latestRecord.id,
         status: latestRecord.status,
@@ -195,9 +208,15 @@ export default function StudioTTSPage() {
       setIsGeneratingModalOpen(true);
     }
 
+    // 如果任务已完成，重置用户关闭标志（允许下次新任务自动打开）
+    if (!isProcessing && userClosedGeneratingModal) {
+      console.log('📱 [TTSPage] 任务完成，重置用户关闭标志');
+      setUserClosedGeneratingModal(false);
+    }
+
     // 如果最新记录已完成且弹窗是打开的，不自动关闭（用户手动关闭）
     // 用户可以查看完成结果，手动关闭弹窗
-  }, [generations, isMobile, isGeneratingModalOpen]);
+  }, [generations, isMobile, isGeneratingModalOpen, userClosedGeneratingModal]);
 
   // Memoize callbacks to prevent unnecessary re-renders
   const handleOpenSettings = useCallback(() => {
@@ -374,6 +393,7 @@ export default function StudioTTSPage() {
         onClose={() => {
           console.log('📱 [TTSPage] 用户手动关闭生成进度弹窗');
           setIsGeneratingModalOpen(false);
+          setUserClosedGeneratingModal(true); // 标记用户手动关闭，防止自动重新打开
         }}
         generation={generations.length > 0 ? generations[0] : null}
         onDelete={(id) => {
@@ -381,6 +401,7 @@ export default function StudioTTSPage() {
           handleDeleteGeneration(id);
           // 删除后立即关闭弹窗
           setIsGeneratingModalOpen(false);
+          setUserClosedGeneratingModal(true); // 也标记为手动关闭
         }}
         onDownload={handleDownloadGeneration}
       />

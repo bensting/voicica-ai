@@ -31,13 +31,24 @@ export const ttsQueue = {
         ? `https://${process.env.VERCEL_URL}`
         : 'https://voicica.ai';
 
-    // 异步调用处理函数（不等待结果）
-    fetch(`${baseUrl}/api/queue/tts`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
-    }).catch((err) => {
-      console.error('[Queue] 调用失败:', err);
-    });
+    // 调用队列处理函数
+    try {
+      const response = await fetch(`${baseUrl}/api/queue/tts`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        const error = await response.text();
+        console.error('[Queue] 队列调用失败:', response.status, error);
+        throw new Error(`Queue call failed: ${response.status}`);
+      }
+
+      console.log('[Queue] ✅ 任务已提交到队列:', payload.taskId);
+    } catch (err) {
+      console.error('[Queue] ❌ 调用失败:', err);
+      throw err; // 向上抛出错误，让调用方知道失败了
+    }
   }
 };

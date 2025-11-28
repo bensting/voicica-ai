@@ -7,7 +7,7 @@ import prisma from '@/lib/prisma';
 import { getUserOrAnonymous } from '@/lib/auth-firebase';
 import { v4 as uuidv4 } from 'uuid';
 import { nanoid } from 'nanoid';
-import { inngest } from '@/lib/inngest/client';
+import { ttsQueue } from '@/lib/queue/tts-queue';
 import { InsufficientCreditsError, errorToResponse } from '@/lib/errors';
 import { calculateVoiceCost} from '@/config/appConfig';
 
@@ -229,25 +229,39 @@ export async function createTtsTask(request: TtsRequest): Promise<TtsTaskStatus>
 
     console.log(`TTS 任务已创建: ${taskId}, 用户: ${userId}, 积分: ${requiredCredits}`);
 
-    // 6. 触发 Inngest 处理任务
-    await inngest.send({
-      name: 'tts/task.created',
-      data: {
-        taskId,
-        userId,
-        text: request.text,
-        voiceName: request.voice_name,
-        language: request.language || undefined,
-        style: request.style || undefined, // 语音风格
-        speed: request.speed ?? 1.0,      // 0.5 - 2.0，默认 1.0 倍速
-        pitch: request.pitch ?? 50,       // 1 - 100，默认 50（中间值）
-        volume: request.volume ?? 50,     // 1 - 100，默认 50（中间值）
-        creditsCost: requiredCredits,
-        isAnonymous,
-      },
-    });
+    // 6. 触发 Vercel Queue 处理任务
+    const payload = {
+      taskId,
+      userId,
+      text: request.text,
+      voiceName: request.voice_name,
+      language: request.language,
+      style: request.style,
+      speed: request.speed ?? 1.0,
+      pitch: request.pitch ?? 50,
+      volume: request.volume ?? 50,
+      creditsCost: requiredCredits,
+      isAnonymous,
+    };
 
-    console.log(`📤 Inngest 事件已发送: ${taskId}`);
+    // 本地开发：直接调用处理函数
+    // 生产环境：使用 Vercel Queue
+    if (process.env.NODE_ENV === 'development') {
+      console.log(`🧪 [开发模式] 直接调用处理函数: ${taskId}`);
+      // 异步调用，不等待结果（模拟队列行为）
+      fetch('http://localhost:3000/api/queue/tts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      }).catch((err) => {
+        console.error('本地队列调用失败:', err);
+      });
+    } else {
+      console.log(`📤 [生产模式] 添加到 Vercel Queue: ${taskId}`);
+      await ttsQueue.enqueue(payload);
+    }
+
+    console.log(`📤 队列任务已添加: ${taskId}`);
 
     return {
       task_id: taskId,

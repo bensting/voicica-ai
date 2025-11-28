@@ -122,16 +122,10 @@ export default function VoiceSelectorBottomSheet({
 
   return (
     <>
-      {/* Backdrop */}
-      <div
-        className="fixed inset-0 bg-black/40 z-40 transition-opacity"
-        onClick={onClose}
-      />
-
-      {/* Bottom Sheet */}
-      <div className="fixed inset-x-0 bottom-0 z-50 bg-white rounded-t-3xl shadow-2xl flex flex-col max-h-[90vh] animate-slide-up">
+      {/* Mobile Fullscreen Voice Selector */}
+      <div className="fixed inset-0 z-50 bg-white flex flex-col animate-slide-up">
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-gray-200 flex-shrink-0">
+        <div className="flex items-center justify-between p-4 border-b border-gray-200 flex-shrink-0 bg-white">
           <h2 className="text-lg font-semibold text-gray-900">
             {t('studio.selectVoice')}
           </h2>

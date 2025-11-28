@@ -95,7 +95,7 @@ export default function LanguageSelectorModal({
       {/* 模态框 - 从底部弹出 */}
       <div className="fixed inset-x-0 bottom-0 z-50 animate-slideUp">
         <div
-          className="bg-white rounded-t-3xl shadow-2xl w-full max-h-[85vh] flex flex-col"
+          className="bg-white rounded-t-3xl shadow-2xl w-full h-[65vh] flex flex-col"
           onClick={(e) => e.stopPropagation()}
         >
           {/* 拖动指示器 */}

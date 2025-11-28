@@ -1,9 +1,10 @@
-/**
- * TTS 任务队列处理函数 (Vercel Queue)
+ /**
+ * TTS 任务队列处理函数 (Upstash QStash)
  *
- * 替代原有的 Inngest Worker
+ * 由 QStash 调用，处理异步 TTS 生成任务
  */
 import { NextRequest, NextResponse } from 'next/server';
+import { verifySignatureAppRouter } from '@upstash/qstash/nextjs';
 import prisma from '@/lib/prisma';
 import { synthesizeSpeech } from '@/lib/services/azure-tts';
 import { uploadAudio } from '@/lib/services/r2-storage';
@@ -13,7 +14,8 @@ import type { TtsQueuePayload } from '@/lib/queue/tts-queue';
 // 允许长时间运行（最多 5 分钟）
 export const maxDuration = 300;
 
-export async function POST(req: NextRequest) {
+// 处理函数（不带签名验证，用于开发环境）
+async function handleTTSTask(req: NextRequest) {
   const payload: TtsQueuePayload = await req.json();
   const { taskId, userId, text, voiceName, language, style, speed, pitch, volume, creditsCost, isAnonymous } = payload;
 
@@ -261,3 +263,11 @@ export async function POST(req: NextRequest) {
     );
   }
 }
+
+// 导出 POST 函数
+// 生产环境：使用 QStash 签名验证（确保只有 QStash 可以调用）
+// 开发环境：跳过验证（方便本地测试）
+export const POST =
+  process.env.NODE_ENV === 'production' && process.env.QSTASH_CURRENT_SIGNING_KEY
+    ? verifySignatureAppRouter(handleTTSTask)
+    : handleTTSTask;

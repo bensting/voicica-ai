@@ -32,7 +32,7 @@ export default function Home() {
     console.log('=== 环境信息 ===');
     console.log('NODE_ENV:', process.env.NODE_ENV);
     console.log('Next.js 环境:', process.env.NEXT_PUBLIC_VERCEL_ENV || 'local');
-    console.log('PWA 状态:', process.env.NODE_ENV === 'development' ? '禁用 (开发环境)' : '启用 (生产环境)');
+    console.log('PWA 状态: 已启用');
     console.log('===============');
   }, []);
 

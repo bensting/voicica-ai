@@ -41,23 +41,17 @@ export default function PWAInstallButton() {
     console.log('[PWA Install Button] iOS Device:', isIOSDevice);
     console.log('[PWA Install Button] User Agent:', navigator.userAgent);
 
-    // iOS 设备始终显示按钮（因为需要手动引导）
-    if (isIOSDevice) {
-      console.log('[PWA Install Button] iOS detected, showing button');
-      setShowButton(true);
-    } else {
-      console.log('[PWA Install Button] Non-iOS device, waiting for beforeinstallprompt event');
-    }
+    // 显示按钮（所有设备）
+    setShowButton(true);
+    console.log('[PWA Install Button] Showing button');
 
     // Android/Desktop: 监听 beforeinstallprompt 事件
     const handleBeforeInstallPrompt = (e: Event) => {
       e.preventDefault();
       console.log('[PWA Install Button] ✅ beforeinstallprompt event fired!');
       setDeferredPrompt(e as BeforeInstallPromptEvent);
-      setShowButton(true);
     };
 
-    console.log('[PWA Install Button] Adding beforeinstallprompt event listener');
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
 
     // 监听 appinstalled 事件

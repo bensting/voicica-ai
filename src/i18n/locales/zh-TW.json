@@ -4,7 +4,10 @@
     "cancel": "取消",
     "close": "關閉",
     "retry": "重試",
-    "loading": "載入中..."
+    "loading": "載入中...",
+    "download": "下載",
+    "share": "分享",
+    "delete": "刪除"
   },
   "productCategory": {
     "aiVideo": "AI 影片",
@@ -339,6 +342,8 @@
     "taskProgress": "進度",
     "recentAuditions": "最近生成",
     "allRecords": "全部記錄",
+    "progress": "生成進度",
+    "duration": "時長",
     "errors": {
       "selectTextAndVoice": "請輸入文字並選擇語音",
       "invalidParams": "請求參數錯誤，請檢查輸入",

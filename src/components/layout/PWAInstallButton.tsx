@@ -154,14 +154,6 @@ export default function PWAInstallButton() {
 
             {/* 内容 */}
             <div className="p-6">
-              {/* 临时调试信息 */}
-              <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg text-xs">
-                <div><strong>Debug Info:</strong></div>
-                <div>isIOS: {isIOS ? 'true' : 'false'}</div>
-                <div>User Agent: {typeof window !== 'undefined' ? navigator.userAgent : 'N/A'}</div>
-                <div>Has deferredPrompt: {deferredPrompt ? 'yes' : 'no'}</div>
-              </div>
-
               <h3 className="text-lg font-semibold text-gray-900 mb-2">
                 {t('pwa.installTitle') || 'Install Application'}
               </h3>

@@ -229,8 +229,8 @@ export async function createTtsTask(request: TtsRequest): Promise<TtsTaskStatus>
 
     console.log(`TTS 任务已创建: ${taskId}, 用户: ${userId}, 积分: ${requiredCredits}`);
 
-    // 6. 触发 Vercel Queue 处理任务
-    const payload = {
+    // 6. 触发后台处理任务
+    await ttsQueue.enqueue({
       taskId,
       userId,
       text: request.text,
@@ -242,24 +242,7 @@ export async function createTtsTask(request: TtsRequest): Promise<TtsTaskStatus>
       volume: request.volume ?? 50,
       creditsCost: requiredCredits,
       isAnonymous,
-    };
-
-    // 本地开发：直接调用处理函数
-    // 生产环境：使用 Vercel Queue
-    if (process.env.NODE_ENV === 'development') {
-      console.log(`🧪 [开发模式] 直接调用处理函数: ${taskId}`);
-      // 异步调用，不等待结果（模拟队列行为）
-      fetch('http://localhost:3000/api/queue/tts', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      }).catch((err) => {
-        console.error('本地队列调用失败:', err);
-      });
-    } else {
-      console.log(`📤 [生产模式] 添加到 Vercel Queue: ${taskId}`);
-      await ttsQueue.enqueue(payload);
-    }
+    });
 
     console.log(`📤 队列任务已添加: ${taskId}`);
 

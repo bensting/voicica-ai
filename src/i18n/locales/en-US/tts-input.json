@@ -1,6 +1,6 @@
 {
   "placeholder": "Enter your text here, and we will automatically identify and convert it to the corresponding speech.",
-  "creditsLeft": "credits left",
+  "creditsLeft": "Credits",
   "characterCount": "{current} / {max}",
   "generateSpeech": "Generate Speech",
   "generating": "Generating...",

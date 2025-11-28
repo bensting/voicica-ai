@@ -1,5 +1,6 @@
 {
   "placeholder": "ป้อนข้อความที่นี่ เราจะแปลงเป็นเสียงพูดให้โดยอัตโนมัติ",
+  "creditsLeft": "เครดิต",
   "charactersLeft": "ตัวอักษรที่เหลือ",
   "characterCount": "{current} / {max}",
   "generateSpeech": "สร้างเสียง",

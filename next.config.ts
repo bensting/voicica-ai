@@ -77,7 +77,7 @@ export default withPWA({
   dest: 'public',
   register: true,
   skipWaiting: false,  // 改为 false,让新 Service Worker 等待
-  disable: process.env.NODE_ENV === 'development',
+  disable: false,  // 开发环境也启用 PWA（方便测试安装功能）
   // 自定义 Service Worker 配置
   buildExcludes: [/middleware-manifest\.json$/, /_buildManifest\.js$/],
   // 添加版本控制

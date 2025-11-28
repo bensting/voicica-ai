@@ -18,12 +18,18 @@ export default function PWAInstallButton() {
   const { t } = useLanguage();
 
   useEffect(() => {
+    console.log('[PWA Install Button] Component mounted');
+
     // 检查是否已经安装（standalone 模式）
     const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
     const navigatorWithStandalone = window.navigator as Navigator & { standalone?: boolean };
     const isIOSStandalone = ('standalone' in window.navigator) && navigatorWithStandalone.standalone;
 
+    console.log('[PWA Install Button] isStandalone:', isStandalone);
+    console.log('[PWA Install Button] isIOSStandalone:', isIOSStandalone);
+
     if (isStandalone || isIOSStandalone) {
+      console.log('[PWA Install Button] Already installed, not showing button');
       return;
     }
 
@@ -32,22 +38,31 @@ export default function PWAInstallButton() {
     const isIOSDevice = /iPad|iPhone|iPod/.test(navigator.userAgent) && !windowWithMSStream.MSStream;
     setIsIOS(isIOSDevice);
 
+    console.log('[PWA Install Button] iOS Device:', isIOSDevice);
+    console.log('[PWA Install Button] User Agent:', navigator.userAgent);
+
     // iOS 设备始终显示按钮（因为需要手动引导）
     if (isIOSDevice) {
+      console.log('[PWA Install Button] iOS detected, showing button');
       setShowButton(true);
+    } else {
+      console.log('[PWA Install Button] Non-iOS device, waiting for beforeinstallprompt event');
     }
 
-    // Android: 监听 beforeinstallprompt 事件
+    // Android/Desktop: 监听 beforeinstallprompt 事件
     const handleBeforeInstallPrompt = (e: Event) => {
       e.preventDefault();
+      console.log('[PWA Install Button] ✅ beforeinstallprompt event fired!');
       setDeferredPrompt(e as BeforeInstallPromptEvent);
       setShowButton(true);
     };
 
+    console.log('[PWA Install Button] Adding beforeinstallprompt event listener');
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
 
     // 监听 appinstalled 事件
     const handleAppInstalled = () => {
+      console.log('[PWA Install Button] App installed');
       setShowButton(false);
       setDeferredPrompt(null);
     };
@@ -145,6 +160,14 @@ export default function PWAInstallButton() {
 
             {/* 内容 */}
             <div className="p-6">
+              {/* 临时调试信息 */}
+              <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg text-xs">
+                <div><strong>Debug Info:</strong></div>
+                <div>isIOS: {isIOS ? 'true' : 'false'}</div>
+                <div>User Agent: {typeof window !== 'undefined' ? navigator.userAgent : 'N/A'}</div>
+                <div>Has deferredPrompt: {deferredPrompt ? 'yes' : 'no'}</div>
+              </div>
+
               <h3 className="text-lg font-semibold text-gray-900 mb-2">
                 {t('pwa.installTitle') || 'Install Application'}
               </h3>

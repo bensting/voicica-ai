@@ -74,7 +74,11 @@ export default function PWAInstallButton() {
   };
 
   const handleInstall = async () => {
-    if (!deferredPrompt) return;
+    if (!deferredPrompt) {
+      // 如果没有 deferredPrompt，说明浏览器不支持 PWA 安装或 PWA 配置不完整
+      alert('当前浏览器不支持自动安装，或应用未满足 PWA 安装条件。\n\n您可以尝试：\n1. 使用 Chrome/Edge 浏览器\n2. 确保网站通过 HTTPS 访问\n3. 手动将网站添加到主屏幕');
+      return;
+    }
 
     // 显示浏览器的安装提示
     await deferredPrompt.prompt();

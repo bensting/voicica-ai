@@ -13,6 +13,9 @@ const APP_VERSION = packageJson.version;
 const nextConfig: NextConfig = {
   /* config options here */
 
+  // 禁用尾部斜杠重定向（避免 Stripe webhook 307 错误）
+  skipTrailingSlashRedirect: true,
+
   // 环境变量注入
   env: {
     NEXT_PUBLIC_APP_VERSION: APP_VERSION,

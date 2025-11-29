@@ -7,13 +7,13 @@
  * 作为中间层隐藏后端 API 地址，并提供统一的错误处理
  */
 
-import prisma from '@/lib/prisma';
 import { getUserOrAnonymous } from '@/lib/auth-firebase';
 import { InsufficientCreditsError, errorToResponse } from '@/lib/errors';
 import { calculateProductCreditsCost } from '@/config/creditsCost';
 import { ProductType } from '@/config/productType';
 import { isYouTubeUrl } from '@/lib/services/youtube-downloader';
 import { isTikTokUrl } from '@/lib/services/tiktok-downloader';
+import { checkCredits, deductCredits } from '@/lib/credits';
 
 // 视频格式信息
 export interface VideoFormat {
@@ -45,69 +45,6 @@ export interface ParseResult {
 
 // 后端 API 地址（从环境变量获取）
 const API_BASE_URL = process.env.NEXT_PUBLIC_TOOLS_API_URL || 'https://tools-api.voicica.ai';
-
-/**
- * 检查用户积分
- */
-async function checkCredits(
-  userId: string,
-  required: number,
-  isAnonymous: boolean
-): Promise<{ hasEnough: boolean; current: number }> {
-  if (isAnonymous) {
-    const user = await prisma.anonymous_users.findUnique({
-      where: { user_id: userId },
-      select: { credits: true },
-    });
-    const current = user?.credits ?? 0;
-    return { hasEnough: current >= required, current };
-  } else {
-    const user = await prisma.users.findUnique({
-      where: { user_id: userId },
-      select: { credits: true },
-    });
-    const current = user?.credits ?? 0;
-    return { hasEnough: current >= required, current };
-  }
-}
-
-/**
- * 扣除积分并记录到 credit_history
- */
-async function deductCreditsAndLog(
-  userId: string,
-  amount: number,
-  productType: ProductType,
-  isAnonymous: boolean,
-  description: string
-): Promise<void> {
-  const tableName = isAnonymous ? 'anonymous_users' : 'users';
-
-  // 扣除积分
-  if (isAnonymous) {
-    await prisma.anonymous_users.update({
-      where: { user_id: userId },
-      data: { credits: { decrement: amount } },
-    });
-  } else {
-    await prisma.users.update({
-      where: { user_id: userId },
-      data: { credits: { decrement: amount } },
-    });
-  }
-
-  // 记录到 credit_history
-  await prisma.credit_history.create({
-    data: {
-      user_id: userId,
-      amount: -amount,
-      description,
-      product_type: productType,
-    },
-  });
-
-  console.log(`✅ [deductCredits] 扣除积分成功: ${amount}, 用户: ${userId}, 表: ${tableName}`);
-}
 
 /**
  * 解析视频 URL（统一入口）
@@ -190,7 +127,7 @@ export async function parseVideoUrl(url: string): Promise<ParseResult> {
 
     // 7. 解析成功，扣除积分
     if (requiredCredits > 0) {
-      await deductCreditsAndLog(
+      await deductCredits(
         userId,
         requiredCredits,
         productType,
@@ -208,18 +145,11 @@ export async function parseVideoUrl(url: string): Promise<ParseResult> {
   } catch (error) {
     console.error('[parseVideoUrl] Error:', error);
 
-    // 处理积分不足错误
-    if (error instanceof InsufficientCreditsError) {
-      const errorResponse = errorToResponse(error);
-      return {
-        success: false,
-        error: errorResponse.error,
-      };
-    }
-
+    // 统一错误处理
+    const errorResponse = errorToResponse(error);
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Failed to parse video',
+      error: errorResponse.error,
     };
   }
 }

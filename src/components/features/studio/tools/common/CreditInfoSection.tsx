@@ -54,7 +54,7 @@ export default function CreditInfoSection({
         <div className={`flex items-center gap-2 ${isMobile ? 'text-xs' : 'text-sm'}`}>
           <div className="flex items-center gap-1.5">
             <CreditsIcon className={`${isMobile ? 'w-6 h-6' : 'w-7 h-7'} text-amber-600 flex-shrink-0`} />
-            <span className="text-gray-700 font-medium">当前积分：</span>
+            <span className="text-gray-700 font-medium">{t('creditInfo.currentCredits')}</span>
           </div>
           <span className="font-bold text-amber-700 text-base">
             {profile?.credits ?? 0}
@@ -65,7 +65,7 @@ export default function CreditInfoSection({
               href="/studio/login"
               className="ml-auto text-red-600 hover:text-red-700 underline font-medium transition-colors"
             >
-              登录获取更多积分
+              {t('creditInfo.loginForMore')}
             </Link>
           )}
         </div>
@@ -89,7 +89,7 @@ export default function CreditInfoSection({
             />
           </svg>
           <span className="text-amber-700">
-            {actionName}成功后将扣除 <span className="font-semibold">{creditCost}</span> 个积分
+            {t('creditInfo.deductionNotice', { actionName, count: creditCost })}
           </span>
         </div>
       </div>

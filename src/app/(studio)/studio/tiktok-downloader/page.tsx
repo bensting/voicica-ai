@@ -15,13 +15,13 @@ import {
 } from '@/lib/services/tiktok-downloader';
 
 // 组件导入
-import VideoUrlInput, { ParseButton } from '@/components/features/studio/tiktok-downloader/VideoUrlInput';
-import LoadingState from '@/components/features/studio/tiktok-downloader/LoadingState';
-import ErrorMessage from '@/components/features/studio/tiktok-downloader/ErrorMessage';
-import VideoInfoCard from '@/components/features/studio/tiktok-downloader/VideoInfoCard';
-import FormatSelector from '@/components/features/studio/tiktok-downloader/FormatSelector';
-import DownloadButton from '@/components/features/studio/tiktok-downloader/DownloadButton';
-import EmptyState from '@/components/features/studio/tiktok-downloader/EmptyState';
+import VideoUrlInput, { ParseButton } from '@/components/features/studio/tools/tiktok-downloader/VideoUrlInput';
+import LoadingState from '@/components/features/studio/tools/tiktok-downloader/LoadingState';
+import ErrorMessage from '@/components/features/studio/tools/tiktok-downloader/ErrorMessage';
+import VideoInfoCard from '@/components/features/studio/tools/tiktok-downloader/VideoInfoCard';
+import FormatSelector from '@/components/features/studio/tools/tiktok-downloader/FormatSelector';
+import DownloadButton from '@/components/features/studio/tools/tiktok-downloader/DownloadButton';
+import EmptyState from '@/components/features/studio/tools/tiktok-downloader/EmptyState';
 
 /**
  * TikTok Video Downloader Page

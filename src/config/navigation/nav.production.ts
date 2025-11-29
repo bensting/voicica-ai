@@ -33,13 +33,13 @@ export const navigationConfig: NavigationConfig = {
       insertAfter: '/studio/tts', // Insert after Studio link
       items: [
         {
-          href: '/studio/tiktok-downloader',
+          href: '/studio/tools/tiktok-downloader',
           labelKey: 'nav.tiktokDownloader',
           descriptionKey: 'nav.tiktokDownloaderDesc',
           icon: TikTokIcon,
         },
         {
-          href: '/studio/youtube-downloader',
+          href: '/studio/tools/youtube-downloader',
           labelKey: 'nav.youtubeDownloader',
           descriptionKey: 'nav.youtubeDownloaderDesc',
           icon: YouTubeIcon,

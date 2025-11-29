@@ -173,7 +173,7 @@ export default function YouTubeDownloaderPage() {
         <div className="flex-1 flex flex-col px-4 pt-4 gap-4 overflow-y-auto pb-24">
           {/* URL 输入框 */}
           <div className="flex flex-col gap-2">
-a            <label className="text-sm font-medium text-gray-700">
+            <label className="text-sm font-medium text-gray-700">
               {t('youtubeDownloader.urlLabel')}
             </label>
             <div className="flex gap-2">

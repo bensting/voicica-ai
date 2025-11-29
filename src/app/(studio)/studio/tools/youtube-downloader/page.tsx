@@ -183,12 +183,12 @@ export default function YouTubeDownloaderPage() {
       {/* Mobile Layout */}
       <div className="lg:hidden fixed inset-0 top-[60px] flex flex-col bg-gradient-to-b from-gray-50 to-white">
         <div className="flex-1 flex flex-col px-4 pt-4 gap-4 overflow-y-auto pb-24">
-          {/* URL 输入框 */}
-          <div className="flex flex-col gap-2">
-            <label className="text-sm font-medium text-gray-700">
+          {/* URL 输入框卡片 */}
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-4">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
               {t('youtubeDownloader.urlLabel')}
             </label>
-            <div className="flex gap-2">
+            <div className="flex gap-2 mb-3">
               <VideoUrlInput
                 url={url}
                 loading={loading}
@@ -200,7 +200,7 @@ export default function YouTubeDownloaderPage() {
               <button
                 onClick={handleParse}
                 disabled={loading || !url.trim()}
-                className="px-6 py-3 bg-red-600 text-white rounded-xl font-medium hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="px-6 py-3 bg-red-600 text-white rounded-xl font-medium hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex-shrink-0"
               >
                 {loading ? (
                   <svg className="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">

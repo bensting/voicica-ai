@@ -555,6 +555,9 @@
     "productType": {
       "textToSpeech": "語音合成",
       "voiceCloning": "語音克隆",
+      "youtubeDownloader": "YouTube下載",
+      "tiktokDownloader": "TikTok下載",
+      "subscription": "訂閱",
       "other": "其他"
     }
   },

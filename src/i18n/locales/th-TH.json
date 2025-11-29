@@ -570,6 +570,9 @@
     "productType": {
       "textToSpeech": "แปลงข้อความเป็นเสียง",
       "voiceCloning": "โคลนเสียง",
+      "youtubeDownloader": "ดาวน์โหลด YouTube",
+      "tiktokDownloader": "ดาวน์โหลด TikTok",
+      "subscription": "สมัครสมาชิก",
       "other": "อื่นๆ"
     }
   },

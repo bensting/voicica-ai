@@ -569,6 +569,9 @@
     "productType": {
       "textToSpeech": "Text to Speech",
       "voiceCloning": "Voice Cloning",
+      "youtubeDownloader": "YouTube Download",
+      "tiktokDownloader": "TikTok Download",
+      "subscription": "Subscription",
       "other": "Other"
     }
   },

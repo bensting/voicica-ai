@@ -116,6 +116,10 @@ export default function VoiceSelector({
 
   const handleSelectLanguage = (language: LocaleOption | null) => {
     setSelectedLanguage(language);
+    // 切换语言时重置"已使用"筛选
+    if (usedOnly) {
+      setUsedOnly(false);
+    }
     // Save to localStorage
     if (language) {
       localStorage.setItem('voiceLanguageFilter', language.code);

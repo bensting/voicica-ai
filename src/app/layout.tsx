@@ -8,7 +8,6 @@ import { FirebaseAuthProvider } from "@/contexts/FirebaseAuthContext";
 import { UserProvider } from "@/contexts/UserContext";
 import { CreditsProvider } from "@/contexts/CreditsContext";
 import { AudioSettingsProvider } from "@/contexts/AudioSettingsContext";
-import PWAInstallButton from "@/components/layout/PWAInstallButton";
 import PWAUpdatePrompt from "@/components/layout/PWAUpdatePrompt";
 import LanguageLoadingWrapper from "@/components/providers/LanguageLoadingWrapper";
 import DeviceFingerprintProvider from "@/components/providers/DeviceFingerprintProvider";
@@ -61,23 +60,22 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         suppressHydrationWarning
       >
-        <FirebaseAuthProvider>
-          <UserProvider>
-            <CreditsProvider>
-              <LanguageProvider>
-                <LanguageLoadingWrapper>
+        <LanguageProvider>
+          <FirebaseAuthProvider>
+            <LanguageLoadingWrapper>
+              <UserProvider>
+                <CreditsProvider>
                   <AudioSettingsProvider>
                     <DeviceFingerprintProvider />
                     <CapacitorProvider />
                     {children}
-                    <PWAInstallButton />
                     <PWAUpdatePrompt />
                   </AudioSettingsProvider>
-                </LanguageLoadingWrapper>
-              </LanguageProvider>
-            </CreditsProvider>
-          </UserProvider>
-        </FirebaseAuthProvider>
+                </CreditsProvider>
+              </UserProvider>
+            </LanguageLoadingWrapper>
+          </FirebaseAuthProvider>
+        </LanguageProvider>
         {process.env.NEXT_PUBLIC_GA_ID && (
           <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID} />
         )}

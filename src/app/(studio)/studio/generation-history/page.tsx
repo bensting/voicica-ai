@@ -3,7 +3,7 @@
 import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import ConfirmDialog from '@/components/ui/ConfirmDialog';
-import PageLoading from '@/components/ui/PageLoading';
+import CutePageLoading from '@/components/ui/CutePageLoading';
 import DesktopView from '@/components/features/studio/generation-history/DesktopView';
 import MobileView from '@/components/features/studio/generation-history/MobileView';
 import { useGenerationHistory } from '@/components/features/studio/generation-history/hooks/useGenerationHistory';
@@ -100,7 +100,7 @@ export default function GenerationHistoryPage() {
   return (
     <>
       {/* Page Loading Animation */}
-      <PageLoading show={isInitialLoading} />
+      <CutePageLoading show={isInitialLoading} />
 
       {/* Mobile Layout - shown only on mobile screens */}
       <div className="lg:hidden fixed inset-0 bg-gray-50 pt-16 overflow-hidden">

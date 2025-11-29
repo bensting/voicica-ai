@@ -625,7 +625,7 @@
     "tabs": {
       "videoWithAudio": "视频",
       "videoOnly": "仅视频",
-      "audioOnly": "仅音频"
+      "audioOnly": "音频"
     },
     "errors": {
       "emptyUrl": "请输入 YouTube 视频链接",

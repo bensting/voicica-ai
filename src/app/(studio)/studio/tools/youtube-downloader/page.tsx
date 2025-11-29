@@ -273,6 +273,7 @@ export default function YouTubeDownloaderPage() {
               colorFrom="from-red-100"
               colorTo="to-red-50"
               iconColor="text-red-600"
+              bgColor="bg-red-50/60"
               variant="mobile"
             />
           )}

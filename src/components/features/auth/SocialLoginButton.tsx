@@ -1,7 +1,8 @@
 import { ReactNode } from 'react';
+import type { LoginProvider } from '@/config/loginProviders';
 
 interface SocialLoginButtonProps {
-  provider: 'google' | 'apple' | 'twitter' | 'sso';
+  provider: LoginProvider;
   onClick: () => void;
   disabled?: boolean;
   children: ReactNode;

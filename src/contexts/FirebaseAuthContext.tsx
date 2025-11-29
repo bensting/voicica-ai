@@ -18,6 +18,7 @@ import {
   onAuthStateChanged,
   GoogleAuthProvider,
   TwitterAuthProvider,
+  FacebookAuthProvider,
   OAuthProvider,
   type User,
   type AuthProvider,
@@ -32,6 +33,7 @@ interface FirebaseAuthContextType {
   signInWithGoogle: () => Promise<void>;
   signInWithTwitter: () => Promise<void>;
   signInWithApple: () => Promise<void>;
+  signInWithFacebook: () => Promise<void>;
   signOut: () => Promise<void>;
 }
 
@@ -164,6 +166,13 @@ export function FirebaseAuthProvider({ children }: { children: React.ReactNode }
     await signInWithProvider(provider, 'Apple');
   }, [signInWithProvider]);
 
+  // Facebook 登录
+  const signInWithFacebook = useCallback(async () => {
+    const provider = new FacebookAuthProvider();
+    provider.addScope('email');
+    await signInWithProvider(provider, 'Facebook');
+  }, [signInWithProvider]);
+
   // 登出
   const signOut = useCallback(async () => {
     try {
@@ -181,6 +190,7 @@ export function FirebaseAuthProvider({ children }: { children: React.ReactNode }
     signInWithGoogle,
     signInWithTwitter,
     signInWithApple,
+    signInWithFacebook,
     signOut,
   };
 

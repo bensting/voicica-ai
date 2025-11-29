@@ -94,6 +94,7 @@
     "signInWithGoogle": "使用 Google 登录",
     "signInWithApple": "使用 Apple 登录",
     "signInWithX": "使用 X 登录",
+    "signInWithFacebook": "使用 Facebook 登录",
     "signInWithSSO": "使用 SSO 登录",
     "termsPrefix": "继续即表示您同意我们的",
     "terms": "服务条款",

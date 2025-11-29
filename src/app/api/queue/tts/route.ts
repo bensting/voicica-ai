@@ -10,6 +10,7 @@ import { synthesizeSpeech } from '@/lib/services/azure-tts';
 import { uploadAudio } from '@/lib/services/r2-storage';
 import { ProductType } from '@/config/productType';
 import type { TtsQueuePayload } from '@/lib/queue/tts-queue';
+import { deductCreditsAtomic, addCredits } from '@/lib/credits';
 
 // 允许长时间运行（最多 5 分钟）
 export const maxDuration = 300;
@@ -59,53 +60,16 @@ async function handleTTSTask(req: NextRequest) {
 
     console.log(`🔓 [Queue] 任务 ${taskId} 状态已锁定为 PROCESSING`);
 
-    // 3. 扣减积分并记录历史（使用事务确保原子性）
-    await prisma.$transaction(async (tx) => {
-      // 扣减积分
-      if (isAnonymous) {
-        const result = await tx.anonymous_users.updateMany({
-          where: {
-            user_id: userId,
-            credits: { gte: creditsCost },
-          },
-          data: {
-            credits: { decrement: creditsCost },
-            total_credits_used: { increment: creditsCost },
-          },
-        });
-        if (result.count === 0) {
-          throw new Error('积分扣减失败，余额不足');
-        }
-      } else {
-        const result = await tx.users.updateMany({
-          where: {
-            user_id: userId,
-            credits: { gte: creditsCost },
-          },
-          data: {
-            credits: { decrement: creditsCost },
-            total_credits_used: { increment: creditsCost },
-          },
-        });
-        if (result.count === 0) {
-          throw new Error('积分扣减失败，余额不足');
-        }
-      }
-
-      // 记录积分扣减历史
-      await tx.credit_history.create({
-        data: {
-          user_id: userId,
-          amount: -creditsCost, // 负数表示扣减
-          task_id: taskId,
-          description: `TTS生成: ${text.substring(0, 30)}${text.length > 30 ? '...' : ''}`,
-          product_type: ProductType.TEXT_TO_SPEECH,
-        },
-      });
-
-      creditsDeducted = true;
-      console.log(`💰 积分扣减成功: ${userId}, -${creditsCost}, 已记录到 credit_history`);
-    });
+    // 3. 扣减积分并记录历史（使用原子性扣除避免竞态条件）
+    await deductCreditsAtomic(
+      userId,
+      creditsCost,
+      ProductType.TEXT_TO_SPEECH,
+      isAnonymous,
+      `TTS生成: ${text.substring(0, 30)}${text.length > 30 ? '...' : ''}`,
+      taskId
+    );
+    creditsDeducted = true;
 
     // 4. 更新进度到 20%
     await prisma.tts_records.update({
@@ -192,39 +156,15 @@ async function handleTTSTask(req: NextRequest) {
     // 如果积分已扣减，退还积分并记录历史
     if (creditsDeducted) {
       try {
-        await prisma.$transaction(async (tx) => {
-          // 退还积分
-          if (isAnonymous) {
-            await tx.anonymous_users.update({
-              where: { user_id: userId },
-              data: {
-                credits: { increment: creditsCost },
-                total_credits_used: { decrement: creditsCost },
-              },
-            });
-          } else {
-            await tx.users.update({
-              where: { user_id: userId },
-              data: {
-                credits: { increment: creditsCost },
-                total_credits_used: { decrement: creditsCost },
-              },
-            });
-          }
-
-          // 记录积分退还历史
-          await tx.credit_history.create({
-            data: {
-              user_id: userId,
-              amount: creditsCost, // 正数表示退还
-              task_id: taskId,
-              description: `TTS任务失败，积分退还`,
-              product_type: ProductType.TEXT_TO_SPEECH,
-            },
-          });
-
-          console.log(`💰 积分已退还: ${userId}, +${creditsCost}, 已记录到 credit_history`);
-        });
+        await addCredits(
+          userId,
+          creditsCost,
+          ProductType.TEXT_TO_SPEECH,
+          isAnonymous,
+          'TTS任务失败，积分退还',
+          taskId,
+          true // updateTotalUsed = true，退还时需要减少累计使用量
+        );
       } catch (refundError) {
         console.error('积分退还失败:', refundError);
       }

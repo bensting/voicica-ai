@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import prisma from '@/lib/prisma';
 import { getCreditTierByProductId } from '@/config/subscription';
+import { addCredits } from '@/lib/credits';
 
 // 延迟初始化 Stripe，避免构建时因缺少环境变量而失败
 let _stripe: Stripe | null = null;
@@ -170,24 +171,14 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session, eventId
     },
   });
 
-  // 给用户添加积分
-  await prisma.users.update({
-    where: { user_id: userId },
-    data: {
-      credits: { increment: tier.credits },
-    },
-  });
-
-  // 记录积分变动历史
-  await prisma.credit_history.create({
-    data: {
-      user_id: userId,
-      amount: tier.credits,
-      description: `订阅购买: ${plan.plan_name}`,
-      task_id: `subscription_${subscription.id}`,
-      product_type: null,
-    },
-  });
+  // 给用户添加积分（使用统一的积分管理服务）
+  await addCredits(
+    userId,
+    tier.credits,
+    null as any, // 订阅购买不需要 ProductType
+    false, // 订阅用户都是正式用户
+    `订阅购买: ${plan.plan_name}`
+  );
 
   console.log(`✅ 订阅已创建: ${subscription.id}, 积分: +${tier.credits}`);
 
@@ -275,24 +266,14 @@ async function handleInvoicePaid(invoice: Stripe.Invoice, eventId: string) {
     },
   });
 
-  // 给用户添加积分
-  await prisma.users.update({
-    where: { user_id: subscription.user_id },
-    data: {
-      credits: { increment: tier.credits },
-    },
-  });
-
-  // 记录积分变动历史
-  await prisma.credit_history.create({
-    data: {
-      user_id: subscription.user_id,
-      amount: tier.credits,
-      description: `订阅续费: ${plan.plan_name}`,
-      task_id: `subscription_${subscription.id}_renewal`,
-      product_type: null,
-    },
-  });
+  // 给用户添加积分（使用统一的积分管理服务）
+  await addCredits(
+    subscription.user_id,
+    tier.credits,
+    null as any, // 订阅续费不需要 ProductType
+    false, // 订阅用户都是正式用户
+    `订阅续费: ${plan.plan_name}`
+  );
 
   console.log(`✅ 订阅已续费: ${subscription.id}, 积分: +${tier.credits}`);
 

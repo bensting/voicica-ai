@@ -19,6 +19,8 @@ interface ToolEmptyStateProps {
   colorTo?: string;
   /** 图标颜色 */
   iconColor?: string;
+  /** 卡片背景色（移动端） */
+  bgColor?: string;
   /** 变体 */
   variant?: 'mobile' | 'desktop';
 }
@@ -49,11 +51,12 @@ export default function ToolEmptyState({
   colorFrom = 'from-purple-100',
   colorTo = 'to-purple-50',
   iconColor = 'text-purple-600',
+  bgColor = 'bg-gray-50/80',
   variant = 'mobile',
 }: ToolEmptyStateProps) {
   if (variant === 'mobile') {
     return (
-      <div className="bg-white/60 backdrop-blur-sm rounded-2xl border border-gray-100 p-5">
+      <div className={`${bgColor} rounded-2xl border border-gray-100 p-5`}>
         {/* 标题和图标在一行 */}
         <div className="flex items-center gap-3 mb-3">
           <div className={`w-10 h-10 bg-gradient-to-br ${colorFrom} ${colorTo} rounded-xl flex items-center justify-center flex-shrink-0`}>

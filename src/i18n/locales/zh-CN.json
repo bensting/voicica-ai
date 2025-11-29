@@ -9,6 +9,11 @@
     "share": "分享",
     "delete": "删除"
   },
+  "creditInfo": {
+    "currentCredits": "当前积分：",
+    "loginForMore": "登录获取更多积分",
+    "deductionNotice": "{{actionName}}成功后将扣除 {{count}} 个积分"
+  },
   "productCategory": {
     "aiVideo": "AI 视频",
     "aiMusic": "AI 音乐",
@@ -620,7 +625,7 @@
     "tabs": {
       "videoWithAudio": "视频",
       "videoOnly": "仅视频",
-      "audioOnly": "仅音频"
+      "audioOnly": "音频"
     },
     "errors": {
       "emptyUrl": "请输入 YouTube 视频链接",

@@ -1,8 +1,9 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useStudio } from '@/contexts/StudioContext';
+import { useCredits } from '@/contexts/CreditsContext';
 import TikTokIcon from '@/components/icons/TikTokIcon';
 import {
   parseVideoUrl,
@@ -13,15 +14,18 @@ import {
   getProxyDownloadUrl,
   isTikTokUrl,
 } from '@/lib/services/tiktok-downloader';
+import { calculateProductCreditsCost } from '@/config/creditsCost';
+import { ProductType } from '@/config/productType';
 
 // 组件导入
-import VideoUrlInput, { ParseButton } from '@/components/features/studio/tiktok-downloader/VideoUrlInput';
-import LoadingState from '@/components/features/studio/tiktok-downloader/LoadingState';
-import ErrorMessage from '@/components/features/studio/tiktok-downloader/ErrorMessage';
-import VideoInfoCard from '@/components/features/studio/tiktok-downloader/VideoInfoCard';
-import FormatSelector from '@/components/features/studio/tiktok-downloader/FormatSelector';
-import DownloadButton from '@/components/features/studio/tiktok-downloader/DownloadButton';
-import EmptyState from '@/components/features/studio/tiktok-downloader/EmptyState';
+import VideoUrlInput, { ParseButton } from '@/components/features/studio/tools/tiktok-downloader/VideoUrlInput';
+import LoadingState from '@/components/features/studio/tools/tiktok-downloader/LoadingState';
+import ErrorMessage from '@/components/features/studio/tools/tiktok-downloader/ErrorMessage';
+import VideoInfoCard from '@/components/features/studio/tools/tiktok-downloader/VideoInfoCard';
+import FormatSelector from '@/components/features/studio/tools/tiktok-downloader/FormatSelector';
+import DownloadButton from '@/components/features/studio/tools/tiktok-downloader/DownloadButton';
+import CreditInfoSection from '@/components/features/studio/tools/common/CreditInfoSection';
+import ToolEmptyState from '@/components/features/studio/tools/common/ToolEmptyState';
 
 /**
  * TikTok Video Downloader Page
@@ -31,6 +35,7 @@ import EmptyState from '@/components/features/studio/tiktok-downloader/EmptyStat
 export default function TikTokDownloaderPage() {
   const { t } = useLanguage();
   const { setTitle } = useStudio();
+  const { refreshCredits } = useCredits();
 
   const [url, setUrl] = useState('');
   const [loading, setLoading] = useState(false);
@@ -38,6 +43,11 @@ export default function TikTokDownloaderPage() {
   const [error, setError] = useState<string | null>(null);
   const [videoInfo, setVideoInfo] = useState<ParseResponse | null>(null);
   const [selectedFormat, setSelectedFormat] = useState<VideoFormat | null>(null);
+
+  // 获取 TikTok 下载器的积分成本
+  const creditCost = useMemo(() => {
+    return calculateProductCreditsCost(ProductType.TIKTOK_DOWNLOADER);
+  }, []);
 
   // 设置页面标题
   useEffect(() => {
@@ -78,6 +88,9 @@ export default function TikTokDownloaderPage() {
 
       setVideoInfo(result.data);
 
+      // 解析成功，刷新用户积分
+      await refreshCredits();
+
       // 自动选择最佳格式（优先选择 play_direct）
       const bestFormat = result.data.formats.find(f => f.format_id === 'play_direct') || result.data.formats[0];
       setSelectedFormat(bestFormat);
@@ -86,7 +99,7 @@ export default function TikTokDownloaderPage() {
     } finally {
       setLoading(false);
     }
-  }, [url, t]);
+  }, [url, t, refreshCredits]);
 
   // 下载视频
   const handleDownload = useCallback(() => {
@@ -145,6 +158,9 @@ export default function TikTokDownloaderPage() {
                 )}
               </button>
             </div>
+
+            {/* 积分信息 */}
+            <CreditInfoSection creditCost={creditCost} actionName="解析" variant="mobile" />
           </div>
 
           {/* 解析中提示 */}
@@ -191,9 +207,13 @@ export default function TikTokDownloaderPage() {
 
           {/* 空状态 */}
           {!loading && !videoInfo && !error && (
-            <EmptyState
-              emptyTitle={t('tiktokDownloader.emptyTitle')}
-              emptyDescription={t('tiktokDownloader.emptyDescription')}
+            <ToolEmptyState
+              icon={<TikTokIcon className="w-6 h-6" />}
+              title={t('tiktokDownloader.emptyTitle')}
+              description={t('tiktokDownloader.emptyDescription')}
+              colorFrom="from-purple-100"
+              colorTo="to-pink-100"
+              iconColor="text-gray-900"
               variant="mobile"
             />
           )}
@@ -204,8 +224,8 @@ export default function TikTokDownloaderPage() {
       </div>
 
       {/* Desktop Layout */}
-      <div className="hidden lg:flex flex-col bg-gradient-to-b from-white to-purple-50 lg:h-[calc(100vh-60px)] overflow-hidden">
-        <div className="w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1 flex flex-col min-h-0 overflow-y-auto">
+      <div className="hidden lg:block bg-gradient-to-b from-white to-purple-50 lg:h-[calc(100vh-60px)] overflow-y-auto">
+        <div className="w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           {/* 标题 */}
           <div className="text-center mb-6 bg-white rounded-2xl shadow-sm border border-gray-200 px-6 py-5">
             <div className="flex items-center justify-center gap-3">
@@ -224,7 +244,7 @@ export default function TikTokDownloaderPage() {
             <label className="block text-sm font-medium text-gray-700 mb-2">
               {t('tiktokDownloader.urlLabel')}
             </label>
-            <div className="flex gap-3">
+            <div className="flex gap-3 mb-3">
               <VideoUrlInput
                 url={url}
                 loading={loading}
@@ -241,6 +261,9 @@ export default function TikTokDownloaderPage() {
                 parsingText={t('tiktokDownloader.parsing')}
               />
             </div>
+
+            {/* 积分信息 */}
+            <CreditInfoSection creditCost={creditCost} actionName="解析" variant="desktop" />
           </div>
 
           {/* 解析中提示 */}
@@ -298,9 +321,13 @@ export default function TikTokDownloaderPage() {
 
           {/* 空状态 */}
           {!loading && !videoInfo && !error && (
-            <EmptyState
-              emptyTitle={t('tiktokDownloader.emptyTitle')}
-              emptyDescription={t('tiktokDownloader.emptyDescription')}
+            <ToolEmptyState
+              icon={<TikTokIcon className="w-7 h-7" />}
+              title={t('tiktokDownloader.emptyTitle')}
+              description={t('tiktokDownloader.emptyDescription')}
+              colorFrom="from-purple-100"
+              colorTo="to-pink-100"
+              iconColor="text-gray-900"
               variant="desktop"
             />
           )}

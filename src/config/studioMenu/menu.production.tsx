@@ -63,7 +63,7 @@ export const studioMenuItems: StudioMenuItemConfig[] = [
   {
     id: 'tiktok-downloader',
     labelKey: 'studio.menu.tiktokDownloader',
-    href: '/studio/tiktok-downloader',
+    href: '/studio/tools/tiktok-downloader',
     category: 'tools',
     enabled: true,
     icon: <TikTokIcon className="w-5 h-5" />,
@@ -71,7 +71,7 @@ export const studioMenuItems: StudioMenuItemConfig[] = [
   {
     id: 'youtube-downloader',
     labelKey: 'studio.menu.youtubeDownloader',
-    href: '/studio/youtube-downloader',
+    href: '/studio/tools/youtube-downloader',
     category: 'tools',
     enabled: true,
     icon: <YouTubeIcon className="w-5 h-5" />,

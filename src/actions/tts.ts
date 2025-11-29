@@ -9,7 +9,9 @@ import { v4 as uuidv4 } from 'uuid';
 import { nanoid } from 'nanoid';
 import { ttsQueue } from '@/lib/queue/tts-queue';
 import { InsufficientCreditsError, errorToResponse } from '@/lib/errors';
-import { calculateVoiceCost} from '@/config/appConfig';
+import { calculateProductCreditsCost } from '@/config/creditsCost';
+import { ProductType } from '@/config/productType';
+import { checkCredits, getCredits } from '@/lib/credits';
 
 /**
  * 生成分享短码
@@ -121,28 +123,10 @@ export interface TtsRecordsQueryResponse {
 function calculateCreditsCost(text: string, _voiceName: string): number {
   // 目前 TTS 统一使用 standard 类型计费
   // TODO: 未来可根据 voiceName 查询语音类型（standard/professional/special/clone）
-  return calculateVoiceCost(text.length, 'standard');
-}
-
-// 检查用户积分
-async function checkCredits(
-  userId: string,
-  required: number,
-  isAnonymous: boolean
-): Promise<boolean> {
-  if (isAnonymous) {
-    const user = await prisma.anonymous_users.findUnique({
-      where: { user_id: userId },
-      select: { credits: true },
-    });
-    return (user?.credits ?? 0) >= required;
-  } else {
-    const user = await prisma.users.findUnique({
-      where: { user_id: userId },
-      select: { credits: true },
-    });
-    return (user?.credits ?? 0) >= required;
-  }
+  return calculateProductCreditsCost(ProductType.TEXT_TO_SPEECH, {
+    charCount: text.length,
+    voiceType: 'standard',
+  });
 }
 
 /**
@@ -161,19 +145,15 @@ export async function createTtsTask(request: TtsRequest): Promise<TtsTaskStatus>
     console.log('🎤 [createTtsTask] 用户认证成功:', { userId, isAnonymous });
 
     // 1. 计算所需积分
-    const requiredCredits = await calculateCreditsCost(request.text, request.voice_name);
+    const requiredCredits = calculateCreditsCost(request.text, request.voice_name);
 
     // 2. 检查积分是否足够
-    const hasEnoughCredits = await checkCredits(userId, requiredCredits, isAnonymous);
-    if (!hasEnoughCredits) {
-      const currentCredits = isAnonymous
-        ? (await prisma.anonymous_users.findUnique({ where: { user_id: userId }, select: { credits: true } }))?.credits ?? 0
-        : (await prisma.users.findUnique({ where: { user_id: userId }, select: { credits: true } }))?.credits ?? 0;
-
-      console.log(`⚠️ [createTtsTask] 积分不足: 需要 ${requiredCredits}, 当前 ${currentCredits}`);
+    const { hasEnough, current } = await checkCredits(userId, requiredCredits, isAnonymous);
+    if (!hasEnough) {
+      console.log(`⚠️ [createTtsTask] 积分不足: 需要 ${requiredCredits}, 当前 ${current}`);
 
       // 抛出业务错误，由 catch 块统一处理
-      throw new InsufficientCreditsError(requiredCredits, currentCredits);
+      throw new InsufficientCreditsError(requiredCredits, current);
     }
 
     // 3. 生成任务 ID

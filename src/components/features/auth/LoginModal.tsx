@@ -102,7 +102,23 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
       await signInWithEmail(email, password);
     } catch (err: any) {
       console.error('邮箱登录失败:', err);
-      setError(t('login.loginFailed'));
+      // 根据错误码显示具体错误信息
+      switch (err.code) {
+        case 'auth/user-not-found':
+          setError(t('login.userNotFound'));
+          break;
+        case 'auth/wrong-password':
+          setError(t('login.wrongPassword'));
+          break;
+        case 'auth/invalid-credential':
+          setError(t('login.invalidCredential'));
+          break;
+        case 'auth/too-many-requests':
+          setError(t('login.tooManyRequests'));
+          break;
+        default:
+          setError(t('login.loginFailed'));
+      }
     } finally {
       setLoading(false);
     }
@@ -128,7 +144,20 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
       await signUpWithEmail(email, password);
     } catch (err: any) {
       console.error('邮箱注册失败:', err);
-      setError(t('login.signupFailed'));
+      // 根据错误码显示具体错误信息
+      switch (err.code) {
+        case 'auth/email-already-in-use':
+          setError(t('login.emailAlreadyInUse'));
+          break;
+        case 'auth/weak-password':
+          setError(t('login.weakPassword'));
+          break;
+        case 'auth/too-many-requests':
+          setError(t('login.tooManyRequests'));
+          break;
+        default:
+          setError(t('login.signupFailed'));
+      }
     } finally {
       setLoading(false);
     }

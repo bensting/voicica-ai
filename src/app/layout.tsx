@@ -61,11 +61,11 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         suppressHydrationWarning
       >
-        <FirebaseAuthProvider>
-          <UserProvider>
-            <CreditsProvider>
-              <LanguageProvider>
-                <LanguageLoadingWrapper>
+        <LanguageProvider>
+          <FirebaseAuthProvider>
+            <LanguageLoadingWrapper>
+              <UserProvider>
+                <CreditsProvider>
                   <AudioSettingsProvider>
                     <DeviceFingerprintProvider />
                     <CapacitorProvider />
@@ -73,11 +73,11 @@ export default function RootLayout({
                     <PWAInstallButton />
                     <PWAUpdatePrompt />
                   </AudioSettingsProvider>
-                </LanguageLoadingWrapper>
-              </LanguageProvider>
-            </CreditsProvider>
-          </UserProvider>
-        </FirebaseAuthProvider>
+                </CreditsProvider>
+              </UserProvider>
+            </LanguageLoadingWrapper>
+          </FirebaseAuthProvider>
+        </LanguageProvider>
         {process.env.NEXT_PUBLIC_GA_ID && (
           <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID} />
         )}

@@ -23,6 +23,25 @@ interface ToolEmptyStateProps {
   variant?: 'mobile' | 'desktop';
 }
 
+// 信息提示图标
+function InfoIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      className={className}
+      fill="none"
+      viewBox="0 0 24 24"
+      strokeWidth={1.5}
+      stroke="currentColor"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z"
+      />
+    </svg>
+  );
+}
+
 export default function ToolEmptyState({
   icon,
   title,
@@ -43,24 +62,30 @@ export default function ToolEmptyState({
           <h3 className="text-lg font-semibold text-gray-900">{title}</h3>
         </div>
 
-        {/* 描述 */}
-        <p className="text-gray-500 text-sm max-w-xs leading-relaxed">{description}</p>
+        {/* 描述（带提示图标） */}
+        <div className="flex items-start gap-2 max-w-sm">
+          <InfoIcon className="w-5 h-5 text-blue-500 flex-shrink-0 mt-0.5" />
+          <p className="text-gray-500 text-sm leading-relaxed text-left">{description}</p>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col items-center justify-center text-center py-16">
+    <div className="flex flex-col items-center justify-center text-center py-16 max-w-2xl mx-auto">
       {/* 标题和图标在一行 */}
-      <div className="flex items-center gap-4 mb-4">
+      <div className="flex items-center gap-4 mb-6">
         <div className={`w-14 h-14 bg-gradient-to-br ${colorFrom} ${colorTo} rounded-xl flex items-center justify-center flex-shrink-0`}>
           <div className={iconColor}>{icon}</div>
         </div>
         <h3 className="text-2xl font-semibold text-gray-900">{title}</h3>
       </div>
 
-      {/* 描述 */}
-      <p className="text-gray-500 text-base max-w-md leading-relaxed">{description}</p>
+      {/* 描述（带提示图标） */}
+      <div className="flex items-start gap-2.5 max-w-xl">
+        <InfoIcon className="w-5 h-5 text-blue-500 flex-shrink-0 mt-0.5" />
+        <p className="text-gray-500 text-base leading-relaxed text-left">{description}</p>
+      </div>
     </div>
   );
 }

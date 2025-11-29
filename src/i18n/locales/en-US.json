@@ -88,7 +88,7 @@
     }
   },
   "login": {
-    "title": "Voicica AI",
+    "title": "Login",
     "welcome": "Welcome",
     "welcomeBack": "Welcome back",
     "signInWithGoogle": "Sign in with Google",
@@ -96,10 +96,28 @@
     "signInWithX": "Sign in with X",
     "signInWithFacebook": "Sign in with Facebook",
     "signInWithSSO": "Sign in with SSO",
+    "or": "OR",
+    "emailPlaceholder": "Enter registered email account",
+    "passwordPlaceholder": "Password",
+    "forgotPassword": "Forget your password?",
+    "loginButton": "Login",
+    "noAccount": "Don't have a Voicica ID?",
+    "createAccount": "Create account",
+    "createAccountTitle": "Create ID",
+    "createAccountButton": "Create Account",
+    "backToLogin": "Back to login",
+    "agreementText": "An account will be automatically created if not registered. By clicking 'Create Account,' you agree to Voicica's",
+    "licensePolicy": "License Policy",
+    "and": "and",
+    "privacyPolicy": "Privacy Policy",
     "termsPrefix": "By continuing, you agree to our",
     "terms": "Terms of Service",
     "termsAnd": "and",
-    "privacy": "Privacy Policy"
+    "privacy": "Privacy Policy",
+    "invalidEmail": "Invalid email address",
+    "passwordTooShort": "Password must be at least 6 characters",
+    "loginFailed": "Login failed. Please check your email and password.",
+    "signupFailed": "Sign up failed. Please try again."
   },
   "home": {
     "heroTitle": "One Stop AI Solution for",

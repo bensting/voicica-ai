@@ -9,19 +9,19 @@ interface PageLoadingProps {
 }
 
 /**
- * PageLoading - 页面加载动画
+ * CutePageLoading - 页面加载动画
  * 小巧可爱的加载指示器，显示在页面中间，不遮挡页面内容
  *
  * @example
  * ```tsx
  * // 简单使用
- * {isLoading && <PageLoading />}
+ * {isLoading && <CutePageLoading />}
  *
  * // 使用 show 属性
- * <PageLoading show={isLoading} />
+ * <CutePageLoading show={isLoading} />
  * ```
  */
-export default function PageLoading({ show = true }: PageLoadingProps) {
+export default function CutePageLoading({ show = true }: PageLoadingProps) {
   if (!show) return null;
 
   return (

@@ -100,10 +100,13 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
     setLoading(true);
     try {
       await signInWithEmail(email, password);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('邮箱登录失败:', err);
       // 根据错误码显示具体错误信息
-      switch (err.code) {
+      const errorCode = err && typeof err === 'object' && 'code' in err
+        ? (err as { code: string }).code
+        : '';
+      switch (errorCode) {
         case 'auth/user-not-found':
           setError(t('login.userNotFound'));
           break;
@@ -142,10 +145,13 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
     setLoading(true);
     try {
       await signUpWithEmail(email, password);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('邮箱注册失败:', err);
       // 根据错误码显示具体错误信息
-      switch (err.code) {
+      const errorCode = err && typeof err === 'object' && 'code' in err
+        ? (err as { code: string }).code
+        : '';
+      switch (errorCode) {
         case 'auth/email-already-in-use':
           setError(t('login.emailAlreadyInUse'));
           break;
@@ -185,10 +191,13 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
         default:
           console.error('Unknown provider:', providerId);
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(`${providerId} 登录失败:`, err);
       // 只有在不是用户取消的情况下才显示错误
-      if (err.code !== 'auth/popup-closed-by-user' && err.code !== 'auth/cancelled-popup-request') {
+      const errorCode = err && typeof err === 'object' && 'code' in err
+        ? (err as { code: string }).code
+        : '';
+      if (errorCode !== 'auth/popup-closed-by-user' && errorCode !== 'auth/cancelled-popup-request') {
         setError(t('login.loginFailed'));
       }
     } finally {

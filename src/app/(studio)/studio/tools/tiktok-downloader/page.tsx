@@ -224,8 +224,8 @@ export default function TikTokDownloaderPage() {
       </div>
 
       {/* Desktop Layout */}
-      <div className="hidden lg:flex flex-col bg-gradient-to-b from-white to-purple-50 lg:h-[calc(100vh-60px)] overflow-hidden">
-        <div className="w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1 flex flex-col min-h-0 overflow-y-auto">
+      <div className="hidden lg:block bg-gradient-to-b from-white to-purple-50 lg:h-[calc(100vh-60px)] overflow-y-auto">
+        <div className="w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           {/* 标题 */}
           <div className="text-center mb-6 bg-white rounded-2xl shadow-sm border border-gray-200 px-6 py-5">
             <div className="flex items-center justify-center gap-3">
@@ -244,7 +244,7 @@ export default function TikTokDownloaderPage() {
             <label className="block text-sm font-medium text-gray-700 mb-2">
               {t('tiktokDownloader.urlLabel')}
             </label>
-            <div className="flex gap-3">
+            <div className="flex gap-3 mb-3">
               <VideoUrlInput
                 url={url}
                 loading={loading}

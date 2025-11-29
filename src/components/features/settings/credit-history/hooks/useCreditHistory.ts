@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { useRouter } from 'next/navigation';
 import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 import { getCreditHistory } from '@/actions/user';
 import type { CreditHistoryItem } from '@/types/user';
@@ -18,13 +17,11 @@ interface UseCreditHistoryReturn {
   error: string | null;
   hasMore: boolean;
   loadMoreRef: React.RefObject<HTMLDivElement | null>;
-  authLoading: boolean;
 }
 
 export function useCreditHistory(options: UseCreditHistoryOptions = {}): UseCreditHistoryReturn {
   const { pageSize = 20 } = options;
   const { user, loading: authLoading } = useFirebaseAuth();
-  const router = useRouter();
 
   const [items, setItems] = useState<CreditHistoryItem[]>([]);
   const [total, setTotal] = useState(0);
@@ -105,13 +102,6 @@ export function useCreditHistory(options: UseCreditHistoryOptions = {}): UseCred
     };
   }, [loading, hasMore, loadingMore, loadMore]);
 
-  // 未登录重定向
-  useEffect(() => {
-    if (!authLoading && !user) {
-      router.push('/login?returnUrl=/studio/settings/credit-history');
-    }
-  }, [authLoading, user, router]);
-
   return {
     items,
     total,
@@ -120,6 +110,5 @@ export function useCreditHistory(options: UseCreditHistoryOptions = {}): UseCred
     error,
     hasMore,
     loadMoreRef,
-    authLoading,
   };
 }

@@ -24,6 +24,7 @@ import VideoInfoCard from '@/components/features/studio/tools/youtube-downloader
 import FormatSelector from '@/components/features/studio/tools/youtube-downloader/FormatSelector';
 import DownloadButton from '@/components/features/studio/tools/youtube-downloader/DownloadButton';
 import EmptyState from '@/components/features/studio/tools/youtube-downloader/EmptyState';
+import CreditInfoSection from '@/components/features/studio/tools/common/CreditInfoSection';
 
 /**
  * YouTube Video Downloader Page
@@ -172,7 +173,7 @@ export default function YouTubeDownloaderPage() {
         <div className="flex-1 flex flex-col px-4 pt-4 gap-4 overflow-y-auto pb-24">
           {/* URL 输入框 */}
           <div className="flex flex-col gap-2">
-            <label className="text-sm font-medium text-gray-700">
+a            <label className="text-sm font-medium text-gray-700">
               {t('youtubeDownloader.urlLabel')}
             </label>
             <div className="flex gap-2">
@@ -199,6 +200,9 @@ export default function YouTubeDownloaderPage() {
                 )}
               </button>
             </div>
+
+            {/* 积分信息 */}
+            <CreditInfoSection creditCost={1} actionName="解析" variant="mobile" />
           </div>
 
           {/* 解析中提示 */}
@@ -281,7 +285,7 @@ export default function YouTubeDownloaderPage() {
             <label className="block text-sm font-medium text-gray-700 mb-2">
               {t('youtubeDownloader.urlLabel')}
             </label>
-            <div className="flex gap-3">
+            <div className="flex gap-3 mb-3">
               <VideoUrlInput
                 url={url}
                 loading={loading}
@@ -298,6 +302,9 @@ export default function YouTubeDownloaderPage() {
                 parsingText={t('youtubeDownloader.parsing')}
               />
             </div>
+
+            {/* 积分信息 */}
+            <CreditInfoSection creditCost={1} actionName="解析" variant="desktop" />
           </div>
 
           {/* 解析中提示 */}

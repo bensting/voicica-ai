@@ -16,6 +16,8 @@ import {
   getFormatExtension,
   type FormatType,
 } from '@/lib/services/youtube-downloader';
+import { calculateProductCreditsCost } from '@/config/creditsCost';
+import { ProductType } from '@/config/productType';
 
 // 组件导入
 import VideoUrlInput, { ParseButton } from '@/components/features/studio/tools/youtube-downloader/VideoUrlInput';
@@ -24,8 +26,8 @@ import ErrorMessage from '@/components/features/studio/tools/youtube-downloader/
 import VideoInfoCard from '@/components/features/studio/tools/youtube-downloader/VideoInfoCard';
 import FormatSelector from '@/components/features/studio/tools/youtube-downloader/FormatSelector';
 import DownloadButton from '@/components/features/studio/tools/youtube-downloader/DownloadButton';
-import EmptyState from '@/components/features/studio/tools/youtube-downloader/EmptyState';
 import CreditInfoSection from '@/components/features/studio/tools/common/CreditInfoSection';
+import ToolEmptyState from '@/components/features/studio/tools/common/ToolEmptyState';
 
 /**
  * YouTube Video Downloader Page
@@ -45,6 +47,11 @@ export default function YouTubeDownloaderPage() {
   const [videoInfo, setVideoInfo] = useState<ParseResponse | null>(null);
   const [selectedFormat, setSelectedFormat] = useState<VideoFormat | null>(null);
   const [activeTab, setActiveTab] = useState<FormatType>('video_with_audio');
+
+  // 获取 YouTube 下载器的积分成本
+  const creditCost = useMemo(() => {
+    return calculateProductCreditsCost(ProductType.YOUTUBE_DOWNLOADER);
+  }, []);
 
   // 设置页面标题
   useEffect(() => {
@@ -207,7 +214,7 @@ export default function YouTubeDownloaderPage() {
             </div>
 
             {/* 积分信息 */}
-            <CreditInfoSection creditCost={1} actionName="解析" variant="mobile" />
+            <CreditInfoSection creditCost={creditCost} actionName="解析" variant="mobile" />
           </div>
 
           {/* 解析中提示 */}
@@ -257,9 +264,13 @@ export default function YouTubeDownloaderPage() {
 
           {/* 空状态 */}
           {!loading && !videoInfo && !error && (
-            <EmptyState
-              emptyTitle={t('youtubeDownloader.emptyTitle')}
-              emptyDescription={t('youtubeDownloader.emptyDescription')}
+            <ToolEmptyState
+              icon={<YouTubeIcon className="w-6 h-6" />}
+              title={t('youtubeDownloader.emptyTitle')}
+              description={t('youtubeDownloader.emptyDescription')}
+              colorFrom="from-red-100"
+              colorTo="to-red-50"
+              iconColor="text-red-600"
               variant="mobile"
             />
           )}
@@ -309,7 +320,7 @@ export default function YouTubeDownloaderPage() {
             </div>
 
             {/* 积分信息 */}
-            <CreditInfoSection creditCost={1} actionName="解析" variant="desktop" />
+            <CreditInfoSection creditCost={creditCost} actionName="解析" variant="desktop" />
           </div>
 
           {/* 解析中提示 */}
@@ -373,9 +384,13 @@ export default function YouTubeDownloaderPage() {
 
           {/* 空状态 */}
           {!loading && !videoInfo && !error && (
-            <EmptyState
-              emptyTitle={t('youtubeDownloader.emptyTitle')}
-              emptyDescription={t('youtubeDownloader.emptyDescription')}
+            <ToolEmptyState
+              icon={<YouTubeIcon className="w-7 h-7" />}
+              title={t('youtubeDownloader.emptyTitle')}
+              description={t('youtubeDownloader.emptyDescription')}
+              colorFrom="from-red-100"
+              colorTo="to-red-50"
+              iconColor="text-red-600"
               variant="desktop"
             />
           )}

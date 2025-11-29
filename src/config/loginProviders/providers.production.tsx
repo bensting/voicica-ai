@@ -25,14 +25,14 @@ export const loginProviders: LoginProviderConfig[] = [
   {
     id: 'apple',
     labelKey: 'login.signInWithApple',
-    enabled: true, // Apple 登录已配置
+    enabled: false, // Apple 登录已配置
     icon: <FaApple className="w-8 h-8" />,
     order: 2,
   },
   {
     id: 'twitter',
     labelKey: 'login.signInWithX',
-    enabled: true, // Twitter/X 登录已配置
+    enabled: false, // Twitter/X 登录已配置
     icon: <FaXTwitter className="w-8 h-8" />,
     order: 3,
   },

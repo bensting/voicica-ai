@@ -25,7 +25,7 @@ export const appConfig: AppConfig = {
    */
   credits: {
     anonymous_user: 5,
-    registered_user: 10,
+    registered_user: 20,
   },
 
   /**

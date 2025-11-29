@@ -18,6 +18,7 @@ import {
   onAuthStateChanged,
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
+  sendPasswordResetEmail,
   GoogleAuthProvider,
   TwitterAuthProvider,
   FacebookAuthProvider,
@@ -27,6 +28,7 @@ import {
 } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
 import { isInAppBrowser } from '@/config/inAppBrowser';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface FirebaseAuthContextType {
   user: User | null;
@@ -38,6 +40,7 @@ interface FirebaseAuthContextType {
   signInWithFacebook: () => Promise<void>;
   signInWithEmail: (email: string, password: string) => Promise<void>;
   signUpWithEmail: (email: string, password: string) => Promise<void>;
+  resetPassword: (email: string) => Promise<void>;
   signOut: () => Promise<void>;
 }
 
@@ -47,6 +50,7 @@ export function FirebaseAuthProvider({ children }: { children: React.ReactNode }
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [token, setToken] = useState<string | null>(null);
+  const { locale } = useLanguage();
 
   // 处理 redirect 登录结果（应用内浏览器使用 redirect 方式）
   useEffect(() => {
@@ -199,6 +203,33 @@ export function FirebaseAuthProvider({ children }: { children: React.ReactNode }
     }
   }, []);
 
+  // 发送密码重置邮件
+  const resetPassword = useCallback(async (email: string) => {
+    try {
+      // 将 locale 转换为 Firebase 支持的语言代码
+      // 'en-US' -> 'en', 'zh-CN' -> 'zh-CN', 'zh-TW' -> 'zh-TW', 'th-TH' -> 'th'
+      const languageCodeMap: Record<string, string> = {
+        'en-US': 'en',
+        'zh-CN': 'zh-CN',
+        'zh-TW': 'zh-TW',
+        'th-TH': 'th',
+      };
+
+      const firebaseLanguageCode = languageCodeMap[locale] || 'en';
+
+      // 设置邮件语言
+      auth.languageCode = firebaseLanguageCode;
+
+      // 发送密码重置邮件
+      // 邮件链接会使用 Firebase Console 中配置的"操作网址"
+      await sendPasswordResetEmail(auth, email);
+      console.log(`[FirebaseAuth] 密码重置邮件已发送 (语言: ${firebaseLanguageCode})`);
+    } catch (error) {
+      console.error('[FirebaseAuth] 发送密码重置邮件失败:', error);
+      throw error;
+    }
+  }, [locale]);
+
   // 登出
   const signOut = useCallback(async () => {
     try {
@@ -219,6 +250,7 @@ export function FirebaseAuthProvider({ children }: { children: React.ReactNode }
     signInWithFacebook,
     signInWithEmail,
     signUpWithEmail,
+    resetPassword,
     signOut,
   };
 

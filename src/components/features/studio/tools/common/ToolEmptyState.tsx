@@ -19,6 +19,8 @@ interface ToolEmptyStateProps {
   colorTo?: string;
   /** 图标颜色 */
   iconColor?: string;
+  /** 卡片背景色（移动端） */
+  bgColor?: string;
   /** 变体 */
   variant?: 'mobile' | 'desktop';
 }
@@ -49,23 +51,24 @@ export default function ToolEmptyState({
   colorFrom = 'from-purple-100',
   colorTo = 'to-purple-50',
   iconColor = 'text-purple-600',
+  bgColor = 'bg-gray-50/80',
   variant = 'mobile',
 }: ToolEmptyStateProps) {
   if (variant === 'mobile') {
     return (
-      <div className="flex-1 flex flex-col items-center justify-center text-center px-4 py-12">
+      <div className={`${bgColor} rounded-2xl border border-gray-100 p-5`}>
         {/* 标题和图标在一行 */}
-        <div className="flex items-center gap-3 mb-4">
-          <div className={`w-12 h-12 bg-gradient-to-br ${colorFrom} ${colorTo} rounded-xl flex items-center justify-center flex-shrink-0`}>
+        <div className="flex items-center gap-3 mb-3">
+          <div className={`w-10 h-10 bg-gradient-to-br ${colorFrom} ${colorTo} rounded-xl flex items-center justify-center flex-shrink-0`}>
             <div className={iconColor}>{icon}</div>
           </div>
-          <h3 className="text-lg font-semibold text-gray-900">{title}</h3>
+          <h3 className="text-base font-semibold text-gray-900">{title}</h3>
         </div>
 
         {/* 描述（带提示图标） */}
-        <div className="flex items-start gap-2 max-w-sm">
-          <InfoIcon className="w-5 h-5 text-blue-500 flex-shrink-0 mt-0.5" />
-          <p className="text-gray-500 text-sm leading-relaxed text-left">{description}</p>
+        <div className="flex items-start gap-2 pl-1">
+          <InfoIcon className="w-4 h-4 text-gray-400 flex-shrink-0 mt-0.5" />
+          <p className="text-gray-500 text-sm leading-relaxed">{description}</p>
         </div>
       </div>
     );

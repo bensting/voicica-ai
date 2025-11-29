@@ -605,7 +605,7 @@
     "tabs": {
       "videoWithAudio": "影片",
       "videoOnly": "僅影片",
-      "audioOnly": "僅音訊"
+      "audioOnly": "音訊"
     },
     "noFormats": "此類型暫無可用格式",
     "errors": {

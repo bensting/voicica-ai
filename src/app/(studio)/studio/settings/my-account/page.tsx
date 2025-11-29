@@ -1,11 +1,10 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 import { useUser } from '@/contexts/UserContext';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useRequireAuth } from '@/hooks/useRequireAuth';
 import { updateUserProfile } from '@/actions/user';
 import ProfilePictureUpload from '@/components/features/settings/my-account/ProfilePictureUpload';
 import FormField from '@/components/features/settings/my-account/FormField';
@@ -15,8 +14,8 @@ import CreditsIcon from '@/components/icons/CreditsIcon';
 import LoginModal from '@/components/features/auth/LoginModal';
 
 export default function MyAccountPage() {
-  const router = useRouter();
-  const { user, loading: authLoading } = useFirebaseAuth();
+  // 使用通用的需要登录 Hook
+  const { user, authLoading, showLoginModal, handleCloseLoginModal } = useRequireAuth();
   const { profile, loading, refreshProfile, refreshProfileSilent } = useUser();
   const { t } = useLanguage();
   const [formData, setFormData] = useState({
@@ -28,22 +27,6 @@ export default function MyAccountPage() {
   });
   const [isSaving, setIsSaving] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const [showLoginModal, setShowLoginModal] = useState(false);
-
-  // 检查登录状态，未登录则显示登录 Modal
-  useEffect(() => {
-    if (!authLoading && !user) {
-      setShowLoginModal(true);
-    } else if (user) {
-      setShowLoginModal(false);
-    }
-  }, [user, authLoading]);
-
-  // 处理关闭登录 Modal - 跳转到首页
-  const handleCloseLoginModal = () => {
-    setShowLoginModal(false);
-    router.push('/');
-  };
 
   // 解析电话号码为国家代码和号码
   const parsePhone = (phone: string | null) => {

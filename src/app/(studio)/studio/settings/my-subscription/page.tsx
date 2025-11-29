@@ -1,8 +1,7 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
+import { useEffect } from 'react';
+import { useRequireAuth } from '@/hooks/useRequireAuth';
 import { useSubscriptionManager } from '@/components/features/settings/my-subscription/hooks/useSubscriptionManager';
 import SectionHeader from '@/components/features/settings/my-subscription/SectionHeader';
 import LoadingState from '@/components/features/settings/my-subscription/LoadingState';
@@ -12,9 +11,8 @@ import SubscriptionList from '@/components/features/settings/my-subscription/Sub
 import LoginModal from '@/components/features/auth/LoginModal';
 
 export default function MySubscriptionPage() {
-  const router = useRouter();
-  const { user, loading: authLoading } = useFirebaseAuth();
-  const [showLoginModal, setShowLoginModal] = useState(false);
+  // 使用通用的需要登录 Hook
+  const { user, authLoading, showLoginModal, handleCloseLoginModal } = useRequireAuth();
   const {
     data,
     loading,
@@ -23,22 +21,6 @@ export default function MySubscriptionPage() {
     fetchSubscriptions,
     handleCancelSubscription,
   } = useSubscriptionManager();
-
-  // 检查登录状态，未登录则显示登录 Modal
-  useEffect(() => {
-    if (!authLoading && !user) {
-      console.log('🚫 未登录，显示登录 Modal');
-      setShowLoginModal(true);
-    } else if (user) {
-      setShowLoginModal(false);
-    }
-  }, [user, authLoading]);
-
-  // 处理关闭登录 Modal - 跳转到首页
-  const handleCloseLoginModal = () => {
-    setShowLoginModal(false);
-    router.push('/');
-  };
 
   // 获取订阅数据
   useEffect(() => {

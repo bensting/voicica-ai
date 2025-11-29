@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useStudio } from '@/contexts/StudioContext';
+import { useUser } from '@/contexts/UserContext';
 import YouTubeIcon from '@/components/icons/YouTubeIcon';
 import {
   parseVideoUrl,
@@ -35,6 +36,7 @@ import CreditInfoSection from '@/components/features/studio/tools/common/CreditI
 export default function YouTubeDownloaderPage() {
   const { t } = useLanguage();
   const { setTitle } = useStudio();
+  const { refreshProfile } = useUser();
 
   const [url, setUrl] = useState('');
   const [loading, setLoading] = useState(false);
@@ -114,6 +116,9 @@ export default function YouTubeDownloaderPage() {
 
       setVideoInfo(result.data);
 
+      // 解析成功，刷新用户积分
+      await refreshProfile();
+
       // 获取分组格式
       const grouped = getGroupedFormats(result.data.formats);
 
@@ -133,7 +138,7 @@ export default function YouTubeDownloaderPage() {
     } finally {
       setLoading(false);
     }
-  }, [url, t]);
+  }, [url, t, refreshProfile]);
 
   // 切换 tab 时自动选择第一个格式
   useEffect(() => {

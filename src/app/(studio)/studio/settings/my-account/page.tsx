@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 import { useUser } from '@/contexts/UserContext';
@@ -14,6 +15,7 @@ import CreditsIcon from '@/components/icons/CreditsIcon';
 import LoginModal from '@/components/features/auth/LoginModal';
 
 export default function MyAccountPage() {
+  const router = useRouter();
   const { user, loading: authLoading } = useFirebaseAuth();
   const { profile, loading, refreshProfile, refreshProfileSilent } = useUser();
   const { t } = useLanguage();
@@ -36,6 +38,12 @@ export default function MyAccountPage() {
       setShowLoginModal(false);
     }
   }, [user, authLoading]);
+
+  // 处理关闭登录 Modal - 跳转到首页
+  const handleCloseLoginModal = () => {
+    setShowLoginModal(false);
+    router.push('/');
+  };
 
   // 解析电话号码为国家代码和号码
   const parsePhone = (phone: string | null) => {
@@ -289,7 +297,7 @@ export default function MyAccountPage() {
       {showLoginModal && (
         <LoginModal
           isOpen={showLoginModal}
-          onClose={() => {}} // 不允许关闭，必须登录
+          onClose={handleCloseLoginModal}
         />
       )}
     </>

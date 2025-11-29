@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 import { useSubscriptionManager } from '@/components/features/settings/my-subscription/hooks/useSubscriptionManager';
 import SectionHeader from '@/components/features/settings/my-subscription/SectionHeader';
@@ -11,6 +12,7 @@ import SubscriptionList from '@/components/features/settings/my-subscription/Sub
 import LoginModal from '@/components/features/auth/LoginModal';
 
 export default function MySubscriptionPage() {
+  const router = useRouter();
   const { user, loading: authLoading } = useFirebaseAuth();
   const [showLoginModal, setShowLoginModal] = useState(false);
   const {
@@ -31,6 +33,12 @@ export default function MySubscriptionPage() {
       setShowLoginModal(false);
     }
   }, [user, authLoading]);
+
+  // 处理关闭登录 Modal - 跳转到首页
+  const handleCloseLoginModal = () => {
+    setShowLoginModal(false);
+    router.push('/');
+  };
 
   // 获取订阅数据
   useEffect(() => {
@@ -80,7 +88,7 @@ export default function MySubscriptionPage() {
       {showLoginModal && (
         <LoginModal
           isOpen={showLoginModal}
-          onClose={() => {}} // 不允许关闭，必须登录
+          onClose={handleCloseLoginModal}
         />
       )}
     </>

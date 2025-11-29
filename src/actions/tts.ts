@@ -9,7 +9,8 @@ import { v4 as uuidv4 } from 'uuid';
 import { nanoid } from 'nanoid';
 import { ttsQueue } from '@/lib/queue/tts-queue';
 import { InsufficientCreditsError, errorToResponse } from '@/lib/errors';
-import { calculateVoiceCost} from '@/config/appConfig';
+import { calculateProductCreditsCost } from '@/config/creditsCost';
+import { ProductType } from '@/config/productType';
 
 /**
  * 生成分享短码
@@ -121,7 +122,10 @@ export interface TtsRecordsQueryResponse {
 function calculateCreditsCost(text: string, _voiceName: string): number {
   // 目前 TTS 统一使用 standard 类型计费
   // TODO: 未来可根据 voiceName 查询语音类型（standard/professional/special/clone）
-  return calculateVoiceCost(text.length, 'standard');
+  return calculateProductCreditsCost(ProductType.TEXT_TO_SPEECH, {
+    charCount: text.length,
+    voiceType: 'standard',
+  });
 }
 
 // 检查用户积分

@@ -8,7 +8,6 @@ import { FirebaseAuthProvider } from "@/contexts/FirebaseAuthContext";
 import { UserProvider } from "@/contexts/UserContext";
 import { CreditsProvider } from "@/contexts/CreditsContext";
 import { AudioSettingsProvider } from "@/contexts/AudioSettingsContext";
-import PWAInstallButton from "@/components/layout/PWAInstallButton";
 import PWAUpdatePrompt from "@/components/layout/PWAUpdatePrompt";
 import LanguageLoadingWrapper from "@/components/providers/LanguageLoadingWrapper";
 import DeviceFingerprintProvider from "@/components/providers/DeviceFingerprintProvider";
@@ -70,7 +69,6 @@ export default function RootLayout({
                     <DeviceFingerprintProvider />
                     <CapacitorProvider />
                     {children}
-                    <PWAInstallButton />
                     <PWAUpdatePrompt />
                   </AudioSettingsProvider>
                 </CreditsProvider>

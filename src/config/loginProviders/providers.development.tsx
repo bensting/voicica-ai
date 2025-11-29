@@ -4,71 +4,43 @@
  * 开发环境启用所有登录方式，方便测试
  */
 
+import { FcGoogle } from 'react-icons/fc';
+import { FaApple, FaFacebookSquare } from 'react-icons/fa';
+import { FaXTwitter } from 'react-icons/fa6';
 import type { LoginProviderConfig } from './types';
-
-// Google 图标（彩色版本）
-const GoogleIcon = () => (
-  <svg viewBox="0 0 48 48" className="w-full h-full">
-    <path fill="#FFC107" d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 8-11.303 8-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 12.955 4 4 12.955 4 24s8.955 20 20 20 20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z"/>
-    <path fill="#FF3D00" d="m6.306 14.691 6.571 4.819C14.655 15.108 18.961 12 24 12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 16.318 4 9.656 8.337 6.306 14.691z"/>
-    <path fill="#4CAF50" d="M24 44c5.166 0 9.86-1.977 13.409-5.192l-6.19-5.238A11.91 11.91 0 0 1 24 36c-5.202 0-9.619-3.317-11.283-7.946l-6.522 5.025C9.505 39.556 16.227 44 24 44z"/>
-    <path fill="#1976D2" d="M43.611 20.083H42V20H24v8h11.303a12.04 12.04 0 0 1-4.087 5.571l.003-.002 6.19 5.238C36.971 39.205 44 34 44 24c0-1.341-.138-2.65-.389-3.917z"/>
-  </svg>
-);
-
-// Apple 图标（黑色版本）
-const AppleIcon = () => (
-  <svg viewBox="0 0 48 48" className="w-full h-full">
-    <path fill="#000000" d="M38.71 20.07C38.27 20.59 35.28 22.42 35.28 26.31C35.28 30.83 39.26 32.51 39.56 32.59C39.51 32.78 38.87 35.06 37.28 37.42C35.89 39.45 34.42 41.47 32.14 41.47C29.86 41.47 29.24 40.16 26.63 40.16C24.11 40.16 23.11 41.52 21.07 41.52C19.03 41.52 17.61 39.64 15.99 37.33C13.98 34.46 12.35 29.85 12.35 25.51C12.35 18.87 16.84 15.25 21.24 15.25C23.45 15.25 25.3 16.72 26.68 16.72C27.97 16.72 30.09 15.15 32.65 15.15C33.65 15.15 36.64 15.25 38.71 18.07L38.71 20.07ZM30.36 12.31C31.42 11.02 32.19 9.25 32.19 7.48C32.19 7.2 32.16 6.91 32.11 6.67C30.38 6.74 28.28 7.8 27.05 9.24C26.11 10.31 25.18 12.08 25.18 13.88C25.18 14.19 25.24 14.5 25.27 14.61C25.39 14.63 25.6 14.66 25.81 14.66C27.37 14.66 29.35 13.64 30.36 12.31Z"/>
-  </svg>
-);
-
-// Twitter (X) 图标（黑色版本）
-const TwitterIcon = () => (
-  <svg viewBox="0 0 48 48" className="w-full h-full">
-    <path fill="#000000" d="M36.6526 3.8078H43.3995L28.6594 20.6548L46 43.5797H32.4225L21.7881 29.6759L9.61989 43.5797H2.86886L18.6349 25.56L2 3.8078H15.9222L25.5348 16.5165L36.6526 3.8078ZM34.2846 39.5414H38.0232L13.8908 7.63406H9.87892L34.2846 39.5414Z"/>
-  </svg>
-);
-
-// Facebook 图标（彩色蓝色版本）
-const FacebookIcon = () => (
-  <svg viewBox="0 0 48 48" className="w-full h-full">
-    <path fill="#1877F2" d="M24 4C12.954 4 4 12.954 4 24s8.954 20 20 20 20-8.954 20-20S35.046 4 24 4z"/>
-    <path fill="#FFFFFF" d="M26.707 29.301h5.176l.813-5.258h-5.989v-2.874c0-2.184.714-4.121 2.757-4.121h3.283V12.46c-.577-.078-1.797-.248-4.102-.248-4.814 0-7.636 2.542-7.636 8.334v3.498H16.06v5.258h4.948v14.452c.98.146 1.973.246 2.992.246.921 0 1.82-.084 2.707-.204V29.301z"/>
-  </svg>
-);
 
 /**
  * 开发环境登录方式配置
  * 启用所有登录方式，方便开发测试
+ * 使用 react-icons 确保图标大小一致
  */
 export const loginProviders: LoginProviderConfig[] = [
   {
     id: 'google',
     labelKey: 'login.signInWithGoogle',
     enabled: true, // 开发环境启用
-    icon: <GoogleIcon />,
+    icon: <FcGoogle className="w-10 h-10" />,
     order: 1,
   },
   {
     id: 'apple',
     labelKey: 'login.signInWithApple',
     enabled: true, // 开发环境启用
-    icon: <AppleIcon />,
+    icon: <FaApple className="w-10 h-10" />,
     order: 2,
   },
   {
     id: 'twitter',
     labelKey: 'login.signInWithX',
     enabled: true, // 开发环境启用
-    icon: <TwitterIcon />,
+    icon: <FaXTwitter className="w-10 h-10" />,
     order: 3,
   },
   {
     id: 'facebook',
     labelKey: 'login.signInWithFacebook',
     enabled: true, // 开发环境启用
-    icon: <FacebookIcon />,
+    icon: <FaFacebookSquare className="w-10 h-10 text-[#1877F2]" />,
     order: 4,
   },
 ];

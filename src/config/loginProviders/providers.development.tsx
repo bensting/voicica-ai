@@ -32,7 +32,7 @@ export const loginProviders: LoginProviderConfig[] = [
   {
     id: 'twitter',
     labelKey: 'login.signInWithX',
-    enabled: true,
+    enabled: false,
     icon: <FaXTwitter className="w-8 h-8" />,
     order: 3,
   },

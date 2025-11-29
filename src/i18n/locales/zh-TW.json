@@ -9,6 +9,11 @@
     "share": "分享",
     "delete": "刪除"
   },
+  "creditInfo": {
+    "currentCredits": "當前積分：",
+    "loginForMore": "登入獲取更多積分",
+    "deductionNotice": "{{actionName}}成功後將扣除 {{count}} 個積分"
+  },
   "productCategory": {
     "aiVideo": "AI 影片",
     "aiMusic": "AI 音樂",
@@ -600,7 +605,7 @@
     "tabs": {
       "videoWithAudio": "影片",
       "videoOnly": "僅影片",
-      "audioOnly": "僅音訊"
+      "audioOnly": "音訊"
     },
     "noFormats": "此類型暫無可用格式",
     "errors": {

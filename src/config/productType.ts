@@ -18,6 +18,12 @@ export const ProductType = {
   TEXT_TO_SPEECH: 'text_to_speech',
   /** 语音克隆 */
   VOICE_CLONING: 'voice_cloning',
+  /** YouTube 视频下载器 */
+  YOUTUBE_DOWNLOADER: 'youtube_downloader',
+  /** TikTok 视频下载器 */
+  TIKTOK_DOWNLOADER: 'tiktok_downloader',
+  /** 订阅充值 */
+  SUBSCRIPTION: 'subscription',
 } as const;
 
 export type ProductType = typeof ProductType[keyof typeof ProductType];

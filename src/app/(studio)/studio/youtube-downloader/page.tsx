@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
+import Image from 'next/image';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useStudio } from '@/contexts/StudioContext';
 import YouTubeIcon from '@/components/icons/YouTubeIcon';
@@ -232,11 +233,13 @@ export default function YouTubeDownloaderPage() {
                 <div className="flex gap-4 p-4">
                   {/* 缩略图 */}
                   {videoInfo.thumbnail_url && (
-                    <div className="w-32 h-20 flex-shrink-0 rounded-lg overflow-hidden bg-black">
-                      <img
+                    <div className="w-32 h-20 flex-shrink-0 rounded-lg overflow-hidden bg-black relative">
+                      <Image
                         src={videoInfo.thumbnail_url}
                         alt={videoInfo.title}
-                        className="w-full h-full object-cover"
+                        fill
+                        className="object-cover"
+                        unoptimized
                       />
                     </div>
                   )}
@@ -442,11 +445,13 @@ export default function YouTubeDownloaderPage() {
               <div className="flex gap-5 items-start">
                 {/* 缩略图 */}
                 {videoInfo.thumbnail_url && (
-                  <div className="w-48 h-28 flex-shrink-0 rounded-xl overflow-hidden bg-black shadow-md">
-                    <img
+                  <div className="w-48 h-28 flex-shrink-0 rounded-xl overflow-hidden bg-black shadow-md relative">
+                    <Image
                       src={videoInfo.thumbnail_url}
                       alt={videoInfo.title}
-                      className="w-full h-full object-cover"
+                      fill
+                      className="object-cover"
+                      unoptimized
                     />
                   </div>
                 )}

@@ -4,6 +4,7 @@
  * 视频信息卡片（缩略图、标题、作者、时长）
  */
 
+import Image from 'next/image';
 import type { ParseResponse } from '@/actions/video-downloader';
 import { formatDuration } from '@/lib/services/tiktok-downloader';
 
@@ -22,11 +23,13 @@ export default function VideoInfoCard({ videoInfo, untitledText, variant = 'mobi
         <div className="flex gap-4 p-4">
           {/* 缩略图 */}
           {thumbnailUrl && (
-            <div className="w-20 h-28 flex-shrink-0 rounded-lg overflow-hidden bg-black">
-              <img
+            <div className="w-20 h-28 flex-shrink-0 rounded-lg overflow-hidden bg-black relative">
+              <Image
                 src={thumbnailUrl}
                 alt={videoInfo.title}
-                className="w-full h-full object-cover"
+                fill
+                className="object-cover"
+                unoptimized
               />
             </div>
           )}
@@ -53,11 +56,13 @@ export default function VideoInfoCard({ videoInfo, untitledText, variant = 'mobi
     <div className="flex gap-5 items-start">
       {/* 缩略图 */}
       {thumbnailUrl && (
-        <div className="w-24 h-32 flex-shrink-0 rounded-xl overflow-hidden bg-black shadow-md">
-          <img
+        <div className="w-24 h-32 flex-shrink-0 rounded-xl overflow-hidden bg-black shadow-md relative">
+          <Image
             src={thumbnailUrl}
             alt={videoInfo.title}
-            className="w-full h-full object-cover"
+            fill
+            className="object-cover"
+            unoptimized
           />
         </div>
       )}

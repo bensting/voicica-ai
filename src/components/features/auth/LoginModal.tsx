@@ -198,12 +198,12 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
               </h2>
 
               {/* 社交登录图标 - 横向排列 */}
-              <div className="flex justify-center gap-6 mb-6">
+              <div className="flex justify-center gap-4 mb-6">
                 {socialProviders.map((provider) => (
                   <button
                     key={provider.id}
                     onClick={() => handleSocialLogin(provider.id)}
-                    className="w-20 h-20 flex items-center justify-center bg-white border-2 border-gray-200 rounded-2xl hover:border-purple-300 hover:shadow-md transition-all"
+                    className="w-16 h-16 flex-shrink-0 flex items-center justify-center bg-white border-2 border-gray-200 rounded-xl hover:border-purple-300 hover:shadow-md transition-all"
                     aria-label={`Sign in with ${provider.id}`}
                   >
                     {provider.icon}

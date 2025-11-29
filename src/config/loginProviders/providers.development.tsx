@@ -12,35 +12,35 @@ import type { LoginProviderConfig } from './types';
 /**
  * 开发环境登录方式配置
  * 启用所有登录方式，方便开发测试
- * 使用 react-icons 确保图标大小一致
+ * 使用方形容器 + 缩小的图标保持美观
  */
 export const loginProviders: LoginProviderConfig[] = [
   {
     id: 'google',
     labelKey: 'login.signInWithGoogle',
-    enabled: true, // 开发环境启用
-    icon: <FcGoogle className="w-10 h-10" />,
+    enabled: true,
+    icon: <FcGoogle className="w-8 h-8" />,
     order: 1,
   },
   {
     id: 'apple',
     labelKey: 'login.signInWithApple',
-    enabled: true, // 开发环境启用
-    icon: <FaApple className="w-10 h-10" />,
+    enabled: true,
+    icon: <FaApple className="w-8 h-8" />,
     order: 2,
   },
   {
     id: 'twitter',
     labelKey: 'login.signInWithX',
-    enabled: true, // 开发环境启用
-    icon: <FaXTwitter className="w-10 h-10" />,
+    enabled: true,
+    icon: <FaXTwitter className="w-8 h-8" />,
     order: 3,
   },
   {
     id: 'facebook',
     labelKey: 'login.signInWithFacebook',
-    enabled: true, // 开发环境启用
-    icon: <FaFacebookSquare className="w-10 h-10 text-[#1877F2]" />,
+    enabled: true,
+    icon: <FaFacebookSquare className="w-8 h-8 text-[#1877F2]" />,
     order: 4,
   },
 ];

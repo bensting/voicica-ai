@@ -3,6 +3,7 @@ import Stripe from 'stripe';
 import prisma from '@/lib/prisma';
 import { getCreditTierByProductId } from '@/config/subscription';
 import { addCredits } from '@/lib/credits';
+import { ProductType } from '@/config/productType';
 
 // 延迟初始化 Stripe，避免构建时因缺少环境变量而失败
 let _stripe: Stripe | null = null;
@@ -175,7 +176,7 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session, eventId
   await addCredits(
     userId,
     tier.credits,
-    null as any, // 订阅购买不需要 ProductType
+    ProductType.SUBSCRIPTION,
     false, // 订阅用户都是正式用户
     `订阅购买: ${plan.plan_name}`
   );
@@ -270,7 +271,7 @@ async function handleInvoicePaid(invoice: Stripe.Invoice, eventId: string) {
   await addCredits(
     subscription.user_id,
     tier.credits,
-    null as any, // 订阅续费不需要 ProductType
+    ProductType.SUBSCRIPTION,
     false, // 订阅用户都是正式用户
     `订阅续费: ${plan.plan_name}`
   );

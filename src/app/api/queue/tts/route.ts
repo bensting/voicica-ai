@@ -66,7 +66,7 @@ async function handleTTSTask(req: NextRequest) {
       creditsCost,
       ProductType.TEXT_TO_SPEECH,
       isAnonymous,
-      `TTS生成: ${text.substring(0, 30)}${text.length > 30 ? '...' : ''}`,
+      `TTS: ${text.substring(0, 30)}${text.length > 30 ? '...' : ''}`,
       taskId
     );
     creditsDeducted = true;

@@ -22,6 +22,8 @@ export const ProductType = {
   YOUTUBE_DOWNLOADER: 'youtube_downloader',
   /** TikTok 视频下载器 */
   TIKTOK_DOWNLOADER: 'tiktok_downloader',
+  /** 订阅充值 */
+  SUBSCRIPTION: 'subscription',
 } as const;
 
 export type ProductType = typeof ProductType[keyof typeof ProductType];

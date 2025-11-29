@@ -16,8 +16,11 @@ import {
   getRedirectResult,
   signOut as firebaseSignOut,
   onAuthStateChanged,
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
   GoogleAuthProvider,
   TwitterAuthProvider,
+  FacebookAuthProvider,
   OAuthProvider,
   type User,
   type AuthProvider,
@@ -32,6 +35,9 @@ interface FirebaseAuthContextType {
   signInWithGoogle: () => Promise<void>;
   signInWithTwitter: () => Promise<void>;
   signInWithApple: () => Promise<void>;
+  signInWithFacebook: () => Promise<void>;
+  signInWithEmail: (email: string, password: string) => Promise<void>;
+  signUpWithEmail: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
 }
 
@@ -164,6 +170,35 @@ export function FirebaseAuthProvider({ children }: { children: React.ReactNode }
     await signInWithProvider(provider, 'Apple');
   }, [signInWithProvider]);
 
+  // Facebook 登录
+  const signInWithFacebook = useCallback(async () => {
+    const provider = new FacebookAuthProvider();
+    provider.addScope('email');
+    await signInWithProvider(provider, 'Facebook');
+  }, [signInWithProvider]);
+
+  // 邮箱密码登录
+  const signInWithEmail = useCallback(async (email: string, password: string) => {
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+      console.log('[FirebaseAuth] 邮箱登录成功');
+    } catch (error) {
+      console.error('[FirebaseAuth] 邮箱登录失败:', error);
+      throw error;
+    }
+  }, []);
+
+  // 邮箱密码注册
+  const signUpWithEmail = useCallback(async (email: string, password: string) => {
+    try {
+      await createUserWithEmailAndPassword(auth, email, password);
+      console.log('[FirebaseAuth] 邮箱注册成功');
+    } catch (error) {
+      console.error('[FirebaseAuth] 邮箱注册失败:', error);
+      throw error;
+    }
+  }, []);
+
   // 登出
   const signOut = useCallback(async () => {
     try {
@@ -181,6 +216,9 @@ export function FirebaseAuthProvider({ children }: { children: React.ReactNode }
     signInWithGoogle,
     signInWithTwitter,
     signInWithApple,
+    signInWithFacebook,
+    signInWithEmail,
+    signUpWithEmail,
     signOut,
   };
 

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
+import type { LoginProvider } from '@/config/loginProviders';
 
 /**
  * 登录业务逻辑 Hook
@@ -20,7 +21,7 @@ export function useLogin() {
   const [error, setError] = useState<string | null>(null);
   const [isReturningUser, setIsReturningUser] = useState(false);
 
-  const { user, signInWithGoogle, signInWithApple, signInWithTwitter } = useFirebaseAuth();
+  const { user, signInWithGoogle, signInWithApple, signInWithTwitter, signInWithFacebook } = useFirebaseAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -46,7 +47,7 @@ export function useLogin() {
   }, [user, router, returnUrl]);
 
   // 统一的登录处理函数
-  const handleLogin = async (provider: 'google' | 'apple' | 'twitter') => {
+  const handleLogin = async (provider: LoginProvider) => {
     try {
       console.log(`🚀 useLogin: 开始 ${provider} 登录流程`);
       setLoading(true);
@@ -67,6 +68,9 @@ export function useLogin() {
           break;
         case 'twitter':
           await signInWithTwitter();
+          break;
+        case 'facebook':
+          await signInWithFacebook();
           break;
       }
 

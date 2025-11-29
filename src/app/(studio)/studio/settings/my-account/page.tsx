@@ -1,21 +1,21 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 import { useUser } from '@/contexts/UserContext';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useRequireAuth } from '@/hooks/useRequireAuth';
 import { updateUserProfile } from '@/actions/user';
 import ProfilePictureUpload from '@/components/features/settings/my-account/ProfilePictureUpload';
 import FormField from '@/components/features/settings/my-account/FormField';
 import PhoneField from '@/components/features/settings/my-account/PhoneField';
 import ActionButtons from '@/components/features/settings/my-account/ActionButtons';
 import CreditsIcon from '@/components/icons/CreditsIcon';
+import LoginModal from '@/components/features/auth/LoginModal';
 
 export default function MyAccountPage() {
-  const router = useRouter();
-  const { user, loading: authLoading } = useFirebaseAuth();
+  // 使用通用的需要登录 Hook
+  const { user, authLoading, showLoginModal, handleCloseLoginModal } = useRequireAuth();
   const { profile, loading, refreshProfile, refreshProfileSilent } = useUser();
   const { t } = useLanguage();
   const [formData, setFormData] = useState({
@@ -27,14 +27,6 @@ export default function MyAccountPage() {
   });
   const [isSaving, setIsSaving] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
-
-  // 检查登录状态，未登录则重定向到登录页
-  useEffect(() => {
-    if (!authLoading && !user) {
-      const currentPath = window.location.pathname;
-      router.push(`/studio/login?returnUrl=${encodeURIComponent(currentPath)}`);
-    }
-  }, [user, authLoading, router]);
 
   // 解析电话号码为国家代码和号码
   const parsePhone = (phone: string | null) => {
@@ -176,113 +168,121 @@ export default function MyAccountPage() {
     );
   }
 
-  // 未登录，不渲染内容（等待重定向）
-  if (!user) {
-    return null;
-  }
-
   return (
-    <div className="h-full overflow-y-auto">
-      <div className="space-y-6">
-      {/* Basic Info Card */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        {/* Section Header */}
-        <div className="flex items-center gap-3 mb-6">
-          <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
-            <svg className="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-            </svg>
-          </div>
-          <h2 className="text-xl font-semibold text-gray-900">
-            {t('settings.basicInfo.title')}
-          </h2>
-        </div>
-
-      {/* Form Fields */}
-      <div className="space-y-6">
-        {/* Profile Picture with User Info and Credits */}
-        <div className="flex flex-col lg:flex-row gap-4 lg:gap-6">
-          {/* Left: Profile Picture and User Info */}
-          <div className="flex-1 flex items-center bg-gradient-to-br from-gray-50 to-gray-100 px-4 py-4 rounded-xl border border-gray-200">
-            <ProfilePictureUpload
-              currentPhoto={profile?.photo_url}
-              userName={profile?.name}
-              email={profile?.email}
-              onPhotoChange={(url) => handleInputChange('photo_url', url)}
-              onUploadSuccess={refreshProfile}
-            />
+    <>
+      {/* 已登录时显示页面内容 */}
+      {user && (
+      <div className="h-full overflow-y-auto">
+        <div className="space-y-6">
+        {/* Basic Info Card */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+          {/* Section Header */}
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
+              <svg className="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+              </svg>
+            </div>
+            <h2 className="text-xl font-semibold text-gray-900">
+              {t('settings.basicInfo.title')}
+            </h2>
           </div>
 
-          {/* Right: Credits Display */}
-          <div className="flex-1 flex items-center gap-3 bg-gradient-to-br from-yellow-50 to-yellow-100 px-4 py-4 rounded-xl border border-yellow-200">
-            <CreditsIcon className="w-12 h-12 text-yellow-600 shrink-0" />
-            <div className="flex-1">
-              <p className="text-xs text-gray-600 font-medium">
-                {t('settings.benefits.credits')}
-              </p>
-              <div className="flex items-center gap-2">
-                <p className="text-2xl font-bold text-gray-900">
-                  {(profile?.credits ?? 0).toLocaleString()}
+        {/* Form Fields */}
+        <div className="space-y-6">
+          {/* Profile Picture with User Info and Credits */}
+          <div className="flex flex-col lg:flex-row gap-4 lg:gap-6">
+            {/* Left: Profile Picture and User Info */}
+            <div className="flex-1 flex items-center bg-gradient-to-br from-gray-50 to-gray-100 px-4 py-4 rounded-xl border border-gray-200">
+              <ProfilePictureUpload
+                currentPhoto={profile?.photo_url}
+                userName={profile?.name}
+                email={profile?.email}
+                onPhotoChange={(url) => handleInputChange('photo_url', url)}
+                onUploadSuccess={refreshProfile}
+              />
+            </div>
+
+            {/* Right: Credits Display */}
+            <div className="flex-1 flex items-center gap-3 bg-gradient-to-br from-yellow-50 to-yellow-100 px-4 py-4 rounded-xl border border-yellow-200">
+              <CreditsIcon className="w-12 h-12 text-yellow-600 shrink-0" />
+              <div className="flex-1">
+                <p className="text-xs text-gray-600 font-medium">
+                  {t('settings.benefits.credits')}
                 </p>
-                <button
-                  onClick={handleRefresh}
-                  disabled={isRefreshing}
-                  className="p-1 text-gray-400 hover:text-gray-600 hover:bg-yellow-200/50 rounded-md transition-all disabled:opacity-50"
-                  title={t('settings.benefits.refresh')}
-                >
-                  <svg
-                    className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`}
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
+                <div className="flex items-center gap-2">
+                  <p className="text-2xl font-bold text-gray-900">
+                    {(profile?.credits ?? 0).toLocaleString()}
+                  </p>
+                  <button
+                    onClick={handleRefresh}
+                    disabled={isRefreshing}
+                    className="p-1 text-gray-400 hover:text-gray-600 hover:bg-yellow-200/50 rounded-md transition-all disabled:opacity-50"
+                    title={t('settings.benefits.refresh')}
                   >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-                    />
-                  </svg>
-                </button>
+                    <svg
+                      className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`}
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                      />
+                    </svg>
+                  </button>
+                </div>
+                <Link
+                  href="/studio/settings/credit-history"
+                  className="text-xs font-medium text-yellow-700 hover:text-yellow-800 hover:underline"
+                >
+                  {t('settings.benefits.viewHistory')}
+                </Link>
               </div>
-              <Link
-                href="/studio/settings/credit-history"
-                className="text-xs font-medium text-yellow-700 hover:text-yellow-800 hover:underline"
-              >
-                {t('settings.benefits.viewHistory')}
-              </Link>
             </div>
           </div>
+
+          {/* Name & Surname */}
+          <FormField
+            label={t('settings.basicInfo.nameSurname')}
+            value={formData.name}
+            onChange={(value) => handleInputChange('name', value)}
+            placeholder="Enter your name"
+          />
+
+          {/* Phone */}
+          <PhoneField
+            label={t('settings.basicInfo.phone')}
+            countryCode={formData.countryCode}
+            phoneNumber={formData.phone}
+            onCountryCodeChange={(code) => handleInputChange('countryCode', code)}
+            onPhoneChange={(phone) => handleInputChange('phone', phone)}
+          />
         </div>
 
-        {/* Name & Surname */}
-        <FormField
-          label={t('settings.basicInfo.nameSurname')}
-          value={formData.name}
-          onChange={(value) => handleInputChange('name', value)}
-          placeholder="Enter your name"
-        />
+          {/* Action Buttons */}
+          <ActionButtons
+            onSave={handleSave}
+            onCancel={handleCancel}
+            saveText={t('settings.actions.save')}
+            cancelText={t('settings.actions.cancel')}
+            isLoading={isSaving}
+          />
+        </div>
+        </div>
+      </div>
+      )}
 
-        {/* Phone */}
-        <PhoneField
-          label={t('settings.basicInfo.phone')}
-          countryCode={formData.countryCode}
-          phoneNumber={formData.phone}
-          onCountryCodeChange={(code) => handleInputChange('countryCode', code)}
-          onPhoneChange={(phone) => handleInputChange('phone', phone)}
+      {/* Login Modal - 未登录时显示 */}
+      {showLoginModal && (
+        <LoginModal
+          isOpen={showLoginModal}
+          onClose={handleCloseLoginModal}
         />
-      </div>
-
-        {/* Action Buttons */}
-        <ActionButtons
-          onSave={handleSave}
-          onCancel={handleCancel}
-          saveText={t('settings.actions.save')}
-          cancelText={t('settings.actions.cancel')}
-          isLoading={isSaving}
-        />
-      </div>
-      </div>
-    </div>
+      )}
+    </>
   );
 }

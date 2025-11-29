@@ -11,8 +11,6 @@ interface VideoUrlInputProps {
   onClear: () => void;
   onParse: () => void;
   placeholder: string;
-  parseButtonText: string;
-  parsingText: string;
 }
 
 export default function VideoUrlInput({
@@ -22,8 +20,6 @@ export default function VideoUrlInput({
   onClear,
   onParse,
   placeholder,
-  parseButtonText,
-  parsingText,
 }: VideoUrlInputProps) {
   return (
     <div className="relative flex-1">

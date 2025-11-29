@@ -1,18 +1,18 @@
 'use client';
 
 import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
+import { useRequireAuth } from '@/hooks/useRequireAuth';
 import { useSubscriptionManager } from '@/components/features/settings/my-subscription/hooks/useSubscriptionManager';
 import SectionHeader from '@/components/features/settings/my-subscription/SectionHeader';
 import LoadingState from '@/components/features/settings/my-subscription/LoadingState';
 import ErrorState from '@/components/features/settings/my-subscription/ErrorState';
 import EmptyState from '@/components/features/settings/my-subscription/EmptyState';
 import SubscriptionList from '@/components/features/settings/my-subscription/SubscriptionList';
+import LoginModal from '@/components/features/auth/LoginModal';
 
 export default function MySubscriptionPage() {
-  const router = useRouter();
-  const { user, loading: authLoading } = useFirebaseAuth();
+  // 使用通用的需要登录 Hook
+  const { user, authLoading, showLoginModal, handleCloseLoginModal } = useRequireAuth();
   const {
     data,
     loading,
@@ -21,16 +21,6 @@ export default function MySubscriptionPage() {
     fetchSubscriptions,
     handleCancelSubscription,
   } = useSubscriptionManager();
-
-  // 检查登录状态，未登录则重定向到登录页
-  useEffect(() => {
-    if (!authLoading && !user) {
-      console.log('🚫 未登录，重定向到登录页');
-      // 保存当前路径，登录成功后返回
-      const currentPath = window.location.pathname;
-      router.push(`/studio/login?returnUrl=${encodeURIComponent(currentPath)}`);
-    }
-  }, [user, authLoading, router]);
 
   // 获取订阅数据
   useEffect(() => {
@@ -46,35 +36,43 @@ export default function MySubscriptionPage() {
     );
   }
 
-  // 未登录，不渲染内容（等待重定向）
-  if (!user) {
-    return null;
-  }
-
   return (
-    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 lg:p-6 flex flex-col max-h-[calc(100vh-120px)] lg:max-h-[calc(100vh-180px)]">
-      {/* Section Header */}
-      <SectionHeader />
+    <>
+      {/* 已登录时显示页面内容 */}
+      {user && (
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 lg:p-6 flex flex-col max-h-[calc(100vh-120px)] lg:max-h-[calc(100vh-180px)]">
+        {/* Section Header */}
+        <SectionHeader />
 
-      {/* Content - Scrollable */}
-      <div className="flex-1 overflow-y-auto">
-        {loading ? (
-          <LoadingState />
-        ) : error ? (
-          <ErrorState
-            error={error}
-            onRetry={() => fetchSubscriptions()}
-          />
-        ) : data?.subscriptions.length === 0 ? (
-          <EmptyState />
-        ) : data ? (
-          <SubscriptionList
-            data={data}
-            onCancel={handleCancelSubscription}
-            cancelingId={cancelingId}
-          />
-        ) : null}
+        {/* Content - Scrollable */}
+        <div className="flex-1 overflow-y-auto">
+          {loading ? (
+            <LoadingState />
+          ) : error ? (
+            <ErrorState
+              error={error}
+              onRetry={() => fetchSubscriptions()}
+            />
+          ) : data?.subscriptions.length === 0 ? (
+            <EmptyState />
+          ) : data ? (
+            <SubscriptionList
+              data={data}
+              onCancel={handleCancelSubscription}
+              cancelingId={cancelingId}
+            />
+          ) : null}
+        </div>
       </div>
-    </div>
+      )}
+
+      {/* Login Modal - 未登录时显示 */}
+      {showLoginModal && (
+        <LoginModal
+          isOpen={showLoginModal}
+          onClose={handleCloseLoginModal}
+        />
+      )}
+    </>
   );
 }

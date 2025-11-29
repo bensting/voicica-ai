@@ -117,7 +117,13 @@
     "invalidEmail": "Invalid email address",
     "passwordTooShort": "Password must be at least 6 characters",
     "loginFailed": "Login failed. Please check your email and password.",
-    "signupFailed": "Sign up failed. Please try again."
+    "signupFailed": "Sign up failed. Please try again.",
+    "emailAlreadyInUse": "This email is already registered. Please log in or use a different email.",
+    "weakPassword": "Password is too weak. Please use a stronger password.",
+    "invalidCredential": "Invalid email or password.",
+    "userNotFound": "User not found. Please sign up first.",
+    "wrongPassword": "Incorrect password. Please try again.",
+    "tooManyRequests": "Too many requests. Please try again later."
   },
   "home": {
     "heroTitle": "One Stop AI Solution for",

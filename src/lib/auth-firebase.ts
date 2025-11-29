@@ -95,7 +95,7 @@ async function createOrUpdateFirebaseUser(decodedToken: {
       data: {
         user_id: decodedToken.uid,
         email: decodedToken.email || `${decodedToken.uid}@firebase.user`,
-        name: decodedToken.name || 'Firebase User',
+        name: decodedToken.name || (decodedToken.email ? decodedToken.email.split('@')[0] : 'Firebase User'),
         photo_url: decodedToken.picture,
         credits: initialCredits,
         total_credits_used: 0,

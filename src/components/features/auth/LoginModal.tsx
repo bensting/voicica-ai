@@ -31,6 +31,7 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
     signInWithApple,
     signInWithTwitter,
     signInWithFacebook,
+    resetPassword,
   } = useFirebaseAuth();
 
   const [mode, setMode] = useState<Mode>('login');
@@ -39,6 +40,7 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [resetEmailSent, setResetEmailSent] = useState(false);
 
   // 获取启用的社交登录方式
   const socialProviders = getEnabledLoginProviders();
@@ -74,6 +76,7 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
     setEmail('');
     setPassword('');
     setError(null);
+    setResetEmailSent(false);
   };
 
   // 验证邮箱格式
@@ -163,6 +166,44 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
           break;
         default:
           setError(t('login.signupFailed'));
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // 处理忘记密码
+  const handleForgotPassword = async () => {
+    // 验证邮箱
+    if (!email || !validateEmail(email)) {
+      setError(t('login.resetPasswordEmailRequired'));
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+
+    try {
+      await resetPassword(email);
+      setResetEmailSent(true);
+      console.log('[LoginModal] 密码重置邮件已发送');
+    } catch (err: unknown) {
+      console.error('发送密码重置邮件失败:', err);
+      const errorCode = err && typeof err === 'object' && 'code' in err
+        ? (err as { code: string }).code
+        : '';
+      switch (errorCode) {
+        case 'auth/user-not-found':
+          setError(t('login.userNotFound'));
+          break;
+        case 'auth/invalid-email':
+          setError(t('login.invalidEmail'));
+          break;
+        case 'auth/too-many-requests':
+          setError(t('login.tooManyRequests'));
+          break;
+        default:
+          setError(t('login.resetPasswordFailed'));
       }
     } finally {
       setLoading(false);
@@ -323,11 +364,20 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
                 <div className="text-right">
                   <button
                     type="button"
-                    className="text-sm text-gray-500 hover:text-purple-600 transition-colors"
+                    onClick={handleForgotPassword}
+                    disabled={loading}
+                    className="text-sm text-gray-500 hover:text-purple-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {t('login.forgotPassword')}
                   </button>
                 </div>
+
+                {/* 密码重置成功提示 */}
+                {resetEmailSent && (
+                  <div className="p-3 bg-green-50 border border-green-200 rounded-lg text-green-700 text-sm">
+                    {t('login.resetEmailSent')}
+                  </div>
+                )}
 
                 {/* 登录按钮 */}
                 <button

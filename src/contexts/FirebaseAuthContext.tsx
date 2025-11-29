@@ -18,6 +18,7 @@ import {
   onAuthStateChanged,
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
+  sendPasswordResetEmail,
   GoogleAuthProvider,
   TwitterAuthProvider,
   FacebookAuthProvider,
@@ -38,6 +39,7 @@ interface FirebaseAuthContextType {
   signInWithFacebook: () => Promise<void>;
   signInWithEmail: (email: string, password: string) => Promise<void>;
   signUpWithEmail: (email: string, password: string) => Promise<void>;
+  resetPassword: (email: string) => Promise<void>;
   signOut: () => Promise<void>;
 }
 
@@ -199,6 +201,17 @@ export function FirebaseAuthProvider({ children }: { children: React.ReactNode }
     }
   }, []);
 
+  // 发送密码重置邮件
+  const resetPassword = useCallback(async (email: string) => {
+    try {
+      await sendPasswordResetEmail(auth, email);
+      console.log('[FirebaseAuth] 密码重置邮件已发送');
+    } catch (error) {
+      console.error('[FirebaseAuth] 发送密码重置邮件失败:', error);
+      throw error;
+    }
+  }, []);
+
   // 登出
   const signOut = useCallback(async () => {
     try {
@@ -219,6 +232,7 @@ export function FirebaseAuthProvider({ children }: { children: React.ReactNode }
     signInWithFacebook,
     signInWithEmail,
     signUpWithEmail,
+    resetPassword,
     signOut,
   };
 

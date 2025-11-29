@@ -128,7 +128,10 @@
     "invalidCredential": "Invalid email or password.",
     "userNotFound": "User not found. Please sign up first.",
     "wrongPassword": "Incorrect password. Please try again.",
-    "tooManyRequests": "Too many requests. Please try again later."
+    "tooManyRequests": "Too many requests. Please try again later.",
+    "resetPasswordEmailRequired": "Please enter your email address first",
+    "resetPasswordFailed": "Failed to send reset email. Please try again",
+    "resetEmailSent": "Password reset email sent! Please check your inbox"
   },
   "home": {
     "heroTitle": "One Stop AI Solution for",

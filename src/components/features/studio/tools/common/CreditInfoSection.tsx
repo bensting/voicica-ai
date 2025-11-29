@@ -7,7 +7,7 @@
 
 import { useState } from 'react';
 import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
-import { useUser } from '@/contexts/UserContext';
+import { useCredits } from '@/contexts/CreditsContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import CreditsIcon from '@/components/icons/CreditsIcon';
 import LoginModal from '@/components/features/auth/LoginModal';
@@ -38,7 +38,7 @@ export default function CreditInfoSection({
   variant = 'desktop',
 }: CreditInfoSectionProps) {
   const { user } = useFirebaseAuth();
-  const { profile } = useUser();
+  const { credits } = useCredits();
   const { t } = useLanguage();
   const [showLoginModal, setShowLoginModal] = useState(false);
 
@@ -60,7 +60,7 @@ export default function CreditInfoSection({
               <span className="text-gray-700 font-medium">{t('creditInfo.currentCredits')}</span>
             </div>
             <span className="font-bold text-amber-700 text-base">
-              {profile?.credits ?? 0}
+              {credits}
             </span>
 
             {!user && (

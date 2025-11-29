@@ -129,8 +129,6 @@ export default function TikTokDownloaderPage() {
                 onClear={handleClear}
                 onParse={handleParse}
                 placeholder={t('tiktokDownloader.urlPlaceholder')}
-                parseButtonText={t('tiktokDownloader.parseButton')}
-                parsingText={t('tiktokDownloader.parsing')}
               />
               <button
                 onClick={handleParse}
@@ -234,8 +232,6 @@ export default function TikTokDownloaderPage() {
                 onClear={handleClear}
                 onParse={handleParse}
                 placeholder={t('tiktokDownloader.urlPlaceholder')}
-                parseButtonText={t('tiktokDownloader.parseButton')}
-                parsingText={t('tiktokDownloader.parsing')}
               />
               <ParseButton
                 loading={loading}

@@ -9,6 +9,11 @@
     "share": "Share",
     "delete": "Delete"
   },
+  "creditInfo": {
+    "currentCredits": "Current Credits:",
+    "loginForMore": "Login for more credits",
+    "deductionNotice": "{{count}} credit(s) will be deducted after {{actionName}} succeeds"
+  },
   "productCategory": {
     "aiVideo": "AI Video",
     "aiMusic": "AI Music",

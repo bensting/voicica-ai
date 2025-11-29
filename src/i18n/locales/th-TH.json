@@ -9,6 +9,11 @@
     "share": "แชร์",
     "delete": "ลบ"
   },
+  "creditInfo": {
+    "currentCredits": "เครดิตปัจจุบัน:",
+    "loginForMore": "เข้าสู่ระบบเพื่อรับเครดิตเพิ่มเติม",
+    "deductionNotice": "{{count}} เครดิตจะถูกหักหลังจาก{{actionName}}สำเร็จ"
+  },
   "productCategory": {
     "aiVideo": "AI วิดีโอ",
     "aiMusic": "AI เพลง",

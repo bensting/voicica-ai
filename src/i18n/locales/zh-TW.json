@@ -9,6 +9,11 @@
     "share": "分享",
     "delete": "刪除"
   },
+  "creditInfo": {
+    "currentCredits": "當前積分：",
+    "loginForMore": "登入獲取更多積分",
+    "deductionNotice": "{{actionName}}成功後將扣除 {{count}} 個積分"
+  },
   "productCategory": {
     "aiVideo": "AI 影片",
     "aiMusic": "AI 音樂",

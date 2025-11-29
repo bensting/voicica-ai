@@ -10,7 +10,7 @@
 import prisma from '@/lib/prisma';
 import { getUserOrAnonymous } from '@/lib/auth-firebase';
 import { InsufficientCreditsError, errorToResponse } from '@/lib/errors';
-import { getCreditsCost } from '@/config/creditsCost';
+import { calculateProductCreditsCost } from '@/config/creditsCost';
 import { ProductType } from '@/config/productType';
 import { isYouTubeUrl } from '@/lib/services/youtube-downloader';
 import { isTikTokUrl } from '@/lib/services/tiktok-downloader';
@@ -152,8 +152,8 @@ export async function parseVideoUrl(url: string): Promise<ParseResult> {
 
     console.log('🎬 [parseVideoUrl] 检测平台:', platformName);
 
-    // 4. 获取所需积分
-    const requiredCredits = getCreditsCost(productType);
+    // 4. 计算所需积分（使用统一入口）
+    const requiredCredits = calculateProductCreditsCost(productType);
 
     console.log('🎬 [parseVideoUrl] 所需积分:', requiredCredits);
 

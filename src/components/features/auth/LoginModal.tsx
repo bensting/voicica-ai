@@ -206,9 +206,7 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
                     className="w-20 h-20 flex items-center justify-center bg-white border-2 border-gray-200 rounded-2xl hover:border-purple-300 hover:shadow-md transition-all"
                     aria-label={`Sign in with ${provider.id}`}
                   >
-                    <div className="w-10 h-10">
-                      {provider.icon}
-                    </div>
+                    {provider.icon}
                   </button>
                 ))}
               </div>

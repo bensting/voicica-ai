@@ -72,14 +72,6 @@ export function calculateProductCreditsCost(
 }
 
 /**
- * @deprecated 请使用 calculateProductCreditsCost() 统一入口
- * 获取指定产品类型的积分消耗（仅适用于固定积分的产品）
- */
-export function getCreditsCost(productType: ProductType | string): number {
-  return creditsCostConfig[productType] ?? 0;
-}
-
-/**
  * 获取所有产品类型的积分消耗配置（用于调试）
  */
 export function getAllCreditsCosts() {

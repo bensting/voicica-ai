@@ -2,11 +2,8 @@
 
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useLogin } from '@/hooks/useLogin';
-import SocialLoginButton, {
-  GoogleIcon,
-  AppleIcon,
-  TwitterIcon,
-} from './SocialLoginButton';
+import { getEnabledLoginProviders } from '@/config/loginProviders';
+import SocialLoginButton from './SocialLoginButton';
 
 /**
  * 登录表单容器组件
@@ -47,34 +44,19 @@ export default function LoginForm() {
         </div>
       )}
 
-      {/* 登录按钮组 */}
+      {/* 登录按钮组 - 使用配置动态渲染 */}
       <div className="space-y-3">
-        <SocialLoginButton
-          provider="google"
-          onClick={() => handleLogin('google')}
-          disabled={loading}
-          icon={<GoogleIcon />}
-        >
-          {t('login.signInWithGoogle')}
-        </SocialLoginButton>
-
-        <SocialLoginButton
-          provider="apple"
-          onClick={() => handleLogin('apple')}
-          disabled={loading}
-          icon={<AppleIcon />}
-        >
-          {t('login.signInWithApple')}
-        </SocialLoginButton>
-
-        <SocialLoginButton
-          provider="twitter"
-          onClick={() => handleLogin('twitter')}
-          disabled={loading}
-          icon={<TwitterIcon />}
-        >
-          {t('login.signInWithX')}
-        </SocialLoginButton>
+        {getEnabledLoginProviders().map((provider) => (
+          <SocialLoginButton
+            key={provider.id}
+            provider={provider.id}
+            onClick={() => handleLogin(provider.id)}
+            disabled={loading}
+            icon={provider.icon}
+          >
+            {t(provider.labelKey)}
+          </SocialLoginButton>
+        ))}
       </div>
 
       {/* 服务条款 */}

@@ -94,6 +94,7 @@
     "signInWithGoogle": "Sign in with Google",
     "signInWithApple": "Sign in with Apple",
     "signInWithX": "Sign in with X",
+    "signInWithFacebook": "Sign in with Facebook",
     "signInWithSSO": "Sign in with SSO",
     "termsPrefix": "By continuing, you agree to our",
     "terms": "Terms of Service",

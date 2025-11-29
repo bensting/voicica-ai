@@ -28,13 +28,17 @@ export function useRequireAuth() {
   const handleCloseLoginModal = () => {
     setShowLoginModal(false);
 
-    // 根据当前路径判断返回哪个首页
-    if (pathname.startsWith('/studio')) {
-      router.push('/studio');
-    } else if (pathname.startsWith('/marketing')) {
-      router.push('/marketing');
-    } else {
-      router.push('/');
+    // 只有在用户手动关闭（未登录）时才跳转
+    // 如果已登录（登录成功），则留在当前页面
+    if (!user) {
+      // 根据当前路径判断返回哪个首页
+      if (pathname.startsWith('/studio')) {
+        router.push('/studio');
+      } else if (pathname.startsWith('/marketing')) {
+        router.push('/marketing');
+      } else {
+        router.push('/');
+      }
     }
   };
 

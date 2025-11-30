@@ -65,6 +65,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
           homeModule,
           pricingModule,
           studioModule,
+          ttsModule,
           toolsModule,
           historyModule,
           settingsModule,
@@ -73,7 +74,6 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
           languagesModule,
           countriesModule,
           ttsSamplesModule,
-          ttsInputModule,
           voiceStylesModule,
         ] = await Promise.all([
           import(`@/i18n/locales/${locale}/common.json`),
@@ -81,6 +81,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
           import(`@/i18n/locales/${locale}/home.json`),
           import(`@/i18n/locales/${locale}/pricing.json`),
           import(`@/i18n/locales/${locale}/studio.json`),
+          import(`@/i18n/locales/${locale}/tts.json`),
           import(`@/i18n/locales/${locale}/tools.json`),
           import(`@/i18n/locales/${locale}/history.json`),
           import(`@/i18n/locales/${locale}/settings.json`),
@@ -89,7 +90,6 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
           import(`@/i18n/locales/${locale}/data/languages.json`),
           import(`@/i18n/locales/${locale}/data/countries.json`),
           import(`@/i18n/locales/${locale}/tts-samples.json`),
-          import(`@/i18n/locales/${locale}/tts-input.json`),
           import(`@/i18n/locales/${locale}/voice-styles.json`),
         ]);
 
@@ -100,6 +100,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
           ...homeModule.default,
           ...pricingModule.default,
           ...studioModule.default,
+          ...ttsModule.default,
           ...toolsModule.default,
           ...historyModule.default,
           ...settingsModule.default,
@@ -107,7 +108,6 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
           ...pwaModule.default,
           ...languagesModule.default,
           ...countriesModule.default,
-          ttsInput: ttsInputModule.default,
           voiceStyles: voiceStylesModule.default,
           ...ttsSamplesModule.default,
         });

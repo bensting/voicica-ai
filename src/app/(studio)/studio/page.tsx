@@ -2,6 +2,7 @@
 
 import { useLanguage } from '@/contexts/LanguageContext';
 import ProductCard from '@/components/features/studio/ProductCard';
+import ToolCard from '@/components/features/studio/ToolCard';
 
 export default function StudioPage() {
   const { t } = useLanguage();

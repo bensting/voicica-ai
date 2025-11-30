@@ -4,15 +4,11 @@
 
 import TikTokIcon from '@/components/icons/TikTokIcon';
 import YouTubeIcon from '@/components/icons/YouTubeIcon';
+import TTSIcon from '@/components/icons/TTSIcon';
 import type { NavigationConfig } from './types';
 
 export const navigationConfig: NavigationConfig = {
   links: [
-    {
-      href: '/studio/tts',
-      labelKey: 'nav.studio',
-      type: 'page',
-    },
     {
       href: '/pricing',
       labelKey: 'nav.pricing',
@@ -28,9 +24,21 @@ export const navigationConfig: NavigationConfig = {
   ],
   dropdowns: [
     {
+      id: 'studio',
+      labelKey: 'nav.studio',
+      items: [
+        {
+          href: '/studio/tts',
+          labelKey: 'nav.textToSpeech',
+          descriptionKey: 'nav.textToSpeechDesc',
+          icon: TTSIcon,
+        },
+      ],
+    },
+    {
       id: 'free-tools',
       labelKey: 'nav.freeTools',
-      insertAfter: '/studio/tts', // Insert after Studio link
+      insertAfter: 'studio', // Insert after Studio dropdown
       items: [
         {
           href: '/studio/tools/tiktok-downloader',

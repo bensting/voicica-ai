@@ -38,6 +38,8 @@
     "faq": "คำถามที่พบบ่อย",
     "generationHistory": "ประวัติการสร้าง",
     "freeTools": "เครื่องมือฟรี",
+    "textToSpeech": "ข้อความเป็นเสียง",
+    "textToSpeechDesc": "แปลงข้อความเป็นเสียงพูดที่เป็นธรรมชาติ",
     "tiktokDownloader": "ดาวน์โหลด TikTok",
     "tiktokDownloaderDesc": "ดาวน์โหลดวิดีโอ TikTok โดยไม่มีลายน้ำ",
     "youtubeDownloader": "ดาวน์โหลด YouTube",

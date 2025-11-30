@@ -1,53 +1,9 @@
 {
   "studio": {
-    "tts": "ข้อความเป็นเสียง",
-    "upgrade": "อัปเกรด",
-    "credits": "เครดิต",
-    "selectVoice": "เลือกเสียง",
-    "generating": "กำลังสร้าง...",
     "welcomeTitle": "สวัสดี ยินดีต้อนรับสู่ Voicica AI",
     "welcomeSubtitle": "ปลดล็อกพลังของ AI ด้วยเครื่องมือล้ำสมัยสำหรับเสียง วิดีโอ เพลง และศิลปะ เปลี่ยนไอเดียของคุณให้เป็นจริง—เร็วขึ้น ฉลาดขึ้น และง่ายดาย",
     "ttsDescription": "แปลงข้อความเป็นเสียงพูดที่เป็นธรรมชาติด้วยเสียง AI ขั้นสูง",
     "moreToolsComing": "เครื่องมือเพิ่มเติมเร็วๆ นี้",
-    "generationComplete": "สร้างเสร็จสมบูรณ์",
-    "generationFailed": "การสร้างล้มเหลว",
-    "processingMessage": "กำลังสร้างเสียงของคุณ กรุณารอสักครู่...",
-    "successMessage": "สร้างเสียงสำเร็จ!",
-    "generatingTip": "อาจใช้เวลาสักครู่ คุณสามารถปิดหน้านี้และตรวจสอบในประวัติการสร้างภายหลัง",
-    "successTip": "เสียงของคุณพร้อมแล้ว! คุณสามารถดาวน์โหลดหรือเล่นได้เลย",
-    "taskProgress": "ความคืบหน้า",
-    "recentAuditions": "การสร้างล่าสุด",
-    "allRecords": "บันทึกทั้งหมด",
-    "progress": "ความคืบหน้า",
-    "duration": "ระยะเวลา",
-    "errors": {
-      "selectTextAndVoice": "กรุณาป้อนข้อความและเลือกเสียง",
-      "invalidParams": "พารามิเตอร์ไม่ถูกต้อง กรุณาตรวจสอบ",
-      "insufficientCredits": "เครดิตไม่เพียงพอ กรุณาอัปเกรดหรือเติมเงิน",
-      "unauthorized": "ไม่ได้เข้าสู่ระบบหรือหมดเวลา กรุณาเข้าสู่ระบบอีกครั้ง",
-      "taskSubmitFailed": "ส่งงานไม่สำเร็จ กรุณาลองใหม่",
-      "taskNoId": "ส่งงานไม่สำเร็จ ไม่มี ID งาน",
-      "queryTaskFailed": "ตรวจสอบสถานะไม่สำเร็จ กรุณารีเฟรช",
-      "generationFailed": "สร้างไม่สำเร็จ กรุณาลองใหม่",
-      "unknownTaskStatus": "สถานะไม่ชัดเจน กรุณาลองใหม่",
-      "INSUFFICIENT_CREDITS": "เครดิตไม่เพียงพอ ต้องการ: {{required}}, ปัจจุบัน: {{current}}",
-      "UNAUTHORIZED": "ไม่ได้รับอนุญาต กรุณาเข้าสู่ระบบ",
-      "NO_AUTH_INFO": "ไม่มีข้อมูลการยืนยันตัวตน",
-      "TASK_NOT_FOUND": "ไม่พบงาน: {{taskId}}",
-      "TASK_CREATION_FAILED": "สร้างงานไม่สำเร็จ",
-      "VALIDATION_ERROR": "ข้อผิดพลาดการตรวจสอบ: {{field}}",
-      "TEXT_TOO_LONG": "ข้อความยาวเกินไป ความยาวสูงสุด: {{maxLength}}, ปัจจุบัน: {{currentLength}}",
-      "RESOURCE_NOT_FOUND": "ไม่พบ {{resource}}: {{id}}",
-      "VOICE_NOT_FOUND": "ไม่พบโมเดลเสียง: {{voiceName}}",
-      "INTERNAL_ERROR": "ข้อผิดพลาดภายในเซิร์ฟเวอร์"
-    },
-    "deleteDialog": {
-      "title": "ลบการสร้างเสียง",
-      "message": "คุณแน่ใจหรือไม่ว่าต้องการลบการสร้างเสียงนี้? การดำเนินการนี้ไม่สามารถยกเลิกได้และไฟล์เสียงจะถูกลบอย่างถาวร",
-      "confirmButton": "ลบ",
-      "cancelButton": "ยกเลิก",
-      "deleteFailedAlert": "ลบไม่สำเร็จ กรุณาลองใหม่"
-    },
     "menu": {
       "home": "หน้าแรก",
       "creationHub": "ศูนย์สร้างสรรค์",
@@ -75,69 +31,6 @@
       "voices": "เสียง",
       "clone": "โคลน",
       "history": "ประวัติ"
-    },
-    "audioSettings": {
-      "title": "ตั้งค่าเสียง",
-      "speed": {
-        "title": "ความเร็วการพูด",
-        "description": "ปรับความเร็วในการพูด",
-        "current": "ความเร็วปัจจุบัน"
-      },
-      "volume": {
-        "title": "ระดับเสียง",
-        "description": "ตั้งค่าระดับเสียง",
-        "current": "ระดับเสียงปัจจุบัน"
-      },
-      "pitch": {
-        "title": "ระดับเสียงสูง-ต่ำ",
-        "description": "ปรับระดับเสียงโดยรวม",
-        "current": "ระดับปัจจุบัน",
-        "deep": "ทุ้ม",
-        "dull": "เรียบ",
-        "consistent": "สม่ำเสมอ",
-        "bright": "สดใส",
-        "crisp": "คมชัด"
-      },
-      "save": "บันทึก"
-    }
-  },
-  "voiceFilters": {
-    "selectCountry": "เลือกประเทศ",
-    "selectLanguage": "เลือกภาษา",
-    "allLanguages": "ทุกภาษา",
-    "selectGender": "เลือกเพศ",
-    "searchPlaceholder": "ค้นหาเสียงตามชื่อ...",
-    "search": "ค้นหา...",
-    "gender": "เพศ",
-    "all": "ทั้งหมด",
-    "male": "ชาย",
-    "female": "หญิง",
-    "neutral": "กลาง",
-    "proBasic": "Pro/Basic",
-    "usedOnly": "ที่ใช้แล้ว",
-    "noUsedVoices": "ไม่มีประวัติการใช้งาน",
-    "noVoicesFound": "ไม่พบเสียง",
-    "loadMoreVoices": "โหลดเพิ่ม",
-    "searchLanguages": "ค้นหาภาษา...",
-    "allVoicesLoaded": "โหลดเสียงทั้งหมดแล้ว ({{total}} รายการ)"
-  },
-  "voices": {
-    "tags": {
-      "all": "ทั้งหมด",
-      "myClone": "โคลนของฉัน",
-      "used": "ที่ใช้แล้ว",
-      "socialMedia": "โซเชียลมีเดีย",
-      "celebrities": "คนดัง",
-      "animation": "แอนิเมชัน",
-      "moviesTV": "ภาพยนตร์และทีวี",
-      "games": "เกม",
-      "festivals": "เทศกาล",
-      "narration": "การบรรยาย",
-      "new": "ใหม่",
-      "commercial": "โฆษณา",
-      "audiobook": "หนังสือเสียง",
-      "podcast": "พอดแคสต์",
-      "education": "การศึกษา"
     }
   }
 }

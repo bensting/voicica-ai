@@ -50,40 +50,68 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   const [messages, setMessages] = useState<Record<string, MessageValue>>({});
   const [isReady, setIsReady] = useState(false);
 
-  // 加载语言文件（主文件 + FAQ 文件 + TTS Samples 文件 + TTS Input 文件）
+  // 加载语言文件（按页面模块拆分）
   useEffect(() => {
     const loadMessages = async () => {
       try {
         // 每次切换语言时，先设置为未就绪
         setIsReady(false);
 
-        // 加载主语言文件
-        const messagesModule = await import(`@/i18n/locales/${locale}.json`);
-        const mainMessages = messagesModule.default;
+        // 并行加载所有模块化的语言文件
+        const [
+          commonModule,
+          authModule,
+          homeModule,
+          pricingModule,
+          studioModule,
+          toolsModule,
+          historyModule,
+          settingsModule,
+          shareModule,
+          pwaModule,
+          languagesModule,
+          countriesModule,
+          faqModule,
+          ttsSamplesModule,
+          ttsInputModule,
+          voiceStylesModule,
+        ] = await Promise.all([
+          import(`@/i18n/locales/${locale}/common.json`),
+          import(`@/i18n/locales/${locale}/auth.json`),
+          import(`@/i18n/locales/${locale}/home.json`),
+          import(`@/i18n/locales/${locale}/pricing.json`),
+          import(`@/i18n/locales/${locale}/studio.json`),
+          import(`@/i18n/locales/${locale}/tools.json`),
+          import(`@/i18n/locales/${locale}/history.json`),
+          import(`@/i18n/locales/${locale}/settings.json`),
+          import(`@/i18n/locales/${locale}/share.json`),
+          import(`@/i18n/locales/${locale}/pwa.json`),
+          import(`@/i18n/locales/${locale}/data/languages.json`),
+          import(`@/i18n/locales/${locale}/data/countries.json`),
+          import(`@/i18n/locales/${locale}/faq.json`),
+          import(`@/i18n/locales/${locale}/tts-samples.json`),
+          import(`@/i18n/locales/${locale}/tts-input.json`),
+          import(`@/i18n/locales/${locale}/voice-styles.json`),
+        ]);
 
-        // 加载 FAQ 语言文件
-        const faqModule = await import(`@/i18n/locales/${locale}/faq.json`);
-        const faqMessages = faqModule.default;
-
-        // 加载 TTS Samples 语言文件
-        const ttsSamplesModule = await import(`@/i18n/locales/${locale}/tts-samples.json`);
-        const ttsSamplesMessages = ttsSamplesModule.default;
-
-        // 加载 TTS Input 语言文件
-        const ttsInputModule = await import(`@/i18n/locales/${locale}/tts-input.json`);
-        const ttsInputMessages = ttsInputModule.default;
-
-        // 加载 Voice Styles 语言文件
-        const voiceStylesModule = await import(`@/i18n/locales/${locale}/voice-styles.json`);
-        const voiceStylesMessages = voiceStylesModule.default;
-
-        // 合并消息
+        // 合并所有模块的消息
         setMessages({
-          ...mainMessages,
-          faq: faqMessages,
-          ttsInput: ttsInputMessages,
-          voiceStyles: voiceStylesMessages,
-          ...ttsSamplesMessages
+          ...commonModule.default,
+          ...authModule.default,
+          ...homeModule.default,
+          ...pricingModule.default,
+          ...studioModule.default,
+          ...toolsModule.default,
+          ...historyModule.default,
+          ...settingsModule.default,
+          ...shareModule.default,
+          ...pwaModule.default,
+          ...languagesModule.default,
+          ...countriesModule.default,
+          faq: faqModule.default,
+          ttsInput: ttsInputModule.default,
+          voiceStyles: voiceStylesModule.default,
+          ...ttsSamplesModule.default,
         });
 
         // 语言文件加载完成后，标记为已就绪

@@ -16,7 +16,9 @@
     "errors": {
       "emptyUrl": "請輸入 TikTok 影片連結",
       "invalidUrl": "無效的 TikTok 連結，請輸入正確的 TikTok 影片連結。",
-      "parseFailed": "解析影片失敗，請檢查連結後重試。"
+      "parseFailed": "解析影片失敗，請檢查連結後重試。",
+      "insufficientCredits": "積分不足，需要: {{required}}，目前: {{current}}",
+      "unknownError": "發生未知錯誤，請稍後重試。"
     }
   },
   "youtubeDownloader": {
@@ -42,7 +44,9 @@
     "errors": {
       "emptyUrl": "請輸入 YouTube 影片連結",
       "invalidUrl": "無效的 YouTube 連結，請輸入正確的 YouTube 影片連結。",
-      "parseFailed": "解析影片失敗，請檢查連結後重試。"
+      "parseFailed": "解析影片失敗，請檢查連結後重試。",
+      "insufficientCredits": "積分不足，需要: {{required}}，目前: {{current}}",
+      "unknownError": "發生未知錯誤，請稍後重試。"
     }
   }
 }

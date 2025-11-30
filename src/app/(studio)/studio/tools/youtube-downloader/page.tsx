@@ -9,6 +9,7 @@ import {
   parseVideoUrl,
   type ParseResponse,
   type VideoFormat,
+  type VideoParseErrorCode,
 } from '@/actions/video-downloader';
 import {
   isYouTubeUrl,
@@ -57,6 +58,27 @@ export default function YouTubeDownloaderPage() {
   useEffect(() => {
     setTitle(t('studio.menu.youtubeDownloader'));
   }, [t, setTitle]);
+
+  // 根据错误码获取国际化错误信息
+  const getErrorMessage = useCallback((errorCode: VideoParseErrorCode, errorData?: Record<string, unknown>): string => {
+    switch (errorCode) {
+      case 'EMPTY_URL':
+        return t('youtubeDownloader.errors.emptyUrl');
+      case 'INVALID_URL':
+      case 'UNSUPPORTED_PLATFORM':
+        return t('youtubeDownloader.errors.invalidUrl');
+      case 'INSUFFICIENT_CREDITS':
+        return t('youtubeDownloader.errors.insufficientCredits', {
+          required: errorData?.required ?? 0,
+          current: errorData?.current ?? 0,
+        });
+      case 'PARSE_FAILED':
+        return t('youtubeDownloader.errors.parseFailed');
+      case 'UNKNOWN_ERROR':
+      default:
+        return t('youtubeDownloader.errors.unknownError');
+    }
+  }, [t]);
 
   // 分组后的格式
   const groupedFormats = useMemo(() => {
@@ -117,7 +139,9 @@ export default function YouTubeDownloaderPage() {
       const result = await parseVideoUrl(url);
 
       if (!result.success || !result.data) {
-        setError(result.error || t('youtubeDownloader.errors.parseFailed'));
+        // 使用错误码获取国际化错误信息
+        const errorCode = result.errorCode || 'UNKNOWN_ERROR';
+        setError(getErrorMessage(errorCode, result.errorData));
         return;
       }
 
@@ -141,11 +165,11 @@ export default function YouTubeDownloaderPage() {
         setSelectedFormat(grouped.videoOnly[0]);
       }
     } catch {
-      setError(t('youtubeDownloader.errors.parseFailed'));
+      setError(t('youtubeDownloader.errors.unknownError'));
     } finally {
       setLoading(false);
     }
-  }, [url, t, refreshCredits]);
+  }, [url, t, refreshCredits, getErrorMessage]);
 
   // 切换 tab 时自动选择第一个格式
   useEffect(() => {

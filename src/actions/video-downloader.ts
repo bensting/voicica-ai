@@ -8,7 +8,7 @@
  */
 
 import { getUserOrAnonymous } from '@/lib/auth-firebase';
-import { InsufficientCreditsError, errorToResponse } from '@/lib/errors';
+import { InsufficientCreditsError } from '@/lib/errors';
 import { calculateProductCreditsCost } from '@/config/creditsCost';
 import { ProductType } from '@/config/productType';
 import { isYouTubeUrl } from '@/lib/services/youtube-downloader';
@@ -36,11 +36,22 @@ export interface ParseResponse {
   formats: VideoFormat[];
 }
 
+// 错误码类型
+export type VideoParseErrorCode =
+  | 'EMPTY_URL'
+  | 'INVALID_URL'
+  | 'UNSUPPORTED_PLATFORM'
+  | 'INSUFFICIENT_CREDITS'
+  | 'PARSE_FAILED'
+  | 'UNKNOWN_ERROR';
+
 // 解析结果（包含错误处理）
 export interface ParseResult {
   success: boolean;
   data?: ParseResponse;
   error?: string;
+  errorCode?: VideoParseErrorCode;
+  errorData?: Record<string, unknown>;
 }
 
 // 后端 API 地址（从环境变量获取）
@@ -59,7 +70,7 @@ export async function parseVideoUrl(url: string): Promise<ParseResult> {
     if (!url?.trim()) {
       return {
         success: false,
-        error: 'URL is required',
+        errorCode: 'EMPTY_URL',
       };
     }
 
@@ -83,7 +94,7 @@ export async function parseVideoUrl(url: string): Promise<ParseResult> {
     } else {
       return {
         success: false,
-        error: 'Unsupported platform. Only YouTube and TikTok are supported.',
+        errorCode: 'UNSUPPORTED_PLATFORM',
       };
     }
 
@@ -100,7 +111,11 @@ export async function parseVideoUrl(url: string): Promise<ParseResult> {
 
       if (!hasEnough) {
         console.log(`⚠️ [parseVideoUrl] 积分不足: 需要 ${requiredCredits}, 当前 ${current}`);
-        throw new InsufficientCreditsError(requiredCredits, current);
+        return {
+          success: false,
+          errorCode: 'INSUFFICIENT_CREDITS',
+          errorData: { required: requiredCredits, current },
+        };
       }
 
       console.log('✅ [parseVideoUrl] 积分充足:', current);
@@ -116,10 +131,12 @@ export async function parseVideoUrl(url: string): Promise<ParseResult> {
     });
 
     if (!response.ok) {
+      // 记录后端错误但不暴露给用户
       const error = await response.json().catch(() => ({ detail: 'Unknown error' }));
+      console.error('🎬 [parseVideoUrl] 后端解析失败:', error.detail);
       return {
         success: false,
-        error: error.detail || 'Failed to parse video',
+        errorCode: 'PARSE_FAILED',
       };
     }
 
@@ -145,11 +162,19 @@ export async function parseVideoUrl(url: string): Promise<ParseResult> {
   } catch (error) {
     console.error('[parseVideoUrl] Error:', error);
 
-    // 统一错误处理
-    const errorResponse = errorToResponse(error);
+    // 检查是否是积分不足错误
+    if (error instanceof InsufficientCreditsError) {
+      return {
+        success: false,
+        errorCode: 'INSUFFICIENT_CREDITS',
+        errorData: error.data,
+      };
+    }
+
+    // 未知错误不暴露详情
     return {
       success: false,
-      error: errorResponse.error,
+      errorCode: 'UNKNOWN_ERROR',
     };
   }
 }

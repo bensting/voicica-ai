@@ -58,6 +58,13 @@ export default function StudioTTSPage() {
     setTitle(t('tts.title'));
   }, [t, setTitle]);
 
+  // Google Ads 转化跟踪
+  useEffect(() => {
+    if (typeof window !== 'undefined' && typeof window.gtag === 'function') {
+      window.gtag('event', 'ads_conversion_tts', {});
+    }
+  }, []);
+
   // 注意：积分已由 CreditsContext 在认证完成后自动获取
   // 这里不需要再主动调用 refreshCredits，避免重复请求
 

@@ -5,6 +5,7 @@ import { ChevronRight, User, UserRound } from 'lucide-react';
 import * as FlagIcons from 'country-flag-icons/react/3x2';
 import type { Voice } from '@/types/voice';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { getCountryCode } from '@/utils/localeMapper';
 
 interface VoiceSelectButtonProps {
   voice: Voice | null;
@@ -74,25 +75,6 @@ export default function VoiceSelectButton({
 
   const config = sizeConfig[size];
   const voiceName = voice?.display_name || t('tts.selectVoice');
-
-  // Get country code from locale
-  const getCountryCode = (locale: string): string => {
-    const countryMap: Record<string, string> = {
-      'zh-CN': 'CN',
-      'zh-TW': 'TW',
-      'en-US': 'US',
-      'en-GB': 'GB',
-      'ja-JP': 'JP',
-      'ko-KR': 'KR',
-      'es-ES': 'ES',
-      'fr-FR': 'FR',
-      'de-DE': 'DE',
-      'it-IT': 'IT',
-      'pt-BR': 'BR',
-      'ru-RU': 'RU',
-    };
-    return countryMap[locale] || 'UN'; // UN for unknown
-  };
 
   // Get Flag Icon component
   const getFlagIcon = (locale: string) => {

@@ -369,3 +369,23 @@ export function getAllLocaleOptions(): LocaleOption[] {
     countryCode: info.countryCode,
   }));
 }
+
+/**
+ * 根据 locale 获取国家代码
+ * @param locale - 语言代码，如 'en-US', 'zh-CN', 'am-ET'
+ * @returns 国家代码，如 'US', 'CN', 'ET'，如果找不到则返回空字符串
+ */
+export function getCountryCode(locale: string): string {
+  const localeInfo = LOCALE_MAP[locale];
+  if (localeInfo) {
+    return localeInfo.countryCode;
+  }
+
+  // 尝试从 locale 中提取国家代码（例如 "ar-SA" -> "SA"）
+  const parts = locale.split('-');
+  if (parts.length >= 2) {
+    return parts[parts.length - 1].toUpperCase();
+  }
+
+  return '';
+}

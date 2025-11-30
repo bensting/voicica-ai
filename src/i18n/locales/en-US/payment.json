@@ -1,0 +1,33 @@
+{
+  "payment": {
+    "success": {
+      "verifying": {
+        "title": "Verifying Payment...",
+        "description": "Please wait while we confirm your payment"
+      },
+      "success": {
+        "title": "Payment Successful!",
+        "description": "Thank you for your purchase, subscription activated",
+        "orderSummary": "Order Summary",
+        "orderId": "Order ID",
+        "subscriptionId": "Subscription ID",
+        "countdown": "Redirecting to studio in {{count}} seconds...",
+        "enterStudio": "Enter Studio Now"
+      },
+      "pending": {
+        "title": "Payment Processing",
+        "description": "Your payment is being processed, subscription will be activated soon",
+        "orderId": "Order ID:",
+        "refresh": "Refresh Status",
+        "backHome": "Back to Home"
+      },
+      "failed": {
+        "title": "Payment Verification Failed",
+        "description": "Sorry, we could not verify your payment",
+        "notice": "If you have completed the payment, please refresh the page later to check the status, or contact customer service for help.",
+        "retry": "Retry Verification",
+        "backHome": "Back to Home"
+      }
+    }
+  }
+}

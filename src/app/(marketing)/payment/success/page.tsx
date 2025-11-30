@@ -4,6 +4,7 @@ import { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { verifyStripePayment as verifyStripePaymentAction } from '@/actions/payment';
 import type { StripeVerifyResponse } from '@/types/subscription';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 type PaymentStatus = 'verifying' | 'success' | 'pending' | 'failed';
 
@@ -16,6 +17,7 @@ interface PaymentDetails {
 function PaymentSuccessContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { t } = useLanguage();
   const [status, setStatus] = useState<PaymentStatus>('verifying');
   const [paymentDetails, setPaymentDetails] = useState<PaymentDetails | null>(null);
   const [error, setError] = useState<string>('');
@@ -25,7 +27,7 @@ function PaymentSuccessContent() {
   const verifyStripePayment = async (params: URLSearchParams) => {
     const requestId = params.get('request_id');
     if (!requestId) {
-      throw new Error('缺少 Stripe Request ID');
+      throw new Error('Missing Stripe Request ID');
     }
 
     // 检查用户登录状态
@@ -60,7 +62,7 @@ function PaymentSuccessContent() {
       setError(response.message);
     } else {
       setStatus('failed');
-      setError(response.message || `支付状态: ${response.payment_status}`);
+      setError(response.message || `Payment status: ${response.payment_status}`);
     }
   };
 
@@ -98,7 +100,7 @@ function PaymentSuccessContent() {
       } catch (err) {
         console.error('❌ 支付验证失败:', err);
         setStatus('failed');
-        setError(err instanceof Error ? err.message : '验证支付失败，请稍后重试');
+        setError(err instanceof Error ? err.message : 'Payment verification failed');
       }
     };
 
@@ -115,7 +117,7 @@ function PaymentSuccessContent() {
     }
 
     if (status === 'success' && countdown === 0) {
-      router.push('/');
+      router.push('/studio');
     }
   }, [status, countdown, router]);
 
@@ -148,8 +150,12 @@ function PaymentSuccessContent() {
                   />
                 </svg>
               </div>
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">正在验证支付...</h2>
-              <p className="text-gray-600">请稍候，我们正在确认您的支付信息</p>
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                {t('payment.success.verifying.title')}
+              </h2>
+              <p className="text-gray-600">
+                {t('payment.success.verifying.description')}
+              </p>
             </div>
           </div>
         )}
@@ -173,25 +179,33 @@ function PaymentSuccessContent() {
                   />
                 </svg>
               </div>
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">支付成功！</h2>
-              <p className="text-gray-600">感谢您的购买，订阅已激活</p>
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                {t('payment.success.success.title')}
+              </h2>
+              <p className="text-gray-600">
+                {t('payment.success.success.description')}
+              </p>
             </div>
 
             {/* 订单摘要 */}
             <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl p-6 mb-6 text-left">
               <h3 className="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-4">
-                订单摘要
+                {t('payment.success.success.orderSummary')}
               </h3>
               <div className="space-y-3">
                 <div className="flex justify-between items-center">
-                  <span className="text-gray-600">订单号</span>
+                  <span className="text-gray-600">
+                    {t('payment.success.success.orderId')}
+                  </span>
                   <span className="text-gray-900 font-mono text-sm">
                     {paymentDetails.orderId.slice(0, 20)}...
                   </span>
                 </div>
                 {paymentDetails.subscriptionId && (
                   <div className="flex justify-between items-center">
-                    <span className="text-gray-600">订阅 ID</span>
+                    <span className="text-gray-600">
+                      {t('payment.success.success.subscriptionId')}
+                    </span>
                     <span className="text-gray-900 font-mono text-sm">
                       {paymentDetails.subscriptionId}
                     </span>
@@ -202,15 +216,15 @@ function PaymentSuccessContent() {
 
             {/* 自动跳转提示 */}
             <div className="text-sm text-gray-500 mb-4">
-              {countdown} 秒后自动返回首页...
+              {t('payment.success.success.countdown', { count: countdown })}
             </div>
 
-            {/* 立即返回按钮 */}
+            {/* 立即跳转按钮 */}
             <button
-              onClick={() => router.push('/')}
+              onClick={() => router.push('/studio')}
               className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold py-3 px-6 rounded-xl hover:from-purple-700 hover:to-pink-700 transition-all shadow-lg hover:shadow-xl"
             >
-              立即返回首页
+              {t('payment.success.success.enterStudio')}
             </button>
           </div>
         )}
@@ -234,16 +248,20 @@ function PaymentSuccessContent() {
                   />
                 </svg>
               </div>
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">支付处理中</h2>
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                {t('payment.success.pending.title')}
+              </h2>
               <p className="text-gray-600 mb-4">
-                {error || '您的支付正在处理中，订阅将很快激活'}
+                {error || t('payment.success.pending.description')}
               </p>
             </div>
 
             {/* 订单信息 */}
             <div className="bg-gray-50 rounded-xl p-4 mb-6 text-left text-sm">
               <div className="flex justify-between mb-2">
-                <span className="text-gray-600">订单号:</span>
+                <span className="text-gray-600">
+                  {t('payment.success.pending.orderId')}
+                </span>
                 <span className="text-gray-900 font-mono">
                   {paymentDetails.orderId.slice(0, 20)}...
                 </span>
@@ -255,13 +273,13 @@ function PaymentSuccessContent() {
                 onClick={() => window.location.reload()}
                 className="w-full bg-purple-600 text-white font-semibold py-3 px-6 rounded-xl hover:bg-purple-700 transition-colors"
               >
-                刷新状态
+                {t('payment.success.pending.refresh')}
               </button>
               <button
                 onClick={() => router.push('/')}
                 className="w-full border-2 border-gray-300 text-gray-700 font-semibold py-3 px-6 rounded-xl hover:border-purple-400 hover:text-purple-600 transition-colors"
               >
-                返回首页
+                {t('payment.success.pending.backHome')}
               </button>
             </div>
           </div>
@@ -286,13 +304,17 @@ function PaymentSuccessContent() {
                   />
                 </svg>
               </div>
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">支付验证失败</h2>
-              <p className="text-gray-600 mb-4">{error || '抱歉，我们无法验证您的支付'}</p>
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                {t('payment.success.failed.title')}
+              </h2>
+              <p className="text-gray-600 mb-4">
+                {error || t('payment.success.failed.description')}
+              </p>
             </div>
 
             <div className="bg-red-50 border border-red-200 rounded-xl p-4 mb-6">
               <p className="text-sm text-red-800">
-                如果您已完成支付，请稍后刷新页面查看状态，或联系客服获取帮助。
+                {t('payment.success.failed.notice')}
               </p>
             </div>
 
@@ -301,13 +323,13 @@ function PaymentSuccessContent() {
                 onClick={() => window.location.reload()}
                 className="w-full bg-purple-600 text-white font-semibold py-3 px-6 rounded-xl hover:bg-purple-700 transition-colors"
               >
-                重新验证
+                {t('payment.success.failed.retry')}
               </button>
               <button
                 onClick={() => router.push('/')}
                 className="w-full border-2 border-gray-300 text-gray-700 font-semibold py-3 px-6 rounded-xl hover:border-purple-400 hover:text-purple-600 transition-colors"
               >
-                返回首页
+                {t('payment.success.failed.backHome')}
               </button>
             </div>
           </div>

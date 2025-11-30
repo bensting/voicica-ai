@@ -47,11 +47,11 @@ export default function TTSSamples() {
   } = useTTSDemo();
 
   return (
-    <section className="py-20 px-3 sm:px-4 bg-black">
+    <section className="py-12 sm:py-16 px-3 sm:px-4 bg-black">
       <div className="max-w-7xl mx-auto">
         {/* Section Header */}
         <div className="text-center mb-8 sm:mb-12">
-          <h2 className="text-2xl md:text-5xl font-bold text-white mb-4">
+          <h2 className="text-2xl md:text-4xl font-bold text-white mb-4">
             {t('ttsSamples.sectionTitle.prefix')}{' '}
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">
               {t('ttsSamples.sectionTitle.highlight')}

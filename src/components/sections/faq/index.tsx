@@ -13,7 +13,7 @@ export default function FAQ() {
   const { t } = useLanguage();
 
   return (
-    <section id="faq" className="py-20 px-4 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+    <section id="faq" className="py-12 sm:py-16 px-4 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
       <div className="max-w-5xl mx-auto">
         {/* Title */}
         <div className="text-center mb-12">

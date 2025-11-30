@@ -1,0 +1,83 @@
+{
+  "common": {
+    "brand": "Voicica AI",
+    "cancel": "ยกเลิก",
+    "close": "ปิด",
+    "retry": "ลองใหม่",
+    "loading": "กำลังโหลด...",
+    "download": "ดาวน์โหลด",
+    "share": "แชร์",
+    "delete": "ลบ"
+  },
+  "creditInfo": {
+    "currentCredits": "เครดิตปัจจุบัน:",
+    "loginForMore": "เข้าสู่ระบบเพื่อรับเครดิตเพิ่มเติม",
+    "deductionNotice": "{{count}} เครดิตจะถูกหักหลังจาก{{actionName}}สำเร็จ"
+  },
+  "productCategory": {
+    "aiVideo": "AI วิดีโอ",
+    "aiMusic": "AI เพลง",
+    "aiVoice": "AI เสียง"
+  },
+  "navbar": {
+    "explore": "สำรวจ",
+    "pricing": "แผนราคา",
+    "faq": "คำถามที่พบบ่อย",
+    "blog": "บล็อก",
+    "myVoiceModels": "โมเดลเสียงของฉัน",
+    "generationHistory": "ประวัติการสร้าง",
+    "subscription": "แพ็กเกจ",
+    "profile": "โปรไฟล์",
+    "login": "เข้าสู่ระบบ",
+    "logout": "ออกจากระบบ",
+    "myStudio": "สตูดิโอของฉัน"
+  },
+  "nav": {
+    "studio": "สตูดิโอ",
+    "pricing": "แผนราคา",
+    "faq": "คำถามที่พบบ่อย",
+    "generationHistory": "ประวัติการสร้าง",
+    "freeTools": "เครื่องมือฟรี",
+    "tiktokDownloader": "ดาวน์โหลด TikTok",
+    "tiktokDownloaderDesc": "ดาวน์โหลดวิดีโอ TikTok โดยไม่มีลายน้ำ",
+    "youtubeDownloader": "ดาวน์โหลด YouTube",
+    "youtubeDownloaderDesc": "ดาวน์โหลดวิดีโอและเสียง YouTube"
+  },
+  "language": {
+    "en": "English",
+    "zhCN": "简体中文",
+    "zhTW": "繁體中文",
+    "th": "ไทย"
+  },
+  "footer": {
+    "tagline": "โอบรับ AI โอบรับความเรียบง่าย",
+    "followUs": "ติดตามเรา",
+    "changeLanguage": "เปลี่ยนภาษา",
+    "copyright": "สงวนลิขสิทธิ์",
+    "info": {
+      "title": "ข้อมูล",
+      "terms": "ข้อกำหนดและเงื่อนไข",
+      "cookie": "นโยบายคุกกี้",
+      "privacy": "นโยบายความเป็นส่วนตัว",
+      "refund": "นโยบายการคืนเงิน",
+      "partner": "เป็นพาร์ทเนอร์ของเรา"
+    },
+    "about": {
+      "title": "เกี่ยวกับ",
+      "aboutUs": "เกี่ยวกับเรา",
+      "contact": "ติดต่อเรา",
+      "faqs": "คำถามที่พบบ่อย",
+      "blogs": "บล็อก",
+      "dmca": "DMCA"
+    },
+    "products": {
+      "title": "ผลิตภัณฑ์ยอดนิยม",
+      "tts": "AI ข้อความเป็นเสียง",
+      "songCover": "เครื่องมือสร้างเพลงคัฟเวอร์ AI",
+      "musicGenerator": "เครื่องมือสร้างเพลง AI",
+      "voiceCloning": "AI โคลนเสียง",
+      "voiceChanger": "ตัวเปลี่ยนเสียงฟรี",
+      "api": "API (สำหรับนักพัฒนา)"
+    }
+  }
+}

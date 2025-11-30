@@ -1,0 +1,51 @@
+{
+  "pricing": {
+    "pageTitle": "Voicica AI 套餐與定價",
+    "pageSubtitle": "Voicica AI 提供多種購買方案，更好地滿足您的需求。",
+    "loading": "正在載入價格方案...",
+    "error": "載入價格方案失敗，請稍後重試。",
+    "retry": "重試",
+    "week": "週",
+    "month": "月",
+    "year": "年",
+    "perDay": "每天",
+    "creditsPerCycle": "積分/週期",
+    "creditsUsageRules": "積分使用規則",
+    "notes": "提示：",
+    "creditsNote": "積分可用於 Voicica AI 上的所有工具。",
+    "buyNow": "立即購買",
+    "tryItFree": "免費試用",
+    "processing": "處理中...",
+    "renewalAt": "續費價格",
+    "freeForEveryone": "永久免費",
+    "mostPopular": "最受歡迎",
+    "autoRenew": "自動續費，隨時可取消。",
+    "loginRequired": "需要登入",
+    "loginRequiredDesc": "請登入後購買訂閱套餐",
+    "cancel": "取消",
+    "signIn": "登入",
+    "creditsUsageGuide": {
+      "title": "積分使用指南",
+      "subtitle": "以下是各功能所需的積分。",
+      "feature": "功能",
+      "creditsRequired": "所需積分",
+      "standardVoice": "標準語音",
+      "premiumVoice": "高級語音",
+      "clonedVoice": "克隆語音"
+    }
+  },
+  "upgrade": {
+    "header": {
+      "title": "升級您的套餐",
+      "description": "選擇最適合您需求的套餐"
+    },
+    "tabs": {
+      "textToVoice": "文字轉語音",
+      "voiceClone": "語音複製"
+    },
+    "title": {
+      "textToVoice": "選擇您的文字轉語音套餐",
+      "voiceClone": "選擇您的語音複製套餐"
+    }
+  }
+}

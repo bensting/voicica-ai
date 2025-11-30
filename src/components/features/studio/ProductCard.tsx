@@ -38,8 +38,8 @@ export default function ProductCard({
         className="w-full h-auto object-cover"
       />
 
-      {/* 左侧半透明遮罩 + 内容 */}
-      <div className="absolute inset-y-0 left-0 w-3/5 bg-gradient-to-r from-white via-white/95 to-transparent flex flex-col justify-center p-6">
+      {/* 左上角半透明遮罩 + 内容 */}
+      <div className="absolute top-0 left-0 w-3/5 bg-gradient-to-r from-white via-white/95 to-transparent p-5">
         <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-purple-600 transition-colors">
           {title}
         </h3>

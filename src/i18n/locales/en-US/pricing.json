@@ -1,0 +1,51 @@
+{
+  "pricing": {
+    "pageTitle": "Plans & Pricing of Voicica AI",
+    "pageSubtitle": "Voicica AI offers a variety of purchase plans to better meet your needs.",
+    "loading": "Loading pricing plans...",
+    "error": "Failed to load pricing plans. Please try again later.",
+    "retry": "Retry",
+    "week": "Week",
+    "month": "Month",
+    "year": "Year",
+    "perDay": "per day",
+    "creditsPerCycle": "credits per cycle",
+    "creditsUsageRules": "Credits Usage Rules",
+    "notes": "Notes:",
+    "creditsNote": "Credits can be used in all tools on Voicica AI.",
+    "buyNow": "Buy Now",
+    "tryItFree": "Try it Free",
+    "processing": "Processing...",
+    "renewalAt": "Renewal at",
+    "freeForEveryone": "Free for everyone",
+    "mostPopular": "Most Popular",
+    "autoRenew": "Auto-renew. Cancel at any time.",
+    "loginRequired": "Login Required",
+    "loginRequiredDesc": "Please sign in to purchase a subscription plan",
+    "cancel": "Cancel",
+    "signIn": "Sign In",
+    "creditsUsageGuide": {
+      "title": "Credits Usage Guide",
+      "subtitle": "Below are the credit requirements for each feature.",
+      "feature": "Feature",
+      "creditsRequired": "Credits Required",
+      "standardVoice": "Standard Voice",
+      "premiumVoice": "Premium Voice",
+      "clonedVoice": "Cloned Voice"
+    }
+  },
+  "upgrade": {
+    "header": {
+      "title": "Upgrade Your Plan",
+      "description": "Choose the perfect plan for your needs"
+    },
+    "tabs": {
+      "textToVoice": "Text to Voice",
+      "voiceClone": "Voice Clone"
+    },
+    "title": {
+      "textToVoice": "Pick Your Plan of Text to Speech",
+      "voiceClone": "Pick Your Plan of Voice Clone"
+    }
+  }
+}

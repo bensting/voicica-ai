@@ -1,0 +1,112 @@
+{
+  "settings": {
+    "title": "การตั้งค่า",
+    "menu": {
+      "home": "หน้าแรก",
+      "mySubscription": "แพ็กเกจของฉัน",
+      "myProfile": "โปรไฟล์ของฉัน",
+      "orderList": "รายการคำสั่งซื้อ",
+      "myCoupon": "คูปองของฉัน",
+      "messageCenter": "ศูนย์ข้อความ"
+    },
+    "basicInfo": {
+      "title": "ข้อมูลพื้นฐาน",
+      "profilePicture": "รูปโปรไฟล์",
+      "profilePictureHint": "PNG หรือ JPG แนะนำให้ใช้รูปที่มีความกว้างและความสูงเท่ากัน",
+      "uploading": "กำลังอัปโหลด...",
+      "nameSurname": "ชื่อและนามสกุล",
+      "email": "อีเมล",
+      "phone": "เบอร์โทรศัพท์"
+    },
+    "actions": {
+      "save": "บันทึก",
+      "saveChanges": "บันทึกการเปลี่ยนแปลง",
+      "cancel": "ยกเลิก",
+      "saveSuccess": "บันทึกสำเร็จ",
+      "saveFailed": "บันทึกไม่สำเร็จ กรุณาลองใหม่"
+    },
+    "benefits": {
+      "title": "สิทธิประโยชน์ของฉัน",
+      "credits": "เครดิต",
+      "voiceCredits": "เครดิตเสียง",
+      "refresh": "รีเฟรช",
+      "viewHistory": "ดูประวัติ"
+    }
+  },
+  "subscription": {
+    "title": "แผนของคุณ",
+    "changePlan": "เปลี่ยนแผน",
+    "selectPlan": "เลือกแผนที่เหมาะกับคุณที่สุด",
+    "monthly": "รายเดือน",
+    "yearly": "รายปี",
+    "yearlyDiscount": "ลด 33%",
+    "free": {
+      "name": "ฟรี",
+      "badge": "ใช้งานอยู่",
+      "feature1": "สร้างได้สูงสุด 120 ตัวอักษรต่อครั้ง",
+      "feature2": "สร้างเสียง 900 วินาทีต่อเดือน",
+      "feature3": "สร้างโมเดลโคลนเสียงได้สูงสุด 5 โมเดล"
+    },
+    "pro": {
+      "name": "มืออาชีพ",
+      "badge": "แนะนำ",
+      "tagline": "ปลดล็อกศักยภาพเต็มรูปแบบ",
+      "priceMonthly": "$14.99",
+      "priceYearly": "$9.99",
+      "perMonth": "/1 เดือน",
+      "feature1": "สร้างได้สูงสุด 1000 ตัวอักษรต่อครั้ง",
+      "feature2": "อนุญาตให้ใช้เชิงพาณิชย์",
+      "feature3": "สร้างได้ไม่จำกัด",
+      "feature4": "สร้างแบบมีลำดับความสำคัญ",
+      "feature5": "สร้างโมเดลโคลนเสียงได้ไม่จำกัด",
+      "upgradeNow": "อัปเกรดเลย"
+    },
+    "cancel": {
+      "title": "ยกเลิกแพ็กเกจ",
+      "warning": "การดำเนินการนี้ไม่สามารถย้อนกลับได้ แพ็กเกจจะถูกยกเลิกทันที และคุณจะไม่ถูกเรียกเก็บเงินอีก",
+      "note": "เครดิตที่มีอยู่จะยังคงใช้งานได้",
+      "reasonLabel": "เหตุผลในการยกเลิก (ไม่บังคับ)",
+      "reasonPlaceholder": "บอกเราว่าทำไมคุณถึงยกเลิก...",
+      "confirm": "ยืนยัน",
+      "canceling": "กำลังยกเลิก..."
+    },
+    "mySubscription": {
+      "activeSection": "ใช้งานอยู่",
+      "inactiveSection": "ยกเลิกแล้ว/หมดอายุ",
+      "emptyTitle": "ไม่มีแพ็กเกจ",
+      "emptyDesc": "คุณยังไม่มีแพ็กเกจใดๆ",
+      "noActiveSubscriptions": "ไม่มีแพ็กเกจที่ใช้งานอยู่",
+      "noInactiveSubscriptions": "ไม่มีแพ็กเกจที่ยกเลิกหรือหมดอายุ",
+      "retry": "ลองใหม่",
+      "validUntil": "ใช้ได้ถึง:",
+      "daysLeft": "วันที่เหลือ",
+      "credits": "เครดิต",
+      "cancelButton": "ยกเลิกแพ็กเกจ",
+      "status": {
+        "TRIAL": "ทดลองใช้",
+        "ACTIVE": "ใช้งานอยู่",
+        "EXPIRED": "หมดอายุ",
+        "CANCELLED": "ยกเลิกแล้ว",
+        "SUSPENDED": "ระงับ"
+      }
+    }
+  },
+  "creditHistory": {
+    "title": "ประวัติเครดิต",
+    "empty": "ยังไม่มีประวัติเครดิต",
+    "date": "วันที่",
+    "description": "รายละเอียด",
+    "type": "ประเภท",
+    "amount": "เครดิต",
+    "scrollToLoadMore": "เลื่อนลงเพื่อโหลดเพิ่มเติม",
+    "allLoaded": "โหลดข้อมูลทั้งหมดแล้ว",
+    "productType": {
+      "textToSpeech": "แปลงข้อความเป็นเสียง",
+      "voiceCloning": "โคลนเสียง",
+      "youtubeDownloader": "ดาวน์โหลด YouTube",
+      "tiktokDownloader": "ดาวน์โหลด TikTok",
+      "subscription": "สมัครสมาชิก",
+      "other": "อื่นๆ"
+    }
+  }
+}

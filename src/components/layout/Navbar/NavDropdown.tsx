@@ -116,7 +116,7 @@ export default function NavDropdown({ dropdown, mobile = false, onLinkClick }: N
 
       {isOpen && (
         <div className="absolute top-full left-0">
-          <div className="p-3 bg-gray-100 shadow-xl border border-gray-200 border-t-0 min-w-[320px]">
+          <div className="p-3 bg-pink-50 shadow-xl border border-gray-200 border-t-0 min-w-[320px]">
             {dropdown.items
               .filter((item) => item.enabled !== false)
               .map((item) => {
@@ -134,7 +134,7 @@ export default function NavDropdown({ dropdown, mobile = false, onLinkClick }: N
                       </div>
                     )}
                     <div>
-                      <div className="font-medium">{t(item.labelKey)}</div>
+                      <div className="font-semibold">{t(item.labelKey)}</div>
                       {item.descriptionKey && (
                         <div className="text-sm text-gray-500">{t(item.descriptionKey)}</div>
                       )}

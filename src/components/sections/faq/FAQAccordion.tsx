@@ -2,8 +2,7 @@
 
 import { useState } from 'react';
 import { ChevronDown, Minus } from 'lucide-react';
-import { useLanguage } from '@/contexts/LanguageContext';
-import type { FAQItem } from '@/config/faqConfig';
+import type { FAQItem } from '@/config/faq';
 
 interface FAQAccordionProps {
   items: FAQItem[];
@@ -15,7 +14,6 @@ interface FAQAccordionProps {
  * Displays a list of FAQ items with expand/collapse functionality
  */
 export default function FAQAccordion({ items }: FAQAccordionProps) {
-  const { t } = useLanguage();
   const [openIndex, setOpenIndex] = useState<number | null>(0);
 
   const toggleFAQ = (index: number) => {
@@ -41,7 +39,7 @@ export default function FAQAccordion({ items }: FAQAccordionProps) {
               <span className={`font-medium text-base md:text-lg transition-colors ${
                 openIndex === index ? 'text-purple-400' : 'text-white group-hover:text-purple-300'
               }`}>
-                {t(item.questionKey)}
+                {item.question}
               </span>
             </div>
             <div className="flex-shrink-0 ml-4">
@@ -67,7 +65,7 @@ export default function FAQAccordion({ items }: FAQAccordionProps) {
           >
             <div className="px-5 md:px-6 pb-5 md:pb-6 pl-16 md:pl-20">
               <p className="text-gray-300 text-sm md:text-base leading-relaxed">
-                {t(item.answerKey)}
+                {item.answer}
               </p>
             </div>
           </div>

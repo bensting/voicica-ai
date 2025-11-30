@@ -37,10 +37,11 @@ export default function Hero({
 }: HeroProps) {
   const [isMuted, setIsMuted] = useState(true);
   const videoRef = useRef<HTMLVideoElement>(null);
-  const { locale } = useLanguage();
+  const { locale, isReady } = useLanguage();
 
   // 泰语需要较小的字体
-  const isThaiLang = locale === 'th-TH';
+  // 在 hydration 完成前使用默认样式，避免服务端/客户端不一致
+  const isThaiLang = isReady && locale === 'th-TH';
 
   const toggleMute = () => {
     if (videoRef.current) {

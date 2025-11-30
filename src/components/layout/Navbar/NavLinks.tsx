@@ -23,21 +23,37 @@ export default function NavLinks({ mobile = false, onLinkClick }: NavLinksProps 
   // Build ordered navigation items based on insertAfter configuration
   const orderedItems = useMemo<NavItem[]>(() => {
     const items: NavItem[] = [];
+    const addedDropdownIds = new Set<string>();
 
+    // Helper to add a dropdown and its dependents recursively
+    const addDropdownWithDependents = (dropdown: NavDropdownType) => {
+      if (addedDropdownIds.has(dropdown.id)) return;
+
+      items.push({ type: 'dropdown', data: dropdown });
+      addedDropdownIds.add(dropdown.id);
+
+      // Find dropdowns that should be inserted after this dropdown
+      const dropdownsAfter = NAV_DROPDOWNS.filter(d => d.insertAfter === dropdown.id);
+      for (const dep of dropdownsAfter) {
+        addDropdownWithDependents(dep);
+      }
+    };
+
+    // First, add dropdowns without insertAfter (they come first)
+    const dropdownsWithoutPosition = NAV_DROPDOWNS.filter(d => !d.insertAfter);
+    for (const dropdown of dropdownsWithoutPosition) {
+      addDropdownWithDependents(dropdown);
+    }
+
+    // Then add links, with dropdowns inserted after matching links
     for (const link of NAV_LINKS) {
       items.push({ type: 'link', data: link });
 
-      // Find dropdowns that should be inserted after this link
-      const dropdownsAfter = NAV_DROPDOWNS.filter(d => d.insertAfter === link.href);
-      for (const dropdown of dropdownsAfter) {
-        items.push({ type: 'dropdown', data: dropdown });
+      // Find dropdowns that should be inserted after this link (by href)
+      const dropdownsAfterLink = NAV_DROPDOWNS.filter(d => d.insertAfter === link.href && !addedDropdownIds.has(d.id));
+      for (const dropdown of dropdownsAfterLink) {
+        addDropdownWithDependents(dropdown);
       }
-    }
-
-    // Add dropdowns without insertAfter at the end
-    const dropdownsWithoutPosition = NAV_DROPDOWNS.filter(d => !d.insertAfter);
-    for (const dropdown of dropdownsWithoutPosition) {
-      items.push({ type: 'dropdown', data: dropdown });
     }
 
     return items;

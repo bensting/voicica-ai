@@ -9,8 +9,8 @@ import {
   parseVideoUrl,
   type ParseResponse,
   type VideoFormat,
-  type VideoParseErrorCode,
 } from '@/actions/video-downloader';
+import { getVideoParseErrorMessage } from '@/lib/services/video-downloader-utils';
 import {
   isYouTubeUrl,
   getGroupedFormats,
@@ -58,27 +58,6 @@ export default function YouTubeDownloaderPage() {
   useEffect(() => {
     setTitle(t('studio.menu.youtubeDownloader'));
   }, [t, setTitle]);
-
-  // 根据错误码获取国际化错误信息
-  const getErrorMessage = useCallback((errorCode: VideoParseErrorCode, errorData?: Record<string, unknown>): string => {
-    switch (errorCode) {
-      case 'EMPTY_URL':
-        return t('youtubeDownloader.errors.emptyUrl');
-      case 'INVALID_URL':
-      case 'UNSUPPORTED_PLATFORM':
-        return t('youtubeDownloader.errors.invalidUrl');
-      case 'INSUFFICIENT_CREDITS':
-        return t('youtubeDownloader.errors.insufficientCredits', {
-          required: errorData?.required ?? 0,
-          current: errorData?.current ?? 0,
-        });
-      case 'PARSE_FAILED':
-        return t('youtubeDownloader.errors.parseFailed');
-      case 'UNKNOWN_ERROR':
-      default:
-        return t('youtubeDownloader.errors.unknownError');
-    }
-  }, [t]);
 
   // 分组后的格式
   const groupedFormats = useMemo(() => {
@@ -141,7 +120,7 @@ export default function YouTubeDownloaderPage() {
       if (!result.success || !result.data) {
         // 使用错误码获取国际化错误信息
         const errorCode = result.errorCode || 'UNKNOWN_ERROR';
-        setError(getErrorMessage(errorCode, result.errorData));
+        setError(getVideoParseErrorMessage(errorCode, result.errorData, t, 'youtubeDownloader'));
         return;
       }
 
@@ -169,7 +148,7 @@ export default function YouTubeDownloaderPage() {
     } finally {
       setLoading(false);
     }
-  }, [url, t, refreshCredits, getErrorMessage]);
+  }, [url, t, refreshCredits]);
 
   // 切换 tab 时自动选择第一个格式
   useEffect(() => {

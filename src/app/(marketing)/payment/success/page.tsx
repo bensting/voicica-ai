@@ -66,6 +66,13 @@ function PaymentSuccessContent() {
     }
   };
 
+  // Google Ads 转化跟踪
+  useEffect(() => {
+    if (typeof window !== 'undefined' && typeof window.gtag === 'function') {
+      window.gtag('event', 'ads_conversion_purchase', {});
+    }
+  }, []);
+
   // 验证支付
   useEffect(() => {
     const verifyPayment = async () => {

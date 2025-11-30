@@ -1,0 +1,133 @@
+{
+  "tts": {
+    "title": "Text to Speech",
+    "upgrade": "Upgrade",
+    "credits": "Credits",
+    "selectVoice": "Select Voice",
+    "generating": "Generating...",
+    "generationComplete": "Generation Complete",
+    "generationFailed": "Generation Failed",
+    "processingMessage": "Your audio is being generated, please wait...",
+    "successMessage": "Audio generated successfully!",
+    "generatingTip": "This may take a few seconds. You can close this and check later in Generation History.",
+    "successTip": "Your audio is ready! You can download or play it now.",
+    "taskProgress": "Progress",
+    "progress": "Progress",
+    "duration": "Duration",
+    "recentAuditions": "Recent auditions",
+    "allRecords": "All records",
+    "input": {
+      "placeholder": "Enter your text here, and we will automatically identify and convert it to the corresponding speech.",
+      "creditsLeft": "Credits",
+      "characterCount": "{current} / {max}",
+      "generateSpeech": "Generate Speech",
+      "generating": "Generating...",
+      "tryExamples": "Try these examples",
+      "examples": {
+        "greeting": {
+          "label": "Greeting",
+          "text": "Hello! Nice to meet you. How are you doing today?"
+        },
+        "ebook": {
+          "label": "E-book",
+          "text": "In a quiet little village, there lived a kind old man. Every day, he would sit under the big tree at the village entrance and tell ancient stories."
+        },
+        "podcast": {
+          "label": "Podcast",
+          "text": "Welcome to today's show. In this episode, we will explore the latest developments in artificial intelligence technology."
+        }
+      }
+    },
+    "errors": {
+      "selectTextAndVoice": "Please enter text and select a voice",
+      "invalidParams": "Invalid parameters, please check your input",
+      "insufficientCredits": "Insufficient credits, please upgrade or recharge",
+      "unauthorized": "Not logged in or session expired, please login again",
+      "taskSubmitFailed": "Failed to submit task, please try again",
+      "taskNoId": "Task submission failed, no task ID returned",
+      "queryTaskFailed": "Failed to query task status, please refresh the page",
+      "generationFailed": "Generation failed, please try again",
+      "unknownTaskStatus": "Unknown task status, please try again",
+      "INSUFFICIENT_CREDITS": "Insufficient credits. Required: {{required}}, Current: {{current}}",
+      "UNAUTHORIZED": "Unauthorized. Please log in",
+      "NO_AUTH_INFO": "No authentication info provided",
+      "TASK_NOT_FOUND": "Task not found: {{taskId}}",
+      "TASK_CREATION_FAILED": "Task creation failed",
+      "VALIDATION_ERROR": "Validation error: {{field}}",
+      "TEXT_TOO_LONG": "Text too long. Max length: {{maxLength}}, Current: {{currentLength}}",
+      "RESOURCE_NOT_FOUND": "{{resource}} not found: {{id}}",
+      "VOICE_NOT_FOUND": "Voice model not found: {{voiceName}}",
+      "INTERNAL_ERROR": "Internal server error"
+    },
+    "deleteDialog": {
+      "title": "Delete Speech Generation",
+      "message": "Are you sure you want to delete this speech generation? This action cannot be undone and the audio file will be permanently removed.",
+      "confirmButton": "Delete",
+      "cancelButton": "Cancel",
+      "deleteFailedAlert": "Failed to delete record. Please try again."
+    },
+    "audioSettings": {
+      "title": "Audio Settings",
+      "speed": {
+        "title": "Speech speed",
+        "description": "Adjust audio speaking speed",
+        "current": "Current Speech speed"
+      },
+      "volume": {
+        "title": "Volume",
+        "description": "Speech volume setting",
+        "current": "Current Volume"
+      },
+      "pitch": {
+        "title": "Pitch",
+        "description": "Adjust overall pitch",
+        "current": "Current Pitch",
+        "deep": "Deep",
+        "dull": "Dull",
+        "consistent": "Consistent",
+        "bright": "Bright",
+        "crisp": "Crisp"
+      },
+      "save": "Save"
+    }
+  },
+  "voiceFilters": {
+    "selectCountry": "Select Country",
+    "selectLanguage": "Select Language",
+    "allLanguages": "All Languages",
+    "selectGender": "Select Gender",
+    "searchPlaceholder": "Search voices by name...",
+    "search": "Search...",
+    "gender": "Gender",
+    "all": "All",
+    "male": "Male",
+    "female": "Female",
+    "neutral": "Neutral",
+    "proBasic": "Pro/Basic",
+    "usedOnly": "Used",
+    "noUsedVoices": "No usage history",
+    "noVoicesFound": "No voices found",
+    "loadMoreVoices": "Load More Voices",
+    "searchLanguages": "Search languages...",
+    "allVoicesLoaded": "All voices loaded ({{total}} total)"
+  },
+  "voices": {
+    "tags": {
+      "all": "All",
+      "myClone": "My Clone",
+      "used": "Used",
+      "socialMedia": "Social Media",
+      "celebrities": "Celebrities",
+      "animation": "Animation",
+      "moviesTV": "Movies & TV",
+      "games": "Games",
+      "festivals": "Festivals",
+      "narration": "Narration",
+      "new": "New",
+      "commercial": "Commercial",
+      "audiobook": "Audiobook",
+      "podcast": "Podcast",
+      "education": "Education"
+    }
+  }
+}

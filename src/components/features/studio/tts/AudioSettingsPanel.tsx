@@ -21,11 +21,11 @@ export default function AudioSettingsPanel() {
   const [isExpanded, setIsExpanded] = useState(false);
 
   const getPitchLabel = (value: number) => {
-    if (value <= 10) return t('studio.audioSettings.pitch.deep');
-    if (value <= 35) return t('studio.audioSettings.pitch.dull');
-    if (value <= 65) return t('studio.audioSettings.pitch.consistent');
-    if (value <= 90) return t('studio.audioSettings.pitch.bright');
-    return t('studio.audioSettings.pitch.crisp');
+    if (value <= 10) return t('tts.audioSettings.pitch.deep');
+    if (value <= 35) return t('tts.audioSettings.pitch.dull');
+    if (value <= 65) return t('tts.audioSettings.pitch.consistent');
+    if (value <= 90) return t('tts.audioSettings.pitch.bright');
+    return t('tts.audioSettings.pitch.crisp');
   };
 
   return (
@@ -46,7 +46,7 @@ export default function AudioSettingsPanel() {
 
         <Settings className="w-6 h-6 text-gray-700" />
         <span className="text-xs font-medium text-gray-700">
-          {t('studio.audioSettings.title')}
+          {t('tts.audioSettings.title')}
         </span>
       </button>
 
@@ -57,7 +57,7 @@ export default function AudioSettingsPanel() {
           <div>
             <div className="flex justify-between items-center mb-2">
               <label className="text-sm font-medium text-gray-700">
-                {t('studio.audioSettings.speed.title')}
+                {t('tts.audioSettings.speed.title')}
               </label>
               <span className="text-sm font-semibold text-purple-600">
                 {settings.speed}x
@@ -82,7 +82,7 @@ export default function AudioSettingsPanel() {
           <div>
             <div className="flex justify-between items-center mb-2">
               <label className="text-sm font-medium text-gray-700">
-                {t('studio.audioSettings.volume.title')}
+                {t('tts.audioSettings.volume.title')}
               </label>
               <span className="text-sm font-semibold text-purple-600">
                 {settings.volume}%
@@ -107,7 +107,7 @@ export default function AudioSettingsPanel() {
           <div>
             <div className="flex justify-between items-center mb-2">
               <label className="text-sm font-medium text-gray-700">
-                {t('studio.audioSettings.pitch.title')}
+                {t('tts.audioSettings.pitch.title')}
               </label>
               <span className="text-sm font-semibold text-purple-600">
                 {settings.pitch} ({getPitchLabel(settings.pitch)})
@@ -123,9 +123,9 @@ export default function AudioSettingsPanel() {
               className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-purple-600"
             />
             <div className="flex justify-between text-xs text-gray-500 mt-1">
-              <span>{t('studio.audioSettings.pitch.deep')}</span>
-              <span>{t('studio.audioSettings.pitch.consistent')}</span>
-              <span>{t('studio.audioSettings.pitch.crisp')}</span>
+              <span>{t('tts.audioSettings.pitch.deep')}</span>
+              <span>{t('tts.audioSettings.pitch.consistent')}</span>
+              <span>{t('tts.audioSettings.pitch.crisp')}</span>
             </div>
           </div>
         </div>

@@ -58,9 +58,9 @@ export default function GeneratingRecordModal({
                 <div className="w-2 h-2 bg-red-600 rounded-full" />
               )}
               <h2 className="text-lg font-semibold text-gray-900">
-                {isProcessing && t('studio.generating')}
-                {isSuccess && t('studio.generationComplete')}
-                {isFailed && t('studio.generationFailed')}
+                {isProcessing && t('tts.generating')}
+                {isSuccess && t('tts.generationComplete')}
+                {isFailed && t('tts.generationFailed')}
               </h2>
             </div>
             <button
@@ -77,7 +77,7 @@ export default function GeneratingRecordModal({
             {isProcessing && (
               <div className="mb-4 p-3 bg-purple-50 border border-purple-200 rounded-xl">
                 <p className="text-sm text-purple-700 font-medium">
-                  {t('studio.processingMessage')}
+                  {t('tts.processingMessage')}
                 </p>
               </div>
             )}
@@ -85,7 +85,7 @@ export default function GeneratingRecordModal({
             {isSuccess && (
               <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-xl">
                 <p className="text-sm text-green-700 font-medium">
-                  ✓ {t('studio.successMessage')}
+                  ✓ {t('tts.successMessage')}
                 </p>
               </div>
             )}
@@ -110,8 +110,8 @@ export default function GeneratingRecordModal({
             {/* Tips */}
             <div className="mt-4 p-3 bg-gray-50 rounded-xl">
               <p className="text-xs text-gray-600 text-center">
-                {isProcessing && t('studio.generatingTip')}
-                {isSuccess && t('studio.successTip')}
+                {isProcessing && t('tts.generatingTip')}
+                {isSuccess && t('tts.successTip')}
               </p>
             </div>
           </div>

@@ -1,53 +1,9 @@
 {
   "studio": {
-    "tts": "文字转语音",
-    "upgrade": "购买/升级",
-    "credits": "积分",
-    "selectVoice": "选择语音",
-    "generating": "生成中...",
-    "welcomeTitle": "欢迎使用工作室",
-    "welcomeSubtitle": "选择一个工具，开始创作精彩内容",
+    "welcomeTitle": "Hi，欢迎来到 Voicica AI",
+    "welcomeSubtitle": "借助我们先进的语音、视频、音乐和艺术 AI 工具，释放人工智能的力量。更快、更智能、更轻松地将您的创意变为现实。",
     "ttsDescription": "使用先进的 AI 语音技术，将文字转换为自然流畅的语音",
     "moreToolsComing": "更多工具即将推出",
-    "generationComplete": "生成完成",
-    "generationFailed": "生成失败",
-    "processingMessage": "正在生成您的音频，请稍候...",
-    "successMessage": "音频生成成功！",
-    "generatingTip": "这可能需要几秒钟。您可以关闭此窗口，稍后在生成历史中查看。",
-    "successTip": "您的音频已准备就绪！现在可以下载或播放。",
-    "taskProgress": "进度",
-    "recentAuditions": "最近生成",
-    "allRecords": "全部记录",
-    "progress": "生成进度",
-    "duration": "时长",
-    "errors": {
-      "selectTextAndVoice": "请输入文本并选择语音",
-      "invalidParams": "请求参数错误，请检查输入",
-      "insufficientCredits": "积分不足，请升级套餐或充值",
-      "unauthorized": "未登录或登录已过期，请重新登录",
-      "taskSubmitFailed": "提交任务失败，请重试",
-      "taskNoId": "任务提交失败，未返回任务ID",
-      "queryTaskFailed": "查询任务状态失败，请刷新页面查看结果",
-      "generationFailed": "生成失败，请重试",
-      "unknownTaskStatus": "任务状态异常，请重试",
-      "INSUFFICIENT_CREDITS": "积分不足。需要 {{required}} 积分，当前剩余 {{current}} 积分",
-      "UNAUTHORIZED": "未授权，请登录",
-      "NO_AUTH_INFO": "未提供认证信息",
-      "TASK_NOT_FOUND": "任务不存在：{{taskId}}",
-      "TASK_CREATION_FAILED": "任务创建失败",
-      "VALIDATION_ERROR": "参数验证错误：{{field}}",
-      "TEXT_TOO_LONG": "文本过长。最大长度：{{maxLength}}，当前长度：{{currentLength}}",
-      "RESOURCE_NOT_FOUND": "{{resource}}不存在：{{id}}",
-      "VOICE_NOT_FOUND": "语音模型不存在：{{voiceName}}",
-      "INTERNAL_ERROR": "服务器内部错误"
-    },
-    "deleteDialog": {
-      "title": "删除语音生成",
-      "message": "确定要删除这个语音生成吗？此操作无法撤销，音频文件将被永久删除。",
-      "confirmButton": "删除",
-      "cancelButton": "取消",
-      "deleteFailedAlert": "删除失败，请重试。"
-    },
     "menu": {
       "home": "首页",
       "creationHub": "创作中心",
@@ -75,69 +31,6 @@
       "voices": "语音库",
       "clone": "克隆",
       "history": "历史"
-    },
-    "audioSettings": {
-      "title": "音频设置",
-      "speed": {
-        "title": "语速",
-        "description": "调整音频播放速度",
-        "current": "当前语速"
-      },
-      "volume": {
-        "title": "音量",
-        "description": "语音音量设置",
-        "current": "当前音量"
-      },
-      "pitch": {
-        "title": "音调",
-        "description": "调整整体音调",
-        "current": "当前音调",
-        "deep": "低沉",
-        "dull": "平淡",
-        "consistent": "稳定",
-        "bright": "明亮",
-        "crisp": "清脆"
-      },
-      "save": "保存"
-    }
-  },
-  "voiceFilters": {
-    "selectCountry": "选择国家",
-    "selectLanguage": "选择语言",
-    "allLanguages": "所有语言",
-    "selectGender": "选择性别",
-    "searchPlaceholder": "按名称搜索语音...",
-    "search": "搜索...",
-    "gender": "性别",
-    "all": "全部",
-    "male": "男",
-    "female": "女",
-    "neutral": "中性",
-    "proBasic": "专业版/基础版",
-    "usedOnly": "已使用",
-    "noUsedVoices": "暂无使用记录",
-    "noVoicesFound": "未找到语音",
-    "loadMoreVoices": "加载更多语音",
-    "searchLanguages": "搜索语言...",
-    "allVoicesLoaded": "已加载全部语音（共 {{total}} 个）"
-  },
-  "voices": {
-    "tags": {
-      "all": "全部",
-      "myClone": "我的克隆",
-      "used": "已使用",
-      "socialMedia": "社交媒体",
-      "celebrities": "名人",
-      "animation": "动画",
-      "moviesTV": "影视",
-      "games": "游戏",
-      "festivals": "节日",
-      "narration": "旁白",
-      "new": "最新",
-      "commercial": "商业",
-      "audiobook": "有声书",
-      "podcast": "播客",
-      "education": "教育"
     }
   }
 }

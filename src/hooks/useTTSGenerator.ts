@@ -123,7 +123,7 @@ export function useTTSGenerator(
   // 生成音频（提交任务，polling 由 useGenerationHistory 处理）
   const handleGenerate = useCallback(async () => {
     if (!canGenerate || !selectedVoice) {
-      setError(t('studio.errors.selectTextAndVoice'));
+      setError(t('tts.errors.selectTextAndVoice'));
       return;
     }
 
@@ -146,7 +146,7 @@ export function useTTSGenerator(
       // 检查是否返回错误（业务逻辑错误，如积分不足）
       if (result.status === 'FAILURE' && result.errorCode) {
         // 根据错误码使用国际化消息
-        const errorKey = `studio.errors.${result.errorCode}`;
+        const errorKey = `tts.errors.${result.errorCode}`;
 
         // 如果有错误数据，传递给翻译函数进行插值
         const errorMessage = result.errorData
@@ -172,9 +172,9 @@ export function useTTSGenerator(
 
       // 处理未预期的异常（网络错误、服务器崩溃等）
       if (err instanceof Error) {
-        setError(err.message || t('studio.errors.taskSubmitFailed'));
+        setError(err.message || t('tts.errors.taskSubmitFailed'));
       } else {
-        setError(t('studio.errors.taskSubmitFailed'));
+        setError(t('tts.errors.taskSubmitFailed'));
       }
 
       setIsGenerating(false);

@@ -462,8 +462,8 @@ export function useGenerationHistory({
   const handleDeleteGeneration = useCallback((id: string) => {
     setConfirmDialog({
       isOpen: true,
-      title: t ? t('studio.deleteDialog.title') : 'Delete Speech Generation',
-      message: t ? t('studio.deleteDialog.message') : 'Are you sure you want to delete this speech generation? This action cannot be undone and the audio file will be permanently removed.',
+      title: t ? t('tts.deleteDialog.title') : 'Delete Speech Generation',
+      message: t ? t('tts.deleteDialog.message') : 'Are you sure you want to delete this speech generation? This action cannot be undone and the audio file will be permanently removed.',
       onConfirm: async () => {
         setConfirmDialog(prev => ({ ...prev, isOpen: false }));
         try {
@@ -471,7 +471,7 @@ export function useGenerationHistory({
           await fetchRecords();
         } catch (err) {
           console.error('[useGenerationHistory] Error deleting record:', id, err);
-          window.alert(t ? t('studio.deleteDialog.deleteFailedAlert') : 'Failed to delete record. Please try again.');
+          window.alert(t ? t('tts.deleteDialog.deleteFailedAlert') : 'Failed to delete record. Please try again.');
         }
       },
     });

@@ -40,7 +40,6 @@ export default function StudioPage() {
             description={t('studio.ttsDescription')}
             href="/studio/tts"
             image="/images/products/tts-preview.webp"
-            layout="horizontal"
           />
 
           {/* Placeholder cards for future features */}

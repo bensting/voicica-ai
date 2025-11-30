@@ -2,98 +2,12 @@
 
 /**
  * 语音模块 Server Actions
- *
- * 使用服务端缓存优化查询性能
  */
 import prisma from '@/lib/prisma';
 import { getUserOrAnonymous } from '@/lib/auth-firebase';
 import type { Voice, VoiceListResponse, VoiceFilters } from '@/types/voice';
-
 // 从 Prisma Client 获取 voices 类型
 type voices = Awaited<ReturnType<typeof prisma.voices.findFirst>>;
-
-// ==================== 缓存层 ====================
-
-interface VoiceCache {
-  voices: NonNullable<voices>[];
-  lastUpdatedAt: Date | null;
-}
-
-// 模块级缓存
-let voiceCache: VoiceCache = {
-  voices: [],
-  lastUpdatedAt: null,
-};
-
-/**
- * 获取数据库中最新的 updated_at 时间戳
- */
-async function getLatestUpdatedAt(): Promise<Date | null> {
-  const result = await prisma.voices.aggregate({
-    _max: {
-      updated_at: true,
-    },
-    where: {
-      is_active: true,
-    },
-  });
-  return result._max.updated_at;
-}
-
-/**
- * 检查缓存是否有效
- */
-async function isCacheValid(): Promise<boolean> {
-  if (voiceCache.voices.length === 0 || !voiceCache.lastUpdatedAt) {
-    return false;
-  }
-
-  const latestUpdatedAt = await getLatestUpdatedAt();
-  if (!latestUpdatedAt) {
-    return false;
-  }
-
-  // 比较时间戳
-  return voiceCache.lastUpdatedAt.getTime() === latestUpdatedAt.getTime();
-}
-
-/**
- * 加载所有活跃语音到缓存
- */
-async function loadVoicesIntoCache(): Promise<void> {
-  console.log('🔄 [VoiceCache] 重新加载语音缓存...');
-
-  const voices = await prisma.voices.findMany({
-    where: { is_active: true },
-    orderBy: [{ sort_order: 'asc' }, { created_at: 'desc' }],
-  });
-
-  const latestUpdatedAt = await getLatestUpdatedAt();
-
-  voiceCache = {
-    voices,
-    lastUpdatedAt: latestUpdatedAt,
-  };
-
-  console.log(`✅ [VoiceCache] 缓存已更新，共 ${voices.length} 个语音，时间戳: ${latestUpdatedAt?.toISOString()}`);
-}
-
-/**
- * 获取缓存的语音列表
- *
- * 自动检查缓存有效性，无效则重新加载
- */
-async function getCachedVoices(): Promise<NonNullable<voices>[]> {
-  const valid = await isCacheValid();
-
-  if (!valid) {
-    await loadVoicesIntoCache();
-  } else {
-    console.log('📦 [VoiceCache] 使用缓存数据');
-  }
-
-  return voiceCache.voices;
-}
 
 // ==================== 数据转换 ====================
 
@@ -124,8 +38,6 @@ function toVoice(model: NonNullable<voices>): Voice {
 
 /**
  * 获取语音列表（支持过滤和分页）
- *
- * 使用缓存优化，在内存中进行过滤
  */
 export async function listVoices(filters: VoiceFilters = {}): Promise<VoiceListResponse> {
   const {
@@ -141,58 +53,45 @@ export async function listVoices(filters: VoiceFilters = {}): Promise<VoiceListR
     page_size = 20,
   } = filters;
 
-  // 从缓存获取所有语音
-  let voices = await getCachedVoices();
+  // 构建查询条件
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const where: Record<string, any> = {
+    is_active,
+  };
 
-  // 如果查询非活跃语音，需要直接查数据库（缓存只存活跃的）
-  if (!is_active) {
-    voices = await prisma.voices.findMany({
-      where: { is_active: false },
-      orderBy: [{ sort_order: 'asc' }, { created_at: 'desc' }],
-    });
-  }
-
-  // 在内存中过滤
-  let filtered = voices;
-
-  if (provider) {
-    filtered = filtered.filter(v => v.provider === provider);
-  }
-  if (country) {
-    filtered = filtered.filter(v => v.country === country);
-  }
-  if (role) {
-    filtered = filtered.filter(v => v.role === role);
-  }
-  if (gender) {
-    filtered = filtered.filter(v => v.gender === gender);
-  }
+  if (provider) where.provider = provider;
+  if (country) where.country = country;
+  if (role) where.role = role;
+  if (gender) where.gender = gender;
 
   // locale 精确匹配
   if (locale) {
-    filtered = filtered.filter(v => v.locale === locale);
+    where.locale = locale;
   } else if (language) {
     // language 前缀匹配
-    filtered = filtered.filter(v => v.locale.startsWith(`${language}-`));
+    where.locale = { startsWith: `${language}-` };
   }
 
   // 标签过滤
   if (tag) {
-    filtered = filtered.filter(v => {
-      const tags = v.tags as string[];
-      return tags.includes(tag);
-    });
+    where.tags = { array_contains: tag };
   }
 
-  // 计算分页
-  const total = filtered.length;
+  // 查询总数
+  const total = await prisma.voices.count({ where });
+
+  // 分页查询
+  const voices = await prisma.voices.findMany({
+    where,
+    orderBy: [{ sort_order: 'asc' }, { created_at: 'desc' }],
+    skip: (page - 1) * page_size,
+    take: page_size,
+  });
+
   const total_pages = Math.ceil(total / page_size);
-  const start = (page - 1) * page_size;
-  const end = start + page_size;
-  const paginatedVoices = filtered.slice(start, end);
 
   return {
-    voices: paginatedVoices.map(toVoice),
+    voices: voices.map(toVoice),
     total,
     page,
     page_size,
@@ -204,71 +103,65 @@ export async function listVoices(filters: VoiceFilters = {}): Promise<VoiceListR
  * 根据 ID 获取单个语音
  */
 export async function getVoiceById(id: number): Promise<Voice | null> {
-  // 先从缓存查找
-  const voices = await getCachedVoices();
-  const voice = voices.find(v => v.id === id);
-
-  if (voice) {
-    return toVoice(voice);
-  }
-
-  // 缓存没有，查数据库（可能是非活跃的）
-  const dbVoice = await prisma.voices.findUnique({
+  const voice = await prisma.voices.findUnique({
     where: { id },
   });
 
-  if (!dbVoice) return null;
+  if (!voice) return null;
 
-  return toVoice(dbVoice);
+  return toVoice(voice);
 }
 
 /**
  * 根据 name 获取单个语音
  */
 export async function getVoiceByName(name: string): Promise<Voice | null> {
-  // 先从缓存查找
-  const voices = await getCachedVoices();
-  const voice = voices.find(v => v.name === name);
-
-  if (voice) {
-    return toVoice(voice);
-  }
-
-  // 缓存没有，查数据库
-  const dbVoice = await prisma.voices.findUnique({
+  const voice = await prisma.voices.findUnique({
     where: { name },
   });
 
-  if (!dbVoice) return null;
+  if (!voice) return null;
 
-  return toVoice(dbVoice);
+  return toVoice(voice);
 }
 
 /**
  * 获取可用的国家列表
  */
 export async function getDistinctCountries(): Promise<string[]> {
-  const voices = await getCachedVoices();
-  const countries = [...new Set(voices.map(v => v.country))];
-  return countries.sort();
+  const voices = await prisma.voices.findMany({
+    where: { is_active: true },
+    select: { country: true },
+    distinct: ['country'],
+  });
+
+  return voices.map(v => v.country).sort();
 }
 
 /**
  * 获取可用的角色列表
  */
 export async function getDistinctRoles(): Promise<string[]> {
-  const voices = await getCachedVoices();
-  const roles = [...new Set(voices.map(v => v.role))];
-  return roles.sort();
+  const voices = await prisma.voices.findMany({
+    where: { is_active: true },
+    select: { role: true },
+    distinct: ['role'],
+  });
+
+  return voices.map(v => v.role).sort();
 }
 
 /**
  * 获取可用的语言区域列表
  */
 export async function getDistinctLocales(): Promise<string[]> {
-  const voices = await getCachedVoices();
-  const locales = [...new Set(voices.map(v => v.locale))];
-  return locales.sort();
+  const voices = await prisma.voices.findMany({
+    where: { is_active: true },
+    select: { locale: true },
+    distinct: ['locale'],
+  });
+
+  return voices.map(v => v.locale).sort();
 }
 
 /**
@@ -278,26 +171,16 @@ export async function searchVoicesByTags(
   tags: string[],
   limit: number = 50
 ): Promise<Voice[]> {
-  const voices = await getCachedVoices();
+  const voices = await prisma.voices.findMany({
+    where: {
+      is_active: true,
+      OR: tags.map(tag => ({ tags: { array_contains: tag } })),
+    },
+    orderBy: [{ sort_order: 'asc' }, { created_at: 'desc' }],
+    take: limit,
+  });
 
-  // 在内存中过滤包含任意标签的语音
-  const filtered = voices
-    .filter(v => {
-      const voiceTags = v.tags as string[];
-      return tags.some(t => voiceTags.includes(t));
-    })
-    .slice(0, limit);
-
-  return filtered.map(toVoice);
-}
-
-/**
- * 强制刷新缓存
- *
- * 用于管理后台更新语音数据后手动刷新
- */
-export async function refreshVoiceCache(): Promise<void> {
-  await loadVoicesIntoCache();
+  return voices.map(toVoice);
 }
 
 /**

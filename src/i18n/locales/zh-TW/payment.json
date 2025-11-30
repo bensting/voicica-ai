@@ -1,0 +1,33 @@
+{
+  "payment": {
+    "success": {
+      "verifying": {
+        "title": "正在驗證付款...",
+        "description": "請稍候，我們正在確認您的付款資訊"
+      },
+      "success": {
+        "title": "付款成功！",
+        "description": "感謝您的購買，訂閱已啟用",
+        "orderSummary": "訂單摘要",
+        "orderId": "訂單號",
+        "subscriptionId": "訂閱 ID",
+        "countdown": "{{count}} 秒後自動跳轉到工作室...",
+        "enterStudio": "立即進入工作室"
+      },
+      "pending": {
+        "title": "付款處理中",
+        "description": "您的付款正在處理中，訂閱將很快啟用",
+        "orderId": "訂單號:",
+        "refresh": "重新整理狀態",
+        "backHome": "返回首頁"
+      },
+      "failed": {
+        "title": "付款驗證失敗",
+        "description": "抱歉，我們無法驗證您的付款",
+        "notice": "如果您已完成付款，請稍後重新整理頁面查看狀態，或聯繫客服獲取幫助。",
+        "retry": "重新驗證",
+        "backHome": "返回首頁"
+      }
+    }
+  }
+}

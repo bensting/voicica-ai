@@ -16,7 +16,9 @@
     "errors": {
       "emptyUrl": "Please enter a TikTok video URL",
       "invalidUrl": "Invalid TikTok URL. Please enter a valid TikTok video link.",
-      "parseFailed": "Failed to parse video. Please check the URL and try again."
+      "parseFailed": "Failed to parse video. Please check the URL and try again.",
+      "insufficientCredits": "Insufficient credits. Required: {{required}}, Current: {{current}}",
+      "unknownError": "An unexpected error occurred. Please try again later."
     }
   },
   "youtubeDownloader": {
@@ -41,7 +43,9 @@
     "errors": {
       "emptyUrl": "Please enter a YouTube video URL",
       "invalidUrl": "Invalid YouTube URL. Please enter a valid YouTube video link.",
-      "parseFailed": "Failed to parse video. Please check the URL and try again."
+      "parseFailed": "Failed to parse video. Please check the URL and try again.",
+      "insufficientCredits": "Insufficient credits. Required: {{required}}, Current: {{current}}",
+      "unknownError": "An unexpected error occurred. Please try again later."
     }
   }
 }

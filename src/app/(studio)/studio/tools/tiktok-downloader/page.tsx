@@ -9,6 +9,7 @@ import {
   parseVideoUrl,
   type ParseResponse,
   type VideoFormat,
+  type VideoParseErrorCode,
 } from '@/actions/video-downloader';
 import {
   getProxyDownloadUrl,
@@ -54,6 +55,27 @@ export default function TikTokDownloaderPage() {
     setTitle(t('studio.menu.tiktokDownloader'));
   }, [t, setTitle]);
 
+  // 根据错误码获取国际化错误信息
+  const getErrorMessage = useCallback((errorCode: VideoParseErrorCode, errorData?: Record<string, unknown>): string => {
+    switch (errorCode) {
+      case 'EMPTY_URL':
+        return t('tiktokDownloader.errors.emptyUrl');
+      case 'INVALID_URL':
+      case 'UNSUPPORTED_PLATFORM':
+        return t('tiktokDownloader.errors.invalidUrl');
+      case 'INSUFFICIENT_CREDITS':
+        return t('tiktokDownloader.errors.insufficientCredits', {
+          required: errorData?.required ?? 0,
+          current: errorData?.current ?? 0,
+        });
+      case 'PARSE_FAILED':
+        return t('tiktokDownloader.errors.parseFailed');
+      case 'UNKNOWN_ERROR':
+      default:
+        return t('tiktokDownloader.errors.unknownError');
+    }
+  }, [t]);
+
   // 清除输入
   const handleClear = useCallback(() => {
     setUrl('');
@@ -82,7 +104,9 @@ export default function TikTokDownloaderPage() {
       const result = await parseVideoUrl(url);
 
       if (!result.success || !result.data) {
-        setError(result.error || t('tiktokDownloader.errors.parseFailed'));
+        // 使用错误码获取国际化错误信息
+        const errorCode = result.errorCode || 'UNKNOWN_ERROR';
+        setError(getErrorMessage(errorCode, result.errorData));
         return;
       }
 
@@ -95,11 +119,11 @@ export default function TikTokDownloaderPage() {
       const bestFormat = result.data.formats.find(f => f.format_id === 'play_direct') || result.data.formats[0];
       setSelectedFormat(bestFormat);
     } catch {
-      setError(t('tiktokDownloader.errors.parseFailed'));
+      setError(t('tiktokDownloader.errors.unknownError'));
     } finally {
       setLoading(false);
     }
-  }, [url, t, refreshCredits]);
+  }, [url, t, refreshCredits, getErrorMessage]);
 
   // 下载视频
   const handleDownload = useCallback(() => {

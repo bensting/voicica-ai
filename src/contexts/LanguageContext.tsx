@@ -58,6 +58,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
         setIsReady(false);
 
         // 并行加载所有模块化的语言文件
+        // 注意: FAQ 内容已移至 faqConfig.ts，不再通过 i18n 加载
         const [
           commonModule,
           authModule,
@@ -71,7 +72,6 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
           pwaModule,
           languagesModule,
           countriesModule,
-          faqModule,
           ttsSamplesModule,
           ttsInputModule,
           voiceStylesModule,
@@ -88,7 +88,6 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
           import(`@/i18n/locales/${locale}/pwa.json`),
           import(`@/i18n/locales/${locale}/data/languages.json`),
           import(`@/i18n/locales/${locale}/data/countries.json`),
-          import(`@/i18n/locales/${locale}/faq.json`),
           import(`@/i18n/locales/${locale}/tts-samples.json`),
           import(`@/i18n/locales/${locale}/tts-input.json`),
           import(`@/i18n/locales/${locale}/voice-styles.json`),
@@ -108,7 +107,6 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
           ...pwaModule.default,
           ...languagesModule.default,
           ...countriesModule.default,
-          faq: faqModule.default,
           ttsInput: ttsInputModule.default,
           voiceStyles: voiceStylesModule.default,
           ...ttsSamplesModule.default,

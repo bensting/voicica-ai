@@ -50,14 +50,14 @@ export default function ActionButtons({
           {isGenerating ? (
             <>
               <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-              <span className="text-sm">{t('ttsInput.generating')}</span>
+              <span className="text-sm">{t('tts.input.generating')}</span>
             </>
           ) : (
             <>
               <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M8 5v14l11-7z" />
               </svg>
-              <span className="text-sm">{t('ttsInput.generateSpeech')}</span>
+              <span className="text-sm">{t('tts.input.generateSpeech')}</span>
             </>
           )}
         </button>

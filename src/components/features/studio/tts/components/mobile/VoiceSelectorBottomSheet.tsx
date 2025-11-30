@@ -127,7 +127,7 @@ export default function VoiceSelectorBottomSheet({
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b-2 border-purple-100 flex-shrink-0 bg-gradient-to-r from-white to-purple-50/30">
           <h2 className="text-xl font-bold text-gray-900 tracking-tight">
-            {t('studio.selectVoice')}
+            {t('tts.selectVoice')}
           </h2>
           <button
             onClick={onClose}

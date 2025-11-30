@@ -62,18 +62,18 @@ export default function TextInput({
   const EXAMPLE_BUTTONS: ExampleButton[] = [
     {
       id: 'greeting',
-      label: t('ttsInput.examples.greeting.label'),
-      text: t('ttsInput.examples.greeting.text'),
+      label: t('tts.input.examples.greeting.label'),
+      text: t('tts.input.examples.greeting.text'),
     },
     {
       id: 'ebook',
-      label: t('ttsInput.examples.ebook.label'),
-      text: t('ttsInput.examples.ebook.text'),
+      label: t('tts.input.examples.ebook.label'),
+      text: t('tts.input.examples.ebook.text'),
     },
     {
       id: 'podcast',
-      label: t('ttsInput.examples.podcast.label'),
-      text: t('ttsInput.examples.podcast.text'),
+      label: t('tts.input.examples.podcast.label'),
+      text: t('tts.input.examples.podcast.text'),
     },
   ];
 
@@ -96,7 +96,7 @@ export default function TextInput({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         disabled={disabled}
-        placeholder={placeholder || t('ttsInput.placeholder')}
+        placeholder={placeholder || t('tts.input.placeholder')}
         className="flex-1 h-0 w-full p-4 text-base text-gray-700 placeholder-gray-400 bg-white border-0 focus:outline-none resize-none disabled:opacity-50 disabled:cursor-not-allowed rounded-t-2xl"
         maxLength={maxCharacters}
       />
@@ -117,7 +117,7 @@ export default function TextInput({
               ) : (
                 remainingCredits.toLocaleString()
               )}{' '}
-              {t('ttsInput.creditsLeft')}
+              {t('tts.input.creditsLeft')}
             </span>
           </div>
 
@@ -153,14 +153,14 @@ export default function TextInput({
                 {isGenerating ? (
                   <>
                     <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                    <span>{t('ttsInput.generating')}</span>
+                    <span>{t('tts.input.generating')}</span>
                   </>
                 ) : (
                   <>
                     <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                       <path d="M8 5v14l11-7z" />
                     </svg>
-                    <span>{t('ttsInput.generateSpeech')}</span>
+                    <span>{t('tts.input.generateSpeech')}</span>
                   </>
                 )}
               </button>
@@ -181,7 +181,7 @@ export default function TextInput({
                   <div className="flex items-center gap-1.5 flex-shrink-0">
                     <span className="text-sm">📌</span>
                     <span className="text-xs font-medium text-gray-600 whitespace-nowrap">
-                      {t('ttsInput.tryExamples')}
+                      {t('tts.input.tryExamples')}
                     </span>
                   </div>
 

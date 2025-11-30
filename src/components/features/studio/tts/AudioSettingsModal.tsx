@@ -43,28 +43,28 @@ export default function AudioSettingsModal({ isOpen, onClose }: AudioSettingsMod
   };
 
   const getPitchLabel = (value: number) => {
-    if (value <= 10) return t('studio.audioSettings.pitch.deep');
-    if (value <= 35) return t('studio.audioSettings.pitch.dull');
-    if (value <= 65) return t('studio.audioSettings.pitch.consistent');
-    if (value <= 90) return t('studio.audioSettings.pitch.bright');
-    return t('studio.audioSettings.pitch.crisp');
+    if (value <= 10) return t('tts.audioSettings.pitch.deep');
+    if (value <= 35) return t('tts.audioSettings.pitch.dull');
+    if (value <= 65) return t('tts.audioSettings.pitch.consistent');
+    if (value <= 90) return t('tts.audioSettings.pitch.bright');
+    return t('tts.audioSettings.pitch.crisp');
   };
 
   const tabs: { id: Tab; icon: React.ReactNode; label: string }[] = [
     {
       id: 'speed',
       icon: <Clock className="w-5 h-5" />,
-      label: t('studio.audioSettings.speed.title'),
+      label: t('tts.audioSettings.speed.title'),
     },
     {
       id: 'volume',
       icon: <Volume2 className="w-5 h-5" />,
-      label: t('studio.audioSettings.volume.title'),
+      label: t('tts.audioSettings.volume.title'),
     },
     {
       id: 'pitch',
       icon: <Sliders className="w-5 h-5" />,
-      label: t('studio.audioSettings.pitch.title'),
+      label: t('tts.audioSettings.pitch.title'),
     },
   ];
 
@@ -103,10 +103,10 @@ export default function AudioSettingsModal({ isOpen, onClose }: AudioSettingsMod
             <div className="space-y-6">
               <div>
                 <h3 className="text-xl font-semibold text-gray-900">
-                  {t('studio.audioSettings.speed.title')}
+                  {t('tts.audioSettings.speed.title')}
                 </h3>
                 <p className="text-sm text-gray-500 mt-1">
-                  {t('studio.audioSettings.speed.description')}
+                  {t('tts.audioSettings.speed.description')}
                 </p>
               </div>
 
@@ -118,7 +118,7 @@ export default function AudioSettingsModal({ isOpen, onClose }: AudioSettingsMod
 
               <div>
                 <p className="text-sm text-gray-600 mb-3">
-                  {t('studio.audioSettings.speed.current')}
+                  {t('tts.audioSettings.speed.current')}
                 </p>
                 <input
                   type="range"
@@ -144,10 +144,10 @@ export default function AudioSettingsModal({ isOpen, onClose }: AudioSettingsMod
             <div className="space-y-6">
               <div>
                 <h3 className="text-xl font-semibold text-gray-900">
-                  {t('studio.audioSettings.volume.title')}
+                  {t('tts.audioSettings.volume.title')}
                 </h3>
                 <p className="text-sm text-gray-500 mt-1">
-                  {t('studio.audioSettings.volume.description')}
+                  {t('tts.audioSettings.volume.description')}
                 </p>
               </div>
 
@@ -159,7 +159,7 @@ export default function AudioSettingsModal({ isOpen, onClose }: AudioSettingsMod
 
               <div>
                 <p className="text-sm text-gray-600 mb-3">
-                  {t('studio.audioSettings.volume.current')}
+                  {t('tts.audioSettings.volume.current')}
                 </p>
                 <input
                   type="range"
@@ -185,10 +185,10 @@ export default function AudioSettingsModal({ isOpen, onClose }: AudioSettingsMod
             <div className="space-y-6">
               <div>
                 <h3 className="text-xl font-semibold text-gray-900">
-                  {t('studio.audioSettings.pitch.title')}
+                  {t('tts.audioSettings.pitch.title')}
                 </h3>
                 <p className="text-sm text-gray-500 mt-1">
-                  {t('studio.audioSettings.pitch.description')}
+                  {t('tts.audioSettings.pitch.description')}
                 </p>
               </div>
 
@@ -200,7 +200,7 @@ export default function AudioSettingsModal({ isOpen, onClose }: AudioSettingsMod
 
               <div>
                 <p className="text-sm text-gray-600 mb-3">
-                  {t('studio.audioSettings.pitch.current')}
+                  {t('tts.audioSettings.pitch.current')}
                 </p>
                 <input
                   type="range"
@@ -214,11 +214,11 @@ export default function AudioSettingsModal({ isOpen, onClose }: AudioSettingsMod
                   className="w-full h-2 bg-purple-200 rounded-lg appearance-none cursor-pointer accent-purple-600"
                 />
                 <div className="flex justify-between text-xs text-gray-500 mt-2">
-                  <span>{t('studio.audioSettings.pitch.deep')}</span>
-                  <span>{t('studio.audioSettings.pitch.dull')}</span>
-                  <span>{t('studio.audioSettings.pitch.consistent')}</span>
-                  <span>{t('studio.audioSettings.pitch.bright')}</span>
-                  <span>{t('studio.audioSettings.pitch.crisp')}</span>
+                  <span>{t('tts.audioSettings.pitch.deep')}</span>
+                  <span>{t('tts.audioSettings.pitch.dull')}</span>
+                  <span>{t('tts.audioSettings.pitch.consistent')}</span>
+                  <span>{t('tts.audioSettings.pitch.bright')}</span>
+                  <span>{t('tts.audioSettings.pitch.crisp')}</span>
                 </div>
                 <div className="text-center mt-2 text-sm font-medium text-purple-600">
                   {getPitchLabel(tempSettings.pitch)}
@@ -232,7 +232,7 @@ export default function AudioSettingsModal({ isOpen, onClose }: AudioSettingsMod
             onClick={handleSave}
             className="w-full mt-6 bg-purple-600 text-white py-4 rounded-xl font-medium hover:bg-purple-700 transition-colors"
           >
-            {t('studio.audioSettings.save')}
+            {t('tts.audioSettings.save')}
           </button>
         </div>
       </div>

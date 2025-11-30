@@ -181,7 +181,7 @@ export default function GenerationRecordCard({
 
           {/* 右侧：时长/进度 */}
           <div className="text-right">
-            <span className="text-xs text-gray-500 block">{isProcessing ? t('studio.progress') : t('studio.duration')}</span>
+            <span className="text-xs text-gray-500 block">{isProcessing ? t('tts.progress') : t('tts.duration')}</span>
             <span className={`${config.progressText} font-semibold ${isProcessing ? 'text-purple-600' : 'text-gray-700'}`}>
               {isProcessing ? `${progress}%` : generation.duration ? `${generation.duration}s` : '-'}
             </span>

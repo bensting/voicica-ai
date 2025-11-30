@@ -73,7 +73,7 @@ export default function VoiceSelectButton({
   };
 
   const config = sizeConfig[size];
-  const voiceName = voice?.display_name || t('studio.selectVoice');
+  const voiceName = voice?.display_name || t('tts.selectVoice');
 
   // Get country code from locale
   const getCountryCode = (locale: string): string => {

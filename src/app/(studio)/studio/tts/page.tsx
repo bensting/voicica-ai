@@ -55,7 +55,7 @@ export default function StudioTTSPage() {
 
   // Set page title
   useEffect(() => {
-    setTitle(t('studio.tts'));
+    setTitle(t('tts.title'));
   }, [t, setTitle]);
 
   // 注意：积分已由 CreditsContext 在认证完成后自动获取
@@ -232,7 +232,7 @@ export default function StudioTTSPage() {
   const voiceDisplayName = useMemo(
     () =>
       selectedVoice?.display_name ||
-      (authLoading || !isLocaleReady ? t('common.loading') : t('studio.selectVoice')),
+      (authLoading || !isLocaleReady ? t('common.loading') : t('tts.selectVoice')),
     [selectedVoice?.display_name, authLoading, isLocaleReady, t]
   );
 

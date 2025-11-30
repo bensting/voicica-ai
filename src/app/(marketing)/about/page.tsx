@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import PageHero from "@/components/common/PageHero";
 
 export const metadata: Metadata = {
   title: "About Us - Voicica AI",
@@ -11,25 +12,11 @@ export const metadata: Metadata = {
 export default function AboutPage() {
   return (
     <div className="font-sans min-h-screen">
-      {/* Hero Section with Background Image */}
-      <section className="relative h-[200px] sm:h-[260px] w-full overflow-hidden">
-        {/* Background Image */}
-        <Image
-          src="/images/about-hero.jpg"
-          alt="About Voicica AI"
-          fill
-          className="object-cover"
-          style={{ objectPosition: 'center 40%' }}
-          priority
-        />
-        {/* Frosted Glass Overlay */}
-        <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" />
-
-        {/* Hero Content */}
-        <h1 className="absolute inset-0 z-10 flex items-center justify-center text-2xl sm:text-3xl font-bold text-white">
-          About Voicica AI
-        </h1>
-      </section>
+      <PageHero
+        title="About Voicica AI"
+        imageSrc="/images/about-hero.jpg"
+        imageAlt="About Voicica AI"
+      />
 
       {/* Main Content */}
       <main className="max-w-4xl mx-auto px-6 py-12 sm:py-16">

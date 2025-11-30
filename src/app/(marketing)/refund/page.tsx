@@ -19,257 +19,119 @@ export default function RefundPolicy() {
             <p className="text-gray-600 dark:text-gray-400 mb-6">
               Last Updated: {new Date().toLocaleDateString("en-US")}
             </p>
+            <p className="mb-4">
+              At Voicica AI, we regard customer satisfaction to be most important. We strive to ensure that our customers are completely happy with both our products and our service.
+            </p>
+            <p className="mb-4">
+              In the unlikely event that you are dissatisfied with, or even if you just have questions about, any aspect of our products or service, please contact our Customer Support Team without delay.
+            </p>
             <p>
-              At Voicica AI, we strive to provide excellent service and customer satisfaction. This Refund Policy explains our policies regarding refunds, cancellations, and subscription management.
-            </p>
-          </section>
-
-          <section>
-            <h2 className="text-xl sm:text-2xl font-semibold mb-3">
-              1. Subscription Overview
-            </h2>
-            <p className="mb-3">
-              Voicica AI offers various subscription plans with different features and pricing:
-            </p>
-            <ul className="list-disc list-inside space-y-2 ml-4">
-              <li>
-                <strong>Free Plan:</strong> No payment required, limited features
-              </li>
-              <li>
-                <strong>Monthly Subscriptions:</strong> Billed monthly, can be cancelled anytime
-              </li>
-              <li>
-                <strong>Annual Subscriptions:</strong> Billed annually, offering discounted rates
-              </li>
-            </ul>
-          </section>
-
-          <section>
-            <h2 className="text-xl sm:text-2xl font-semibold mb-3">
-              2. 7-Day Money-Back Guarantee
-            </h2>
-            <p className="mb-3">
-              We offer a <strong>7-day money-back guarantee</strong> for first-time subscribers:
-            </p>
-            <ul className="list-disc list-inside space-y-2 ml-4">
-              <li>Applies to first-time purchases only (not applicable to renewals)</li>
-              <li>Request must be submitted within 7 days of the initial purchase date</li>
-              <li>Full refund will be issued to the original payment method</li>
-              <li>Account will be downgraded to the free plan upon refund processing</li>
-              <li>Generated content and usage during the trial period will be retained according to free plan limits</li>
-            </ul>
-          </section>
-
-          <section>
-            <h2 className="text-xl sm:text-2xl font-semibold mb-3">
-              3. How to Request a Refund
-            </h2>
-            <p className="mb-3">
-              To request a refund within the 7-day guarantee period:
-            </p>
-            <ol className="list-decimal list-inside space-y-2 ml-4">
-              <li>
-                Send an email to{" "}
-                <a
-                  href="mailto:support@voicica.ai"
-                  className="text-blue-600 dark:text-blue-400 hover:underline"
-                >
-                  support@voicica.ai
-                </a>
-              </li>
-              <li>Include your account email address and order/transaction ID</li>
-              <li>Provide a brief reason for the refund request (optional but helpful)</li>
-              <li>We will process your request within 3-5 business days</li>
-              <li>Refunds typically appear in your account within 5-10 business days, depending on your payment provider</li>
-            </ol>
-          </section>
-
-          <section>
-            <h2 className="text-xl sm:text-2xl font-semibold mb-3">
-              4. Subscription Cancellation
-            </h2>
-            <p className="mb-3">
-              You can cancel your subscription at any time:
-            </p>
-            <ul className="list-disc list-inside space-y-2 ml-4">
-              <li>Go to your account settings and navigate to the subscription section</li>
-              <li>Click &quot;Cancel Subscription&quot; and follow the prompts</li>
-              <li>Your subscription will remain active until the end of the current billing period</li>
-              <li>You will retain access to paid features until the subscription expires</li>
-              <li>No charges will be made for subsequent billing periods</li>
-              <li>Your account will automatically downgrade to the free plan after expiration</li>
-            </ul>
-          </section>
-
-          <section>
-            <h2 className="text-xl sm:text-2xl font-semibold mb-3">
-              5. Non-Refundable Situations
-            </h2>
-            <p className="mb-3">
-              Refunds will <strong>not</strong> be provided in the following situations:
-            </p>
-            <ul className="list-disc list-inside space-y-2 ml-4">
-              <li>
-                <strong>After 7-Day Period:</strong> Refund requests made more than 7 days after the purchase date
-              </li>
-              <li>
-                <strong>Subscription Renewals:</strong> Automatic subscription renewals (monthly or annual)
-              </li>
-              <li>
-                <strong>Partial Period Refunds:</strong> We do not offer prorated refunds for partial subscription periods
-              </li>
-              <li>
-                <strong>Account Violations:</strong> Accounts suspended or terminated due to Terms of Service violations
-              </li>
-              <li>
-                <strong>Usage-Based Charges:</strong> Charges incurred from actual service usage (if applicable)
-              </li>
-              <li>
-                <strong>Third-Party Services:</strong> Any fees charged by third-party payment processors
-              </li>
-              <li>
-                <strong>Changed Mind:</strong> Cancellations after the 7-day guarantee period simply due to change of preference
-              </li>
-            </ul>
-          </section>
-
-          <section>
-            <h2 className="text-xl sm:text-2xl font-semibold mb-3">
-              6. Subscription Auto-Renewal
-            </h2>
-            <p className="mb-3">
-              All paid subscriptions automatically renew:
-            </p>
-            <ul className="list-disc list-inside space-y-2 ml-4">
-              <li>Monthly subscriptions renew every month on the anniversary of your purchase date</li>
-              <li>Annual subscriptions renew every year on the anniversary of your purchase date</li>
-              <li>You will be charged using your saved payment method</li>
-              <li>We will send a reminder email 7 days before renewal</li>
-              <li>Cancel anytime before the renewal date to avoid being charged</li>
-              <li>Cancellation must be completed at least 24 hours before the renewal date</li>
-            </ul>
-          </section>
-
-          <section>
-            <h2 className="text-xl sm:text-2xl font-semibold mb-3">
-              7. Downgrade and Upgrades
-            </h2>
-            <p className="mb-3">
-              <strong>Upgrading Your Plan:</strong>
-            </p>
-            <ul className="list-disc list-inside space-y-2 ml-4 mb-4">
-              <li>You can upgrade to a higher-tier plan at any time</li>
-              <li>You will be charged the prorated difference for the current billing period</li>
-              <li>The new plan takes effect immediately</li>
-            </ul>
-            <p className="mb-3">
-              <strong>Downgrading Your Plan:</strong>
-            </p>
-            <ul className="list-disc list-inside space-y-2 ml-4">
-              <li>You can request to downgrade to a lower-tier plan</li>
-              <li>The downgrade will take effect at the end of your current billing period</li>
-              <li>No refund will be issued for the price difference</li>
-              <li>You will retain access to current plan features until the billing period ends</li>
-            </ul>
-          </section>
-
-          <section>
-            <h2 className="text-xl sm:text-2xl font-semibold mb-3">
-              8. Payment Failures and Retry Policy
-            </h2>
-            <p className="mb-3">
-              If a subscription renewal payment fails:
-            </p>
-            <ul className="list-disc list-inside space-y-2 ml-4">
-              <li>We will attempt to charge your payment method up to 3 times over 7 days</li>
-              <li>You will receive email notifications about the failed payment</li>
-              <li>Update your payment information in account settings to resolve the issue</li>
-              <li>If all retry attempts fail, your subscription will be cancelled</li>
-              <li>Your account will be downgraded to the free plan</li>
-              <li>You can resubscribe at any time by updating your payment information</li>
-            </ul>
-          </section>
-
-          <section>
-            <h2 className="text-xl sm:text-2xl font-semibold mb-3">
-              9. Exceptional Circumstances
-            </h2>
-            <p className="mb-3">
-              In rare cases, we may consider refunds outside of our standard policy for:
-            </p>
-            <ul className="list-disc list-inside space-y-2 ml-4">
-              <li>Technical issues that prevented you from using the service</li>
-              <li>Billing errors or duplicate charges</li>
-              <li>Service outages that significantly impacted your usage</li>
-              <li>Other extraordinary circumstances at our sole discretion</li>
-            </ul>
-            <p className="mt-3">
-              Please contact our support team at{" "}
+              You can reach out to Voicica AI&apos;s caring Customer Support Team at{" "}
               <a
                 href="mailto:support@voicica.ai"
                 className="text-blue-600 dark:text-blue-400 hover:underline"
               >
                 support@voicica.ai
               </a>
-              {" "}to discuss such situations.
             </p>
           </section>
 
           <section>
             <h2 className="text-xl sm:text-2xl font-semibold mb-3">
-              10. Disputes and Chargebacks
+              Requesting a Refund
             </h2>
             <p className="mb-3">
-              If you dispute a charge with your credit card company or payment provider:
+              Sometimes, despite our best intentions, a customer may want to cancel their order. If that is the case, we respectfully request that they complete a &apos;Request Refund&apos; form.
             </p>
-            <ul className="list-disc list-inside space-y-2 ml-4">
-              <li>Your account may be immediately suspended pending investigation</li>
-              <li>Please contact us first before initiating a chargeback so we can resolve the issue</li>
-              <li>Fraudulent chargebacks may result in permanent account termination</li>
-              <li>We reserve the right to pursue collection of disputed charges</li>
+            <p className="mb-3">To complete the form, you will need the:</p>
+            <ul className="list-disc list-inside space-y-2 ml-4 mb-4">
+              <li>Product name.</li>
+              <li>Order reference number.</li>
+              <li>Email address used when making the purchase.</li>
+              <li>Reason for requesting a refund.</li>
             </ul>
-          </section>
-
-          <section>
-            <h2 className="text-xl sm:text-2xl font-semibold mb-3">
-              11. Free Trial Policy
-            </h2>
             <p>
-              From time to time, we may offer free trials of our paid plans. Free trial terms will be clearly communicated at the time of offer. Unless cancelled before the trial period ends, you will automatically be charged for the subscription plan when the trial expires.
+              Voicica AI aims to process each request for a refund within one business day of receiving the request. Each request is assessed according to the criteria listed below.
             </p>
           </section>
 
           <section>
             <h2 className="text-xl sm:text-2xl font-semibold mb-3">
-              12. Changes to This Policy
+              Money Back Guarantee
             </h2>
+            <p className="mb-4">
+              Voicica AI products generally feature &apos;free trial&apos; versions, which allow the customer to test the tools for flaws, and to ensure that it is working correctly on their device.
+            </p>
             <p>
-              We reserve the right to modify this Refund Policy at any time. Changes will be posted on this page with an updated revision date. Material changes will be communicated via email or through a notice on our website. Your continued use of our services after such changes constitutes acceptance of the updated policy.
+              If no problems were evident, and communicated to Voicica AI&apos;s Customer Support Team, during the 30-day trial period, then the order may not be cancelled.
             </p>
           </section>
 
           <section>
             <h2 className="text-xl sm:text-2xl font-semibold mb-3">
-              13. Contact Information
+              Eligibility for Refund
             </h2>
             <p className="mb-3">
-              For questions, concerns, or requests related to refunds and billing, please contact us:
+              Under the 30-day Money Back Guarantee, refunds will only be granted in the following circumstances listed below, with the money credited to the account originally used to make the purchase.
             </p>
-            <ul className="list-none space-y-2 ml-4">
+            <ul className="list-disc list-inside space-y-3 ml-4">
               <li>
-                Email:{" "}
-                <a
-                  href="mailto:support@voicica.ai"
-                  className="text-blue-600 dark:text-blue-400 hover:underline"
-                >
-                  support@voicica.ai
-                </a>
+                If the tool malfunctions due to a technical problem that is unable to be resolved within the trial period, and the customer is unwilling to wait for a software update, Voicica AI will refund the purchase price.
               </li>
-              <li>Billing Email: billing@voicica.ai</li>
-              <li>Address: 30 N Gould St, STE R, Sheridan, WY 82801, USA</li>
+              <li>
+                If the online tool suffers a fatal malfunction, Voicica AI will either refund the purchase price, or offer an exchange for a different product, at the customer&apos;s discretion.
+              </li>
+              <li>
+                If the customer mistakenly duplicates the purchase of the software, or purchases a similar type of software, then Voicica AI will either refund the purchase price of one of them or offer an exchange for a different product.
+              </li>
+              <li>
+                If the order information for the tool has not been received by the customer within 24 hours of making payment, and the customer has not received a response from the Customer Support Team within 48 hours of notifying them of the issue, then Voicica AI may either cancel the order or offer a full refund.
+              </li>
+              <li>
+                If the customer does not receive an auto-renewal notification by email prior to the subscription being auto-renewed against the customer&apos;s wishes, Voicica AI will offer a refund if contacted within 7 days of the renewal.
+              </li>
+              <li>
+                If two or more payments were made for the same product due to a technical issue with the customer&apos;s payment platform, Voicica AI will refund the extra payments.
+              </li>
             </ul>
-            <p className="mt-4 text-sm text-gray-600 dark:text-gray-400">
-              Our support team typically responds within 24-48 hours during business days (Monday-Friday, 9 AM - 5 PM EST).
+          </section>
+
+          <section>
+            <h2 className="text-xl sm:text-2xl font-semibold mb-3">
+              Ineligibility for Refund
+            </h2>
+            <p className="mb-3">
+              Unfortunately, there are circumstances where Voicica AI will not be able to offer a refund but may offer to exchange for a different type of tools.
+            </p>
+            <p className="mb-3">These circumstances are detailed below:</p>
+            <ul className="list-disc list-inside space-y-3 ml-4">
+              <li>
+                Since purchasing, the customer has found the same product being sold elsewhere for a lower price.
+              </li>
+              <li>
+                Since purchasing, the customer has bought a similar product from a different provider.
+              </li>
+              <li>
+                The customer purchased the product on special terms during a sales promotion.
+              </li>
+              <li>
+                The customer has repeatedly and intentionally purchased similar products.
+              </li>
+              <li>
+                Since third-party payment processing services are used, it is not possible for Voicica AI to monitor the legitimacy of payments, so fraudulent use of credit cards and unauthorized transfers must be resolved between the customer and the issuer of their credit card(s). Voicica AI will assist where able.
+              </li>
+              <li>
+                Failing to properly understand the functions and capabilities of the product(s) through not reading the product description thoroughly before purchasing the software.
+              </li>
+              <li>
+                Refusal to supply a reason for requesting a refund.
+              </li>
+            </ul>
+          </section>
+
+          <section>
+            <p>
+              As stated in our Refund Policy above, Voicica AI is committed to customer satisfaction. To that end, Voicica AI&apos;s Customer Support Team is always willing to take feedback, and consider suggestions, from customers. Voicica AI will make every effort to resolve customers&apos; problems.
             </p>
           </section>
 

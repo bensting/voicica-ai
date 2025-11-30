@@ -75,6 +75,8 @@
     "products": {
       "title": "ผลิตภัณฑ์ยอดนิยม",
       "tts": "AI ข้อความเป็นเสียง",
+      "tiktokDownloader": "ดาวน์โหลด TikTok",
+      "youtubeDownloader": "ดาวน์โหลด YouTube",
       "songCover": "เครื่องมือสร้างเพลงคัฟเวอร์ AI",
       "musicGenerator": "เครื่องมือสร้างเพลง AI",
       "voiceCloning": "AI โคลนเสียง",

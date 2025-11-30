@@ -207,7 +207,7 @@ export default function AboutPage() {
             </span>
 
             {/* Voicica AI Logo */}
-            <div className="flex items-center justify-center w-24 h-24 sm:w-32 sm:h-32">
+            <div className="flex items-center justify-center w-32 h-32 sm:w-44 sm:h-44">
               <Image
                 src="/logo/voice-labs-logo-light.svg"
                 alt="Voicica AI"

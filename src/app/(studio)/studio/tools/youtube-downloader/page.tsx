@@ -10,6 +10,7 @@ import {
   type ParseResponse,
   type VideoFormat,
 } from '@/actions/video-downloader';
+import { getVideoParseErrorMessage } from '@/lib/services/video-downloader-utils';
 import {
   isYouTubeUrl,
   getGroupedFormats,
@@ -117,7 +118,9 @@ export default function YouTubeDownloaderPage() {
       const result = await parseVideoUrl(url);
 
       if (!result.success || !result.data) {
-        setError(result.error || t('youtubeDownloader.errors.parseFailed'));
+        // 使用错误码获取国际化错误信息
+        const errorCode = result.errorCode || 'UNKNOWN_ERROR';
+        setError(getVideoParseErrorMessage(errorCode, result.errorData, t, 'youtubeDownloader'));
         return;
       }
 
@@ -141,7 +144,7 @@ export default function YouTubeDownloaderPage() {
         setSelectedFormat(grouped.videoOnly[0]);
       }
     } catch {
-      setError(t('youtubeDownloader.errors.parseFailed'));
+      setError(t('youtubeDownloader.errors.unknownError'));
     } finally {
       setLoading(false);
     }

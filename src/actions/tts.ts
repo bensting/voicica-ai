@@ -11,7 +11,7 @@ import { ttsQueue } from '@/lib/queue/tts-queue';
 import { InsufficientCreditsError, errorToResponse } from '@/lib/errors';
 import { calculateProductCreditsCost } from '@/config/creditsCost';
 import { ProductType } from '@/config/productType';
-import { checkCredits, getCredits } from '@/lib/credits';
+import { checkCredits } from '@/lib/credits';
 
 /**
  * 生成分享短码

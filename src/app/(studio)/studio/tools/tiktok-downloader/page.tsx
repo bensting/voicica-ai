@@ -14,6 +14,7 @@ import {
   getProxyDownloadUrl,
   isTikTokUrl,
 } from '@/lib/services/tiktok-downloader';
+import { getVideoParseErrorMessage } from '@/lib/services/video-downloader-utils';
 import { calculateProductCreditsCost } from '@/config/creditsCost';
 import { ProductType } from '@/config/productType';
 
@@ -82,7 +83,9 @@ export default function TikTokDownloaderPage() {
       const result = await parseVideoUrl(url);
 
       if (!result.success || !result.data) {
-        setError(result.error || t('tiktokDownloader.errors.parseFailed'));
+        // 使用错误码获取国际化错误信息
+        const errorCode = result.errorCode || 'UNKNOWN_ERROR';
+        setError(getVideoParseErrorMessage(errorCode, result.errorData, t, 'tiktokDownloader'));
         return;
       }
 
@@ -95,7 +98,7 @@ export default function TikTokDownloaderPage() {
       const bestFormat = result.data.formats.find(f => f.format_id === 'play_direct') || result.data.formats[0];
       setSelectedFormat(bestFormat);
     } catch {
-      setError(t('tiktokDownloader.errors.parseFailed'));
+      setError(t('tiktokDownloader.errors.unknownError'));
     } finally {
       setLoading(false);
     }

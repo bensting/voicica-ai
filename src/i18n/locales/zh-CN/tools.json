@@ -43,7 +43,7 @@
     "errors": {
       "emptyUrl": "请输入 YouTube 视频链接",
       "invalidUrl": "无效的 YouTube 链接，请输入正确的 YouTube 视频链接。",
-m      "parseFailed": "解析视频失败，请检查链接后重试。",
+      "parseFailed": "解析视频失败，请检查链接后重试。",
       "insufficientCredits": "积分不足，需要: {{required}}，当前: {{current}}",
       "unknownError": "发生未知错误，请稍后重试。"
     }

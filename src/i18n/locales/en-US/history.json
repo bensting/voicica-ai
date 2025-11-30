@@ -1,0 +1,25 @@
+{
+  "generationHistory": {
+    "title": "Generation History",
+    "subtitle": "View and manage your speech generations.",
+    "generatedSpeech": "Generated Speech",
+    "clearAll": "Clear All",
+    "noGenerations": "No generations yet",
+    "noGenerationsDescription": "Your speech generations will appear here once you start creating.",
+    "allRecordsLoaded": "All records loaded",
+    "total": "total",
+    "filters": {
+      "status": "Status",
+      "dateRange": "Date",
+      "allStatus": "All Status",
+      "success": "Success",
+      "processing": "Processing",
+      "pending": "Pending",
+      "failed": "Failed",
+      "from": "From",
+      "to": "To",
+      "apply": "Apply",
+      "clear": "Clear"
+    }
+  }
+}

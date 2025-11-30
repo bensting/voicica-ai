@@ -1,0 +1,82 @@
+{
+  "common": {
+    "brand": "Voicica AI",
+    "cancel": "取消",
+    "close": "关闭",
+    "retry": "重试",
+    "loading": "加载中...",
+    "download": "下载",
+    "share": "分享",
+    "delete": "删除"
+  },
+  "creditInfo": {
+    "currentCredits": "当前积分：",
+    "loginForMore": "登录获取更多积分",
+    "deductionNotice": "{{actionName}}成功后将扣除 {{count}} 个积分"
+  },
+  "productCategory": {
+    "aiVideo": "AI 视频",
+    "aiMusic": "AI 音乐",
+    "aiVoice": "AI 语音"
+  },
+  "navbar": {
+    "explore": "探索",
+    "pricing": "定价",
+    "faq": "常见问题",
+    "blog": "博客",
+    "myVoiceModels": "我的语音模型",
+    "generationHistory": "生成历史",
+    "subscription": "订阅",
+    "profile": "个人资料",
+    "login": "登录",
+    "logout": "退出登录",
+    "myStudio": "我的工作室"
+  },
+  "nav": {
+    "studio": "工作室",
+    "pricing": "定价",
+    "faq": "常见问题",
+    "generationHistory": "生成历史",
+    "freeTools": "免费工具",
+    "tiktokDownloader": "TikTok 下载",
+    "tiktokDownloaderDesc": "下载无水印 TikTok 视频",
+    "youtubeDownloader": "YouTube 下载",
+    "youtubeDownloaderDesc": "下载 YouTube 视频和音频"
+  },
+  "language": {
+    "en": "English",
+    "zhCN": "简体中文",
+    "zhTW": "繁體中文"
+  },
+  "footer": {
+    "tagline": "拥抱 AI，拥抱简单",
+    "followUs": "关注我们",
+    "changeLanguage": "切换语言",
+    "copyright": "版权所有。",
+    "info": {
+      "title": "信息",
+      "terms": "条款与条件",
+      "cookie": "Cookie 政策",
+      "privacy": "隐私政策",
+      "refund": "退款政策",
+      "partner": "成为我们的合作伙伴"
+    },
+    "about": {
+      "title": "关于",
+      "aboutUs": "关于我们",
+      "contact": "联系我们",
+      "faqs": "常见问题",
+      "blogs": "博客",
+      "dmca": "DMCA"
+    },
+    "products": {
+      "title": "明星产品",
+      "tts": "AI 文字转语音",
+      "songCover": "AI 歌曲翻唱生成器",
+      "musicGenerator": "AI 音乐生成器",
+      "voiceCloning": "AI 语音克隆",
+      "voiceChanger": "免费变声器",
+      "api": "API（开发者）"
+    }
+  }
+}

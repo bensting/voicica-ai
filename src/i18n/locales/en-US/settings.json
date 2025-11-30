@@ -1,0 +1,112 @@
+{
+  "settings": {
+    "title": "Settings",
+    "menu": {
+      "home": "Home",
+      "mySubscription": "My Subscription",
+      "myProfile": "My Profile",
+      "orderList": "Order List",
+      "myCoupon": "My Coupon",
+      "messageCenter": "Message Center"
+    },
+    "basicInfo": {
+      "title": "Basic Info",
+      "profilePicture": "Profile Picture",
+      "profilePictureHint": "PNG or JPG, images with equal width and height are recommended",
+      "uploading": "Uploading...",
+      "nameSurname": "Name & Surname",
+      "email": "Email Address",
+      "phone": "Phone"
+    },
+    "actions": {
+      "save": "Save",
+      "saveChanges": "Save Changes",
+      "cancel": "Cancel",
+      "saveSuccess": "Saved successfully",
+      "saveFailed": "Save failed, please try again"
+    },
+    "benefits": {
+      "title": "My Benefits",
+      "credits": "Credits",
+      "voiceCredits": "Voice Credits",
+      "refresh": "Refresh",
+      "viewHistory": "View History"
+    }
+  },
+  "subscription": {
+    "title": "Your Plan",
+    "changePlan": "Change Your Plan",
+    "selectPlan": "Choose a plan that suits you best.",
+    "monthly": "Monthly",
+    "yearly": "Yearly",
+    "yearlyDiscount": "33% OFF",
+    "free": {
+      "name": "Free",
+      "badge": "Active",
+      "feature1": "Up to 120 characters per generation",
+      "feature2": "900 seconds audio generation per month",
+      "feature3": "Create up to 5 voice clone models"
+    },
+    "pro": {
+      "name": "Professional",
+      "badge": "Recommended",
+      "tagline": "Unlock full potential",
+      "priceMonthly": "$14.99",
+      "priceYearly": "$9.99",
+      "perMonth": "/1 month",
+      "feature1": "Up to 1000 characters per generation",
+      "feature2": "Commercial use allowed",
+      "feature3": "Unlimited generation",
+      "feature4": "Priority generation",
+      "feature5": "Create unlimited voice clone models",
+      "upgradeNow": "Upgrade Now"
+    },
+    "cancel": {
+      "title": "Cancel Subscription",
+      "warning": "This action cannot be undone. Your subscription will be canceled immediately and you will not be charged again.",
+      "note": "Your allocated credits will remain available for use.",
+      "reasonLabel": "Reason for cancellation (optional)",
+      "reasonPlaceholder": "Tell us why you're canceling...",
+      "confirm": "Confirm",
+      "canceling": "Canceling..."
+    },
+    "mySubscription": {
+      "activeSection": "Active",
+      "inactiveSection": "Cancelled/Expired",
+      "emptyTitle": "No Subscriptions",
+      "emptyDesc": "You don't have any subscriptions yet.",
+      "noActiveSubscriptions": "No active subscriptions",
+      "noInactiveSubscriptions": "No cancelled or expired subscriptions",
+      "retry": "Retry",
+      "validUntil": "Valid until:",
+      "daysLeft": "days left",
+      "credits": "credits",
+      "cancelButton": "Cancel Subscription",
+      "status": {
+        "TRIAL": "Trial",
+        "ACTIVE": "Active",
+        "EXPIRED": "Expired",
+        "CANCELLED": "Cancelled",
+        "SUSPENDED": "Suspended"
+      }
+    }
+  },
+  "creditHistory": {
+    "title": "Credit History",
+    "empty": "No credit history yet",
+    "date": "Date",
+    "description": "Description",
+    "type": "Type",
+    "amount": "Credits",
+    "scrollToLoadMore": "Scroll down to load more",
+    "allLoaded": "All records loaded",
+    "productType": {
+      "textToSpeech": "Text to Speech",
+      "voiceCloning": "Voice Cloning",
+      "youtubeDownloader": "YouTube Download",
+      "tiktokDownloader": "TikTok Download",
+      "subscription": "Subscription",
+      "other": "Other"
+    }
+  }
+}

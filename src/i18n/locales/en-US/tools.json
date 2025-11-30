@@ -1,0 +1,47 @@
+{
+  "tiktokDownloader": {
+    "title": "TikTok Video Downloader",
+    "subtitle": "Download TikTok videos without watermark for free",
+    "urlLabel": "TikTok Video URL",
+    "urlPlaceholder": "Paste TikTok video link here...",
+    "parseButton": "Parse",
+    "parsing": "Parsing",
+    "doNotClose": "Please do not close this page",
+    "downloadButton": "Download Video",
+    "downloading": "Downloading...",
+    "selectQuality": "Select Quality",
+    "untitled": "Untitled Video",
+    "emptyTitle": "Download TikTok Videos",
+    "emptyDescription": "Paste a TikTok video URL above to start downloading. Supports all TikTok video formats.",
+    "errors": {
+      "emptyUrl": "Please enter a TikTok video URL",
+      "invalidUrl": "Invalid TikTok URL. Please enter a valid TikTok video link.",
+      "parseFailed": "Failed to parse video. Please check the URL and try again."
+    }
+  },
+  "youtubeDownloader": {
+    "title": "YouTube Video Downloader",
+    "subtitle": "Download YouTube videos and audio for free",
+    "urlLabel": "YouTube Video URL",
+    "urlPlaceholder": "Paste YouTube video link here...",
+    "parseButton": "Parse",
+    "parsing": "Parsing",
+    "doNotClose": "Please do not close this page",
+    "downloadButton": "Download",
+    "downloading": "Downloading...",
+    "selectQuality": "Select Quality",
+    "untitled": "Untitled Video",
+    "emptyTitle": "Download YouTube Videos",
+    "emptyDescription": "Paste a YouTube video URL above to start downloading. Supports video and audio formats.",
+    "tabs": {
+      "videoWithAudio": "Video",
+      "videoOnly": "Video Only",
+      "audioOnly": "Audio"
+    },
+    "errors": {
+      "emptyUrl": "Please enter a YouTube video URL",
+      "invalidUrl": "Invalid YouTube URL. Please enter a valid YouTube video link.",
+      "parseFailed": "Failed to parse video. Please check the URL and try again."
+    }
+  }
+}

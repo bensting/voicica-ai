@@ -1,0 +1,112 @@
+{
+  "settings": {
+    "title": "设置",
+    "menu": {
+      "home": "首页",
+      "mySubscription": "我的订阅",
+      "myProfile": "我的资料",
+      "orderList": "订单列表",
+      "myCoupon": "我的优惠券",
+      "messageCenter": "消息中心"
+    },
+    "basicInfo": {
+      "title": "基本信息",
+      "profilePicture": "头像",
+      "profilePictureHint": "PNG 或 JPG 格式，建议使用等宽等高的图片",
+      "uploading": "上传中...",
+      "nameSurname": "姓名",
+      "email": "邮箱地址",
+      "phone": "电话"
+    },
+    "actions": {
+      "save": "保存",
+      "saveChanges": "保存更改",
+      "cancel": "取消",
+      "saveSuccess": "保存成功",
+      "saveFailed": "保存失败，请重试"
+    },
+    "benefits": {
+      "title": "我的权益",
+      "credits": "积分",
+      "voiceCredits": "语音积分",
+      "refresh": "刷新",
+      "viewHistory": "查看历史"
+    }
+  },
+  "subscription": {
+    "title": "您的套餐",
+    "changePlan": "更改您的套餐",
+    "selectPlan": "选择一个更订阅的套餐。",
+    "monthly": "按月",
+    "yearly": "按年",
+    "yearlyDiscount": "33% OFF",
+    "free": {
+      "name": "免费版",
+      "badge": "有效",
+      "feature1": "每次生成最多 120 个字符",
+      "feature2": "每月 900 秒音频生成",
+      "feature3": "最多创建 5 个声音克隆模型"
+    },
+    "pro": {
+      "name": "专业版",
+      "badge": "推荐",
+      "tagline": "解锁全部潜力",
+      "priceMonthly": "$14.99",
+      "priceYearly": "$9.99",
+      "perMonth": "/1 个月",
+      "feature1": "每次生成最多 1000 个字符",
+      "feature2": "允许商业用途",
+      "feature3": "无限生成",
+      "feature4": "优先生成",
+      "feature5": "创建无限声音克隆模型",
+      "upgradeNow": "Upgrade Now"
+    },
+    "cancel": {
+      "title": "取消订阅",
+      "warning": "此操作无法撤销。您的订阅将立即取消，不会再次收费。",
+      "note": "您已分配的积分将继续可用。",
+      "reasonLabel": "取消原因（选填）",
+      "reasonPlaceholder": "告诉我们您取消的原因...",
+      "confirm": "确认",
+      "canceling": "取消中..."
+    },
+    "mySubscription": {
+      "activeSection": "生效中",
+      "inactiveSection": "已取消/已过期",
+      "emptyTitle": "暂无订阅",
+      "emptyDesc": "您还没有任何订阅记录。",
+      "noActiveSubscriptions": "暂无生效中的订阅",
+      "noInactiveSubscriptions": "暂无已取消或已过期的订阅",
+      "retry": "重试",
+      "validUntil": "有效期至：",
+      "daysLeft": "天后到期",
+      "credits": "积分",
+      "cancelButton": "取消订阅",
+      "status": {
+        "TRIAL": "试用中",
+        "ACTIVE": "生效中",
+        "EXPIRED": "已过期",
+        "CANCELLED": "已取消",
+        "SUSPENDED": "已暂停"
+      }
+    }
+  },
+  "creditHistory": {
+    "title": "积分历史",
+    "empty": "暂无积分记录",
+    "date": "时间",
+    "description": "描述",
+    "type": "类型",
+    "amount": "积分",
+    "scrollToLoadMore": "向下滑动加载更多",
+    "allLoaded": "所有记录已加载完毕",
+    "productType": {
+      "textToSpeech": "语音合成",
+      "voiceCloning": "语音克隆",
+      "youtubeDownloader": "YouTube下载",
+      "tiktokDownloader": "TikTok下载",
+      "subscription": "订阅",
+      "other": "其他"
+    }
+  }
+}

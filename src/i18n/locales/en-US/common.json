@@ -1,0 +1,82 @@
+{
+  "common": {
+    "brand": "Voicica AI",
+    "cancel": "Cancel",
+    "close": "Close",
+    "retry": "Retry",
+    "loading": "Loading...",
+    "download": "Download",
+    "share": "Share",
+    "delete": "Delete"
+  },
+  "creditInfo": {
+    "currentCredits": "Current Credits:",
+    "loginForMore": "Login for more credits",
+    "deductionNotice": "{{count}} credit(s) will be deducted after {{actionName}} succeeds"
+  },
+  "productCategory": {
+    "aiVideo": "AI Video",
+    "aiMusic": "AI Music",
+    "aiVoice": "AI Voice"
+  },
+  "navbar": {
+    "explore": "Explore",
+    "pricing": "Pricing",
+    "faq": "FAQ",
+    "blog": "Blog",
+    "myVoiceModels": "My Voice Models",
+    "generationHistory": "Generation History",
+    "subscription": "Subscription",
+    "profile": "Profile",
+    "login": "Login",
+    "logout": "Logout",
+    "myStudio": "My Studio"
+  },
+  "nav": {
+    "studio": "Studio",
+    "pricing": "Pricing",
+    "faq": "FAQ",
+    "generationHistory": "Generation History",
+    "freeTools": "Free Tools",
+    "tiktokDownloader": "TikTok Downloader",
+    "tiktokDownloaderDesc": "Download TikTok videos without watermark",
+    "youtubeDownloader": "YouTube Downloader",
+    "youtubeDownloaderDesc": "Download YouTube videos and audio"
+  },
+  "language": {
+    "en": "English",
+    "zhCN": "简体中文",
+    "zhTW": "繁體中文"
+  },
+  "footer": {
+    "tagline": "Embrace AI, Embrace Simplicity",
+    "followUs": "Follow Us",
+    "changeLanguage": "Change Language",
+    "copyright": "All rights reserved.",
+    "info": {
+      "title": "Info",
+      "terms": "Terms & Conditions",
+      "cookie": "Cookie Policy",
+      "privacy": "Privacy Policy",
+      "refund": "Refund Policy",
+      "partner": "Become Our Partner"
+    },
+    "about": {
+      "title": "About",
+      "aboutUs": "About us",
+      "contact": "Contact Us",
+      "faqs": "FAQs",
+      "blogs": "Blogs",
+      "dmca": "DMCA"
+    },
+    "products": {
+      "title": "Star Products",
+      "tts": "AI Text to Speech",
+      "songCover": "AI Song Cover Generator",
+      "musicGenerator": "AI Music Generator",
+      "voiceCloning": "AI Voice Cloning",
+      "voiceChanger": "Free Voice Changer",
+      "api": "API (For Developers)"
+    }
+  }
+}

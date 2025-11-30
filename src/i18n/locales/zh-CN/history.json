@@ -1,0 +1,25 @@
+{
+  "generationHistory": {
+    "title": "生成历史",
+    "subtitle": "查看和管理您的语音生成记录。",
+    "generatedSpeech": "生成的语音",
+    "clearAll": "清空全部",
+    "noGenerations": "暂无生成记录",
+    "noGenerationsDescription": "开始创建后，您的语音生成记录将显示在这里。",
+    "allRecordsLoaded": "所有记录已加载完毕",
+    "total": "条",
+    "filters": {
+      "status": "状态",
+      "dateRange": "日期",
+      "allStatus": "全部状态",
+      "success": "成功",
+      "processing": "处理中",
+      "pending": "待处理",
+      "failed": "失败",
+      "from": "开始日期",
+      "to": "结束日期",
+      "apply": "应用",
+      "clear": "清除"
+    }
+  }
+}

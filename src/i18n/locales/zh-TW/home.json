@@ -1,0 +1,31 @@
+{
+  "home": {
+    "heroTitle": "一站式 AI 解決方案",
+    "heroTitleHighlight": "影片、音樂和配音",
+    "heroDescription": "在一個平台上擁有創建高品質影片、音樂和配音所需的一切。無需技術技能。立即在 Voicica 中將您的最佳創意變為現實。",
+    "exploreVoices": "探索語音",
+    "viewPricing": "查看定價",
+    "whyChoose": "為什麼選擇 Voicica AI？",
+    "getStarted": "開始使用",
+    "learnMore": "了解更多",
+    "readyTitle": "準備好開始了嗎？",
+    "readyDescription": "加入成千上萬的用戶，使用 Voicica AI 創建精彩的語音內容。",
+    "startCreating": "立即開始創建"
+  },
+  "cta": {
+    "title": "視頻、配音和音樂創作的一站式 AI 平台",
+    "getStarted": "免費開始使用！",
+    "viewPricing": "查看我們的計劃和價格",
+    "features": {
+      "moneyBack": "30 天退款保證",
+      "support": "免費技術支持",
+      "secure": "100% 安全",
+      "updates": "定期更新"
+    }
+  },
+  "ttsSamples": {
+    "titlePrefix": "Voicica AI 的",
+    "titleHighlight": "明星產品",
+    "titleSuffix": "不容錯過 👍"
+  }
+}

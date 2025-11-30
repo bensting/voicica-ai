@@ -1,0 +1,31 @@
+{
+  "home": {
+    "heroTitle": "One Stop AI Solution for",
+    "heroTitleHighlight": "Video, Music, and Voiceover",
+    "heroDescription": "Everything you need to create high-quality videos with music and voiceovers in one place. No technical skills required. Bring your best ideas to life in Voicica now.",
+    "exploreVoices": "Explore Voices",
+    "viewPricing": "View Pricing",
+    "whyChoose": "Why Choose Voicica AI?",
+    "getStarted": "Get Started",
+    "learnMore": "Learn More",
+    "readyTitle": "Ready to Get Started?",
+    "readyDescription": "Join thousands of users creating amazing voice content with Voicica AI.",
+    "startCreating": "Start Creating Now"
+  },
+  "cta": {
+    "title": "All-in-One AI Platform for Video, Voiceover & Music Creation.",
+    "getStarted": "Get started, it's free!",
+    "viewPricing": "View Our Plans and Pricing",
+    "features": {
+      "moneyBack": "30 Days Money Back Guarantee",
+      "support": "Free Technical Support",
+      "secure": "100% Secure",
+      "updates": "Regular Updates"
+    }
+  },
+  "ttsSamples": {
+    "titlePrefix": "Voicica AI's",
+    "titleHighlight": "Star Product",
+    "titleSuffix": "You Can't Miss 👍"
+  }
+}

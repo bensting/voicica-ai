@@ -19,7 +19,7 @@ function StudioLayoutContent({
   };
 
   return (
-    <div className="min-h-screen lg:h-screen lg:overflow-hidden bg-gray-50">
+    <div className="min-h-screen bg-gray-50">
       {/* ========== 顶部导航 (响应式，移动端和桌面端统一) ========== */}
       <StudioTopNav
         onUpgradeClick={handleUpgradeClick}
@@ -34,7 +34,7 @@ function StudioLayoutContent({
       />
 
       {/* ========== 主内容区域 ========== */}
-      <main className="pt-[60px] lg:ml-16 lg:h-screen lg:overflow-hidden">
+      <main className="pt-[60px] lg:ml-16">
         {children}
       </main>
 

@@ -1,9 +1,14 @@
 {
   "studio": {
     "welcomeTitle": "Hi，歡迎來到 Voicica AI",
+    "featuredProducts": "明星產品",
     "welcomeSubtitle": "借助我們先進的語音、影片、音樂和藝術 AI 工具，釋放人工智慧的力量。更快、更智慧、更輕鬆地將您的創意變為現實。",
     "ttsDescription": "使用先進的 AI 語音技術，將文字轉換為自然流暢的語音",
     "moreToolsComing": "更多工具即將推出",
+    "youMightWantToTry": "你可能想試試",
+    "tiktokDownloaderDesc": "免費下載 TikTok 影片，無浮水印，高畫質",
+    "youtubeDownloaderDesc": "免費下載 YouTube 影片，支援多種格式和解析度",
+    "upgrade": "升級",
     "menu": {
       "home": "首頁",
       "creationHub": "創作中心",

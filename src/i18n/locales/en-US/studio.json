@@ -2,8 +2,13 @@
   "studio": {
     "welcomeTitle": "Hi, welcome to Voicica AI",
     "welcomeSubtitle": "Unlock the power of AI with our cutting-edge tools for voice, video, music, and art. Transform your ideas into reality—faster, smarter, and effortlessly.",
+    "featuredProducts": "Featured Products",
     "ttsDescription": "Convert text to natural-sounding speech with advanced AI voices",
     "moreToolsComing": "More tools coming soon",
+    "youMightWantToTry": "You might want to try",
+    "tiktokDownloaderDesc": "Download TikTok videos for free, no watermark, HD quality",
+    "youtubeDownloaderDesc": "Download YouTube videos for free, multiple formats and resolutions",
+    "upgrade": "Upgrade",
     "menu": {
       "home": "Home",
       "creationHub": "Creation Hub",

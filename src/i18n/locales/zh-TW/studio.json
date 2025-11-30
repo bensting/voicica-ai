@@ -1,0 +1,142 @@
+{
+  "studio": {
+    "tts": "文字轉語音",
+    "upgrade": "購買/升級",
+    "credits": "積分",
+    "selectVoice": "選擇語音",
+    "generating": "生成中...",
+    "welcomeTitle": "歡迎使用工作室",
+    "welcomeSubtitle": "選擇一個工具，開始創作精彩內容",
+    "ttsDescription": "使用先進的 AI 語音技術，將文字轉換為自然流暢的語音",
+    "moreToolsComing": "更多工具即將推出",
+    "generationComplete": "生成完成",
+    "generationFailed": "生成失敗",
+    "processingMessage": "正在生成您的音訊，請稍候...",
+    "successMessage": "音訊生成成功！",
+    "generatingTip": "這可能需要幾秒鐘。您可以關閉此視窗，稍後在生成歷史中查看。",
+    "successTip": "您的音訊已準備就緒！現在可以下載或播放。",
+    "taskProgress": "進度",
+    "recentAuditions": "最近生成",
+    "allRecords": "全部記錄",
+    "progress": "生成進度",
+    "duration": "時長",
+    "errors": {
+      "selectTextAndVoice": "請輸入文字並選擇語音",
+      "invalidParams": "請求參數錯誤，請檢查輸入",
+      "insufficientCredits": "積分不足，請升級套餐或充值",
+      "unauthorized": "未登入或登入已過期，請重新登入",
+      "taskSubmitFailed": "提交任務失敗，請重試",
+      "taskNoId": "任務提交失敗，未返回任務ID",
+      "queryTaskFailed": "查詢任務狀態失敗，請重新整理頁面查看結果",
+      "generationFailed": "生成失敗，請重試",
+      "unknownTaskStatus": "任務狀態異常，請重試",
+      "INSUFFICIENT_CREDITS": "積分不足。需要 {{required}} 積分，當前剩餘 {{current}} 積分",
+      "UNAUTHORIZED": "未授權，請登入",
+      "NO_AUTH_INFO": "未提供認證資訊",
+      "TASK_NOT_FOUND": "任務不存在：{{taskId}}",
+      "TASK_CREATION_FAILED": "任務建立失敗",
+      "VALIDATION_ERROR": "參數驗證錯誤：{{field}}",
+      "TEXT_TOO_LONG": "文字過長。最大長度：{{maxLength}}，當前長度：{{currentLength}}",
+      "RESOURCE_NOT_FOUND": "{{resource}}不存在：{{id}}",
+      "VOICE_NOT_FOUND": "語音模型不存在：{{voiceName}}",
+      "INTERNAL_ERROR": "伺服器內部錯誤"
+    },
+    "deleteDialog": {
+      "title": "刪除語音生成",
+      "message": "確定要刪除這個語音生成嗎？此操作無法撤銷，音訊檔案將被永久刪除。",
+      "confirmButton": "刪除",
+      "cancelButton": "取消",
+      "deleteFailedAlert": "刪除失敗，請重試。"
+    },
+    "menu": {
+      "home": "首頁",
+      "creationHub": "創作中心",
+      "project": "專案",
+      "shortVideo": "短影片",
+      "aiVideoGenerator": "AI 影片產生器",
+      "textToSpeech": "文字轉語音",
+      "generationHistory": "生成歷史",
+      "speechToSpeech": "語音轉語音",
+      "voiceCloning": "語音複製",
+      "voiceoverStudio": "配音工作室",
+      "aiSong": "AI 歌曲",
+      "aiMusicMovie": "AI 音樂影片",
+      "musicHistory": "音樂歷史",
+      "aiMusic": "AI 音樂",
+      "aiCover": "AI 翻唱",
+      "musicTools": "音樂工具",
+      "account": "我的帳戶",
+      "tools": "免費工具",
+      "tiktokDownloader": "TikTok 下載",
+      "youtubeDownloader": "YouTube 下載"
+    },
+    "mobileNav": {
+      "tts": "文字轉語音",
+      "voices": "語音庫",
+      "clone": "複製",
+      "history": "歷史"
+    },
+    "audioSettings": {
+      "title": "音訊設定",
+      "speed": {
+        "title": "語速",
+        "description": "調整音訊播放速度",
+        "current": "當前語速"
+      },
+      "volume": {
+        "title": "音量",
+        "description": "語音音量設定",
+        "current": "當前音量"
+      },
+      "pitch": {
+        "title": "音調",
+        "description": "調整整體音調",
+        "current": "當前音調",
+        "deep": "低沉",
+        "dull": "平淡",
+        "consistent": "穩定",
+        "bright": "明亮",
+        "crisp": "清脆"
+      },
+      "save": "儲存"
+    }
+  },
+  "voiceFilters": {
+    "selectCountry": "選擇國家",
+    "selectLanguage": "選擇語言",
+    "allLanguages": "所有語言",
+    "selectGender": "選擇性別",
+    "searchPlaceholder": "按名稱搜尋語音...",
+    "search": "搜尋...",
+    "gender": "性別",
+    "all": "全部",
+    "male": "男",
+    "female": "女",
+    "neutral": "中性",
+    "proBasic": "專業版/基礎版",
+    "usedOnly": "已使用",
+    "noUsedVoices": "暫無使用記錄",
+    "noVoicesFound": "未找到語音",
+    "loadMoreVoices": "載入更多語音",
+    "searchLanguages": "搜尋語言..."
+  },
+  "voices": {
+    "tags": {
+      "all": "全部",
+      "myClone": "我的複製",
+      "used": "已使用",
+      "socialMedia": "社交媒體",
+      "celebrities": "名人",
+      "animation": "動畫",
+      "moviesTV": "影視",
+      "games": "遊戲",
+      "festivals": "節日",
+      "narration": "旁白",
+      "new": "最新",
+      "commercial": "商業",
+      "audiobook": "有聲書",
+      "podcast": "播客",
+      "education": "教育"
+    }
+  }
+}

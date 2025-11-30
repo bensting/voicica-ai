@@ -1,0 +1,25 @@
+{
+  "generationHistory": {
+    "title": "ประวัติการสร้าง",
+    "subtitle": "ดูและจัดการการสร้างเสียงของคุณ",
+    "generatedSpeech": "เสียงที่สร้างขึ้น",
+    "clearAll": "ล้างทั้งหมด",
+    "noGenerations": "ยังไม่มีการสร้าง",
+    "noGenerationsDescription": "การสร้างเสียงของคุณจะปรากฏที่นี่เมื่อคุณเริ่มสร้าง",
+    "allRecordsLoaded": "โหลดข้อมูลทั้งหมดแล้ว",
+    "total": "ทั้งหมด",
+    "filters": {
+      "status": "สถานะ",
+      "dateRange": "วันที่",
+      "allStatus": "ทุกสถานะ",
+      "success": "สำเร็จ",
+      "processing": "กำลังดำเนินการ",
+      "pending": "รอดำเนินการ",
+      "failed": "ล้มเหลว",
+      "from": "จาก",
+      "to": "ถึง",
+      "apply": "ใช้งาน",
+      "clear": "ล้าง"
+    }
+  }
+}

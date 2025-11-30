@@ -74,6 +74,8 @@
     "products": {
       "title": "明星產品",
       "tts": "AI 文字轉語音",
+      "tiktokDownloader": "TikTok 下載器",
+      "youtubeDownloader": "YouTube 下載器",
       "songCover": "AI 歌曲翻唱產生器",
       "musicGenerator": "AI 音樂產生器",
       "voiceCloning": "AI 語音複製",

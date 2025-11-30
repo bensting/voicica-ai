@@ -134,7 +134,7 @@ export default function NavDropdown({ dropdown, mobile = false, onLinkClick }: N
                       </div>
                     )}
                     <div>
-                      <div className="font-medium">{t(item.labelKey)}</div>
+                      <div className="font-semibold">{t(item.labelKey)}</div>
                       {item.descriptionKey && (
                         <div className="text-sm text-gray-500">{t(item.descriptionKey)}</div>
                       )}

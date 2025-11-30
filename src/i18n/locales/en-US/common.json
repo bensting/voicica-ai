@@ -74,6 +74,8 @@
     "products": {
       "title": "Star Products",
       "tts": "AI Text to Speech",
+      "tiktokDownloader": "TikTok Downloader",
+      "youtubeDownloader": "YouTube Downloader",
       "songCover": "AI Song Cover Generator",
       "musicGenerator": "AI Music Generator",
       "voiceCloning": "AI Voice Cloning",

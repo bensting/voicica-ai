@@ -24,6 +24,10 @@ export const INFO_LINKS: FooterLink[] = [
     labelKey: 'footer.info.privacy',
     href: '/privacy',
   },
+  {
+    labelKey: 'footer.info.refund',
+    href: '/refund',
+  },
 ];
 
 // About Section Links
@@ -51,6 +55,14 @@ export const PRODUCTS_LINKS: FooterLink[] = [
   {
     labelKey: 'footer.products.tts',
     href: '/studio/tts',
+  },
+  {
+    labelKey: 'footer.products.tiktokDownloader',
+    href: '/studio/tools/tiktok-downloader',
+  },
+  {
+    labelKey: 'footer.products.youtubeDownloader',
+    href: '/studio/tools/youtube-downloader',
   },
   // {
   //   labelKey: 'footer.products.songCover',

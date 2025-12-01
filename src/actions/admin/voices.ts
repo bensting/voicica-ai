@@ -632,6 +632,8 @@ export async function getAdminVoiceList(params: {
   gender?: string;
   isActive?: boolean | null;
   search?: string;
+  styleCountMin?: number;
+  styleCountMax?: number;
 }): Promise<{
   voices: Array<{
     id: number;
@@ -654,7 +656,7 @@ export async function getAdminVoiceList(params: {
 }> {
   await verifyAdminWithoutDb();
 
-  const { page = 1, pageSize = 20, locale, gender, isActive, search } = params;
+  const { page = 1, pageSize = 20, locale, gender, isActive, search, styleCountMin, styleCountMax } = params;
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const where: any = {};
@@ -669,6 +671,56 @@ export async function getAdminVoiceList(params: {
     ];
   }
 
+  // 如果有风格数量筛选，需要在内存中过滤
+  const needsStyleFilter = styleCountMin !== undefined || styleCountMax !== undefined;
+
+  if (needsStyleFilter) {
+    // 获取所有符合基础条件的语音
+    const allVoices = await prisma.voices.findMany({
+      where,
+      orderBy: [{ locale: 'asc' }, { name: 'asc' }],
+      select: {
+        id: true,
+        name: true,
+        display_name: true,
+        locale: true,
+        country: true,
+        gender: true,
+        role: true,
+        is_active: true,
+        avatar_url: true,
+        style_list: true,
+        voice_sample_url: true,
+        created_at: true,
+      },
+    });
+
+    // 在内存中按风格数量过滤
+    const filteredVoices = allVoices.filter((v) => {
+      const styleCount = ((v.style_list as string[]) || []).length;
+      if (styleCountMin !== undefined && styleCount < styleCountMin) return false;
+      if (styleCountMax !== undefined && styleCount > styleCountMax) return false;
+      return true;
+    });
+
+    const total = filteredVoices.length;
+    const paginatedVoices = filteredVoices.slice((page - 1) * pageSize, page * pageSize);
+
+    return {
+      voices: paginatedVoices.map((v) => ({
+        ...v,
+        display_name: v.display_name || v.name,
+        style_list: (v.style_list as string[]) || [],
+        voice_sample_url: (v.voice_sample_url as Record<string, string>) || {},
+      })),
+      total,
+      page,
+      pageSize,
+      totalPages: Math.ceil(total / pageSize),
+    };
+  }
+
+  // 无风格数量筛选，使用数据库分页
   const [voices, total] = await Promise.all([
     prisma.voices.findMany({
       where,

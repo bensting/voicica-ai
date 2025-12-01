@@ -59,6 +59,7 @@ export default function VoicesManagementPage() {
   const [genderFilter, setGenderFilter] = useState('');
   const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'inactive'>('all');
   const [searchQuery, setSearchQuery] = useState('');
+  const [styleCountFilter, setStyleCountFilter] = useState('');
 
   // 批量选择
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
@@ -67,6 +68,18 @@ export default function VoicesManagementPage() {
   const [editingVoice, setEditingVoice] = useState<EditingVoice | null>(null);
   const [editLoading, setEditLoading] = useState(false);
   const [saving, setSaving] = useState(false);
+
+  // 解析风格数量筛选
+  const getStyleCountParams = () => {
+    if (!styleCountFilter) return {};
+    switch (styleCountFilter) {
+      case '1': return { styleCountMin: 1, styleCountMax: 1 };
+      case '2-5': return { styleCountMin: 2, styleCountMax: 5 };
+      case '6-10': return { styleCountMin: 6, styleCountMax: 10 };
+      case '10+': return { styleCountMin: 11 };
+      default: return {};
+    }
+  };
 
   // 加载语音列表
   const loadVoices = useCallback(async () => {
@@ -79,6 +92,7 @@ export default function VoicesManagementPage() {
         gender: genderFilter || undefined,
         isActive: statusFilter === 'all' ? undefined : statusFilter === 'active',
         search: searchQuery || undefined,
+        ...getStyleCountParams(),
       });
       setVoices(result.voices);
       setTotal(result.total);
@@ -88,7 +102,8 @@ export default function VoicesManagementPage() {
     } finally {
       setLoading(false);
     }
-  }, [page, localeFilter, genderFilter, statusFilter, searchQuery]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [page, localeFilter, genderFilter, statusFilter, searchQuery, styleCountFilter]);
 
   // 加载 locale 列表
   const loadLocales = useCallback(async () => {
@@ -153,6 +168,7 @@ export default function VoicesManagementPage() {
     setGenderFilter('');
     setStatusFilter('all');
     setSearchQuery('');
+    setStyleCountFilter('');
     setPage(1);
   };
 
@@ -307,6 +323,22 @@ export default function VoicesManagementPage() {
             <option value="all">所有状态</option>
             <option value="active">已启用</option>
             <option value="inactive">已禁用</option>
+          </select>
+
+          {/* 风格数量筛选 */}
+          <select
+            value={styleCountFilter}
+            onChange={(e) => {
+              setStyleCountFilter(e.target.value);
+              setPage(1);
+            }}
+            className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+          >
+            <option value="">所有风格数量</option>
+            <option value="1">1 个风格</option>
+            <option value="2-5">2-5 个风格</option>
+            <option value="6-10">6-10 个风格</option>
+            <option value="10+">10+ 个风格</option>
           </select>
 
           {/* 重置 */}

@@ -136,7 +136,7 @@ export function LanguageProvider({ children, initialLocale }: LanguageProviderPr
         setIsReady(true);
       }
     };
-    loadMessages();
+    void loadMessages();
   }, [locale]);
 
   const setLocale = useMemo(

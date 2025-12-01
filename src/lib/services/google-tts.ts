@@ -129,8 +129,8 @@ export async function synthesizeSpeech(request: GoogleTtsRequest): Promise<Googl
   // 解析语音名称（可能是 locale:voiceName 格式）
   const parsed = parseVoiceName(rawVoiceName);
   const actualVoiceName = parsed.voiceName;
-  // 优先使用传入的 language，其次使用从名称解析的 locale，最后默认 en-US
-  const languageCode = language || parsed.locale || 'en-US';
+  // 优先使用传入的 language（需转换），其次使用从名称解析的 locale，最后默认 en-US
+  const languageCode = language ? toGoogleLocale(language) : (parsed.locale || 'en-US');
 
   const requestBody: SynthesizeRequest = {
     input: {

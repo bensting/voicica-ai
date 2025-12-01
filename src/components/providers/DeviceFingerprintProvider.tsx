@@ -21,13 +21,13 @@ export default function DeviceFingerprintProvider() {
         const fingerprint = await getDeviceFingerprint();
 
         // 设置 cookie 供 middleware 读取
-        // 使用 SameSite=Strict 和 Secure (production) 确保安全性
+        // 使用 SameSite=Lax（与 firebase-token 一致）确保跨页面导航时 cookie 能被发送
         const isProduction = window.location.protocol === 'https:';
         const cookieOptions = [
           `device-fingerprint=${fingerprint}`,
           'path=/',
           'max-age=31536000', // 1 year
-          'SameSite=Strict',
+          'SameSite=Lax',
           isProduction ? 'Secure' : '',
         ]
           .filter(Boolean)

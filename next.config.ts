@@ -49,6 +49,11 @@ const nextConfig: NextConfig = {
         hostname: 'pub-dc353f0aede3432493780267c47faff7.r2.dev',
         pathname: '/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'pub-f697d01a99f445de9534dbc9eef1ae37.r2.dev',
+        pathname: '/**',
+      },
     ],
     // 允许 SVG 图片（用于 DiceBear 头像）
     dangerouslyAllowSVG: true,

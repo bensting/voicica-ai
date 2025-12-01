@@ -577,6 +577,108 @@ export async function generateAllVoiceSamples(): Promise<SyncResult> {
 }
 
 /**
+ * 为单个语音生成样本音频（重新生成所有风格）
+ * @param voiceId 语音 ID
+ */
+export async function generateVoiceSampleForVoice(voiceId: number): Promise<SyncResult> {
+  await verifyAdminWithoutDb();
+
+  try {
+    // 获取语音信息
+    const voice = await prisma.voices.findUnique({
+      where: { id: voiceId },
+      select: {
+        id: true,
+        name: true,
+        locale: true,
+        style_list: true,
+      },
+    });
+
+    if (!voice) {
+      return {
+        success: false,
+        message: '语音不存在',
+      };
+    }
+
+    const sampleText = getSampleText(voice.locale);
+    if (!sampleText) {
+      return {
+        success: false,
+        message: `没有配置 ${voice.locale} 的示例文本`,
+      };
+    }
+
+    const styleList = (voice.style_list as string[]) || ['default'];
+    console.log(`🎤 开始为 ${voice.name} 生成 ${styleList.length} 个风格的语音样本...`);
+
+    let generatedCount = 0;
+    let failedCount = 0;
+    const newSamples: Record<string, string> = {};
+
+    for (const style of styleList) {
+      try {
+        console.log(`  🎤 生成 ${voice.name} - ${style}...`);
+
+        // 调用 Azure TTS 生成音频
+        const ttsResult = await synthesizeSpeech({
+          text: sampleText,
+          voiceName: voice.name,
+          language: voice.locale,
+          style: style === 'default' ? undefined : style,
+        });
+
+        // 上传到 R2
+        const fileName = style === 'default'
+          ? `${voice.name}.mp3`
+          : `${voice.name}_${style}.mp3`;
+        const audioUrl = await uploadAudio(
+          ttsResult.audioData,
+          fileName,
+          'audio/mpeg',
+          'voice-samples'
+        );
+
+        newSamples[style] = audioUrl;
+        generatedCount++;
+        console.log(`  ✅ ${voice.name} - ${style} 生成成功`);
+      } catch (error) {
+        failedCount++;
+        console.error(`  ❌ ${voice.name} - ${style} 生成失败:`, error);
+      }
+    }
+
+    // 更新数据库
+    if (generatedCount > 0) {
+      await prisma.voices.update({
+        where: { id: voice.id },
+        data: {
+          voice_sample_url: newSamples,
+          voice_sample_text: sampleText,
+        },
+      });
+    }
+
+    console.log(`✅ ${voice.name} 语音样本生成完成: 成功 ${generatedCount}, 失败 ${failedCount}`);
+
+    return {
+      success: failedCount === 0,
+      message: failedCount === 0
+        ? `生成完成: ${generatedCount} 个样本`
+        : `部分失败: 成功 ${generatedCount}, 失败 ${failedCount}`,
+      updated: generatedCount,
+    };
+  } catch (error) {
+    console.error(`❌ 生成语音样本失败:`, error);
+    return {
+      success: false,
+      message: error instanceof Error ? error.message : '生成失败',
+    };
+  }
+}
+
+/**
  * 清空指定 locale 的语音样本
  */
 export async function clearVoiceSamples(locale: string): Promise<SyncResult> {
@@ -622,6 +724,309 @@ export async function clearVoiceSamples(locale: string): Promise<SyncResult> {
  *
  * 不更新的字段：is_active、avatar_url、voice_sample_url、voice_sample_text
  */
+/**
+ * 获取语音列表（管理员用，支持查看所有语音）
+ */
+export async function getAdminVoiceList(params: {
+  page?: number;
+  pageSize?: number;
+  locale?: string;
+  gender?: string;
+  isActive?: boolean | null;
+  search?: string;
+  styleCountMin?: number;
+  styleCountMax?: number;
+}): Promise<{
+  voices: Array<{
+    id: number;
+    name: string;
+    display_name: string;
+    locale: string;
+    country: string;
+    gender: string;
+    role: string;
+    is_active: boolean;
+    avatar_url: string;
+    style_list: string[];
+    voice_sample_url: Record<string, string>;
+    created_at: Date | null;
+  }>;
+  total: number;
+  page: number;
+  pageSize: number;
+  totalPages: number;
+}> {
+  await verifyAdminWithoutDb();
+
+  const { page = 1, pageSize = 20, locale, gender, isActive, search, styleCountMin, styleCountMax } = params;
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const where: any = {};
+
+  if (locale) where.locale = locale;
+  if (gender) where.gender = gender;
+  if (isActive !== null && isActive !== undefined) where.is_active = isActive;
+  if (search) {
+    where.OR = [
+      { name: { contains: search, mode: 'insensitive' } },
+      { display_name: { contains: search, mode: 'insensitive' } },
+    ];
+  }
+
+  // 如果有风格数量筛选，需要在内存中过滤
+  const needsStyleFilter = styleCountMin !== undefined || styleCountMax !== undefined;
+
+  if (needsStyleFilter) {
+    // 获取所有符合基础条件的语音
+    const allVoices = await prisma.voices.findMany({
+      where,
+      orderBy: [{ locale: 'asc' }, { name: 'asc' }],
+      select: {
+        id: true,
+        name: true,
+        display_name: true,
+        locale: true,
+        country: true,
+        gender: true,
+        role: true,
+        is_active: true,
+        avatar_url: true,
+        style_list: true,
+        voice_sample_url: true,
+        created_at: true,
+      },
+    });
+
+    // 在内存中按风格数量过滤
+    const filteredVoices = allVoices.filter((v) => {
+      const styleCount = ((v.style_list as string[]) || []).length;
+      if (styleCountMin !== undefined && styleCount < styleCountMin) return false;
+      if (styleCountMax !== undefined && styleCount > styleCountMax) return false;
+      return true;
+    });
+
+    const total = filteredVoices.length;
+    const paginatedVoices = filteredVoices.slice((page - 1) * pageSize, page * pageSize);
+
+    return {
+      voices: paginatedVoices.map((v) => ({
+        ...v,
+        display_name: v.display_name || v.name,
+        style_list: (v.style_list as string[]) || [],
+        voice_sample_url: (v.voice_sample_url as Record<string, string>) || {},
+      })),
+      total,
+      page,
+      pageSize,
+      totalPages: Math.ceil(total / pageSize),
+    };
+  }
+
+  // 无风格数量筛选，使用数据库分页
+  const [voices, total] = await Promise.all([
+    prisma.voices.findMany({
+      where,
+      orderBy: [{ locale: 'asc' }, { name: 'asc' }],
+      skip: (page - 1) * pageSize,
+      take: pageSize,
+      select: {
+        id: true,
+        name: true,
+        display_name: true,
+        locale: true,
+        country: true,
+        gender: true,
+        role: true,
+        is_active: true,
+        avatar_url: true,
+        style_list: true,
+        voice_sample_url: true,
+        created_at: true,
+      },
+    }),
+    prisma.voices.count({ where }),
+  ]);
+
+  return {
+    voices: voices.map((v) => ({
+      ...v,
+      display_name: v.display_name || v.name,
+      style_list: (v.style_list as string[]) || [],
+      voice_sample_url: (v.voice_sample_url as Record<string, string>) || {},
+    })),
+    total,
+    page,
+    pageSize,
+    totalPages: Math.ceil(total / pageSize),
+  };
+}
+
+/**
+ * 更新语音状态（启用/禁用）
+ */
+export async function updateVoiceStatus(
+  voiceId: number,
+  isActive: boolean
+): Promise<{ success: boolean; message: string }> {
+  await verifyAdminWithoutDb();
+
+  try {
+    await prisma.voices.update({
+      where: { id: voiceId },
+      data: { is_active: isActive },
+    });
+
+    return {
+      success: true,
+      message: isActive ? '已启用' : '已禁用',
+    };
+  } catch (error) {
+    console.error('更新语音状态失败:', error);
+    return {
+      success: false,
+      message: error instanceof Error ? error.message : '更新失败',
+    };
+  }
+}
+
+/**
+ * 批量更新语音状态
+ */
+export async function batchUpdateVoiceStatus(
+  voiceIds: number[],
+  isActive: boolean
+): Promise<{ success: boolean; message: string; updated: number }> {
+  await verifyAdminWithoutDb();
+
+  try {
+    const result = await prisma.voices.updateMany({
+      where: { id: { in: voiceIds } },
+      data: { is_active: isActive },
+    });
+
+    return {
+      success: true,
+      message: `已${isActive ? '启用' : '禁用'} ${result.count} 个语音`,
+      updated: result.count,
+    };
+  } catch (error) {
+    console.error('批量更新语音状态失败:', error);
+    return {
+      success: false,
+      message: error instanceof Error ? error.message : '更新失败',
+      updated: 0,
+    };
+  }
+}
+
+/**
+ * 获取所有 locale 列表（用于筛选）
+ */
+export async function getAdminVoiceLocales(): Promise<Array<{ code: string; name: string }>> {
+  await verifyAdminWithoutDb();
+
+  const locales = await prisma.voices.findMany({
+    select: { locale: true },
+    distinct: ['locale'],
+    orderBy: { locale: 'asc' },
+  });
+
+  // 动态导入 localeMapper
+  const { getLocaleInfo } = await import('@/utils/localeMapper');
+
+  return locales.map((l) => {
+    const info = getLocaleInfo(l.locale);
+    return {
+      code: l.locale,
+      name: info?.name || l.locale,
+    };
+  });
+}
+
+/**
+ * 获取单个语音详情
+ */
+export async function getAdminVoiceById(voiceId: number): Promise<{
+  id: number;
+  name: string;
+  display_name: string;
+  locale: string;
+  country: string;
+  gender: string;
+  role: string;
+  is_active: boolean;
+  avatar_url: string;
+  style_list: string[];
+  tags: string[];
+  sort_order: number;
+} | null> {
+  await verifyAdminWithoutDb();
+
+  const voice = await prisma.voices.findUnique({
+    where: { id: voiceId },
+  });
+
+  if (!voice) return null;
+
+  return {
+    id: voice.id,
+    name: voice.name,
+    display_name: voice.display_name || voice.name,
+    locale: voice.locale,
+    country: voice.country,
+    gender: voice.gender,
+    role: voice.role,
+    is_active: voice.is_active,
+    avatar_url: voice.avatar_url,
+    style_list: (voice.style_list as string[]) || [],
+    tags: (voice.tags as string[]) || [],
+    sort_order: voice.sort_order,
+  };
+}
+
+/**
+ * 更新语音信息
+ */
+export async function updateVoice(
+  voiceId: number,
+  data: {
+    display_name?: string;
+    role?: string;
+    is_active?: boolean;
+    style_list?: string[];
+    tags?: string[];
+    sort_order?: number;
+  }
+): Promise<{ success: boolean; message: string }> {
+  await verifyAdminWithoutDb();
+
+  try {
+    await prisma.voices.update({
+      where: { id: voiceId },
+      data: {
+        ...(data.display_name !== undefined && { display_name: data.display_name }),
+        ...(data.role !== undefined && { role: data.role }),
+        ...(data.is_active !== undefined && { is_active: data.is_active }),
+        ...(data.style_list !== undefined && { style_list: data.style_list }),
+        ...(data.tags !== undefined && { tags: data.tags }),
+        ...(data.sort_order !== undefined && { sort_order: data.sort_order }),
+        updated_at: new Date(),
+      },
+    });
+
+    return {
+      success: true,
+      message: '更新成功',
+    };
+  } catch (error) {
+    console.error('更新语音失败:', error);
+    return {
+      success: false,
+      message: error instanceof Error ? error.message : '更新失败',
+    };
+  }
+}
+
 export async function updateAllVoices(): Promise<SyncResult> {
   await verifyAdminWithoutDb();
 

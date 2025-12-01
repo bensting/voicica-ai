@@ -10,6 +10,7 @@ import { ADMIN_EMAILS } from '@/config/admin';
 const NAV_ITEMS = [
   { href: '/admin/database', label: '数据库管理' },
   { href: '/admin/voices', label: '语音管理' },
+  { href: '/admin/voices/sync', label: 'Azure 同步' },
 ];
 
 interface AdminLayoutProps {

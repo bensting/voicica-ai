@@ -2,12 +2,13 @@
 
 /**
  * 语音管理 Server Actions
- * 从 Azure TTS API 获取语音列表，同步到数据库
+ * 从 Azure/Google TTS API 获取语音列表，同步到数据库
  */
 import prisma from '@/lib/prisma';
 import { Prisma } from '@prisma/client';
 import { getLocaleInfo } from '@/utils/localeMapper';
-import { synthesizeSpeech } from '@/lib/services/azure-tts';
+import { synthesizeSpeech as azureSynthesize } from '@/lib/services/azure-tts';
+import { synthesizeSpeech as googleSynthesize } from '@/lib/services/google-tts';
 import { uploadAudio } from '@/lib/services/r2-storage';
 import { getSampleText } from '@/config/voiceSampleTexts';
 import { verifyAdminWithoutDb } from '@/lib/auth-admin';
@@ -429,13 +430,14 @@ export async function regenerateAllAvatars(): Promise<SyncResult> {
 /**
  * 核心函数：为语音生成样本音频
  * 遍历每个语音的 style_list，为缺失样本的 style 生成音频
+ * 支持 Azure 和 Google TTS
  * @param locale 可选，指定 locale 则只处理该 locale 的语音
  */
 async function generateVoiceSamplesCore(locale?: string): Promise<SyncResult> {
   const label = locale || '全部';
   console.log(`🎤 开始生成 ${label} 的语音样本（支持多风格）...`);
 
-  // 获取活跃语音，包含 style_list 和 voice_sample_url
+  // 获取活跃语音，包含 style_list、voice_sample_url 和 provider
   const voices = await prisma.voices.findMany({
     where: {
       is_active: true,
@@ -445,6 +447,7 @@ async function generateVoiceSamplesCore(locale?: string): Promise<SyncResult> {
       id: true,
       name: true,
       locale: true,
+      provider: true,
       style_list: true,
       voice_sample_url: true,
     },
@@ -473,6 +476,7 @@ async function generateVoiceSamplesCore(locale?: string): Promise<SyncResult> {
 
     const styleList = (voice.style_list as string[]) || ['default'];
     const existingSamples = (voice.voice_sample_url as Record<string, string> | null) || {};
+    const provider = voice.provider || 'microsoft';
 
     // 找出缺失样本的 styles
     const missingStyles = styleList.filter(style => !existingSamples[style]);
@@ -482,7 +486,7 @@ async function generateVoiceSamplesCore(locale?: string): Promise<SyncResult> {
       continue;
     }
 
-    console.log(`🎙️ ${voice.name}: 需要生成 ${missingStyles.length} 个风格样本 [${missingStyles.join(', ')}]`);
+    console.log(`🎙️ ${voice.name} (${provider}): 需要生成 ${missingStyles.length} 个风格样本 [${missingStyles.join(', ')}]`);
 
     // 为每个缺失的 style 生成样本
     const newSamples: Record<string, string> = { ...existingSamples };
@@ -491,13 +495,24 @@ async function generateVoiceSamplesCore(locale?: string): Promise<SyncResult> {
       try {
         console.log(`  🎤 生成 ${voice.name} - ${style}...`);
 
-        // 调用 Azure TTS 生成音频（传入 style）
-        const ttsResult = await synthesizeSpeech({
-          text: sampleText,
-          voiceName: voice.name,
-          language: voice.locale,
-          style: style === 'default' ? undefined : style,
-        });
+        let ttsResult: { audioData: Buffer; duration: number; format: string };
+
+        if (provider === 'google') {
+          // Google TTS（不支持 style）
+          ttsResult = await googleSynthesize({
+            text: sampleText,
+            voiceName: voice.name,
+            language: voice.locale,
+          });
+        } else {
+          // Azure TTS（支持 style）
+          ttsResult = await azureSynthesize({
+            text: sampleText,
+            voiceName: voice.name,
+            language: voice.locale,
+            style: style === 'default' ? undefined : style,
+          });
+        }
 
         // 上传到 R2，文件名包含 style
         const fileName = style === 'default'
@@ -578,6 +593,7 @@ export async function generateAllVoiceSamples(): Promise<SyncResult> {
 
 /**
  * 为单个语音生成样本音频（重新生成所有风格）
+ * 支持 Azure 和 Google TTS
  * @param voiceId 语音 ID
  */
 export async function generateVoiceSampleForVoice(voiceId: number): Promise<SyncResult> {
@@ -591,6 +607,7 @@ export async function generateVoiceSampleForVoice(voiceId: number): Promise<Sync
         id: true,
         name: true,
         locale: true,
+        provider: true,
         style_list: true,
       },
     });
@@ -611,7 +628,8 @@ export async function generateVoiceSampleForVoice(voiceId: number): Promise<Sync
     }
 
     const styleList = (voice.style_list as string[]) || ['default'];
-    console.log(`🎤 开始为 ${voice.name} 生成 ${styleList.length} 个风格的语音样本...`);
+    const provider = voice.provider || 'microsoft';
+    console.log(`🎤 开始为 ${voice.name} (${provider}) 生成 ${styleList.length} 个风格的语音样本...`);
 
     let generatedCount = 0;
     let failedCount = 0;
@@ -621,13 +639,24 @@ export async function generateVoiceSampleForVoice(voiceId: number): Promise<Sync
       try {
         console.log(`  🎤 生成 ${voice.name} - ${style}...`);
 
-        // 调用 Azure TTS 生成音频
-        const ttsResult = await synthesizeSpeech({
-          text: sampleText,
-          voiceName: voice.name,
-          language: voice.locale,
-          style: style === 'default' ? undefined : style,
-        });
+        let ttsResult: { audioData: Buffer; duration: number; format: string };
+
+        if (provider === 'google') {
+          // Google TTS（不支持 style）
+          ttsResult = await googleSynthesize({
+            text: sampleText,
+            voiceName: voice.name,
+            language: voice.locale,
+          });
+        } else {
+          // Azure TTS（支持 style）
+          ttsResult = await azureSynthesize({
+            text: sampleText,
+            voiceName: voice.name,
+            language: voice.locale,
+            style: style === 'default' ? undefined : style,
+          });
+        }
 
         // 上传到 R2
         const fileName = style === 'default'
@@ -732,6 +761,7 @@ export async function getAdminVoiceList(params: {
   pageSize?: number;
   locale?: string;
   gender?: string;
+  provider?: string;
   isActive?: boolean | null;
   search?: string;
   styleCountMin?: number;
@@ -741,6 +771,7 @@ export async function getAdminVoiceList(params: {
     id: number;
     name: string;
     display_name: string;
+    provider: string;
     locale: string;
     country: string;
     gender: string;
@@ -758,13 +789,14 @@ export async function getAdminVoiceList(params: {
 }> {
   await verifyAdminWithoutDb();
 
-  const { page = 1, pageSize = 20, locale, gender, isActive, search, styleCountMin, styleCountMax } = params;
+  const { page = 1, pageSize = 20, locale, gender, provider, isActive, search, styleCountMin, styleCountMax } = params;
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const where: any = {};
 
   if (locale) where.locale = locale;
   if (gender) where.gender = gender;
+  if (provider) where.provider = provider;
   if (isActive !== null && isActive !== undefined) where.is_active = isActive;
   if (search) {
     where.OR = [
@@ -785,6 +817,7 @@ export async function getAdminVoiceList(params: {
         id: true,
         name: true,
         display_name: true,
+        provider: true,
         locale: true,
         country: true,
         gender: true,
@@ -833,6 +866,7 @@ export async function getAdminVoiceList(params: {
         id: true,
         name: true,
         display_name: true,
+        provider: true,
         locale: true,
         country: true,
         gender: true,

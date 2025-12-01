@@ -10,6 +10,7 @@ import {
   batchUpdateVoiceStatus,
   getAdminVoiceById,
   updateVoice,
+  generateVoiceSampleForVoice,
 } from '@/actions/admin/voices';
 
 interface Voice {
@@ -48,7 +49,7 @@ interface EditingVoice {
 export default function VoicesManagementPage() {
   // 状态
   const [voices, setVoices] = useState<Voice[]>([]);
-  const [locales, setLocales] = useState<string[]>([]);
+  const [locales, setLocales] = useState<Array<{ code: string; name: string }>>([]);
   const [loading, setLoading] = useState(true);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
@@ -68,6 +69,9 @@ export default function VoicesManagementPage() {
   const [editingVoice, setEditingVoice] = useState<EditingVoice | null>(null);
   const [editLoading, setEditLoading] = useState(false);
   const [saving, setSaving] = useState(false);
+
+  // 生成样本
+  const [generatingVoiceId, setGeneratingVoiceId] = useState<number | null>(null);
 
   // 解析风格数量筛选
   const getStyleCountParams = () => {
@@ -247,6 +251,29 @@ export default function VoicesManagementPage() {
     );
   };
 
+  // 生成语音样本
+  const handleGenerateSamples = async (voiceId: number, styleCount: number) => {
+    if (!confirm(`确定要为此语音生成 ${styleCount} 个风格的样本吗？这会覆盖现有样本。`)) {
+      return;
+    }
+
+    setGeneratingVoiceId(voiceId);
+    try {
+      const result = await generateVoiceSampleForVoice(voiceId);
+      if (result.success) {
+        alert(result.message);
+        loadVoices(); // 刷新列表
+      } else {
+        alert(`生成失败: ${result.message}`);
+      }
+    } catch (error) {
+      console.error('生成样本失败:', error);
+      alert('生成样本失败');
+    } finally {
+      setGeneratingVoiceId(null);
+    }
+  };
+
   return (
     <div>
       {/* 页面标题 */}
@@ -291,8 +318,8 @@ export default function VoicesManagementPage() {
           >
             <option value="">所有语言</option>
             {locales.map((locale) => (
-              <option key={locale} value={locale}>
-                {locale}
+              <option key={locale.code} value={locale.code}>
+                {locale.code} - {locale.name}
               </option>
             ))}
           </select>
@@ -556,6 +583,13 @@ export default function VoicesManagementPage() {
                           className="text-sm text-blue-600 hover:text-blue-700"
                         >
                           编辑
+                        </button>
+                        <button
+                          onClick={() => handleGenerateSamples(voice.id, voice.style_list.length)}
+                          disabled={generatingVoiceId === voice.id}
+                          className="text-sm text-teal-600 hover:text-teal-700 disabled:opacity-50"
+                        >
+                          {generatingVoiceId === voice.id ? '生成中...' : '生成样本'}
                         </button>
                         <button
                           onClick={() => handleToggleStatus(voice.id, voice.is_active)}

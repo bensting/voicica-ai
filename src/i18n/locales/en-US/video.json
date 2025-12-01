@@ -1,0 +1,18 @@
+{
+  "textToVideo": "Text to Video",
+  "promptPlaceholder": "Describe the video you want to create. Be specific about actions, scenes, style, and mood...",
+  "promptLabel": "Video Description",
+  "resolution": "Resolution",
+  "duration": "Duration",
+  "aspectRatio": "Aspect Ratio",
+  "creditsCost": "Credits Cost",
+  "model": "Model",
+  "veo31Description": "Google's most advanced video generation model with superior quality and motion",
+  "latest": "Latest",
+  "generate": "Generate Video",
+  "generating": "Generating...",
+  "generatingVideo": "Generating your video...",
+  "preview": "Preview",
+  "previewPlaceholder": "Your generated video will appear here",
+  "browserNotSupported": "Your browser does not support the video tag."
+}

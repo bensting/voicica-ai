@@ -20,6 +20,7 @@ export type { StudioMenuItemConfig, StudioMenuCategories, MenuCategory };
  */
 export const studioMenuCategories: StudioMenuCategories = {
   main: studioMenuItems.filter(item => !item.category && (item.enabled !== false)),
+  ai_video: studioMenuItems.filter(item => item.category === 'ai_video' && (item.enabled !== false)),
   video: studioMenuItems.filter(item => item.category === 'video' && (item.enabled !== false)),
   voiceover: studioMenuItems.filter(item => item.category === 'voiceover' && (item.enabled !== false)),
   music: studioMenuItems.filter(item => item.category === 'music' && (item.enabled !== false)),

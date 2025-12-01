@@ -81,9 +81,10 @@ export async function listVoices(filters: VoiceFilters = {}): Promise<VoiceListR
   const total = await prisma.voices.count({ where });
 
   // 分页查询
+  // provider 排序：microsoft 在前，google 在后（按字母顺序 asc: google < microsoft）
   const voices = await prisma.voices.findMany({
     where,
-    orderBy: [{ sort_order: 'asc' }, { created_at: 'desc' }],
+    orderBy: [{ provider: 'desc' }, { sort_order: 'asc' }, { created_at: 'desc' }],
     skip: (page - 1) * page_size,
     take: page_size,
   });
@@ -176,7 +177,7 @@ export async function searchVoicesByTags(
       is_active: true,
       OR: tags.map(tag => ({ tags: { array_contains: tag } })),
     },
-    orderBy: [{ sort_order: 'asc' }, { created_at: 'desc' }],
+    orderBy: [{ provider: 'desc' }, { sort_order: 'asc' }, { created_at: 'desc' }],
     take: limit,
   });
 

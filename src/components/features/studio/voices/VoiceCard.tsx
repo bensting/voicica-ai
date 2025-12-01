@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import { Play, Pause, ArrowRight, User, UserRound } from 'lucide-react';
-import { SiGoogle } from 'react-icons/si';
 import * as FlagIcons from 'country-flag-icons/react/3x2';
 import type { Voice } from '@/types/voice';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { getCountryCode } from '@/utils/localeMapper';
+import ProviderIcon from '@/components/ui/icons/ProviderIcon';
 
 interface VoiceCardProps {
   voice: Voice;
@@ -65,27 +65,6 @@ export default function VoiceCard({
         return <User className="w-3.5 h-3.5 text-gray-500" />;
     }
   };
-
-  // Get provider icon
-  const getProviderIcon = (provider: string) => {
-    switch (provider) {
-      case 'google':
-        return <SiGoogle className="w-3.5 h-3.5 text-[#4285F4]" title="Google" />;
-      case 'microsoft':
-        // Microsoft logo SVG (4 squares)
-        return (
-          <svg className="w-3.5 h-3.5" viewBox="0 0 23 23" fill="none" aria-label="Microsoft">
-            <title>Microsoft</title>
-            <rect x="1" y="1" width="10" height="10" fill="#F25022" />
-            <rect x="12" y="1" width="10" height="10" fill="#7FBA00" />
-            <rect x="1" y="12" width="10" height="10" fill="#00A4EF" />
-            <rect x="12" y="12" width="10" height="10" fill="#FFB900" />
-          </svg>
-        );
-      default:
-        return null;
-    }
-  };
   return (
     <div className="bg-white rounded-lg p-4 border border-gray-200 flex items-center gap-4 hover:shadow-md transition-shadow">
       {/* Avatar + Play button */}
@@ -125,7 +104,7 @@ export default function VoiceCard({
           <div className="flex items-center gap-1.5 text-xs">
             {getFlagIcon(voice.locale)}
             {getGenderIcon(voice.gender)}
-            {getProviderIcon(voice.provider)}
+            <ProviderIcon provider={voice.provider} className="w-3.5 h-3.5" />
           </div>
         </div>
 

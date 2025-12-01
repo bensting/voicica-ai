@@ -6,6 +6,7 @@ import * as FlagIcons from 'country-flag-icons/react/3x2';
 import type { Voice } from '@/types/voice';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { getCountryCode } from '@/utils/localeMapper';
+import ProviderIcon from '@/components/ui/icons/ProviderIcon';
 
 interface VoiceSelectButtonProps {
   voice: Voice | null;
@@ -147,6 +148,7 @@ export default function VoiceSelectButton({
             <div className={`flex items-center gap-1.5 ${config.details}`}>
               {getFlagIcon(voice.locale)}
               {getGenderIcon(voice.gender)}
+              <ProviderIcon provider={voice.provider} className={config.flag} />
             </div>
           )}
         </div>

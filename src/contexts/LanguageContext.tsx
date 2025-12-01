@@ -8,62 +8,65 @@ interface LanguageContextType {
   locale: Locale;
   setLocale: (locale: Locale) => void;
   t: (key: string, params?: Record<string, unknown>) => string;
-  isReady: boolean; // 添加就绪状态
+  isReady: boolean;
 }
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
 type MessageValue = string | Record<string, unknown>;
 
-// 默认语言（SSR 和初始客户端渲染必须一致）
+// 支持的语言列表
+const SUPPORTED_LOCALES: Locale[] = ['en-US', 'zh-CN', 'zh-TW', 'th-TH'];
 const DEFAULT_LOCALE: Locale = 'en-US';
 
-// 检测浏览器语言
-const detectBrowserLanguage = (): Locale => {
-  if (typeof window === 'undefined') return DEFAULT_LOCALE;
+/**
+ * 从 cookie 读取语言设置
+ * 可在客户端调用，读取 middleware 设置的 locale cookie
+ */
+function getLocaleFromCookie(): Locale {
+  if (typeof document === 'undefined') return DEFAULT_LOCALE;
 
-  const browserLang = navigator.language.toLowerCase();
+  const match = document.cookie.match(/(?:^|; )locale=([^;]*)/);
+  const locale = match?.[1] as Locale | undefined;
 
-  // 匹配浏览器语言到支持的语言
-  if (browserLang.startsWith('zh')) {
-    if (browserLang.includes('tw') || browserLang.includes('hk') || browserLang.includes('hant')) {
-      return 'zh-TW';
-    }
-    return 'zh-CN';
-  }
-
-  if (browserLang.startsWith('th')) {
-    return 'th-TH';
+  if (locale && SUPPORTED_LOCALES.includes(locale)) {
+    return locale;
   }
 
   return DEFAULT_LOCALE;
-};
+}
 
-// 获取用户的实际 locale（仅在客户端调用）
-const getUserLocale = (): Locale => {
-  if (typeof window === 'undefined') return DEFAULT_LOCALE;
+/**
+ * 设置语言 cookie
+ */
+function setLocaleCookie(locale: Locale): void {
+  if (typeof document === 'undefined') return;
 
-  const savedLocale = localStorage.getItem('locale') as Locale;
-  if (savedLocale && ['en-US', 'zh-CN', 'zh-TW', 'th-TH'].includes(savedLocale)) {
-    return savedLocale;
-  }
+  // 设置 1 年有效期的 cookie
+  const maxAge = 60 * 60 * 24 * 365;
+  document.cookie = `locale=${locale}; path=/; max-age=${maxAge}; samesite=lax`;
+}
 
-  return detectBrowserLanguage();
-};
+interface LanguageProviderProps {
+  children: ReactNode;
+  initialLocale?: Locale; // 从服务端传入的初始语言
+}
 
-export function LanguageProvider({ children }: { children: ReactNode }) {
-  // 初始使用默认语言，确保 SSR 和客户端首次渲染一致
-  const [locale, setLocaleState] = useState<Locale>(DEFAULT_LOCALE);
+export function LanguageProvider({ children, initialLocale }: LanguageProviderProps) {
+  // 使用服务端传入的语言，或默认语言
+  const [locale, setLocaleState] = useState<Locale>(initialLocale || DEFAULT_LOCALE);
   const [messages, setMessages] = useState<Record<string, MessageValue>>({});
   const [isReady, setIsReady] = useState(false);
 
-  // 挂载后检测用户的实际语言偏好
+  // 如果没有传入 initialLocale，挂载后从 cookie 读取（兼容旧用法）
   useEffect(() => {
-    const userLocale = getUserLocale();
-    if (userLocale !== DEFAULT_LOCALE) {
-      setLocaleState(userLocale);
+    if (!initialLocale) {
+      const cookieLocale = getLocaleFromCookie();
+      if (cookieLocale !== locale) {
+        setLocaleState(cookieLocale);
+      }
     }
-  }, []);
+  }, [initialLocale]);
 
   // 加载语言文件（按页面模块拆分）
   useEffect(() => {
@@ -141,7 +144,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   const setLocale = useMemo(
     () => (newLocale: Locale) => {
       setLocaleState(newLocale);
-      localStorage.setItem('locale', newLocale);
+      setLocaleCookie(newLocale); // 保存到 cookie，下次访问 middleware 可读取
     },
     []
   );

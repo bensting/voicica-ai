@@ -8,47 +8,63 @@ interface LanguageContextType {
   locale: Locale;
   setLocale: (locale: Locale) => void;
   t: (key: string, params?: Record<string, unknown>) => string;
-  isReady: boolean; // 添加就绪状态
+  isReady: boolean;
 }
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
 type MessageValue = string | Record<string, unknown>;
 
-// 检测浏览器语言
-const detectBrowserLanguage = (): Locale => {
-  if (typeof window === 'undefined') return 'en-US';
+// 支持的语言列表
+const SUPPORTED_LOCALES: Locale[] = ['en-US', 'zh-CN', 'zh-TW', 'th-TH'];
+const DEFAULT_LOCALE: Locale = 'en-US';
 
-  const browserLang = navigator.language.toLowerCase();
+/**
+ * 从 cookie 读取语言设置
+ * 可在客户端调用，读取 middleware 设置的 locale cookie
+ */
+function getLocaleFromCookie(): Locale {
+  if (typeof document === 'undefined') return DEFAULT_LOCALE;
 
-  // 匹配浏览器语言到支持的语言
-  if (browserLang.startsWith('zh')) {
-    if (browserLang.includes('tw') || browserLang.includes('hk') || browserLang.includes('hant')) {
-      return 'zh-TW';
-    }
-    return 'zh-CN';
+  const match = document.cookie.match(/(?:^|; )locale=([^;]*)/);
+  const locale = match?.[1] as Locale | undefined;
+
+  if (locale && SUPPORTED_LOCALES.includes(locale)) {
+    return locale;
   }
 
-  return 'en-US';
-};
+  return DEFAULT_LOCALE;
+}
 
-// 获取初始 locale（在组件外部，只执行一次）
-const getInitialLocale = (): Locale => {
-  if (typeof window === 'undefined') return 'en-US';
+/**
+ * 设置语言 cookie
+ */
+function setLocaleCookie(locale: Locale): void {
+  if (typeof document === 'undefined') return;
 
-  const savedLocale = localStorage.getItem('locale') as Locale;
-  if (savedLocale && ['en-US', 'zh-CN', 'zh-TW', 'th-TH'].includes(savedLocale)) {
-    return savedLocale;
-  }
+  // 设置 1 年有效期的 cookie
+  const maxAge = 60 * 60 * 24 * 365;
+  document.cookie = `locale=${locale}; path=/; max-age=${maxAge}; samesite=lax`;
+}
 
-  return detectBrowserLanguage();
-};
+interface LanguageProviderProps {
+  children: ReactNode;
+  initialLocale?: Locale; // 从服务端传入的初始语言
+}
 
-export function LanguageProvider({ children }: { children: ReactNode }) {
-  // 使用函数式初始化，避免后续状态变化
-  const [locale, setLocaleState] = useState<Locale>(() => getInitialLocale());
+export function LanguageProvider({ children, initialLocale }: LanguageProviderProps) {
+  // 使用服务端传入的语言，或默认语言
+  const [locale, setLocaleState] = useState<Locale>(initialLocale || DEFAULT_LOCALE);
   const [messages, setMessages] = useState<Record<string, MessageValue>>({});
   const [isReady, setIsReady] = useState(false);
+
+  // 如果没有传入 initialLocale，挂载后从 cookie 读取（兼容旧用法）
+  useEffect(() => {
+    if (!initialLocale) {
+      const cookieLocale = getLocaleFromCookie();
+      setLocaleState(cookieLocale);
+    }
+  }, [initialLocale]);
 
   // 加载语言文件（按页面模块拆分）
   useEffect(() => {
@@ -120,13 +136,13 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
         setIsReady(true);
       }
     };
-    loadMessages();
+    void loadMessages();
   }, [locale]);
 
   const setLocale = useMemo(
     () => (newLocale: Locale) => {
       setLocaleState(newLocale);
-      localStorage.setItem('locale', newLocale);
+      setLocaleCookie(newLocale); // 保存到 cookie，下次访问 middleware 可读取
     },
     []
   );
@@ -148,7 +164,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
       let result = typeof value === 'string' ? value : key;
 
       // 如果提供了参数，进行插值替换
-      if (params && typeof result === 'string') {
+      if (params) {
         Object.keys(params).forEach((paramKey) => {
           const regex = new RegExp(`{{\\s*${paramKey}\\s*}}`, 'g');
           result = result.replace(regex, String(params[paramKey]));

@@ -4,8 +4,12 @@
  * Google TTS 语音同步 Server Actions
  */
 import prisma from '@/lib/prisma';
+import { Prisma } from '@prisma/client';
 import { verifyAdminWithoutDb } from '@/lib/auth-admin';
 import { getLocaleInfo } from '@/utils/localeMapper';
+import { synthesizeSpeech as googleSynthesize } from '@/lib/services/google-tts';
+import { uploadAudio } from '@/lib/services/r2-storage';
+import { getSampleText } from '@/config/voiceSampleTexts';
 
 /**
  * 同步结果
@@ -532,6 +536,144 @@ export async function getGoogleVoicesByLocale(locale: string): Promise<{
   } catch (error) {
     console.error(`获取 ${locale} 语音列表失败:`, error);
     throw error;
+  }
+}
+
+/**
+ * 按 locale 生成语音样例（只为没有样例的语音生成）
+ */
+export async function syncGoogleVoiceSamplesByLocale(locale: string): Promise<SyncResult> {
+  await verifyAdminWithoutDb();
+
+  try {
+    const dbLocale = normalizeLocale(locale);
+
+    // 获取该 locale 没有语音样例的 Google 语音
+    const voices = await prisma.voices.findMany({
+      where: {
+        provider: 'google',
+        locale: dbLocale,
+        OR: [
+          { voice_sample_url: { equals: Prisma.DbNull } },
+          { voice_sample_url: { equals: Prisma.JsonNull } },
+          { voice_sample_url: { equals: {} } },
+        ],
+      },
+      select: { id: true, name: true, locale: true, style_list: true },
+    });
+
+    if (voices.length === 0) {
+      return {
+        success: true,
+        message: `${locale} 的所有语音都已有样例`,
+        updated: 0,
+      };
+    }
+
+    // 获取该 locale 的样例文本
+    const sampleText = getSampleText(dbLocale);
+    let updated = 0;
+    let failed = 0;
+
+    for (const voice of voices) {
+      try {
+        console.log(`🎤 生成 ${voice.name} 语音样例...`);
+
+        // Google TTS 不支持 style，只生成 default
+        const ttsResult = await googleSynthesize({
+          text: sampleText,
+          voiceName: voice.name,
+          language: voice.locale,
+        });
+
+        // 上传到 R2
+        const audioUrl = await uploadAudio(
+          ttsResult.audioData,
+          `voice-samples/google/${voice.name.replace(/:/g, '_')}_default.${ttsResult.format}`
+        );
+
+        // 更新数据库
+        await prisma.voices.update({
+          where: { id: voice.id },
+          data: {
+            voice_sample_url: { default: audioUrl },
+            voice_sample_text: sampleText,
+          },
+        });
+
+        updated++;
+        console.log(`✅ ${voice.name} 样例生成成功`);
+      } catch (error) {
+        console.error(`❌ ${voice.name} 样例生成失败:`, error);
+        failed++;
+      }
+    }
+
+    return {
+      success: true,
+      message: `生成完成: ${updated} 成功, ${failed} 失败`,
+      updated,
+      failed,
+    };
+  } catch (error) {
+    console.error(`生成 ${locale} 语音样例失败:`, error);
+    return {
+      success: false,
+      message: error instanceof Error ? error.message : '生成失败',
+    };
+  }
+}
+
+/**
+ * 按 locale 生成头像（只更新空头像）
+ */
+export async function syncGoogleVoiceAvatarsByLocale(locale: string): Promise<SyncResult> {
+  await verifyAdminWithoutDb();
+
+  try {
+    const dbLocale = normalizeLocale(locale);
+
+    const voices = await prisma.voices.findMany({
+      where: {
+        provider: 'google',
+        locale: dbLocale,
+        avatar_url: '',
+      },
+      select: { id: true, name: true, gender: true },
+    });
+
+    if (voices.length === 0) {
+      return {
+        success: true,
+        message: `${locale} 的所有语音都已有头像`,
+        updated: 0,
+      };
+    }
+
+    let updated = 0;
+    for (const voice of voices) {
+      const seed = voice.name;
+      const style = voice.gender === 'female' ? 'lorelei' : 'avataaars';
+      const avatarUrl = `https://api.dicebear.com/7.x/${style}/svg?seed=${encodeURIComponent(seed)}`;
+
+      await prisma.voices.update({
+        where: { id: voice.id },
+        data: { avatar_url: avatarUrl },
+      });
+      updated++;
+    }
+
+    return {
+      success: true,
+      message: `已为 ${updated} 个语音生成头像`,
+      updated,
+    };
+  } catch (error) {
+    console.error(`生成 ${locale} 头像失败:`, error);
+    return {
+      success: false,
+      message: error instanceof Error ? error.message : '生成失败',
+    };
   }
 }
 

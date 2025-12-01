@@ -35,6 +35,8 @@ export default function GoogleVoiceSyncPage() {
     closeConfirmDialog,
     handleViewVoices,
     closeVoiceDetailDialog,
+    handleSyncSamplesByLocale,
+    handleSyncAvatarsByLocale,
   } = useGoogleVoiceSync();
 
   return (
@@ -106,6 +108,8 @@ export default function GoogleVoiceSyncPage() {
         onRefresh={loadLocales}
         onSync={handleSync}
         onView={handleViewVoices}
+        onSyncSamples={handleSyncSamplesByLocale}
+        onSyncAvatars={handleSyncAvatarsByLocale}
       />
 
       {/* 说明 */}

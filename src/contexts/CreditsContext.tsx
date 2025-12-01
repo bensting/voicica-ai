@@ -79,9 +79,19 @@ export function CreditsProvider({ children }: CreditsProviderProps) {
       return;
     }
 
+    // 已登录但 profile 还没加载完：等待 profile
+    if (user && !profile) {
+      setLoading(true);
+      return;
+    }
+
     // 未登录用户：需要单独获取匿名用户积分
+    // 延迟一小段时间确保 cookie 已设置
     if (!user && !authLoading) {
-      fetchAnonymousCredits();
+      const timer = setTimeout(() => {
+        fetchAnonymousCredits();
+      }, 100);
+      return () => clearTimeout(timer);
     }
   }, [user, profile, authLoading, profileLoading, localOverride, fetchAnonymousCredits]);
 

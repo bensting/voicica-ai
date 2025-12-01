@@ -27,7 +27,7 @@ async function getAdminStats() {
     prisma.anonymous_users.count(),
     prisma.user_subscriptions.count({
       where: {
-        status: 'active',
+        status: 'ACTIVE',
         end_date: { gt: now },
       },
     }),

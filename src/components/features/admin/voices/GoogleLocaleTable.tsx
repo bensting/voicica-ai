@@ -14,6 +14,8 @@ interface GoogleLocaleTableProps {
   onRefresh: () => void;
   onSync: (locale: string) => void;
   onView: (locale: string, localeName: string) => void;
+  onSyncSamples: (locale: string) => void;
+  onSyncAvatars: (locale: string) => void;
 }
 
 /**
@@ -30,6 +32,8 @@ export default function GoogleLocaleTable({
   onRefresh,
   onSync,
   onView,
+  onSyncSamples,
+  onSyncAvatars,
 }: GoogleLocaleTableProps) {
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
@@ -95,6 +99,8 @@ export default function GoogleLocaleTable({
                   syncResults={syncResults}
                   onSync={onSync}
                   onView={onView}
+                  onSyncSamples={onSyncSamples}
+                  onSyncAvatars={onSyncAvatars}
                 />
               ))}
             </tbody>
@@ -114,14 +120,23 @@ function GoogleLocaleTableRow({
   syncResults,
   onSync,
   onView,
+  onSyncSamples,
+  onSyncAvatars,
 }: {
   item: GoogleLocaleStats;
   syncing: string | null;
   syncResults: Record<string, SyncResult>;
   onSync: (locale: string) => void;
   onView: (locale: string, localeName: string) => void;
+  onSyncSamples: (locale: string) => void;
+  onSyncAvatars: (locale: string) => void;
 }) {
   const result = syncResults[item.locale];
+  const samplesResult = syncResults[`samples-${item.locale}`];
+  const avatarsResult = syncResults[`avatars-${item.locale}`];
+  const isSyncingSamples = syncing === `samples-${item.locale}`;
+  const isSyncingAvatars = syncing === `avatars-${item.locale}`;
+  const hasDbData = item.dbCount > 0;
 
   return (
     <tr className="hover:bg-gray-50">
@@ -159,6 +174,28 @@ function GoogleLocaleTableRow({
             查看
           </button>
           <button
+            onClick={() => onSyncSamples(item.locale)}
+            disabled={syncing !== null || !hasDbData}
+            className={`px-3 py-1 text-sm rounded-lg transition-colors ${
+              hasDbData
+                ? 'bg-purple-600 text-white hover:bg-purple-700'
+                : 'bg-gray-100 text-gray-400 cursor-not-allowed'
+            } disabled:opacity-50`}
+          >
+            {isSyncingSamples ? '生成中...' : '样例'}
+          </button>
+          <button
+            onClick={() => onSyncAvatars(item.locale)}
+            disabled={syncing !== null || !hasDbData}
+            className={`px-3 py-1 text-sm rounded-lg transition-colors ${
+              hasDbData
+                ? 'bg-teal-600 text-white hover:bg-teal-700'
+                : 'bg-gray-100 text-gray-400 cursor-not-allowed'
+            } disabled:opacity-50`}
+          >
+            {isSyncingAvatars ? '生成中...' : '头像'}
+          </button>
+          <button
             onClick={() => onSync(item.locale)}
             disabled={syncing !== null || !item.canSync}
             className={`px-3 py-1 text-sm rounded-lg transition-colors ${
@@ -170,11 +207,24 @@ function GoogleLocaleTableRow({
             {syncing === item.locale ? '同步中...' : '同步'}
           </button>
         </div>
-        {result && (
-          <div className={`mt-2 text-xs ${result.success ? 'text-green-600' : 'text-red-600'}`}>
-            {result.success ? `+${result.inserted || 0}` : '失败'}
-          </div>
-        )}
+        {/* 结果提示 */}
+        <div className="mt-2 text-xs space-y-1">
+          {result && (
+            <div className={result.success ? 'text-green-600' : 'text-red-600'}>
+              同步: {result.success ? `+${result.inserted || 0}` : '失败'}
+            </div>
+          )}
+          {samplesResult && (
+            <div className={samplesResult.success ? 'text-purple-600' : 'text-red-600'}>
+              样例: {samplesResult.success ? `${samplesResult.updated || 0} 成功` : '失败'}
+            </div>
+          )}
+          {avatarsResult && (
+            <div className={avatarsResult.success ? 'text-teal-600' : 'text-red-600'}>
+              头像: {avatarsResult.success ? `${avatarsResult.updated || 0} 成功` : '失败'}
+            </div>
+          )}
+        </div>
       </td>
     </tr>
   );

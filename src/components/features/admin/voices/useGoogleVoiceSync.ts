@@ -6,6 +6,8 @@ import {
   getGoogleVoiceStatsByLocale,
   getGoogleVoicesByLocale,
   syncGoogleVoiceAvatars,
+  syncGoogleVoiceAvatarsByLocale,
+  syncGoogleVoiceSamplesByLocale,
   regenerateAllGoogleAvatars,
   syncAllGoogleVoices,
   updateAllGoogleVoices,
@@ -239,6 +241,46 @@ export function useGoogleVoiceSync() {
     setVoiceDetailDialog((prev) => ({ ...prev, isOpen: false }));
   }, []);
 
+  // 按 locale 生成语音样例
+  const handleSyncSamplesByLocale = useCallback(async (locale: string) => {
+    const syncKey = `samples-${locale}`;
+    setSyncing(syncKey);
+    try {
+      const result = await syncGoogleVoiceSamplesByLocale(locale);
+      setSyncResults((prev) => ({ ...prev, [syncKey]: result }));
+    } catch (error) {
+      setSyncResults((prev) => ({
+        ...prev,
+        [syncKey]: {
+          success: false,
+          message: error instanceof Error ? error.message : '生成失败',
+        },
+      }));
+    } finally {
+      setSyncing(null);
+    }
+  }, []);
+
+  // 按 locale 生成头像
+  const handleSyncAvatarsByLocale = useCallback(async (locale: string) => {
+    const syncKey = `avatars-${locale}`;
+    setSyncing(syncKey);
+    try {
+      const result = await syncGoogleVoiceAvatarsByLocale(locale);
+      setSyncResults((prev) => ({ ...prev, [syncKey]: result }));
+    } catch (error) {
+      setSyncResults((prev) => ({
+        ...prev,
+        [syncKey]: {
+          success: false,
+          message: error instanceof Error ? error.message : '生成失败',
+        },
+      }));
+    } finally {
+      setSyncing(null);
+    }
+  }, []);
+
   return {
     // 状态
     locales,
@@ -260,5 +302,7 @@ export function useGoogleVoiceSync() {
     closeConfirmDialog,
     handleViewVoices,
     closeVoiceDetailDialog,
+    handleSyncSamplesByLocale,
+    handleSyncAvatarsByLocale,
   };
 }

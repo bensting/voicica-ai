@@ -74,7 +74,8 @@ export default function VoiceCard({
       case 'microsoft':
         // Microsoft logo SVG (4 squares)
         return (
-          <svg className="w-3.5 h-3.5" viewBox="0 0 23 23" fill="none" title="Microsoft">
+          <svg className="w-3.5 h-3.5" viewBox="0 0 23 23" fill="none" aria-label="Microsoft">
+            <title>Microsoft</title>
             <rect x="1" y="1" width="10" height="10" fill="#F25022" />
             <rect x="12" y="1" width="10" height="10" fill="#7FBA00" />
             <rect x="1" y="12" width="10" height="10" fill="#00A4EF" />

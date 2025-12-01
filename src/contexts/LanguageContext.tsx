@@ -15,9 +15,12 @@ const LanguageContext = createContext<LanguageContextType | undefined>(undefined
 
 type MessageValue = string | Record<string, unknown>;
 
+// 默认语言（SSR 和初始客户端渲染必须一致）
+const DEFAULT_LOCALE: Locale = 'en-US';
+
 // 检测浏览器语言
 const detectBrowserLanguage = (): Locale => {
-  if (typeof window === 'undefined') return 'en-US';
+  if (typeof window === 'undefined') return DEFAULT_LOCALE;
 
   const browserLang = navigator.language.toLowerCase();
 
@@ -29,12 +32,16 @@ const detectBrowserLanguage = (): Locale => {
     return 'zh-CN';
   }
 
-  return 'en-US';
+  if (browserLang.startsWith('th')) {
+    return 'th-TH';
+  }
+
+  return DEFAULT_LOCALE;
 };
 
-// 获取初始 locale（在组件外部，只执行一次）
-const getInitialLocale = (): Locale => {
-  if (typeof window === 'undefined') return 'en-US';
+// 获取用户的实际 locale（仅在客户端调用）
+const getUserLocale = (): Locale => {
+  if (typeof window === 'undefined') return DEFAULT_LOCALE;
 
   const savedLocale = localStorage.getItem('locale') as Locale;
   if (savedLocale && ['en-US', 'zh-CN', 'zh-TW', 'th-TH'].includes(savedLocale)) {
@@ -45,10 +52,18 @@ const getInitialLocale = (): Locale => {
 };
 
 export function LanguageProvider({ children }: { children: ReactNode }) {
-  // 使用函数式初始化，避免后续状态变化
-  const [locale, setLocaleState] = useState<Locale>(() => getInitialLocale());
+  // 初始使用默认语言，确保 SSR 和客户端首次渲染一致
+  const [locale, setLocaleState] = useState<Locale>(DEFAULT_LOCALE);
   const [messages, setMessages] = useState<Record<string, MessageValue>>({});
   const [isReady, setIsReady] = useState(false);
+
+  // 挂载后检测用户的实际语言偏好
+  useEffect(() => {
+    const userLocale = getUserLocale();
+    if (userLocale !== DEFAULT_LOCALE) {
+      setLocaleState(userLocale);
+    }
+  }, []);
 
   // 加载语言文件（按页面模块拆分）
   useEffect(() => {

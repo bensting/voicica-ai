@@ -77,7 +77,7 @@ export default function StudioSidebar({ isOpen = false, onClose }: StudioSidebar
             {/* 桌面端展开时显示，移动端始终显示 */}
             <div className={`px-4 py-2 ${isExpanded ? 'lg:block' : 'lg:hidden'}`}>
               <span className="text-xs font-semibold text-gray-400 uppercase">
-                AI Video
+                Video AI
               </span>
             </div>
             {studioMenuCategories.ai_video.map((item) => {

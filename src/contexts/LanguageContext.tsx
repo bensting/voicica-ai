@@ -62,9 +62,7 @@ export function LanguageProvider({ children, initialLocale }: LanguageProviderPr
   useEffect(() => {
     if (!initialLocale) {
       const cookieLocale = getLocaleFromCookie();
-      if (cookieLocale !== locale) {
-        setLocaleState(cookieLocale);
-      }
+      setLocaleState(cookieLocale);
     }
   }, [initialLocale]);
 
@@ -166,7 +164,7 @@ export function LanguageProvider({ children, initialLocale }: LanguageProviderPr
       let result = typeof value === 'string' ? value : key;
 
       // 如果提供了参数，进行插值替换
-      if (params && typeof result === 'string') {
+      if (params) {
         Object.keys(params).forEach((paramKey) => {
           const regex = new RegExp(`{{\\s*${paramKey}\\s*}}`, 'g');
           result = result.replace(regex, String(params[paramKey]));

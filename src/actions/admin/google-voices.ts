@@ -93,18 +93,19 @@ function isTraditionalName(name: string): boolean {
 
 /**
  * 从语音名称解析显示名称
- * 传统格式: "zh-CN-Wavenet-A" -> "Wavenet A"
+ * 传统格式: "ar-XA-Chirp3-HD-Achernar" -> "Chirp3-HD-Achernar"
+ *          "zh-CN-Wavenet-A" -> "Wavenet-A"
  * 新格式: "Achernar" -> "Achernar"
+ *
+ * 规则：去掉 locale 前缀（如 ar-XA-, zh-CN-），保留剩余部分
  */
 function parseDisplayName(name: string): string {
   if (isTraditionalName(name)) {
-    // 传统格式: locale-Type-Variant
-    const parts = name.split('-');
-    if (parts.length >= 4) {
-      // 取最后两部分作为显示名
-      const type = parts[parts.length - 2]; // Wavenet, Standard, Neural2 等
-      const variant = parts[parts.length - 1]; // A, B, C 等
-      return `${type} ${variant}`;
+    // 传统格式: locale 前缀 + 其他部分
+    // 匹配并去掉 locale 前缀（如 ar-XA-, zh-CN-, en-US-）
+    const match = name.match(/^[a-z]{2,3}-[A-Z]{2}-(.+)$/);
+    if (match) {
+      return match[1]; // 返回 locale 后面的部分
     }
   }
   // 新格式直接返回名称

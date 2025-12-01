@@ -56,7 +56,7 @@ export async function getAdminUserList(params: {
       include: {
         user_subscriptions: {
           where: {
-            status: 'active',
+            status: 'ACTIVE',
             end_date: { gt: now },
           },
           take: 1,

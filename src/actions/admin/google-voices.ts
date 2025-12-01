@@ -31,6 +31,8 @@ interface LocaleStats {
   localeName: string;
   googleCount: number;
   dbCount: number;
+  sampleCount: number; // 已有语音样例的数量
+  avatarCount: number; // 已有头像的数量
   canSync: boolean;
 }
 
@@ -232,6 +234,31 @@ export async function getGoogleVoiceStatsByLocale(): Promise<LocaleStats[]> {
       dbCountByLocale[stat.locale] = stat._count.id;
     }
 
+    // 获取已有语音样例的统计（voice_sample_url 不为空对象）
+    const dbVoices = await prisma.voices.findMany({
+      where: { provider: 'google' },
+      select: { locale: true, voice_sample_url: true, avatar_url: true },
+    });
+
+    // 统计每个 locale 的样例和头像数量
+    const sampleCountByLocale: Record<string, number> = {};
+    const avatarCountByLocale: Record<string, number> = {};
+    for (const voice of dbVoices) {
+      // 检查 voice_sample_url 是否有内容
+      const hasSample = voice.voice_sample_url &&
+        typeof voice.voice_sample_url === 'object' &&
+        Object.keys(voice.voice_sample_url).length > 0;
+      // 检查 avatar_url 是否有内容
+      const hasAvatar = voice.avatar_url && voice.avatar_url.length > 0;
+
+      if (hasSample) {
+        sampleCountByLocale[voice.locale] = (sampleCountByLocale[voice.locale] || 0) + 1;
+      }
+      if (hasAvatar) {
+        avatarCountByLocale[voice.locale] = (avatarCountByLocale[voice.locale] || 0) + 1;
+      }
+    }
+
     // 构建结果（只显示 Google API 返回的 locale）
     const results: LocaleStats[] = [];
     for (const locale of Object.keys(googleCountByLocale)) {
@@ -239,6 +266,8 @@ export async function getGoogleVoiceStatsByLocale(): Promise<LocaleStats[]> {
       // 使用标准化后的 locale 查询数据库数量
       const dbLocale = localeToDbLocale[locale];
       const dbCount = dbCountByLocale[dbLocale] || 0;
+      const sampleCount = sampleCountByLocale[dbLocale] || 0;
+      const avatarCount = avatarCountByLocale[dbLocale] || 0;
       // 尝试用标准化后的 locale 获取显示名称
       const localeInfo = getLocaleInfo(dbLocale) || getLocaleInfo(locale);
 
@@ -247,6 +276,8 @@ export async function getGoogleVoiceStatsByLocale(): Promise<LocaleStats[]> {
         localeName: localeInfo?.name || locale,
         googleCount,
         dbCount,
+        sampleCount,
+        avatarCount,
         canSync: googleCount > dbCount,
       });
     }

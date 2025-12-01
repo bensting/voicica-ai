@@ -571,7 +571,7 @@ export async function syncGoogleVoiceSamplesByLocale(locale: string): Promise<Sy
     }
 
     // 获取该 locale 的样例文本
-    const sampleText = getSampleText(dbLocale);
+    const sampleText = getSampleText(dbLocale) || 'Hello, this is a sample voice recording for demonstration purposes.';
     let updated = 0;
     let failed = 0;
 

@@ -85,15 +85,28 @@ function convertParams(request: GoogleTtsRequest) {
 }
 
 /**
+ * 将标准化的 locale 转换回 Google API 需要的原始 locale
+ * zh-CN -> cmn-CN, zh-TW -> cmn-TW
+ */
+function toGoogleLocale(locale: string): string {
+  const REVERSE_MAPPING: Record<string, string> = {
+    'zh-CN': 'cmn-CN',
+    'zh-TW': 'cmn-TW',
+  };
+  return REVERSE_MAPPING[locale] || locale;
+}
+
+/**
  * 解析数据库中存储的语音名称
- * 格式：locale:voiceName（如 en-US:Achernar）-> { locale: 'en-US', voiceName: 'Achernar' }
+ * 格式：locale:voiceName（如 zh-CN:cmn-CN-Chirp3-HD-Achernar）-> { locale: 'cmn-CN', voiceName: '...' }
  * 如果没有冒号，则返回原名称
  */
 function parseVoiceName(dbName: string): { locale: string | null; voiceName: string } {
   const colonIndex = dbName.indexOf(':');
   if (colonIndex !== -1) {
+    const dbLocale = dbName.substring(0, colonIndex);
     return {
-      locale: dbName.substring(0, colonIndex),
+      locale: toGoogleLocale(dbLocale), // 转换为 Google API 需要的 locale
       voiceName: dbName.substring(colonIndex + 1),
     };
   }

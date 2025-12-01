@@ -17,6 +17,7 @@ interface Voice {
   id: number;
   name: string;
   display_name: string;
+  provider: string;
   locale: string;
   country: string;
   gender: string;
@@ -58,6 +59,7 @@ export default function VoicesManagementPage() {
   // 筛选条件
   const [localeFilter, setLocaleFilter] = useState('');
   const [genderFilter, setGenderFilter] = useState('');
+  const [providerFilter, setProviderFilter] = useState('');
   const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'inactive'>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [styleCountFilter, setStyleCountFilter] = useState('');
@@ -94,6 +96,7 @@ export default function VoicesManagementPage() {
         pageSize: 20,
         locale: localeFilter || undefined,
         gender: genderFilter || undefined,
+        provider: providerFilter || undefined,
         isActive: statusFilter === 'all' ? undefined : statusFilter === 'active',
         search: searchQuery || undefined,
         ...getStyleCountParams(),
@@ -107,7 +110,7 @@ export default function VoicesManagementPage() {
       setLoading(false);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page, localeFilter, genderFilter, statusFilter, searchQuery, styleCountFilter]);
+  }, [page, localeFilter, genderFilter, providerFilter, statusFilter, searchQuery, styleCountFilter]);
 
   // 加载 locale 列表
   const loadLocales = useCallback(async () => {
@@ -170,6 +173,7 @@ export default function VoicesManagementPage() {
   const handleResetFilters = () => {
     setLocaleFilter('');
     setGenderFilter('');
+    setProviderFilter('');
     setStatusFilter('all');
     setSearchQuery('');
     setStyleCountFilter('');
@@ -338,6 +342,20 @@ export default function VoicesManagementPage() {
             <option value="female">女声</option>
           </select>
 
+          {/* 服务商筛选 */}
+          <select
+            value={providerFilter}
+            onChange={(e) => {
+              setProviderFilter(e.target.value);
+              setPage(1);
+            }}
+            className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+          >
+            <option value="">所有服务商</option>
+            <option value="microsoft">Microsoft</option>
+            <option value="google">Google</option>
+          </select>
+
           {/* 状态筛选 */}
           <select
             value={statusFilter}
@@ -429,6 +447,9 @@ export default function VoicesManagementPage() {
                   语言
                 </th>
                 <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
+                  服务商
+                </th>
+                <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
                   性别
                 </th>
                 <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
@@ -448,7 +469,7 @@ export default function VoicesManagementPage() {
             <tbody className="divide-y divide-gray-200">
               {loading ? (
                 <tr>
-                  <td colSpan={8} className="px-4 py-8 text-center text-gray-500">
+                  <td colSpan={9} className="px-4 py-8 text-center text-gray-500">
                     <div className="flex items-center justify-center gap-2">
                       <div className="w-5 h-5 border-2 border-purple-600 border-t-transparent rounded-full animate-spin" />
                       加载中...
@@ -457,7 +478,7 @@ export default function VoicesManagementPage() {
                 </tr>
               ) : voices.length === 0 ? (
                 <tr>
-                  <td colSpan={8} className="px-4 py-8 text-center text-gray-500">
+                  <td colSpan={9} className="px-4 py-8 text-center text-gray-500">
                     没有找到语音
                   </td>
                 </tr>
@@ -499,6 +520,17 @@ export default function VoicesManagementPage() {
                     </td>
                     <td className="px-4 py-3">
                       <span className="text-sm text-gray-700">{voice.locale}</span>
+                    </td>
+                    <td className="px-4 py-3">
+                      <span
+                        className={`inline-flex items-center px-2 py-0.5 text-xs font-medium rounded ${
+                          voice.provider === 'google'
+                            ? 'bg-blue-100 text-blue-700'
+                            : 'bg-purple-100 text-purple-700'
+                        }`}
+                      >
+                        {voice.provider === 'google' ? 'Google' : 'Microsoft'}
+                      </span>
                     </td>
                     <td className="px-4 py-3">
                       <span

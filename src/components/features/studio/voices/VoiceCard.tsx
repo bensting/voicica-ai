@@ -5,6 +5,7 @@ import * as FlagIcons from 'country-flag-icons/react/3x2';
 import type { Voice } from '@/types/voice';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { getCountryCode } from '@/utils/localeMapper';
+import ProviderIcon from '@/components/ui/icons/ProviderIcon';
 
 interface VoiceCardProps {
   voice: Voice;
@@ -100,9 +101,10 @@ export default function VoiceCard({
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 mb-1">
           <h3 className="text-sm font-semibold text-gray-900 truncate">{voiceName}</h3>
-          <div className="flex items-center gap-1 text-xs">
+          <div className="flex items-center gap-1.5 text-xs">
             {getFlagIcon(voice.locale)}
             {getGenderIcon(voice.gender)}
+            <ProviderIcon provider={voice.provider} className="w-3.5 h-3.5" />
           </div>
         </div>
 

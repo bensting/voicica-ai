@@ -2,11 +2,13 @@
  * TTS 任务队列处理函数 (Upstash QStash)
  *
  * 由 QStash 调用，处理异步 TTS 生成任务
+ * 支持 Azure 和 Google TTS 服务
  */
 import { NextRequest, NextResponse } from 'next/server';
 import { verifySignatureAppRouter } from '@upstash/qstash/nextjs';
 import prisma from '@/lib/prisma';
-import { synthesizeSpeech } from '@/lib/services/azure-tts';
+import { synthesizeSpeech as azureSynthesize } from '@/lib/services/azure-tts';
+import { synthesizeSpeech as googleSynthesize } from '@/lib/services/google-tts';
 import { uploadAudio } from '@/lib/services/r2-storage';
 import { ProductType } from '@/config/productType';
 import type { TtsQueuePayload } from '@/lib/queue/tts-queue';
@@ -92,17 +94,42 @@ async function handleTTSTask(req: NextRequest) {
       data: { progress: 30 },
     });
 
-    // 7. 调用 Azure TTS 生成音频
-    console.log(`🎤 调用 Azure TTS: ${voiceName}, style: ${style || 'default'}`);
-    const { audioData, duration, format } = await synthesizeSpeech({
-      text,
-      voiceName,
-      language: language || voice.locale,
-      style: style || undefined,
-      speed,
-      pitch,
-      volume,
-    });
+    // 7. 根据 provider 调用对应的 TTS 服务
+    const provider = voice.provider || 'microsoft';
+    console.log(`🎤 调用 ${provider.toUpperCase()} TTS: ${voiceName}, style: ${style || 'default'}`);
+
+    let audioData: Buffer;
+    let duration: number;
+    let format: string;
+
+    if (provider === 'google') {
+      // Google TTS（不支持 style）
+      const result = await googleSynthesize({
+        text,
+        voiceName,
+        language: language || voice.locale,
+        speed,
+        pitch,
+        volume,
+      });
+      audioData = result.audioData;
+      duration = result.duration;
+      format = result.format;
+    } else {
+      // Azure TTS（默认，支持 style）
+      const result = await azureSynthesize({
+        text,
+        voiceName,
+        language: language || voice.locale,
+        style: style || undefined,
+        speed,
+        pitch,
+        volume,
+      });
+      audioData = result.audioData;
+      duration = result.duration;
+      format = result.format;
+    }
 
     // 8. 更新进度到 80%
     await prisma.tts_records.update({

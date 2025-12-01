@@ -1,0 +1,18 @@
+{
+  "textToVideo": "文字轉影片",
+  "promptPlaceholder": "描述您想創建的影片。具體說明動作、場景、風格和氛圍...",
+  "promptLabel": "影片描述",
+  "resolution": "解析度",
+  "duration": "時長",
+  "aspectRatio": "寬高比",
+  "creditsCost": "積分消耗",
+  "model": "模型",
+  "veo31Description": "Google 最先進的影片生成模型，具有卓越的畫質和運動效果",
+  "latest": "最新",
+  "generate": "生成影片",
+  "generating": "生成中...",
+  "generatingVideo": "正在生成影片...",
+  "preview": "預覽",
+  "previewPlaceholder": "生成的影片將顯示在這裡",
+  "browserNotSupported": "您的瀏覽器不支援影片標籤。"
+}

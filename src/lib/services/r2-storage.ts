@@ -141,3 +141,72 @@ export async function deleteAudio(filePath: string): Promise<boolean> {
     return false;
   }
 }
+
+/**
+ * 上传视频到 R2
+ */
+export async function uploadVideo(
+  videoData: Buffer,
+  fileName: string,
+  contentType: string = 'video/mp4',
+  folder: string = 'videos'
+): Promise<string> {
+  const bucketName = process.env.CLOUDFLARE_R2_BUCKET_NAME;
+  const publicUrl = process.env.CLOUDFLARE_R2_PUBLIC_URL;
+
+  if (!bucketName) {
+    throw new Error('CLOUDFLARE_R2_BUCKET_NAME 未配置');
+  }
+
+  const client = getS3Client();
+  const key = `${folder}/${fileName}`;
+
+  console.log(`📤 R2 上传视频: ${key}, 大小: ${videoData.length} bytes`);
+
+  await client.send(
+    new PutObjectCommand({
+      Bucket: bucketName,
+      Key: key,
+      Body: videoData,
+      ContentType: contentType,
+    })
+  );
+
+  // 生成公开 URL
+  let url: string;
+  if (publicUrl) {
+    url = `${publicUrl.replace(/\/$/, '')}/${key}`;
+  } else {
+    const accountId = process.env.CLOUDFLARE_R2_ACCOUNT_ID;
+    url = `https://${bucketName}.${accountId}.r2.dev/${key}`;
+  }
+
+  console.log(`✅ R2 视频上传成功: ${url}`);
+  return url;
+}
+
+/**
+ * 删除 R2 中的视频
+ */
+export async function deleteVideo(filePath: string): Promise<boolean> {
+  const bucketName = process.env.CLOUDFLARE_R2_BUCKET_NAME;
+
+  if (!bucketName) {
+    throw new Error('CLOUDFLARE_R2_BUCKET_NAME 未配置');
+  }
+
+  try {
+    const client = getS3Client();
+    await client.send(
+      new DeleteObjectCommand({
+        Bucket: bucketName,
+        Key: filePath,
+      })
+    );
+    console.log(`✅ R2 视频删除成功: ${filePath}`);
+    return true;
+  } catch (error) {
+    console.error(`❌ R2 视频删除失败: ${filePath}`, error);
+    return false;
+  }
+}

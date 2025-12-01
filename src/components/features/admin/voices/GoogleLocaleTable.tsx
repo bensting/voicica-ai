@@ -83,6 +83,12 @@ export default function GoogleLocaleTable({
                   数据库数量
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  样例
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  头像
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   状态
                 </th>
                 <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -149,6 +155,24 @@ function GoogleLocaleTableRow({
       </td>
       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
         {item.dbCount}
+      </td>
+      <td className="px-6 py-4 whitespace-nowrap text-sm">
+        {item.dbCount > 0 ? (
+          <span className={item.sampleCount === item.dbCount ? 'text-green-600' : 'text-gray-900'}>
+            {item.sampleCount}/{item.dbCount}
+          </span>
+        ) : (
+          <span className="text-gray-400">-</span>
+        )}
+      </td>
+      <td className="px-6 py-4 whitespace-nowrap text-sm">
+        {item.dbCount > 0 ? (
+          <span className={item.avatarCount === item.dbCount ? 'text-green-600' : 'text-gray-900'}>
+            {item.avatarCount}/{item.dbCount}
+          </span>
+        ) : (
+          <span className="text-gray-400">-</span>
+        )}
       </td>
       <td className="px-6 py-4 whitespace-nowrap">
         {item.googleCount === item.dbCount ? (

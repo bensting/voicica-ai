@@ -577,6 +577,108 @@ export async function generateAllVoiceSamples(): Promise<SyncResult> {
 }
 
 /**
+ * 为单个语音生成样本音频（重新生成所有风格）
+ * @param voiceId 语音 ID
+ */
+export async function generateVoiceSampleForVoice(voiceId: number): Promise<SyncResult> {
+  await verifyAdminWithoutDb();
+
+  try {
+    // 获取语音信息
+    const voice = await prisma.voices.findUnique({
+      where: { id: voiceId },
+      select: {
+        id: true,
+        name: true,
+        locale: true,
+        style_list: true,
+      },
+    });
+
+    if (!voice) {
+      return {
+        success: false,
+        message: '语音不存在',
+      };
+    }
+
+    const sampleText = getSampleText(voice.locale);
+    if (!sampleText) {
+      return {
+        success: false,
+        message: `没有配置 ${voice.locale} 的示例文本`,
+      };
+    }
+
+    const styleList = (voice.style_list as string[]) || ['default'];
+    console.log(`🎤 开始为 ${voice.name} 生成 ${styleList.length} 个风格的语音样本...`);
+
+    let generatedCount = 0;
+    let failedCount = 0;
+    const newSamples: Record<string, string> = {};
+
+    for (const style of styleList) {
+      try {
+        console.log(`  🎤 生成 ${voice.name} - ${style}...`);
+
+        // 调用 Azure TTS 生成音频
+        const ttsResult = await synthesizeSpeech({
+          text: sampleText,
+          voiceName: voice.name,
+          language: voice.locale,
+          style: style === 'default' ? undefined : style,
+        });
+
+        // 上传到 R2
+        const fileName = style === 'default'
+          ? `${voice.name}.mp3`
+          : `${voice.name}_${style}.mp3`;
+        const audioUrl = await uploadAudio(
+          ttsResult.audioData,
+          fileName,
+          'audio/mpeg',
+          'voice-samples'
+        );
+
+        newSamples[style] = audioUrl;
+        generatedCount++;
+        console.log(`  ✅ ${voice.name} - ${style} 生成成功`);
+      } catch (error) {
+        failedCount++;
+        console.error(`  ❌ ${voice.name} - ${style} 生成失败:`, error);
+      }
+    }
+
+    // 更新数据库
+    if (generatedCount > 0) {
+      await prisma.voices.update({
+        where: { id: voice.id },
+        data: {
+          voice_sample_url: newSamples,
+          voice_sample_text: sampleText,
+        },
+      });
+    }
+
+    console.log(`✅ ${voice.name} 语音样本生成完成: 成功 ${generatedCount}, 失败 ${failedCount}`);
+
+    return {
+      success: failedCount === 0,
+      message: failedCount === 0
+        ? `生成完成: ${generatedCount} 个样本`
+        : `部分失败: 成功 ${generatedCount}, 失败 ${failedCount}`,
+      updated: generatedCount,
+    };
+  } catch (error) {
+    console.error(`❌ 生成语音样本失败:`, error);
+    return {
+      success: false,
+      message: error instanceof Error ? error.message : '生成失败',
+    };
+  }
+}
+
+/**
  * 清空指定 locale 的语音样本
  */
 export async function clearVoiceSamples(locale: string): Promise<SyncResult> {
@@ -820,7 +922,7 @@ export async function batchUpdateVoiceStatus(
 /**
  * 获取所有 locale 列表（用于筛选）
  */
-export async function getAdminVoiceLocales(): Promise<string[]> {
+export async function getAdminVoiceLocales(): Promise<Array<{ code: string; name: string }>> {
   await verifyAdminWithoutDb();
 
   const locales = await prisma.voices.findMany({
@@ -829,7 +931,16 @@ export async function getAdminVoiceLocales(): Promise<string[]> {
     orderBy: { locale: 'asc' },
   });
 
-  return locales.map((l) => l.locale);
+  // 动态导入 localeMapper
+  const { getLocaleInfo } = await import('@/utils/localeMapper');
+
+  return locales.map((l) => {
+    const info = getLocaleInfo(l.locale);
+    return {
+      code: l.locale,
+      name: info?.name || l.locale,
+    };
+  });
 }
 
 /**

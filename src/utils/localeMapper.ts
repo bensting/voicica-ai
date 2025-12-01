@@ -308,18 +308,18 @@ const LOCALE_MAP: Record<string, { name: string; countryCode: string }> = {
   'wuu-CN': { name: '吴语 (China)', countryCode: 'CN' },
 
   // === 粤语 (Cantonese) ===
-  'yue-CN': { name: '粤语 (China)', countryCode: 'CN' },
+  'yue-CN': { name: '广东话 (China)', countryCode: 'CN' },
 
   // === 中文 (Chinese) ===
   'zh-CN': { name: '简体中文 (China)', countryCode: 'CN' },
-  'zh-CN-guangxi': { name: '简体中文 (Guangxi)', countryCode: 'CN' },
-  'zh-CN-henan': { name: '简体中文 (Henan)', countryCode: 'CN' },
-  'zh-CN-liaoning': { name: '简体中文 (Liaoning)', countryCode: 'CN' },
-  'zh-CN-shaanxi': { name: '简体中文 (Shaanxi)', countryCode: 'CN' },
-  'zh-CN-shandong': { name: '简体中文 (Shandong)', countryCode: 'CN' },
-  'zh-CN-sichuan': { name: '简体中文 (Sichuan)', countryCode: 'CN' },
+  'zh-CN-guangxi': { name: '广西话 (Guangxi)', countryCode: 'CN' },
+  'zh-CN-henan': { name: '河南话 (Henan)', countryCode: 'CN' },
+  'zh-CN-liaoning': { name: '辽宁话 (Liaoning)', countryCode: 'CN' },
+  'zh-CN-shaanxi': { name: '陕西话 (Shaanxi)', countryCode: 'CN' },
+  'zh-CN-shandong': { name: '山东话 (Shandong)', countryCode: 'CN' },
+  'zh-CN-sichuan': { name: '四川话 (Sichuan)', countryCode: 'CN' },
   'zh-HK': { name: '粤語 (Hong Kong)', countryCode: 'HK' },
-  'zh-TW': { name: '繁體中文 (Taiwan)', countryCode: 'TW' },
+  'zh-TW': { name: '國語 (Taiwan)', countryCode: 'TW' },
 
   // === 祖鲁语 (Zulu) ===
   'zu-ZA': { name: 'IsiZulu (South Africa)', countryCode: 'ZA' },

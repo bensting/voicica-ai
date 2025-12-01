@@ -113,10 +113,25 @@ function parseDisplayName(name: string): string {
 }
 
 /**
+ * 标准化 locale 代码
+ * Google 使用 ISO 639-3 代码，需要转换为常用的 ISO 639-1 代码
+ * cmn-CN -> zh-CN (普通话/简体中文)
+ * cmn-TW -> zh-TW (普通话/繁体中文)
+ */
+function normalizeLocale(locale: string): string {
+  const LOCALE_MAPPING: Record<string, string> = {
+    'cmn-CN': 'zh-CN',
+    'cmn-TW': 'zh-TW',
+  };
+  return LOCALE_MAPPING[locale] || locale;
+}
+
+/**
  * 从 locale 获取国家代码（大写）
  */
 function getCountryFromLocale(locale: string): string {
-  const parts = locale.split('-');
+  const normalized = normalizeLocale(locale);
+  const parts = normalized.split('-');
   if (parts.length >= 2) {
     return parts[1].toUpperCase();
   }
@@ -153,6 +168,9 @@ function getVoiceTypeTag(name: string): string | null {
     if (nameLower.includes('journey')) return 'Journey';
     if (nameLower.includes('news')) return 'News';
     if (nameLower.includes('standard')) return 'Standard';
+    // Chirp 系列（注意顺序：先检查更具体的 chirp3，再检查 chirp）
+    if (nameLower.includes('chirp3')) return 'Chirp3';
+    if (nameLower.includes('chirp')) return 'Chirp';
   }
   return null;
 }
@@ -185,13 +203,16 @@ export async function getGoogleVoiceStatsByLocale(): Promise<LocaleStats[]> {
     // 从 Google API 获取所有语音
     const googleVoices = await fetchVoicesFromGoogle();
 
-    // 按 locale 分组统计 Google 数量
+    // 按 locale 分组统计 Google 数量（保留原始 locale 用于显示和 API 查询）
+    // 同时记录标准化后的 locale 用于与数据库对比
     const googleCountByLocale: Record<string, number> = {};
+    const localeToDbLocale: Record<string, string> = {}; // Google locale -> 标准化后的 DB locale
     for (const voice of googleVoices) {
       // Google 语音可能支持多个 locale，取第一个
       const locale = voice.languageCodes[0];
       if (locale) {
         googleCountByLocale[locale] = (googleCountByLocale[locale] || 0) + 1;
+        localeToDbLocale[locale] = normalizeLocale(locale);
       }
     }
 
@@ -207,21 +228,18 @@ export async function getGoogleVoiceStatsByLocale(): Promise<LocaleStats[]> {
       dbCountByLocale[stat.locale] = stat._count.id;
     }
 
-    // 合并所有 locale
-    const allLocales = new Set([
-      ...Object.keys(googleCountByLocale),
-      ...Object.keys(dbCountByLocale),
-    ]);
-
-    // 构建结果
+    // 构建结果（只显示 Google API 返回的 locale）
     const results: LocaleStats[] = [];
-    for (const locale of allLocales) {
+    for (const locale of Object.keys(googleCountByLocale)) {
       const googleCount = googleCountByLocale[locale] || 0;
-      const dbCount = dbCountByLocale[locale] || 0;
-      const localeInfo = getLocaleInfo(locale);
+      // 使用标准化后的 locale 查询数据库数量
+      const dbLocale = localeToDbLocale[locale];
+      const dbCount = dbCountByLocale[dbLocale] || 0;
+      // 尝试用标准化后的 locale 获取显示名称
+      const localeInfo = getLocaleInfo(dbLocale) || getLocaleInfo(locale);
 
       results.push({
-        locale,
+        locale, // 保留原始 Google locale 用于 API 调用
         localeName: localeInfo?.name || locale,
         googleCount,
         dbCount,
@@ -256,7 +274,9 @@ export async function syncGoogleVoicesByLocale(locale: string): Promise<SyncResu
   await verifyAdminWithoutDb();
 
   try {
-    console.log(`🔄 开始同步 Google 语音 locale: ${locale}`);
+    // 标准化 locale（cmn-CN -> zh-CN）
+    const dbLocale = normalizeLocale(locale);
+    console.log(`🔄 开始同步 Google 语音 locale: ${locale} -> ${dbLocale}`);
 
     // 从 Google API 获取该 locale 的语音
     const googleVoices = await fetchVoicesFromGoogle();
@@ -271,16 +291,16 @@ export async function syncGoogleVoicesByLocale(locale: string): Promise<SyncResu
       };
     }
 
-    // 获取数据库中已存在的 Google 语音名称
+    // 获取数据库中已存在的 Google 语音名称（使用标准化后的 locale 查询）
     const existingVoices = await prisma.voices.findMany({
-      where: { provider: 'google', locale },
+      where: { provider: 'google', locale: dbLocale },
       select: { name: true },
     });
     const existingNames = new Set(existingVoices.map((v) => v.name));
 
-    // 过滤出需要插入的语音（使用 locale:name 格式检查）
+    // 过滤出需要插入的语音（使用 dbLocale:name 格式检查）
     const voicesToInsert = localeVoices.filter(
-      (v) => !existingNames.has(buildGoogleVoiceName(locale, v.name))
+      (v) => !existingNames.has(buildGoogleVoiceName(dbLocale, v.name))
     );
 
     if (voicesToInsert.length === 0) {
@@ -292,12 +312,12 @@ export async function syncGoogleVoicesByLocale(locale: string): Promise<SyncResu
       };
     }
 
-    // 批量插入
+    // 批量插入（使用标准化后的 locale）
     const insertData = voicesToInsert.map((voice) => ({
-      name: buildGoogleVoiceName(locale, voice.name), // 使用 locale:name 格式
+      name: buildGoogleVoiceName(dbLocale, voice.name), // 使用标准化的 locale:name 格式
       display_name: parseDisplayName(voice.name),
       provider: 'google',
-      locale: locale,
+      locale: dbLocale, // 使用标准化后的 locale
       country: getCountryFromLocale(locale),
       role: 'Professional',
       gender: normalizeGender(voice.ssmlGender),
@@ -315,7 +335,7 @@ export async function syncGoogleVoicesByLocale(locale: string): Promise<SyncResu
       skipDuplicates: true,
     });
 
-    console.log(`✅ 成功同步 ${locale}: 插入 ${voicesToInsert.length} 条`);
+    console.log(`✅ 成功同步 ${locale} -> ${dbLocale}: 插入 ${voicesToInsert.length} 条`);
 
     return {
       success: true,

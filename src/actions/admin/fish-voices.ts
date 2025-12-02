@@ -6,6 +6,7 @@
 import prisma from '@/lib/prisma';
 import { verifyAdminWithoutDb } from '@/lib/auth-admin';
 import { getLocaleInfo } from '@/utils/localeMapper';
+import { uploadImage } from '@/lib/services/r2-storage';
 import * as OpenCC from 'opencc-js';
 
 /**
@@ -302,6 +303,55 @@ function toTraditionalChinese(text: string): string {
 }
 
 /**
+ * 下载 Fish Audio 封面图并上传到我们的 R2
+ * @param coverImage Fish Audio 的 cover_image 字段（如 "coverimage/xxx"）
+ * @param modelId 模型 ID，用于生成文件名
+ * @returns 上传后的 R2 URL，失败则返回空字符串
+ */
+async function downloadAndUploadAvatar(coverImage: string, modelId: string): Promise<string> {
+  if (!coverImage) return '';
+
+  try {
+    // 构建 Fish Audio 封面图 URL
+    const sourceUrl = buildCoverImageUrl(coverImage, 400); // 使用较大尺寸以保证质量
+
+    console.log(`📥 下载头像: ${sourceUrl}`);
+
+    // 下载图片
+    const response = await fetch(sourceUrl, {
+      cache: 'no-store',
+    });
+
+    if (!response.ok) {
+      console.error(`❌ 下载头像失败: ${response.status}`);
+      return '';
+    }
+
+    // 获取图片数据
+    const arrayBuffer = await response.arrayBuffer();
+    const imageBuffer = Buffer.from(arrayBuffer);
+
+    // 确定 content type
+    const contentType = response.headers.get('content-type') || 'image/webp';
+
+    // 生成文件名（使用 modelId 确保唯一性）
+    const extension = contentType.includes('webp') ? 'webp' :
+                      contentType.includes('png') ? 'png' :
+                      contentType.includes('gif') ? 'gif' : 'jpg';
+    const fileName = `fish_${modelId}.${extension}`;
+
+    // 上传到 R2
+    const r2Url = await uploadImage(imageBuffer, fileName, contentType, 'voice-avatars/fish');
+
+    console.log(`✅ 头像上传成功: ${r2Url}`);
+    return r2Url;
+  } catch (error) {
+    console.error(`❌ 下载/上传头像失败 (${modelId}):`, error);
+    return '';
+  }
+}
+
+/**
  * 获取 Fish Audio 所有语言及统计信息
  */
 export async function getFishVoiceStatsByLanguage(): Promise<FishLanguageStats[]> {
@@ -487,8 +537,8 @@ export async function syncFishVoice(
       voiceSampleUrl['default'] = model.samples[0].audio;
     }
 
-    // 构建封面图 URL
-    const avatarUrl = buildCoverImageUrl(model.cover_image);
+    // 下载封面图并上传到我们的 R2
+    const avatarUrl = await downloadAndUploadAvatar(model.cover_image, model._id);
 
     // 从 locale 获取国家代码
     const country = normalizedLocale.includes('-')
@@ -591,7 +641,8 @@ export async function syncFishPopularVoices(
           voiceSampleUrl['default'] = model.samples[0].audio;
         }
 
-        const avatarUrl = buildCoverImageUrl(model.cover_image);
+        // 下载封面图并上传到我们的 R2
+        const avatarUrl = await downloadAndUploadAvatar(model.cover_image, model._id);
 
         // 从 locale 获取国家代码
         const country = normalizedLocale.includes('-')
@@ -758,9 +809,16 @@ export async function syncFishVoiceAvatars(): Promise<SyncResult> {
         // 从 name 中提取 modelId
         const modelId = extractModelId(voice.name);
         const model = await fetchVoiceDetail(modelId);
-        const avatarUrl = model.cover_image
-          ? buildCoverImageUrl(model.cover_image)
-          : `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(voice.name)}`;
+
+        // 下载封面图并上传到我们的 R2
+        let avatarUrl = '';
+        if (model.cover_image) {
+          avatarUrl = await downloadAndUploadAvatar(model.cover_image, modelId);
+        }
+        // 如果下载失败，使用 DiceBear 生成头像
+        if (!avatarUrl) {
+          avatarUrl = `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(voice.name)}`;
+        }
 
         await prisma.voices.update({
           where: { id: voice.id },

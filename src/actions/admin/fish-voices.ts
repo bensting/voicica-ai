@@ -433,33 +433,41 @@ export async function getFishPopularVoices(
 
 /**
  * 同步单个 Fish 语音到数据库
+ * @param modelId Fish Audio 模型 ID
+ * @param targetLocale 目标语言区域（可选，如 'zh-TW'），不传则使用模型的默认语言
  */
-export async function syncFishVoice(modelId: string): Promise<SyncResult> {
+export async function syncFishVoice(
+  modelId: string,
+  targetLocale?: string
+): Promise<SyncResult> {
   await verifyAdminWithoutDb();
 
   try {
     // 获取语音详情
     const model = await fetchVoiceDetail(modelId);
 
+    // 确定目标语言
+    const primaryLanguage = model.languages[0] || 'en';
+    const normalizedLocale = targetLocale || normalizeLanguage(primaryLanguage);
+
+    // 构建 name: locale:id 格式
+    const voiceName = `${normalizedLocale}:${model._id}`;
+
     // 检查是否已存在
     const existing = await prisma.voices.findFirst({
       where: {
         provider: 'fish',
-        name: model._id,
+        name: voiceName,
       },
     });
 
     if (existing) {
       return {
         success: true,
-        message: '该语音已存在',
+        message: `该语音已存在 (${normalizedLocale})`,
         skipped: 1,
       };
     }
-
-    // 取第一个语言作为主语言
-    const primaryLanguage = model.languages[0] || 'en';
-    const normalizedLocale = normalizeLanguage(primaryLanguage);
 
     // 构建语音样例 URL
     const voiceSampleUrl: Record<string, string> = {};
@@ -470,15 +478,20 @@ export async function syncFishVoice(modelId: string): Promise<SyncResult> {
     // 构建封面图 URL
     const avatarUrl = buildCoverImageUrl(model.cover_image);
 
+    // 从 locale 获取国家代码
+    const country = normalizedLocale.includes('-')
+      ? normalizedLocale.split('-')[1].toUpperCase()
+      : getCountryFromLanguage(primaryLanguage);
+
     // 插入数据库
     await prisma.voices.create({
       data: {
-        name: model._id,
+        name: voiceName,
         display_name: model.title,
         provider: 'fish',
         locale: normalizedLocale,
-        country: getCountryFromLanguage(primaryLanguage),
-        role: model.author?.nickname || 'Community',
+        country,
+        role: 'Celebrity', // Fish 语音多为名人/角色克隆
         gender: 'unknown', // Fish 不提供性别信息
         avatar_url: avatarUrl,
         voice_sample_url: voiceSampleUrl,
@@ -492,7 +505,7 @@ export async function syncFishVoice(modelId: string): Promise<SyncResult> {
 
     return {
       success: true,
-      message: `成功同步 ${model.title}`,
+      message: `成功同步 ${model.title} (${normalizedLocale})`,
       inserted: 1,
     };
   } catch (error) {
@@ -506,29 +519,38 @@ export async function syncFishVoice(modelId: string): Promise<SyncResult> {
 
 /**
  * 批量同步 Fish 热门语音
+ * @param count 同步数量
+ * @param language Fish API 语言筛选（如 'zh'）
+ * @param targetLocale 目标语言区域（可选，如 'zh-TW'），不传则使用默认映射
  */
 export async function syncFishPopularVoices(
   count: number = 50,
-  language?: string
+  language?: string,
+  targetLocale?: string
 ): Promise<SyncResult> {
   await verifyAdminWithoutDb();
 
   try {
-    console.log(`🔄 开始同步 Fish Audio 热门语音 (数量: ${count}, 语言: ${language || '全部'})...`);
+    console.log(`🔄 开始同步 Fish Audio 热门语音 (数量: ${count}, 语言: ${language || '全部'}, 目标: ${targetLocale || '默认'})...`);
 
     // 获取热门语音
     const pageSize = Math.min(count, 100);
     const data = await fetchVoicesFromFish(pageSize, 1, language);
 
-    // 获取已存在的 ID
+    // 获取已存在的 name（格式为 locale:id）
     const existingVoices = await prisma.voices.findMany({
       where: { provider: 'fish' },
       select: { name: true },
     });
-    const existingIds = new Set(existingVoices.map((v) => v.name));
+    const existingNames = new Set(existingVoices.map((v) => v.name));
 
     // 过滤出需要插入的
-    const voicesToInsert = data.items.filter((m) => !existingIds.has(m._id));
+    const voicesToInsert = data.items.filter((m) => {
+      const primaryLanguage = m.languages[0] || 'en';
+      const locale = targetLocale || normalizeLanguage(primaryLanguage);
+      const voiceName = `${locale}:${m._id}`;
+      return !existingNames.has(voiceName);
+    });
 
     if (voicesToInsert.length === 0) {
       return {
@@ -545,7 +567,8 @@ export async function syncFishPopularVoices(
     for (const model of voicesToInsert) {
       try {
         const primaryLanguage = model.languages[0] || 'en';
-        const normalizedLocale = normalizeLanguage(primaryLanguage);
+        const normalizedLocale = targetLocale || normalizeLanguage(primaryLanguage);
+        const voiceName = `${normalizedLocale}:${model._id}`;
 
         const voiceSampleUrl: Record<string, string> = {};
         if (model.samples && model.samples.length > 0) {
@@ -554,14 +577,19 @@ export async function syncFishPopularVoices(
 
         const avatarUrl = buildCoverImageUrl(model.cover_image);
 
+        // 从 locale 获取国家代码
+        const country = normalizedLocale.includes('-')
+          ? normalizedLocale.split('-')[1].toUpperCase()
+          : getCountryFromLanguage(primaryLanguage);
+
         await prisma.voices.create({
           data: {
-            name: model._id,
+            name: voiceName,
             display_name: model.title,
             provider: 'fish',
             locale: normalizedLocale,
-            country: getCountryFromLanguage(primaryLanguage),
-            role: model.author?.nickname || 'Community',
+            country,
+            role: 'Celebrity',
             gender: 'unknown',
             avatar_url: avatarUrl,
             voice_sample_url: voiceSampleUrl,
@@ -574,7 +602,7 @@ export async function syncFishPopularVoices(
         });
 
         inserted++;
-        console.log(`✅ 同步成功: ${model.title}`);
+        console.log(`✅ 同步成功: ${model.title} (${normalizedLocale})`);
       } catch (error) {
         console.error(`❌ 同步失败: ${model.title}`, error);
         failed++;
@@ -598,6 +626,17 @@ export async function syncFishPopularVoices(
 }
 
 /**
+ * 从 name 字段提取 modelId
+ * name 格式可能是 "locale:id" 或直接是 "id"（旧数据）
+ */
+function extractModelId(name: string): string {
+  if (name.includes(':')) {
+    return name.split(':').slice(1).join(':'); // 处理 id 中可能包含 : 的情况
+  }
+  return name;
+}
+
+/**
  * 更新 Fish 语音数据（刷新封面和样例）
  */
 export async function updateFishVoices(): Promise<SyncResult> {
@@ -617,7 +656,9 @@ export async function updateFishVoices(): Promise<SyncResult> {
 
     for (const dbVoice of dbVoices) {
       try {
-        const model = await fetchVoiceDetail(dbVoice.name);
+        // 从 name 中提取 modelId
+        const modelId = extractModelId(dbVoice.name);
+        const model = await fetchVoiceDetail(modelId);
 
         const voiceSampleUrl: Record<string, string> = {};
         if (model.samples && model.samples.length > 0) {
@@ -690,7 +731,9 @@ export async function syncFishVoiceAvatars(): Promise<SyncResult> {
 
     for (const voice of voices) {
       try {
-        const model = await fetchVoiceDetail(voice.name);
+        // 从 name 中提取 modelId
+        const modelId = extractModelId(voice.name);
+        const model = await fetchVoiceDetail(modelId);
         const avatarUrl = model.cover_image
           ? buildCoverImageUrl(model.cover_image)
           : `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(voice.name)}`;

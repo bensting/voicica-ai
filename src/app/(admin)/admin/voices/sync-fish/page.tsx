@@ -36,6 +36,7 @@ export default function FishVoiceSyncPage() {
     handleUpdateAll,
     handleSyncAvatars,
     handleSyncSingle,
+    handleSyncToTW,
     closeConfirmDialog,
     handleViewVoice,
     closeVoiceDetailDialog,
@@ -108,6 +109,7 @@ export default function FishVoiceSyncPage() {
         pageSize={pageSize}
         onRefresh={loadVoices}
         onSync={handleSyncSingle}
+        onSyncTW={handleSyncToTW}
         onView={handleViewVoice}
         onPageChange={handlePageChange}
       />

@@ -278,6 +278,18 @@ function buildTags(model: FishVoiceModel): string[] {
 }
 
 /**
+ * 构建 Fish Audio 封面图 URL
+ * Fish Audio 使用 Cloudflare R2 CDN，格式为：
+ * https://public-platform.r2.fish.audio/cdn-cgi/image/width=200,format=webp/coverimage/{id}
+ */
+function buildCoverImageUrl(coverImage: string, width: number = 200): string {
+  if (!coverImage) return '';
+  // coverImage 格式为 "coverimage/xxx" 或完整 URL
+  if (coverImage.startsWith('http')) return coverImage;
+  return `https://public-platform.r2.fish.audio/cdn-cgi/image/width=${width},format=webp/${coverImage}`;
+}
+
+/**
  * 获取 Fish Audio 所有语言及统计信息
  */
 export async function getFishVoiceStatsByLanguage(): Promise<FishLanguageStats[]> {
@@ -396,9 +408,7 @@ export async function getFishPopularVoices(
       id: model._id,
       title: model.title,
       description: model.description,
-      coverImage: model.cover_image
-        ? `https://api.fish.audio/${model.cover_image}`
-        : '',
+      coverImage: buildCoverImageUrl(model.cover_image),
       languages: model.languages,
       author: model.author?.nickname || 'Unknown',
       taskCount: model.task_count,
@@ -458,9 +468,7 @@ export async function syncFishVoice(modelId: string): Promise<SyncResult> {
     }
 
     // 构建封面图 URL
-    const avatarUrl = model.cover_image
-      ? `https://api.fish.audio/${model.cover_image}`
-      : '';
+    const avatarUrl = buildCoverImageUrl(model.cover_image);
 
     // 插入数据库
     await prisma.voices.create({
@@ -544,9 +552,7 @@ export async function syncFishPopularVoices(
           voiceSampleUrl['default'] = model.samples[0].audio;
         }
 
-        const avatarUrl = model.cover_image
-          ? `https://api.fish.audio/${model.cover_image}`
-          : '';
+        const avatarUrl = buildCoverImageUrl(model.cover_image);
 
         await prisma.voices.create({
           data: {
@@ -618,9 +624,7 @@ export async function updateFishVoices(): Promise<SyncResult> {
           voiceSampleUrl['default'] = model.samples[0].audio;
         }
 
-        const avatarUrl = model.cover_image
-          ? `https://api.fish.audio/${model.cover_image}`
-          : '';
+        const avatarUrl = buildCoverImageUrl(model.cover_image);
 
         await prisma.voices.update({
           where: { id: dbVoice.id },
@@ -688,7 +692,7 @@ export async function syncFishVoiceAvatars(): Promise<SyncResult> {
       try {
         const model = await fetchVoiceDetail(voice.name);
         const avatarUrl = model.cover_image
-          ? `https://api.fish.audio/${model.cover_image}`
+          ? buildCoverImageUrl(model.cover_image)
           : `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(voice.name)}`;
 
         await prisma.voices.update({

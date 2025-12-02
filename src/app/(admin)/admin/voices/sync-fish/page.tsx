@@ -29,6 +29,7 @@ export default function FishVoiceSyncPage() {
     pageSize,
     confirmDialog,
     voiceDetailDialog,
+    exporting,
     setSearchFilter,
     setLanguageFilter,
     loadVoices,
@@ -41,6 +42,7 @@ export default function FishVoiceSyncPage() {
     handleViewVoice,
     closeVoiceDetailDialog,
     handlePageChange,
+    handleExportExcel,
   } = useFishVoiceSync();
 
   return (
@@ -107,11 +109,13 @@ export default function FishVoiceSyncPage() {
         syncResults={syncResults}
         pageNumber={pageNumber}
         pageSize={pageSize}
+        exporting={exporting}
         onRefresh={loadVoices}
         onSync={handleSyncSingle}
         onSyncTW={handleSyncToTW}
         onView={handleViewVoice}
         onPageChange={handlePageChange}
+        onExport={handleExportExcel}
       />
 
       {/* 说明 */}

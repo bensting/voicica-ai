@@ -8,6 +8,7 @@ import { verifyAdminWithoutDb } from '@/lib/auth-admin';
 import { getLocaleInfo } from '@/utils/localeMapper';
 import { uploadImage } from '@/lib/services/r2-storage';
 import * as OpenCC from 'opencc-js';
+import * as XLSX from 'xlsx';
 
 /**
  * 同步结果
@@ -867,6 +868,128 @@ export async function deleteFishVoice(voiceId: number): Promise<SyncResult> {
     return {
       success: false,
       message: error instanceof Error ? error.message : '删除失败',
+    };
+  }
+}
+
+/**
+ * 导出结果接口
+ */
+interface ExportResult {
+  success: boolean;
+  message: string;
+  data?: string; // base64 encoded xlsx
+  filename?: string;
+}
+
+/**
+ * 导出 Fish Audio 语音列表为 Excel
+ * 下载全部数据（分页获取所有数据）
+ * @param language 语言筛选（可选）
+ */
+export async function exportFishVoicesToExcel(language?: string): Promise<ExportResult> {
+  await verifyAdminWithoutDb();
+
+  try {
+    console.log(`📊 开始导出 Fish Audio 语音数据 (语言: ${language || '全部'})...`);
+
+    // 分页获取所有数据
+    const allVoices: FishVoiceModel[] = [];
+    const pageSize = 100;
+    let pageNumber = 1;
+    let total = 0;
+
+    // 首次获取，拿到 total
+    const firstPage = await fetchVoicesFromFish(pageSize, pageNumber, language);
+    total = firstPage.total;
+    allVoices.push(...firstPage.items);
+
+    // 计算总页数
+    const totalPages = Math.ceil(total / pageSize);
+    console.log(`📊 总共 ${total} 条数据，${totalPages} 页`);
+
+    // 获取剩余页面
+    for (let page = 2; page <= totalPages; page++) {
+      console.log(`📊 获取第 ${page}/${totalPages} 页...`);
+      const pageData = await fetchVoicesFromFish(pageSize, page, language);
+      allVoices.push(...pageData.items);
+
+      // 添加延迟避免 API 限流
+      await new Promise((resolve) => setTimeout(resolve, 200));
+    }
+
+    console.log(`📊 共获取 ${allVoices.length} 条数据，开始生成 Excel...`);
+
+    // 转换为 Excel 数据格式
+    const excelData = allVoices.map((model, index) => ({
+      序号: index + 1,
+      ID: model._id,
+      名称: model.title,
+      描述: model.description,
+      作者: model.author?.nickname || 'Unknown',
+      语言: model.languages.join(', '),
+      使用次数: model.task_count,
+      点赞数: model.like_count,
+      收藏数: model.mark_count,
+      标签: model.tags.join(', '),
+      训练模式: model.train_mode,
+      状态: model.state,
+      可见性: model.visibility,
+      创建时间: model.created_at,
+      更新时间: model.updated_at,
+      封面图: buildCoverImageUrl(model.cover_image),
+    }));
+
+    // 创建工作簿和工作表
+    const worksheet = XLSX.utils.json_to_sheet(excelData);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Fish Voices');
+
+    // 设置列宽
+    const columnWidths = [
+      { wch: 6 }, // 序号
+      { wch: 30 }, // ID
+      { wch: 30 }, // 名称
+      { wch: 50 }, // 描述
+      { wch: 15 }, // 作者
+      { wch: 15 }, // 语言
+      { wch: 12 }, // 使用次数
+      { wch: 10 }, // 点赞数
+      { wch: 10 }, // 收藏数
+      { wch: 30 }, // 标签
+      { wch: 12 }, // 训练模式
+      { wch: 10 }, // 状态
+      { wch: 10 }, // 可见性
+      { wch: 20 }, // 创建时间
+      { wch: 20 }, // 更新时间
+      { wch: 60 }, // 封面图
+    ];
+    worksheet['!cols'] = columnWidths;
+
+    // 生成 buffer
+    const buffer = XLSX.write(workbook, { type: 'buffer', bookType: 'xlsx' });
+
+    // 转换为 base64
+    const base64 = Buffer.from(buffer).toString('base64');
+
+    // 生成文件名
+    const languageLabel = language ? `_${language}` : '';
+    const dateStr = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+    const filename = `fish_voices${languageLabel}_${dateStr}.xlsx`;
+
+    console.log(`✅ Excel 生成成功: ${filename} (${allVoices.length} 条数据)`);
+
+    return {
+      success: true,
+      message: `导出成功: ${allVoices.length} 条数据`,
+      data: base64,
+      filename,
+    };
+  } catch (error) {
+    console.error('导出 Fish 语音 Excel 失败:', error);
+    return {
+      success: false,
+      message: error instanceof Error ? error.message : '导出失败',
     };
   }
 }

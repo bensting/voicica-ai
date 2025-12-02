@@ -8,6 +8,7 @@ import {
   syncFishVoiceAvatars,
   syncFishVoice,
   deleteFishVoice,
+  exportFishVoicesToExcel,
 } from '@/actions/admin/fish-voices';
 import { SyncResult, ConfirmDialogState } from './types';
 
@@ -254,6 +255,51 @@ export function useFishVoiceSync() {
     setPageNumber(page);
   }, []);
 
+  // 切换语言筛选（同时重置页码）
+  const handleLanguageFilterChange = useCallback((language: string) => {
+    setLanguageFilter(language);
+    setPageNumber(1); // 重置到第一页
+  }, []);
+
+  // 下载 Excel
+  const [exporting, setExporting] = useState(false);
+  const handleExportExcel = useCallback(async () => {
+    setExporting(true);
+    try {
+      const result = await exportFishVoicesToExcel(languageFilter || undefined);
+      if (result.success && result.data) {
+        // 将 base64 转换为 blob 并下载
+        const byteCharacters = atob(result.data);
+        const byteNumbers = new Array(byteCharacters.length);
+        for (let i = 0; i < byteCharacters.length; i++) {
+          byteNumbers[i] = byteCharacters.charCodeAt(i);
+        }
+        const byteArray = new Uint8Array(byteNumbers);
+        const blob = new Blob([byteArray], {
+          type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        });
+
+        // 创建下载链接
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = result.filename || 'fish_voices.xlsx';
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+      } else {
+        console.error('导出失败:', result.message);
+        alert(result.message || '导出失败');
+      }
+    } catch (error) {
+      console.error('导出 Excel 失败:', error);
+      alert('导出失败');
+    } finally {
+      setExporting(false);
+    }
+  }, [languageFilter]);
+
   return {
     // 状态
     voices,
@@ -268,9 +314,10 @@ export function useFishVoiceSync() {
     pageSize,
     confirmDialog,
     voiceDetailDialog,
+    exporting,
     // 方法
     setSearchFilter,
-    setLanguageFilter,
+    setLanguageFilter: handleLanguageFilterChange, // 使用新的方法，会重置页码
     loadVoices,
     handleSyncPopular,
     handleUpdateAll,
@@ -282,5 +329,6 @@ export function useFishVoiceSync() {
     handleViewVoice,
     closeVoiceDetailDialog,
     handlePageChange,
+    handleExportExcel,
   };
 }

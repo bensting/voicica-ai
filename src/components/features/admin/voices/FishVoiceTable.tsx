@@ -16,11 +16,13 @@ interface FishVoiceTableProps {
   syncResults: Record<string, SyncResult>;
   pageNumber: number;
   pageSize: number;
+  exporting?: boolean;
   onRefresh: () => void;
   onSync: (modelId: string) => void;
   onSyncTW?: (modelId: string) => void;
   onView: (voice: FishVoiceDetail) => void;
   onPageChange: (page: number) => void;
+  onExport?: () => void;
 }
 
 // 支持的语言选项
@@ -54,11 +56,13 @@ export default function FishVoiceTable({
   syncResults,
   pageNumber,
   pageSize,
+  exporting,
   onRefresh,
   onSync,
   onSyncTW,
   onView,
   onPageChange,
+  onExport,
 }: FishVoiceTableProps) {
   const totalPages = Math.ceil(total / pageSize);
 
@@ -90,13 +94,24 @@ export default function FishVoiceTable({
             共 {total.toLocaleString()} 个模型
           </span>
         </div>
-        <button
-          onClick={onRefresh}
-          disabled={loading}
-          className="px-4 py-2 text-sm bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors disabled:opacity-50"
-        >
-          {loading ? '加载中...' : '刷新'}
-        </button>
+        <div className="flex gap-2">
+          {onExport && (
+            <button
+              onClick={onExport}
+              disabled={exporting || loading}
+              className="px-4 py-2 text-sm bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50"
+            >
+              {exporting ? '导出中...' : '下载 Excel'}
+            </button>
+          )}
+          <button
+            onClick={onRefresh}
+            disabled={loading}
+            className="px-4 py-2 text-sm bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors disabled:opacity-50"
+          >
+            {loading ? '加载中...' : '刷新'}
+          </button>
+        </div>
       </div>
 
       {/* 表格内容 */}

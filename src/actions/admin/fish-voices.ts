@@ -6,6 +6,7 @@
 import prisma from '@/lib/prisma';
 import { verifyAdminWithoutDb } from '@/lib/auth-admin';
 import { getLocaleInfo } from '@/utils/localeMapper';
+import * as OpenCC from 'opencc-js';
 
 /**
  * 同步结果
@@ -289,6 +290,17 @@ function buildCoverImageUrl(coverImage: string, width: number = 200): string {
   return `https://public-platform.r2.fish.audio/cdn-cgi/image/width=${width},format=webp/${coverImage}`;
 }
 
+// 简体中文转繁体中文转换器
+const s2tConverter = OpenCC.Converter({ from: 'cn', to: 'tw' });
+
+/**
+ * 将简体中文转换为繁体中文
+ */
+function toTraditionalChinese(text: string): string {
+  if (!text) return text;
+  return s2tConverter(text);
+}
+
 /**
  * 获取 Fish Audio 所有语言及统计信息
  */
@@ -483,11 +495,15 @@ export async function syncFishVoice(
       ? normalizedLocale.split('-')[1].toUpperCase()
       : getCountryFromLanguage(primaryLanguage);
 
+    // 处理 display_name：如果是繁体中文则转换
+    const displayName =
+      normalizedLocale === 'zh-TW' ? toTraditionalChinese(model.title) : model.title;
+
     // 插入数据库
     await prisma.voices.create({
       data: {
         name: voiceName,
-        display_name: model.title,
+        display_name: displayName,
         provider: 'fish',
         locale: normalizedLocale,
         country,
@@ -582,10 +598,14 @@ export async function syncFishPopularVoices(
           ? normalizedLocale.split('-')[1].toUpperCase()
           : getCountryFromLanguage(primaryLanguage);
 
+        // 处理 display_name：如果是繁体中文则转换
+        const displayName =
+          normalizedLocale === 'zh-TW' ? toTraditionalChinese(model.title) : model.title;
+
         await prisma.voices.create({
           data: {
             name: voiceName,
-            display_name: model.title,
+            display_name: displayName,
             provider: 'fish',
             locale: normalizedLocale,
             country,
@@ -648,7 +668,7 @@ export async function updateFishVoices(): Promise<SyncResult> {
     // 获取数据库中所有 Fish 语音
     const dbVoices = await prisma.voices.findMany({
       where: { provider: 'fish' },
-      select: { id: true, name: true },
+      select: { id: true, name: true, locale: true },
     });
 
     let updated = 0;
@@ -667,10 +687,14 @@ export async function updateFishVoices(): Promise<SyncResult> {
 
         const avatarUrl = buildCoverImageUrl(model.cover_image);
 
+        // 处理 display_name：如果是繁体中文则转换
+        const displayName =
+          dbVoice.locale === 'zh-TW' ? toTraditionalChinese(model.title) : model.title;
+
         await prisma.voices.update({
           where: { id: dbVoice.id },
           data: {
-            display_name: model.title,
+            display_name: displayName,
             avatar_url: avatarUrl,
             voice_sample_url: voiceSampleUrl,
             voice_sample_text: model.default_text || model.samples?.[0]?.text || '',

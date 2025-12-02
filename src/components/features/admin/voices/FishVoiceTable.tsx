@@ -18,6 +18,7 @@ interface FishVoiceTableProps {
   pageSize: number;
   onRefresh: () => void;
   onSync: (modelId: string) => void;
+  onSyncTW?: (modelId: string) => void;
   onView: (voice: FishVoiceDetail) => void;
   onPageChange: (page: number) => void;
 }
@@ -55,6 +56,7 @@ export default function FishVoiceTable({
   pageSize,
   onRefresh,
   onSync,
+  onSyncTW,
   onView,
   onPageChange,
 }: FishVoiceTableProps) {
@@ -138,6 +140,7 @@ export default function FishVoiceTable({
                   syncing={syncing}
                   syncResults={syncResults}
                   onSync={onSync}
+                  onSyncTW={onSyncTW}
                   onView={onView}
                 />
               ))}
@@ -182,17 +185,25 @@ function FishVoiceTableRow({
   syncing,
   syncResults,
   onSync,
+  onSyncTW,
   onView,
 }: {
   voice: FishVoiceDetail;
   syncing: string | null;
   syncResults: Record<string, SyncResult>;
   onSync: (modelId: string) => void;
+  onSyncTW?: (modelId: string) => void;
   onView: (voice: FishVoiceDetail) => void;
 }) {
   const syncKey = `single-${voice.id}`;
+  const syncKeyTW = `single-tw-${voice.id}`;
   const result = syncResults[syncKey];
+  const resultTW = syncResults[syncKeyTW];
   const isSyncing = syncing === syncKey;
+  const isSyncingTW = syncing === syncKeyTW;
+
+  // 是否是中文语音
+  const isChineseVoice = voice.languages.includes('zh');
 
   return (
     <tr className="hover:bg-gray-50">
@@ -289,17 +300,38 @@ function FishVoiceTableRow({
           >
             {isSyncing ? '同步中...' : '同步'}
           </button>
+          {/* 中文语音显示同步TW按钮 */}
+          {isChineseVoice && onSyncTW && (
+            <button
+              onClick={() => onSyncTW(voice.id)}
+              disabled={syncing !== null}
+              className="px-3 py-1 text-sm bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors disabled:opacity-50"
+            >
+              {isSyncingTW ? '同步中...' : '同步TW'}
+            </button>
+          )}
         </div>
         {/* 结果提示 */}
         {result && (
           <div
-            className={`mt-2 text-xs ${result.success ? 'text-green-600' : 'text-red-600'}`}
+            className={`mt-1 text-xs ${result.success ? 'text-green-600' : 'text-red-600'}`}
           >
             {result.success
               ? result.inserted
-                ? '已同步'
-                : '已存在'
+                ? '已同步(CN)'
+                : '已存在(CN)'
               : '同步失败'}
+          </div>
+        )}
+        {resultTW && (
+          <div
+            className={`mt-1 text-xs ${resultTW.success ? 'text-green-600' : 'text-red-600'}`}
+          >
+            {resultTW.success
+              ? resultTW.inserted
+                ? '已同步(TW)'
+                : '已存在(TW)'
+              : '同步失败(TW)'}
           </div>
         )}
       </td>

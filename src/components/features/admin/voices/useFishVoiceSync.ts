@@ -159,12 +159,32 @@ export function useFishVoiceSync() {
     }
   }, []);
 
-  // 同步单个语音
+  // 同步单个语音（默认语言，zh -> zh-CN）
   const handleSyncSingle = useCallback(async (modelId: string) => {
     const syncKey = `single-${modelId}`;
     setSyncing(syncKey);
     try {
       const result = await syncFishVoice(modelId);
+      setSyncResults((prev) => ({ ...prev, [syncKey]: result }));
+    } catch (error) {
+      setSyncResults((prev) => ({
+        ...prev,
+        [syncKey]: {
+          success: false,
+          message: error instanceof Error ? error.message : '同步失败',
+        },
+      }));
+    } finally {
+      setSyncing(null);
+    }
+  }, []);
+
+  // 同步单个语音到繁体中文（zh-TW）
+  const handleSyncToTW = useCallback(async (modelId: string) => {
+    const syncKey = `single-tw-${modelId}`;
+    setSyncing(syncKey);
+    try {
+      const result = await syncFishVoice(modelId, 'zh-TW');
       setSyncResults((prev) => ({ ...prev, [syncKey]: result }));
     } catch (error) {
       setSyncResults((prev) => ({
@@ -256,6 +276,7 @@ export function useFishVoiceSync() {
     handleUpdateAll,
     handleSyncAvatars,
     handleSyncSingle,
+    handleSyncToTW,
     handleDelete,
     closeConfirmDialog,
     handleViewVoice,

@@ -50,8 +50,8 @@ function warning(message) {
 
 // 预设的测试环境
 const TEST_ENVIRONMENTS = {
-  'test': 'https://ai-voice-labs.com',
-  'staging': 'https://staging.voicica.ai',
+  'test': 'https://ai-voice-labs.com/studio',
+  'staging': 'https://staging.voicica.ai/studio',
   'production': 'https://voicica.ai/studio',
 };
 

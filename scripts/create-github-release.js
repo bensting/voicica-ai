@@ -153,11 +153,11 @@ SHA256: ${fileInfo.sha256}
 const TEST_ENVIRONMENTS = {
   'test': {
     name: 'ai-voice-labs.com (测试)',
-    url: 'https://ai-voice-labs.com',
+    url: 'https://ai-voice-labs.com/studio',
   },
   'staging': {
     name: 'staging (预发布)',
-    url: 'https://staging.voicica.ai',
+    url: 'https://staging.voicica.ai/studio',
   }
 };
 

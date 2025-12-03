@@ -8,11 +8,13 @@
  * - 自动获取和刷新 ID Token
  * - 提供登录/登出方法
  * - 支持多种登录方式（Google, Apple, Twitter等）
+ * - 在 Capacitor 原生应用中使用原生登录（避免 WebView 限制）
  */
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import {
   signInWithPopup,
   signInWithRedirect,
+  signInWithCredential,
   getRedirectResult,
   signOut as firebaseSignOut,
   onAuthStateChanged,
@@ -27,8 +29,11 @@ import {
   type AuthProvider,
 } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
-import { isInAppBrowser } from '@/config/inAppBrowser';
+import { isInAppBrowser, isCapacitorNative } from '@/config/inAppBrowser';
 import { useLanguage } from '@/contexts/LanguageContext';
+
+// Capacitor Firebase Auth 插件（仅在原生环境中使用）
+import { FirebaseAuthentication } from '@capacitor-firebase/authentication';
 
 interface FirebaseAuthContextType {
   user: User | null;
@@ -153,6 +158,26 @@ export function FirebaseAuthProvider({ children }: { children: React.ReactNode }
 
   // Google 登录
   const signInWithGoogle = useCallback(async () => {
+    // 在 Capacitor 原生环境中使用原生登录
+    if (isCapacitorNative()) {
+      try {
+        console.log('[FirebaseAuth] 使用原生 Google 登录');
+        const result = await FirebaseAuthentication.signInWithGoogle();
+
+        // 使用返回的 credential 在 Firebase Web SDK 中认证
+        if (result.credential?.idToken) {
+          const credential = GoogleAuthProvider.credential(result.credential.idToken);
+          await signInWithCredential(auth, credential);
+          console.log('[FirebaseAuth] 原生 Google 登录成功');
+        }
+      } catch (error) {
+        console.error('[FirebaseAuth] 原生 Google 登录失败:', error);
+        throw error;
+      }
+      return;
+    }
+
+    // Web 环境使用 popup/redirect 方式
     const provider = new GoogleAuthProvider();
     provider.setCustomParameters({
       prompt: 'select_account',

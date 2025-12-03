@@ -131,7 +131,8 @@ async function main() {
   console.log('');
 
   try {
-    execSync('npm run android:build', {
+    // 使用 --skip-sync 避免重复同步覆盖测试配置
+    execSync('node scripts/build-android.js apk --skip-sync', {
       stdio: 'inherit',
       env: { ...process.env, CAPACITOR_SERVER_URL: targetUrl }
     });
@@ -140,54 +141,30 @@ async function main() {
     process.exit(1);
   }
 
-  // 5. 重命名输出文件（添加环境标识）
+  // 5. 重命名为测试包文件名
   const apkDir = path.join(__dirname, '../android/app/build/outputs/apk/release');
-  const originalApk = path.join(apkDir, 'app-release.apk');
+  const versionPath = path.join(__dirname, '../native-version.json');
+  const version = JSON.parse(fs.readFileSync(versionPath, 'utf8'));
 
-  if (fs.existsSync(originalApk)) {
-    // 从 URL 提取环境标识
-    let envLabel = 'test';
-    if (targetUrl.includes('ai-voice-labs.com')) {
-      envLabel = 'ai-voice-labs';
-    } else if (targetUrl.includes('staging')) {
-      envLabel = 'staging';
-    } else if (targetUrl.includes('voicica.ai')) {
-      envLabel = 'production';
+  // 生产构建脚本会生成 app-release-版本号.apk，需要重命名为测试包
+  const prodApkName = `app-release-${version.version}.apk`;
+  const prodApkPath = path.join(apkDir, prodApkName);
+  const testApkName = `app-release-test-${version.version}.apk`;
+  const testApkPath = path.join(apkDir, testApkName);
+
+  if (fs.existsSync(prodApkPath)) {
+    // 如果目标文件已存在，先删除
+    if (fs.existsSync(testApkPath)) {
+      fs.unlinkSync(testApkPath);
     }
-
-    // 读取版本信息
-    const versionPath = path.join(__dirname, '../native-version.json');
-    const version = JSON.parse(fs.readFileSync(versionPath, 'utf8'));
-
-    // 新文件名：app-release-{环境}-{版本}.apk
-    const newApkName = `app-release-${envLabel}-v${version.version}.apk`;
-    const newApkPath = path.join(apkDir, newApkName);
-
-    // 复制文件（保留原文件）
-    fs.copyFileSync(originalApk, newApkPath);
-    success(`测试包已生成: ${newApkName}`);
+    fs.renameSync(prodApkPath, testApkPath);
 
     console.log('');
     log('📦 构建结果:', colors.bright);
-    console.log(`   原始文件: ${originalApk}`);
-    console.log(`   测试包:   ${newApkPath}`);
+    console.log(`   APK 文件: ${testApkPath}`);
     console.log(`   目标 URL: ${targetUrl}`);
+    console.log(`   版本: ${version.version} (Build ${version.buildNumber})`);
     console.log('');
-
-    // 保存构建信息
-    const buildInfo = {
-      type: 'test',
-      environment: envLabel,
-      serverUrl: targetUrl,
-      version: version.version,
-      buildNumber: version.buildNumber,
-      buildDate: new Date().toISOString(),
-      apkFile: newApkName
-    };
-
-    const buildInfoPath = path.join(apkDir, `build-info-${envLabel}.json`);
-    fs.writeFileSync(buildInfoPath, JSON.stringify(buildInfo, null, 2));
-    info(`构建信息已保存: build-info-${envLabel}.json`);
   }
 
   console.log('');

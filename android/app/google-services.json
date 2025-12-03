@@ -1,0 +1,116 @@
+{
+  "project_info": {
+    "project_number": "304429736257",
+    "project_id": "your-project-id",
+    "storage_bucket": "your-project-id.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:304429736257:android:afaa89acaba08c843341c0",
+        "android_client_info": {
+          "package_name": "ai.voicica.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "304429736257-hn2oh9qgpecuiv8v2kvam7k4hnqvqngk.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "ai.voicica.app",
+            "certificate_hash": "ecc64ed47dce7794dbb832b17badd934ae95daa6"
+          }
+        },
+        {
+          "client_id": "304429736257-idgsdv85q5hgggq76fa7d33stnmf0tvm.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "ai.voicica.app",
+            "certificate_hash": "fda3044b0f347ea1ff8e0dd35c3ef904ad27d572"
+          }
+        },
+        {
+          "client_id": "304429736257-ljccu9brouiru7psj2qi0hogp8f8jh43.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBb5_0JrTawovGnSQQzxIxhx4pLL5N3bw8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "your_google_client_id.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:304429736257:android:1ae9c9655b94f6943341c0",
+        "android_client_info": {
+          "package_name": "com.zobalabs.aivoicelabs"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "304429736257-auc07mdv9790erj01340opa8girsh90u.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.zobalabs.aivoicelabs",
+            "certificate_hash": "442965aef33c20c658739ce4d246a4e053691f0d"
+          }
+        },
+        {
+          "client_id": "304429736257-cgfgjiplb5agcmboe515ntvniu96qoun.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.zobalabs.aivoicelabs",
+            "certificate_hash": "c0092bcd6d924779edddb7ee0100b70f8d5c06c2"
+          }
+        },
+        {
+          "client_id": "304429736257-ouj9j16rh7oja3tq3ftgjnkuoa4ogsef.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.zobalabs.aivoicelabs",
+            "certificate_hash": "fda3044b0f347ea1ff8e0dd35c3ef904ad27d572"
+          }
+        },
+        {
+          "client_id": "304429736257-tnd0jsgkfr55m466htn9lkfvlpg9ai32.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.zobalabs.aivoicelabs",
+            "certificate_hash": "fc8834bffbaa2b27044150566521f78cfc941401"
+          }
+        },
+        {
+          "client_id": "304429736257-ljccu9brouiru7psj2qi0hogp8f8jh43.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBb5_0JrTawovGnSQQzxIxhx4pLL5N3bw8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "your_google_client_id.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

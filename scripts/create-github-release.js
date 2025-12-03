@@ -154,30 +154,12 @@ const TEST_ENVIRONMENTS = {
   'test': {
     name: 'ai-voice-labs.com (测试)',
     url: 'https://ai-voice-labs.com',
-    apkPattern: 'app-release-ai-voice-labs-v*.apk'
   },
   'staging': {
     name: 'staging (预发布)',
     url: 'https://staging.voicica.ai',
-    apkPattern: 'app-release-staging-v*.apk'
   }
 };
-
-// 查找测试 APK
-function findTestApk(env) {
-  const releaseDir = path.join(__dirname, '../android/app/build/outputs/apk/release');
-
-  if (!fs.existsSync(releaseDir)) {
-    return null;
-  }
-
-  const files = fs.readdirSync(releaseDir);
-  const pattern = TEST_ENVIRONMENTS[env]?.apkPattern || `app-release-${env}-v*.apk`;
-  const regex = new RegExp(pattern.replace('*', '.*'));
-
-  const apkFile = files.find(f => regex.test(f));
-  return apkFile ? path.join(releaseDir, apkFile) : null;
-}
 
 // 主流程
 async function main() {
@@ -240,30 +222,38 @@ async function main() {
   // 3. 检查 APK 文件
   info('检查 APK 文件...');
 
+  const releaseDir = path.join(__dirname, '../android/app/build/outputs/apk/release');
   let apkPath;
   let testEnv = null;
 
   if (isTest) {
-    // 查找测试 APK
-    apkPath = findTestApk(testEnvName);
+    // 测试包：app-release-test-版本号.apk
+    const testApkName = `app-release-test-${version.version}.apk`;
+    apkPath = path.join(releaseDir, testApkName);
     testEnv = TEST_ENVIRONMENTS[testEnvName] || {
       name: testEnvName,
       url: `https://${testEnvName}.voicica.ai`
     };
 
-    if (!apkPath) {
-      error(`未找到测试 APK (${testEnvName})`);
+    if (!fs.existsSync(apkPath)) {
+      error(`未找到测试 APK: ${testApkName}`);
       console.log('');
       console.log('请先构建测试 APK:');
-      console.log(`  npm run android:build:test`);
-      console.log('');
-      console.log('或手动指定环境:');
-      console.log(`  CAPACITOR_SERVER_URL=https://your-url.com npm run android:build`);
+      console.log(`  npm run android:build:test test`);
       process.exit(1);
     }
   } else {
-    // 正式版本 APK
-    apkPath = path.join(__dirname, '../android/app/build/outputs/apk/release/app-release.apk');
+    // 生产包：app-release-版本号.apk
+    const prodApkName = `app-release-${version.version}.apk`;
+    apkPath = path.join(releaseDir, prodApkName);
+
+    if (!fs.existsSync(apkPath)) {
+      error(`未找到生产 APK: ${prodApkName}`);
+      console.log('');
+      console.log('请先构建 APK:');
+      console.log('  npm run android:build');
+      process.exit(1);
+    }
   }
 
   if (!fs.existsSync(apkPath)) {

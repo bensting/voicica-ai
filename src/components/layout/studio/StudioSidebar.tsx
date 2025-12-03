@@ -71,8 +71,8 @@ export default function StudioSidebar({ isOpen = false, onClose }: StudioSidebar
           })}
         </div>
 
-        {/* Video AI */}
-        {studioMenuCategories.video.length > 0 && (
+        {/* AI Video */}
+        {studioMenuCategories.ai_video.length > 0 && (
           <div className="mb-6">
             {/* 桌面端展开时显示，移动端始终显示 */}
             <div className={`px-4 py-2 ${isExpanded ? 'lg:block' : 'lg:hidden'}`}>
@@ -80,7 +80,7 @@ export default function StudioSidebar({ isOpen = false, onClose }: StudioSidebar
                 Video AI
               </span>
             </div>
-            {studioMenuCategories.video.map((item) => {
+            {studioMenuCategories.ai_video.map((item) => {
               const isActive = pathname === item.href;
               return (
                 <Link

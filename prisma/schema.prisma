@@ -207,3 +207,39 @@ model voices {
   @@index([role, country], map: "ix_voices_role_country")
   @@index([sort_order, is_active], map: "ix_voices_sort_active")
 }
+
+/// Video generation records (Text-to-Video, Image-to-Video)
+model video_records {
+  user_id         String    @db.VarChar(255)
+  task_id         String    @unique(map: "ix_video_records_task_id") @db.VarChar(255)
+  task_type       String    @db.VarChar(50) // text_to_video, image_to_video
+  model           String    @db.VarChar(50) // veo-3.1, etc.
+  prompt          String    // User's text prompt
+  prompt_zh       String?   // Translated Chinese prompt (if translation enabled)
+  negative_prompt String?   // Negative prompt (optional)
+  resolution      String    @db.VarChar(20) // 768p, 1080p
+  duration        Int       // Target duration in seconds (8, 10, 15)
+  aspect_ratio    String    @db.VarChar(10) // 16:9, 9:16
+  seed            Int?      // Random seed for reproducibility
+  is_public       Boolean   @default(false) // Public visibility
+  credits_cost    Int       // Credits deducted
+  status          String    @db.VarChar(20) // PENDING, PROCESSING, SUCCESS, FAILURE
+  progress        Int       @default(0) // 0-100 progress indicator
+  video_url       String?   // R2 URL after success
+  thumbnail_url   String?   // Video thumbnail URL
+  actual_duration Float?    // Actual video duration in seconds
+  format          String    @db.VarChar(10) @default("mp4") // mp4
+  error_message   String?
+  completed_at    DateTime? @db.Timestamptz(6)
+  share_id        String?   @unique(map: "ix_video_records_share_id") @db.VarChar(12)
+  id              Int       @id(map: "pk_video_records") @default(autoincrement())
+  created_at      DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at      DateTime? @updatedAt @db.Timestamptz(6)
+
+  @@index([status], map: "ix_video_records_status")
+  @@index([user_id], map: "ix_video_records_user_id")
+  @@index([user_id, created_at], map: "ix_video_records_user_created")
+  @@index([user_id, status], map: "ix_video_records_user_status")
+  @@index([user_id, status, created_at], map: "ix_video_records_user_status_created")
+  @@index([is_public], map: "ix_video_records_is_public")
+}

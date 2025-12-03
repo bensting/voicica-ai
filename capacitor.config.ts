@@ -5,11 +5,29 @@ const serverUrl = process.env.CAPACITOR_SERVER_URL || 'https://voicica.ai/studio
 
 // 根据 URL 确定允许导航的域名
 const getAllowedDomains = (url: string): string[] => {
+  // 基础域名（支付、认证等）
   const baseDomains = [
-    '*.stripe.com',
+    // Stripe 支付
     'stripe.com',
-    '*.google.com',
+    '*.stripe.com',
+    // Google 登录
     'google.com',
+    '*.google.com',
+    'accounts.google.com',
+    '*.googleapis.com',
+    // Firebase 认证
+    '*.firebaseapp.com',
+    '*.firebase.com',
+    '*.firebaseio.com',
+    // Apple 登录
+    'apple.com',
+    '*.apple.com',
+    'appleid.apple.com',
+    // Twitter/X 登录
+    'twitter.com',
+    '*.twitter.com',
+    'x.com',
+    '*.x.com',
   ];
 
   if (url.includes('ai-voice-labs.com')) {

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import { getAuth } from 'firebase/auth';
 import {
   getFishPopularVoices,
   syncFishPopularVoices,
@@ -8,7 +9,6 @@ import {
   syncFishVoiceAvatars,
   syncFishVoice,
   deleteFishVoice,
-  exportFishVoicesToExcel,
 } from '@/actions/admin/fish-voices';
 import { SyncResult, ConfirmDialogState } from './types';
 
@@ -261,40 +261,56 @@ export function useFishVoiceSync() {
     setPageNumber(1); // 重置到第一页
   }, []);
 
-  // 下载 Excel
+  // 下载 Excel（使用 API Route + fetch 下载，需要传递 token）
   const [exporting, setExporting] = useState(false);
   const handleExportExcel = useCallback(async () => {
     setExporting(true);
     try {
-      const result = await exportFishVoicesToExcel(languageFilter || undefined);
-      if (result.success && result.data) {
-        // 将 base64 转换为 blob 并下载
-        const byteCharacters = atob(result.data);
-        const byteNumbers = new Array(byteCharacters.length);
-        for (let i = 0; i < byteCharacters.length; i++) {
-          byteNumbers[i] = byteCharacters.charCodeAt(i);
-        }
-        const byteArray = new Uint8Array(byteNumbers);
-        const blob = new Blob([byteArray], {
-          type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-        });
-
-        // 创建下载链接
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = result.filename || 'fish_voices.xlsx';
-        document.body.appendChild(a);
-        a.click();
-        window.URL.revokeObjectURL(url);
-        document.body.removeChild(a);
-      } else {
-        console.error('导出失败:', result.message);
-        alert(result.message || '导出失败');
+      // 获取 Firebase token
+      const auth = getAuth();
+      const user = auth.currentUser;
+      if (!user) {
+        alert('请先登录');
+        return;
       }
+      const token = await user.getIdToken();
+
+      // 请求 API
+      const url = `/api/admin/fish-voices/export${languageFilter ? `?language=${languageFilter}` : ''}`;
+      const response = await fetch(url, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || '导出失败');
+      }
+
+      // 获取文件名
+      const contentDisposition = response.headers.get('Content-Disposition');
+      let filename = 'fish_voices.xlsx';
+      if (contentDisposition) {
+        const match = contentDisposition.match(/filename="(.+)"/);
+        if (match) {
+          filename = match[1];
+        }
+      }
+
+      // 下载文件
+      const blob = await response.blob();
+      const downloadUrl = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = downloadUrl;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(downloadUrl);
+      document.body.removeChild(a);
     } catch (error) {
       console.error('导出 Excel 失败:', error);
-      alert('导出失败');
+      alert(error instanceof Error ? error.message : '导出失败');
     } finally {
       setExporting(false);
     }

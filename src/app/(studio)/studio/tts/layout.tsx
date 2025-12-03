@@ -24,9 +24,15 @@ export default function TTSLayout({
       </div>
 
       {/* ========== 移动端布局 (<lg) ========== */}
-      <div className="lg:hidden h-[calc(100vh-60px)] flex flex-col">
-        {/* Content area */}
-        <div className="flex-1 min-h-0">
+      {/* 高度计算：100vh - 顶部导航(60px) - 安全区域顶部 */}
+      <div
+        className="lg:hidden flex flex-col"
+        style={{
+          height: 'calc(100vh - 60px - env(safe-area-inset-top, 0px))'
+        }}
+      >
+        {/* Content area - 底部留出安全区域空间 */}
+        <div className="flex-1 min-h-0 safe-area-bottom-margin">
           <div className="h-full">
             {children}
           </div>

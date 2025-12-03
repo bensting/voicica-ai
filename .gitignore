@@ -84,3 +84,8 @@ android-release.keystore
 release.keystore
 upload-keystore.jks
 android/local.properties
+google-play-service-account.json
+
+# Release temporary files
+.release-notes.md
+.releases.json

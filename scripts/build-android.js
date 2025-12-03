@@ -160,10 +160,11 @@ async function main() {
 
   if (hasRemoteServer) {
     info('检测到远程加载模式（WebView 加载线上网页）');
-    info('跳过 Web 资源同步（不需要）');
+    info('同步 Capacitor 配置（不同步 Web 资源）...');
 
-    // 只更新插件，不同步 Web 资源
-    exec('npx cap update android', { ignoreError: true });
+    // 远程模式：同步配置和插件，跳过 Web 资源构建
+    // cap sync 会同步 capacitor.config.json 到 Android 项目
+    exec('npx cap sync android', { ignoreError: true });
   } else {
     // 本地模式，需要同步 Web 资源
     info('本地模式：同步 Web 资源到原生项目...');

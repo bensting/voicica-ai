@@ -80,10 +80,25 @@ export const IN_APP_BROWSER_PATTERNS: InAppBrowserPattern[] = [
 ];
 
 /**
+ * 检测是否在 Capacitor 原生应用中
+ */
+export function isCapacitorNative(): boolean {
+  if (typeof window === 'undefined') return false;
+
+  // 检测 Capacitor 原生环境
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const Capacitor = (window as any).Capacitor;
+  return Capacitor?.isNativePlatform?.() === true;
+}
+
+/**
  * 检测是否在应用内浏览器中
  */
 export function isInAppBrowser(): boolean {
   if (typeof window === 'undefined') return false;
+
+  // Capacitor 原生应用视为应用内浏览器（需要使用 redirect 方式登录）
+  if (isCapacitorNative()) return true;
 
   const ua = navigator.userAgent.toLowerCase();
 

@@ -19,6 +19,7 @@
     "native:version:show": "node -e \"console.log(JSON.stringify(require('./native-version.json'), null, 2))\"",
     "android:build": "node scripts/build-android.js apk",
     "android:build:aab": "node scripts/build-android.js aab",
+    "android:build:test": "node scripts/build-android-test.js",
     "android:build:manual": "cd android && gradlew assembleRelease",
     "android:build:debug": "cd android && gradlew assembleDebug",
     "android:clean": "cd android && gradlew clean",

@@ -101,29 +101,49 @@ async function main() {
   // 2. 同步 Capacitor 配置
   info('同步 Capacitor 配置...');
   try {
-    execSync('npx cap sync android', {
-      stdio: 'inherit',
-      env: { ...process.env, CAPACITOR_SERVER_URL: targetUrl }
-    });
+    execSync('npx cap sync android', { stdio: 'inherit' });
     success('Capacitor 同步完成');
   } catch (err) {
     // 远程模式下可能会有警告，但不影响
     warning('Capacitor 同步完成（有警告，可忽略）');
   }
 
-  // 3. 验证配置
-  info('验证配置...');
+  // 3. 直接修改配置文件（避免 Windows 环境变量传递问题）
+  info('修改 Capacitor 配置为测试环境...');
   const capacitorConfigPath = path.join(__dirname, '../android/app/src/main/assets/capacitor.config.json');
 
   if (fs.existsSync(capacitorConfigPath)) {
-    const configContent = fs.readFileSync(capacitorConfigPath, 'utf8');
-    const config = JSON.parse(configContent);
+    const config = JSON.parse(fs.readFileSync(capacitorConfigPath, 'utf8'));
 
-    if (config.server && config.server.url === targetUrl) {
-      success(`配置验证通过: ${config.server.url}`);
-    } else {
-      warning(`配置 URL 可能不匹配，实际: ${config.server?.url}`);
+    // 保存原始 URL 用于日志
+    const originalUrl = config.server?.url || 'unknown';
+
+    // 修改服务器 URL
+    config.server.url = targetUrl;
+
+    // 根据 URL 设置允许导航的域名
+    const baseDomains = [
+      'stripe.com', '*.stripe.com',
+      'google.com', '*.google.com', 'accounts.google.com', '*.googleapis.com',
+      '*.firebaseapp.com', '*.firebase.com', '*.firebaseio.com',
+      'apple.com', '*.apple.com', 'appleid.apple.com',
+      'twitter.com', '*.twitter.com', 'x.com', '*.x.com',
+    ];
+
+    if (targetUrl.includes('ai-voice-labs.com')) {
+      config.server.allowNavigation = ['ai-voice-labs.com', '*.ai-voice-labs.com', ...baseDomains];
+    } else if (targetUrl.includes('voicica.ai')) {
+      config.server.allowNavigation = ['voicica.ai', '*.voicica.ai', ...baseDomains];
     }
+
+    // 保存修改后的配置
+    fs.writeFileSync(capacitorConfigPath, JSON.stringify(config, null, '\t'));
+
+    success(`配置已修改: ${originalUrl} → ${targetUrl}`);
+    info(`allowNavigation: ${config.server.allowNavigation[0]}, ${config.server.allowNavigation[1]}, ...`);
+  } else {
+    error('未找到 capacitor.config.json');
+    process.exit(1);
   }
 
   // 4. 构建 APK

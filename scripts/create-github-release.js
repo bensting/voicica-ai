@@ -286,7 +286,12 @@ async function main() {
 
     // 自动删除现有 Release
     exec(`gh release delete ${tagName} --yes`, { silent: true, ignoreError: true });
-    success(`已删除旧版本 ${tagName}`);
+
+    // 删除远程和本地 tag（Release 删除后 tag 仍存在）
+    exec(`git push origin :refs/tags/${tagName}`, { silent: true, ignoreError: true });
+    exec(`git tag -d ${tagName}`, { silent: true, ignoreError: true });
+
+    success(`已删除旧版本 ${tagName} 及其 tag`);
   } else {
     success(`${tagName} 可用`);
   }

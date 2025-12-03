@@ -2,6 +2,9 @@ ext {
     minSdkVersion = 23
     compileSdkVersion = 35
     targetSdkVersion = 35
+
+    // Firebase Authentication - 启用 Google 登录
+    rgcfaIncludeGoogle = true
     androidxActivityVersion = '1.9.2'
     androidxAppCompatVersion = '1.7.0'
     androidxCoordinatorLayoutVersion = '1.2.0'

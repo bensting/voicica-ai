@@ -1,17 +1,14 @@
 {
-  "version": "1.0.0",
+  "version": "1.0.1",
   "buildNumber": 1,
   "description": "原生应用版本（Android/iOS 应用壳）",
   "changelog": [
     {
-      "version": "1.0.0",
+      "version": "1.0.1",
       "buildNumber": 1,
       "date": "2024-12-03",
       "changes": [
-        "初始版本",
-        "WebView 远程加载模式",
-        "支持 Firebase 认证",
-        "集成核心 Capacitor 插件"
+        "更新浏览器安全距离"
       ]
     }
   ],

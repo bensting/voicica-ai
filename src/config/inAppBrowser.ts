@@ -81,14 +81,27 @@ export const IN_APP_BROWSER_PATTERNS: InAppBrowserPattern[] = [
 
 /**
  * 检测是否在 Capacitor 原生应用中
+ *
+ * 远程加载模式下 window.Capacitor 不可用，需要通过 User-Agent 检测
  */
 export function isCapacitorNative(): boolean {
   if (typeof window === 'undefined') return false;
 
-  // 检测 Capacitor 原生环境
+  // 方法 1: 检测 Capacitor 对象（本地模式有效）
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const Capacitor = (window as any).Capacitor;
-  return Capacitor?.isNativePlatform?.() === true;
+  if (Capacitor?.isNativePlatform?.() === true) {
+    return true;
+  }
+
+  // 方法 2: 通过 User-Agent 检测（远程加载模式）
+  // Capacitor 配置了 appendUserAgent: 'VoicicaApp'
+  const ua = navigator.userAgent;
+  if (ua.includes('VoicicaApp')) {
+    return true;
+  }
+
+  return false;
 }
 
 /**

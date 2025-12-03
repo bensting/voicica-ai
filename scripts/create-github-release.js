@@ -292,16 +292,14 @@ async function main() {
   const existingRelease = exec(`gh release view ${tagName} 2>&1`, { silent: true, ignoreError: true });
 
   if (existingRelease && !existingRelease.includes('release not found')) {
-    warning(`Release ${tagName} 已存在`);
-    console.log('');
-    console.log('选项:');
-    console.log(`  1. 删除现有 Release: gh release delete ${tagName} --yes`);
-    console.log(`  2. 更新版本号后重新运行`);
-    console.log(`  3. 手动上传文件: gh release upload ${tagName} "${apkPath}"`);
-    process.exit(1);
-  }
+    warning(`Release ${tagName} 已存在，自动删除并重新发布...`);
 
-  success(`${tagName} 可用`);
+    // 自动删除现有 Release
+    exec(`gh release delete ${tagName} --yes`, { silent: true, ignoreError: true });
+    success(`已删除旧版本 ${tagName}`);
+  } else {
+    success(`${tagName} 可用`);
+  }
 
   // 5. 生成 Release Notes
   info('生成 Release Notes...');

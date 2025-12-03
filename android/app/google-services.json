@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "304429736257-hn2oh9qgpecuiv8v2kvam7k4hnqvqngk.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "ai.voicica.app",
+            "certificate_hash": "ecc64ed47dce7794dbb832b17badd934ae95daa6"
+          }
+        },
+        {
           "client_id": "304429736257-idgsdv85q5hgggq76fa7d33stnmf0tvm.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {

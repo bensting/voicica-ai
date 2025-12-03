@@ -55,7 +55,12 @@ const config: CapacitorConfig = {
     cleartext: true,
     // 允许导航到外部链接（根据 URL 自动配置）
     allowNavigation: getAllowedDomains(serverUrl),
+    // 添加自定义 User-Agent 标识，用于远程网页检测原生环境
+    androidScheme: 'https',
   },
+
+  // 自定义 User-Agent，用于远程网页检测是否在原生应用中
+  appendUserAgent: 'VoicicaApp',
 
   // iOS 配置
   ios: {

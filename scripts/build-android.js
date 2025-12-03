@@ -228,14 +228,25 @@ async function main() {
     : path.join(outputDir, 'app-release.apk');
 
   if (fs.existsSync(outputFile)) {
-    const stats = fs.statSync(outputFile);
-    const sha256 = calculateSHA256(outputFile);
+    // 重命名为带版本号的文件名
+    const ext = buildType === 'aab' ? 'aab' : 'apk';
+    const newFileName = `app-release-${nativeVersion.version}.${ext}`;
+    const newFilePath = path.join(outputDir, newFileName);
+
+    // 如果目标文件已存在，先删除
+    if (fs.existsSync(newFilePath)) {
+      fs.unlinkSync(newFilePath);
+    }
+    fs.renameSync(outputFile, newFilePath);
+
+    const stats = fs.statSync(newFilePath);
+    const sha256 = calculateSHA256(newFilePath);
 
     console.log('');
     success('构建成功！');
     console.log('');
     log('📦 文件信息:', colors.bright);
-    console.log(`   文件：${outputFile}`);
+    console.log(`   文件：${newFilePath}`);
     console.log(`   大小：${formatFileSize(stats.size)}`);
     console.log(`   SHA256：${sha256}`);
     console.log('');
@@ -246,7 +257,7 @@ async function main() {
       buildNumber: nativeVersion.buildNumber,
       buildType: buildType.toUpperCase(),
       buildDate: new Date().toISOString(),
-      file: outputFile,
+      file: newFilePath,
       size: stats.size,
       sha256: sha256
     };

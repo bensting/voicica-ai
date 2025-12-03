@@ -153,11 +153,11 @@ SHA256: ${fileInfo.sha256}
 const TEST_ENVIRONMENTS = {
   'test': {
     name: 'ai-voice-labs.com (测试)',
-    url: 'https://ai-voice-labs.com',
+    url: 'https://ai-voice-labs.com/studio',
   },
   'staging': {
     name: 'staging (预发布)',
-    url: 'https://staging.voicica.ai',
+    url: 'https://staging.voicica.ai/studio',
   }
 };
 
@@ -286,7 +286,12 @@ async function main() {
 
     // 自动删除现有 Release
     exec(`gh release delete ${tagName} --yes`, { silent: true, ignoreError: true });
-    success(`已删除旧版本 ${tagName}`);
+
+    // 删除远程和本地 tag（Release 删除后 tag 仍存在）
+    exec(`git push origin :refs/tags/${tagName}`, { silent: true, ignoreError: true });
+    exec(`git tag -d ${tagName}`, { silent: true, ignoreError: true });
+
+    success(`已删除旧版本 ${tagName} 及其 tag`);
   } else {
     success(`${tagName} 可用`);
   }

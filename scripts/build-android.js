@@ -137,14 +137,27 @@ async function main() {
     success('签名密钥配置已就绪');
   }
 
-  // 2. 同步版本号
-  section('步骤 2/5: 同步原生版本号');
-  info('从 native-version.json 同步版本号到 Android...');
-  exec('node scripts/sync-native-version.js');
+  // 2. 自动递增版本号并同步
+  section('步骤 2/5: 更新并同步版本号');
 
   // 读取版本信息
-  const nativeVersion = JSON.parse(fs.readFileSync(path.join(__dirname, '../native-version.json'), 'utf8'));
-  info(`当前版本: ${nativeVersion.version} (Build ${nativeVersion.buildNumber})`);
+  const versionPath = path.join(__dirname, '../native-version.json');
+  const nativeVersion = JSON.parse(fs.readFileSync(versionPath, 'utf8'));
+
+  // 递增 patch 版本号 (1.0.6 → 1.0.7)
+  const oldVersion = nativeVersion.version;
+  const versionParts = oldVersion.split('.');
+  versionParts[2] = String(parseInt(versionParts[2], 10) + 1);
+  nativeVersion.version = versionParts.join('.');
+
+  // 保存更新后的版本信息
+  fs.writeFileSync(versionPath, JSON.stringify(nativeVersion, null, 2));
+  info(`版本号自动递增: ${oldVersion} → ${nativeVersion.version}`);
+
+  // 同步到 Android/iOS 项目
+  info('同步版本号到 Android...');
+  exec('node scripts/sync-native-version.js');
+  success(`当前版本: ${nativeVersion.version} (Build ${nativeVersion.buildNumber})`);
 
   // 3. 同步 Capacitor
   section('步骤 3/5: 同步 Capacitor 插件');

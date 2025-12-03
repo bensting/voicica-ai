@@ -158,20 +158,34 @@ export function FirebaseAuthProvider({ children }: { children: React.ReactNode }
 
   // Google 登录
   const signInWithGoogle = useCallback(async () => {
+    // 检测是否在原生环境
+    const isNative = isCapacitorNative();
+    console.log('[FirebaseAuth] isCapacitorNative():', isNative);
+    console.log('[FirebaseAuth] User-Agent:', typeof navigator !== 'undefined' ? navigator.userAgent : 'N/A');
+
     // 在 Capacitor 原生环境中使用原生登录
-    if (isCapacitorNative()) {
+    if (isNative) {
       try {
-        console.log('[FirebaseAuth] 使用原生 Google 登录');
+        console.log('[FirebaseAuth] 使用原生 Google 登录...');
         const result = await FirebaseAuthentication.signInWithGoogle();
+        console.log('[FirebaseAuth] 原生登录返回结果:', JSON.stringify(result, null, 2));
 
         // 使用返回的 credential 在 Firebase Web SDK 中认证
         if (result.credential?.idToken) {
+          console.log('[FirebaseAuth] 获取到 idToken，正在认证...');
           const credential = GoogleAuthProvider.credential(result.credential.idToken);
           await signInWithCredential(auth, credential);
           console.log('[FirebaseAuth] 原生 Google 登录成功');
+        } else {
+          console.error('[FirebaseAuth] 未获取到 idToken');
+          throw new Error('No idToken returned from native sign-in');
         }
-      } catch (error) {
-        console.error('[FirebaseAuth] 原生 Google 登录失败:', error);
+      } catch (error: unknown) {
+        const err = error as { code?: string; message?: string };
+        console.error('[FirebaseAuth] 原生 Google 登录失败:');
+        console.error('  - Error:', error);
+        console.error('  - Code:', err?.code);
+        console.error('  - Message:', err?.message);
         throw error;
       }
       return;

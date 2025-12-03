@@ -5,12 +5,25 @@ const serverUrl = process.env.CAPACITOR_SERVER_URL || 'https://voicica.ai/studio
 
 // 根据 URL 确定允许导航的域名
 const getAllowedDomains = (url: string): string[] => {
-  const baseDomains = ['*.stripe.com', '*.google.com'];
+  const baseDomains = [
+    '*.stripe.com',
+    'stripe.com',
+    '*.google.com',
+    'google.com',
+  ];
 
   if (url.includes('ai-voice-labs.com')) {
-    return ['*.ai-voice-labs.com', ...baseDomains];
+    return [
+      'ai-voice-labs.com',      // 主域名
+      '*.ai-voice-labs.com',    // 子域名
+      ...baseDomains
+    ];
   }
-  return ['*.voicica.ai', ...baseDomains];
+  return [
+    'voicica.ai',               // 主域名
+    '*.voicica.ai',             // 子域名
+    ...baseDomains
+  ];
 };
 
 const config: CapacitorConfig = {

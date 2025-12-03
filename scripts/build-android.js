@@ -92,6 +92,7 @@ function formatFileSize(bytes) {
 async function main() {
   const args = process.argv.slice(2);
   const buildType = args[0] || 'apk'; // apk 或 aab
+  const skipSync = args.includes('--skip-sync'); // 跳过 cap sync（从测试脚本调用时）
 
   log('\n🚀 Android 自动化构建工具', colors.cyan + colors.bright);
   log('━'.repeat(60) + '\n', colors.cyan);
@@ -147,31 +148,38 @@ async function main() {
 
   // 3. 同步 Capacitor
   section('步骤 3/5: 同步 Capacitor 插件');
-  info('同步 Capacitor 插件到 Android 项目...');
 
-  // 检查是否使用远程模式（读取 TypeScript 配置文件）
-  const capacitorConfigPath = path.join(__dirname, '../capacitor.config.ts');
-  const capacitorConfigContent = fs.readFileSync(capacitorConfigPath, 'utf8');
-
-  // 检测是否配置了 server.url（远程加载模式）
-  const hasRemoteServer = capacitorConfigContent.includes('server:') &&
-                          (capacitorConfigContent.includes('process.env.CAPACITOR_SERVER_URL') ||
-                           capacitorConfigContent.includes('https://'));
-
-  if (hasRemoteServer) {
-    info('检测到远程加载模式（WebView 加载线上网页）');
-    info('同步 Capacitor 配置（不同步 Web 资源）...');
-
-    // 远程模式：同步配置和插件，跳过 Web 资源构建
-    // cap sync 会同步 capacitor.config.json 到 Android 项目
-    exec('npx cap sync android', { ignoreError: true });
+  if (skipSync) {
+    // 从测试脚本调用，已经同步过配置，跳过避免覆盖
+    info('跳过 Capacitor 同步（配置已由调用方同步）');
+    success('使用现有 Capacitor 配置');
   } else {
-    // 本地模式，需要同步 Web 资源
-    info('本地模式：同步 Web 资源到原生项目...');
-    exec('npx cap sync android');
-  }
+    info('同步 Capacitor 插件到 Android 项目...');
 
-  success('Capacitor 同步完成');
+    // 检查是否使用远程模式（读取 TypeScript 配置文件）
+    const capacitorConfigPath = path.join(__dirname, '../capacitor.config.ts');
+    const capacitorConfigContent = fs.readFileSync(capacitorConfigPath, 'utf8');
+
+    // 检测是否配置了 server.url（远程加载模式）
+    const hasRemoteServer = capacitorConfigContent.includes('server:') &&
+                            (capacitorConfigContent.includes('process.env.CAPACITOR_SERVER_URL') ||
+                             capacitorConfigContent.includes('https://'));
+
+    if (hasRemoteServer) {
+      info('检测到远程加载模式（WebView 加载线上网页）');
+      info('同步 Capacitor 配置（不同步 Web 资源）...');
+
+      // 远程模式：同步配置和插件，跳过 Web 资源构建
+      // cap sync 会同步 capacitor.config.json 到 Android 项目
+      exec('npx cap sync android', { ignoreError: true });
+    } else {
+      // 本地模式，需要同步 Web 资源
+      info('本地模式：同步 Web 资源到原生项目...');
+      exec('npx cap sync android');
+    }
+
+    success('Capacitor 同步完成');
+  }
 
   // 4. 构建
   section('步骤 4/5: 构建 Android 应用');

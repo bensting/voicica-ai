@@ -131,7 +131,8 @@ async function main() {
   console.log('');
 
   try {
-    execSync('npm run android:build', {
+    // 使用 --skip-sync 避免重复同步覆盖测试配置
+    execSync('node scripts/build-android.js apk --skip-sync', {
       stdio: 'inherit',
       env: { ...process.env, CAPACITOR_SERVER_URL: targetUrl }
     });

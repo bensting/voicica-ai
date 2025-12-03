@@ -28,6 +28,7 @@
     "android:publish:beta": "node scripts/upload-to-google-play.js beta",
     "release:github": "node scripts/create-github-release.js",
     "release:github:draft": "node scripts/create-github-release.js --draft",
+    "release:github:test": "node scripts/create-github-release.js --test",
     "cap:sync": "npx cap sync",
     "cap:open:ios": "npx cap open ios",
     "cap:open:android": "npx cap open android",

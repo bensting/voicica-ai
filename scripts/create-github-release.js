@@ -80,7 +80,43 @@ function formatFileSize(bytes) {
 }
 
 // 生成 Release Notes
-function generateReleaseNotes(version, changelog, fileInfo) {
+function generateReleaseNotes(version, changelog, fileInfo, testEnv = null) {
+  if (testEnv) {
+    // 测试版本的 Release Notes
+    return `## 🧪 Voicica AI v${version.version} 测试版
+
+> ⚠️ **此版本为内部测试版，仅供测试使用**
+
+### 🔗 测试服务器
+- **服务器地址**: ${testEnv.url}
+- **环境**: ${testEnv.name}
+
+### 📦 下载信息
+- **文件名**: ${path.basename(fileInfo.path)}
+- **大小**: ${fileInfo.size}
+- **版本**: ${version.version} (Build ${version.buildNumber})
+- **构建日期**: ${new Date().toISOString().split('T')[0]}
+
+### 🔐 安全校验
+\`\`\`
+SHA256: ${fileInfo.sha256}
+\`\`\`
+
+### 📥 安装说明
+1. 下载 APK 文件
+2. 在 Android 设备上，进入 **设置 → 安全**，启用「允许安装未知来源应用」
+3. 打开下载的 APK 文件
+4. 点击「安装」
+
+### ⚠️ 注意事项
+- 此为测试版本，请勿用于生产环境
+- 测试完成后请安装正式版本
+
+---
+🤖 Generated with [create-github-release.js](https://github.com/benshui08/ai-voice-labs-web)`;
+  }
+
+  // 正式版本的 Release Notes
   const notes = `## 📱 Voicica AI v${version.version}
 
 ### ✨ 更新内容
@@ -113,14 +149,54 @@ SHA256: ${fileInfo.sha256}
   return notes;
 }
 
+// 测试环境配置
+const TEST_ENVIRONMENTS = {
+  'test': {
+    name: 'ai-voice-labs.com (测试)',
+    url: 'https://ai-voice-labs.com',
+    apkPattern: 'app-release-ai-voice-labs-v*.apk'
+  },
+  'staging': {
+    name: 'staging (预发布)',
+    url: 'https://staging.voicica.ai',
+    apkPattern: 'app-release-staging-v*.apk'
+  }
+};
+
+// 查找测试 APK
+function findTestApk(env) {
+  const releaseDir = path.join(__dirname, '../android/app/build/outputs/apk/release');
+
+  if (!fs.existsSync(releaseDir)) {
+    return null;
+  }
+
+  const files = fs.readdirSync(releaseDir);
+  const pattern = TEST_ENVIRONMENTS[env]?.apkPattern || `app-release-${env}-v*.apk`;
+  const regex = new RegExp(pattern.replace('*', '.*'));
+
+  const apkFile = files.find(f => regex.test(f));
+  return apkFile ? path.join(releaseDir, apkFile) : null;
+}
+
 // 主流程
 async function main() {
   const args = process.argv.slice(2);
   const isDraft = args.includes('--draft');
   const isPrerelease = args.includes('--prerelease');
 
+  // 解析 --test 参数
+  const testIndex = args.findIndex(a => a === '--test');
+  const testEnvName = testIndex !== -1 ? (args[testIndex + 1] || 'test') : null;
+  const isTest = testEnvName !== null;
+
   log('\n🚀 GitHub Release 自动化工具', colors.cyan + colors.bright);
   log('━'.repeat(60) + '\n', colors.cyan);
+
+  if (isTest) {
+    log(`📦 模式: 测试版本 (${testEnvName})`, colors.yellow);
+    console.log('');
+  }
 
   // 1. 检查 GitHub CLI
   info('检查 GitHub CLI...');
@@ -163,7 +239,32 @@ async function main() {
 
   // 3. 检查 APK 文件
   info('检查 APK 文件...');
-  const apkPath = path.join(__dirname, '../android/app/build/outputs/apk/release/app-release.apk');
+
+  let apkPath;
+  let testEnv = null;
+
+  if (isTest) {
+    // 查找测试 APK
+    apkPath = findTestApk(testEnvName);
+    testEnv = TEST_ENVIRONMENTS[testEnvName] || {
+      name: testEnvName,
+      url: `https://${testEnvName}.voicica.ai`
+    };
+
+    if (!apkPath) {
+      error(`未找到测试 APK (${testEnvName})`);
+      console.log('');
+      console.log('请先构建测试 APK:');
+      console.log(`  npm run android:build:test`);
+      console.log('');
+      console.log('或手动指定环境:');
+      console.log(`  CAPACITOR_SERVER_URL=https://your-url.com npm run android:build`);
+      process.exit(1);
+    }
+  } else {
+    // 正式版本 APK
+    apkPath = path.join(__dirname, '../android/app/build/outputs/apk/release/app-release.apk');
+  }
 
   if (!fs.existsSync(apkPath)) {
     error('未找到 APK 文件');
@@ -181,11 +282,11 @@ async function main() {
     sha256: sha256
   };
 
-  success(`找到 APK: ${fileInfo.size}`);
+  success(`找到 APK: ${path.basename(apkPath)} (${fileInfo.size})`);
   info(`SHA256: ${sha256.substring(0, 16)}...`);
 
   // 4. 检查是否已存在该版本的 Release
-  const tagName = `v${version.version}`;
+  const tagName = isTest ? `v${version.version}-${testEnvName}` : `v${version.version}`;
   info(`检查 Release ${tagName} 是否已存在...`);
 
   const existingRelease = exec(`gh release view ${tagName} 2>&1`, { silent: true, ignoreError: true });
@@ -194,7 +295,7 @@ async function main() {
     warning(`Release ${tagName} 已存在`);
     console.log('');
     console.log('选项:');
-    console.log(`  1. 删除现有 Release: gh release delete ${tagName}`);
+    console.log(`  1. 删除现有 Release: gh release delete ${tagName} --yes`);
     console.log(`  2. 更新版本号后重新运行`);
     console.log(`  3. 手动上传文件: gh release upload ${tagName} "${apkPath}"`);
     process.exit(1);
@@ -204,8 +305,8 @@ async function main() {
 
   // 5. 生成 Release Notes
   info('生成 Release Notes...');
-  const changelog = version.changelog || ['版本更新'];
-  const releaseNotes = generateReleaseNotes(version, changelog, fileInfo);
+  const changelog = version.changelog?.[0]?.changes || ['版本更新'];
+  const releaseNotes = generateReleaseNotes(version, changelog, fileInfo, testEnv);
 
   // 6. 创建 Release
   info('创建 GitHub Release...');
@@ -215,12 +316,17 @@ async function main() {
   fs.writeFileSync(notesPath, releaseNotes);
 
   try {
-    let command = `gh release create ${tagName} "${apkPath}" --title "Voicica AI ${tagName}" --notes-file "${notesPath}"`;
+    const releaseTitle = isTest
+      ? `Voicica AI ${tagName} 测试版 (${testEnv.name})`
+      : `Voicica AI ${tagName}`;
+
+    let command = `gh release create ${tagName} "${apkPath}" --title "${releaseTitle}" --notes-file "${notesPath}"`;
 
     if (isDraft) {
       command += ' --draft';
     }
-    if (isPrerelease) {
+    // 测试版本自动添加 prerelease 标记
+    if (isPrerelease || isTest) {
       command += ' --prerelease';
     }
 
@@ -243,7 +349,9 @@ async function main() {
       tag: tagName,
       releaseDate: new Date().toISOString(),
       sha256: sha256,
-      size: stats.size
+      size: stats.size,
+      isTest: isTest,
+      testEnv: testEnvName
     };
 
     const releasesLogPath = path.join(__dirname, '../.releases.json');

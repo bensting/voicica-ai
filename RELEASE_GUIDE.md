@@ -103,7 +103,37 @@ npm run release:github
 
 # 草稿发布（不公开，可以后续编辑）
 npm run release:github:draft
+
+# 测试版本发布（自动 prerelease）
+npm run release:github:test
 ```
+
+### 测试版本发布
+
+用于发布指向测试服务器的 APK，会自动标记为 Pre-release。
+
+**完整流程**：
+
+```bash
+# 1. 构建测试包
+npm run android:build:test
+
+# 2. 发布到 GitHub（自动标记为 prerelease）
+npm run release:github:test
+```
+
+**支持的测试环境**：
+
+| 环境名 | 服务器地址 | Release Tag |
+|--------|-----------|-------------|
+| `test` | https://ai-voice-labs.com | `v1.0.0-test` |
+| `staging` | https://staging.voicica.ai | `v1.0.0-staging` |
+
+**特性**：
+- 自动查找对应环境的测试 APK
+- 自动生成测试版专用 Release Notes
+- 自动添加 `--prerelease` 标记
+- Tag 格式: `v{version}-{environment}`
 
 ### 脚本功能
 

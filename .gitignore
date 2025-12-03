@@ -73,3 +73,13 @@ NUL
 /android/.gradle
 /android/app/build
 /android/build
+
+# ==========================================
+# Android 签名密钥文件（敏感！不要提交）
+# ==========================================
+*.keystore
+*.jks
+*.p12
+android-release.keystore
+release.keystore
+upload-keystore.jks

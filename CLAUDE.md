@@ -350,46 +350,135 @@ npx prisma db push
 
 ## 版本管理
 
-本项目使用 **package.json 作为版本号的单一来源**，通过自动化脚本确保版本一致性。
+本项目采用 **双版本管理机制**，分别管理 Web 版本和原生应用版本。
 
-### 版本号同步机制
+### 为什么使用双版本？
 
-1. **主版本源**: `package.json` 的 `version` 字段
-2. **自动同步目标**:
-   - `public/manifest.json` - PWA manifest 版本号
-   - `NEXT_PUBLIC_APP_VERSION` - 应用内环境变量
+由于应用使用 **WebView 远程加载模式**（加载 https://voicica.ai），Web 内容可以热更新，无需重新发布 APK/IPA。因此：
+
+- **Web 版本**：频繁更新（每次功能发布）
+- **原生应用版本**：偶尔更新（仅当原生功能变化时）
+
+### Web 版本管理
+
+**版本源**: `package.json`
+
+**自动同步目标**:
+- `public/manifest.json` - PWA manifest 版本号
+- `NEXT_PUBLIC_APP_VERSION` - 应用内环境变量
+
+**更新场景**：
+- 修改 UI/样式
+- 更新业务逻辑
+- 新增/修改功能
+- Bug 修复
+
+**操作命令**：
+```bash
+npm run version:patch   # 0.1.0 -> 0.1.1 (Bug 修复)
+npm run version:minor   # 0.1.0 -> 0.2.0 (新功能)
+npm run version:major   # 0.1.0 -> 1.0.0 (重大更新)
+```
+
+### 原生应用版本管理
+
+**版本源**: `native-version.json`
+
+**自动同步目标**:
+- `android/app/build.gradle`
+  - `versionName`: 语义化版本号（如 "1.0.0"）
+  - `versionCode`: 构建号（如 1）
+- `ios/App/App.xcodeproj/project.pbxproj`
+  - `MARKETING_VERSION`: 营销版本号（如 "1.0.0"）
+  - `CURRENT_PROJECT_VERSION`: 构建号（如 1）
+
+**更新场景**：
+- 升级 Capacitor 版本
+- 添加/删除原生插件
+- 修改应用权限
+- 更换应用图标/启动画面
+- 修改原生代码
+
+**操作命令**：
+```bash
+# 1. 手动编辑 native-version.json
+{
+  "version": "1.0.0",
+  "buildNumber": 1
+}
+
+# 2. 同步到 Android 和 iOS
+npm run native:version:sync
+
+# 3. 构建并发布新版本
+cd android && ./gradlew assembleRelease
+```
+
+### 版本号规范
+
+**Web 版本示例**：
+```
+0.1.0 → 0.1.1 → 0.2.0 → 1.0.0
+(频繁更新)
+```
+
+**原生应用版本示例**：
+```
+1.0.0 (Build 1) → 1.1.0 (Build 2) → 2.0.0 (Build 3)
+(偶尔更新，buildNumber 必须递增)
+```
 
 ### 更新版本号
 
 ```bash
-# 方法 1: 使用 npm version（推荐）
-npm version patch   # 0.1.0 -> 0.1.1 (Bug 修复)
-npm version minor   # 0.1.0 -> 0.2.0 (新功能)
-npm version major   # 0.1.0 -> 1.0.0 (重大更新)
+# 方法 1: 使用便捷命令（推荐）
+npm run version:patch   # 0.1.0 -> 0.1.1 (Bug 修复) + 自动同步
+npm run version:minor   # 0.1.0 -> 0.2.0 (新功能) + 自动同步
+npm run version:major   # 0.1.0 -> 1.0.0 (重大更新) + 自动同步
 
-# 方法 2: 手动修改 package.json 后同步
+# 方法 2: 使用原生 npm version
+npm version patch   # 0.1.0 -> 0.1.1
+npm version minor   # 0.1.0 -> 0.2.0
+npm version major   # 0.1.0 -> 1.0.0
+
+# 方法 3: 手动修改 package.json 后同步
 npm run version:sync
 ```
 
 ### 自动化流程
 
-每次构建时自动执行:
+**Web 版本**：每次构建时自动执行
 1. `prebuild` hook 运行 `scripts/sync-version.js`
 2. 从 `package.json` 读取版本号
-3. 自动更新 `manifest.json`
+3. 自动同步到：
+   - `manifest.json` (PWA)
+   - `.env.example` (环境变量示例)
 4. Next.js 构建时注入到 `process.env.NEXT_PUBLIC_APP_VERSION`
+
+**原生应用版本**：手动执行
+1. 编辑 `native-version.json`
+2. 运行 `npm run native:version:sync`
+3. 自动同步到：
+   - `android/app/build.gradle`
+   - `ios/App/App.xcodeproj/project.pbxproj`
 
 ### 在代码中使用版本号
 
 ```tsx
-// 任何组件中
-const version = process.env.NEXT_PUBLIC_APP_VERSION;
-return <div>v{version}</div>;
+// Web 版本号（显示在页面上）
+const webVersion = process.env.NEXT_PUBLIC_APP_VERSION;  // 来自 package.json
+
+// 原生应用版本号（显示在关于页面）
+import nativeVersion from '@/native-version.json';
+const appVersion = nativeVersion.version;
+const buildNumber = nativeVersion.buildNumber;
 ```
 
 **示例**: Footer 组件显示版本号 (`src/components/layout/Footer/index.tsx:43`)
 
-**详细文档**: 查看 `VERSION_MANAGEMENT.md`
+**详细文档**:
+- Web 版本管理：查看 `VERSION_MANAGEMENT.md`
+- 原生应用：查看 `NATIVE_APPS.md`
 
 ## PWA 版本更新机制
 

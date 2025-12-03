@@ -8,7 +8,7 @@ android {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
-        versionName "1.0"
+        versionName "1.0.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {
              // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.
@@ -16,8 +16,34 @@ android {
             ignoreAssetsPattern '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
         }
     }
-    buildTypes {
+
+    // 签名配置
+    signingConfigs {
         release {
+            // 密钥文件路径（从项目根目录）
+            def keystorePath = System.getenv("ANDROID_KEYSTORE_PATH") ?: "../../android-release.keystore"
+            storeFile file(keystorePath)
+
+            // 从环境变量读取密码（安全）
+            storePassword System.getenv("ANDROID_KEYSTORE_PASSWORD")
+            keyAlias System.getenv("ANDROID_KEY_ALIAS") ?: "voicica-key"
+            keyPassword System.getenv("ANDROID_KEY_PASSWORD")
+
+            // 如果环境变量未设置，给出提示
+            if (!System.getenv("ANDROID_KEYSTORE_PASSWORD")) {
+                logger.warn("警告: ANDROID_KEYSTORE_PASSWORD 环境变量未设置")
+                logger.warn("请在 .env.local 中配置签名密钥信息")
+            }
+        }
+    }
+
+    buildTypes {
+        debug {
+            // Debug 版本使用默认签名（不需要配置）
+        }
+        release {
+            // 使用发布签名配置
+            signingConfig signingConfigs.release
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }

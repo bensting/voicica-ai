@@ -52,6 +52,7 @@ export const viewport = {
   maximumScale: 1,
   userScalable: false,
   themeColor: "#9333ea",
+  viewportFit: "cover", // 启用安全区域支持
 };
 
 export default async function RootLayout({

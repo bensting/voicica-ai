@@ -17,7 +17,10 @@ export default function GenerationHistoryLayout({
   return (
     <>
       {/* Unified layout - children rendered once */}
-      {children}
+      {/* mobile-bottom-nav-space: 移动端底部留出导航栏 + 安全区域空间 */}
+      <div className="mobile-bottom-nav-space">
+        {children}
+      </div>
 
       {/* Mobile Bottom Navigation - only shown on mobile */}
       <div className="lg:hidden">

@@ -1,0 +1,23 @@
+{
+  "version": "1.0.0",
+  "buildNumber": 1,
+  "description": "原生应用版本（Android/iOS 应用壳）",
+  "changelog": [
+    {
+      "version": "1.0.0",
+      "buildNumber": 1,
+      "date": "2024-12-03",
+      "changes": [
+        "初始版本",
+        "WebView 远程加载模式",
+        "支持 Firebase 认证",
+        "集成核心 Capacitor 插件"
+      ]
+    }
+  ],
+  "releaseNotes": {
+    "en": "Initial release with core features",
+    "zh-CN": "初始版本，包含核心功能",
+    "zh-TW": "初始版本，包含核心功能"
+  }
+}

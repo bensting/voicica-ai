@@ -17,7 +17,8 @@ export default function VoicesLayout({
   return (
     <>
       {/* Children rendered once with responsive padding */}
-      <div className="pb-0 lg:pb-0">
+      {/* mobile-bottom-nav-space: 移动端底部留出导航栏 + 安全区域空间 */}
+      <div className="mobile-bottom-nav-space">
         {children}
       </div>
 

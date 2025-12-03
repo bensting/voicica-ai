@@ -34,7 +34,13 @@ function StudioLayoutContent({
       />
 
       {/* ========== 主内容区域 ========== */}
-      <main className="pt-[60px] lg:ml-16">
+      {/* padding-top 需要计算：导航栏高度(60px) + 安全区域顶部 */}
+      <main
+        className="lg:ml-16"
+        style={{
+          paddingTop: 'calc(60px + env(safe-area-inset-top, 0px))'
+        }}
+      >
         {children}
       </main>
 

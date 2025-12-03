@@ -83,3 +83,4 @@ NUL
 android-release.keystore
 release.keystore
 upload-keystore.jks
+android/local.properties

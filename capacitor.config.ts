@@ -7,7 +7,7 @@ const config: CapacitorConfig = {
 
   // 远程模式：直接加载线上网页（支持热更新）
   server: {
-    url: process.env.CAPACITOR_SERVER_URL || 'https://voicica.ai',
+    url: process.env.CAPACITOR_SERVER_URL || 'https://voicica.ai/studio',
     cleartext: true,
     // 允许导航到外部链接
     allowNavigation: ['*.voicica.ai', '*.stripe.com', '*.google.com'],

@@ -5,10 +5,11 @@
  */
 
 import { ProductType } from '../productType';
-import type { CreditsCostConfig, VoiceCostConfig } from './types';
+import type { CreditsCostConfig, VoiceCostConfig, VideoCostConfig } from './types';
 
 export const creditsCostConfig: CreditsCostConfig = {
   [ProductType.TEXT_TO_SPEECH]: 0, // TTS 按字符数计费，由 calculateVoiceCost 计算
+  [ProductType.TEXT_TO_VIDEO]: 0, // 视频按分辨率和时长计费，由 calculateVideoCost 计算
   [ProductType.VOICE_CLONING]: 0, // 语音克隆待定
   [ProductType.YOUTUBE_DOWNLOADER]: 0, // YouTube 解析消耗 1 积分
   [ProductType.TIKTOK_DOWNLOADER]: 1, // TikTok 解析消耗 1 积分
@@ -25,4 +26,23 @@ export const voiceCostConfig: VoiceCostConfig = {
   professional: 1,
   special: 2,
   clone: 3,
+};
+
+/**
+ * 视频成本配置 - 开发环境
+ *
+ * 开发环境使用较低积分，方便测试
+ */
+export const videoCostConfig: VideoCostConfig = {
+  models: ['veo-3.1'],
+  costs: [
+    { resolution: '768p', duration: 5, credits: 1 },
+    { resolution: '768p', duration: 8, credits: 1 },
+    { resolution: '768p', duration: 10, credits: 1 },
+    { resolution: '768p', duration: 15, credits: 1 },
+    { resolution: '1080p', duration: 5, credits: 1 },
+    { resolution: '1080p', duration: 8, credits: 1 },
+    { resolution: '1080p', duration: 10, credits: 1 },
+    { resolution: '1080p', duration: 15, credits: 1 },
+  ],
 };

@@ -7,7 +7,10 @@ export { default as SyncCard } from './SyncCard';
 export { default as LocaleTable } from './LocaleTable';
 export { default as GoogleLocaleTable } from './GoogleLocaleTable';
 export { default as GoogleVoiceDetailDialog } from './GoogleVoiceDetailDialog';
+export { default as FishVoiceTable } from './FishVoiceTable';
+export { default as FishVoiceDetailDialog } from './FishVoiceDetailDialog';
 
 // Hook 导出
 export { useVoiceSync } from './useVoiceSync';
 export { useGoogleVoiceSync } from './useGoogleVoiceSync';
+export { useFishVoiceSync } from './useFishVoiceSync';

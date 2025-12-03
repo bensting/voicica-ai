@@ -16,6 +16,8 @@
 export const ProductType = {
   /** 文字转语音 */
   TEXT_TO_SPEECH: 'text_to_speech',
+  /** 文字转视频 */
+  TEXT_TO_VIDEO: 'text_to_video',
   /** 语音克隆 */
   VOICE_CLONING: 'voice_cloning',
   /** YouTube 视频下载器 */

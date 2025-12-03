@@ -1,0 +1,18 @@
+{
+  "textToVideo": "文字转视频",
+  "promptPlaceholder": "描述你想创建的视频。具体说明动作、场景、风格和氛围...",
+  "promptLabel": "视频描述",
+  "resolution": "分辨率",
+  "duration": "时长",
+  "aspectRatio": "宽高比",
+  "creditsCost": "积分消耗",
+  "model": "模型",
+  "veo31Description": "Google 最先进的视频生成模型，具有卓越的画质和运动效果",
+  "latest": "最新",
+  "generate": "生成视频",
+  "generating": "生成中...",
+  "generatingVideo": "正在生成视频...",
+  "preview": "预览",
+  "previewPlaceholder": "生成的视频将显示在这里",
+  "browserNotSupported": "您的浏览器不支持视频标签。"
+}

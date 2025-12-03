@@ -1,5 +1,18 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 
+// 服务器 URL 配置
+const serverUrl = process.env.CAPACITOR_SERVER_URL || 'https://voicica.ai/studio';
+
+// 根据 URL 确定允许导航的域名
+const getAllowedDomains = (url: string): string[] => {
+  const baseDomains = ['*.stripe.com', '*.google.com'];
+
+  if (url.includes('ai-voice-labs.com')) {
+    return ['*.ai-voice-labs.com', ...baseDomains];
+  }
+  return ['*.voicica.ai', ...baseDomains];
+};
+
 const config: CapacitorConfig = {
   appId: 'ai.voicica.app',
   appName: 'Voicica AI',
@@ -7,10 +20,10 @@ const config: CapacitorConfig = {
 
   // 远程模式：直接加载线上网页（支持热更新）
   server: {
-    url: process.env.CAPACITOR_SERVER_URL || 'https://voicica.ai',
+    url: serverUrl,
     cleartext: true,
-    // 允许导航到外部链接
-    allowNavigation: ['*.voicica.ai', '*.stripe.com', '*.google.com'],
+    // 允许导航到外部链接（根据 URL 自动配置）
+    allowNavigation: getAllowedDomains(serverUrl),
   },
 
   // iOS 配置

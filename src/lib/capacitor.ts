@@ -57,6 +57,24 @@ export const setStatusBarStyle = async (style: 'light' | 'dark'): Promise<void> 
 };
 
 /**
+ * 设置状态栏覆盖模式（让内容延伸到状态栏下方）
+ */
+export const setStatusBarOverlay = async (overlay: boolean): Promise<void> => {
+  if (isNativeApp()) {
+    await StatusBar.setOverlaysWebView({ overlay });
+  }
+};
+
+/**
+ * 设置状态栏背景颜色（仅 Android）
+ */
+export const setStatusBarBackgroundColor = async (color: string): Promise<void> => {
+  if (isAndroid()) {
+    await StatusBar.setBackgroundColor({ color });
+  }
+};
+
+/**
  * 触发触觉反馈
  */
 export const hapticFeedback = async (
@@ -133,8 +151,18 @@ export const initCapacitor = async (): Promise<void> => {
     // 隐藏启动画面
     await hideSplashScreen();
 
-    // 设置状态栏
+    // 设置状态栏样式
     await setStatusBarStyle('dark');
+
+    // Android: 设置状态栏为透明覆盖模式
+    if (isAndroid()) {
+      await setStatusBarOverlay(true);
+      await setStatusBarBackgroundColor('#00000000'); // 透明
+    }
+
+    // 添加原生 App 标识类到 body
+    document.body.classList.add('native-app');
+    document.body.classList.add(`platform-${getPlatform()}`);
 
     console.log(`🚀 Capacitor initialized on ${getPlatform()}`);
   }

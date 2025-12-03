@@ -94,34 +94,32 @@ async function main() {
   info(`目标 URL: ${targetUrl}`);
   console.log('');
 
-  // 1. 设置环境变量
-  process.env.CAPACITOR_SERVER_URL = targetUrl;
-  success(`环境变量已设置: CAPACITOR_SERVER_URL=${targetUrl}`);
+  // 1. 先运行生产构建（和生产完全一样的流程）
+  info('运行标准构建流程...');
+  console.log('');
 
-  // 2. 同步 Capacitor 配置
-  info('同步 Capacitor 配置...');
   try {
-    execSync('npx cap sync android', { stdio: 'inherit' });
-    success('Capacitor 同步完成');
+    execSync('node scripts/build-android.js apk', { stdio: 'inherit' });
   } catch (err) {
-    // 远程模式下可能会有警告，但不影响
-    warning('Capacitor 同步完成（有警告，可忽略）');
+    error('APK 构建失败');
+    process.exit(1);
   }
 
-  // 3. 直接修改配置文件（避免 Windows 环境变量传递问题）
-  info('修改 Capacitor 配置为测试环境...');
+  // 2. 构建完成后，修改 APK 中的配置并重新打包
+  // 但这太复杂了，改用更简单的方式：
+  // 直接修改配置文件，然后只运行 Gradle 构建（不运行 cap sync）
+
+  info('修改配置为测试环境并重新构建...');
   const capacitorConfigPath = path.join(__dirname, '../android/app/src/main/assets/capacitor.config.json');
 
   if (fs.existsSync(capacitorConfigPath)) {
     const config = JSON.parse(fs.readFileSync(capacitorConfigPath, 'utf8'));
-
-    // 保存原始 URL 用于日志
     const originalUrl = config.server?.url || 'unknown';
 
-    // 修改服务器 URL
+    // 只修改 URL（其他配置保持和生产一样）
     config.server.url = targetUrl;
 
-    // 根据 URL 设置允许导航的域名
+    // 修改 allowNavigation
     const baseDomains = [
       'stripe.com', '*.stripe.com',
       'google.com', '*.google.com', 'accounts.google.com', '*.googleapis.com',
@@ -136,48 +134,63 @@ async function main() {
       config.server.allowNavigation = ['voicica.ai', '*.voicica.ai', ...baseDomains];
     }
 
-    // 保存修改后的配置
     fs.writeFileSync(capacitorConfigPath, JSON.stringify(config, null, '\t'));
-
     success(`配置已修改: ${originalUrl} → ${targetUrl}`);
-    info(`allowNavigation: ${config.server.allowNavigation[0]}, ${config.server.allowNavigation[1]}, ...`);
-  } else {
-    error('未找到 capacitor.config.json');
-    process.exit(1);
   }
 
-  // 4. 构建 APK
-  info('开始构建 APK...');
-  console.log('');
+  // 3. 读取签名配置
+  if (!process.env.ANDROID_KEYSTORE_PASSWORD) {
+    const envLocalPath = path.join(__dirname, '../.env.local');
+    if (fs.existsSync(envLocalPath)) {
+      const envContent = fs.readFileSync(envLocalPath, 'utf8');
+      const passwordMatch = envContent.match(/ANDROID_KEYSTORE_PASSWORD=(.+)/);
+      if (passwordMatch) {
+        process.env.ANDROID_KEYSTORE_PASSWORD = passwordMatch[1].trim();
+        process.env.ANDROID_KEY_PASSWORD = passwordMatch[1].trim();
+        process.env.ANDROID_KEY_ALIAS = 'voicica-key';
+      }
+    }
+  }
+
+  // 4. 只运行 Gradle 重新打包（不运行 cap sync，配置已修改）
+  info('重新打包 APK...');
+  const isWindows = process.platform === 'win32';
+  const androidDir = path.join(__dirname, '../android');
+  const gradleCommand = isWindows ? 'cmd /c "gradlew.bat assembleRelease"' : './gradlew assembleRelease';
 
   try {
-    // 使用 --skip-sync 避免重复同步覆盖测试配置
-    execSync('node scripts/build-android.js apk --skip-sync', {
+    execSync(gradleCommand, {
+      cwd: androidDir,
       stdio: 'inherit',
-      env: { ...process.env, CAPACITOR_SERVER_URL: targetUrl }
+      env: {
+        ...process.env,
+        ANDROID_KEYSTORE_PASSWORD: process.env.ANDROID_KEYSTORE_PASSWORD,
+        ANDROID_KEY_PASSWORD: process.env.ANDROID_KEY_PASSWORD,
+        ANDROID_KEY_ALIAS: process.env.ANDROID_KEY_ALIAS,
+      }
     });
+    success('重新打包完成');
   } catch (err) {
-    error('APK 构建失败');
+    error('Gradle 构建失败');
     process.exit(1);
   }
 
-  // 5. 重命名为测试包文件名
+  // 4. 重命名为测试包文件名
   const apkDir = path.join(__dirname, '../android/app/build/outputs/apk/release');
   const versionPath = path.join(__dirname, '../native-version.json');
   const version = JSON.parse(fs.readFileSync(versionPath, 'utf8'));
 
-  // 生产构建脚本会生成 app-release-版本号.apk，需要重命名为测试包
-  const prodApkName = `app-release-${version.version}.apk`;
-  const prodApkPath = path.join(apkDir, prodApkName);
+  // Gradle 输出的是 app-release.apk
+  const gradleOutputApk = path.join(apkDir, 'app-release.apk');
   const testApkName = `app-release-test-${version.version}.apk`;
   const testApkPath = path.join(apkDir, testApkName);
 
-  if (fs.existsSync(prodApkPath)) {
+  if (fs.existsSync(gradleOutputApk)) {
     // 如果目标文件已存在，先删除
     if (fs.existsSync(testApkPath)) {
       fs.unlinkSync(testApkPath);
     }
-    fs.renameSync(prodApkPath, testApkPath);
+    fs.renameSync(gradleOutputApk, testApkPath);
 
     console.log('');
     log('📦 构建结果:', colors.bright);
@@ -185,6 +198,8 @@ async function main() {
     console.log(`   目标 URL: ${targetUrl}`);
     console.log(`   版本: ${version.version} (Build ${version.buildNumber})`);
     console.log('');
+  } else {
+    warning('未找到 Gradle 输出的 APK 文件');
   }
 
   console.log('');

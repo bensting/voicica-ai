@@ -23,6 +23,14 @@
       "generateSpeech": "สร้างเสียง",
       "generating": "กำลังสร้าง...",
       "tryExamples": "ลองตัวอย่างเหล่านี้",
+      "more": "เพิ่มเติม",
+      "moreMenu": {
+        "title": "รับเครดิตเพิ่ม",
+        "signUp": "สมัครฟรี",
+        "signUpDesc": "รับ {{credits}} เครดิตฟรี",
+        "pricing": "ดูราคา",
+        "pricingDesc": "สำรวจแพ็คเกจสมาชิก"
+      },
       "examples": {
         "greeting": {
           "label": "ทักทาย",

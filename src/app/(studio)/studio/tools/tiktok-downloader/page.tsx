@@ -130,7 +130,7 @@ export default function TikTokDownloaderPage() {
   return (
     <>
       {/* Mobile Layout */}
-      <div className="lg:hidden fixed inset-0 top-[60px] flex flex-col bg-gradient-to-b from-gray-50 to-white">
+      <div className="lg:hidden fixed inset-0 flex flex-col bg-gradient-to-b from-gray-50 to-white" style={{ top: 'calc(60px + var(--safe-area-inset-top, 0px))' }}>
         <div className="flex-1 flex flex-col px-4 pt-4 gap-4 overflow-y-auto pb-24">
           {/* URL 输入框卡片 */}
           <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-4">

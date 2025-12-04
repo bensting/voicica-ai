@@ -145,7 +145,7 @@ export default function VoicesPage() {
   const getVoiceName = (voice: Voice) => voice.display_name;
 
   return (
-    <div className="h-[calc(100vh-60px)] lg:h-screen bg-white overflow-y-auto" onScroll={handleScroll}>
+    <div className="lg:h-screen bg-white overflow-y-auto" style={{ height: 'calc(100vh - 60px - var(--safe-area-inset-top, 0px))' }} onScroll={handleScroll}>
       {/* ========== Sticky Header: Search + Filters ========== */}
       <div className="sticky top-0 z-10 bg-white/95 backdrop-blur-sm border-b border-gray-100 shadow-sm">
         {/* Search bar + Language selector */}
@@ -207,7 +207,7 @@ export default function VoicesPage() {
       </div>
 
       {/* ========== Bottom Select Button (fixed, above bottom nav) ========== */}
-      <div className="fixed bottom-[72px] left-0 right-0 p-4 bg-gradient-to-t from-white via-white/95 to-transparent lg:hidden">
+      <div className="fixed left-0 right-0 p-4 bg-gradient-to-t from-white via-white/95 to-transparent lg:hidden" style={{ bottom: 'calc(72px + var(--safe-area-inset-bottom, 0px))' }}>
         <button
           onClick={handleConfirmSelection}
           disabled={!selectedVoice}

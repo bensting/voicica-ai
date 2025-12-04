@@ -7,7 +7,13 @@
     "loading": "Loading...",
     "download": "Download",
     "share": "Share",
-    "delete": "Delete"
+    "delete": "Delete",
+    "later": "Later",
+    "refresh": "Refresh"
+  },
+  "app": {
+    "updateAvailable": "Update Available",
+    "refreshRequired": "A new version is available. Please refresh to continue."
   },
   "creditInfo": {
     "currentCredits": "Current Credits:",

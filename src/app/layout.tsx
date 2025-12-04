@@ -13,6 +13,7 @@ import PWAUpdatePrompt from "@/components/layout/PWAUpdatePrompt";
 import LanguageLoadingWrapper from "@/components/providers/LanguageLoadingWrapper";
 import DeviceFingerprintProvider from "@/components/providers/DeviceFingerprintProvider";
 import CapacitorProvider from "@/components/providers/CapacitorProvider";
+import ServerActionErrorHandler from "@/components/providers/ServerActionErrorHandler";
 
 // 支持的语言列表
 const SUPPORTED_LOCALES = ['en-US', 'zh-CN', 'zh-TW', 'th-TH'] as const;
@@ -85,6 +86,7 @@ export default async function RootLayout({
                     <CapacitorProvider />
                     {children}
                     <PWAUpdatePrompt />
+                    <ServerActionErrorHandler />
                   </AudioSettingsProvider>
                 </CreditsProvider>
               </UserProvider>

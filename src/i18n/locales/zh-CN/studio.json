@@ -38,6 +38,10 @@
       "voices": "语音库",
       "clone": "克隆",
       "history": "历史"
+    },
+    "voices": {
+      "selectVoice": "选择语音",
+      "selectVoicePrompt": "请选择一个语音"
     }
   }
 }

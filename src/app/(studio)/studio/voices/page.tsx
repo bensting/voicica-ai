@@ -2,31 +2,36 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
+import { ArrowRight } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 import { useStudio } from '@/contexts/StudioContext';
 import LanguageSelectorModal from '@/components/common/LanguageSelectorModal';
 import VoiceSearchBar from '@/components/features/studio/voices/VoiceSearchBar';
 import VoiceFilters from '@/components/features/studio/voices/VoiceFilters';
-import VoiceList from '@/components/features/studio/voices/VoiceList';
+import VoiceGrid from '@/components/features/studio/voices/VoiceGrid';
 import { useVoices } from '@/components/features/studio/voices/hooks/useVoices';
 import { getAllLocaleOptions } from '@/utils/localeMapper';
 import type { LocaleOption } from '@/types/config';
 import type { Voice } from '@/types/voice';
 
 /**
- * Voices Gallery Page (Mobile-First Design)
+ * Voices Gallery Page - Grid Layout
  *
  * Features:
  * - Search bar with language selector
- * - Left panel: Voice filters and categories
- * - Right panel: Voice cards grid
+ * - Filters (gender, used only)
+ * - Circular avatar grid
+ * - Bottom select button
  */
 export default function VoicesPage() {
   const router = useRouter();
-  const { locale } = useLanguage();
+  const { locale, t } = useLanguage();
   const { user, loading: authLoading } = useFirebaseAuth();
   const { setTitle } = useStudio();
+
+  // Selected voice state
+  const [selectedVoice, setSelectedVoice] = useState<Voice | null>(null);
 
   // Language selector modal state
   const [isLanguageModalOpen, setIsLanguageModalOpen] = useState(false);
@@ -76,10 +81,8 @@ export default function VoicesPage() {
 
   // Initialize language selection based on localStorage or current locale
   useEffect(() => {
-    // 1. Try to get from localStorage (user's previous selection)
     const savedLanguageCode = localStorage.getItem('voiceLanguageFilter');
     if (savedLanguageCode) {
-      // Special case: user selected "All Languages"
       if (savedLanguageCode === 'all') {
         if (selectedLanguage !== null) {
           setSelectedLanguage(null);
@@ -87,7 +90,6 @@ export default function VoicesPage() {
         return;
       }
 
-      // Find saved language
       const savedLanguage = availableLanguages.find(lang => lang.code === savedLanguageCode);
       if (savedLanguage && selectedLanguage?.code !== savedLanguageCode) {
         setSelectedLanguage(savedLanguage);
@@ -95,16 +97,13 @@ export default function VoicesPage() {
       }
     }
 
-    // 2. Only set default if no localStorage and no selection yet
     if (!savedLanguageCode && selectedLanguage === null) {
-      // Try to match current website locale
       const currentLanguage = availableLanguages.find(lang => lang.code === locale);
       if (currentLanguage) {
         setSelectedLanguage(currentLanguage);
         return;
       }
 
-      // Default to en-US
       const defaultLanguage = availableLanguages.find(lang => lang.code === 'en-US');
       if (defaultLanguage) {
         setSelectedLanguage(defaultLanguage);
@@ -114,34 +113,44 @@ export default function VoicesPage() {
 
   const handleLanguageSelect = (language: LocaleOption | null) => {
     setSelectedLanguage(language);
-    // Save to localStorage
     if (language) {
       localStorage.setItem('voiceLanguageFilter', language.code);
     } else {
-      // Save 'all' to indicate user selected "All Languages"
       localStorage.setItem('voiceLanguageFilter', 'all');
     }
   };
 
-  // Handle voice selection (return to TTS page)
+  // Handle voice selection (just select, don't navigate)
   const handleSelectVoice = (voice: Voice) => {
-    console.log('🎯 [Voices] 选中语音:', voice.name, voice.id);
-    sessionStorage.setItem('ttsPreSelectedVoice', JSON.stringify(voice));
-    console.log('💾 [Voices] 已保存到 sessionStorage');
-    router.push('/studio/tts');
+    setSelectedVoice(voice);
+  };
+
+  // Handle play voice
+  const handlePlay = (voice: Voice) => {
+    handlePlayVoice(voice, null);
+  };
+
+  // Handle confirm selection (navigate to TTS)
+  const handleConfirmSelection = () => {
+    if (selectedVoice) {
+      console.log('[Voices] Selected voice:', selectedVoice.name, selectedVoice.id);
+      sessionStorage.setItem('ttsPreSelectedVoice', JSON.stringify(selectedVoice));
+      router.push('/studio/tts');
+    }
   };
 
   // Helper to get voice display name
   const getVoiceName = (voice: Voice) => voice.display_name;
 
   return (
-    <div className="h-[calc(100vh-60px)] lg:h-screen flex flex-col bg-white overflow-hidden">
+    <div className="h-[calc(100vh-60px)] lg:h-screen flex flex-col bg-gray-900 overflow-hidden">
       {/* ========== Search bar + Language selector ========== */}
       <VoiceSearchBar
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
         selectedLanguage={selectedLanguage}
         onLanguageClick={() => setIsLanguageModalOpen(true)}
+        darkMode
       />
 
       {/* Language selector modal */}
@@ -153,47 +162,63 @@ export default function VoicesPage() {
         onSelect={handleLanguageSelect}
       />
 
-      {/* ========== 内容区域：筛选器 + 列表 ========== */}
-      <div className="flex-1 flex flex-col overflow-hidden min-h-0">
-        {/* Filters */}
-        <VoiceFilters
-          selectedGender={selectedGender}
-          onGenderChange={setSelectedGender}
+      {/* ========== Filters ========== */}
+      <VoiceFilters
+        selectedGender={selectedGender}
+        onGenderChange={setSelectedGender}
+        usedOnly={usedOnly}
+        onUsedOnlyChange={setUsedOnly}
+        darkMode
+      />
+
+      {/* ========== Voice Grid (scrollable) ========== */}
+      <div className="flex-1 overflow-y-auto" onScroll={handleScroll}>
+        <VoiceGrid
+          voices={filteredVoices}
+          loading={loading}
+          error={error}
+          playingVoiceId={playingVoiceId}
+          selectedVoice={selectedVoice}
+          getVoiceName={getVoiceName}
+          onPlayVoice={handlePlay}
+          onSelectVoice={handleSelectVoice}
+          onRetry={refreshVoices}
           usedOnly={usedOnly}
-          onUsedOnlyChange={setUsedOnly}
         />
 
-        {/* Voice List with Infinite Scroll */}
-        <div className="flex-1 overflow-y-auto bg-gray-50" onScroll={handleScroll}>
-          <div className="p-4 pb-20 lg:p-6 lg:pb-6">
-            <VoiceList
-              voices={filteredVoices}
-              loading={loading}
-              error={error}
-              playingVoiceId={playingVoiceId}
-              locale={locale}
-              getVoiceName={getVoiceName}
-              onPlayVoice={handlePlayVoice}
-              onSelectVoice={handleSelectVoice}
-              onRetry={refreshVoices}
-              usedOnly={usedOnly}
-            />
-
-            {/* Loading more indicator */}
-            {loadingMore && (
-              <div className="flex justify-center py-4">
-                <div className="text-sm text-gray-500">Loading more voices...</div>
-              </div>
-            )}
-
-            {/* End of list indicator */}
-            {!loading && !loadingMore && !hasMore && filteredVoices.length > 0 && (
-              <div className="flex justify-center py-4">
-                <div className="text-xs text-gray-400">All voices loaded ({total} total)</div>
-              </div>
-            )}
+        {/* Loading more indicator */}
+        {loadingMore && (
+          <div className="flex justify-center py-4">
+            <div className="text-sm text-gray-400">Loading more voices...</div>
           </div>
-        </div>
+        )}
+
+        {/* End of list indicator */}
+        {!loading && !loadingMore && !hasMore && filteredVoices.length > 0 && (
+          <div className="flex justify-center py-4 pb-24">
+            <div className="text-xs text-gray-500">All voices loaded ({total} total)</div>
+          </div>
+        )}
+      </div>
+
+      {/* ========== Bottom Select Button (fixed, above bottom nav) ========== */}
+      <div className="fixed bottom-[72px] left-0 right-0 p-4 bg-gradient-to-t from-gray-900 via-gray-900/95 to-transparent lg:hidden">
+        <button
+          onClick={handleConfirmSelection}
+          disabled={!selectedVoice}
+          className={`w-full py-3 rounded-xl font-medium flex items-center justify-center gap-2 transition-all ${
+            selectedVoice
+              ? 'bg-purple-600 text-white hover:bg-purple-700 active:scale-[0.98]'
+              : 'bg-gray-700 text-gray-400 cursor-not-allowed'
+          }`}
+        >
+          <span>
+            {selectedVoice
+              ? `${t('studio.voices.selectVoice')} - ${getVoiceName(selectedVoice)}`
+              : t('studio.voices.selectVoicePrompt')}
+          </span>
+          {selectedVoice && <ArrowRight className="w-5 h-5" />}
+        </button>
       </div>
     </div>
   );

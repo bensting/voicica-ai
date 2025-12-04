@@ -163,14 +163,21 @@ export default function StudioTTSPage() {
       }
 
       // 2. 检查是否从 voices 页面预选了语音
-      const hasGallerySelection = sessionStorage.getItem('voicePreSelectedFromGallery');
-      if (hasGallerySelection) {
-        // 清除所有 gallery 相关标志，避免影响下次使用
-        sessionStorage.removeItem('voicePreSelectedFromGallery');
-        sessionStorage.removeItem('gallerySelectedVoiceId');
-        sessionStorage.removeItem('ttsPreSelectedVoice');
-        sessionStorage.removeItem('clearVoiceCache');
-        return; // useTTSGenerator hook 会处理预选语音
+      const preSelectedVoiceStr = sessionStorage.getItem('ttsPreSelectedVoice');
+      if (preSelectedVoiceStr) {
+        try {
+          const preSelectedVoice = JSON.parse(preSelectedVoiceStr) as Voice;
+          console.log('🎯 [TTSPage] 从 Voices 页面预选语音:', preSelectedVoice.display_name);
+          handleVoiceSelect(preSelectedVoice);
+          // 清除 sessionStorage
+          sessionStorage.removeItem('ttsPreSelectedVoice');
+          sessionStorage.removeItem('voicePreSelectedFromGallery');
+          sessionStorage.removeItem('clearVoiceCache');
+          return;
+        } catch (err) {
+          console.error('[TTSPage] Failed to parse pre-selected voice:', err);
+          sessionStorage.removeItem('ttsPreSelectedVoice');
+        }
       }
 
       // 3. 尝试从 localStorage 加载上次选择的语音（记住用户选择）

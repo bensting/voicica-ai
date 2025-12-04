@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
-    "prebuild": "node scripts/sync-version.js",
+    "prebuild": "node scripts/sync-version.js && node scripts/generate-build-id.js",
     "build": "prisma generate && prisma migrate deploy && next build --turbopack",
     "build:webpack": "prisma generate && prisma migrate deploy && next build",
     "build:production": "prisma generate && prisma migrate deploy && next build",

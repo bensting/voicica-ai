@@ -1,18 +1,24 @@
 
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 
+// 版本检查间隔（毫秒）
+const VERSION_CHECK_INTERVAL = 5 * 60 * 1000; // 5 分钟
+
 /**
- * Server Action 错误处理组件
+ * Server Action 错误处理 + 主动版本检测组件
  *
- * 检测 Next.js Server Action 版本不匹配错误，提示用户刷新页面
- * 这种错误通常发生在部署新版本后，用户缓存的 JS 代码与服务器不匹配
+ * 功能：
+ * 1. 被动检测：监听 Server Action 版本不匹配错误
+ * 2. 主动检测：定期检查服务器版本，发现更新时提示用户
  */
 export default function ServerActionErrorHandler() {
   const [showRefreshPrompt, setShowRefreshPrompt] = useState(false);
   const { t } = useLanguage();
+  const initialBuildIdRef = useRef<string | null>(null);
+  const checkIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
   const handleRefresh = useCallback(() => {
     // 清除缓存并刷新
@@ -30,6 +36,66 @@ export default function ServerActionErrorHandler() {
     setShowRefreshPrompt(false);
   }, []);
 
+  // 主动版本检测
+  useEffect(() => {
+    const checkVersion = async () => {
+      try {
+        // 添加时间戳避免缓存
+        const response = await fetch(`/build-info.json?t=${Date.now()}`, {
+          cache: 'no-store',
+        });
+
+        if (!response.ok) {
+          // 文件不存在时静默忽略（可能是开发环境）
+          return;
+        }
+
+        const data = await response.json();
+        const serverBuildId = data.buildId;
+
+        if (!serverBuildId) return;
+
+        // 首次加载，记录当前版本
+        if (initialBuildIdRef.current === null) {
+          initialBuildIdRef.current = serverBuildId;
+          console.log('[VersionCheck] 初始版本:', serverBuildId);
+          return;
+        }
+
+        // 版本发生变化
+        if (initialBuildIdRef.current !== serverBuildId) {
+          console.log('[VersionCheck] 检测到新版本:', {
+            current: initialBuildIdRef.current,
+            server: serverBuildId,
+          });
+          setShowRefreshPrompt(true);
+
+          // 停止继续检查
+          if (checkIntervalRef.current) {
+            clearInterval(checkIntervalRef.current);
+            checkIntervalRef.current = null;
+          }
+        }
+      } catch (error) {
+        // 网络错误时静默忽略
+        console.debug('[VersionCheck] 检查失败:', error);
+      }
+    };
+
+    // 初始检查
+    checkVersion();
+
+    // 定期检查
+    checkIntervalRef.current = setInterval(checkVersion, VERSION_CHECK_INTERVAL);
+
+    return () => {
+      if (checkIntervalRef.current) {
+        clearInterval(checkIntervalRef.current);
+      }
+    };
+  }, []);
+
+  // 被动错误监听
   useEffect(() => {
     // 监听全局错误
     const handleError = (event: ErrorEvent) => {

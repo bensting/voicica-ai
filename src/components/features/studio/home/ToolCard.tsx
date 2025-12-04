@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { ChevronRight } from 'lucide-react';
 
 interface ToolCardProps {
   title: string;
@@ -13,7 +14,7 @@ interface ToolCardProps {
 /**
  * 工具卡片组件
  *
- * 竖向布局：图标在上，标题和描述在下
+ * 水平布局：图标在左，标题和描述在右
  * 用于展示小工具如下载器等
  */
 export default function ToolCard({
@@ -26,22 +27,25 @@ export default function ToolCard({
   return (
     <Link
       href={href}
-      className="group block rounded-2xl border border-gray-200 hover:border-purple-300 hover:shadow-lg transition-all duration-300 p-5 bg-white"
+      className="group flex items-center gap-4 rounded-2xl border border-gray-200 hover:border-purple-300 hover:shadow-lg transition-all duration-300 p-4 bg-white"
     >
       {/* 图标 */}
       <div
-        className={`w-12 h-12 ${iconBgColor} rounded-xl flex items-center justify-center mb-4`}
+        className={`flex-shrink-0 w-12 h-12 ${iconBgColor} rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform`}
       >
         {icon}
       </div>
 
-      {/* 标题 */}
-      <h3 className="text-lg font-bold text-gray-900 mb-2 group-hover:text-purple-600 transition-colors">
-        {title}
-      </h3>
+      {/* 文字内容 */}
+      <div className="flex-1 min-w-0">
+        <h3 className="text-base font-semibold text-gray-900 group-hover:text-purple-600 transition-colors">
+          {title}
+        </h3>
+        <p className="text-sm text-gray-500 leading-relaxed line-clamp-2">{description}</p>
+      </div>
 
-      {/* 描述 */}
-      <p className="text-sm text-gray-600 leading-relaxed">{description}</p>
+      {/* 箭头 */}
+      <ChevronRight className="flex-shrink-0 w-5 h-5 text-gray-300 group-hover:text-purple-500 group-hover:translate-x-0.5 transition-all" />
     </Link>
   );
 }

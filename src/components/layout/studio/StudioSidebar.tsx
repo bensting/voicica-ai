@@ -274,7 +274,7 @@ export default function StudioSidebar({ isOpen = false, onClose }: StudioSidebar
       </div>
     );
 
-  // 渲染移动端菜单项（卡片式风格）
+  // 渲染移动端菜单项（精致水平布局）
   const renderMobileMenuItem = (item: { id: string; href: string; icon: React.ReactNode; labelKey: string }) => {
     const isActive = pathname === item.href;
     return (
@@ -283,15 +283,27 @@ export default function StudioSidebar({ isOpen = false, onClose }: StudioSidebar
         href={item.href}
         onClick={onClose}
         className={`
-          flex items-center justify-between px-4 py-3.5 transition-colors
-          ${isActive ? 'bg-purple-50 text-purple-600' : 'text-gray-700'}
+          flex items-center gap-3 px-3 py-3 transition-all rounded-xl
+          ${isActive
+            ? 'bg-purple-100 text-purple-700'
+            : 'text-gray-700 hover:bg-gray-50 active:bg-gray-100'}
         `}
       >
-        <div className="flex items-center gap-3">
-          <span className="flex-shrink-0 text-purple-600">{item.icon}</span>
-          <span className="text-sm font-medium">{t(item.labelKey)}</span>
+        {/* 图标容器 */}
+        <div className={`
+          flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center
+          ${isActive
+            ? 'bg-purple-600 text-white shadow-sm'
+            : 'bg-gray-100 text-gray-600'}
+        `}>
+          {item.icon}
         </div>
-        <ChevronRight className="w-4 h-4 text-gray-400" />
+        {/* 文字 */}
+        <span className={`flex-1 text-sm font-medium ${isActive ? 'text-purple-700' : 'text-gray-800'}`}>
+          {t(item.labelKey)}
+        </span>
+        {/* 箭头 */}
+        <ChevronRight className={`w-4 h-4 flex-shrink-0 ${isActive ? 'text-purple-400' : 'text-gray-300'}`} />
       </Link>
     );
   };
@@ -300,11 +312,11 @@ export default function StudioSidebar({ isOpen = false, onClose }: StudioSidebar
   const renderMobileSection = (title: string, items: { id: string; href: string; icon: React.ReactNode; labelKey: string }[]) => {
     if (items.length === 0) return null;
     return (
-      <div className="mb-4">
-        <h3 className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+      <div className="mb-5">
+        <h3 className="px-5 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">
           {title}
         </h3>
-        <div className="mx-4 bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden divide-y divide-gray-100">
+        <div className="mx-4 bg-white rounded-2xl shadow-sm border border-gray-100 p-1.5 space-y-0.5">
           {items.map(renderMobileMenuItem)}
         </div>
       </div>

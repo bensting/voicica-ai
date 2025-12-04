@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState, useCallback, useMemo } from 'react';
+import dynamic from 'next/dynamic';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 import { useStudio } from '@/contexts/StudioContext';
@@ -11,15 +12,29 @@ import type { Voice } from '@/types/voice';
 import TextInput from '@/components/features/studio/tts/components/TextInput';
 import VoiceSelector from '@/components/features/studio/tts/components/VoiceSelector';
 import VoiceSelectButton from '@/components/features/studio/tts/components/VoiceSelectButton';
-import VoiceSelectorBottomSheet from '@/components/features/studio/tts/components/mobile/VoiceSelectorBottomSheet';
 import ActionButtons from '@/components/features/studio/tts/components/ActionButtons';
-import AudioPlayerModal from '@/components/features/studio/tts/components/mobile/AudioPlayerModal';
-import GeneratingRecordModal from '@/components/features/studio/tts/components/mobile/GeneratingRecordModal';
 import { useGenerationHistory } from '@/components/features/studio/generation-history/hooks/useGenerationHistory';
 import RecentGenerationsList from '@/components/features/studio/tts/components/RecentGenerationsList';
 import ConfirmDialog from '@/components/ui/ConfirmDialog';
-import AudioSettingsModal from '@/components/features/studio/tts/AudioSettingsModal';
 import AudioSettingsPanel from '@/components/features/studio/tts/AudioSettingsPanel';
+
+// 动态导入弹窗组件 - 减少首屏加载时间
+const VoiceSelectorBottomSheet = dynamic(
+  () => import('@/components/features/studio/tts/components/mobile/VoiceSelectorBottomSheet'),
+  { ssr: false }
+);
+const AudioPlayerModal = dynamic(
+  () => import('@/components/features/studio/tts/components/mobile/AudioPlayerModal'),
+  { ssr: false }
+);
+const GeneratingRecordModal = dynamic(
+  () => import('@/components/features/studio/tts/components/mobile/GeneratingRecordModal'),
+  { ssr: false }
+);
+const AudioSettingsModal = dynamic(
+  () => import('@/components/features/studio/tts/AudioSettingsModal'),
+  { ssr: false }
+);
 
 // 将 defaultStatus 提取到组件外部，避免每次渲染创建新数组引用
 const DEFAULT_GENERATION_STATUS = [TaskStatus.SUCCESS, TaskStatus.PROCESSING, TaskStatus.PENDING];

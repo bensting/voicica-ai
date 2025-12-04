@@ -84,12 +84,12 @@ const config: CapacitorConfig = {
   plugins: {
     // 启动画面
     SplashScreen: {
-      launchShowDuration: 2000,
+      launchShowDuration: 3000,
       launchAutoHide: true,
       backgroundColor: '#9333ea',
-      showSpinner: false,
-      androidSpinnerStyle: 'small',
-      iosSpinnerStyle: 'small',
+      showSpinner: true,
+      androidSpinnerStyle: 'large',
+      iosSpinnerStyle: 'large',
       spinnerColor: '#ffffff',
     },
     // 状态栏 - light 表示白色文字图标（适配紫色背景）

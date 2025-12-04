@@ -298,7 +298,7 @@ export default function StudioTTSPage() {
         </div>
 
         {/* 底部导航栏占位空间 */}
-        <div className="h-[64px] flex-shrink-0" style={{ height: 'calc(64px + env(safe-area-inset-bottom))' }} />
+        <div className="h-[64px] flex-shrink-0" style={{ height: 'calc(64px + var(--safe-area-inset-bottom, 0px))' }} />
       </div>
 
       {/* Desktop Layout - Two Column */}

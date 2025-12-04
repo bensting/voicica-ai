@@ -138,7 +138,7 @@ export default function TextToVideoPage() {
         </div>
 
         {/* Bottom safe area */}
-        <div className="h-[64px] flex-shrink-0" style={{ height: 'calc(64px + env(safe-area-inset-bottom))' }} />
+        <div className="h-[64px] flex-shrink-0" style={{ height: 'calc(64px + var(--safe-area-inset-bottom, 0px))' }} />
       </div>
 
       {/* Desktop Layout */}

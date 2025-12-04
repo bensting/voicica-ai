@@ -143,15 +143,25 @@ export default function VoicesPage() {
   const getVoiceName = (voice: Voice) => voice.display_name;
 
   return (
-    <div className="h-[calc(100vh-60px)] lg:h-screen flex flex-col bg-gray-900 overflow-hidden">
-      {/* ========== Search bar + Language selector ========== */}
-      <VoiceSearchBar
-        searchQuery={searchQuery}
-        onSearchChange={setSearchQuery}
-        selectedLanguage={selectedLanguage}
-        onLanguageClick={() => setIsLanguageModalOpen(true)}
-        darkMode
-      />
+    <div className="h-[calc(100vh-60px)] lg:h-screen flex flex-col bg-gray-50 overflow-hidden">
+      {/* ========== Fixed Header: Search + Filters ========== */}
+      <div className="flex-shrink-0 bg-white border-b border-gray-200 shadow-sm">
+        {/* Search bar + Language selector */}
+        <VoiceSearchBar
+          searchQuery={searchQuery}
+          onSearchChange={setSearchQuery}
+          selectedLanguage={selectedLanguage}
+          onLanguageClick={() => setIsLanguageModalOpen(true)}
+        />
+
+        {/* Filters */}
+        <VoiceFilters
+          selectedGender={selectedGender}
+          onGenderChange={setSelectedGender}
+          usedOnly={usedOnly}
+          onUsedOnlyChange={setUsedOnly}
+        />
+      </div>
 
       {/* Language selector modal */}
       <LanguageSelectorModal
@@ -162,17 +172,8 @@ export default function VoicesPage() {
         onSelect={handleLanguageSelect}
       />
 
-      {/* ========== Filters ========== */}
-      <VoiceFilters
-        selectedGender={selectedGender}
-        onGenderChange={setSelectedGender}
-        usedOnly={usedOnly}
-        onUsedOnlyChange={setUsedOnly}
-        darkMode
-      />
-
       {/* ========== Voice Grid (scrollable) ========== */}
-      <div className="flex-1 overflow-y-auto" onScroll={handleScroll}>
+      <div className="flex-1 overflow-y-auto bg-white" onScroll={handleScroll}>
         <VoiceGrid
           voices={filteredVoices}
           loading={loading}
@@ -189,27 +190,27 @@ export default function VoicesPage() {
         {/* Loading more indicator */}
         {loadingMore && (
           <div className="flex justify-center py-4">
-            <div className="text-sm text-gray-400">Loading more voices...</div>
+            <div className="text-sm text-gray-500">Loading more voices...</div>
           </div>
         )}
 
         {/* End of list indicator */}
         {!loading && !loadingMore && !hasMore && filteredVoices.length > 0 && (
           <div className="flex justify-center py-4 pb-24">
-            <div className="text-xs text-gray-500">All voices loaded ({total} total)</div>
+            <div className="text-xs text-gray-400">All voices loaded ({total} total)</div>
           </div>
         )}
       </div>
 
       {/* ========== Bottom Select Button (fixed, above bottom nav) ========== */}
-      <div className="fixed bottom-[72px] left-0 right-0 p-4 bg-gradient-to-t from-gray-900 via-gray-900/95 to-transparent lg:hidden">
+      <div className="fixed bottom-[72px] left-0 right-0 p-4 bg-gradient-to-t from-white via-white/95 to-transparent lg:hidden">
         <button
           onClick={handleConfirmSelection}
           disabled={!selectedVoice}
-          className={`w-full py-3 rounded-xl font-medium flex items-center justify-center gap-2 transition-all ${
+          className={`w-full py-3 rounded-xl font-medium flex items-center justify-center gap-2 transition-all shadow-lg ${
             selectedVoice
               ? 'bg-purple-600 text-white hover:bg-purple-700 active:scale-[0.98]'
-              : 'bg-gray-700 text-gray-400 cursor-not-allowed'
+              : 'bg-gray-200 text-gray-400 cursor-not-allowed'
           }`}
         >
           <span>

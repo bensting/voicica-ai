@@ -38,10 +38,10 @@ export default function VoiceGrid({
   if (loading) {
     return (
       <div className="grid grid-cols-5 gap-2 p-4">
-        {[...Array(15)].map((_, index) => (
+        {[...Array(20)].map((_, index) => (
           <div key={index} className="flex flex-col items-center gap-1.5 p-2 animate-pulse">
-            <div className="w-14 h-14 rounded-full bg-gray-700" />
-            <div className="h-3 w-12 bg-gray-700 rounded" />
+            <div className="w-14 h-14 rounded-full bg-gray-200" />
+            <div className="h-3 w-12 bg-gray-200 rounded" />
           </div>
         ))}
       </div>
@@ -52,7 +52,7 @@ export default function VoiceGrid({
   if (error) {
     return (
       <div className="flex flex-col justify-center items-center py-12 space-y-4">
-        <div className="text-sm text-red-400">{error}</div>
+        <div className="text-sm text-red-500">{error}</div>
         {onRetry && (
           <button
             onClick={onRetry}
@@ -69,7 +69,7 @@ export default function VoiceGrid({
   if (voices.length === 0) {
     return (
       <div className="flex justify-center items-center py-12">
-        <div className="text-sm text-gray-400">
+        <div className="text-sm text-gray-500">
           {usedOnly ? t('voiceFilters.noUsedVoices') : t('voiceFilters.noVoicesFound')}
         </div>
       </div>

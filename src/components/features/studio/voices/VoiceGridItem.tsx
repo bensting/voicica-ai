@@ -29,14 +29,14 @@ export default function VoiceGridItem({
   return (
     <button
       onClick={() => onSelect(voice)}
-      className="flex flex-col items-center gap-1.5 p-2 rounded-xl transition-all hover:bg-gray-800 active:scale-95"
+      className="flex flex-col items-center gap-1.5 p-2 rounded-xl transition-all hover:bg-gray-100 active:scale-95"
     >
       {/* Avatar with play overlay */}
       <div className="relative">
         <div
           className={`w-14 h-14 rounded-full overflow-hidden ring-2 transition-all ${
             isSelected
-              ? 'ring-purple-500 ring-offset-2 ring-offset-gray-900'
+              ? 'ring-purple-500 ring-offset-2 ring-offset-white'
               : 'ring-transparent'
           }`}
         >
@@ -85,7 +85,7 @@ export default function VoiceGridItem({
 
       {/* Name */}
       <span className={`text-xs text-center line-clamp-1 max-w-[72px] ${
-        isSelected ? 'text-purple-400 font-medium' : 'text-gray-300'
+        isSelected ? 'text-purple-600 font-medium' : 'text-gray-600'
       }`}>
         {voiceName}
       </span>

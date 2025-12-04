@@ -6,7 +6,6 @@ interface VoiceFiltersProps {
   onGenderChange: (gender: string) => void;
   usedOnly: boolean;
   onUsedOnlyChange: (usedOnly: boolean) => void;
-  darkMode?: boolean;
 }
 
 /**
@@ -17,7 +16,6 @@ export default function VoiceFilters({
   onGenderChange,
   usedOnly,
   onUsedOnlyChange,
-  darkMode = false,
 }: VoiceFiltersProps) {
   const { t } = useLanguage();
   const [isGenderDropdownOpen, setIsGenderDropdownOpen] = useState(false);
@@ -37,66 +35,6 @@ export default function VoiceFilters({
         return t('voiceFilters.gender');
     }
   };
-
-  if (darkMode) {
-    return (
-      <div className="flex-shrink-0 px-3 py-2 bg-gray-900 border-b border-gray-800">
-        <div className="flex items-center justify-between">
-          {/* Left: Gender filter */}
-          <div className="flex items-center gap-2">
-            <div className="relative">
-              <button
-                onClick={() => setIsGenderDropdownOpen(!isGenderDropdownOpen)}
-                className={`px-3 py-1.5 text-xs font-medium bg-gray-800 border rounded-lg hover:bg-gray-700 transition-colors flex items-center gap-1.5 ${
-                  selectedGender !== 'all' ? 'border-purple-500 text-purple-400' : 'border-gray-700 text-gray-300'
-                }`}
-              >
-                {getGenderLabel(selectedGender)}
-                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
-              </button>
-
-              {/* Gender dropdown */}
-              {isGenderDropdownOpen && (
-                <div className="absolute top-full left-0 mt-1 bg-gray-800 border border-gray-700 rounded-lg shadow-lg z-50 min-w-[100px]">
-                  {['all', 'male', 'female', 'neutral'].map((gender) => (
-                    <button
-                      key={gender}
-                      onClick={() => {
-                        onGenderChange(gender);
-                        setIsGenderDropdownOpen(false);
-                      }}
-                      className={`w-full px-3 py-2 text-xs text-left hover:bg-gray-700 transition-colors ${
-                        selectedGender === gender ? 'bg-purple-900/50 text-purple-400 font-medium' : 'text-gray-300'
-                      } ${gender === 'all' ? 'rounded-t-lg' : ''} ${gender === 'neutral' ? 'rounded-b-lg' : ''}`}
-                    >
-                      {gender === 'all' ? t('voiceFilters.all') : getGenderLabel(gender)}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Right: Used Only query button */}
-          <button
-            onClick={() => onUsedOnlyChange(!usedOnly)}
-            className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors flex items-center gap-1.5 ${
-              usedOnly
-                ? 'bg-purple-900/50 text-purple-400 border border-purple-500'
-                : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
-            }`}
-          >
-            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            {t('voiceFilters.usedOnly')}
-          </button>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="flex-shrink-0 px-3 py-2 bg-white border-b border-gray-200">

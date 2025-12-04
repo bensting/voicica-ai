@@ -103,8 +103,17 @@ export default function GenerationHistoryPage() {
       <CutePageLoading show={isInitialLoading} />
 
       {/* Mobile Layout - shown only on mobile screens */}
-      <div className="lg:hidden fixed inset-0 bg-gray-50 pt-16 overflow-hidden">
-        <MobileView {...viewProps} />
+      <div className="lg:hidden fixed inset-0 bg-gray-50 overflow-hidden" style={{ paddingTop: 'calc(60px + var(--safe-area-inset-top, 0px))' }}>
+        <MobileView
+          generations={generations}
+          total={total}
+          currentPage={currentPage}
+          totalPages={totalPages}
+          loading={loading}
+          onDeleteGeneration={handleDeleteGeneration}
+          onDownloadGeneration={handleDownloadGeneration}
+          onPageChange={handlePageChange}
+        />
       </div>
 
       {/* Desktop Layout - shown only on desktop screens */}

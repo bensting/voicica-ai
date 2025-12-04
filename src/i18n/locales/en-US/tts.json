@@ -104,6 +104,8 @@
     "female": "Female",
     "neutral": "Neutral",
     "proBasic": "Pro/Basic",
+    "celebrity": "Celebrity",
+    "professional": "Professional",
     "usedOnly": "Used",
     "noUsedVoices": "No usage history",
     "noVoicesFound": "No voices found",

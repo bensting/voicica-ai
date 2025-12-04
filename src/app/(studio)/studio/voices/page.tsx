@@ -50,6 +50,8 @@ export default function VoicesPage() {
     setSelectedLanguage,
     selectedGender,
     setSelectedGender,
+    selectedRole,
+    setSelectedRole,
     usedOnly,
     setUsedOnly,
     playingVoiceId,
@@ -158,6 +160,8 @@ export default function VoicesPage() {
         <VoiceFilters
           selectedGender={selectedGender}
           onGenderChange={setSelectedGender}
+          selectedRole={selectedRole}
+          onRoleChange={setSelectedRole}
           usedOnly={usedOnly}
           onUsedOnlyChange={setUsedOnly}
         />

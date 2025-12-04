@@ -143,9 +143,9 @@ export default function VoicesPage() {
   const getVoiceName = (voice: Voice) => voice.display_name;
 
   return (
-    <div className="h-[calc(100vh-60px)] lg:h-screen bg-gray-50 overflow-y-auto" onScroll={handleScroll}>
+    <div className="h-[calc(100vh-60px)] lg:h-screen bg-white overflow-y-auto" onScroll={handleScroll}>
       {/* ========== Sticky Header: Search + Filters ========== */}
-      <div className="sticky top-0 z-10 bg-white border-b border-gray-200 shadow-sm">
+      <div className="sticky top-0 z-10 bg-white/95 backdrop-blur-sm border-b border-gray-100 shadow-sm">
         {/* Search bar + Language selector */}
         <VoiceSearchBar
           searchQuery={searchQuery}
@@ -173,7 +173,7 @@ export default function VoicesPage() {
       />
 
       {/* ========== Voice Grid ========== */}
-      <div className="bg-white min-h-[calc(100%-120px)]">
+      <div className="bg-gradient-to-b from-gray-50/50 to-white min-h-[calc(100%-120px)]">
         <VoiceGrid
           voices={filteredVoices}
           loading={loading}

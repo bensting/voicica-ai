@@ -78,7 +78,7 @@ export default function VoiceGrid({
 
   // Voice grid
   return (
-    <div className="grid grid-cols-5 gap-1 p-2">
+    <div className="grid grid-cols-5 gap-0.5 p-3">
       {voices.map((voice, index) => (
         <VoiceGridItem
           key={voice.id}

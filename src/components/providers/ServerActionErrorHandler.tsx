@@ -3,9 +3,10 @@
 
 import { useEffect, useState, useCallback, useRef } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { appConfig } from '@/config/appConfig';
 
-// 版本检查间隔（毫秒）
-const VERSION_CHECK_INTERVAL = 5 * 60 * 1000; // 5 分钟
+// 从配置读取版本检查间隔（转换为毫秒）
+const VERSION_CHECK_INTERVAL = appConfig.version_check.check_interval_minutes * 60 * 1000;
 
 /**
  * Server Action 错误处理 + 主动版本检测组件

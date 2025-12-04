@@ -34,4 +34,11 @@ export const appConfig: AppConfig = {
   anonymous_user: {
     expiry_days: 30,
   },
+
+  /**
+   * 版本检测配置
+   */
+  version_check: {
+    check_interval_minutes: 5,
+  },
 };

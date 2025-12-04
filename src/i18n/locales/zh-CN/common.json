@@ -7,7 +7,13 @@
     "loading": "加载中...",
     "download": "下载",
     "share": "分享",
-    "delete": "删除"
+    "delete": "删除",
+    "later": "稍后",
+    "refresh": "刷新"
+  },
+  "app": {
+    "updateAvailable": "发现新版本",
+    "refreshRequired": "应用已更新，请刷新页面继续使用。"
   },
   "creditInfo": {
     "currentCredits": "当前积分：",

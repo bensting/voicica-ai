@@ -20,7 +20,7 @@ export const mobileBottomNavItems: MobileNavItemConfig[] = [
     icon: <Users className="w-5 h-5" />,
     labelKey: 'studio.mobileNav.voices',
     href: '/studio/voices',
-    enabled: false, // 生产环境暂未上线
+    enabled: true,
   },
   {
     id: 'clone',

@@ -76,7 +76,7 @@ export default function TextToVideoPage() {
   return (
     <>
       {/* Mobile Layout */}
-      <div className="lg:hidden fixed inset-0 top-[60px] flex flex-col bg-gradient-to-b from-gray-50 to-white overflow-auto">
+      <div className="lg:hidden fixed inset-0 flex flex-col bg-gradient-to-b from-gray-50 to-white overflow-auto" style={{ top: 'calc(60px + var(--safe-area-inset-top, 0px))' }}>
         <div className="flex-1 flex flex-col px-4 py-4 gap-4">
           {/* Error Message */}
           {error && (
@@ -138,7 +138,7 @@ export default function TextToVideoPage() {
         </div>
 
         {/* Bottom safe area */}
-        <div className="h-[64px] flex-shrink-0" style={{ height: 'calc(64px + env(safe-area-inset-bottom))' }} />
+        <div className="h-[64px] flex-shrink-0" style={{ height: 'calc(64px + var(--safe-area-inset-bottom, 0px))' }} />
       </div>
 
       {/* Desktop Layout */}

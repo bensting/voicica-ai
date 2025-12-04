@@ -1,9 +1,14 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { Trash2 } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
+import { Trash2, ChevronRight, Gift, CreditCard, Sparkles } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 import CreditsIcon from '@/components/icons/CreditsIcon';
+import LoginModal from '@/components/features/auth/LoginModal';
+import UpgradeModal from '@/components/features/pricing/UpgradeModal';
+import { appConfig } from '@/config/appConfig';
 
 interface ExampleButton {
   id: string;
@@ -23,7 +28,7 @@ interface TextInputProps {
   canGenerate?: boolean;
   remainingCredits?: number;
   creditsLoading?: boolean;
-  onClear?: () => void; // 新增：清空输入框回调
+  onClear?: () => void;
 }
 
 /**
@@ -45,10 +50,20 @@ export default function TextInput({
   onClear,
 }: TextInputProps) {
   const { t } = useLanguage();
+  const { user } = useFirebaseAuth();
   // 初始值设为 true，等 hydration 完成后再根据 value 决定是否显示
   const [showExamples, setShowExamples] = useState(true);
   // Track if component has mounted (client-side only)
   const [hasMounted, setHasMounted] = useState(false);
+  // "More" menu state
+  const [showMoreMenu, setShowMoreMenu] = useState(false);
+  const moreMenuRef = useRef<HTMLDivElement>(null);
+  // Modal states
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const [isUpgradeModalOpen, setIsUpgradeModalOpen] = useState(false);
+
+  // Get signup bonus from config
+  const signupBonus = appConfig.credits.registered_user;
 
   useEffect(() => {
     setHasMounted(true);
@@ -57,6 +72,19 @@ export default function TextInput({
       setShowExamples(false);
     }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Close more menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (moreMenuRef.current && !moreMenuRef.current.contains(event.target as Node)) {
+        setShowMoreMenu(false);
+      }
+    };
+    if (showMoreMenu) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [showMoreMenu]);
 
   // Get example buttons from i18n
   const EXAMPLE_BUTTONS: ExampleButton[] = [
@@ -104,8 +132,8 @@ export default function TextInput({
       {/* Bottom Bar with Character Counter and Example Buttons */}
       <div className="relative bg-purple-50 border-t border-purple-100 rounded-b-2xl">
         <div className="flex items-center justify-between px-4 py-3">
-          {/* Left: Remaining Credits */}
-          <div className="flex items-center gap-1.5">
+          {/* Left: Remaining Credits and More Menu for non-logged-in users */}
+          <div className="flex items-center gap-1.5 relative" ref={moreMenuRef}>
             <CreditsIcon className="w-4 h-4 lg:w-5 lg:h-5 text-amber-500" />
             <span className="text-sm lg:text-base font-medium text-gray-700">
               {creditsLoading ? (
@@ -119,6 +147,71 @@ export default function TextInput({
               )}{' '}
               {t('tts.input.creditsLeft')}
             </span>
+
+            {/* More chip - show for all users */}
+            <button
+              type="button"
+              onClick={() => setShowMoreMenu(!showMoreMenu)}
+              className="ml-1 px-2 py-0.5 bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white text-xs font-medium rounded-full transition-all shadow-sm flex items-center gap-0.5"
+            >
+              <Sparkles className="w-3 h-3" />
+              <span>{t('tts.input.more') || 'More'}</span>
+            </button>
+
+            {/* Floating menu dropdown */}
+            {showMoreMenu && (
+              <div className="absolute left-0 bottom-full mb-2 w-60 bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden z-50 animate-in fade-in slide-in-from-bottom-2 duration-200">
+                {/* Menu header */}
+                <div className="px-4 py-2.5 bg-gradient-to-r from-purple-500 to-blue-500">
+                  <p className="text-xs font-medium text-white/90">{t('tts.input.moreMenu.title') || 'Get more credits'}</p>
+                </div>
+
+                {/* Menu items */}
+                <div className="p-2 space-y-1">
+                  {/* Sign up option - only for non-logged-in users */}
+                  {!user && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setShowMoreMenu(false);
+                        setIsLoginModalOpen(true);
+                      }}
+                      className="w-full px-3 py-2.5 flex items-center gap-3 hover:bg-gradient-to-r hover:from-purple-50 hover:to-purple-100 rounded-xl transition-all group"
+                    >
+                      <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center shadow-sm group-hover:shadow-md group-hover:scale-105 transition-all">
+                        <Gift className="w-4 h-4 text-white" />
+                      </div>
+                      <div className="flex-1 text-left min-w-0">
+                        <p className="text-sm font-semibold text-gray-800">{t('tts.input.moreMenu.signUp') || 'Sign up free'}</p>
+                        <p className="text-xs text-gray-500 truncate">
+                          {t('tts.input.moreMenu.signUpDesc', { credits: signupBonus }) || `Get ${signupBonus} free credits`}
+                        </p>
+                      </div>
+                      <ChevronRight className="w-4 h-4 text-gray-300 group-hover:text-purple-500 group-hover:translate-x-0.5 transition-all flex-shrink-0" />
+                    </button>
+                  )}
+
+                  {/* View pricing option - show for all users */}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowMoreMenu(false);
+                      setIsUpgradeModalOpen(true);
+                    }}
+                    className="w-full px-3 py-2.5 flex items-center gap-3 hover:bg-gradient-to-r hover:from-blue-50 hover:to-blue-100 rounded-xl transition-all group"
+                  >
+                    <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-sm group-hover:shadow-md group-hover:scale-105 transition-all">
+                      <CreditCard className="w-4 h-4 text-white" />
+                    </div>
+                    <div className="flex-1 text-left min-w-0">
+                      <p className="text-sm font-semibold text-gray-800">{t('tts.input.moreMenu.pricing') || 'View pricing'}</p>
+                      <p className="text-xs text-gray-500 truncate">{t('tts.input.moreMenu.pricingDesc') || 'Explore subscription plans'}</p>
+                    </div>
+                    <ChevronRight className="w-4 h-4 text-gray-300 group-hover:text-blue-500 group-hover:translate-x-0.5 transition-all flex-shrink-0" />
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Right: Clear button, Character count and Desktop Generate button */}
@@ -229,6 +322,24 @@ export default function TextInput({
           </div>
         )}
       </div>
+
+      {/* Login Modal - rendered via portal to body */}
+      {hasMounted && isLoginModalOpen && createPortal(
+        <LoginModal
+          isOpen={isLoginModalOpen}
+          onClose={() => setIsLoginModalOpen(false)}
+        />,
+        document.body
+      )}
+
+      {/* Upgrade Modal - rendered via portal to body */}
+      {hasMounted && isUpgradeModalOpen && createPortal(
+        <UpgradeModal
+          isOpen={isUpgradeModalOpen}
+          onClose={() => setIsUpgradeModalOpen(false)}
+        />,
+        document.body
+      )}
     </div>
   );
 }

@@ -38,6 +38,10 @@
       "voices": "Voices",
       "clone": "Clone",
       "history": "History"
+    },
+    "voices": {
+      "selectVoice": "Select Voice",
+      "selectVoicePrompt": "Please select a voice"
     }
   }
 }

@@ -38,7 +38,7 @@ function StudioLayoutContent({
       <main
         className="lg:ml-16"
         style={{
-          paddingTop: 'calc(60px + env(safe-area-inset-top, 0px))'
+          paddingTop: 'calc(60px + var(--safe-area-inset-top, 0px))'
         }}
       >
         {children}

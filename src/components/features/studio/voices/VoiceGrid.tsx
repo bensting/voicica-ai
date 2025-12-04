@@ -38,7 +38,7 @@ export default function VoiceGrid({
   if (loading) {
     return (
       <div className="grid grid-cols-5 gap-2 p-4">
-        {[...Array(20)].map((_, index) => (
+        {[...Array(50)].map((_, index) => (
           <div key={index} className="flex flex-col items-center gap-1.5 p-2 animate-pulse">
             <div className="w-14 h-14 rounded-full bg-gray-200" />
             <div className="h-3 w-12 bg-gray-200 rounded" />

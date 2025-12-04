@@ -65,7 +65,7 @@ export function useVoices({ authLoading, initialLanguage }: UseVoicesProps): Use
   const [currentPage, setCurrentPage] = useState(1);
   const [total, setTotal] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
-  const pageSize = 20;
+  const pageSize = 50; // Show more voices initially to fill the screen
 
   // Search state
   const [searchQuery, setSearchQuery] = useState('');

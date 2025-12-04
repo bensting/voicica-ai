@@ -316,8 +316,16 @@ export default function StudioSidebar({ isOpen = false, onClose }: StudioSidebar
         <h3 className="px-5 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">
           {title}
         </h3>
-        <div className="mx-4 bg-white rounded-2xl shadow-sm border border-gray-100 p-1.5 space-y-0.5">
-          {items.map(renderMobileMenuItem)}
+        <div className="mx-4 bg-white rounded-2xl shadow-sm border border-gray-100 p-1.5">
+          {items.map((item, index) => (
+            <div key={item.id}>
+              {renderMobileMenuItem(item)}
+              {/* 添加分隔线（最后一项不加） */}
+              {index < items.length - 1 && (
+                <div className="mx-3 border-b border-gray-100" />
+              )}
+            </div>
+          ))}
         </div>
       </div>
     );
@@ -339,24 +347,22 @@ export default function StudioSidebar({ isOpen = false, onClose }: StudioSidebar
         {/* 内容容器 */}
         <div className="relative h-full flex flex-col" style={{ paddingTop: 'var(--safe-area-inset-top, 0px)', paddingBottom: 'var(--safe-area-inset-bottom, 0px)' }}>
           {/* 头部：关闭按钮 + Logo */}
-          <div className="flex-shrink-0 flex items-center justify-between px-4 py-3 bg-gray-50">
+          <div className="flex-shrink-0 flex items-center justify-between px-4 py-2.5 bg-white border-b border-gray-100">
             <button
               onClick={onClose}
-              className="p-2 -ml-2 text-gray-500 hover:text-gray-700 hover:bg-gray-200 rounded-full transition-colors"
+              className="w-9 h-9 flex items-center justify-center text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-xl transition-colors"
             >
-              <X className="w-6 h-6" />
+              <X className="w-5 h-5" />
             </button>
-            <div className="flex items-center gap-2">
-              <Image
-                src="/logo/voice-labs-logo-light.svg"
-                alt="Voicica.AI"
-                width={120}
-                height={24}
-                className="h-6 w-auto"
-              />
-            </div>
+            <Image
+              src="/logo/voice-labs-logo-light.svg"
+              alt="Voicica.AI"
+              width={110}
+              height={22}
+              className="h-5 w-auto"
+            />
             {/* 占位，保持 Logo 居中 */}
-            <div className="w-10" />
+            <div className="w-9" />
           </div>
 
           {/* 滚动区域 */}

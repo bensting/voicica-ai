@@ -27,9 +27,17 @@ export default function VoiceGridItem({
   priority = false,
 }: VoiceGridItemProps) {
   return (
-    <button
+    <div
+      role="button"
+      tabIndex={0}
       onClick={() => onSelect(voice)}
-      className={`flex flex-col items-center gap-1.5 p-2 rounded-2xl transition-all active:scale-95 ${
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          onSelect(voice);
+        }
+      }}
+      className={`flex flex-col items-center gap-1.5 p-2 rounded-2xl transition-all cursor-pointer active:scale-95 ${
         isSelected ? 'bg-purple-50' : 'hover:bg-gray-50'
       }`}
     >
@@ -91,6 +99,6 @@ export default function VoiceGridItem({
       }`}>
         {voiceName}
       </span>
-    </button>
+    </div>
   );
 }

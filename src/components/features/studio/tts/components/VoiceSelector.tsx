@@ -47,6 +47,8 @@ export default function VoiceSelector({
     setSelectedLanguage,
     selectedGender,
     setSelectedGender,
+    selectedRole,
+    setSelectedRole,
     usedOnly,
     setUsedOnly,
     playingVoiceId,
@@ -208,6 +210,8 @@ export default function VoiceSelector({
         <VoiceFilters
           selectedGender={selectedGender}
           onGenderChange={setSelectedGender}
+          selectedRole={selectedRole}
+          onRoleChange={setSelectedRole}
           usedOnly={usedOnly}
           onUsedOnlyChange={setUsedOnly}
         />

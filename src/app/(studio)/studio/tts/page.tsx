@@ -127,7 +127,7 @@ export default function StudioTTSPage() {
     t, // 传入翻译函数
   });
 
-  // Load last selected voice from localStorage (remember user's choice)
+  // Load voice from various sources (sessionStorage from Voices page takes priority)
   useEffect(() => {
     // 等待认证完成
     if (authLoading) return;
@@ -135,11 +135,26 @@ export default function StudioTTSPage() {
     // Early return if conditions not met yet
     if (!isLocaleReady) return;
 
-    // Skip if already selected
-    if (selectedVoice) return;
+    const loadVoice = () => {
+      // 1. 检查是否从 voices 页面预选了语音（最高优先级，覆盖当前选择）
+      const preSelectedVoiceStr = sessionStorage.getItem('ttsPreSelectedVoice');
+      if (preSelectedVoiceStr) {
+        try {
+          const preSelectedVoice = JSON.parse(preSelectedVoiceStr) as Voice;
+          console.log('🎯 [TTSPage] 从 Voices 页面预选语音:', preSelectedVoice.display_name);
+          handleVoiceSelect(preSelectedVoice);
+          // 清除 sessionStorage
+          sessionStorage.removeItem('ttsPreSelectedVoice');
+          sessionStorage.removeItem('voicePreSelectedFromGallery');
+          sessionStorage.removeItem('clearVoiceCache');
+          return;
+        } catch (err) {
+          console.error('[TTSPage] Failed to parse pre-selected voice:', err);
+          sessionStorage.removeItem('ttsPreSelectedVoice');
+        }
+      }
 
-    const loadLastSelectedVoice = async () => {
-      // 1. 检查是否从首页 TTS Samples 预填充了数据（最高优先级）
+      // 2. 检查是否从首页 TTS Samples 预填充了数据
       const prefillText = localStorage.getItem('tts_prefill_text');
       const prefillVoiceStr = localStorage.getItem('tts_prefill_voice');
       if (prefillText && prefillVoiceStr) {
@@ -162,23 +177,8 @@ export default function StudioTTSPage() {
         }
       }
 
-      // 2. 检查是否从 voices 页面预选了语音
-      const preSelectedVoiceStr = sessionStorage.getItem('ttsPreSelectedVoice');
-      if (preSelectedVoiceStr) {
-        try {
-          const preSelectedVoice = JSON.parse(preSelectedVoiceStr) as Voice;
-          console.log('🎯 [TTSPage] 从 Voices 页面预选语音:', preSelectedVoice.display_name);
-          handleVoiceSelect(preSelectedVoice);
-          // 清除 sessionStorage
-          sessionStorage.removeItem('ttsPreSelectedVoice');
-          sessionStorage.removeItem('voicePreSelectedFromGallery');
-          sessionStorage.removeItem('clearVoiceCache');
-          return;
-        } catch (err) {
-          console.error('[TTSPage] Failed to parse pre-selected voice:', err);
-          sessionStorage.removeItem('ttsPreSelectedVoice');
-        }
-      }
+      // Skip loading from localStorage if voice is already selected
+      if (selectedVoice) return;
 
       // 3. 尝试从 localStorage 加载上次选择的语音（记住用户选择）
       const lastVoiceStr = localStorage.getItem('lastSelectedVoice');
@@ -196,7 +196,7 @@ export default function StudioTTSPage() {
       // 4. 首次访问或找不到上次的语音：不自动选择，让用户主动选择
     };
 
-    void loadLastSelectedVoice();
+    loadVoice();
   }, [locale, isLocaleReady, authLoading, selectedVoice, handleVoiceSelect, handleTextChange]);
 
   // 当音频生成成功时，移动端自动打开弹窗

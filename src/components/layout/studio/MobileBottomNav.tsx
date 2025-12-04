@@ -24,7 +24,7 @@ export default function MobileBottomNav() {
   };
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 bg-gray-50 border-t border-gray-100 z-40 lg:hidden safe-area-bottom">
+    <div className="fixed bottom-0 left-0 right-0 bg-gradient-to-t from-purple-50 to-white border-t border-purple-100 z-40 lg:hidden safe-area-bottom">
       <div className="flex items-center justify-around px-2 py-2">
         {/* Navigation Items */}
         {getEnabledNavItems().map((item) => {

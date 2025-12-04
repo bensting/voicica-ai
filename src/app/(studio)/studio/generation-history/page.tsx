@@ -3,7 +3,6 @@
 import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import ConfirmDialog from '@/components/ui/ConfirmDialog';
-import CutePageLoading from '@/components/ui/CutePageLoading';
 import DesktopView from '@/components/features/studio/generation-history/DesktopView';
 import MobileView from '@/components/features/studio/generation-history/MobileView';
 import { useGenerationHistory } from '@/components/features/studio/generation-history/hooks/useGenerationHistory';
@@ -46,10 +45,6 @@ export default function GenerationHistoryPage() {
     accumulateData: true, // Enable infinite scroll for both mobile and desktop
     t, // 传入翻译函数
   });
-
-  // Show loading while checking auth or initial data loading
-  // Note: Anonymous users can also view their generation history
-  const isInitialLoading = authLoading || (loading && generations.length === 0);
 
   // Show error state
   if (error && !authLoading) {
@@ -97,11 +92,9 @@ export default function GenerationHistoryPage() {
 
   // Show main content (supports both authenticated and anonymous users)
   // Use CSS to show/hide views based on screen size (better performance than JS state)
+  // Loading state is handled by: 1) loading.tsx for page navigation, 2) MobileView/DesktopView skeleton states
   return (
     <>
-      {/* Page Loading Animation */}
-      <CutePageLoading show={isInitialLoading} />
-
       {/* Mobile Layout - shown only on mobile screens */}
       <div className="lg:hidden fixed inset-0 bg-gray-50 overflow-hidden" style={{ paddingTop: 'calc(60px + var(--safe-area-inset-top, 0px))' }}>
         <MobileView

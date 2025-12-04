@@ -159,14 +159,14 @@ export default function TextInput({
 
             {/* Floating menu dropdown */}
             {showMoreMenu && (
-              <div className="absolute left-0 bottom-full mb-2 w-56 bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden z-50 animate-in fade-in slide-in-from-bottom-2 duration-200">
+              <div className="absolute left-0 bottom-full mb-2 w-60 bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden z-50 animate-in fade-in slide-in-from-bottom-2 duration-200">
                 {/* Menu header */}
-                <div className="px-4 py-3 bg-gradient-to-r from-purple-50 to-blue-50 border-b border-gray-100">
-                  <p className="text-xs text-gray-600">{t('tts.input.moreMenu.title') || 'Get more credits'}</p>
+                <div className="px-4 py-2.5 bg-gradient-to-r from-purple-500 to-blue-500">
+                  <p className="text-xs font-medium text-white/90">{t('tts.input.moreMenu.title') || 'Get more credits'}</p>
                 </div>
 
                 {/* Menu items */}
-                <div className="py-1">
+                <div className="p-2 space-y-1">
                   {/* Sign up option - only for non-logged-in users */}
                   {!user && (
                     <button
@@ -175,18 +175,18 @@ export default function TextInput({
                         setShowMoreMenu(false);
                         setIsLoginModalOpen(true);
                       }}
-                      className="w-full px-4 py-2.5 flex items-center gap-3 hover:bg-purple-50 transition-colors group"
+                      className="w-full px-3 py-2.5 flex items-center gap-3 hover:bg-gradient-to-r hover:from-purple-50 hover:to-purple-100 rounded-xl transition-all group"
                     >
-                      <div className="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center group-hover:bg-purple-200 transition-colors">
-                        <Gift className="w-4 h-4 text-purple-600" />
+                      <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center shadow-sm group-hover:shadow-md group-hover:scale-105 transition-all">
+                        <Gift className="w-4 h-4 text-white" />
                       </div>
-                      <div className="flex-1 text-left">
-                        <p className="text-sm font-medium text-gray-800">{t('tts.input.moreMenu.signUp') || 'Sign up free'}</p>
-                        <p className="text-xs text-gray-500">
+                      <div className="flex-1 text-left min-w-0">
+                        <p className="text-sm font-semibold text-gray-800">{t('tts.input.moreMenu.signUp') || 'Sign up free'}</p>
+                        <p className="text-xs text-gray-500 truncate">
                           {t('tts.input.moreMenu.signUpDesc', { credits: signupBonus }) || `Get ${signupBonus} free credits`}
                         </p>
                       </div>
-                      <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-purple-500 transition-colors" />
+                      <ChevronRight className="w-4 h-4 text-gray-300 group-hover:text-purple-500 group-hover:translate-x-0.5 transition-all flex-shrink-0" />
                     </button>
                   )}
 
@@ -197,16 +197,16 @@ export default function TextInput({
                       setShowMoreMenu(false);
                       setIsUpgradeModalOpen(true);
                     }}
-                    className="w-full px-4 py-2.5 flex items-center gap-3 hover:bg-purple-50 transition-colors group"
+                    className="w-full px-3 py-2.5 flex items-center gap-3 hover:bg-gradient-to-r hover:from-blue-50 hover:to-blue-100 rounded-xl transition-all group"
                   >
-                    <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center group-hover:bg-blue-200 transition-colors">
-                      <CreditCard className="w-4 h-4 text-blue-600" />
+                    <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-sm group-hover:shadow-md group-hover:scale-105 transition-all">
+                      <CreditCard className="w-4 h-4 text-white" />
                     </div>
-                    <div className="flex-1 text-left">
-                      <p className="text-sm font-medium text-gray-800">{t('tts.input.moreMenu.pricing') || 'View pricing'}</p>
-                      <p className="text-xs text-gray-500">{t('tts.input.moreMenu.pricingDesc') || 'Explore subscription plans'}</p>
+                    <div className="flex-1 text-left min-w-0">
+                      <p className="text-sm font-semibold text-gray-800">{t('tts.input.moreMenu.pricing') || 'View pricing'}</p>
+                      <p className="text-xs text-gray-500 truncate">{t('tts.input.moreMenu.pricingDesc') || 'Explore subscription plans'}</p>
                     </div>
-                    <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-purple-500 transition-colors" />
+                    <ChevronRight className="w-4 h-4 text-gray-300 group-hover:text-blue-500 group-hover:translate-x-0.5 transition-all flex-shrink-0" />
                   </button>
                 </div>
               </div>

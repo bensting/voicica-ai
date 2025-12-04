@@ -138,6 +138,26 @@ export function FirebaseAuthProvider({ children }: { children: React.ReactNode }
   }, [user]);
 
   /**
+   * 检查是否为用户取消登录的错误
+   */
+  const isUserCancelledError = (error: unknown): boolean => {
+    const err = error as { code?: string; message?: string };
+    const cancelCodes = [
+      'auth/popup-closed-by-user',
+      'auth/cancelled-popup-request',
+      'auth/user-cancelled',
+      '12501', // Google Sign-In cancelled on Android
+      'SIGN_IN_CANCELLED',
+    ];
+    return cancelCodes.some(code =>
+      err?.code === code ||
+      err?.message?.includes(code) ||
+      err?.message?.includes('cancelled') ||
+      err?.message?.includes('canceled')
+    );
+  };
+
+  /**
    * 通用登录方法：自动选择 popup 或 redirect 方式
    * - 普通浏览器使用 popup（体验更好）
    * - 应用内浏览器使用 redirect（避免被阻止）
@@ -151,6 +171,11 @@ export function FirebaseAuthProvider({ children }: { children: React.ReactNode }
         await signInWithPopup(auth, provider);
       }
     } catch (error) {
+      // 用户取消登录，静默处理，不抛出错误
+      if (isUserCancelledError(error)) {
+        console.log(`[FirebaseAuth] 用户取消了 ${providerName} 登录`);
+        return;
+      }
       console.error(`[FirebaseAuth] ${providerName} 登录失败:`, error);
       throw error;
     }
@@ -181,6 +206,11 @@ export function FirebaseAuthProvider({ children }: { children: React.ReactNode }
           throw new Error('No idToken returned from native sign-in');
         }
       } catch (error: unknown) {
+        // 用户取消登录，静默处理
+        if (isUserCancelledError(error)) {
+          console.log('[FirebaseAuth] 用户取消了原生 Google 登录');
+          return;
+        }
         const err = error as { code?: string; message?: string };
         console.error('[FirebaseAuth] 原生 Google 登录失败:');
         console.error('  - Error:', error);

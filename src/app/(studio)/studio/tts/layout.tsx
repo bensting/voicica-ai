@@ -28,7 +28,7 @@ export default function TTSLayout({
       <div
         className="lg:hidden flex flex-col"
         style={{
-          height: 'calc(100vh - 60px - env(safe-area-inset-top, 0px))'
+          height: 'calc(100vh - 60px - var(--safe-area-inset-top, 0px))'
         }}
       >
         {/* Content area - 底部留出安全区域空间 */}

@@ -4,16 +4,20 @@ import { useLanguage } from '@/contexts/LanguageContext';
 interface VoiceFiltersProps {
   selectedGender: string;
   onGenderChange: (gender: string) => void;
+  selectedRole: string;
+  onRoleChange: (role: string) => void;
   usedOnly: boolean;
   onUsedOnlyChange: (usedOnly: boolean) => void;
 }
 
 /**
- * Voice filters component (Gender, Tier, etc.)
+ * Voice filters component (Gender, Role, etc.)
  */
 export default function VoiceFilters({
   selectedGender,
   onGenderChange,
+  selectedRole,
+  onRoleChange,
   usedOnly,
   onUsedOnlyChange,
 }: VoiceFiltersProps) {
@@ -37,15 +41,18 @@ export default function VoiceFilters({
   };
 
   return (
-    <div className="flex-shrink-0 px-3 py-2 bg-white border-b border-gray-200">
+    <div className="flex-shrink-0 px-4 py-2.5 bg-white border-b border-gray-100">
       <div className="flex items-center justify-between">
-        {/* Left: Gender filter */}
+        {/* Left: Gender filter + Role filters */}
         <div className="flex items-center gap-2">
+          {/* Gender dropdown */}
           <div className="relative">
             <button
               onClick={() => setIsGenderDropdownOpen(!isGenderDropdownOpen)}
-              className={`px-3 py-1.5 text-xs font-medium bg-white border rounded-lg hover:bg-gray-50 transition-colors flex items-center gap-1.5 ${
-                selectedGender !== 'all' ? 'border-purple-500 text-purple-600' : 'border-gray-200 text-gray-700'
+              className={`px-4 py-2 text-xs font-medium rounded-full transition-colors flex items-center gap-1.5 ${
+                selectedGender !== 'all'
+                  ? 'bg-purple-100 text-purple-700 border border-purple-200'
+                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
               }`}
             >
               {getGenderLabel(selectedGender)}
@@ -54,7 +61,7 @@ export default function VoiceFilters({
               </svg>
             </button>
 
-            {/* Gender dropdown */}
+            {/* Gender dropdown menu */}
             {isGenderDropdownOpen && (
               <div className="absolute top-full left-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-50 min-w-[100px]">
                 {['all', 'male', 'female', 'neutral'].map((gender) => (
@@ -74,14 +81,38 @@ export default function VoiceFilters({
               </div>
             )}
           </div>
+
+          {/* Celebrity filter */}
+          <button
+            onClick={() => onRoleChange(selectedRole === 'Celebrity' ? 'all' : 'Celebrity')}
+            className={`px-4 py-2 text-xs font-medium rounded-full transition-colors ${
+              selectedRole === 'Celebrity'
+                ? 'bg-purple-100 text-purple-700 border border-purple-200'
+                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+            }`}
+          >
+            {t('voiceFilters.celebrity')}
+          </button>
+
+          {/* Professional filter */}
+          <button
+            onClick={() => onRoleChange(selectedRole === 'Professional' ? 'all' : 'Professional')}
+            className={`px-4 py-2 text-xs font-medium rounded-full transition-colors ${
+              selectedRole === 'Professional'
+                ? 'bg-purple-100 text-purple-700 border border-purple-200'
+                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+            }`}
+          >
+            {t('voiceFilters.professional')}
+          </button>
         </div>
 
         {/* Right: Used Only query button */}
         <button
           onClick={() => onUsedOnlyChange(!usedOnly)}
-          className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors flex items-center gap-1.5 ${
+          className={`px-4 py-2 text-xs font-medium rounded-full transition-colors flex items-center gap-1.5 ${
             usedOnly
-              ? 'bg-purple-100 text-purple-700 border border-purple-300'
+              ? 'bg-purple-100 text-purple-700 border border-purple-200'
               : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
           }`}
         >

@@ -69,6 +69,8 @@ export default function VoiceSelectorBottomSheet({
     setSelectedLanguage,
     selectedGender,
     setSelectedGender,
+    selectedRole,
+    setSelectedRole,
     usedOnly,
     setUsedOnly,
     playingVoiceId,
@@ -154,6 +156,8 @@ export default function VoiceSelectorBottomSheet({
             <VoiceFilters
               selectedGender={selectedGender}
               onGenderChange={setSelectedGender}
+              selectedRole={selectedRole}
+              onRoleChange={setSelectedRole}
               usedOnly={usedOnly}
               onUsedOnlyChange={setUsedOnly}
             />

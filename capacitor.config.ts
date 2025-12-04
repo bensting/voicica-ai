@@ -1,7 +1,7 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 
 // 服务器 URL 配置
-const serverUrl = process.env.CAPACITOR_SERVER_URL || 'https://voicica.ai/studio';
+const serverUrl = process.env.CAPACITOR_SERVER_URL || 'https://www.voicica.ai/studio';
 
 // 根据 URL 确定允许导航的域名
 const getAllowedDomains = (url: string): string[] => {
@@ -84,17 +84,17 @@ const config: CapacitorConfig = {
   plugins: {
     // 启动画面
     SplashScreen: {
-      launchShowDuration: 2000,
+      launchShowDuration: 3000,
       launchAutoHide: true,
       backgroundColor: '#9333ea',
-      showSpinner: false,
-      androidSpinnerStyle: 'small',
-      iosSpinnerStyle: 'small',
+      showSpinner: true,
+      androidSpinnerStyle: 'large',
+      iosSpinnerStyle: 'large',
       spinnerColor: '#ffffff',
     },
-    // 状态栏
+    // 状态栏 - light 表示白色文字图标（适配紫色背景）
     StatusBar: {
-      style: 'dark',
+      style: 'light',
       backgroundColor: '#9333ea',
     },
     // 键盘

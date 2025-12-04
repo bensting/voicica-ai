@@ -33,6 +33,10 @@ interface UseVoicesReturn {
   selectedGender: string;
   setSelectedGender: (gender: string) => void;
 
+  // Role filter state
+  selectedRole: string;
+  setSelectedRole: (role: string) => void;
+
   // Used only filter state
   usedOnly: boolean;
   setUsedOnly: (usedOnly: boolean) => void;
@@ -65,7 +69,7 @@ export function useVoices({ authLoading, initialLanguage }: UseVoicesProps): Use
   const [currentPage, setCurrentPage] = useState(1);
   const [total, setTotal] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
-  const pageSize = 20;
+  const pageSize = 50; // Show more voices initially to fill the screen
 
   // Search state
   const [searchQuery, setSearchQuery] = useState('');
@@ -75,6 +79,9 @@ export function useVoices({ authLoading, initialLanguage }: UseVoicesProps): Use
 
   // Gender filter state
   const [selectedGender, setSelectedGender] = useState<string>('all');
+
+  // Role filter state
+  const [selectedRole, setSelectedRole] = useState<string>('all');
 
   // Used only filter state
   const [usedOnly, setUsedOnly] = useState(false);
@@ -99,13 +106,14 @@ export function useVoices({ authLoading, initialLanguage }: UseVoicesProps): Use
       setError(null);
 
       // Build API params
-      // When usedOnly is enabled, don't apply locale/gender filters
+      // When usedOnly is enabled, don't apply locale/gender/role filters
       const params: {
         is_active: boolean;
         page: number;
         page_size: number;
         locale?: string;
         gender?: string;
+        role?: string;
       } = {
         is_active: true,
         page: 1,
@@ -121,6 +129,10 @@ export function useVoices({ authLoading, initialLanguage }: UseVoicesProps): Use
         if (selectedGender !== 'all') {
           params.gender = selectedGender;
         }
+
+        if (selectedRole !== 'all') {
+          params.role = selectedRole;
+        }
       }
 
       const response = await listVoices(params);
@@ -135,7 +147,7 @@ export function useVoices({ authLoading, initialLanguage }: UseVoicesProps): Use
     } finally {
       setLoading(false);
     }
-  }, [selectedLanguage, selectedGender, pageSize, usedOnly]);
+  }, [selectedLanguage, selectedGender, selectedRole, pageSize, usedOnly]);
 
   // Load more voices (pagination)
   const loadMoreVoices = useCallback(async () => {
@@ -152,6 +164,7 @@ export function useVoices({ authLoading, initialLanguage }: UseVoicesProps): Use
         page_size: number;
         locale?: string;
         gender?: string;
+        role?: string;
       } = {
         is_active: true,
         page: nextPage,
@@ -166,6 +179,10 @@ export function useVoices({ authLoading, initialLanguage }: UseVoicesProps): Use
         params.gender = selectedGender;
       }
 
+      if (selectedRole !== 'all') {
+        params.role = selectedRole;
+      }
+
       const response = await listVoices(params);
 
       setVoices((prev) => [...prev, ...(response.voices as Voice[])]);
@@ -177,7 +194,7 @@ export function useVoices({ authLoading, initialLanguage }: UseVoicesProps): Use
     } finally {
       setLoadingMore(false);
     }
-  }, [loadingMore, currentPage, totalPages, selectedLanguage, selectedGender, pageSize]);
+  }, [loadingMore, currentPage, totalPages, selectedLanguage, selectedGender, selectedRole, pageSize]);
 
   // Initial load and reload when filters change
   // Wait for authentication to complete before loading voices
@@ -193,7 +210,7 @@ export function useVoices({ authLoading, initialLanguage }: UseVoicesProps): Use
     // - Anonymous users: use device fingerprint
     void loadVoices();
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedLanguage, selectedGender, usedOnly, authLoading]); // 直接依赖 filter 值，避免 loadVoices 引用变化导致多次请求
+  }, [selectedLanguage, selectedGender, selectedRole, usedOnly, authLoading]); // 直接依赖 filter 值，避免 loadVoices 引用变化导致多次请求
 
   // Filter voices based on search query and usedOnly (client-side)
   // Other filters (language, gender) are handled by API
@@ -270,6 +287,10 @@ export function useVoices({ authLoading, initialLanguage }: UseVoicesProps): Use
     // Gender filter state
     selectedGender,
     setSelectedGender,
+
+    // Role filter state
+    selectedRole,
+    setSelectedRole,
 
     // Used only filter state
     usedOnly,

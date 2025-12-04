@@ -43,40 +43,8 @@ export function useTTSGenerator(
   const [error, setError] = useState<string | null>(null);
   const [audioUrl, setAudioUrl] = useState<string | null>(null);
 
-  // Ref to track if we've already loaded the pre-selected voice
-  const hasLoadedPreSelection = useRef(false);
-
-  // Check for pre-selected voice from sessionStorage (from Voices Gallery page)
-  // Only run once to prevent infinite render loop
-  useEffect(() => {
-    // Only run once
-    if (hasLoadedPreSelection.current) return;
-
-    const preSelectedVoiceStr = sessionStorage.getItem('ttsPreSelectedVoice');
-    if (preSelectedVoiceStr) {
-      try {
-        const preSelectedVoice = JSON.parse(preSelectedVoiceStr) as Voice;
-
-        // Only update if it's a different voice
-        if (!selectedVoice || selectedVoice.id !== preSelectedVoice.id) {
-          // Clear the module-level cache in MobileTTSPage to prevent it from using old default voice
-          if (typeof window !== 'undefined') {
-            sessionStorage.setItem('clearVoiceCache', 'true');
-            sessionStorage.setItem('voicePreSelectedFromGallery', 'true');
-          }
-
-          setSelectedVoice(preSelectedVoice);
-          hasLoadedPreSelection.current = true; // Mark as loaded
-        }
-
-        // Clear after applying
-        sessionStorage.removeItem('ttsPreSelectedVoice');
-      } catch (err) {
-        console.error('[useTTSGenerator] Failed to parse pre-selected voice:', err);
-        sessionStorage.removeItem('ttsPreSelectedVoice');
-      }
-    }
-  }, [selectedVoice]); // ✅ Now has dependency array
+  // Note: Pre-selected voice from sessionStorage is handled by the TTS page component
+  // to ensure proper coordination with localStorage persistence and UI updates
 
   // 可用字符数
   const availableCharacters = maxCharacters - text.length;

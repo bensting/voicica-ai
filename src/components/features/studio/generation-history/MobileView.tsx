@@ -2,28 +2,19 @@
 
 import { useRef, useCallback, useEffect } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
-import FiltersSection from './components/FiltersSection';
 import MobileSpeechCard from './MobileSpeechCard';
 import MobileSpeechCardSkeleton from './MobileSpeechCardSkeleton';
-import { TaskStatus } from '@/types/tts';
 import type { Generation } from '@/types/tts';
 
 interface MobileViewProps {
   generations: Generation[];
   total: number;
   currentPage: number;
-  pageSize: number;
   totalPages: number;
   loading?: boolean;
-  selectedStatus: TaskStatus | null;
-  startDate: string | null;
-  endDate: string | null;
-  onClearAll: () => void;
   onDeleteGeneration: (id: string) => void;
   onDownloadGeneration: (id: string) => void;
   onPageChange: (page: number) => void;
-  onStatusChange: (status: TaskStatus | null) => void;
-  onDateRangeChange: (startDate: string | null, endDate: string | null) => void;
 }
 
 /**
@@ -35,15 +26,9 @@ export default function MobileView({
   currentPage,
   totalPages,
   loading = false,
-  selectedStatus,
-  startDate,
-  endDate,
-  // onClearAll,  // Not used - removed to fix ESLint warning
   onDeleteGeneration,
   onDownloadGeneration,
   onPageChange,
-  onStatusChange,
-  onDateRangeChange
 }: MobileViewProps) {
   const { t } = useLanguage();
   const observerTarget = useRef<HTMLDivElement>(null);
@@ -76,21 +61,8 @@ export default function MobileView({
     <div className="flex flex-col h-full">
       {/* Fixed Header Area */}
       <div className="flex-none bg-gray-50">
-        {/* Filters Section */}
-        <div className="px-4 py-3">
-          <FiltersSection
-            selectedStatus={selectedStatus}
-            startDate={startDate}
-            endDate={endDate}
-            onStatusChange={onStatusChange}
-            onDateRangeChange={onDateRangeChange}
-            statusLabel={t('generationHistory.filters.status') || 'Status'}
-            dateRangeLabel={t('generationHistory.filters.dateRange') || 'Date'}
-          />
-        </div>
-
         {/* Title Bar */}
-        <div className="mx-4 mb-3">
+        <div className="mx-4 mt-3 mb-3">
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 px-4 py-3">
             <div className="flex items-center gap-2.5">
               {/* Microphone Icon */}
@@ -114,7 +86,7 @@ export default function MobileView({
 
       {/* Scrollable Content Area */}
       <div className="flex-1 overflow-y-auto bg-gray-50">
-        <div className="p-4 space-y-3 pb-20">
+        <div className="p-4 space-y-3" style={{ paddingBottom: 'calc(80px + var(--safe-area-inset-bottom, 0px))' }}>
           {/* Initial Loading State - Show Skeletons */}
           {loading && generations.length === 0 && (
             <>

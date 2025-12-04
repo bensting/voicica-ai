@@ -40,64 +40,70 @@ function toVoice(model: NonNullable<voices>): Voice {
  * 获取语音列表（支持过滤和分页）
  */
 export async function listVoices(filters: VoiceFilters = {}): Promise<VoiceListResponse> {
-  const {
-    provider,
-    country,
-    language,
-    locale,
-    role,
-    gender,
-    tag,
-    is_active = true,
-    page = 1,
-    page_size = 20,
-  } = filters;
+  try {
+    const {
+      provider,
+      country,
+      language,
+      locale,
+      role,
+      gender,
+      tag,
+      is_active = true,
+      page = 1,
+      page_size = 20,
+    } = filters;
 
-  // 构建查询条件
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const where: Record<string, any> = {
-    is_active,
-  };
+    // 构建查询条件
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const where: Record<string, any> = {
+      is_active,
+    };
 
-  if (provider) where.provider = provider;
-  if (country) where.country = country;
-  if (role) where.role = role;
-  if (gender) where.gender = gender;
+    if (provider) where.provider = provider;
+    if (country) where.country = country;
+    if (role) where.role = role;
+    if (gender) where.gender = gender;
 
-  // locale 精确匹配
-  if (locale) {
-    where.locale = locale;
-  } else if (language) {
-    // language 前缀匹配
-    where.locale = { startsWith: `${language}-` };
+    // locale 精确匹配
+    if (locale) {
+      where.locale = locale;
+    } else if (language) {
+      // language 前缀匹配
+      where.locale = { startsWith: `${language}-` };
+    }
+
+    // 标签过滤
+    if (tag) {
+      where.tags = { array_contains: tag };
+    }
+
+    // 查询总数
+    const total = await prisma.voices.count({ where });
+
+    // 分页查询
+    // provider 排序：microsoft 在前，google 在后（按字母顺序 asc: google < microsoft）
+    const voices = await prisma.voices.findMany({
+      where,
+      orderBy: [{ provider: 'desc' }, { sort_order: 'asc' }, { created_at: 'desc' }],
+      skip: (page - 1) * page_size,
+      take: page_size,
+    });
+
+    const total_pages = Math.ceil(total / page_size);
+
+    return {
+      voices: voices.map(toVoice),
+      total,
+      page,
+      page_size,
+      total_pages,
+    };
+  } catch (error) {
+    console.error('[listVoices] 数据库查询失败:', error);
+    // 重新抛出错误，让调用方知道失败了
+    throw error;
   }
-
-  // 标签过滤
-  if (tag) {
-    where.tags = { array_contains: tag };
-  }
-
-  // 查询总数
-  const total = await prisma.voices.count({ where });
-
-  // 分页查询
-  // provider 排序：microsoft 在前，google 在后（按字母顺序 asc: google < microsoft）
-  const voices = await prisma.voices.findMany({
-    where,
-    orderBy: [{ provider: 'desc' }, { sort_order: 'asc' }, { created_at: 'desc' }],
-    skip: (page - 1) * page_size,
-    take: page_size,
-  });
-
-  const total_pages = Math.ceil(total / page_size);
-
-  return {
-    voices: voices.map(toVoice),
-    total,
-    page,
-    page_size,
-    total_pages,
-  };
 }
 
 /**

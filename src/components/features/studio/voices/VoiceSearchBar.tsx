@@ -19,8 +19,9 @@ export default function VoiceSearchBar({
   onLanguageClick,
 }: VoiceSearchBarProps) {
   const { t } = useLanguage();
+
   return (
-    <div className="flex-shrink-0 px-4 py-3 bg-white border-b border-gray-200">
+    <div className="flex-shrink-0 px-4 py-3 bg-gradient-to-b from-gray-50 to-white">
       <div className="flex items-center gap-3">
         {/* Search input */}
         <div className="flex-1 relative">
@@ -30,20 +31,20 @@ export default function VoiceSearchBar({
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
             placeholder={t('voiceFilters.search')}
-            className="w-full h-[48px] pl-10 pr-4 bg-white border border-gray-200 rounded-xl text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+            className="w-full h-[44px] pl-10 pr-4 bg-gray-100 border-0 rounded-full text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:bg-white transition-all"
           />
         </div>
 
         {/* Language selector button */}
-        <div className="w-[160px]">
+        <div className="w-[140px]">
           <button
             onClick={onLanguageClick}
-            className="w-full h-[48px] flex items-center justify-between gap-2 px-4 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors"
+            className="w-full h-[44px] flex items-center justify-between gap-2 px-4 bg-gray-100 rounded-full hover:bg-gray-200 transition-colors"
           >
-            <span className="text-sm text-gray-900 truncate">
+            <span className="text-sm text-gray-700 truncate font-medium">
               {selectedLanguage ? selectedLanguage.name : t('voiceFilters.allLanguages')}
             </span>
-            <svg className="w-4 h-4 text-gray-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-4 h-4 text-gray-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
             </svg>
           </button>

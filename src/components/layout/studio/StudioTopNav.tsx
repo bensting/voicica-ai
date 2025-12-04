@@ -44,32 +44,42 @@ export default function StudioTopNav({
   };
 
   return (
-    <div className="fixed top-0 left-0 right-0 z-40 bg-white lg:bg-gradient-to-r lg:from-purple-50 lg:to-blue-50 border-b border-gray-200 safe-area-top">
+    <div className="fixed top-0 left-0 right-0 z-40 bg-gradient-to-r from-purple-600 to-purple-500 lg:from-purple-50 lg:to-blue-50 lg:border-b lg:border-gray-200 safe-area-top">
       <div className="flex items-center justify-between px-3 py-2.5 lg:px-4 lg:py-3 gap-2">
         {/* ========== 左侧：Hamburger Menu (移动端) + Logo (移动端和桌面端) ========== */}
         <div className="flex items-center gap-1.5 flex-shrink min-w-0 lg:ml-6">
           {/* Hamburger Menu - 仅移动端显示 */}
           <button
             onClick={toggleMenu}
-            className="p-2 hover:bg-gray-100 rounded-lg transition-colors flex-shrink-0 lg:hidden"
+            className="p-2 hover:bg-white/10 rounded-lg transition-colors flex-shrink-0 lg:hidden"
             aria-label="Toggle menu"
           >
             {isMenuOpen ? (
-              <X className="w-6 h-6 text-gray-700" />
+              <X className="w-6 h-6 text-white" />
             ) : (
-              <Menu className="w-6 h-6 text-gray-700" />
+              <Menu className="w-6 h-6 text-white" />
             )}
           </button>
 
-          {/* Logo - 移动端和桌面端都显示 */}
-          <Link href="/" className="flex items-center min-w-0">
+          {/* Logo - 移动端用亮色logo，桌面端用深色logo */}
+          <Link href="/studio" className="flex items-center min-w-0">
+            {/* 移动端 - 亮色 logo (紫色背景) */}
             <Image
-              src="/logo/voice-labs-logo-light.svg"
-              alt="AI-Voice-Labs.com"
+              src="/logo/voice-labs-logo-dark.svg"
+              alt="Voicica.AI"
               width={200}
               height={28}
               priority
-              className="h-7 w-auto"
+              className="h-7 w-auto lg:hidden"
+            />
+            {/* 桌面端 - 深色 logo (浅色背景) */}
+            <Image
+              src="/logo/voice-labs-logo-light.svg"
+              alt="Voicica.AI"
+              width={200}
+              height={28}
+              priority
+              className="h-7 w-auto hidden lg:block"
             />
           </Link>
         </div>
@@ -86,7 +96,7 @@ export default function StudioTopNav({
           </button>
 
           {/* Language Switcher */}
-          <LanguageSwitcher theme="dark" variant="compact" showArrow={false} />
+          <LanguageSwitcher theme="light" variant="compact" showArrow={false} />
 
           {/* User Menu */}
           <UserMenu size="sm" />

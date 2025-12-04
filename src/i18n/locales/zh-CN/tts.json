@@ -23,6 +23,14 @@
       "generateSpeech": "生成语音",
       "generating": "生成中...",
       "tryExamples": "试试这些示例",
+      "more": "更多",
+      "moreMenu": {
+        "title": "获取更多积分",
+        "signUp": "免费注册",
+        "signUpDesc": "获得 {{credits}} 免费积分",
+        "pricing": "查看价格",
+        "pricingDesc": "探索订阅方案"
+      },
       "examples": {
         "greeting": {
           "label": "问候语",
@@ -104,6 +112,8 @@
     "female": "女",
     "neutral": "中性",
     "proBasic": "专业版/基础版",
+    "celebrity": "名人",
+    "professional": "专业",
     "usedOnly": "已使用",
     "noUsedVoices": "暂无使用记录",
     "noVoicesFound": "未找到语音",

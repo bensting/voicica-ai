@@ -31,10 +31,19 @@ export interface AnonymousUserConfig {
 }
 
 /**
+ * 版本检测配置
+ */
+export interface VersionCheckConfig {
+  /** 版本检查间隔（分钟） */
+  check_interval_minutes: number;
+}
+
+/**
  * 应用配置
  */
 export interface AppConfig {
   tts_samples: TtsSamplesConfig;
   credits: CreditsConfig;
   anonymous_user: AnonymousUserConfig;
+  version_check: VersionCheckConfig;
 }

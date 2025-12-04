@@ -54,6 +54,11 @@ const nextConfig: NextConfig = {
         hostname: 'pub-f697d01a99f445de9534dbc9eef1ae37.r2.dev',
         pathname: '/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'public-platform.r2.fish.audio',
+        pathname: '/**',
+      },
     ],
     // 允许 SVG 图片（用于 DiceBear 头像）
     dangerouslyAllowSVG: true,

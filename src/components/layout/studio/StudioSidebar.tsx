@@ -2,7 +2,9 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
+import { X, ChevronRight } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { studioMenuCategories } from '@/config/studioMenu';
 
@@ -21,9 +23,8 @@ interface StudioSidebarProps {
  * - 位置：左侧，top-[60px]
  *
  * 移动端（< lg）：
- * - 抽屉式菜单（从左侧滑入）
+ * - 全屏菜单
  * - 需要 isOpen 和 onClose props
- * - 带遮罩层
  */
 export default function StudioSidebar({ isOpen = false, onClose }: StudioSidebarProps) {
   const { t } = useLanguage();
@@ -273,31 +274,103 @@ export default function StudioSidebar({ isOpen = false, onClose }: StudioSidebar
       </div>
     );
 
+  // 渲染移动端菜单项（卡片式风格）
+  const renderMobileMenuItem = (item: { id: string; href: string; icon: React.ReactNode; labelKey: string }) => {
+    const isActive = pathname === item.href;
+    return (
+      <Link
+        key={item.id}
+        href={item.href}
+        onClick={onClose}
+        className={`
+          flex items-center justify-between px-4 py-3.5 transition-colors
+          ${isActive ? 'bg-purple-50 text-purple-600' : 'text-gray-700'}
+        `}
+      >
+        <div className="flex items-center gap-3">
+          <span className="flex-shrink-0 text-purple-600">{item.icon}</span>
+          <span className="text-sm font-medium">{t(item.labelKey)}</span>
+        </div>
+        <ChevronRight className="w-4 h-4 text-gray-400" />
+      </Link>
+    );
+  };
+
+  // 渲染移动端分组卡片
+  const renderMobileSection = (title: string, items: { id: string; href: string; icon: React.ReactNode; labelKey: string }[]) => {
+    if (items.length === 0) return null;
+    return (
+      <div className="mb-4">
+        <h3 className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+          {title}
+        </h3>
+        <div className="mx-4 bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden divide-y divide-gray-100">
+          {items.map(renderMobileMenuItem)}
+        </div>
+      </div>
+    );
+  };
+
   return (
     <>
-      {/* 移动端遮罩层 */}
-      {isOpen && (
-        <div
-          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
-          onClick={onClose}
-        />
-      )}
-
-      {/* 侧边栏 */}
-      <nav
+      {/* ========== 移动端全屏菜单 ========== */}
+      <div
         className={`
-          fixed left-0 bg-white border-r border-gray-200 overflow-y-auto
-
-          // 移动端样式：抽屉式，从左侧滑入
-          top-[60px] bottom-0 w-72 shadow-xl z-50
+          fixed inset-0 z-50 lg:hidden
           transform transition-transform duration-300 ease-in-out
           ${isOpen ? 'translate-x-0' : '-translate-x-full'}
+        `}
+      >
+        {/* 背景 */}
+        <div className="absolute inset-0 bg-gray-50" />
 
-          // 桌面端样式：固定侧边栏，悬停展开
-          lg:translate-x-0
-          lg:top-[60px] lg:h-[calc(100vh-60px)] lg:z-20
-          lg:transition-all lg:duration-300 lg:ease-in-out
-          ${isExpanded ? 'lg:w-64' : 'lg:w-16'}
+        {/* 内容容器 */}
+        <div className="relative h-full flex flex-col" style={{ paddingTop: 'var(--safe-area-inset-top, 0px)', paddingBottom: 'var(--safe-area-inset-bottom, 0px)' }}>
+          {/* 头部：关闭按钮 + Logo */}
+          <div className="flex-shrink-0 flex items-center justify-between px-4 py-3 bg-gray-50">
+            <button
+              onClick={onClose}
+              className="p-2 -ml-2 text-gray-500 hover:text-gray-700 hover:bg-gray-200 rounded-full transition-colors"
+            >
+              <X className="w-6 h-6" />
+            </button>
+            <div className="flex items-center gap-2">
+              <Image
+                src="/logo/voice-labs-logo-light.svg"
+                alt="Voicica.AI"
+                width={120}
+                height={24}
+                className="h-6 w-auto"
+              />
+            </div>
+            {/* 占位，保持 Logo 居中 */}
+            <div className="w-10" />
+          </div>
+
+          {/* 滚动区域 */}
+          <div className="flex-1 overflow-y-auto pb-8">
+            {/* HOME */}
+            {renderMobileSection(t('studio.menu.home'), studioMenuCategories.main)}
+
+            {/* VOICEOVER AI */}
+            {renderMobileSection('VOICEOVER AI', studioMenuCategories.voiceover)}
+
+            {/* FREE TOOLS */}
+            {renderMobileSection(t('studio.menu.tools'), studioMenuCategories.tools)}
+
+            {/* ACCOUNT */}
+            {renderMobileSection(t('studio.menu.account'), studioMenuCategories.account)}
+          </div>
+        </div>
+      </div>
+
+      {/* ========== 桌面端侧边栏 ========== */}
+      <nav
+        className={`
+          hidden lg:block fixed left-0 bg-white border-r border-gray-200 overflow-y-auto
+          top-[60px] h-[calc(100vh-60px)] z-20
+          transition-all duration-300 ease-in-out
+          ${isExpanded ? 'w-64' : 'w-16'}
         `}
         onMouseEnter={() => setIsExpanded(true)}
         onMouseLeave={() => setIsExpanded(false)}

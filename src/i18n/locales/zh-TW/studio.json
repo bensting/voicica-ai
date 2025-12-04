@@ -38,6 +38,10 @@
       "voices": "語音庫",
       "clone": "複製",
       "history": "歷史"
+    },
+    "voices": {
+      "selectVoice": "選擇語音",
+      "selectVoicePrompt": "請選擇一個語音"
     }
   }
 }

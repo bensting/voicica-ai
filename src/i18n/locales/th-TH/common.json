@@ -7,7 +7,13 @@
     "loading": "กำลังโหลด...",
     "download": "ดาวน์โหลด",
     "share": "แชร์",
-    "delete": "ลบ"
+    "delete": "ลบ",
+    "later": "ภายหลัง",
+    "refresh": "รีเฟรช"
+  },
+  "app": {
+    "updateAvailable": "มีเวอร์ชันใหม่",
+    "refreshRequired": "แอปได้รับการอัปเดตแล้ว กรุณารีเฟรชหน้าเพื่อใช้งานต่อ"
   },
   "creditInfo": {
     "currentCredits": "เครดิตปัจจุบัน:",

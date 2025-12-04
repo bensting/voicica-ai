@@ -23,6 +23,14 @@
       "generateSpeech": "Generate Speech",
       "generating": "Generating...",
       "tryExamples": "Try these examples",
+      "more": "More",
+      "moreMenu": {
+        "title": "Get more credits",
+        "signUp": "Sign up free",
+        "signUpDesc": "Get {{credits}} free credits",
+        "pricing": "View pricing",
+        "pricingDesc": "Explore subscription plans"
+      },
       "examples": {
         "greeting": {
           "label": "Greeting",

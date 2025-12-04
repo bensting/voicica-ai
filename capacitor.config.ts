@@ -92,9 +92,9 @@ const config: CapacitorConfig = {
       iosSpinnerStyle: 'small',
       spinnerColor: '#ffffff',
     },
-    // 状态栏
+    // 状态栏 - light 表示白色文字图标（适配紫色背景）
     StatusBar: {
-      style: 'dark',
+      style: 'light',
       backgroundColor: '#9333ea',
     },
     // 键盘

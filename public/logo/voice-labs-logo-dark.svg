@@ -1,43 +1,18 @@
 <svg viewBox="0 0 180 40" xmlns="http://www.w3.org/2000/svg" fill="none">
-  <defs>
-    <!-- 品牌渐变：从粉色到紫色到蓝色 -->
-    <linearGradient id="brandGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-      <stop offset="0%" stop-color="#f472b6"/>
-      <stop offset="50%" stop-color="#a855f7"/>
-      <stop offset="100%" stop-color="#6366f1"/>
-    </linearGradient>
-
-    <!-- 图标渐变：从粉色到紫色到蓝色 -->
-    <linearGradient id="iconGradient" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#f472b6"/>
-      <stop offset="50%" stop-color="#a855f7"/>
-      <stop offset="100%" stop-color="#6366f1"/>
-    </linearGradient>
-
-    <!-- .AI 渐变：从粉色到紫色到蓝色（独立渐变） -->
-    <linearGradient id="aiGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-      <stop offset="0%" stop-color="#f472b6"/>
-      <stop offset="50%" stop-color="#a855f7"/>
-      <stop offset="100%" stop-color="#6366f1"/>
-    </linearGradient>
-  </defs>
-
-  <!-- 左侧麦克风图标 -->
+  <!-- 左侧麦克风图标 - 白色 -->
   <g transform="translate(15, 20)">
     <!-- 麦克风主体 -->
-    <rect x="-5" y="-14" width="10" height="18" rx="5" fill="url(#iconGradient)" />
+    <rect x="-5" y="-14" width="10" height="18" rx="5" fill="white" />
 
     <!-- 麦克风支架 -->
-    <path d="M -8 6 Q -8 10, 0 10 Q 8 10, 8 6" stroke="url(#iconGradient)" stroke-width="2" fill="none" stroke-linecap="round"/>
-    <line x1="0" y1="10" x2="0" y2="16" stroke="url(#iconGradient)" stroke-width="2" stroke-linecap="round"/>
-    <line x1="-6" y1="16" x2="6" y2="16" stroke="url(#iconGradient)" stroke-width="2" stroke-linecap="round"/>
+    <path d="M -8 6 Q -8 10, 0 10 Q 8 10, 8 6" stroke="white" stroke-width="2" fill="none" stroke-linecap="round"/>
 
     <!-- 声波 -->
-    <path d="M -13 -5 Q -15 0, -13 5" stroke="url(#iconGradient)" stroke-width="1.5" fill="none" stroke-linecap="round" opacity="0.7"/>
-    <path d="M 13 -5 Q 15 0, 13 5" stroke="url(#iconGradient)" stroke-width="1.5" fill="none" stroke-linecap="round" opacity="0.7"/>
+    <path d="M -13 -5 Q -15 0, -13 5" stroke="white" stroke-width="1.5" fill="none" stroke-linecap="round" opacity="0.7"/>
+    <path d="M 13 -5 Q 15 0, 13 5" stroke="white" stroke-width="1.5" fill="none" stroke-linecap="round" opacity="0.7"/>
   </g>
 
-  <!-- 品牌文字 - Voicica.AI -->
-  <text x="38" y="29" font-family="Poppins, sans-serif" font-weight="700" font-size="24" fill="url(#brandGradient)">Voicica</text>
-  <text x="122" y="29" font-family="Poppins, sans-serif" font-weight="700" font-size="24" fill="url(#aiGradient)">.AI</text>
+  <!-- 品牌文字 - Voicica.AI - 白色 -->
+  <text x="38" y="29" font-family="Poppins, sans-serif" font-weight="700" font-size="24" fill="white">Voicica</text>
+  <text x="122" y="29" font-family="Poppins, sans-serif" font-weight="700" font-size="24" fill="white">.AI</text>
 </svg>

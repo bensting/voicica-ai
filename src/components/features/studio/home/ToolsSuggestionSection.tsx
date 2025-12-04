@@ -20,7 +20,7 @@ export default function ToolsSuggestionSection() {
         <ToolCard
           title={t('studio.menu.tiktokDownloader')}
           description={t('studio.tiktokDownloaderDesc')}
-          href="/tools/tiktok-downloader"
+          href="/studio/tools/tiktok-downloader"
           icon={
             <svg
               className="w-6 h-6 text-pink-600"
@@ -37,7 +37,7 @@ export default function ToolsSuggestionSection() {
         <ToolCard
           title={t('studio.menu.youtubeDownloader')}
           description={t('studio.youtubeDownloaderDesc')}
-          href="/tools/youtube-downloader"
+          href="/studio/tools/youtube-downloader"
           icon={
             <svg
               className="w-6 h-6 text-red-600"

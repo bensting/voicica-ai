@@ -147,6 +147,8 @@ adb install app/build/outputs/apk/debug/app-debug.apk
 # 指定设备安装
 adb -s 192.168.1.100:5555 install app/build/outputs/apk/debug/app-debug.apk
 
+adb -s 10.3.170.241:5555 install app/build/outputs/apk/debug/app-debug.apk
+
 # 覆盖安装（保留数据）
 adb install -r app/build/outputs/apk/debug/app-debug.apk
 ```

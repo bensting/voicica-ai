@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { Trash2, ChevronRight, Gift, CreditCard, Sparkles } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
@@ -322,20 +323,22 @@ export default function TextInput({
         )}
       </div>
 
-      {/* Login Modal */}
-      {isLoginModalOpen && (
+      {/* Login Modal - rendered via portal to body */}
+      {hasMounted && isLoginModalOpen && createPortal(
         <LoginModal
           isOpen={isLoginModalOpen}
           onClose={() => setIsLoginModalOpen(false)}
-        />
+        />,
+        document.body
       )}
 
-      {/* Upgrade Modal */}
-      {isUpgradeModalOpen && (
+      {/* Upgrade Modal - rendered via portal to body */}
+      {hasMounted && isUpgradeModalOpen && createPortal(
         <UpgradeModal
           isOpen={isUpgradeModalOpen}
           onClose={() => setIsUpgradeModalOpen(false)}
-        />
+        />,
+        document.body
       )}
     </div>
   );

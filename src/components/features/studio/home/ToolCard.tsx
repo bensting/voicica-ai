@@ -27,25 +27,25 @@ export default function ToolCard({
   return (
     <Link
       href={href}
-      className="group flex items-center gap-4 rounded-2xl border border-gray-200 hover:border-purple-300 hover:shadow-lg transition-all duration-300 p-4 bg-white"
+      className="group flex items-center gap-3 rounded-xl border border-gray-200 hover:border-purple-300 hover:shadow-md transition-all duration-300 px-3 py-2.5 bg-white"
     >
       {/* 图标 */}
       <div
-        className={`flex-shrink-0 w-12 h-12 ${iconBgColor} rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform`}
+        className={`flex-shrink-0 w-10 h-10 ${iconBgColor} rounded-lg flex items-center justify-center group-hover:scale-105 transition-transform`}
       >
         {icon}
       </div>
 
       {/* 文字内容 */}
       <div className="flex-1 min-w-0">
-        <h3 className="text-base font-semibold text-gray-900 group-hover:text-purple-600 transition-colors">
+        <h3 className="text-sm font-semibold text-gray-900 group-hover:text-purple-600 transition-colors">
           {title}
         </h3>
-        <p className="text-sm text-gray-500 leading-relaxed line-clamp-2">{description}</p>
+        <p className="text-xs text-gray-500 leading-snug line-clamp-2">{description}</p>
       </div>
 
       {/* 箭头 */}
-      <ChevronRight className="flex-shrink-0 w-5 h-5 text-gray-300 group-hover:text-purple-500 group-hover:translate-x-0.5 transition-all" />
+      <ChevronRight className="flex-shrink-0 w-4 h-4 text-gray-300 group-hover:text-purple-500 group-hover:translate-x-0.5 transition-all" />
     </Link>
   );
 }

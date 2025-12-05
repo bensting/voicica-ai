@@ -1,0 +1,40 @@
+{
+  "ttsPromo": {
+    "stats": {
+      "downloads": "Downloads",
+      "reviews": "Reviews"
+    },
+    "hero": {
+      "title1": "Sound like",
+      "titleCelebrities": "Celebrities",
+      "title2": ", Movie",
+      "title3": "Characters &",
+      "titlePoliticians": "Politicians",
+      "description": "Create audio using the voices of celebrities, politicians, movie characters, or even your own voice. Discover what's possible with",
+      "brandName": "Voicica AI",
+      "appStore": "App Store",
+      "downloadOn": "Download on the",
+      "googlePlay": "Google Play",
+      "getItOn": "GET IT ON"
+    },
+    "samples": {
+      "title1": "Listen to real",
+      "title2": "examples of our",
+      "titleHighlight": "AI Voice Changer",
+      "description": "Our AI-models are trained to mimic the original speaker in emotions, tone and pronounciations. We have achieve hyper-realistic voice clones - and with just a few seconds of audio, you can even clone your own custom Voice.",
+      "noVoices": "No voices available for this language."
+    },
+    "filters": {
+      "celebrities": "Celebrities",
+      "professional": "Professional"
+    },
+    "cta": {
+      "aiVoiceCloning": "AI-Powered Voice Cloning",
+      "exportAudio": "Export High-Quality Audio",
+      "voiceModels": "100+ Voice Models",
+      "startCreating": "Start Creating Now",
+      "noCreditCard": "No credit card required",
+      "freeTier": "Free tier available"
+    }
+  }
+}

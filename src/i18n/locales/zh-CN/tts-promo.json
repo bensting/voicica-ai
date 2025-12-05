@@ -1,0 +1,40 @@
+{
+  "ttsPromo": {
+    "stats": {
+      "downloads": "下载量",
+      "reviews": "评价"
+    },
+    "hero": {
+      "title1": "模仿",
+      "titleCelebrities": "明星",
+      "title2": "、电影",
+      "title3": "角色和",
+      "titlePoliticians": "政治人物",
+      "description": "使用明星、政治人物、电影角色的声音创作音频，甚至可以克隆你自己的声音。探索",
+      "brandName": "Voicica AI",
+      "appStore": "App Store",
+      "downloadOn": "下载自",
+      "googlePlay": "Google Play",
+      "getItOn": "立即下载"
+    },
+    "samples": {
+      "title1": "试听我们",
+      "title2": "AI 变声器",
+      "titleHighlight": "的真实示例",
+      "description": "我们的 AI 模型经过训练，能够模仿原说话者的情感、语调和发音。我们实现了超逼真的语音克隆——只需几秒钟的音频，您就可以克隆自己的声音。",
+      "noVoices": "该语言暂无可用语音。"
+    },
+    "filters": {
+      "celebrities": "明星",
+      "professional": "专业"
+    },
+    "cta": {
+      "aiVoiceCloning": "AI 驱动的语音克隆",
+      "exportAudio": "导出高品质音频",
+      "voiceModels": "100+ 语音模型",
+      "startCreating": "立即开始创作",
+      "noCreditCard": "无需信用卡",
+      "freeTier": "提供免费套餐"
+    }
+  }
+}

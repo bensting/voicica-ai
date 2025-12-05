@@ -1,0 +1,40 @@
+{
+  "ttsPromo": {
+    "stats": {
+      "downloads": "ดาวน์โหลด",
+      "reviews": "รีวิว"
+    },
+    "hero": {
+      "title1": "เสียงเหมือน",
+      "titleCelebrities": "คนดัง",
+      "title2": " ตัวละคร",
+      "title3": "ในภาพยนตร์ และ",
+      "titlePoliticians": "นักการเมือง",
+      "description": "สร้างเสียงโดยใช้เสียงของคนดัง นักการเมือง ตัวละครในภาพยนตร์ หรือแม้แต่เสียงของคุณเอง ค้นพบความเป็นไปได้กับ",
+      "brandName": "Voicica AI",
+      "appStore": "App Store",
+      "downloadOn": "ดาวน์โหลดจาก",
+      "googlePlay": "Google Play",
+      "getItOn": "ดาวน์โหลดเลย"
+    },
+    "samples": {
+      "title1": "ฟังตัวอย่างจริง",
+      "title2": "ของ",
+      "titleHighlight": "AI Voice Changer",
+      "description": "โมเดล AI ของเราได้รับการฝึกฝนให้เลียนแบบอารมณ์ โทนเสียง และการออกเสียงของผู้พูดต้นฉบับ เราสร้างโคลนเสียงที่สมจริงมาก - และด้วยเสียงเพียงไม่กี่วินาที คุณก็สามารถโคลนเสียงของคุณเองได้",
+      "noVoices": "ไม่มีเสียงสำหรับภาษานี้"
+    },
+    "filters": {
+      "celebrities": "คนดัง",
+      "professional": "มืออาชีพ"
+    },
+    "cta": {
+      "aiVoiceCloning": "การโคลนเสียงด้วย AI",
+      "exportAudio": "ส่งออกเสียงคุณภาพสูง",
+      "voiceModels": "100+ โมเดลเสียง",
+      "startCreating": "เริ่มสร้างเลย",
+      "noCreditCard": "ไม่ต้องใช้บัตรเครดิต",
+      "freeTier": "มีแพ็คเกจฟรี"
+    }
+  }
+}

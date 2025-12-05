@@ -80,7 +80,7 @@ export default function VoiceSelectorBottomSheet({
     loadMoreVoices,
     refreshVoices,
     total,
-  } = useVoices({ locale, user, authLoading, initialLanguage });
+  } = useVoices({ locale, user, authLoading });
 
   const handleLanguageSelect = (language: LocaleOption | null) => {
     setSelectedLanguage(language);

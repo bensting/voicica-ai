@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Image from 'next/image';
 import { Play, Pause, Mic, Star, Download, Sparkles, ChevronUp } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -46,9 +46,10 @@ const STATS = [
 
 export default function TTSPromoPage() {
   const router = useRouter();
-  const { t } = useLanguage();
+  const searchParams = useSearchParams();
+  const { t, setLocale } = useLanguage();
   const [playingId, setPlayingId] = useState<string | null>(null);
-  const [selectedLanguage, setSelectedLanguage] = useState('en-US');
+  const [selectedLanguage, setSelectedLanguage] = useState<string | null>(null);
   const [selectedRole, setSelectedRole] = useState('Celebrity');
   const [isLanguageDropdownOpen, setIsLanguageDropdownOpen] = useState(false);
   const [voices, setVoices] = useState<Voice[]>([]);
@@ -56,13 +57,49 @@ export default function TTSPromoPage() {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
+  // Initialize language from URL parameter
+  useEffect(() => {
+    const langParam = searchParams.get('lang');
+    if (langParam) {
+      // Check if the language is valid
+      const validLang = LANGUAGE_OPTIONS.find(l => l.code === langParam);
+      if (validLang) {
+        setSelectedLanguage(langParam);
+        // Also set the page locale based on URL parameter
+        // Map voice locale to UI locale (e.g., zh-CN -> zh-CN, zh-TW -> zh-TW)
+        const uiLocaleMap: Record<string, 'en-US' | 'zh-CN' | 'zh-TW' | 'th-TH'> = {
+          'zh-CN': 'zh-CN',
+          'zh-TW': 'zh-TW',
+          'en-US': 'en-US',
+          'ja-JP': 'en-US', // fallback to English for unsupported UI locales
+          'ko-KR': 'en-US',
+          'es-ES': 'en-US',
+          'fr-FR': 'en-US',
+          'de-DE': 'en-US',
+          'ar-SA': 'en-US',
+          'ru-RU': 'en-US',
+          'pt-BR': 'en-US',
+          'th-TH': 'th-TH',
+        };
+        const uiLocale = uiLocaleMap[langParam] || 'en-US';
+        setLocale(uiLocale);
+      } else {
+        setSelectedLanguage('en-US');
+      }
+    } else {
+      setSelectedLanguage('en-US');
+    }
+  }, [searchParams, setLocale]);
+
   // Load voices from database
   useEffect(() => {
+    if (!selectedLanguage) return; // Wait for language to be initialized
+
     async function loadVoices() {
       setLoading(true);
       try {
         const response = await listVoices({
-          locale: selectedLanguage,
+          locale: selectedLanguage ?? undefined,
           role: selectedRole,
           is_active: true,
           page: 1,
@@ -192,20 +229,19 @@ export default function TTSPromoPage() {
           {/* Main Headline */}
           <div className="text-center mb-8">
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
-              Sound like{' '}
+              {t('ttsPromo.hero.title1')}{' '}
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">
-                Celebrities
+                {t('ttsPromo.hero.titleCelebrities')}
               </span>
-              , Movie<br />
-              Characters &{' '}
+              {t('ttsPromo.hero.title2')}<br />
+              {t('ttsPromo.hero.title3')}{' '}
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-purple-400">
-                Politicians
+                {t('ttsPromo.hero.titlePoliticians')}
               </span>
             </h1>
             <p className="text-gray-300 text-lg md:text-xl max-w-2xl mx-auto leading-relaxed">
-              Create audio using the voices of celebrities, politicians, movie characters,
-              or even your own voice. Discover what&apos;s possible with{' '}
-              <span className="text-purple-400 font-semibold">Voicica AI</span>.
+              {t('ttsPromo.hero.description')}{' '}
+              <span className="text-purple-400 font-semibold">{t('ttsPromo.hero.brandName')}</span>
             </p>
           </div>
 
@@ -255,16 +291,14 @@ export default function TTSPromoPage() {
           {/* Section Header */}
           <div className="text-center mb-8">
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-              Listen to real<br />
-              examples of our{' '}
+              {t('ttsPromo.samples.title1')}<br />
+              {t('ttsPromo.samples.title2')}{' '}
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">
-                AI Voice Changer
+                {t('ttsPromo.samples.titleHighlight')}
               </span>
             </h2>
             <p className="text-gray-400 max-w-2xl mx-auto">
-              Our AI-models are trained to mimic the original speaker in emotions, tone and
-              pronounciations. We have achieve hyper-realistic voice clones - and with just a few
-              seconds of audio, you can even clone your own custom Voice.
+              {t('ttsPromo.samples.description')}
             </p>
           </div>
 
@@ -303,20 +337,28 @@ export default function TTSPromoPage() {
             </div>
 
             {/* Role Filter Tabs */}
-            {ROLE_OPTIONS.map((role) => (
-              <button
-                key={role.code}
-                onClick={() => handleRoleSelect(role.code)}
-                className={`flex items-center gap-2 px-4 py-2 text-sm font-medium transition-colors ${
-                  selectedRole === role.code
-                    ? 'text-yellow-400'
-                    : 'text-gray-500 hover:text-gray-400'
-                }`}
-              >
-                <span className={selectedRole === role.code ? '' : 'grayscale opacity-50'}>{role.icon}</span>
-                <span>{role.name}</span>
-              </button>
-            ))}
+            <button
+              onClick={() => handleRoleSelect('Celebrity')}
+              className={`flex items-center gap-2 px-4 py-2 text-sm font-medium transition-colors ${
+                selectedRole === 'Celebrity'
+                  ? 'text-yellow-400'
+                  : 'text-gray-500 hover:text-gray-400'
+              }`}
+            >
+              <span className={selectedRole === 'Celebrity' ? '' : 'grayscale opacity-50'}>⭐</span>
+              <span>{t('ttsPromo.filters.celebrities')}</span>
+            </button>
+            <button
+              onClick={() => handleRoleSelect('Professional')}
+              className={`flex items-center gap-2 px-4 py-2 text-sm font-medium transition-colors ${
+                selectedRole === 'Professional'
+                  ? 'text-yellow-400'
+                  : 'text-gray-500 hover:text-gray-400'
+              }`}
+            >
+              <span className={selectedRole === 'Professional' ? '' : 'grayscale opacity-50'}>🎙️</span>
+              <span>{t('ttsPromo.filters.professional')}</span>
+            </button>
           </div>
 
           {/* Voice Grid */}
@@ -453,7 +495,7 @@ export default function TTSPromoPage() {
             </>
           ) : (
             <div className="text-center py-12">
-              <p className="text-gray-400">No voices available for this language.</p>
+              <p className="text-gray-400">{t('ttsPromo.samples.noVoices')}</p>
             </div>
           )}
         </div>
@@ -466,15 +508,15 @@ export default function TTSPromoPage() {
           <div className="flex flex-wrap justify-center gap-6 mb-10">
             <div className="flex items-center gap-2 text-gray-300">
               <Sparkles className="w-5 h-5 text-purple-400" />
-              <span>AI-Powered Voice Cloning</span>
+              <span>{t('ttsPromo.cta.aiVoiceCloning')}</span>
             </div>
             <div className="flex items-center gap-2 text-gray-300">
               <Download className="w-5 h-5 text-purple-400" />
-              <span>Export High-Quality Audio</span>
+              <span>{t('ttsPromo.cta.exportAudio')}</span>
             </div>
             <div className="flex items-center gap-2 text-gray-300">
               <Mic className="w-5 h-5 text-purple-400" />
-              <span>100+ Voice Models</span>
+              <span>{t('ttsPromo.cta.voiceModels')}</span>
             </div>
           </div>
 
@@ -485,11 +527,11 @@ export default function TTSPromoPage() {
             onClick={handleGetStarted}
           >
             <Mic className="w-6 h-6 mr-2" />
-            Start Creating Now
+            {t('ttsPromo.cta.startCreating')}
           </GradientButton>
 
           <p className="mt-4 text-gray-500 text-sm">
-            No credit card required • Free tier available
+            {t('ttsPromo.cta.noCreditCard')} • {t('ttsPromo.cta.freeTier')}
           </p>
         </div>
       </section>

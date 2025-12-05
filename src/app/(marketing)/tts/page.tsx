@@ -609,18 +609,18 @@ export default function TTSPromoPage() {
       <section className="py-6 px-4 bg-gradient-to-t from-purple-900/30 to-transparent">
         <div className="max-w-4xl mx-auto text-center">
           {/* Features */}
-          <div className="flex flex-wrap justify-center gap-4 mb-4">
-            <div className="flex items-center gap-2 text-gray-300">
-              <Sparkles className="w-5 h-5 text-purple-400" />
-              <span>{t('ttsPromo.cta.aiVoiceCloning')}</span>
+          <div className="inline-flex flex-col gap-2 mb-4">
+            <div className="flex items-center gap-3 text-gray-300">
+              <Sparkles className="w-5 h-5 text-purple-400 flex-shrink-0" />
+              <span className="text-left">{t('ttsPromo.cta.aiVoiceCloning')}</span>
             </div>
-            <div className="flex items-center gap-2 text-gray-300">
-              <Download className="w-5 h-5 text-purple-400" />
-              <span>{t('ttsPromo.cta.exportAudio')}</span>
+            <div className="flex items-center gap-3 text-gray-300">
+              <Download className="w-5 h-5 text-purple-400 flex-shrink-0" />
+              <span className="text-left">{t('ttsPromo.cta.exportAudio')}</span>
             </div>
-            <div className="flex items-center gap-2 text-gray-300">
-              <Mic className="w-5 h-5 text-purple-400" />
-              <span>{t('ttsPromo.cta.voiceModels')}</span>
+            <div className="flex items-center gap-3 text-gray-300">
+              <Mic className="w-5 h-5 text-purple-400 flex-shrink-0" />
+              <span className="text-left">{t('ttsPromo.cta.voiceModels')}</span>
             </div>
           </div>
 

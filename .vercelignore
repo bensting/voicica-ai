@@ -7,9 +7,9 @@ ios/
 *.aab
 *.ipa
 
-# Native app resources
-resources/
-icons/
+# Native app resources (root level only)
+/resources/
+/icons/
 native-version.json
 capacitor.config.ts
 

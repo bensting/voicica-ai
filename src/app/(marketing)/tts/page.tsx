@@ -374,12 +374,12 @@ export default function TTSPromoPage() {
               <div className="hidden md:block">
                 <div className="flex justify-center gap-4 mb-4">
                   {[...Array(12)].map((_, i) => (
-                    <div key={i} className="w-16 h-16 lg:w-20 lg:h-20 rounded-full bg-gray-800 animate-pulse" />
+                    <div key={i} className="w-16 h-16 lg:w-20 lg:h-20 flex-shrink-0 rounded-full bg-gray-800 animate-pulse" />
                   ))}
                 </div>
                 <div className="flex justify-center gap-4">
                   {[...Array(10)].map((_, i) => (
-                    <div key={i} className="w-16 h-16 lg:w-20 lg:h-20 rounded-full bg-gray-800 animate-pulse" />
+                    <div key={i} className="w-16 h-16 lg:w-20 lg:h-20 flex-shrink-0 rounded-full bg-gray-800 animate-pulse" />
                   ))}
                 </div>
               </div>

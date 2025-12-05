@@ -7,7 +7,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 export default function PaymentCancelPage() {
   const router = useRouter();
   const { t } = useLanguage();
-  const [countdown, setCountdown] = useState(5);
+  const [countdown, setCountdown] = useState(3);
 
   // 倒计时自动返回工作室
   useEffect(() => {

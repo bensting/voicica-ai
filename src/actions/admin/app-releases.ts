@@ -162,15 +162,6 @@ export async function uploadAppRelease(formData: FormData): Promise<ActionResult
       return { success: false, message: `版本 ${version} 已存在` };
     }
 
-    // 检查 version_code 是否唯一
-    const existingCode = await prisma.app_releases.findFirst({
-      where: { platform, version_code: versionCode },
-    });
-
-    if (existingCode) {
-      return { success: false, message: `版本号 ${versionCode} 已被使用` };
-    }
-
     // 上传文件到 R2
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
@@ -390,15 +381,6 @@ export async function getApkUploadUrl(params: {
 
     if (existing) {
       return { success: false, message: `版本 ${version} 已存在` };
-    }
-
-    // 检查 version_code 是否唯一
-    const existingCode = await prisma.app_releases.findFirst({
-      where: { platform, version_code: versionCode },
-    });
-
-    if (existingCode) {
-      return { success: false, message: `版本号 ${versionCode} 已被使用` };
     }
 
     // 生成预签名 URL

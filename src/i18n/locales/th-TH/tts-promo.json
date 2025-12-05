@@ -12,10 +12,10 @@
       "titlePoliticians": "นักการเมือง",
       "description": "สร้างเสียงโดยใช้เสียงของคนดัง นักการเมือง ตัวละครในภาพยนตร์ หรือแม้แต่เสียงของคุณเอง ค้นพบความเป็นไปได้กับ",
       "brandName": "Voicica AI",
-      "appStore": "App Store",
-      "downloadOn": "ดาวน์โหลดจาก",
-      "googlePlay": "Google Play",
-      "getItOn": "ดาวน์โหลดเลย"
+      "downloadApk": "ดาวน์โหลด",
+      "comingSoon": "เร็วๆ นี้",
+      "tryNow": "ทดลองใช้",
+      "webVersion": "เวอร์ชันเว็บ"
     },
     "samples": {
       "title1": "ฟังตัวอย่างจริง",

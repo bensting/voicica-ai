@@ -12,10 +12,10 @@
       "titlePoliticians": "Politicians",
       "description": "Create audio using the voices of celebrities, politicians, movie characters, or even your own voice. Discover what's possible with",
       "brandName": "Voicica AI",
-      "appStore": "App Store",
-      "downloadOn": "Download on the",
-      "googlePlay": "Google Play",
-      "getItOn": "GET IT ON"
+      "downloadApk": "Download",
+      "comingSoon": "Coming Soon",
+      "tryNow": "Try Now",
+      "webVersion": "Web Version"
     },
     "samples": {
       "title1": "Listen to real",

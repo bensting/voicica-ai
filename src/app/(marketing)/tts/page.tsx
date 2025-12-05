@@ -275,35 +275,40 @@ export default function TTSPromoPage() {
             </p>
           </div>
 
-          {/* App Store Buttons */}
-          <div className="flex justify-center gap-4">
+          {/* Download & Try Buttons */}
+          <div className="flex flex-wrap justify-center gap-3">
+            {/* Download APK */}
             <a
               href="#"
-              className="flex items-center gap-2 bg-black border border-gray-700 rounded-xl px-5 py-3 hover:bg-gray-900 transition-colors"
+              className="flex items-center gap-2 bg-black border border-gray-700 rounded-xl px-4 py-2.5 hover:bg-gray-900 transition-colors"
             >
-              <svg className="w-7 h-7" viewBox="0 0 24 24" fill="white">
-                <path d="M18.71 19.5C17.88 20.74 17 21.95 15.66 21.97C14.32 22 13.89 21.18 12.37 21.18C10.84 21.18 10.37 21.95 9.1 22C7.79 22.05 6.8 20.68 5.96 19.47C4.25 17 2.94 12.45 4.7 9.39C5.57 7.87 7.13 6.91 8.82 6.88C10.1 6.86 11.32 7.75 12.11 7.75C12.89 7.75 14.37 6.68 15.92 6.84C16.57 6.87 18.39 7.1 19.56 8.82C19.47 8.88 17.39 10.1 17.41 12.63C17.44 15.65 20.06 16.66 20.09 16.67C20.06 16.74 19.67 18.11 18.71 19.5ZM13 3.5C13.73 2.67 14.94 2.04 15.94 2C16.07 3.17 15.6 4.35 14.9 5.19C14.21 6.04 13.07 6.7 11.95 6.61C11.8 5.46 12.36 4.26 13 3.5Z"/>
-              </svg>
+              <span className="text-xl">📱</span>
               <div className="text-left">
-                <div className="text-[10px] text-gray-400">Download on the</div>
-                <div className="text-sm font-semibold text-white">App Store</div>
+                <div className="text-[10px] text-gray-400">{t('ttsPromo.hero.downloadApk')}</div>
+                <div className="text-sm font-semibold text-white">Android APK</div>
               </div>
             </a>
-            <a
-              href="#"
-              className="flex items-center gap-2 bg-black border border-gray-700 rounded-xl px-5 py-3 hover:bg-gray-900 transition-colors"
-            >
-              <svg className="w-7 h-7" viewBox="0 0 24 24">
-                <path fill="#EA4335" d="M5.26 7.97L2.15 4.86c-.2-.2-.2-.51 0-.71l.71-.71c.2-.2.51-.2.71 0L6.68 6.55 5.26 7.97z"/>
-                <path fill="#FBBC04" d="M5.26 16.03l-3.11 3.11c-.2.2-.2.51 0 .71l.71.71c.2.2.51.2.71 0l3.11-3.11-1.42-1.42z"/>
-                <path fill="#4285F4" d="M12 3l8.49 4.91c.44.25.71.73.71 1.24v5.7c0 .51-.27.99-.71 1.24L12 21l-8.49-4.91c-.44-.25-.71-.73-.71-1.24v-5.7c0-.51.27-.99.71-1.24L12 3z"/>
-                <path fill="#34A853" d="M12 3v18l8.49-4.91c.44-.25.71-.73.71-1.24v-5.7c0-.51-.27-.99-.71-1.24L12 3z"/>
-              </svg>
+
+            {/* iOS Coming Soon */}
+            <div className="flex items-center gap-2 bg-black/50 border border-gray-700/50 rounded-xl px-4 py-2.5 opacity-60 cursor-not-allowed">
+              <span className="text-xl">🍎</span>
               <div className="text-left">
-                <div className="text-[10px] text-gray-400">GET IT ON</div>
-                <div className="text-sm font-semibold text-white">Google Play</div>
+                <div className="text-[10px] text-gray-500">iOS</div>
+                <div className="text-sm font-semibold text-gray-400">{t('ttsPromo.hero.comingSoon')}</div>
               </div>
-            </a>
+            </div>
+
+            {/* Web Version */}
+            <button
+              onClick={handleGetStarted}
+              className="flex items-center gap-2 bg-gradient-to-r from-purple-600 to-pink-600 border border-purple-500/50 rounded-xl px-4 py-2.5 hover:from-purple-700 hover:to-pink-700 transition-colors"
+            >
+              <span className="text-xl">🌐</span>
+              <div className="text-left">
+                <div className="text-[10px] text-purple-200">{t('ttsPromo.hero.tryNow')}</div>
+                <div className="text-sm font-semibold text-white">{t('ttsPromo.hero.webVersion')}</div>
+              </div>
+            </button>
           </div>
         </div>
       </section>

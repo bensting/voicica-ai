@@ -12,10 +12,10 @@
       "titlePoliticians": "政治人物",
       "description": "使用明星、政治人物、电影角色的声音创作音频，甚至可以克隆你自己的声音。探索",
       "brandName": "Voicica AI",
-      "appStore": "App Store",
-      "downloadOn": "下载自",
-      "googlePlay": "Google Play",
-      "getItOn": "立即下载"
+      "downloadApk": "下载",
+      "comingSoon": "即将推出",
+      "tryNow": "立即体验",
+      "webVersion": "网页版"
     },
     "samples": {
       "title1": "试听我们",

@@ -17,5 +17,13 @@
     "iosStep2": "Scroll and tap \"Add to Home Screen\"",
     "iosStep3": "Tap \"Add\" in the top right corner",
     "gotIt": "Got it"
+  },
+  "appUpdate": {
+    "title": "New Version Available",
+    "currentVersion": "Current version",
+    "releaseNotes": "What's new",
+    "forceUpdateWarning": "This is a required update. Please update to continue using the app.",
+    "updateNow": "Update Now",
+    "later": "Later"
   }
 }

@@ -65,6 +65,21 @@ export default function TTSPromoPage() {
     download_url: string;
   } | null>(null);
 
+  // Device detection state
+  const [deviceType, setDeviceType] = useState<'android' | 'ios' | 'desktop'>('desktop');
+
+  // Detect device type
+  useEffect(() => {
+    const userAgent = navigator.userAgent.toLowerCase();
+    if (/android/.test(userAgent)) {
+      setDeviceType('android');
+    } else if (/iphone|ipad|ipod/.test(userAgent)) {
+      setDeviceType('ios');
+    } else {
+      setDeviceType('desktop');
+    }
+  }, []);
+
   // Load latest APK info
   useEffect(() => {
     async function loadApkInfo() {
@@ -310,47 +325,52 @@ export default function TTSPromoPage() {
           </div>
 
           {/* Download & Try Buttons */}
-          <div className="flex flex-wrap justify-center gap-3">
-            {/* Download APK */}
-            {apkInfo ? (
-              <button
-                onClick={handleApkDownload}
-                className="flex items-center gap-2 bg-black border border-gray-700 rounded-xl px-4 py-2.5 hover:bg-gray-900 transition-colors"
-              >
-                <span className="text-xl">📱</span>
-                <div className="text-left">
-                  <div className="text-[10px] text-gray-400">{t('ttsPromo.hero.downloadApk')}</div>
-                  <div className="text-sm font-semibold text-white">Android APK</div>
+          {/* 桌面端显示3个按钮，移动端根据设备类型显示2个并排 */}
+          <div className={`flex justify-center gap-3 ${deviceType === 'desktop' ? 'flex-wrap' : ''}`}>
+            {/* Android APK - 仅在非 iOS 设备上显示 */}
+            {deviceType !== 'ios' && (
+              apkInfo ? (
+                <button
+                  onClick={handleApkDownload}
+                  className={`flex items-center gap-3 bg-gray-900/80 border border-gray-700 rounded-xl px-4 py-3 hover:bg-gray-800 transition-colors ${deviceType === 'desktop' ? 'w-[180px]' : 'flex-1 max-w-[180px]'}`}
+                >
+                  <span className="text-2xl">📱</span>
+                  <div className="text-left">
+                    <div className="text-[10px] text-gray-400 uppercase tracking-wide">{t('ttsPromo.hero.downloadApk')}</div>
+                    <div className="text-sm font-semibold text-white">Android</div>
+                  </div>
+                </button>
+              ) : (
+                <div className={`flex items-center gap-3 bg-gray-900/50 border border-gray-700/50 rounded-xl px-4 py-3 opacity-50 cursor-not-allowed ${deviceType === 'desktop' ? 'w-[180px]' : 'flex-1 max-w-[180px]'}`}>
+                  <span className="text-2xl">📱</span>
+                  <div className="text-left">
+                    <div className="text-[10px] text-gray-500 uppercase tracking-wide">Android</div>
+                    <div className="text-sm font-semibold text-gray-400">{t('ttsPromo.hero.comingSoon')}</div>
+                  </div>
                 </div>
-              </button>
-            ) : (
-              <div className="flex items-center gap-2 bg-black/50 border border-gray-700/50 rounded-xl px-4 py-2.5 opacity-60 cursor-not-allowed">
-                <span className="text-xl">📱</span>
+              )
+            )}
+
+            {/* iOS - 仅在非 Android 设备上显示 */}
+            {deviceType !== 'android' && (
+              <div className={`flex items-center gap-3 bg-gray-900/50 border border-gray-700/50 rounded-xl px-4 py-3 opacity-50 cursor-not-allowed ${deviceType === 'desktop' ? 'w-[180px]' : 'flex-1 max-w-[180px]'}`}>
+                <span className="text-2xl">🍎</span>
                 <div className="text-left">
-                  <div className="text-[10px] text-gray-500">Android</div>
+                  <div className="text-[10px] text-gray-500 uppercase tracking-wide">iOS</div>
                   <div className="text-sm font-semibold text-gray-400">{t('ttsPromo.hero.comingSoon')}</div>
                 </div>
               </div>
             )}
 
-            {/* iOS Coming Soon */}
-            <div className="flex items-center gap-2 bg-black/50 border border-gray-700/50 rounded-xl px-4 py-2.5 opacity-60 cursor-not-allowed">
-              <span className="text-xl">🍎</span>
-              <div className="text-left">
-                <div className="text-[10px] text-gray-500">iOS</div>
-                <div className="text-sm font-semibold text-gray-400">{t('ttsPromo.hero.comingSoon')}</div>
-              </div>
-            </div>
-
             {/* Web Version */}
             <button
               onClick={handleGetStarted}
-              className="flex items-center gap-2 bg-gradient-to-r from-purple-600 to-pink-600 border border-purple-500/50 rounded-xl px-4 py-2.5 hover:from-purple-700 hover:to-pink-700 transition-colors"
+              className={`flex items-center gap-3 bg-gradient-to-r from-purple-600 to-pink-600 border border-purple-500/30 rounded-xl px-4 py-3 hover:from-purple-700 hover:to-pink-700 transition-colors ${deviceType === 'desktop' ? 'w-[180px]' : 'flex-1 max-w-[180px]'}`}
             >
-              <span className="text-xl">🌐</span>
+              <span className="text-2xl">🌐</span>
               <div className="text-left">
-                <div className="text-[10px] text-purple-200">{t('ttsPromo.hero.tryNow')}</div>
-                <div className="text-sm font-semibold text-white">{t('ttsPromo.hero.webVersion')}</div>
+                <div className="text-[10px] text-purple-200 uppercase tracking-wide whitespace-nowrap">{t('ttsPromo.hero.tryNow')}</div>
+                <div className="text-sm font-semibold text-white whitespace-nowrap">{t('ttsPromo.hero.webVersion')}</div>
               </div>
             </button>
           </div>
@@ -572,6 +592,16 @@ export default function TTSPromoPage() {
               <p className="text-gray-400">{t('ttsPromo.samples.noVoices')}</p>
             </div>
           )}
+
+          {/* Explore All Characters Button */}
+          <div className="text-center mt-6">
+            <button
+              onClick={() => router.push('/studio/voices')}
+              className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400 font-semibold text-sm hover:opacity-80 transition-opacity"
+            >
+              {t('ttsPromo.samples.exploreAll') || 'Explore all AI Characters'} →
+            </button>
+          </div>
         </div>
       </section>
 
@@ -579,18 +609,18 @@ export default function TTSPromoPage() {
       <section className="py-6 px-4 bg-gradient-to-t from-purple-900/30 to-transparent">
         <div className="max-w-4xl mx-auto text-center">
           {/* Features */}
-          <div className="flex flex-wrap justify-center gap-4 mb-4">
-            <div className="flex items-center gap-2 text-gray-300">
-              <Sparkles className="w-5 h-5 text-purple-400" />
-              <span>{t('ttsPromo.cta.aiVoiceCloning')}</span>
+          <div className="inline-flex flex-col gap-2 mb-4">
+            <div className="flex items-center gap-3 text-gray-300">
+              <Sparkles className="w-5 h-5 text-purple-400 flex-shrink-0" />
+              <span className="text-left">{t('ttsPromo.cta.aiVoiceCloning')}</span>
             </div>
-            <div className="flex items-center gap-2 text-gray-300">
-              <Download className="w-5 h-5 text-purple-400" />
-              <span>{t('ttsPromo.cta.exportAudio')}</span>
+            <div className="flex items-center gap-3 text-gray-300">
+              <Download className="w-5 h-5 text-purple-400 flex-shrink-0" />
+              <span className="text-left">{t('ttsPromo.cta.exportAudio')}</span>
             </div>
-            <div className="flex items-center gap-2 text-gray-300">
-              <Mic className="w-5 h-5 text-purple-400" />
-              <span>{t('ttsPromo.cta.voiceModels')}</span>
+            <div className="flex items-center gap-3 text-gray-300">
+              <Mic className="w-5 h-5 text-purple-400 flex-shrink-0" />
+              <span className="text-left">{t('ttsPromo.cta.voiceModels')}</span>
             </div>
           </div>
 

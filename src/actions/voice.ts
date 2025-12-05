@@ -191,6 +191,56 @@ export async function searchVoicesByTags(
 }
 
 /**
+ * 获取 celebrity 语音列表（用于推广页面展示）
+ * 按 sort_order 从大到小排列
+ */
+export async function getCelebrityVoices(locale?: string): Promise<Voice[]> {
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const where: Record<string, any> = {
+      is_active: true,
+      role: 'celebrity',
+    };
+
+    if (locale) {
+      where.locale = locale;
+    }
+
+    const voices = await prisma.voices.findMany({
+      where,
+      orderBy: [{ sort_order: 'desc' }],
+      take: 20, // 限制返回数量
+    });
+
+    return voices.map(toVoice);
+  } catch (error) {
+    console.error('[getCelebrityVoices] 数据库查询失败:', error);
+    return [];
+  }
+}
+
+/**
+ * 获取 celebrity 语音可用的语言列表
+ */
+export async function getCelebrityLocales(): Promise<string[]> {
+  try {
+    const voices = await prisma.voices.findMany({
+      where: {
+        is_active: true,
+        role: 'celebrity',
+      },
+      select: { locale: true },
+      distinct: ['locale'],
+    });
+
+    return voices.map(v => v.locale).sort();
+  } catch (error) {
+    console.error('[getCelebrityLocales] 数据库查询失败:', error);
+    return [];
+  }
+}
+
+/**
  * 获取当前用户已使用的语音名称列表
  *
  * 从 tts_records 表中查询用户使用过的不重复 voice_name

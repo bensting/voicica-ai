@@ -58,6 +58,7 @@ export default function VoicesPage() {
     handlePlayVoice,
     loadMoreVoices,
     refreshVoices,
+    isLanguageInitialized,
   } = useVoices({ locale, user, authLoading });
 
   // Handle scroll to load more
@@ -80,38 +81,6 @@ export default function VoicesPage() {
 
   // Get all available language options
   const availableLanguages = getAllLocaleOptions();
-
-  // Initialize language selection based on localStorage or current locale
-  useEffect(() => {
-    const savedLanguageCode = localStorage.getItem('voiceLanguageFilter');
-    if (savedLanguageCode) {
-      if (savedLanguageCode === 'all') {
-        if (selectedLanguage !== null) {
-          setSelectedLanguage(null);
-        }
-        return;
-      }
-
-      const savedLanguage = availableLanguages.find(lang => lang.code === savedLanguageCode);
-      if (savedLanguage && selectedLanguage?.code !== savedLanguageCode) {
-        setSelectedLanguage(savedLanguage);
-        return;
-      }
-    }
-
-    if (!savedLanguageCode && selectedLanguage === null) {
-      const currentLanguage = availableLanguages.find(lang => lang.code === locale);
-      if (currentLanguage) {
-        setSelectedLanguage(currentLanguage);
-        return;
-      }
-
-      const defaultLanguage = availableLanguages.find(lang => lang.code === 'en-US');
-      if (defaultLanguage) {
-        setSelectedLanguage(defaultLanguage);
-      }
-    }
-  }, [availableLanguages, locale, selectedLanguage, setSelectedLanguage]);
 
   const handleLanguageSelect = (language: LocaleOption | null) => {
     setSelectedLanguage(language);

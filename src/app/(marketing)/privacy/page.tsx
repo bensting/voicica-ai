@@ -123,10 +123,10 @@ export default function PrivacyPolicy() {
             <p className="mb-3">
               If you wish to delete your account and associated data, please send an email to{" "}
               <a
-                href="mailto:support@voicica.ai"
+                href="mailto:info@voicica.ai"
                 className="text-blue-600 dark:text-blue-400 hover:underline"
               >
-                support@voicica.ai
+                info@voicica.ai
               </a>
               {" "}with your account deletion request. We will process your request within 7 business days.
             </p>
@@ -137,7 +137,34 @@ export default function PrivacyPolicy() {
 
           <section>
             <h2 className="text-xl sm:text-2xl font-semibold mb-3">
-              8. Cookies and Tracking Technologies
+              8. User Data Deletion
+            </h2>
+            <p className="mb-3">
+              You have the right to request the deletion of your personal data at any time. To request the deletion of your data, please contact us at{" "}
+              <a
+                href="mailto:info@voicica.ai"
+                className="text-blue-600 dark:text-blue-400 hover:underline"
+              >
+                info@voicica.ai
+              </a>
+              {" "}with the subject line &quot;Data Deletion Request&quot;.
+            </p>
+            <p className="mb-3">
+              Please include the following information in your request:
+            </p>
+            <ul className="list-disc list-inside space-y-2 ml-4 mb-3">
+              <li>Your registered email address</li>
+              <li>Your username (if applicable)</li>
+              <li>A brief description of the data you wish to delete</li>
+            </ul>
+            <p className="text-sm text-gray-600 dark:text-gray-400">
+              We will verify your identity and process your data deletion request within 30 days. Please note that some data may be retained as required by law or for legitimate business purposes.
+            </p>
+          </section>
+
+          <section>
+            <h2 className="text-xl sm:text-2xl font-semibold mb-3">
+              9. Cookies and Tracking Technologies
             </h2>
             <p>
               We use cookies and similar tracking technologies to collect and use information about your use of our services. You can manage cookie preferences through your browser settings, but disabling cookies may affect the functionality of certain features.
@@ -146,7 +173,7 @@ export default function PrivacyPolicy() {
 
           <section>
             <h2 className="text-xl sm:text-2xl font-semibold mb-3">
-              9. Children&apos;s Privacy
+              10. Children&apos;s Privacy
             </h2>
             <p>
               Our services are not directed to children under 18 years of age. We do not knowingly collect personal information from children. If you become aware that a child has provided us with personal information, please contact us and we will take steps to delete such information.
@@ -155,7 +182,7 @@ export default function PrivacyPolicy() {
 
           <section>
             <h2 className="text-xl sm:text-2xl font-semibold mb-3">
-              10. Changes to This Privacy Policy
+              11. Changes to This Privacy Policy
             </h2>
             <p>
               We may update this Privacy Policy from time to time. When we make significant changes, we will notify you by posting a notice on our service or by sending you a direct notification. We recommend that you review this Privacy Policy periodically for the latest information.
@@ -164,13 +191,13 @@ export default function PrivacyPolicy() {
 
           <section>
             <h2 className="text-xl sm:text-2xl font-semibold mb-3">
-              11. Contact Us
+              12. Contact Us
             </h2>
             <p className="mb-3">
               If you have any questions, comments, or requests regarding this Privacy Policy, please contact us:
             </p>
             <ul className="list-none space-y-2 ml-4">
-              <li>Email: privacy@voicica.ai</li>
+              <li>Email: info@voicica.ai</li>
               <li>Address: 30 N Gould St, STE R, Sheridan, WY 82801, USA</li>
             </ul>
           </section>

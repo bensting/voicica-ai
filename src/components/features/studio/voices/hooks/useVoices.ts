@@ -1,14 +1,14 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { listVoices, getUsedVoiceNames } from '@/actions/voice';
 import type { Voice } from '@/types/voice';
 import { getVoiceSampleUrl } from '@/types/voice';
 import type { LocaleOption } from '@/types/config';
+import { getAllLocaleOptions } from '@/utils/localeMapper';
 
 interface UseVoicesProps {
   locale: string;
   user: { uid: string } | null;
   authLoading: boolean;
-  initialLanguage?: LocaleOption | null; // 初始语言，避免后续修改触发重新加载
 }
 
 interface UseVoicesReturn {
@@ -28,6 +28,7 @@ interface UseVoicesReturn {
   // Language filter state
   selectedLanguage: LocaleOption | null;
   setSelectedLanguage: (language: LocaleOption | null) => void;
+  isLanguageInitialized: boolean;
 
   // Gender filter state
   selectedGender: string;
@@ -58,7 +59,7 @@ interface UseVoicesReturn {
  * - Search and filtering
  * - Audio playback
  */
-export function useVoices({ authLoading, initialLanguage }: UseVoicesProps): UseVoicesReturn {
+export function useVoices({ locale, authLoading }: UseVoicesProps): UseVoicesReturn {
   // Voices data state
   const [voices, setVoices] = useState<Voice[]>([]);
   const [loading, setLoading] = useState(true);
@@ -74,8 +75,9 @@ export function useVoices({ authLoading, initialLanguage }: UseVoicesProps): Use
   // Search state
   const [searchQuery, setSearchQuery] = useState('');
 
-  // Language filter state - 使用初始语言或 null
-  const [selectedLanguage, setSelectedLanguage] = useState<LocaleOption | null>(initialLanguage ?? null);
+  // Language filter state - 初始为 null，在客户端 useEffect 中设置
+  const [selectedLanguage, setSelectedLanguage] = useState<LocaleOption | null>(null);
+  const [isLanguageInitialized, setIsLanguageInitialized] = useState(false);
 
   // Gender filter state
   const [selectedGender, setSelectedGender] = useState<string>('all');
@@ -91,6 +93,38 @@ export function useVoices({ authLoading, initialLanguage }: UseVoicesProps): Use
   const [playingVoiceId, setPlayingVoiceId] = useState<string | null>(null);
   const [playingStyle, setPlayingStyle] = useState<string | null>(null);
   const [audioElement, setAudioElement] = useState<HTMLAudioElement | null>(null);
+
+  // Track if initial load has been done
+  const hasInitializedRef = useRef(false);
+
+  // Initialize language from localStorage on client side (only once)
+  useEffect(() => {
+    if (hasInitializedRef.current) return;
+    hasInitializedRef.current = true;
+
+    const availableLanguages = getAllLocaleOptions();
+    const savedLanguageCode = localStorage.getItem('voiceLanguageFilter');
+
+    let initialLang: LocaleOption | null = null;
+
+    if (savedLanguageCode) {
+      if (savedLanguageCode === 'all') {
+        initialLang = null;
+      } else {
+        initialLang = availableLanguages.find(lang => lang.code === savedLanguageCode) ?? null;
+      }
+    }
+
+    // If no saved language, use current locale or fallback to en-US
+    if (!savedLanguageCode) {
+      initialLang = availableLanguages.find(lang => lang.code === locale)
+        ?? availableLanguages.find(lang => lang.code === 'en-US')
+        ?? null;
+    }
+
+    setSelectedLanguage(initialLang);
+    setIsLanguageInitialized(true);
+  }, [locale]);
 
   // Load used voice names when usedOnly filter is enabled
   useEffect(() => {
@@ -197,10 +231,10 @@ export function useVoices({ authLoading, initialLanguage }: UseVoicesProps): Use
   }, [loadingMore, currentPage, totalPages, selectedLanguage, selectedGender, selectedRole, pageSize]);
 
   // Initial load and reload when filters change
-  // Wait for authentication to complete before loading voices
+  // Wait for authentication and language initialization to complete before loading voices
   useEffect(() => {
-    // Skip if auth is still loading
-    if (authLoading) {
+    // Skip if auth is still loading or language not initialized
+    if (authLoading || !isLanguageInitialized) {
       return;
     }
 
@@ -210,7 +244,7 @@ export function useVoices({ authLoading, initialLanguage }: UseVoicesProps): Use
     // - Anonymous users: use device fingerprint
     void loadVoices();
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedLanguage, selectedGender, selectedRole, usedOnly, authLoading]); // 直接依赖 filter 值，避免 loadVoices 引用变化导致多次请求
+  }, [selectedLanguage, selectedGender, selectedRole, usedOnly, authLoading, isLanguageInitialized]); // 直接依赖 filter 值，避免 loadVoices 引用变化导致多次请求
 
   // Filter voices based on search query and usedOnly (client-side)
   // Other filters (language, gender) are handled by API
@@ -283,6 +317,7 @@ export function useVoices({ authLoading, initialLanguage }: UseVoicesProps): Use
     // Language filter state
     selectedLanguage,
     setSelectedLanguage,
+    isLanguageInitialized,
 
     // Gender filter state
     selectedGender,

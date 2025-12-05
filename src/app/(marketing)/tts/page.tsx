@@ -34,8 +34,9 @@ const LANGUAGE_OPTIONS = [
 
 // Role filter options
 const ROLE_OPTIONS = [
-  { code: 'Celebrity', name: 'Celebrities', icon: '⭐' },
-  { code: 'Professional', name: 'Professional', icon: '🎙️' },
+  { code: 'All', nameKey: 'ttsPromo.filters.all', icon: '🔥' },
+  { code: 'Celebrity', nameKey: 'ttsPromo.filters.celebrities', icon: '⭐' },
+  { code: 'Professional', nameKey: 'ttsPromo.filters.professional', icon: '🎙️' },
 ];
 
 // Stats data
@@ -50,7 +51,7 @@ export default function TTSPromoPage() {
   const { t, setLocale } = useLanguage();
   const [playingId, setPlayingId] = useState<string | null>(null);
   const [selectedLanguage, setSelectedLanguage] = useState<string | null>(null);
-  const [selectedRole, setSelectedRole] = useState('Celebrity');
+  const [selectedRole, setSelectedRole] = useState('All');
   const [isLanguageDropdownOpen, setIsLanguageDropdownOpen] = useState(false);
   const [voices, setVoices] = useState<Voice[]>([]);
   const [loading, setLoading] = useState(true);
@@ -98,16 +99,45 @@ export default function TTSPromoPage() {
     async function loadVoices() {
       setLoading(true);
       try {
-        const response = await listVoices({
-          locale: selectedLanguage ?? undefined,
-          role: selectedRole,
-          is_active: true,
-          page: 1,
-          page_size: 22,
-        });
-        // Sort by sort_order descending
-        const sortedVoices = response.voices.sort((a, b) => b.sort_order - a.sort_order);
-        setVoices(sortedVoices);
+        if (selectedRole === 'All') {
+          // For "All" mode: fetch Celebrity first, then Professional
+          const [celebrityResponse, professionalResponse] = await Promise.all([
+            listVoices({
+              locale: selectedLanguage ?? undefined,
+              role: 'Celebrity',
+              is_active: true,
+              page: 1,
+              page_size: 22,
+            }),
+            listVoices({
+              locale: selectedLanguage ?? undefined,
+              role: 'Professional',
+              is_active: true,
+              page: 1,
+              page_size: 22,
+            }),
+          ]);
+
+          // Sort each by sort_order descending
+          const sortedCelebrity = celebrityResponse.voices.sort((a, b) => b.sort_order - a.sort_order);
+          const sortedProfessional = professionalResponse.voices.sort((a, b) => b.sort_order - a.sort_order);
+
+          // Combine: Celebrity first, then Professional, take 22 total
+          const combinedVoices = [...sortedCelebrity, ...sortedProfessional].slice(0, 22);
+          setVoices(combinedVoices);
+        } else {
+          // For specific role filter
+          const response = await listVoices({
+            locale: selectedLanguage ?? undefined,
+            role: selectedRole,
+            is_active: true,
+            page: 1,
+            page_size: 22,
+          });
+          // Sort by sort_order descending
+          const sortedVoices = response.voices.sort((a, b) => b.sort_order - a.sort_order);
+          setVoices(sortedVoices);
+        }
       } catch (error) {
         console.error('Failed to load voices:', error);
       } finally {
@@ -302,63 +332,57 @@ export default function TTSPromoPage() {
             </p>
           </div>
 
-          {/* Language Selector + Role Filter Tabs (same row) */}
-          <div className="flex justify-center items-center gap-6 mb-8">
-            {/* Language Selector */}
-            <div ref={dropdownRef} className="relative">
-              <button
-                onClick={() => setIsLanguageDropdownOpen(!isLanguageDropdownOpen)}
-                className="flex items-center gap-2 bg-gray-800/80 hover:bg-gray-700 border border-gray-600 rounded-full px-5 py-2.5 text-white transition-colors min-w-[160px] justify-between"
-              >
-                <span className="flex items-center gap-2">
-                  <span className="text-xs text-gray-400">{selectedLangOption.flag}</span>
-                  <span>{selectedLangOption.name}</span>
-                </span>
-                <ChevronUp className={`w-4 h-4 transition-transform ${isLanguageDropdownOpen ? '' : 'rotate-180'}`} />
-              </button>
+          {/* Language Selector + Role Filter Tabs (with border box) */}
+          <div className="flex justify-center mb-8">
+            <div className="flex items-center gap-1 bg-gray-800/50 border border-gray-700 rounded-full px-2 py-1.5">
+              {/* Language Selector */}
+              <div ref={dropdownRef} className="relative">
+                <button
+                  onClick={() => setIsLanguageDropdownOpen(!isLanguageDropdownOpen)}
+                  className="flex items-center gap-2 bg-gray-800/80 hover:bg-gray-700 border border-gray-600 rounded-full px-4 py-2 text-white transition-colors min-w-[140px] justify-between text-sm"
+                >
+                  <span className="flex items-center gap-2">
+                    <span className="text-xs">{selectedLangOption.flag}</span>
+                    <span>{selectedLangOption.name}</span>
+                  </span>
+                  <ChevronUp className={`w-4 h-4 transition-transform ${isLanguageDropdownOpen ? '' : 'rotate-180'}`} />
+                </button>
 
-              {/* Dropdown Menu - Opens upward */}
-              {isLanguageDropdownOpen && (
-                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-48 bg-gray-900 rounded-xl shadow-xl border border-gray-700 py-2 z-50 max-h-80 overflow-y-auto">
-                  {LANGUAGE_OPTIONS.map((lang) => (
-                    <button
-                      key={lang.code}
-                      onClick={() => handleLanguageSelect(lang.code)}
-                      className={`w-full text-left px-4 py-2.5 text-sm flex items-center gap-3 hover:bg-gray-800 transition-colors ${
-                        selectedLanguage === lang.code ? 'text-purple-400 bg-gray-800' : 'text-gray-300'
-                      }`}
-                    >
-                      <span className="text-lg">{lang.flag}</span>
-                      <span>{lang.name}</span>
-                    </button>
-                  ))}
-                </div>
-              )}
+                {/* Dropdown Menu - Opens upward */}
+                {isLanguageDropdownOpen && (
+                  <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-48 bg-gray-900 rounded-xl shadow-xl border border-gray-700 py-2 z-50 max-h-80 overflow-y-auto">
+                    {LANGUAGE_OPTIONS.map((lang) => (
+                      <button
+                        key={lang.code}
+                        onClick={() => handleLanguageSelect(lang.code)}
+                        className={`w-full text-left px-4 py-2.5 text-sm flex items-center gap-3 hover:bg-gray-800 transition-colors ${
+                          selectedLanguage === lang.code ? 'text-purple-400 bg-gray-800' : 'text-gray-300'
+                        }`}
+                      >
+                        <span className="text-lg">{lang.flag}</span>
+                        <span>{lang.name}</span>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Role Filter Tabs */}
+              {ROLE_OPTIONS.map((role) => (
+                <button
+                  key={role.code}
+                  onClick={() => handleRoleSelect(role.code)}
+                  className={`flex items-center gap-1.5 px-3 py-2 text-sm font-medium transition-colors rounded-full ${
+                    selectedRole === role.code
+                      ? 'text-yellow-400'
+                      : 'text-gray-500 hover:text-gray-400'
+                  }`}
+                >
+                  <span className={selectedRole === role.code ? '' : 'grayscale opacity-50'}>{role.icon}</span>
+                  <span>{t(role.nameKey)}</span>
+                </button>
+              ))}
             </div>
-
-            {/* Role Filter Tabs */}
-            <button
-              onClick={() => handleRoleSelect('Celebrity')}
-              className={`flex items-center gap-2 px-4 py-2 text-sm font-medium transition-colors ${
-                selectedRole === 'Celebrity'
-                  ? 'text-yellow-400'
-                  : 'text-gray-500 hover:text-gray-400'
-              }`}
-            >
-              <span className={selectedRole === 'Celebrity' ? '' : 'grayscale opacity-50'}>⭐</span>
-              <span>{t('ttsPromo.filters.celebrities')}</span>
-            </button>
-            <button
-              onClick={() => handleRoleSelect('Professional')}
-              className={`flex items-center gap-2 px-4 py-2 text-sm font-medium transition-colors ${
-                selectedRole === 'Professional'
-                  ? 'text-yellow-400'
-                  : 'text-gray-500 hover:text-gray-400'
-              }`}
-            >
-              <span className={selectedRole === 'Professional' ? '' : 'grayscale opacity-50'}>🎙️</span>
-              <span>{t('ttsPromo.filters.professional')}</span>
-            </button>
           </div>
 
           {/* Voice Grid */}

@@ -25,6 +25,7 @@
       "noVoices": "No voices available for this language."
     },
     "filters": {
+      "all": "All",
       "celebrities": "Celebrities",
       "professional": "Professional"
     },

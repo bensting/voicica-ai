@@ -210,3 +210,71 @@ export async function deleteVideo(filePath: string): Promise<boolean> {
     return false;
   }
 }
+
+/**
+ * 上传 APK 到 R2
+ */
+export async function uploadApk(
+  apkData: Buffer,
+  fileName: string,
+  folder: string = 'app_releases'
+): Promise<string> {
+  const bucketName = process.env.CLOUDFLARE_R2_BUCKET_NAME;
+  const publicUrl = process.env.CLOUDFLARE_R2_PUBLIC_URL;
+
+  if (!bucketName) {
+    throw new Error('CLOUDFLARE_R2_BUCKET_NAME 未配置');
+  }
+
+  const client = getS3Client();
+  const key = `${folder}/${fileName}`;
+
+  console.log(`📤 R2 上传 APK: ${key}, 大小: ${apkData.length} bytes`);
+
+  await client.send(
+    new PutObjectCommand({
+      Bucket: bucketName,
+      Key: key,
+      Body: apkData,
+      ContentType: 'application/vnd.android.package-archive',
+    })
+  );
+
+  // 生成公开 URL
+  let url: string;
+  if (publicUrl) {
+    url = `${publicUrl.replace(/\/$/, '')}/${key}`;
+  } else {
+    const accountId = process.env.CLOUDFLARE_R2_ACCOUNT_ID;
+    url = `https://${bucketName}.${accountId}.r2.dev/${key}`;
+  }
+
+  console.log(`✅ R2 APK 上传成功: ${url}`);
+  return url;
+}
+
+/**
+ * 删除 R2 中的 APK
+ */
+export async function deleteApk(filePath: string): Promise<boolean> {
+  const bucketName = process.env.CLOUDFLARE_R2_BUCKET_NAME;
+
+  if (!bucketName) {
+    throw new Error('CLOUDFLARE_R2_BUCKET_NAME 未配置');
+  }
+
+  try {
+    const client = getS3Client();
+    await client.send(
+      new DeleteObjectCommand({
+        Bucket: bucketName,
+        Key: filePath,
+      })
+    );
+    console.log(`✅ R2 APK 删除成功: ${filePath}`);
+    return true;
+  } catch (error) {
+    console.error(`❌ R2 APK 删除失败: ${filePath}`, error);
+    return false;
+  }
+}

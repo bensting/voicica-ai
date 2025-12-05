@@ -7,6 +7,7 @@ import { Play, Pause, Mic, Star, Download, Sparkles, ChevronUp } from 'lucide-re
 import { useLanguage } from '@/contexts/LanguageContext';
 import { GradientButton } from '@/components/ui';
 import { listVoices } from '@/actions/voice';
+import { getLatestRelease, incrementDownloadCountByVersion } from '@/actions/admin/app-releases';
 import { getVoiceSampleUrl } from '@/types/voice';
 import type { Voice } from '@/types/voice';
 
@@ -57,6 +58,39 @@ export default function TTSPromoPage() {
   const [loading, setLoading] = useState(true);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // APK download state
+  const [apkInfo, setApkInfo] = useState<{
+    version: string;
+    download_url: string;
+  } | null>(null);
+
+  // Load latest APK info
+  useEffect(() => {
+    async function loadApkInfo() {
+      try {
+        const release = await getLatestRelease('android');
+        if (release) {
+          setApkInfo({
+            version: release.version,
+            download_url: release.download_url,
+          });
+        }
+      } catch (error) {
+        console.error('Failed to load APK info:', error);
+      }
+    }
+    loadApkInfo();
+  }, []);
+
+  // Handle APK download with tracking
+  const handleApkDownload = async () => {
+    if (!apkInfo) return;
+    // Track download count
+    await incrementDownloadCountByVersion('android', apkInfo.version);
+    // Trigger download
+    window.open(apkInfo.download_url, '_blank');
+  };
 
   // Initialize language from URL parameter
   useEffect(() => {
@@ -278,16 +312,26 @@ export default function TTSPromoPage() {
           {/* Download & Try Buttons */}
           <div className="flex flex-wrap justify-center gap-3">
             {/* Download APK */}
-            <a
-              href="#"
-              className="flex items-center gap-2 bg-black border border-gray-700 rounded-xl px-4 py-2.5 hover:bg-gray-900 transition-colors"
-            >
-              <span className="text-xl">📱</span>
-              <div className="text-left">
-                <div className="text-[10px] text-gray-400">{t('ttsPromo.hero.downloadApk')}</div>
-                <div className="text-sm font-semibold text-white">Android APK</div>
+            {apkInfo ? (
+              <button
+                onClick={handleApkDownload}
+                className="flex items-center gap-2 bg-black border border-gray-700 rounded-xl px-4 py-2.5 hover:bg-gray-900 transition-colors"
+              >
+                <span className="text-xl">📱</span>
+                <div className="text-left">
+                  <div className="text-[10px] text-gray-400">{t('ttsPromo.hero.downloadApk')}</div>
+                  <div className="text-sm font-semibold text-white">Android APK</div>
+                </div>
+              </button>
+            ) : (
+              <div className="flex items-center gap-2 bg-black/50 border border-gray-700/50 rounded-xl px-4 py-2.5 opacity-60 cursor-not-allowed">
+                <span className="text-xl">📱</span>
+                <div className="text-left">
+                  <div className="text-[10px] text-gray-500">Android</div>
+                  <div className="text-sm font-semibold text-gray-400">{t('ttsPromo.hero.comingSoon')}</div>
+                </div>
               </div>
-            </a>
+            )}
 
             {/* iOS Coming Soon */}
             <div className="flex items-center gap-2 bg-black/50 border border-gray-700/50 rounded-xl px-4 py-2.5 opacity-60 cursor-not-allowed">

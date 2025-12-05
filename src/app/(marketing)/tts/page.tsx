@@ -210,7 +210,7 @@ export default function TTSPromoPage() {
   return (
     <div className="min-h-screen bg-[#0a0a0f]">
       {/* ========== Hero Section ========== */}
-      <section className="relative pt-20 pb-16 px-4 overflow-hidden">
+      <section className="relative pt-6 pb-4 px-4 overflow-hidden">
         {/* Background gradient */}
         <div className="absolute inset-0 bg-gradient-to-b from-purple-900/20 via-transparent to-transparent" />
 
@@ -222,7 +222,7 @@ export default function TTSPromoPage() {
 
         <div className="relative z-10 max-w-6xl mx-auto">
           {/* Stats Row */}
-          <div className="flex justify-center gap-8 mb-12">
+          <div className="flex justify-center gap-8 mb-4">
             {STATS.map((stat, index) => (
               <div key={index} className="flex items-center gap-3">
                 {/* Laurel wreath left */}
@@ -257,8 +257,8 @@ export default function TTSPromoPage() {
           </div>
 
           {/* Main Headline */}
-          <div className="text-center mb-8">
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
+          <div className="text-center mb-4">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-3 leading-tight">
               {t('ttsPromo.hero.title1')}{' '}
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">
                 {t('ttsPromo.hero.titleCelebrities')}
@@ -276,7 +276,7 @@ export default function TTSPromoPage() {
           </div>
 
           {/* App Store Buttons */}
-          <div className="flex justify-center gap-4 mb-12">
+          <div className="flex justify-center gap-4">
             <a
               href="#"
               className="flex items-center gap-2 bg-black border border-gray-700 rounded-xl px-5 py-3 hover:bg-gray-900 transition-colors"
@@ -309,11 +309,11 @@ export default function TTSPromoPage() {
       </section>
 
       {/* ========== Voice Samples Section ========== */}
-      <section className="pt-20 pb-8 px-4">
+      <section className="pt-4 pb-4 px-4">
         <div className="max-w-4xl mx-auto">
           {/* Section Header */}
-          <div className="text-center mb-8">
-            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+          <div className="text-center mb-4">
+            <h2 className="text-2xl md:text-3xl font-bold text-white mb-2">
               {t('ttsPromo.samples.title1')}<br />
               {t('ttsPromo.samples.title2')}{' '}
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">
@@ -326,7 +326,7 @@ export default function TTSPromoPage() {
           </div>
 
           {/* Language Selector + Role Filter Tabs (with border box) */}
-          <div className="flex justify-center mb-8">
+          <div className="flex justify-center mb-4">
             <div className="flex items-center gap-1 bg-gray-800/50 border border-gray-700 rounded-full px-2 py-1.5">
               {/* Language Selector */}
               <div ref={dropdownRef} className="relative">
@@ -527,10 +527,10 @@ export default function TTSPromoPage() {
       </section>
 
       {/* ========== CTA Section ========== */}
-      <section className="py-12 px-4 bg-gradient-to-t from-purple-900/30 to-transparent">
+      <section className="py-6 px-4 bg-gradient-to-t from-purple-900/30 to-transparent">
         <div className="max-w-4xl mx-auto text-center">
           {/* Features */}
-          <div className="flex flex-wrap justify-center gap-6 mb-6">
+          <div className="flex flex-wrap justify-center gap-4 mb-4">
             <div className="flex items-center gap-2 text-gray-300">
               <Sparkles className="w-5 h-5 text-purple-400" />
               <span>{t('ttsPromo.cta.aiVoiceCloning')}</span>

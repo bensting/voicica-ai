@@ -16,6 +16,13 @@ const nextConfig: NextConfig = {
   // 禁用尾部斜杠重定向（避免 Stripe webhook 307 错误）
   skipTrailingSlashRedirect: true,
 
+  // Server Actions 配置（允许上传大文件如 APK）
+  experimental: {
+    serverActions: {
+      bodySizeLimit: '100mb',
+    },
+  },
+
   // 环境变量注入
   env: {
     NEXT_PUBLIC_APP_VERSION: APP_VERSION,

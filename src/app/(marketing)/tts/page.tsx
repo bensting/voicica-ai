@@ -309,7 +309,7 @@ export default function TTSPromoPage() {
       </section>
 
       {/* ========== Voice Samples Section ========== */}
-      <section className="py-20 px-4">
+      <section className="pt-20 pb-8 px-4">
         <div className="max-w-4xl mx-auto">
           {/* Section Header */}
           <div className="text-center mb-8">

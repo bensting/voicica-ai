@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect, useRef } from 'react';
+import { useState, useCallback } from 'react';
 import { createTtsTask } from '@/actions/tts';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAudioSettings } from '@/contexts/AudioSettingsContext';

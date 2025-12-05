@@ -294,6 +294,7 @@ function ensureSentenceEnding(text: string): string {
 
 /**
  * 合成单个文本片段（内部函数）
+ * 支持自动重试：当 pitch 参数不支持时，自动去掉 pitch 重试
  */
 async function synthesizeChunk(
   apiKey: string,
@@ -336,6 +337,52 @@ async function synthesizeChunk(
 
   if (!response.ok) {
     const errorText = await response.text();
+
+    // 检查是否是 pitch 参数不支持的错误，自动重试不带 pitch
+    if (response.status === 400 && errorText.includes('pitch')) {
+      console.warn(`⚠️ Google TTS: 该语音不支持 pitch 参数，重试不带 pitch`);
+
+      const retryRequestBody: SynthesizeRequest = {
+        input: {
+          text: processedText,
+        },
+        voice: {
+          languageCode: languageCode,
+          name: voiceName,
+        },
+        audioConfig: {
+          audioEncoding: 'MP3',
+          speakingRate,
+          volumeGainDb,
+        },
+      };
+
+      const retryResponse = await fetch(
+        `https://texttospeech.googleapis.com/v1/text:synthesize?key=${apiKey}`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(retryRequestBody),
+        }
+      );
+
+      if (!retryResponse.ok) {
+        const retryErrorText = await retryResponse.text();
+        console.error(`❌ Google TTS 重试失败: ${retryResponse.status} - ${retryErrorText}`);
+        throw new Error(`Google TTS 失败: ${retryResponse.status} - ${retryErrorText}`);
+      }
+
+      const retryData = await retryResponse.json();
+
+      if (!retryData.audioContent) {
+        throw new Error('Google TTS 返回数据中没有 audioContent');
+      }
+
+      return Buffer.from(retryData.audioContent, 'base64');
+    }
+
     console.error(`❌ Google TTS 失败: ${response.status} - ${errorText}`);
     throw new Error(`Google TTS 失败: ${response.status} - ${errorText}`);
   }

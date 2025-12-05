@@ -58,7 +58,6 @@ export default function VoicesPage() {
     handlePlayVoice,
     loadMoreVoices,
     refreshVoices,
-    isLanguageInitialized,
   } = useVoices({ locale, user, authLoading });
 
   // Handle scroll to load more

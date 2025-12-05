@@ -305,13 +305,6 @@ export default function TTSPromoPage() {
               </div>
             </a>
           </div>
-
-          {/* Phone Mockups - Placeholder */}
-          <div className="flex justify-center gap-4 px-4">
-            <div className="w-32 md:w-40 h-64 md:h-80 bg-gradient-to-b from-gray-800 to-gray-900 rounded-3xl border border-gray-700 shadow-2xl" />
-            <div className="w-36 md:w-48 h-72 md:h-96 bg-gradient-to-b from-gray-800 to-gray-900 rounded-3xl border border-gray-700 shadow-2xl -mt-4" />
-            <div className="w-32 md:w-40 h-64 md:h-80 bg-gradient-to-b from-gray-800 to-gray-900 rounded-3xl border border-gray-700 shadow-2xl" />
-          </div>
         </div>
       </section>
 
@@ -534,10 +527,10 @@ export default function TTSPromoPage() {
       </section>
 
       {/* ========== CTA Section ========== */}
-      <section className="py-20 px-4 bg-gradient-to-t from-purple-900/30 to-transparent">
+      <section className="py-12 px-4 bg-gradient-to-t from-purple-900/30 to-transparent">
         <div className="max-w-4xl mx-auto text-center">
           {/* Features */}
-          <div className="flex flex-wrap justify-center gap-6 mb-10">
+          <div className="flex flex-wrap justify-center gap-6 mb-6">
             <div className="flex items-center gap-2 text-gray-300">
               <Sparkles className="w-5 h-5 text-purple-400" />
               <span>{t('ttsPromo.cta.aiVoiceCloning')}</span>
@@ -553,14 +546,16 @@ export default function TTSPromoPage() {
           </div>
 
           {/* CTA Button */}
-          <GradientButton
-            size="lg"
-            className="min-w-[280px] py-5 text-lg"
-            onClick={handleGetStarted}
-          >
-            <Mic className="w-6 h-6 mr-2" />
-            {t('ttsPromo.cta.startCreating')}
-          </GradientButton>
+          <div className="flex justify-center">
+            <GradientButton
+              size="lg"
+              className="min-w-[280px] py-5 text-lg"
+              onClick={handleGetStarted}
+            >
+              <Mic className="w-6 h-6 mr-2" />
+              {t('ttsPromo.cta.startCreating')}
+            </GradientButton>
+          </div>
 
           <p className="mt-4 text-gray-500 text-sm">
             {t('ttsPromo.cta.noCreditCard')} • {t('ttsPromo.cta.freeTier')}

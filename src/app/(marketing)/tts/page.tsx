@@ -311,9 +311,9 @@ export default function TTSPromoPage() {
       {/* ========== Voice Samples Section ========== */}
       <section className="pt-4 pb-4 px-4">
         <div className="max-w-4xl mx-auto">
-          {/* Section Header */}
-          <div className="text-center mb-4">
-            <h2 className="text-2xl md:text-3xl font-bold text-white mb-2">
+          {/* Section Header - Hidden on mobile */}
+          <div className="hidden md:block text-center mb-4">
+            <h2 className="text-3xl font-bold text-white mb-2">
               {t('ttsPromo.samples.title1')}<br />
               {t('ttsPromo.samples.title2')}{' '}
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">

@@ -6,3 +6,25 @@ ios/
 *.apk
 *.aab
 *.ipa
+
+# Native app resources
+resources/
+icons/
+native-version.json
+capacitor.config.ts
+
+# Keystore (sensitive)
+*.keystore
+
+# Documentation (not needed for deployment)
+*.md
+!README.md
+docs/
+
+# IDE and editor
+.idea/
+.run/
+.claude/
+
+# Scripts (not needed for runtime)
+scripts/

@@ -1,14 +1,14 @@
 {
-  "version": "1.0.22",
+  "version": "1.0.27",
   "buildNumber": 1,
   "description": "原生应用版本（Android/iOS 应用壳）",
   "changelog": [
     {
-      "version": "1.0.6",
+      "version": "1.0.23",
       "buildNumber": 1,
-      "date": "2024-12-03",
+      "date": "2024-12-05",
       "changes": [
-        "使用原生webview"
+        "使用生产链接发布"
       ]
     }
   ],

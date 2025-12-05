@@ -24,6 +24,14 @@
     "releaseNotes": "What's new",
     "forceUpdateWarning": "This is a required update. Please update to continue using the app.",
     "updateNow": "Update Now",
-    "later": "Later"
+    "later": "Later",
+    "cancel": "Cancel",
+    "retry": "Retry",
+    "checkingPermission": "Checking permission...",
+    "downloading": "Downloading...",
+    "installing": "Installing...",
+    "installComplete": "Installation complete",
+    "downloadError": "Download failed",
+    "permissionRequired": "Please grant permission to install unknown apps and try again"
   }
 }

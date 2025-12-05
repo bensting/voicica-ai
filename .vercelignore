@@ -1,0 +1,8 @@
+# Native app directories (Capacitor)
+android/
+ios/
+
+# Build outputs
+*.apk
+*.aab
+*.ipa

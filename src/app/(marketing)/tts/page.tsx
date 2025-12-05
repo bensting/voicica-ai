@@ -387,7 +387,7 @@ export default function TTSPromoPage() {
                     <button
                       key={voice.id}
                       onClick={() => handlePlayVoice(voice)}
-                      className="group relative w-16 h-16 lg:w-20 lg:h-20 rounded-full overflow-hidden transition-transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                      className="group relative w-16 h-16 lg:w-20 lg:h-20 flex-shrink-0 rounded-full overflow-hidden transition-transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-purple-500"
                     >
                       {voice.avatar_url ? (
                         <Image
@@ -421,7 +421,7 @@ export default function TTSPromoPage() {
                     <button
                       key={voice.id}
                       onClick={() => handlePlayVoice(voice)}
-                      className="group relative w-16 h-16 lg:w-20 lg:h-20 rounded-full overflow-hidden transition-transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                      className="group relative w-16 h-16 lg:w-20 lg:h-20 flex-shrink-0 rounded-full overflow-hidden transition-transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-purple-500"
                     >
                       {voice.avatar_url ? (
                         <Image

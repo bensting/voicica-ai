@@ -196,16 +196,27 @@ export default function PaidPlanCard({ plan }: PaidPlanCardProps) {
       }
 
       if (data.checkout_url) {
-        const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+        // 检测是否在原生 App 中运行
+        const { Capacitor } = await import('@capacitor/core');
 
-        if (isMobile) {
-          window.location.href = data.checkout_url;
+        if (Capacitor.isNativePlatform()) {
+          // 原生 App：使用应用内浏览器打开支付页面
+          const { Browser } = await import('@capacitor/browser');
+          await Browser.open({ url: data.checkout_url });
+          setIsLoading(false);
         } else {
-          const newWindow = window.open(data.checkout_url, '_blank');
-          if (!newWindow || newWindow.closed || typeof newWindow.closed === 'undefined') {
+          // Web 端
+          const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
+          if (isMobile) {
             window.location.href = data.checkout_url;
           } else {
-            setIsLoading(false);
+            const newWindow = window.open(data.checkout_url, '_blank');
+            if (!newWindow || newWindow.closed || typeof newWindow.closed === 'undefined') {
+              window.location.href = data.checkout_url;
+            } else {
+              setIsLoading(false);
+            }
           }
         }
       } else {

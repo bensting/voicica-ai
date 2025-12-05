@@ -56,7 +56,8 @@ export default function VoiceSelectorBottomSheet({
     return availableLanguages.find(lang => lang.code === 'en-US') || null;
   };
 
-  const [initialLanguage] = useState(getInitialLanguage);
+  // 保存初始语言值（虽然当前未使用，但保留以备将来使用）
+  useState(getInitialLanguage);
 
   // Use voices hook - 传入初始语言避免后续修改
   const {

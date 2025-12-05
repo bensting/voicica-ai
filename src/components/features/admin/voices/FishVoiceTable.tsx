@@ -148,7 +148,7 @@ export default function FishVoiceTable({
         <div className="p-8 text-center text-gray-500">加载中...</div>
       ) : !hasData ? (
         <div className="p-8 text-center text-gray-500">
-          点击"搜索"按钮查询 Fish Audio 语音库
+          点击&quot;搜索&quot;按钮查询 Fish Audio 语音库
         </div>
       ) : (
         <div className="overflow-x-auto">

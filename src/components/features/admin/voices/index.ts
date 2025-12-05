@@ -13,4 +13,4 @@ export { default as FishVoiceDetailDialog } from './FishVoiceDetailDialog';
 // Hook 导出
 export { useVoiceSync } from './useVoiceSync';
 export { useGoogleVoiceSync } from './useGoogleVoiceSync';
-export { useFishVoiceSync } from './useFishVoiceSync';
+export { useFishVoiceSync, SORT_BY_OPTIONS } from './useFishVoiceSync';

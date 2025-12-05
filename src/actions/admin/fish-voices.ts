@@ -94,17 +94,25 @@ function getFishApiToken(): string {
 
 /**
  * 从 Fish Audio API 获取语音模型列表
+ * @param pageSize 每页数量
+ * @param pageNumber 页码
+ * @param language 语言筛选
+ * @param sortBy 排序字段: score(热度), task_count(使用次数), created_at(创建时间)
  */
 async function fetchVoicesFromFish(
   pageSize: number = 100,
   pageNumber: number = 1,
-  language?: string
+  language?: string,
+  sortBy?: string
 ): Promise<FishVoiceListResponse> {
   const token = getFishApiToken();
 
   let url = `https://api.fish.audio/model?page_size=${pageSize}&page_number=${pageNumber}`;
   if (language) {
     url += `&language=${language}`;
+  }
+  if (sortBy) {
+    url += `&sort_by=${sortBy}`;
   }
 
   const response = await fetch(url, {
@@ -438,11 +446,16 @@ export async function getFishVoiceStatsByLanguage(): Promise<FishLanguageStats[]
 
 /**
  * 获取 Fish Audio 热门语音列表（用于同步）
+ * @param pageSize 每页数量
+ * @param pageNumber 页码
+ * @param language 语言筛选
+ * @param sortBy 排序字段: score(热度), task_count(使用次数), created_at(创建时间)
  */
 export async function getFishPopularVoices(
   pageSize: number = 20,
   pageNumber: number = 1,
-  language?: string
+  language?: string,
+  sortBy?: string
 ): Promise<{
   total: number;
   items: Array<{
@@ -465,7 +478,7 @@ export async function getFishPopularVoices(
   await verifyAdminWithoutDb();
 
   try {
-    const data = await fetchVoicesFromFish(pageSize, pageNumber, language);
+    const data = await fetchVoicesFromFish(pageSize, pageNumber, language, sortBy);
 
     const items = data.items.map((model) => ({
       id: model._id,

@@ -1,7 +1,8 @@
 'use client';
 
+import { Search } from 'lucide-react';
 import { SyncResult } from './types';
-import { FishVoiceDetail } from './useFishVoiceSync';
+import { FishVoiceDetail, SORT_BY_OPTIONS } from './useFishVoiceSync';
 
 interface FishVoiceTableProps {
   voices: FishVoiceDetail[];
@@ -11,13 +12,15 @@ interface FishVoiceTableProps {
   setSearchFilter: (value: string) => void;
   languageFilter: string;
   setLanguageFilter: (value: string) => void;
+  sortBy: string;
+  setSortBy: (value: string) => void;
   loading: boolean;
   syncing: string | null;
   syncResults: Record<string, SyncResult>;
   pageNumber: number;
   pageSize: number;
   exporting?: boolean;
-  onRefresh: () => void;
+  onSearch: () => void;
   onSync: (modelId: string) => void;
   onSyncTW?: (modelId: string) => void;
   onView: (voice: FishVoiceDetail) => void;
@@ -51,13 +54,15 @@ export default function FishVoiceTable({
   setSearchFilter,
   languageFilter,
   setLanguageFilter,
+  sortBy,
+  setSortBy,
   loading,
   syncing,
   syncResults,
   pageNumber,
   pageSize,
   exporting,
-  onRefresh,
+  onSearch,
   onSync,
   onSyncTW,
   onView,
@@ -65,18 +70,39 @@ export default function FishVoiceTable({
   onExport,
 }: FishVoiceTableProps) {
   const totalPages = Math.ceil(total / pageSize);
+  const hasData = voices.length > 0;
 
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
       {/* 表头 */}
-      <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between flex-wrap gap-4">
-        <div className="flex items-center gap-4 flex-wrap">
+      <div className="px-6 py-4 border-b border-gray-200">
+        <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-semibold text-gray-900">Fish Audio 语音库</h2>
+          <div className="flex gap-2">
+            {onExport && (
+              <button
+                onClick={onExport}
+                disabled={exporting || loading || !hasData}
+                className="px-4 py-2 text-sm bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50"
+              >
+                {exporting ? '导出中...' : '下载 Excel'}
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* 查询条件区域 */}
+        <div className="flex items-center gap-3 flex-wrap">
           <input
             type="text"
             placeholder="搜索语音..."
             value={searchFilter}
             onChange={(e) => setSearchFilter(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                onSearch();
+              }
+            }}
             className="px-3 py-1.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent w-48"
           />
           <select
@@ -90,35 +116,40 @@ export default function FishVoiceTable({
               </option>
             ))}
           </select>
-          <span className="text-sm text-gray-500">
-            共 {total.toLocaleString()} 个模型
-          </span>
-        </div>
-        <div className="flex gap-2">
-          {onExport && (
-            <button
-              onClick={onExport}
-              disabled={exporting || loading}
-              className="px-4 py-2 text-sm bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50"
-            >
-              {exporting ? '导出中...' : '下载 Excel'}
-            </button>
-          )}
-          <button
-            onClick={onRefresh}
-            disabled={loading}
-            className="px-4 py-2 text-sm bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors disabled:opacity-50"
+          <select
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value)}
+            className="px-3 py-1.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           >
-            {loading ? '加载中...' : '刷新'}
+            {SORT_BY_OPTIONS.map((opt) => (
+              <option key={opt.value} value={opt.value}>
+                排序: {opt.label}
+              </option>
+            ))}
+          </select>
+          <button
+            onClick={onSearch}
+            disabled={loading}
+            className="px-4 py-1.5 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 flex items-center gap-1.5"
+          >
+            <Search className="w-4 h-4" />
+            {loading ? '搜索中...' : '搜索'}
           </button>
+          {hasData && (
+            <span className="text-sm text-gray-500">
+              共 {total.toLocaleString()} 个模型
+            </span>
+          )}
         </div>
       </div>
 
       {/* 表格内容 */}
       {loading ? (
         <div className="p-8 text-center text-gray-500">加载中...</div>
-      ) : voices.length === 0 ? (
-        <div className="p-8 text-center text-gray-500">暂无数据</div>
+      ) : !hasData ? (
+        <div className="p-8 text-center text-gray-500">
+          点击"搜索"按钮查询 Fish Audio 语音库
+        </div>
       ) : (
         <div className="overflow-x-auto">
           <table className="w-full">

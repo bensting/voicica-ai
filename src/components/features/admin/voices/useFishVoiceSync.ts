@@ -40,19 +40,28 @@ export interface FishVoiceDetailDialogState {
   voice: FishVoiceDetail | null;
 }
 
+// 排序选项
+export const SORT_BY_OPTIONS = [
+  { value: 'score', label: '热度' },
+  { value: 'task_count', label: '使用次数' },
+  { value: 'created_at', label: '创建时间' },
+];
+
 /**
  * Fish 语音同步管理 Hook
  */
 export function useFishVoiceSync() {
   const [voices, setVoices] = useState<FishVoiceDetail[]>([]);
   const [total, setTotal] = useState(0);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false); // 改为 false，不自动加载
   const [syncing, setSyncing] = useState<string | null>(null);
   const [syncResults, setSyncResults] = useState<Record<string, SyncResult>>({});
   const [searchFilter, setSearchFilter] = useState('');
   const [languageFilter, setLanguageFilter] = useState('');
+  const [sortBy, setSortBy] = useState('score'); // 默认按热度排序
   const [pageNumber, setPageNumber] = useState(1);
   const [pageSize] = useState(20);
+  const [hasSearched, setHasSearched] = useState(false); // 是否已执行过搜索
   const [confirmDialog, setConfirmDialog] = useState<ConfirmDialogState>({
     isOpen: false,
     title: '',
@@ -78,11 +87,13 @@ export function useFishVoiceSync() {
   // 加载 Fish 语音列表
   const loadVoices = useCallback(async () => {
     setLoading(true);
+    setHasSearched(true);
     try {
       const data = await getFishPopularVoices(
         pageSize,
         pageNumber,
-        languageFilter || undefined
+        languageFilter || undefined,
+        sortBy || undefined
       );
       setVoices(data.items);
       setTotal(data.total);
@@ -91,11 +102,15 @@ export function useFishVoiceSync() {
     } finally {
       setLoading(false);
     }
-  }, [pageSize, pageNumber, languageFilter]);
+  }, [pageSize, pageNumber, languageFilter, sortBy]);
 
+  // 移除自动加载，改为手动触发
+  // 翻页时自动加载（如果已经执行过搜索）
   useEffect(() => {
-    loadVoices();
-  }, [loadVoices]);
+    if (hasSearched && pageNumber > 1) {
+      loadVoices();
+    }
+  }, [pageNumber, hasSearched, loadVoices]);
 
   // 同步热门语音（批量）
   const handleSyncPopular = useCallback(
@@ -316,6 +331,12 @@ export function useFishVoiceSync() {
     }
   }, [languageFilter]);
 
+  // 搜索方法（点击搜索按钮时调用）
+  const handleSearch = useCallback(() => {
+    setPageNumber(1); // 重置到第一页
+    loadVoices();
+  }, [loadVoices]);
+
   return {
     // 状态
     voices,
@@ -326,6 +347,7 @@ export function useFishVoiceSync() {
     syncResults,
     searchFilter,
     languageFilter,
+    sortBy,
     pageNumber,
     pageSize,
     confirmDialog,
@@ -334,7 +356,9 @@ export function useFishVoiceSync() {
     // 方法
     setSearchFilter,
     setLanguageFilter: handleLanguageFilterChange, // 使用新的方法，会重置页码
+    setSortBy,
     loadVoices,
+    handleSearch, // 新增搜索方法
     handleSyncPopular,
     handleUpdateAll,
     handleSyncAvatars,

@@ -369,8 +369,8 @@ export default function TTSPromoPage() {
             >
               <span className="text-2xl">🌐</span>
               <div className="text-left">
-                <div className="text-[10px] text-purple-200 uppercase tracking-wide">{t('ttsPromo.hero.tryNow')}</div>
-                <div className="text-sm font-semibold text-white">{t('ttsPromo.hero.webVersion')}</div>
+                <div className="text-[10px] text-purple-200 uppercase tracking-wide whitespace-nowrap">{t('ttsPromo.hero.tryNow')}</div>
+                <div className="text-sm font-semibold text-white whitespace-nowrap">{t('ttsPromo.hero.webVersion')}</div>
               </div>
             </button>
           </div>

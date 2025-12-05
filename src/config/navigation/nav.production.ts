@@ -28,7 +28,7 @@ export const navigationConfig: NavigationConfig = {
       labelKey: 'nav.studio',
       items: [
         {
-          href: '/studio/tts',
+          href: '/tts',
           labelKey: 'nav.textToSpeech',
           descriptionKey: 'nav.textToSpeechDesc',
           icon: TTSIcon,

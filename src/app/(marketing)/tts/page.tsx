@@ -592,6 +592,16 @@ export default function TTSPromoPage() {
               <p className="text-gray-400">{t('ttsPromo.samples.noVoices')}</p>
             </div>
           )}
+
+          {/* Explore All Characters Button */}
+          <div className="text-center mt-6">
+            <button
+              onClick={() => router.push('/studio/voices')}
+              className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400 font-semibold text-sm hover:opacity-80 transition-opacity"
+            >
+              {t('ttsPromo.samples.exploreAll') || 'Explore all AI Characters'} →
+            </button>
+          </div>
         </div>
       </section>
 

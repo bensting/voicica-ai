@@ -3,6 +3,7 @@
  * 使用 AWS SDK S3 兼容 API
  */
 import { S3Client, PutObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 
 // 创建 S3 客户端（延迟初始化）
 let s3Client: S3Client | null = null;
@@ -277,4 +278,51 @@ export async function deleteApk(filePath: string): Promise<boolean> {
     console.error(`❌ R2 APK 删除失败: ${filePath}`, error);
     return false;
   }
+}
+
+/**
+ * 生成 APK 上传的预签名 URL
+ * 用于绕过 Vercel Server Action 4.5MB 限制，实现客户端直传 R2
+ */
+export async function generateApkUploadUrl(
+  fileName: string,
+  folder: string = 'app_releases',
+  expiresIn: number = 3600 // 默认 1 小时有效期
+): Promise<{ uploadUrl: string; publicUrl: string; key: string }> {
+  const bucketName = process.env.CLOUDFLARE_R2_BUCKET_NAME;
+  const publicUrl = process.env.CLOUDFLARE_R2_PUBLIC_URL;
+
+  if (!bucketName) {
+    throw new Error('CLOUDFLARE_R2_BUCKET_NAME 未配置');
+  }
+
+  const client = getS3Client();
+  const key = `${folder}/${fileName}`;
+
+  console.log(`🔑 生成 APK 预签名 URL: ${key}`);
+
+  const command = new PutObjectCommand({
+    Bucket: bucketName,
+    Key: key,
+    ContentType: 'application/vnd.android.package-archive',
+  });
+
+  const uploadUrl = await getSignedUrl(client, command, { expiresIn });
+
+  // 生成公开访问 URL
+  let filePublicUrl: string;
+  if (publicUrl) {
+    filePublicUrl = `${publicUrl.replace(/\/$/, '')}/${key}`;
+  } else {
+    const accountId = process.env.CLOUDFLARE_R2_ACCOUNT_ID;
+    filePublicUrl = `https://${bucketName}.${accountId}.r2.dev/${key}`;
+  }
+
+  console.log(`✅ 预签名 URL 生成成功: ${key}`);
+
+  return {
+    uploadUrl,
+    publicUrl: filePublicUrl,
+    key,
+  };
 }

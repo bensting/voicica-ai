@@ -25,6 +25,7 @@
       "noVoices": "ไม่มีเสียงสำหรับภาษานี้"
     },
     "filters": {
+      "all": "ทั้งหมด",
       "celebrities": "คนดัง",
       "professional": "มืออาชีพ"
     },

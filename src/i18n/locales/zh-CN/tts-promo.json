@@ -25,6 +25,7 @@
       "noVoices": "该语言暂无可用语音。"
     },
     "filters": {
+      "all": "全部",
       "celebrities": "明星",
       "professional": "专业"
     },

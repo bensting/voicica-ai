@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Image from 'next/image';
-import { Play, Pause, Mic, Star, Download, Sparkles, ChevronUp } from 'lucide-react';
+import { Play, Pause, Mic, Star, Download, Sparkles, ChevronUp, Loader2 } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { GradientButton } from '@/components/ui';
 import { listVoices } from '@/actions/voice';
@@ -51,6 +51,7 @@ export default function TTSPromoPage() {
   const searchParams = useSearchParams();
   const { t, setLocale } = useLanguage();
   const [playingId, setPlayingId] = useState<string | null>(null);
+  const [loadingId, setLoadingId] = useState<string | null>(null);
   const [selectedLanguage, setSelectedLanguage] = useState<string | null>(null);
   const [selectedRole, setSelectedRole] = useState('All');
   const [isLanguageDropdownOpen, setIsLanguageDropdownOpen] = useState(false);
@@ -213,17 +214,42 @@ export default function TTSPromoPage() {
       // Pause current
       audioRef.current?.pause();
       setPlayingId(null);
+      setLoadingId(null);
+    } else if (loadingId === voice.id) {
+      // Already loading, ignore click
+      return;
     } else {
       // Stop previous and play new
       audioRef.current?.pause();
+      setPlayingId(null);
+
       const sampleUrl = getVoiceSampleUrl(voice);
       if (sampleUrl) {
+        setLoadingId(voice.id);
         const audio = new Audio(sampleUrl);
-        audio.onended = () => setPlayingId(null);
-        audio.onerror = () => setPlayingId(null);
-        audio.play().catch(() => setPlayingId(null));
+
+        audio.oncanplaythrough = () => {
+          // Audio loaded, start playing
+          setLoadingId(null);
+          setPlayingId(voice.id);
+          audio.play().catch(() => {
+            setPlayingId(null);
+            setLoadingId(null);
+          });
+        };
+
+        audio.onended = () => {
+          setPlayingId(null);
+          setLoadingId(null);
+        };
+
+        audio.onerror = () => {
+          setPlayingId(null);
+          setLoadingId(null);
+        };
+
+        audio.load();
         audioRef.current = audio;
-        setPlayingId(voice.id);
       }
     }
   };
@@ -475,35 +501,41 @@ export default function TTSPromoPage() {
               {/* Mobile: 4 columns grid */}
               <div className="grid grid-cols-4 gap-3 md:hidden">
                 {voices.map((voice) => (
-                  <button
-                    key={voice.id}
-                    onClick={() => handlePlayVoice(voice)}
-                    className="group relative aspect-square rounded-full overflow-hidden transition-transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                  >
-                    {voice.avatar_url ? (
-                      <Image
-                        src={voice.avatar_url}
-                        alt={voice.display_name}
-                        fill
-                        className="object-cover"
-                        sizes="25vw"
-                      />
-                    ) : (
-                      <div className="absolute inset-0 bg-gradient-to-br from-purple-600 via-pink-500 to-orange-400" />
-                    )}
-                    <div className={`absolute inset-0 flex items-center justify-center bg-black/40 transition-opacity ${
-                      playingId === voice.id ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
-                    }`}>
-                      {playingId === voice.id ? (
-                        <Pause className="w-6 h-6 text-white" />
+                  <div key={voice.id} className="flex flex-col items-center gap-1">
+                    <button
+                      onClick={() => handlePlayVoice(voice)}
+                      className="group relative aspect-square w-full rounded-full overflow-hidden transition-transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    >
+                      {voice.avatar_url ? (
+                        <Image
+                          src={voice.avatar_url}
+                          alt={voice.display_name}
+                          fill
+                          className="object-cover"
+                          sizes="25vw"
+                        />
                       ) : (
-                        <Play className="w-6 h-6 text-white ml-0.5" />
+                        <div className="absolute inset-0 bg-gradient-to-br from-purple-600 via-pink-500 to-orange-400" />
                       )}
-                    </div>
-                    {playingId === voice.id && (
-                      <div className="absolute inset-0 border-3 border-purple-500 rounded-full animate-pulse" />
-                    )}
-                  </button>
+                      <div className={`absolute inset-0 flex items-center justify-center bg-black/40 transition-opacity ${
+                        playingId === voice.id || loadingId === voice.id ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
+                      }`}>
+                        {loadingId === voice.id ? (
+                          <Loader2 className="w-6 h-6 text-white animate-spin" />
+                        ) : playingId === voice.id ? (
+                          <Pause className="w-6 h-6 text-white" />
+                        ) : (
+                          <Play className="w-6 h-6 text-white ml-0.5" />
+                        )}
+                      </div>
+                      {playingId === voice.id && (
+                        <div className="absolute inset-0 border-3 border-purple-500 rounded-full animate-pulse" />
+                      )}
+                    </button>
+                    <span className="text-[10px] text-gray-400 text-center w-full truncate px-1">
+                      {voice.display_name}
+                    </span>
+                  </div>
                 ))}
               </div>
 
@@ -529,9 +561,11 @@ export default function TTSPromoPage() {
                           <div className="absolute inset-0 bg-gradient-to-br from-purple-600 via-pink-500 to-orange-400" />
                         )}
                         <div className={`absolute inset-0 flex items-center justify-center bg-black/40 transition-opacity ${
-                          playingId === voice.id ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
+                          playingId === voice.id || loadingId === voice.id ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
                         }`}>
-                          {playingId === voice.id ? (
+                          {loadingId === voice.id ? (
+                            <Loader2 className="w-6 h-6 text-white animate-spin" />
+                          ) : playingId === voice.id ? (
                             <Pause className="w-6 h-6 text-white" />
                           ) : (
                             <Play className="w-6 h-6 text-white ml-0.5" />
@@ -567,9 +601,11 @@ export default function TTSPromoPage() {
                           <div className="absolute inset-0 bg-gradient-to-br from-purple-600 via-pink-500 to-orange-400" />
                         )}
                         <div className={`absolute inset-0 flex items-center justify-center bg-black/40 transition-opacity ${
-                          playingId === voice.id ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
+                          playingId === voice.id || loadingId === voice.id ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
                         }`}>
-                          {playingId === voice.id ? (
+                          {loadingId === voice.id ? (
+                            <Loader2 className="w-6 h-6 text-white animate-spin" />
+                          ) : playingId === voice.id ? (
                             <Pause className="w-6 h-6 text-white" />
                           ) : (
                             <Play className="w-6 h-6 text-white ml-0.5" />

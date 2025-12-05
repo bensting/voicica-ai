@@ -97,10 +97,10 @@ const config: CapacitorConfig = {
       style: 'light',
       backgroundColor: '#9333ea',
     },
-    // 键盘
+    // 键盘 - 使用 'none' 避免键盘弹出时压缩页面布局
     Keyboard: {
-      resize: 'body',
-      resizeOnFullScreen: true,
+      resize: 'none',
+      resizeOnFullScreen: false,
     },
     // Firebase Authentication - 配置支持的登录方式
     FirebaseAuthentication: {

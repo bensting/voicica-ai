@@ -25,6 +25,7 @@ export default function FishVoiceSyncPage() {
     syncResults,
     searchFilter,
     languageFilter,
+    sortBy,
     pageNumber,
     pageSize,
     confirmDialog,
@@ -32,7 +33,8 @@ export default function FishVoiceSyncPage() {
     exporting,
     setSearchFilter,
     setLanguageFilter,
-    loadVoices,
+    setSortBy,
+    handleSearch,
     handleSyncPopular,
     handleUpdateAll,
     handleSyncAvatars,
@@ -104,13 +106,15 @@ export default function FishVoiceSyncPage() {
         setSearchFilter={setSearchFilter}
         languageFilter={languageFilter}
         setLanguageFilter={setLanguageFilter}
+        sortBy={sortBy}
+        setSortBy={setSortBy}
         loading={loading}
         syncing={syncing}
         syncResults={syncResults}
         pageNumber={pageNumber}
         pageSize={pageSize}
         exporting={exporting}
-        onRefresh={loadVoices}
+        onSearch={handleSearch}
         onSync={handleSyncSingle}
         onSyncTW={handleSyncToTW}
         onView={handleViewVoice}

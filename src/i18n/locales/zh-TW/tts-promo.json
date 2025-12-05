@@ -22,7 +22,8 @@
       "title2": "AI 變聲器",
       "titleHighlight": "的真實示例",
       "description": "我們的 AI 模型經過訓練，能夠模仿原說話者的情感、語調和發音。我們實現了超逼真的語音克隆——只需幾秒鐘的音頻，您就可以克隆自己的聲音。",
-      "noVoices": "該語言暫無可用語音。"
+      "noVoices": "該語言暫無可用語音。",
+      "exploreAll": "探索全部 AI 角色"
     },
     "filters": {
       "all": "全部",

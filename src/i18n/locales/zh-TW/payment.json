@@ -19,15 +19,22 @@
         "description": "您的付款正在處理中，訂閱將很快啟用",
         "orderId": "訂單號:",
         "refresh": "重新整理狀態",
-        "backHome": "返回首頁"
+        "backHome": "返回工作室"
       },
       "failed": {
         "title": "付款驗證失敗",
         "description": "抱歉，我們無法驗證您的付款",
         "notice": "如果您已完成付款，請稍後重新整理頁面查看狀態，或聯繫客服獲取幫助。",
         "retry": "重新驗證",
-        "backHome": "返回首頁"
+        "backHome": "返回工作室"
       }
+    },
+    "cancel": {
+      "title": "付款已取消",
+      "description": "您的付款已取消，未產生任何費用。",
+      "notice": "如果您在付款過程中遇到任何問題，請重試或聯繫我們的客服團隊。",
+      "tryAgain": "重新購買",
+      "backToStudio": "返回工作室"
     }
   }
 }

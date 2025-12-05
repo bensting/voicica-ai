@@ -19,15 +19,22 @@
         "description": "Your payment is being processed, subscription will be activated soon",
         "orderId": "Order ID:",
         "refresh": "Refresh Status",
-        "backHome": "Back to Home"
+        "backHome": "Back to Studio"
       },
       "failed": {
         "title": "Payment Verification Failed",
         "description": "Sorry, we could not verify your payment",
         "notice": "If you have completed the payment, please refresh the page later to check the status, or contact customer service for help.",
         "retry": "Retry Verification",
-        "backHome": "Back to Home"
+        "backHome": "Back to Studio"
       }
+    },
+    "cancel": {
+      "title": "Payment Cancelled",
+      "description": "Your payment has been cancelled. No charges were made.",
+      "notice": "If you encountered any issues during the payment process, please try again or contact our support team.",
+      "tryAgain": "Try Again",
+      "backToStudio": "Back to Studio"
     }
   }
 }

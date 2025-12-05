@@ -424,71 +424,79 @@ export default function TTSPromoPage() {
               {/* Desktop: First row 12, second row 10 */}
               <div className="hidden md:block">
                 {/* First row: 12 voices */}
-                <div className="flex justify-center gap-4 mb-4">
+                <div className="flex justify-center gap-4 mb-6">
                   {voices.slice(0, 12).map((voice) => (
-                    <button
-                      key={voice.id}
-                      onClick={() => handlePlayVoice(voice)}
-                      className="group relative w-16 h-16 lg:w-20 lg:h-20 flex-shrink-0 rounded-full overflow-hidden transition-transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                    >
-                      {voice.avatar_url ? (
-                        <Image
-                          src={voice.avatar_url}
-                          alt={voice.display_name}
-                          fill
-                          className="object-cover"
-                          sizes="80px"
-                        />
-                      ) : (
-                        <div className="absolute inset-0 bg-gradient-to-br from-purple-600 via-pink-500 to-orange-400" />
-                      )}
-                      <div className={`absolute inset-0 flex items-center justify-center bg-black/40 transition-opacity ${
-                        playingId === voice.id ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
-                      }`}>
-                        {playingId === voice.id ? (
-                          <Pause className="w-6 h-6 text-white" />
+                    <div key={voice.id} className="flex flex-col items-center gap-2 flex-shrink-0">
+                      <button
+                        onClick={() => handlePlayVoice(voice)}
+                        className="group relative w-16 h-16 lg:w-20 lg:h-20 rounded-full overflow-hidden transition-transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                      >
+                        {voice.avatar_url ? (
+                          <Image
+                            src={voice.avatar_url}
+                            alt={voice.display_name}
+                            fill
+                            className="object-cover"
+                            sizes="80px"
+                          />
                         ) : (
-                          <Play className="w-6 h-6 text-white ml-0.5" />
+                          <div className="absolute inset-0 bg-gradient-to-br from-purple-600 via-pink-500 to-orange-400" />
                         )}
-                      </div>
-                      {playingId === voice.id && (
-                        <div className="absolute inset-0 border-3 border-purple-500 rounded-full animate-pulse" />
-                      )}
-                    </button>
+                        <div className={`absolute inset-0 flex items-center justify-center bg-black/40 transition-opacity ${
+                          playingId === voice.id ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
+                        }`}>
+                          {playingId === voice.id ? (
+                            <Pause className="w-6 h-6 text-white" />
+                          ) : (
+                            <Play className="w-6 h-6 text-white ml-0.5" />
+                          )}
+                        </div>
+                        {playingId === voice.id && (
+                          <div className="absolute inset-0 border-3 border-purple-500 rounded-full animate-pulse" />
+                        )}
+                      </button>
+                      <span className="text-xs text-gray-400 text-center w-16 lg:w-20 truncate">
+                        {voice.display_name}
+                      </span>
+                    </div>
                   ))}
                 </div>
                 {/* Second row: 10 voices */}
                 <div className="flex justify-center gap-4">
                   {voices.slice(12, 22).map((voice) => (
-                    <button
-                      key={voice.id}
-                      onClick={() => handlePlayVoice(voice)}
-                      className="group relative w-16 h-16 lg:w-20 lg:h-20 flex-shrink-0 rounded-full overflow-hidden transition-transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                    >
-                      {voice.avatar_url ? (
-                        <Image
-                          src={voice.avatar_url}
-                          alt={voice.display_name}
-                          fill
-                          className="object-cover"
-                          sizes="80px"
-                        />
-                      ) : (
-                        <div className="absolute inset-0 bg-gradient-to-br from-purple-600 via-pink-500 to-orange-400" />
-                      )}
-                      <div className={`absolute inset-0 flex items-center justify-center bg-black/40 transition-opacity ${
-                        playingId === voice.id ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
-                      }`}>
-                        {playingId === voice.id ? (
-                          <Pause className="w-6 h-6 text-white" />
+                    <div key={voice.id} className="flex flex-col items-center gap-2 flex-shrink-0">
+                      <button
+                        onClick={() => handlePlayVoice(voice)}
+                        className="group relative w-16 h-16 lg:w-20 lg:h-20 rounded-full overflow-hidden transition-transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                      >
+                        {voice.avatar_url ? (
+                          <Image
+                            src={voice.avatar_url}
+                            alt={voice.display_name}
+                            fill
+                            className="object-cover"
+                            sizes="80px"
+                          />
                         ) : (
-                          <Play className="w-6 h-6 text-white ml-0.5" />
+                          <div className="absolute inset-0 bg-gradient-to-br from-purple-600 via-pink-500 to-orange-400" />
                         )}
-                      </div>
-                      {playingId === voice.id && (
-                        <div className="absolute inset-0 border-3 border-purple-500 rounded-full animate-pulse" />
-                      )}
-                    </button>
+                        <div className={`absolute inset-0 flex items-center justify-center bg-black/40 transition-opacity ${
+                          playingId === voice.id ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
+                        }`}>
+                          {playingId === voice.id ? (
+                            <Pause className="w-6 h-6 text-white" />
+                          ) : (
+                            <Play className="w-6 h-6 text-white ml-0.5" />
+                          )}
+                        </div>
+                        {playingId === voice.id && (
+                          <div className="absolute inset-0 border-3 border-purple-500 rounded-full animate-pulse" />
+                        )}
+                      </button>
+                      <span className="text-xs text-gray-400 text-center w-16 lg:w-20 truncate">
+                        {voice.display_name}
+                      </span>
+                    </div>
                   ))}
                 </div>
               </div>

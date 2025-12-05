@@ -222,18 +222,18 @@ export default function TTSPromoPage() {
 
         <div className="relative z-10 max-w-6xl mx-auto">
           {/* Stats Row */}
-          <div className="flex justify-center gap-8 mb-4">
+          <div className="flex justify-center gap-4 md:gap-8 mb-4">
             {STATS.map((stat, index) => (
-              <div key={index} className="flex items-center gap-3">
-                {/* Laurel wreath left */}
-                <svg className="w-8 h-12 text-yellow-500" viewBox="0 0 24 40" fill="currentColor">
+              <div key={index} className="flex items-center gap-1 md:gap-3">
+                {/* Laurel wreath left - hidden on mobile */}
+                <svg className="hidden md:block w-8 h-12 text-yellow-500" viewBox="0 0 24 40" fill="currentColor">
                   <path d="M12 2C8 6 4 12 4 20s4 14 8 18c-2-4-3-10-3-18s1-14 3-18z" opacity="0.8"/>
                   <path d="M10 4C7 8 5 14 5 20s2 12 5 16c-1.5-4-2.5-9-2.5-16s1-12 2.5-16z" opacity="0.6"/>
                   <path d="M8 6C6 10 5 15 5 20s1 10 3 14c-1-3-1.5-8-1.5-14s.5-11 1.5-14z" opacity="0.4"/>
                 </svg>
 
                 <div className="text-center">
-                  <div className="text-xl md:text-2xl font-bold text-yellow-400">{stat.value}</div>
+                  <div className="text-lg md:text-2xl font-bold text-yellow-400">{stat.value}</div>
                   <div className="text-xs text-gray-400 flex items-center justify-center gap-1">
                     {stat.stars && (
                       <div className="flex">
@@ -246,8 +246,8 @@ export default function TTSPromoPage() {
                   </div>
                 </div>
 
-                {/* Laurel wreath right */}
-                <svg className="w-8 h-12 text-yellow-500 transform scale-x-[-1]" viewBox="0 0 24 40" fill="currentColor">
+                {/* Laurel wreath right - hidden on mobile */}
+                <svg className="hidden md:block w-8 h-12 text-yellow-500 transform scale-x-[-1]" viewBox="0 0 24 40" fill="currentColor">
                   <path d="M12 2C8 6 4 12 4 20s4 14 8 18c-2-4-3-10-3-18s1-14 3-18z" opacity="0.8"/>
                   <path d="M10 4C7 8 5 14 5 20s2 12 5 16c-1.5-4-2.5-9-2.5-16s1-12 2.5-16z" opacity="0.6"/>
                   <path d="M8 6C6 10 5 15 5 20s1 10 3 14c-1-3-1.5-8-1.5-14s.5-11 1.5-14z" opacity="0.4"/>

@@ -410,9 +410,9 @@ export default function TTSPromoPage() {
                   <ChevronUp className={`w-3 h-3 md:w-4 md:h-4 flex-shrink-0 transition-transform ${isLanguageDropdownOpen ? '' : 'rotate-180'}`} />
                 </button>
 
-                {/* Dropdown Menu - Opens upward */}
+                {/* Dropdown Menu - Opens downward */}
                 {isLanguageDropdownOpen && (
-                  <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-48 bg-gray-900 rounded-xl shadow-xl border border-gray-700 py-2 z-50 max-h-80 overflow-y-auto">
+                  <div className="absolute top-full left-0 mt-2 w-48 bg-gray-900 rounded-xl shadow-xl border border-gray-700 py-2 z-50 max-h-80 overflow-y-auto">
                     {LANGUAGE_OPTIONS.map((lang) => (
                       <button
                         key={lang.code}

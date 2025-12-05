@@ -41,8 +41,8 @@ const ROLE_OPTIONS = [
 
 // Stats data
 const STATS = [
-  { icon: '🏆', value: '10,000,000+', label: 'Downloads' },
-  { icon: '⭐', value: '140k', label: 'Reviews', stars: 5 },
+  { icon: '🏆', value: '1M+', label: 'Downloads' },
+  { icon: '⭐', value: '100k+', label: 'Reviews', stars: 5 },
 ];
 
 export default function TTSPromoPage() {

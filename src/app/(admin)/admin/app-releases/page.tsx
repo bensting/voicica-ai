@@ -3,10 +3,11 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import {
   getAppReleases,
-  uploadAppRelease,
   updateAppRelease,
   setLatestRelease,
   deleteAppRelease,
+  getApkUploadUrl,
+  saveAppReleaseMetadata,
   type AppRelease,
 } from '@/actions/admin/app-releases';
 
@@ -22,6 +23,8 @@ export default function AppReleasesPage() {
   // 上传相关状态
   const [showUploadModal, setShowUploadModal] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [uploadStatus, setUploadStatus] = useState<string>('');
   const [uploadForm, setUploadForm] = useState({
     platform: 'android',
     version: '',
@@ -61,7 +64,7 @@ export default function AppReleasesPage() {
     return `${(num / (1024 * 1024)).toFixed(1)} MB`;
   };
 
-  // 上传新版本
+  // 上传新版本（使用预签名 URL 直传 R2，绕过 Vercel 4.5MB 限制）
   const handleUpload = async () => {
     if (!selectedFile) {
       alert('请选择 APK 文件');
@@ -73,18 +76,75 @@ export default function AppReleasesPage() {
     }
 
     setUploading(true);
-    try {
-      const formData = new FormData();
-      formData.append('file', selectedFile);
-      formData.append('platform', uploadForm.platform);
-      formData.append('version', uploadForm.version);
-      formData.append('version_code', uploadForm.version_code);
-      formData.append('release_notes', uploadForm.release_notes);
-      formData.append('is_force_update', uploadForm.is_force_update.toString());
-      formData.append('set_as_latest', uploadForm.set_as_latest.toString());
+    setUploadProgress(0);
+    setUploadStatus('正在获取上传凭证...');
 
-      const result = await uploadAppRelease(formData);
-      if (result.success) {
+    try {
+      // Step 1: 获取预签名 URL
+      const urlResult = await getApkUploadUrl({
+        platform: uploadForm.platform,
+        version: uploadForm.version,
+        versionCode: parseInt(uploadForm.version_code, 10),
+      });
+
+      if (!urlResult.success || !urlResult.uploadUrl || !urlResult.publicUrl) {
+        alert(`获取上传凭证失败: ${urlResult.message}`);
+        return;
+      }
+
+      setUploadStatus('正在上传文件到云存储...');
+
+      // Step 2: 使用 XMLHttpRequest 上传到 R2（支持进度显示）
+      const { uploadUrl, publicUrl } = urlResult;
+      const uploadSuccess = await new Promise<boolean>((resolve) => {
+        const xhr = new XMLHttpRequest();
+
+        xhr.upload.onprogress = (event) => {
+          if (event.lengthComputable) {
+            const percent = Math.round((event.loaded / event.total) * 100);
+            setUploadProgress(percent);
+          }
+        };
+
+        xhr.onload = () => {
+          if (xhr.status >= 200 && xhr.status < 300) {
+            resolve(true);
+          } else {
+            console.error('R2 上传失败:', xhr.status, xhr.statusText);
+            resolve(false);
+          }
+        };
+
+        xhr.onerror = () => {
+          console.error('R2 上传网络错误');
+          resolve(false);
+        };
+
+        xhr.open('PUT', uploadUrl);
+        xhr.setRequestHeader('Content-Type', 'application/vnd.android.package-archive');
+        xhr.send(selectedFile);
+      });
+
+      if (!uploadSuccess) {
+        alert('文件上传失败，请重试');
+        return;
+      }
+
+      setUploadStatus('正在保存版本信息...');
+
+      // Step 3: 保存元数据到数据库
+      const saveResult = await saveAppReleaseMetadata({
+        platform: uploadForm.platform,
+        version: uploadForm.version,
+        versionCode: parseInt(uploadForm.version_code, 10),
+        downloadUrl: urlResult.publicUrl,
+        fileSize: selectedFile.size,
+        releaseNotes: uploadForm.release_notes || undefined,
+        isForceUpdate: uploadForm.is_force_update,
+        setAsLatest: uploadForm.set_as_latest,
+      });
+
+      if (saveResult.success) {
         alert('上传成功');
         setShowUploadModal(false);
         setSelectedFile(null);
@@ -98,13 +158,15 @@ export default function AppReleasesPage() {
         });
         loadReleases();
       } else {
-        alert(`上传失败: ${result.message}`);
+        alert(`保存版本信息失败: ${saveResult.message}`);
       }
     } catch (error) {
       console.error('上传失败:', error);
       alert('上传失败');
     } finally {
       setUploading(false);
+      setUploadProgress(0);
+      setUploadStatus('');
     }
   };
 
@@ -517,20 +579,38 @@ export default function AppReleasesPage() {
             </div>
 
             {/* 模态框底部 */}
-            <div className="px-6 py-4 border-t border-gray-200 flex justify-end gap-3">
-              <button
-                onClick={() => setShowUploadModal(false)}
-                className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
-              >
-                取消
-              </button>
-              <button
-                onClick={handleUpload}
-                disabled={uploading}
-                className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors disabled:opacity-50"
-              >
-                {uploading ? '上传中...' : '上传'}
-              </button>
+            <div className="px-6 py-4 border-t border-gray-200">
+              {/* 上传进度 */}
+              {uploading && (
+                <div className="mb-4">
+                  <div className="flex items-center justify-between text-sm text-gray-600 mb-1">
+                    <span>{uploadStatus}</span>
+                    <span>{uploadProgress}%</span>
+                  </div>
+                  <div className="w-full bg-gray-200 rounded-full h-2">
+                    <div
+                      className="bg-purple-600 h-2 rounded-full transition-all duration-300"
+                      style={{ width: `${uploadProgress}%` }}
+                    />
+                  </div>
+                </div>
+              )}
+              <div className="flex justify-end gap-3">
+                <button
+                  onClick={() => setShowUploadModal(false)}
+                  disabled={uploading}
+                  className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors disabled:opacity-50"
+                >
+                  取消
+                </button>
+                <button
+                  onClick={handleUpload}
+                  disabled={uploading}
+                  className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors disabled:opacity-50"
+                >
+                  {uploading ? '上传中...' : '上传'}
+                </button>
+              </div>
             </div>
           </div>
         </div>

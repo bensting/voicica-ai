@@ -5,7 +5,7 @@
  * 管理 Android APK 和 iOS 应用版本发布
  */
 import prisma from '@/lib/prisma';
-import { uploadApk, deleteApk } from '@/lib/services/r2-storage';
+import { uploadApk, deleteApk, generateApkUploadUrl } from '@/lib/services/r2-storage';
 import { verifyAdminWithoutDb } from '@/lib/auth-admin';
 
 export interface AppRelease {
@@ -296,5 +296,149 @@ export async function incrementDownloadCountByVersion(
     });
   } catch (error) {
     console.error('增加下载计数失败:', error);
+  }
+}
+
+// ==================== 预签名 URL 上传相关 ====================
+
+/**
+ * 获取 APK 上传预签名 URL
+ * 用于绕过 Vercel Server Action 4.5MB 限制
+ */
+export async function getApkUploadUrl(params: {
+  platform: string;
+  version: string;
+  versionCode: number;
+}): Promise<
+  ActionResult & {
+    uploadUrl?: string;
+    publicUrl?: string;
+    key?: string;
+  }
+> {
+  await verifyAdminWithoutDb();
+
+  try {
+    const { platform, version, versionCode } = params;
+
+    if (!platform || !version || !versionCode) {
+      return { success: false, message: '缺少必要参数' };
+    }
+
+    // 检查版本是否已存在
+    const existing = await prisma.app_releases.findUnique({
+      where: {
+        platform_version: { platform, version },
+      },
+    });
+
+    if (existing) {
+      return { success: false, message: `版本 ${version} 已存在` };
+    }
+
+    // 检查 version_code 是否唯一
+    const existingCode = await prisma.app_releases.findFirst({
+      where: { platform, version_code: versionCode },
+    });
+
+    if (existingCode) {
+      return { success: false, message: `版本号 ${versionCode} 已被使用` };
+    }
+
+    // 生成预签名 URL
+    const fileName = `${platform}-v${version}-${versionCode}.apk`;
+    const { uploadUrl, publicUrl, key } = await generateApkUploadUrl(fileName);
+
+    return {
+      success: true,
+      message: '预签名 URL 生成成功',
+      uploadUrl,
+      publicUrl,
+      key,
+    };
+  } catch (error) {
+    console.error('生成预签名 URL 失败:', error);
+    return {
+      success: false,
+      message: error instanceof Error ? error.message : '生成预签名 URL 失败',
+    };
+  }
+}
+
+/**
+ * 保存 APK 版本信息（在客户端直传 R2 成功后调用）
+ */
+export async function saveAppReleaseMetadata(params: {
+  platform: string;
+  version: string;
+  versionCode: number;
+  downloadUrl: string;
+  fileSize: number;
+  releaseNotes?: string;
+  isForceUpdate?: boolean;
+  setAsLatest?: boolean;
+}): Promise<ActionResult & { release?: AppRelease }> {
+  await verifyAdminWithoutDb();
+
+  try {
+    const {
+      platform,
+      version,
+      versionCode,
+      downloadUrl,
+      fileSize,
+      releaseNotes,
+      isForceUpdate = false,
+      setAsLatest = true,
+    } = params;
+
+    // 再次检查版本是否已存在（防止并发问题）
+    const existing = await prisma.app_releases.findUnique({
+      where: {
+        platform_version: { platform, version },
+      },
+    });
+
+    if (existing) {
+      return { success: false, message: `版本 ${version} 已存在` };
+    }
+
+    // 如果设为最新版本，先将其他版本的 is_latest 设为 false
+    if (setAsLatest) {
+      await prisma.app_releases.updateMany({
+        where: { platform, is_latest: true },
+        data: { is_latest: false },
+      });
+    }
+
+    // 创建数据库记录
+    const release = await prisma.app_releases.create({
+      data: {
+        platform,
+        version,
+        version_code: versionCode,
+        download_url: downloadUrl,
+        file_size: BigInt(fileSize),
+        release_notes: releaseNotes || null,
+        is_latest: setAsLatest,
+        is_force_update: isForceUpdate,
+        is_active: true,
+        download_count: 0,
+      },
+    });
+
+    console.log(`✅ APK 元数据保存成功: ${platform} v${version}`);
+
+    return {
+      success: true,
+      message: `版本 ${version} 发布成功`,
+      release,
+    };
+  } catch (error) {
+    console.error('保存 APK 元数据失败:', error);
+    return {
+      success: false,
+      message: error instanceof Error ? error.message : '保存失败',
+    };
   }
 }

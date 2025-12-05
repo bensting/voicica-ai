@@ -283,7 +283,7 @@ function PaymentSuccessContent() {
                 {t('payment.success.pending.refresh')}
               </button>
               <button
-                onClick={() => router.push('/')}
+                onClick={() => router.push('/studio')}
                 className="w-full border-2 border-gray-300 text-gray-700 font-semibold py-3 px-6 rounded-xl hover:border-purple-400 hover:text-purple-600 transition-colors"
               >
                 {t('payment.success.pending.backHome')}
@@ -333,7 +333,7 @@ function PaymentSuccessContent() {
                 {t('payment.success.failed.retry')}
               </button>
               <button
-                onClick={() => router.push('/')}
+                onClick={() => router.push('/studio')}
                 className="w-full border-2 border-gray-300 text-gray-700 font-semibold py-3 px-6 rounded-xl hover:border-purple-400 hover:text-purple-600 transition-colors"
               >
                 {t('payment.success.failed.backHome')}

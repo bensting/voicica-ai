@@ -24,6 +24,14 @@
     "releaseNotes": "更新内容",
     "forceUpdateWarning": "此版本为必要更新，请立即更新以继续使用",
     "updateNow": "立即更新",
-    "later": "稍后"
+    "later": "稍后",
+    "cancel": "取消",
+    "retry": "重试",
+    "checkingPermission": "检查权限...",
+    "downloading": "下载中...",
+    "installing": "正在安装...",
+    "installComplete": "安装完成",
+    "downloadError": "下载失败",
+    "permissionRequired": "请授权安装未知来源应用后重试"
   }
 }

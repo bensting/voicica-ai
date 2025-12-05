@@ -17,5 +17,13 @@
     "iosStep2": "滚动并点击「添加到主屏幕」",
     "iosStep3": "点击右上角的「添加」",
     "gotIt": "知道了"
+  },
+  "appUpdate": {
+    "title": "发现新版本",
+    "currentVersion": "当前版本",
+    "releaseNotes": "更新内容",
+    "forceUpdateWarning": "此版本为必要更新，请立即更新以继续使用",
+    "updateNow": "立即更新",
+    "later": "稍后"
   }
 }

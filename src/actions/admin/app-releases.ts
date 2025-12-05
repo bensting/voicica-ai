@@ -55,6 +55,7 @@ export async function getAppReleases(params?: {
  */
 export async function getLatestRelease(platform: string): Promise<{
   version: string;
+  version_code: number;
   download_url: string;
   release_notes: string | null;
   is_force_update: boolean;
@@ -67,6 +68,7 @@ export async function getLatestRelease(platform: string): Promise<{
     },
     select: {
       version: true,
+      version_code: true,
       download_url: true,
       release_notes: true,
       is_force_update: true,
@@ -74,6 +76,60 @@ export async function getLatestRelease(platform: string): Promise<{
   });
 
   return release;
+}
+
+/**
+ * 检查应用更新（公开接口，供 App 调用）
+ *
+ * @param platform 平台 (android/ios)
+ * @param currentVersionCode 当前 App 的 version_code
+ * @returns 更新信息，如果不需要更新则返回 null
+ */
+export async function checkAppUpdate(
+  platform: string,
+  currentVersionCode: number
+): Promise<{
+  hasUpdate: boolean;
+  isForceUpdate: boolean;
+  latestVersion: string;
+  latestVersionCode: number;
+  downloadUrl: string;
+  releaseNotes: string | null;
+} | null> {
+  try {
+    const latest = await prisma.app_releases.findFirst({
+      where: {
+        platform,
+        is_latest: true,
+        is_active: true,
+      },
+      select: {
+        version: true,
+        version_code: true,
+        download_url: true,
+        release_notes: true,
+        is_force_update: true,
+      },
+    });
+
+    if (!latest) {
+      return null;
+    }
+
+    const hasUpdate = latest.version_code > currentVersionCode;
+
+    return {
+      hasUpdate,
+      isForceUpdate: hasUpdate && latest.is_force_update,
+      latestVersion: latest.version,
+      latestVersionCode: latest.version_code,
+      downloadUrl: latest.download_url,
+      releaseNotes: latest.release_notes,
+    };
+  } catch (error) {
+    console.error('检查更新失败:', error);
+    return null;
+  }
 }
 
 /**

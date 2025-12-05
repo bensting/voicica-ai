@@ -93,6 +93,7 @@ export function LanguageProvider({ children, initialLocale }: LanguageProviderPr
           voiceStylesModule,
           videoModule,
           ttsPromoModule,
+          paymentModule,
         ] = await Promise.all([
           import(`@/i18n/locales/${locale}/common.json`),
           import(`@/i18n/locales/${locale}/auth.json`),
@@ -111,6 +112,7 @@ export function LanguageProvider({ children, initialLocale }: LanguageProviderPr
           import(`@/i18n/locales/${locale}/voice-styles.json`),
           import(`@/i18n/locales/${locale}/video.json`),
           import(`@/i18n/locales/${locale}/tts-promo.json`),
+          import(`@/i18n/locales/${locale}/payment.json`),
         ]);
 
         // 合并所有模块的消息
@@ -132,6 +134,7 @@ export function LanguageProvider({ children, initialLocale }: LanguageProviderPr
           ...ttsSamplesModule.default,
           ...videoModule.default,
           ...ttsPromoModule.default,
+          ...paymentModule.default,
         });
 
         // 语言文件加载完成后，标记为已就绪

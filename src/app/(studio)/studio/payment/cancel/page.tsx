@@ -1,11 +1,27 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 export default function PaymentCancelPage() {
   const router = useRouter();
   const { t } = useLanguage();
+  const [countdown, setCountdown] = useState(3);
+
+  // 倒计时自动返回工作室
+  useEffect(() => {
+    if (countdown > 0) {
+      const timer = setTimeout(() => {
+        setCountdown(countdown - 1);
+      }, 1000);
+      return () => clearTimeout(timer);
+    }
+
+    if (countdown === 0) {
+      router.push('/studio');
+    }
+  }, [countdown, router]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-pink-50 flex items-center justify-center p-4">
@@ -41,20 +57,12 @@ export default function PaymentCancelPage() {
             </p>
           </div>
 
-          <div className="space-y-3">
-            <button
-              onClick={() => router.push('/pricing')}
-              className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold py-3 px-6 rounded-xl hover:from-purple-700 hover:to-pink-700 transition-all shadow-lg hover:shadow-xl"
-            >
-              {t('payment.cancel.tryAgain')}
-            </button>
-            <button
-              onClick={() => router.push('/studio')}
-              className="w-full border-2 border-gray-300 text-gray-700 font-semibold py-3 px-6 rounded-xl hover:border-purple-400 hover:text-purple-600 transition-colors"
-            >
-              {t('payment.cancel.backToStudio')}
-            </button>
-          </div>
+          <button
+            onClick={() => router.push('/studio')}
+            className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold py-3 px-6 rounded-xl hover:from-purple-700 hover:to-pink-700 transition-all shadow-lg hover:shadow-xl"
+          >
+            {t('payment.cancel.backToStudio')} ({countdown}s)
+          </button>
         </div>
       </div>
     </div>

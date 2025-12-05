@@ -210,7 +210,7 @@ export default function TTSPromoPage() {
   return (
     <div className="min-h-screen bg-[#0a0a0f]">
       {/* ========== Hero Section ========== */}
-      <section className="relative pt-6 pb-4 px-4 overflow-hidden">
+      <section className="relative pt-20 pb-4 px-4 overflow-hidden">
         {/* Background gradient */}
         <div className="absolute inset-0 bg-gradient-to-b from-purple-900/20 via-transparent to-transparent" />
 
@@ -326,19 +326,19 @@ export default function TTSPromoPage() {
           </div>
 
           {/* Language Selector + Role Filter Tabs (with border box) */}
-          <div className="flex justify-center mb-4">
-            <div className="flex items-center gap-1 bg-gray-800/50 border border-gray-700 rounded-full px-2 py-1.5">
+          <div className="flex justify-center mb-4 px-2">
+            <div className="flex items-center gap-0.5 md:gap-1 bg-gray-800/50 border border-gray-700 rounded-full px-1.5 md:px-2 py-1">
               {/* Language Selector */}
               <div ref={dropdownRef} className="relative">
                 <button
                   onClick={() => setIsLanguageDropdownOpen(!isLanguageDropdownOpen)}
-                  className="flex items-center gap-2 bg-gray-800/80 hover:bg-gray-700 border border-gray-600 rounded-full px-4 py-2 text-white transition-colors min-w-[140px] justify-between text-sm"
+                  className="flex items-center gap-1 md:gap-2 bg-gray-800/80 hover:bg-gray-700 border border-gray-600 rounded-full px-2 md:px-4 py-1.5 md:py-2 text-white transition-colors min-w-[90px] md:min-w-[140px] justify-between text-xs md:text-sm"
                 >
-                  <span className="flex items-center gap-2">
+                  <span className="flex items-center gap-1 md:gap-2">
                     <span className="text-xs">{selectedLangOption.flag}</span>
-                    <span>{selectedLangOption.name}</span>
+                    <span className="truncate max-w-[50px] md:max-w-none">{selectedLangOption.name}</span>
                   </span>
-                  <ChevronUp className={`w-4 h-4 transition-transform ${isLanguageDropdownOpen ? '' : 'rotate-180'}`} />
+                  <ChevronUp className={`w-3 h-3 md:w-4 md:h-4 flex-shrink-0 transition-transform ${isLanguageDropdownOpen ? '' : 'rotate-180'}`} />
                 </button>
 
                 {/* Dropdown Menu - Opens upward */}
@@ -365,13 +365,13 @@ export default function TTSPromoPage() {
                 <button
                   key={role.code}
                   onClick={() => handleRoleSelect(role.code)}
-                  className={`flex items-center gap-1.5 px-3 py-2 text-sm font-medium transition-colors rounded-full ${
+                  className={`flex items-center gap-1 px-2 md:px-3 py-1.5 md:py-2 text-xs md:text-sm font-medium transition-all rounded-full whitespace-nowrap ${
                     selectedRole === role.code
-                      ? 'text-yellow-400'
-                      : 'text-gray-500 hover:text-gray-400'
+                      ? 'text-yellow-400 bg-gray-700/50'
+                      : 'text-gray-400 hover:text-gray-300 hover:bg-gray-700/30'
                   }`}
                 >
-                  <span className={selectedRole === role.code ? '' : 'grayscale opacity-50'}>{role.icon}</span>
+                  <span className={selectedRole === role.code ? '' : 'opacity-60'}>{role.icon}</span>
                   <span>{t(role.nameKey)}</span>
                 </button>
               ))}

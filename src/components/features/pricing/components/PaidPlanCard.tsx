@@ -178,8 +178,8 @@ export default function PaidPlanCard({ plan }: PaidPlanCardProps) {
     setIsLoading(true);
 
     try {
-      const successUrl = process.env.NEXT_PUBLIC_PAYMENT_SUCCESS_URL || `${window.location.origin}/payment/success`;
-      const cancelUrl = process.env.NEXT_PUBLIC_PAYMENT_CANCEL_URL || `${window.location.origin}/pricing`;
+      const successUrl = process.env.NEXT_PUBLIC_PAYMENT_SUCCESS_URL || `${window.location.origin}/studio/payment/success`;
+      const cancelUrl = process.env.NEXT_PUBLIC_PAYMENT_CANCEL_URL || `${window.location.origin}/studio/payment/cancel`;
       const currency = priceInfo?.currency?.toLowerCase() || 'usd';
 
       const requestData = {

@@ -105,7 +105,8 @@ async function handleTTSTask(req: NextRequest) {
 
     if (provider === 'fish') {
       // Fish Audio TTS
-      // voiceName 即为 Fish Audio 的 reference_id (model ID)
+      // voiceName 格式为 "locale:model_id"，如 "zh-CN:1512d05841734931bf905d0520c272b1"
+      // 需要提取冒号后的 model_id 作为 reference_id
       //
       // Fish Audio prosody 参数转换：
       // - speed: 直接使用前端值（0.5 - 2.0），Fish Audio 默认 1.0
@@ -113,6 +114,9 @@ async function handleTTSTask(req: NextRequest) {
       //           转换公式：(volume - 50) / 50，范围 -1 到 +1
       // - pitch: Fish Audio 不支持音调调节，忽略此参数
       //
+      const fishModelId = voiceName.includes(':') ? voiceName.split(':')[1] : voiceName;
+      console.log(`🐟 Fish Audio: voiceName=${voiceName}, modelId=${fishModelId}`);
+
       const fishProsody: { speed?: number; volume?: number } = {};
 
       // 语速：直接使用，Fish Audio 支持的范围与前端一致
@@ -128,7 +132,7 @@ async function handleTTSTask(req: NextRequest) {
 
       const result = await fishAudioSynthesize({
         text,
-        reference_id: voiceName,
+        reference_id: fishModelId,
         format: 'mp3',
         mp3_bitrate: 128,
         prosody: Object.keys(fishProsody).length > 0 ? fishProsody : undefined,

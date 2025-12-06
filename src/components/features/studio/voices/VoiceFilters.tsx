@@ -42,7 +42,7 @@ export default function VoiceFilters({
 
   return (
     <div className="flex-shrink-0 px-4 py-2.5 bg-white border-b border-gray-100">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between max-w-3xl lg:mx-auto">
         {/* Left: Gender filter + Role filters */}
         <div className="flex items-center gap-2">
           {/* Gender dropdown */}

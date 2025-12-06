@@ -174,7 +174,8 @@ export default function VoicesPage() {
         )}
       </div>
 
-      {/* ========== Bottom Select Button (fixed, above bottom nav) ========== */}
+      {/* ========== Bottom Select Button ========== */}
+      {/* Mobile: fixed above bottom nav */}
       <div className="fixed left-0 right-0 p-4 bg-gradient-to-t from-white via-white/95 to-transparent lg:hidden" style={{ bottom: 'calc(72px + var(--safe-area-inset-bottom, 0px))' }}>
         <button
           onClick={handleConfirmSelection}
@@ -192,6 +193,28 @@ export default function VoicesPage() {
           </span>
           {selectedVoice && <ArrowRight className="w-5 h-5" />}
         </button>
+      </div>
+
+      {/* Desktop: fixed at bottom of content area */}
+      <div className="hidden lg:block fixed bottom-0 right-0 p-4 bg-gradient-to-t from-white via-white/95 to-transparent" style={{ left: '72px' }}>
+        <div className="max-w-2xl mx-auto">
+          <button
+            onClick={handleConfirmSelection}
+            disabled={!selectedVoice}
+            className={`w-full py-3 rounded-xl font-medium flex items-center justify-center gap-2 transition-all shadow-lg ${
+              selectedVoice
+                ? 'bg-purple-600 text-white hover:bg-purple-700 active:scale-[0.98]'
+                : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+            }`}
+          >
+            <span>
+              {selectedVoice
+                ? `${t('studio.voices.selectVoice')} - ${getVoiceName(selectedVoice)}`
+                : t('studio.voices.selectVoicePrompt')}
+            </span>
+            {selectedVoice && <ArrowRight className="w-5 h-5" />}
+          </button>
+        </div>
       </div>
     </div>
   );

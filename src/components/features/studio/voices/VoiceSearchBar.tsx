@@ -22,7 +22,7 @@ export default function VoiceSearchBar({
 
   return (
     <div className="flex-shrink-0 px-4 py-3 bg-gradient-to-b from-gray-50 to-white">
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-3 max-w-3xl lg:mx-auto">
         {/* Search input */}
         <div className="flex-1 relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />

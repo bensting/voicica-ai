@@ -4,6 +4,7 @@ import { useState, useMemo, useEffect } from 'react';
 import { PricingPlan } from '@/types/subscription';
 import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 import { createStripeCheckout } from '@/actions/payment';
+import { trackUserEvent } from '@/actions/user';
 import { BillingCycle } from '../hooks/usePricing';
 import { getCurrencySymbol, getCurrencyFromLocale } from '@/config/currency';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -178,6 +179,16 @@ export default function PaidPlanCard({ plan }: PaidPlanCardProps) {
     setIsLoading(true);
 
     try {
+      // 记录 Buy Now 点击事件
+      trackUserEvent('buy_now_clicked', {
+        plan: plan.plan_name,
+        product_id: currentProductId,
+        credits: currentCredits,
+        price: priceInfo?.display,
+        currency: priceInfo?.currency,
+        source: 'upgrade_modal',
+      });
+
       const successUrl = process.env.NEXT_PUBLIC_PAYMENT_SUCCESS_URL || `${window.location.origin}/studio/payment/success`;
       const cancelUrl = process.env.NEXT_PUBLIC_PAYMENT_CANCEL_URL || `${window.location.origin}/studio/payment/cancel`;
       const currency = priceInfo?.currency?.toLowerCase() || 'usd';

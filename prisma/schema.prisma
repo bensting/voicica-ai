@@ -265,3 +265,17 @@ model video_records {
   @@index([user_id, status, created_at], map: "ix_video_records_user_status_created")
   @@index([is_public], map: "ix_video_records_is_public")
 }
+
+/// 用户事件追踪表（通用）
+model user_events {
+  id         Int       @id @default(autoincrement())
+  user_id    String    @db.VarChar(128)
+  event      String    @db.VarChar(100) // buy_now_clicked, upgrade_modal_opened, etc.
+  data       Json?     // 可选的附加数据
+  created_at DateTime  @default(now()) @db.Timestamptz(6)
+
+  @@index([user_id], map: "ix_user_events_user_id")
+  @@index([event], map: "ix_user_events_event")
+  @@index([created_at], map: "ix_user_events_created_at")
+  @@index([user_id, event], map: "ix_user_events_user_event")
+}

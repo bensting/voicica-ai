@@ -497,6 +497,40 @@ const buildNumber = nativeVersion.buildNumber;
 - **缓存过期**: 24 小时
 - **用户控制**: 可选择"立即更新"或"稍后"
 
+## 营销页面
+
+### TTS 推广页 (`/tts`)
+
+语音选择器支持通过 URL 参数指定默认语言：
+
+```
+https://voicica.ai/tts?lang=zh-TW
+```
+
+**语言选择优先级**：URL 参数 > 网站 UI 语言 > 浏览器语言 > 英文
+
+**支持的语言代码**：
+
+| 参数值 | 语言 |
+|--------|------|
+| `en-US` | English |
+| `zh-CN` | 简体中文 |
+| `zh-TW` | 繁體中文 |
+| `ja-JP` | 日本語 |
+| `ko-KR` | 한국어 |
+| `es-ES` | Español |
+| `fr-FR` | Français |
+| `de-DE` | Deutsch |
+| `ar-SA` | العربية |
+| `ru-RU` | Русский |
+| `pt-BR` | Português |
+| `th-TH` | ภาษาไทย |
+
+**示例**：
+- 繁体中文：`/tts?lang=zh-TW`
+- 日语：`/tts?lang=ja-JP`
+- 韩语：`/tts?lang=ko-KR`
+
 ## 最近完成的功能
 
 ### 1. PWA 版本管理系统 (2024)

@@ -46,10 +46,51 @@ const STATS = [
   { icon: '⭐', value: '100k+', label: 'Reviews', stars: 5 },
 ];
 
+// Map UI locale to voice locale
+const UI_TO_VOICE_LOCALE_MAP: Record<string, string> = {
+  'zh-CN': 'zh-CN',
+  'zh-TW': 'zh-TW',
+  'en-US': 'en-US',
+  'th-TH': 'th-TH',
+};
+
+// Map browser language to voice locale (best effort)
+function getBrowserVoiceLocale(): string | null {
+  if (typeof navigator === 'undefined') return null;
+
+  const browserLang = navigator.language || (navigator as { userLanguage?: string }).userLanguage;
+  if (!browserLang) return null;
+
+  // Exact match first
+  const langCode = browserLang.toLowerCase();
+
+  // Check for Chinese variants
+  if (langCode.startsWith('zh')) {
+    if (langCode.includes('tw') || langCode.includes('hant') || langCode.includes('hk') || langCode.includes('mo')) {
+      return 'zh-TW';
+    }
+    return 'zh-CN';
+  }
+
+  // Check for other supported languages
+  if (langCode.startsWith('ja')) return 'ja-JP';
+  if (langCode.startsWith('ko')) return 'ko-KR';
+  if (langCode.startsWith('es')) return 'es-ES';
+  if (langCode.startsWith('fr')) return 'fr-FR';
+  if (langCode.startsWith('de')) return 'de-DE';
+  if (langCode.startsWith('ar')) return 'ar-SA';
+  if (langCode.startsWith('ru')) return 'ru-RU';
+  if (langCode.startsWith('pt')) return 'pt-BR';
+  if (langCode.startsWith('th')) return 'th-TH';
+  if (langCode.startsWith('en')) return 'en-US';
+
+  return null;
+}
+
 export default function TTSPromoPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { t, setLocale } = useLanguage();
+  const { t, locale: uiLocale, setLocale } = useLanguage();
   const [playingId, setPlayingId] = useState<string | null>(null);
   const [loadingId, setLoadingId] = useState<string | null>(null);
   const [selectedLanguage, setSelectedLanguage] = useState<string | null>(null);
@@ -108,21 +149,21 @@ export default function TTSPromoPage() {
     window.open(apkInfo.download_url, '_blank');
   };
 
-  // Initialize language from URL parameter
+  // Initialize language with priority: URL param > UI locale > browser language > English
   useEffect(() => {
     const langParam = searchParams.get('lang');
+
+    // Priority 1: URL parameter
     if (langParam) {
-      // Check if the language is valid
       const validLang = LANGUAGE_OPTIONS.find(l => l.code === langParam);
       if (validLang) {
         setSelectedLanguage(langParam);
         // Also set the page locale based on URL parameter
-        // Map voice locale to UI locale (e.g., zh-CN -> zh-CN, zh-TW -> zh-TW)
         const uiLocaleMap: Record<string, 'en-US' | 'zh-CN' | 'zh-TW' | 'th-TH'> = {
           'zh-CN': 'zh-CN',
           'zh-TW': 'zh-TW',
           'en-US': 'en-US',
-          'ja-JP': 'en-US', // fallback to English for unsupported UI locales
+          'ja-JP': 'en-US',
           'ko-KR': 'en-US',
           'es-ES': 'en-US',
           'fr-FR': 'en-US',
@@ -132,15 +173,29 @@ export default function TTSPromoPage() {
           'pt-BR': 'en-US',
           'th-TH': 'th-TH',
         };
-        const uiLocale = uiLocaleMap[langParam] || 'en-US';
-        setLocale(uiLocale);
-      } else {
-        setSelectedLanguage('en-US');
+        const newUiLocale = uiLocaleMap[langParam] || 'en-US';
+        setLocale(newUiLocale);
+        return;
       }
-    } else {
-      setSelectedLanguage('en-US');
     }
-  }, [searchParams, setLocale]);
+
+    // Priority 2: Website UI locale (from LanguageContext)
+    const uiVoiceLocale = UI_TO_VOICE_LOCALE_MAP[uiLocale];
+    if (uiVoiceLocale && LANGUAGE_OPTIONS.find(l => l.code === uiVoiceLocale)) {
+      setSelectedLanguage(uiVoiceLocale);
+      return;
+    }
+
+    // Priority 3: Browser language
+    const browserLocale = getBrowserVoiceLocale();
+    if (browserLocale && LANGUAGE_OPTIONS.find(l => l.code === browserLocale)) {
+      setSelectedLanguage(browserLocale);
+      return;
+    }
+
+    // Priority 4: Default to English
+    setSelectedLanguage('en-US');
+  }, [searchParams, uiLocale, setLocale]);
 
   // Load voices from database
   useEffect(() => {

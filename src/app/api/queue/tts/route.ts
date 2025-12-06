@@ -226,7 +226,7 @@ async function handleTTSTask(req: NextRequest) {
           creditsCost,
           ProductType.TEXT_TO_SPEECH,
           isAnonymous,
-          'TTS任务失败，积分退还',
+          'TTS Task failed，return credits',
           taskId,
           true // updateTotalUsed = true，退还时需要减少累计使用量
         );

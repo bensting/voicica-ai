@@ -95,7 +95,7 @@ export default function AppReleasesPage() {
       setUploadStatus('正在上传文件到云存储...');
 
       // Step 2: 使用 XMLHttpRequest 上传到 R2（支持进度显示）
-      const { uploadUrl, publicUrl } = urlResult;
+      const { uploadUrl } = urlResult;
       const uploadSuccess = await new Promise<boolean>((resolve) => {
         const xhr = new XMLHttpRequest();
 

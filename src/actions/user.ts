@@ -8,6 +8,7 @@ import { getCurrentUser, getUserOrAnonymous } from '@/lib/auth-firebase';
 import { uploadImage } from '@/lib/services/r2-storage';
 import { v4 as uuidv4 } from 'uuid';
 import type { UserProfile, CreditsInfo, CreditHistoryResponse } from '@/types/user';
+import { Prisma } from '@prisma/client';
 
 /**
  * 获取当前用户资料
@@ -356,4 +357,33 @@ export async function getCreditHistory(
     pageSize,
     hasMore: page * pageSize < total,
   };
+}
+
+/**
+ * 记录用户事件
+ *
+ * @param event - 事件名称，如 buy_now_clicked, upgrade_modal_opened
+ * @param data - 可选的附加数据
+ */
+export async function trackUserEvent(
+  event: string,
+  data?: Prisma.InputJsonValue
+): Promise<{ success: boolean }> {
+  try {
+    const authUser = await getCurrentUser();
+
+    await prisma.user_events.create({
+      data: {
+        user_id: authUser.uid,
+        event,
+        data: data ?? Prisma.JsonNull,
+      },
+    });
+
+    return { success: true };
+  } catch (error) {
+    // 事件记录失败不应阻断用户流程，仅记录日志
+    console.error('❌ [UserEvent] 记录事件失败:', error);
+    return { success: false };
+  }
 }

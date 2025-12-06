@@ -28,10 +28,10 @@ export default function RefundPolicy() {
             <p>
               You can reach out to Voicica AI&apos;s caring Customer Support Team at{" "}
               <a
-                href="mailto:support@voicica.ai"
+                href="mailto:info@voicica.ai"
                 className="text-blue-600 dark:text-blue-400 hover:underline"
               >
-                support@voicica.ai
+                info@voicica.ai
               </a>
             </p>
           </section>

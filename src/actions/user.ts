@@ -8,7 +8,7 @@ import { getCurrentUser, getUserOrAnonymous } from '@/lib/auth-firebase';
 import { uploadImage } from '@/lib/services/r2-storage';
 import { v4 as uuidv4 } from 'uuid';
 import type { UserProfile, CreditsInfo, CreditHistoryResponse } from '@/types/user';
-import type { Prisma } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 
 /**
  * 获取当前用户资料
@@ -376,7 +376,7 @@ export async function trackUserEvent(
       data: {
         user_id: authUser.uid,
         event,
-        data: data ?? null,
+        data: data ?? Prisma.JsonNull,
       },
     });
 

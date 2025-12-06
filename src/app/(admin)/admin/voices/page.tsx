@@ -354,6 +354,7 @@ export default function VoicesManagementPage() {
             <option value="">所有服务商</option>
             <option value="microsoft">Microsoft</option>
             <option value="google">Google</option>
+            <option value="fish">Fish Audio</option>
           </select>
 
           {/* 状态筛选 */}
@@ -526,10 +527,12 @@ export default function VoicesManagementPage() {
                         className={`inline-flex items-center px-2 py-0.5 text-xs font-medium rounded ${
                           voice.provider === 'google'
                             ? 'bg-blue-100 text-blue-700'
-                            : 'bg-purple-100 text-purple-700'
+                            : voice.provider === 'fish'
+                              ? 'bg-teal-100 text-teal-700'
+                              : 'bg-purple-100 text-purple-700'
                         }`}
                       >
-                        {voice.provider === 'google' ? 'Google' : 'Microsoft'}
+                        {voice.provider === 'google' ? 'Google' : voice.provider === 'fish' ? 'Fish Audio' : 'Microsoft'}
                       </span>
                     </td>
                     <td className="px-4 py-3">

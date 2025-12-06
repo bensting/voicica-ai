@@ -2,13 +2,14 @@
  * TTS 任务队列处理函数 (Upstash QStash)
  *
  * 由 QStash 调用，处理异步 TTS 生成任务
- * 支持 Azure 和 Google TTS 服务
+ * 支持 Azure、Google 和 Fish Audio TTS 服务
  */
 import { NextRequest, NextResponse } from 'next/server';
 import { verifySignatureAppRouter } from '@upstash/qstash/nextjs';
 import prisma from '@/lib/prisma';
 import { synthesizeSpeech as azureSynthesize } from '@/lib/services/azure-tts';
 import { synthesizeSpeech as googleSynthesize } from '@/lib/services/google-tts';
+import { synthesizeSpeech as fishAudioSynthesize } from '@/lib/services/fish-audio-tts';
 import { uploadAudio } from '@/lib/services/r2-storage';
 import { ProductType } from '@/config/productType';
 import type { TtsQueuePayload } from '@/lib/queue/tts-queue';
@@ -102,7 +103,40 @@ async function handleTTSTask(req: NextRequest) {
     let duration: number;
     let format: string;
 
-    if (provider === 'google') {
+    if (provider === 'fish') {
+      // Fish Audio TTS
+      // voiceName 即为 Fish Audio 的 reference_id (model ID)
+      //
+      // Fish Audio prosody 参数转换：
+      // - speed: 直接使用前端值（0.5 - 2.0），Fish Audio 默认 1.0
+      // - volume: 前端 1-100 (默认50) -> Fish Audio 使用相对值，默认 0
+      //           转换公式：(volume - 50) / 50，范围 -1 到 +1
+      // - pitch: Fish Audio 不支持音调调节，忽略此参数
+      //
+      const fishProsody: { speed?: number; volume?: number } = {};
+
+      // 语速：直接使用，Fish Audio 支持的范围与前端一致
+      if (speed !== undefined && speed !== 1.0) {
+        fishProsody.speed = speed;
+      }
+
+      // 音量：前端 50 为默认值对应 Fish Audio 的 0
+      // 前端 1 -> -0.98, 前端 50 -> 0, 前端 100 -> +1
+      if (volume !== undefined && volume !== 50) {
+        fishProsody.volume = (volume - 50) / 50;
+      }
+
+      const result = await fishAudioSynthesize({
+        text,
+        reference_id: voiceName,
+        format: 'mp3',
+        mp3_bitrate: 128,
+        prosody: Object.keys(fishProsody).length > 0 ? fishProsody : undefined,
+      });
+      audioData = result.audioData;
+      duration = result.duration;
+      format = result.format;
+    } else if (provider === 'google') {
       // Google TTS（不支持 style）
       const result = await googleSynthesize({
         text,

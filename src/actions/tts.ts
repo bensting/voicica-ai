@@ -111,21 +111,40 @@ export interface TtsRecordsQueryResponse {
 }
 
 /**
+ * 根据语音 role 映射到计费类型
+ * role 值：celebrity, professional, standard 等
+ */
+function mapRoleToVoiceType(role: string): 'standard' | 'professional' | 'celebrity' | 'special' | 'clone' {
+  const normalizedRole = role.toLowerCase();
+  if (normalizedRole === 'celebrity') return 'celebrity';
+  if (normalizedRole === 'professional') return 'professional';
+  if (normalizedRole === 'special') return 'special';
+  if (normalizedRole === 'clone') return 'clone';
+  return 'standard';
+}
+
+/**
  * 计算 TTS 积分消耗
  *
  * 计费规则：每 100 个字符消耗对应积分，不足 100 也按一个单位计算
- * 例如：100 字符消耗 1 积分，101 字符消耗 2 积分
+ * 根据语音的 role 确定计费类型（standard/professional/celebrity/special/clone）
  *
  * @param text 待转换文本
- * @param _voiceName 语音名称（预留，用于未来支持不同语音类型）
+ * @param voiceName 语音名称
  */
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-function calculateCreditsCost(text: string, _voiceName: string): number {
-  // 目前 TTS 统一使用 standard 类型计费
-  // TODO: 未来可根据 voiceName 查询语音类型（standard/professional/special/clone）
+async function calculateCreditsCost(text: string, voiceName: string): Promise<number> {
+  // 查询语音的 role 来确定计费类型
+  const voice = await prisma.voices.findFirst({
+    where: { name: voiceName },
+    select: { role: true },
+  });
+
+  const voiceType = voice ? mapRoleToVoiceType(voice.role) : 'standard';
+  console.log(`💰 [calculateCreditsCost] voice=${voiceName}, role=${voice?.role}, voiceType=${voiceType}`);
+
   return calculateProductCreditsCost(ProductType.TEXT_TO_SPEECH, {
     charCount: text.length,
-    voiceType: 'standard',
+    voiceType,
   });
 }
 
@@ -144,8 +163,8 @@ export async function createTtsTask(request: TtsRequest): Promise<TtsTaskStatus>
 
     console.log('🎤 [createTtsTask] 用户认证成功:', { userId, isAnonymous });
 
-    // 1. 计算所需积分
-    const requiredCredits = calculateCreditsCost(request.text, request.voice_name);
+    // 1. 计算所需积分（根据语音的 role 确定计费类型）
+    const requiredCredits = await calculateCreditsCost(request.text, request.voice_name);
 
     // 2. 检查积分是否足够
     const { hasEnough, current } = await checkCredits(userId, requiredCredits, isAnonymous);

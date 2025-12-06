@@ -236,7 +236,7 @@ export default function AboutPage() {
           </p>
           <div className="flex justify-center">
             <a
-              href="mailto:support@voicica.ai"
+              href="mailto:info@voicica.ai"
               className="text-purple-600 dark:text-purple-400 hover:underline font-medium"
             >
               info@voicica.ai

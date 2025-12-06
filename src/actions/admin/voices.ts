@@ -9,6 +9,7 @@ import { Prisma } from '@prisma/client';
 import { getLocaleInfo } from '@/utils/localeMapper';
 import { synthesizeSpeech as azureSynthesize } from '@/lib/services/azure-tts';
 import { synthesizeSpeech as googleSynthesize } from '@/lib/services/google-tts';
+import { synthesizeSpeech as fishAudioSynthesize } from '@/lib/services/fish-audio-tts';
 import { uploadAudio } from '@/lib/services/r2-storage';
 import { getSampleText } from '@/config/voiceSampleTexts';
 import { verifyAdminWithoutDb } from '@/lib/auth-admin';
@@ -641,7 +642,17 @@ export async function generateVoiceSampleForVoice(voiceId: number): Promise<Sync
 
         let ttsResult: { audioData: Buffer; duration: number; format: string };
 
-        if (provider === 'google') {
+        if (provider === 'fish') {
+          // Fish Audio TTS
+          // voice.name 格式为 "locale:model_id"，提取 model_id
+          const fishModelId = voice.name.includes(':') ? voice.name.split(':')[1] : voice.name;
+          ttsResult = await fishAudioSynthesize({
+            text: sampleText,
+            reference_id: fishModelId,
+            format: 'mp3',
+            mp3_bitrate: 128,
+          });
+        } else if (provider === 'google') {
           // Google TTS（不支持 style）
           ttsResult = await googleSynthesize({
             text: sampleText,
@@ -659,9 +670,13 @@ export async function generateVoiceSampleForVoice(voiceId: number): Promise<Sync
         }
 
         // 上传到 R2
+        // Fish Audio 使用 model_id 作为文件名前缀
+        const fileNamePrefix = provider === 'fish' && voice.name.includes(':')
+          ? voice.name.split(':')[1]
+          : voice.name;
         const fileName = style === 'default'
-          ? `${voice.name}.mp3`
-          : `${voice.name}_${style}.mp3`;
+          ? `${fileNamePrefix}.mp3`
+          : `${fileNamePrefix}_${style}.mp3`;
         const audioUrl = await uploadAudio(
           ttsResult.audioData,
           fileName,
@@ -1025,6 +1040,7 @@ export async function updateVoice(
   voiceId: number,
   data: {
     display_name?: string;
+    gender?: string;
     role?: string;
     is_active?: boolean;
     style_list?: string[];
@@ -1039,6 +1055,7 @@ export async function updateVoice(
       where: { id: voiceId },
       data: {
         ...(data.display_name !== undefined && { display_name: data.display_name }),
+        ...(data.gender !== undefined && { gender: data.gender }),
         ...(data.role !== undefined && { role: data.role }),
         ...(data.is_active !== undefined && { is_active: data.is_active }),
         ...(data.style_list !== undefined && { style_list: data.style_list }),

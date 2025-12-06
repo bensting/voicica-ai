@@ -145,6 +145,7 @@ export default function RecentGenerationsList({
 
             {generations.map((gen) => {
               const isProcessing = gen.status === TaskStatus.PROCESSING || gen.status === TaskStatus.PENDING;
+              const isFailed = gen.status === TaskStatus.FAILURE;
               const progress = gen.progress || 0;
 
               return (
@@ -153,23 +154,31 @@ export default function RecentGenerationsList({
                   className={`flex items-center gap-2 p-3 rounded-lg hover:shadow-sm transition-all ${
                     isProcessing
                       ? 'bg-purple-50 border-2 border-purple-200'
-                      : 'bg-white border border-gray-200 hover:border-purple-300'
+                      : isFailed
+                        ? 'bg-red-50 border border-red-200'
+                        : 'bg-white border border-gray-200 hover:border-purple-300'
                   }`}
                 >
-                  {/* Play/Pause Button or Spinning Icon */}
+                  {/* Play/Pause Button or Spinning Icon or Error Icon */}
                   <button
-                    onClick={() => !isProcessing && handlePlay(gen.id, gen.audioUrl || '')}
+                    onClick={() => !isProcessing && !isFailed && handlePlay(gen.id, gen.audioUrl || '')}
                     className={`w-8 h-8 flex items-center justify-center rounded-full transition-colors flex-shrink-0 ${
                       isProcessing
                         ? 'bg-purple-100 cursor-not-allowed'
-                        : playingId === gen.id
-                          ? 'bg-purple-600 text-white hover:bg-purple-700'
-                          : 'bg-purple-100 text-purple-600 hover:bg-purple-200'
+                        : isFailed
+                          ? 'bg-red-100 cursor-not-allowed'
+                          : playingId === gen.id
+                            ? 'bg-purple-600 text-white hover:bg-purple-700'
+                            : 'bg-purple-100 text-purple-600 hover:bg-purple-200'
                     }`}
-                    disabled={isProcessing || !gen.audioUrl}
+                    disabled={isProcessing || isFailed || !gen.audioUrl}
                   >
                     {isProcessing ? (
                       <div className="w-5 h-5 border-2 border-purple-600 border-t-transparent rounded-full animate-spin" />
+                    ) : isFailed ? (
+                      <svg className="w-4 h-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
                     ) : playingId === gen.id ? (
                       <Pause className="w-4 h-4" fill="currentColor" />
                     ) : (

@@ -203,6 +203,7 @@ export default function VoicesManagementPage() {
     try {
       const result = await updateVoice(editingVoice.id, {
         display_name: editingVoice.display_name,
+        gender: editingVoice.gender,
         role: editingVoice.role,
         is_active: editingVoice.is_active,
         style_list: editingVoice.style_list,
@@ -354,6 +355,7 @@ export default function VoicesManagementPage() {
             <option value="">所有服务商</option>
             <option value="microsoft">Microsoft</option>
             <option value="google">Google</option>
+            <option value="fish">Fish Audio</option>
           </select>
 
           {/* 状态筛选 */}
@@ -526,10 +528,12 @@ export default function VoicesManagementPage() {
                         className={`inline-flex items-center px-2 py-0.5 text-xs font-medium rounded ${
                           voice.provider === 'google'
                             ? 'bg-blue-100 text-blue-700'
-                            : 'bg-purple-100 text-purple-700'
+                            : voice.provider === 'fish'
+                              ? 'bg-teal-100 text-teal-700'
+                              : 'bg-purple-100 text-purple-700'
                         }`}
                       >
-                        {voice.provider === 'google' ? 'Google' : 'Microsoft'}
+                        {voice.provider === 'google' ? 'Google' : voice.provider === 'fish' ? 'Fish Audio' : 'Microsoft'}
                       </span>
                     </td>
                     <td className="px-4 py-3">
@@ -537,10 +541,12 @@ export default function VoicesManagementPage() {
                         className={`inline-flex items-center px-2 py-0.5 text-xs font-medium rounded ${
                           voice.gender === 'male'
                             ? 'bg-blue-100 text-blue-700'
-                            : 'bg-pink-100 text-pink-700'
+                            : voice.gender === 'female'
+                              ? 'bg-pink-100 text-pink-700'
+                              : 'bg-gray-100 text-gray-600'
                         }`}
                       >
-                        {voice.gender === 'male' ? '男' : '女'}
+                        {voice.gender === 'male' ? '男' : voice.gender === 'female' ? '女' : '未知'}
                       </span>
                     </td>
                     <td className="px-4 py-3">
@@ -740,6 +746,22 @@ export default function VoicesManagementPage() {
                       onChange={(e) => updateEditingField('display_name', e.target.value)}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                     />
+                  </div>
+
+                  {/* 性别 */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      性别
+                    </label>
+                    <select
+                      value={editingVoice.gender}
+                      onChange={(e) => updateEditingField('gender', e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    >
+                      <option value="male">男</option>
+                      <option value="female">女</option>
+                      <option value="unknown">未知</option>
+                    </select>
                   </div>
 
                   {/* 角色类型 */}

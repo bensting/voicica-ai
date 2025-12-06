@@ -11,6 +11,7 @@ const MENU_GROUPS = [
   {
     title: '用户',
     items: [
+      { href: '/admin/stats', label: '数据统计', icon: '📊' },
       { href: '/admin/users', label: '用户管理', icon: '👥' },
     ],
   },

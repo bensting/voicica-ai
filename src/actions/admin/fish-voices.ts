@@ -6,7 +6,7 @@
 import prisma from '@/lib/prisma';
 import { verifyAdminWithoutDb } from '@/lib/auth-admin';
 import { getLocaleInfo } from '@/utils/localeMapper';
-import { uploadImage } from '@/lib/services/r2-storage';
+import { uploadImage, uploadAudio } from '@/lib/services/r2-storage';
 import * as OpenCC from 'opencc-js';
 import * as XLSX from 'xlsx';
 
@@ -361,6 +361,62 @@ async function downloadAndUploadAvatar(coverImage: string, modelId: string): Pro
 }
 
 /**
+ * 下载 Fish Audio 语音样本并上传到我们的 R2
+ * Fish Audio 的语音样本 URL 是带签名的临时链接，有效期约 1 小时
+ * 因此需要下载到我们自己的存储中
+ *
+ * @param audioUrl Fish Audio 返回的语音样本 URL
+ * @param modelId 模型 ID，用于生成文件名
+ * @param sampleIndex 样本索引（一个模型可能有多个样本）
+ * @returns 上传后的 R2 URL，失败则返回空字符串
+ */
+async function downloadAndUploadVoiceSample(
+  audioUrl: string,
+  modelId: string,
+  sampleIndex: number = 0
+): Promise<string> {
+  if (!audioUrl) return '';
+
+  try {
+    console.log(`📥 下载语音样本: ${audioUrl.substring(0, 80)}...`);
+
+    // 下载音频
+    const response = await fetch(audioUrl, {
+      cache: 'no-store',
+    });
+
+    if (!response.ok) {
+      console.error(`❌ 下载语音样本失败: ${response.status}`);
+      return '';
+    }
+
+    // 获取音频数据
+    const arrayBuffer = await response.arrayBuffer();
+    const audioBuffer = Buffer.from(arrayBuffer);
+
+    // 确定 content type 和扩展名
+    const contentType = response.headers.get('content-type') || 'audio/mpeg';
+    const extension = contentType.includes('wav') ? 'wav' :
+                      contentType.includes('ogg') ? 'ogg' :
+                      contentType.includes('flac') ? 'flac' : 'mp3';
+
+    // 生成文件名：fish_{modelId}_{sampleIndex}.{ext}
+    const fileName = sampleIndex === 0
+      ? `fish_${modelId}.${extension}`
+      : `fish_${modelId}_${sampleIndex}.${extension}`;
+
+    // 上传到 R2
+    const r2Url = await uploadAudio(audioBuffer, fileName, contentType, 'voice-samples/fish');
+
+    console.log(`✅ 语音样本上传成功: ${r2Url}`);
+    return r2Url;
+  } catch (error) {
+    console.error(`❌ 下载/上传语音样本失败 (${modelId}):`, error);
+    return '';
+  }
+}
+
+/**
  * 获取 Fish Audio 所有语言及统计信息
  */
 export async function getFishVoiceStatsByLanguage(): Promise<FishLanguageStats[]> {
@@ -545,10 +601,17 @@ export async function syncFishVoice(
       };
     }
 
-    // 构建语音样例 URL
+    // 下载语音样本并上传到我们的 R2（Fish Audio 的样本链接有时间限制）
     const voiceSampleUrl: Record<string, string> = {};
     if (model.samples && model.samples.length > 0) {
-      voiceSampleUrl['default'] = model.samples[0].audio;
+      const sampleUrl = await downloadAndUploadVoiceSample(model.samples[0].audio, model._id, 0);
+      if (sampleUrl) {
+        voiceSampleUrl['default'] = sampleUrl;
+      } else {
+        // 如果下载失败，暂时使用原始链接（会过期）
+        console.warn(`⚠️ 语音样本下载失败，使用原始链接 (${model._id})`);
+        voiceSampleUrl['default'] = model.samples[0].audio;
+      }
     }
 
     // 下载封面图并上传到我们的 R2
@@ -650,9 +713,17 @@ export async function syncFishPopularVoices(
         const normalizedLocale = targetLocale || normalizeLanguage(primaryLanguage);
         const voiceName = `${normalizedLocale}:${model._id}`;
 
+        // 下载语音样本并上传到我们的 R2（Fish Audio 的样本链接有时间限制）
         const voiceSampleUrl: Record<string, string> = {};
         if (model.samples && model.samples.length > 0) {
-          voiceSampleUrl['default'] = model.samples[0].audio;
+          const sampleUrl = await downloadAndUploadVoiceSample(model.samples[0].audio, model._id, 0);
+          if (sampleUrl) {
+            voiceSampleUrl['default'] = sampleUrl;
+          } else {
+            // 如果下载失败，暂时使用原始链接（会过期）
+            console.warn(`⚠️ 语音样本下载失败，使用原始链接 (${model._id})`);
+            voiceSampleUrl['default'] = model.samples[0].audio;
+          }
         }
 
         // 下载封面图并上传到我们的 R2

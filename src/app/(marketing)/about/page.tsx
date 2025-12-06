@@ -239,7 +239,7 @@ export default function AboutPage() {
               href="mailto:support@voicica.ai"
               className="text-purple-600 dark:text-purple-400 hover:underline font-medium"
             >
-              support@voicica.ai
+              info@voicica.ai
             </a>
           </div>
         </section>

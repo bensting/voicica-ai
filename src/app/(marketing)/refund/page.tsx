@@ -31,7 +31,7 @@ export default function RefundPolicy() {
                 href="mailto:support@voicica.ai"
                 className="text-blue-600 dark:text-blue-400 hover:underline"
               >
-                support@voicica.ai
+                info@voicica.ai
               </a>
             </p>
           </section>

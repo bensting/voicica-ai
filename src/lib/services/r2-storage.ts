@@ -281,6 +281,54 @@ export async function deleteApk(filePath: string): Promise<boolean> {
 }
 
 /**
+ * 生成图片上传的预签名 URL
+ * 用于客户端直传 R2
+ */
+export async function generateImageUploadUrl(
+  fileName: string,
+  contentType: string = 'image/jpeg',
+  folder: string = 'voice-avatars',
+  expiresIn: number = 3600 // 默认 1 小时有效期
+): Promise<{ uploadUrl: string; publicUrl: string; key: string }> {
+  const bucketName = process.env.CLOUDFLARE_R2_BUCKET_NAME;
+  const publicUrl = process.env.CLOUDFLARE_R2_PUBLIC_URL;
+
+  if (!bucketName) {
+    throw new Error('CLOUDFLARE_R2_BUCKET_NAME 未配置');
+  }
+
+  const client = getS3Client();
+  const key = `${folder}/${fileName}`;
+
+  console.log(`🔑 生成图片预签名 URL: ${key}`);
+
+  const command = new PutObjectCommand({
+    Bucket: bucketName,
+    Key: key,
+    ContentType: contentType,
+  });
+
+  const uploadUrl = await getSignedUrl(client, command, { expiresIn });
+
+  // 生成公开访问 URL
+  let filePublicUrl: string;
+  if (publicUrl) {
+    filePublicUrl = `${publicUrl.replace(/\/$/, '')}/${key}`;
+  } else {
+    const accountId = process.env.CLOUDFLARE_R2_ACCOUNT_ID;
+    filePublicUrl = `https://${bucketName}.${accountId}.r2.dev/${key}`;
+  }
+
+  console.log(`✅ 图片预签名 URL 生成成功: ${key}`);
+
+  return {
+    uploadUrl,
+    publicUrl: filePublicUrl,
+    key,
+  };
+}
+
+/**
  * 生成 APK 上传的预签名 URL
  * 用于绕过 Vercel Server Action 4.5MB 限制，实现客户端直传 R2
  */

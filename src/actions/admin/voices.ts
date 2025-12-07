@@ -10,7 +10,7 @@ import { getLocaleInfo } from '@/utils/localeMapper';
 import { synthesizeSpeech as azureSynthesize } from '@/lib/services/azure-tts';
 import { synthesizeSpeech as googleSynthesize } from '@/lib/services/google-tts';
 import { synthesizeSpeech as fishAudioSynthesize } from '@/lib/services/fish-audio-tts';
-import { uploadAudio } from '@/lib/services/r2-storage';
+import { uploadAudio, generateImageUploadUrl } from '@/lib/services/r2-storage';
 import { getSampleText } from '@/config/voiceSampleTexts';
 import { verifyAdminWithoutDb } from '@/lib/auth-admin';
 
@@ -1008,6 +1008,7 @@ export async function getAdminVoiceById(voiceId: number): Promise<{
   style_list: string[];
   tags: string[];
   sort_order: number;
+  voice_sample_url: Record<string, string>;
 } | null> {
   await verifyAdminWithoutDb();
 
@@ -1030,6 +1031,7 @@ export async function getAdminVoiceById(voiceId: number): Promise<{
     style_list: (voice.style_list as string[]) || [],
     tags: (voice.tags as string[]) || [],
     sort_order: voice.sort_order,
+    voice_sample_url: (voice.voice_sample_url as Record<string, string>) || {},
   };
 }
 
@@ -1046,6 +1048,7 @@ export async function updateVoice(
     style_list?: string[];
     tags?: string[];
     sort_order?: number;
+    avatar_url?: string;
   }
 ): Promise<{ success: boolean; message: string }> {
   await verifyAdminWithoutDb();
@@ -1061,6 +1064,7 @@ export async function updateVoice(
         ...(data.style_list !== undefined && { style_list: data.style_list }),
         ...(data.tags !== undefined && { tags: data.tags }),
         ...(data.sort_order !== undefined && { sort_order: data.sort_order }),
+        ...(data.avatar_url !== undefined && { avatar_url: data.avatar_url }),
         updated_at: new Date(),
       },
     });
@@ -1074,6 +1078,44 @@ export async function updateVoice(
     return {
       success: false,
       message: error instanceof Error ? error.message : '更新失败',
+    };
+  }
+}
+
+/**
+ * 生成语音头像上传的预签名 URL
+ * @param voiceId 语音 ID
+ * @param fileName 文件名
+ * @param contentType 文件类型
+ */
+export async function generateVoiceAvatarUploadUrl(
+  voiceId: number,
+  fileName: string,
+  contentType: string = 'image/jpeg'
+): Promise<{ success: boolean; uploadUrl?: string; publicUrl?: string; message?: string }> {
+  await verifyAdminWithoutDb();
+
+  try {
+    // 生成唯一文件名，包含 voiceId
+    const ext = fileName.split('.').pop() || 'jpg';
+    const uniqueFileName = `voice_${voiceId}_${Date.now()}.${ext}`;
+
+    const { uploadUrl, publicUrl } = await generateImageUploadUrl(
+      uniqueFileName,
+      contentType,
+      'voice-avatars'
+    );
+
+    return {
+      success: true,
+      uploadUrl,
+      publicUrl,
+    };
+  } catch (error) {
+    console.error('生成头像上传 URL 失败:', error);
+    return {
+      success: false,
+      message: error instanceof Error ? error.message : '生成上传 URL 失败',
     };
   }
 }

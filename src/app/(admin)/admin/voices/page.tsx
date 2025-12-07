@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import {
@@ -11,6 +11,7 @@ import {
   getAdminVoiceById,
   updateVoice,
   generateVoiceSampleForVoice,
+  generateVoiceAvatarUploadUrl,
 } from '@/actions/admin/voices';
 
 interface Voice {
@@ -42,6 +43,7 @@ interface EditingVoice {
   style_list: string[];
   tags: string[];
   sort_order: number;
+  voice_sample_url: Record<string, string>;
 }
 
 /**
@@ -74,6 +76,14 @@ export default function VoicesManagementPage() {
 
   // 生成样本
   const [generatingVoiceId, setGeneratingVoiceId] = useState<number | null>(null);
+
+  // 音频播放
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const [playingStyle, setPlayingStyle] = useState<string | null>(null);
+
+  // 头像上传
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
 
   // 解析风格数量筛选
   const getStyleCountParams = () => {
@@ -209,6 +219,7 @@ export default function VoicesManagementPage() {
         style_list: editingVoice.style_list,
         tags: editingVoice.tags,
         sort_order: editingVoice.sort_order,
+        avatar_url: editingVoice.avatar_url,
       });
 
       if (result.success) {
@@ -276,6 +287,92 @@ export default function VoicesManagementPage() {
       alert('生成样本失败');
     } finally {
       setGeneratingVoiceId(null);
+    }
+  };
+
+  // 播放样例语音
+  const handlePlaySample = (style: string, url: string) => {
+    // 如果正在播放同一个，则停止
+    if (playingStyle === style && audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+      setPlayingStyle(null);
+      return;
+    }
+
+    // 停止之前的播放
+    if (audioRef.current) {
+      audioRef.current.pause();
+    }
+
+    // 创建新的音频并播放
+    const audio = new Audio(url);
+    audioRef.current = audio;
+    setPlayingStyle(style);
+
+    audio.play().catch((err) => {
+      console.error('播放失败:', err);
+      setPlayingStyle(null);
+    });
+
+    audio.onended = () => {
+      setPlayingStyle(null);
+    };
+  };
+
+  // 上传头像
+  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!editingVoice || !e.target.files || e.target.files.length === 0) return;
+
+    const file = e.target.files[0];
+    if (!file.type.startsWith('image/')) {
+      alert('请选择图片文件');
+      return;
+    }
+
+    // 限制文件大小为 5MB
+    if (file.size > 5 * 1024 * 1024) {
+      alert('图片大小不能超过 5MB');
+      return;
+    }
+
+    setUploadingAvatar(true);
+    try {
+      // 获取预签名上传 URL
+      const result = await generateVoiceAvatarUploadUrl(
+        editingVoice.id,
+        file.name,
+        file.type
+      );
+
+      if (!result.success || !result.uploadUrl || !result.publicUrl) {
+        throw new Error(result.message || '获取上传 URL 失败');
+      }
+
+      // 直接上传到 R2
+      const uploadResponse = await fetch(result.uploadUrl, {
+        method: 'PUT',
+        body: file,
+        headers: {
+          'Content-Type': file.type,
+        },
+      });
+
+      if (!uploadResponse.ok) {
+        throw new Error('上传失败');
+      }
+
+      // 更新本地状态
+      updateEditingField('avatar_url', result.publicUrl);
+    } catch (error) {
+      console.error('上传头像失败:', error);
+      alert(error instanceof Error ? error.message : '上传头像失败');
+    } finally {
+      setUploadingAvatar(false);
+      // 清空 input
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
     }
   };
 
@@ -710,30 +807,89 @@ export default function VoicesManagementPage() {
 
                 {/* 模态框内容 */}
                 <div className="p-6 space-y-6">
-                  {/* 基本信息（只读） */}
+                  {/* 基本信息 + 头像上传 */}
                   <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg">
-                    {editingVoice.avatar_url ? (
-                      <Image
-                        src={editingVoice.avatar_url}
-                        alt={editingVoice.display_name}
-                        width={64}
-                        height={64}
-                        className="rounded-full"
+                    <div className="relative group">
+                      {editingVoice.avatar_url ? (
+                        <Image
+                          src={editingVoice.avatar_url}
+                          alt={editingVoice.display_name}
+                          width={64}
+                          height={64}
+                          className="rounded-full object-cover"
+                        />
+                      ) : (
+                        <div className="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center">
+                          <span className="text-gray-400">
+                            {editingVoice.gender === 'male' ? '♂' : '♀'}
+                          </span>
+                        </div>
+                      )}
+                      {/* 上传按钮覆盖层 */}
+                      <button
+                        type="button"
+                        onClick={() => fileInputRef.current?.click()}
+                        disabled={uploadingAvatar}
+                        className="absolute inset-0 bg-black/50 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+                      >
+                        {uploadingAvatar ? (
+                          <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                        ) : (
+                          <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                          </svg>
+                        )}
+                      </button>
+                      <input
+                        ref={fileInputRef}
+                        type="file"
+                        accept="image/*"
+                        onChange={handleAvatarUpload}
+                        className="hidden"
                       />
-                    ) : (
-                      <div className="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center">
-                        <span className="text-gray-400">
-                          {editingVoice.gender === 'male' ? '♂' : '♀'}
-                        </span>
-                      </div>
-                    )}
-                    <div>
+                    </div>
+                    <div className="flex-1">
                       <div className="font-medium text-gray-900">{editingVoice.name}</div>
                       <div className="text-sm text-gray-500">
                         {editingVoice.locale} · {editingVoice.gender === 'male' ? '男' : '女'}
                       </div>
                     </div>
                   </div>
+
+                  {/* 播放样例语音 */}
+                  {Object.keys(editingVoice.voice_sample_url).length > 0 && (
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        试听样例
+                      </label>
+                      <div className="flex flex-wrap gap-2">
+                        {Object.entries(editingVoice.voice_sample_url).map(([style, url]) => (
+                          <button
+                            key={style}
+                            onClick={() => handlePlaySample(style, url)}
+                            className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-lg border transition-colors ${
+                              playingStyle === style
+                                ? 'bg-purple-100 border-purple-300 text-purple-700'
+                                : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50'
+                            }`}
+                          >
+                            {playingStyle === style ? (
+                              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                                <rect x="6" y="4" width="4" height="16" rx="1" />
+                                <rect x="14" y="4" width="4" height="16" rx="1" />
+                              </svg>
+                            ) : (
+                              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M8 5v14l11-7z" />
+                              </svg>
+                            )}
+                            {style}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
 
                   {/* 显示名称 */}
                   <div>

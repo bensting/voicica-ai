@@ -7,6 +7,7 @@ import Hero from '@/components/sections/index-hero';
 import TTSSamples from '@/components/sections/tts-samples';
 import FAQ from '@/components/sections/faq';
 import CTA from '@/components/sections/CTA';
+import { AdBanner } from '@/components/ads';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 // Hero Action Buttons Configuration
@@ -61,6 +62,10 @@ export default function Home() {
 
       {/* TTS Samples Section */}
       <TTSSamples />
+
+      {/* 广告位 - TTS Samples 下方 */}
+      <AdBanner slot="HOME_AFTER_SAMPLES" variant="section" />
+
       {/* CTA Section */}
       <CTA titleKey="cta.title" />
 

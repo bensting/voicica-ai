@@ -4,10 +4,12 @@ import AdSense from './AdSense';
 
 // 预定义的广告位 Slot ID（需要在 AdSense 控制台创建后替换）
 export const AD_SLOTS = {
+  // 首页 - Hero 底部（首屏曝光最高）
+  HOME_HERO_BOTTOM: process.env.NEXT_PUBLIC_AD_SLOT_HOME_HERO || 'xxxxxxxxxx',
   // 首页 - TTS Samples 下方
   HOME_AFTER_SAMPLES: process.env.NEXT_PUBLIC_AD_SLOT_HOME_SAMPLES || 'xxxxxxxxxx',
-  // 首页 - CTA 下方
-  HOME_AFTER_CTA: process.env.NEXT_PUBLIC_AD_SLOT_HOME_CTA || 'xxxxxxxxxx',
+  // TTS 落地页 - Hero 底部
+  TTS_HERO_BOTTOM: process.env.NEXT_PUBLIC_AD_SLOT_TTS_HERO || 'xxxxxxxxxx',
   // 通用横幅
   BANNER: process.env.NEXT_PUBLIC_AD_SLOT_BANNER || 'xxxxxxxxxx',
 } as const;

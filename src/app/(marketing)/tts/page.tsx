@@ -3,9 +3,10 @@
 import { useState, useRef, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Image from 'next/image';
-import { Play, Pause, Mic, Star, Download, Sparkles, ChevronUp, Loader2 } from 'lucide-react';
+import { Play, Pause, Mic, Download, Sparkles, ChevronUp, Loader2, Globe, Check } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { GradientButton } from '@/components/ui';
+import { AdBanner } from '@/components/ads';
 import { listVoices } from '@/actions/voice';
 import { getLatestRelease, incrementDownloadCountByVersion } from '@/actions/admin/app-releases';
 import { getVoiceSampleUrl } from '@/types/voice';
@@ -40,10 +41,11 @@ const ROLE_OPTIONS = [
   { code: 'Professional', nameKey: 'ttsPromo.filters.professional', icon: '🎙️' },
 ];
 
-// Stats data
-const STATS = [
-  { icon: '🏆', value: '1M+', label: 'Downloads' },
-  { icon: '⭐', value: '100k+', label: 'Reviews', stars: 5 },
+// Stats data - will be populated with translations
+const STATS_CONFIG = [
+  { value: '3200+', labelKey: 'ttsPromo.stats.voices', highlight: true },
+  { value: '190+', labelKey: 'ttsPromo.stats.languages', highlight: true },
+  { value: '100%', labelKey: 'ttsPromo.stats.free', highlight: true, isFree: true },
 ];
 
 // Map UI locale to voice locale
@@ -351,39 +353,12 @@ export default function TTSPromoPage() {
         </div>
 
         <div className="relative z-10 max-w-6xl mx-auto">
-          {/* Stats Row */}
-          <div className="flex justify-center gap-4 md:gap-8 mb-4">
-            {STATS.map((stat, index) => (
-              <div key={index} className="flex items-center gap-1 md:gap-3">
-                {/* Laurel wreath left - hidden on mobile */}
-                <svg className="hidden md:block w-8 h-12 text-yellow-500" viewBox="0 0 24 40" fill="currentColor">
-                  <path d="M12 2C8 6 4 12 4 20s4 14 8 18c-2-4-3-10-3-18s1-14 3-18z" opacity="0.8"/>
-                  <path d="M10 4C7 8 5 14 5 20s2 12 5 16c-1.5-4-2.5-9-2.5-16s1-12 2.5-16z" opacity="0.6"/>
-                  <path d="M8 6C6 10 5 15 5 20s1 10 3 14c-1-3-1.5-8-1.5-14s.5-11 1.5-14z" opacity="0.4"/>
-                </svg>
-
-                <div className="text-center">
-                  <div className="text-lg md:text-2xl font-bold text-yellow-400">{stat.value}</div>
-                  <div className="text-xs text-gray-400 flex items-center justify-center gap-1">
-                    {stat.stars && (
-                      <div className="flex">
-                        {[...Array(stat.stars)].map((_, i) => (
-                          <Star key={i} className="w-3 h-3 fill-yellow-400 text-yellow-400" />
-                        ))}
-                      </div>
-                    )}
-                    <span>{stat.label}</span>
-                  </div>
-                </div>
-
-                {/* Laurel wreath right - hidden on mobile */}
-                <svg className="hidden md:block w-8 h-12 text-yellow-500 transform scale-x-[-1]" viewBox="0 0 24 40" fill="currentColor">
-                  <path d="M12 2C8 6 4 12 4 20s4 14 8 18c-2-4-3-10-3-18s1-14 3-18z" opacity="0.8"/>
-                  <path d="M10 4C7 8 5 14 5 20s2 12 5 16c-1.5-4-2.5-9-2.5-16s1-12 2.5-16z" opacity="0.6"/>
-                  <path d="M8 6C6 10 5 15 5 20s1 10 3 14c-1-3-1.5-8-1.5-14s.5-11 1.5-14z" opacity="0.4"/>
-                </svg>
-              </div>
-            ))}
+          {/* Free Badge */}
+          <div className="flex justify-center mb-4">
+            <div className="inline-flex items-center gap-2 bg-green-500/20 border border-green-500/30 rounded-full px-4 py-1.5">
+              <Check className="w-4 h-4 text-green-400" />
+              <span className="text-green-400 text-sm font-medium">{t('ttsPromo.hero.badge')}</span>
+            </div>
           </div>
 
           {/* Main Headline */}
@@ -391,18 +366,32 @@ export default function TTSPromoPage() {
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-3 leading-tight">
               {t('ttsPromo.hero.title1')}{' '}
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">
-                {t('ttsPromo.hero.titleCelebrities')}
+                {t('ttsPromo.hero.titleHighlight1')}
               </span>
-              {t('ttsPromo.hero.title2')}<br />
-              {t('ttsPromo.hero.title3')}{' '}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-purple-400">
-                {t('ttsPromo.hero.titlePoliticians')}
-              </span>
+              <br />
+              {t('ttsPromo.hero.title2')}
             </h1>
-            <p className="text-gray-300 text-lg md:text-xl max-w-2xl mx-auto leading-relaxed">
-              {t('ttsPromo.hero.description')}{' '}
-              <span className="text-purple-400 font-semibold">{t('ttsPromo.hero.brandName')}</span>
+
+            {/* Subtitle with stats */}
+            <p className="text-xl md:text-2xl font-semibold text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-400 mb-3">
+              {t('ttsPromo.hero.subtitle')}
             </p>
+
+            <p className="text-gray-300 text-lg md:text-xl max-w-2xl mx-auto leading-relaxed">
+              {t('ttsPromo.hero.description')}
+            </p>
+          </div>
+
+          {/* Stats Row */}
+          <div className="flex justify-center gap-6 md:gap-10 mb-6">
+            {STATS_CONFIG.map((stat, index) => (
+              <div key={index} className="text-center">
+                <div className={`text-2xl md:text-3xl font-bold ${stat.isFree ? 'text-green-400' : 'text-purple-400'}`}>
+                  {stat.value}
+                </div>
+                <div className="text-xs md:text-sm text-gray-400">{t(stat.labelKey)}</div>
+              </div>
+            ))}
           </div>
 
           {/* Download & Try Buttons */}
@@ -457,6 +446,9 @@ export default function TTSPromoPage() {
           </div>
         </div>
       </section>
+
+      {/* 广告位 - Hero 底部 */}
+      <AdBanner slot="TTS_HERO_BOTTOM" variant="section" className="bg-[#0a0a0f]" />
 
       {/* ========== Voice Samples Section ========== */}
       <section className="pt-4 pb-4 px-4">
@@ -697,21 +689,25 @@ export default function TTSPromoPage() {
       </section>
 
       {/* ========== CTA Section ========== */}
-      <section className="py-6 px-4 bg-gradient-to-t from-purple-900/30 to-transparent">
+      <section className="py-8 px-4 bg-gradient-to-t from-purple-900/30 to-transparent">
         <div className="max-w-4xl mx-auto text-center">
-          {/* Features */}
-          <div className="inline-flex flex-col gap-2 mb-4">
-            <div className="flex items-center gap-3 text-gray-300">
-              <Sparkles className="w-5 h-5 text-purple-400 flex-shrink-0" />
-              <span className="text-left">{t('ttsPromo.cta.aiVoiceCloning')}</span>
+          {/* Features - 2x2 grid on mobile, inline on desktop */}
+          <div className="grid grid-cols-2 md:flex md:justify-center gap-3 md:gap-6 mb-6">
+            <div className="flex items-center gap-2 text-gray-300 text-sm">
+              <Globe className="w-4 h-4 text-purple-400 flex-shrink-0" />
+              <span>{t('ttsPromo.cta.feature1')}</span>
             </div>
-            <div className="flex items-center gap-3 text-gray-300">
-              <Download className="w-5 h-5 text-purple-400 flex-shrink-0" />
-              <span className="text-left">{t('ttsPromo.cta.exportAudio')}</span>
+            <div className="flex items-center gap-2 text-gray-300 text-sm">
+              <Download className="w-4 h-4 text-purple-400 flex-shrink-0" />
+              <span>{t('ttsPromo.cta.feature2')}</span>
             </div>
-            <div className="flex items-center gap-3 text-gray-300">
-              <Mic className="w-5 h-5 text-purple-400 flex-shrink-0" />
-              <span className="text-left">{t('ttsPromo.cta.voiceModels')}</span>
+            <div className="flex items-center gap-2 text-gray-300 text-sm">
+              <Mic className="w-4 h-4 text-purple-400 flex-shrink-0" />
+              <span>{t('ttsPromo.cta.feature3')}</span>
+            </div>
+            <div className="flex items-center gap-2 text-gray-300 text-sm">
+              <Check className="w-4 h-4 text-green-400 flex-shrink-0" />
+              <span className="text-green-400 font-medium">{t('ttsPromo.cta.feature4')}</span>
             </div>
           </div>
 
@@ -722,13 +718,13 @@ export default function TTSPromoPage() {
               className="min-w-[280px] py-5 text-lg"
               onClick={handleGetStarted}
             >
-              <Mic className="w-6 h-6 mr-2" />
+              <Sparkles className="w-6 h-6 mr-2" />
               {t('ttsPromo.cta.startCreating')}
             </GradientButton>
           </div>
 
           <p className="mt-4 text-gray-500 text-sm">
-            {t('ttsPromo.cta.noCreditCard')} • {t('ttsPromo.cta.freeTier')}
+            {t('ttsPromo.cta.noCreditCard')} • {t('ttsPromo.cta.noSignup')}
           </p>
         </div>
       </section>

@@ -41,6 +41,11 @@
       "startCreating": "Start Creating - It's Free",
       "noCreditCard": "No credit card",
       "noSignup": "No sign-up required"
+    },
+    "explore": {
+      "title": "Explore AI Voices in Multiple Languages",
+      "subtitle": "Our text-to-speech service supports 190+ languages. Select your preferred language and start creating content with high-quality AI voices.",
+      "exploreMore": "Explore More"
     }
   }
 }

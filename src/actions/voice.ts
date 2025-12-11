@@ -142,6 +142,26 @@ const getCachedCelebrityVoices = unstable_cache(
   { revalidate: CACHE_REVALIDATE }
 );
 
+// 缓存：TTS 落地页语音列表（按 locale + role 缓存）
+const getCachedPromoVoices = unstable_cache(
+  async (locale: string, role: string, pageSize: number) => {
+    const where = {
+      is_active: true,
+      locale,
+      role,
+    };
+
+    const voices = await prisma.voices.findMany({
+      where,
+      orderBy: [{ sort_order: 'desc' }],
+      take: pageSize,
+    });
+    return voices;
+  },
+  ['voices-promo'],
+  { revalidate: CACHE_REVALIDATE }
+);
+
 // ==================== Server Actions ====================
 
 /**
@@ -345,6 +365,20 @@ export async function getUsedVoiceNames(): Promise<string[]> {
     return records.map(r => r.voice_name);
   } catch {
     // 未登录或查询失败返回空数组
+    return [];
+  }
+}
+
+/**
+ * 获取 TTS 落地页语音列表（使用缓存）
+ * 专为落地页优化，按 locale + role 缓存
+ */
+export async function getPromoVoices(locale: string, role: string, pageSize: number = 22): Promise<Voice[]> {
+  try {
+    const voices = await getCachedPromoVoices(locale, role, pageSize);
+    return voices.map(toVoice);
+  } catch (error) {
+    console.error('[getPromoVoices] 数据库查询失败:', error);
     return [];
   }
 }

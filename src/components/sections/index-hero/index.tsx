@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useMemo } from 'react';
 import { Volume2, VolumeX } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { GradientButton } from '@/components/ui';
@@ -24,6 +24,50 @@ interface HeroProps {
   variant?: 'default' | 'tts';
 }
 
+// 预生成的声波数据（避免 hydration mismatch）
+const SOUND_WAVE_DATA = [
+  { height: 65, duration: 0.72 },
+  { height: 45, duration: 0.85 },
+  { height: 80, duration: 0.58 },
+  { height: 35, duration: 0.92 },
+  { height: 90, duration: 0.65 },
+  { height: 55, duration: 0.78 },
+  { height: 70, duration: 0.55 },
+  { height: 40, duration: 0.88 },
+  { height: 85, duration: 0.62 },
+  { height: 50, duration: 0.95 },
+  { height: 75, duration: 0.68 },
+  { height: 60, duration: 0.82 },
+  { height: 95, duration: 0.52 },
+  { height: 30, duration: 0.98 },
+  { height: 88, duration: 0.58 },
+  { height: 42, duration: 0.75 },
+  { height: 78, duration: 0.62 },
+  { height: 58, duration: 0.88 },
+  { height: 92, duration: 0.55 },
+  { height: 48, duration: 0.92 },
+  { height: 82, duration: 0.65 },
+  { height: 38, duration: 0.85 },
+  { height: 72, duration: 0.72 },
+  { height: 52, duration: 0.78 },
+  { height: 98, duration: 0.58 },
+  { height: 28, duration: 0.95 },
+  { height: 68, duration: 0.68 },
+  { height: 46, duration: 0.82 },
+  { height: 86, duration: 0.55 },
+  { height: 56, duration: 0.92 },
+  { height: 76, duration: 0.62 },
+  { height: 62, duration: 0.75 },
+  { height: 94, duration: 0.58 },
+  { height: 34, duration: 0.88 },
+  { height: 84, duration: 0.65 },
+  { height: 44, duration: 0.82 },
+  { height: 74, duration: 0.72 },
+  { height: 54, duration: 0.95 },
+  { height: 96, duration: 0.55 },
+  { height: 36, duration: 0.85 },
+];
+
 /**
  * 声波动画组件
  */
@@ -31,13 +75,13 @@ function SoundWaveAnimation() {
   return (
     <div className="absolute inset-0 flex items-center justify-center opacity-20 pointer-events-none">
       <div className="flex items-end gap-1 h-64">
-        {[...Array(40)].map((_, i) => (
+        {SOUND_WAVE_DATA.map((wave, i) => (
           <div
             key={i}
             className="w-1 md:w-1.5 bg-gradient-to-t from-purple-500 to-pink-500 rounded-full"
             style={{
-              height: `${Math.random() * 100 + 20}%`,
-              animation: `soundWave ${0.5 + Math.random() * 0.5}s ease-in-out infinite alternate`,
+              height: `${wave.height}%`,
+              animation: `soundWave ${wave.duration}s ease-in-out infinite alternate`,
               animationDelay: `${i * 0.05}s`,
             }}
           />

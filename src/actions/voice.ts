@@ -2,8 +2,11 @@
 
 /**
  * 语音模块 Server Actions
+ *
+ * 使用 unstable_cache 缓存语音列表，减少数据库查询
  */
 import prisma from '@/lib/prisma';
+import { unstable_cache } from 'next/cache';
 import { getUserOrAnonymous } from '@/lib/auth-firebase';
 import type { Voice, VoiceListResponse, VoiceFilters } from '@/types/voice';
 // 从 Prisma Client 获取 voices 类型
@@ -34,10 +37,108 @@ function toVoice(model: NonNullable<voices>): Voice {
   };
 }
 
+// ==================== 缓存配置 ====================
+// 缓存时间：1小时（语音数据变化不频繁）
+const CACHE_REVALIDATE = 3600;
+
+// 缓存：国家列表
+const getCachedDistinctCountries = unstable_cache(
+  async () => {
+    const voices = await prisma.voices.findMany({
+      where: { is_active: true },
+      select: { country: true },
+      distinct: ['country'],
+    });
+    return voices.map(v => v.country).sort();
+  },
+  ['voices-distinct-countries'],
+  { revalidate: CACHE_REVALIDATE }
+);
+
+// 缓存：角色列表
+const getCachedDistinctRoles = unstable_cache(
+  async () => {
+    const voices = await prisma.voices.findMany({
+      where: { is_active: true },
+      select: { role: true },
+      distinct: ['role'],
+    });
+    return voices.map(v => v.role).sort();
+  },
+  ['voices-distinct-roles'],
+  { revalidate: CACHE_REVALIDATE }
+);
+
+// 缓存：语言列表
+const getCachedDistinctLocales = unstable_cache(
+  async () => {
+    const voices = await prisma.voices.findMany({
+      where: { is_active: true },
+      select: { locale: true },
+      distinct: ['locale'],
+    });
+    return voices.map(v => v.locale).sort();
+  },
+  ['voices-distinct-locales'],
+  { revalidate: CACHE_REVALIDATE }
+);
+
+// 缓存：celebrity 语言列表
+const getCachedCelebrityLocales = unstable_cache(
+  async () => {
+    const voices = await prisma.voices.findMany({
+      where: { is_active: true, role: 'celebrity' },
+      select: { locale: true },
+      distinct: ['locale'],
+    });
+    return voices.map(v => v.locale).sort();
+  },
+  ['voices-celebrity-locales'],
+  { revalidate: CACHE_REVALIDATE }
+);
+
+// 缓存：按 locale 查询语音列表（最常用的查询）
+const getCachedVoicesByLocale = unstable_cache(
+  async (locale: string, page: number, pageSize: number) => {
+    const where = { is_active: true, locale };
+    const [total, voices] = await Promise.all([
+      prisma.voices.count({ where }),
+      prisma.voices.findMany({
+        where,
+        orderBy: [{ provider: 'desc' }, { sort_order: 'asc' }, { created_at: 'desc' }],
+        skip: (page - 1) * pageSize,
+        take: pageSize,
+      }),
+    ]);
+    return { voices, total };
+  },
+  ['voices-by-locale'],
+  { revalidate: CACHE_REVALIDATE }
+);
+
+// 缓存：celebrity 语音列表
+const getCachedCelebrityVoices = unstable_cache(
+  async (locale?: string) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const where: Record<string, any> = { is_active: true, role: 'celebrity' };
+    if (locale) where.locale = locale;
+
+    const voices = await prisma.voices.findMany({
+      where,
+      orderBy: [{ sort_order: 'desc' }],
+      take: 20,
+    });
+    return voices;
+  },
+  ['voices-celebrity'],
+  { revalidate: CACHE_REVALIDATE }
+);
+
 // ==================== Server Actions ====================
 
 /**
  * 获取语音列表（支持过滤和分页）
+ * 简单 locale 过滤使用缓存，复杂过滤走数据库
  */
 export async function listVoices(filters: VoiceFilters = {}): Promise<VoiceListResponse> {
   try {
@@ -54,7 +155,23 @@ export async function listVoices(filters: VoiceFilters = {}): Promise<VoiceListR
       page_size = 20,
     } = filters;
 
-    // 构建查询条件
+    // 简单 locale 过滤且无其他条件时，使用缓存
+    const isSimpleLocaleQuery = locale && is_active === true &&
+      !provider && !country && !role && !gender && !language && !tag;
+
+    if (isSimpleLocaleQuery) {
+      const { voices, total } = await getCachedVoicesByLocale(locale, page, page_size);
+      const total_pages = Math.ceil(total / page_size);
+      return {
+        voices: voices.map(toVoice),
+        total,
+        page,
+        page_size,
+        total_pages,
+      };
+    }
+
+    // 复杂查询走数据库
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const where: Record<string, any> = {
       is_active,
@@ -133,42 +250,24 @@ export async function getVoiceByName(name: string): Promise<Voice | null> {
 }
 
 /**
- * 获取可用的国家列表
+ * 获取可用的国家列表（使用缓存）
  */
 export async function getDistinctCountries(): Promise<string[]> {
-  const voices = await prisma.voices.findMany({
-    where: { is_active: true },
-    select: { country: true },
-    distinct: ['country'],
-  });
-
-  return voices.map(v => v.country).sort();
+  return getCachedDistinctCountries();
 }
 
 /**
- * 获取可用的角色列表
+ * 获取可用的角色列表（使用缓存）
  */
 export async function getDistinctRoles(): Promise<string[]> {
-  const voices = await prisma.voices.findMany({
-    where: { is_active: true },
-    select: { role: true },
-    distinct: ['role'],
-  });
-
-  return voices.map(v => v.role).sort();
+  return getCachedDistinctRoles();
 }
 
 /**
- * 获取可用的语言区域列表
+ * 获取可用的语言区域列表（使用缓存）
  */
 export async function getDistinctLocales(): Promise<string[]> {
-  const voices = await prisma.voices.findMany({
-    where: { is_active: true },
-    select: { locale: true },
-    distinct: ['locale'],
-  });
-
-  return voices.map(v => v.locale).sort();
+  return getCachedDistinctLocales();
 }
 
 /**
@@ -191,27 +290,12 @@ export async function searchVoicesByTags(
 }
 
 /**
- * 获取 celebrity 语音列表（用于推广页面展示）
+ * 获取 celebrity 语音列表（使用缓存）
  * 按 sort_order 从大到小排列
  */
 export async function getCelebrityVoices(locale?: string): Promise<Voice[]> {
   try {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const where: Record<string, any> = {
-      is_active: true,
-      role: 'celebrity',
-    };
-
-    if (locale) {
-      where.locale = locale;
-    }
-
-    const voices = await prisma.voices.findMany({
-      where,
-      orderBy: [{ sort_order: 'desc' }],
-      take: 20, // 限制返回数量
-    });
-
+    const voices = await getCachedCelebrityVoices(locale);
     return voices.map(toVoice);
   } catch (error) {
     console.error('[getCelebrityVoices] 数据库查询失败:', error);
@@ -220,20 +304,11 @@ export async function getCelebrityVoices(locale?: string): Promise<Voice[]> {
 }
 
 /**
- * 获取 celebrity 语音可用的语言列表
+ * 获取 celebrity 语音可用的语言列表（使用缓存）
  */
 export async function getCelebrityLocales(): Promise<string[]> {
   try {
-    const voices = await prisma.voices.findMany({
-      where: {
-        is_active: true,
-        role: 'celebrity',
-      },
-      select: { locale: true },
-      distinct: ['locale'],
-    });
-
-    return voices.map(v => v.locale).sort();
+    return getCachedCelebrityLocales();
   } catch (error) {
     console.error('[getCelebrityLocales] 数据库查询失败:', error);
     return [];

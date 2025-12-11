@@ -382,3 +382,19 @@ export async function getPromoVoices(locale: string, role: string, pageSize: num
     return [];
   }
 }
+
+/**
+ * 获取首页 TTS 演示用的语音列表（使用缓存）
+ * 复用 getCachedVoicesByLocale 缓存，固定获取前 20 条，调用方按需截取
+ */
+export async function getSampleVoices(locale: string, limit: number = 3): Promise<Voice[]> {
+  try {
+    // 固定使用 page=1, pageSize=20 以复用缓存
+    const { voices } = await getCachedVoicesByLocale(locale, 1, 20);
+    // 截取需要的数量
+    return voices.slice(0, limit).map(toVoice);
+  } catch (error) {
+    console.error('[getSampleVoices] 数据库查询失败:', error);
+    return [];
+  }
+}

@@ -48,7 +48,9 @@ export default function AdSense({
 
     try {
       // 推送广告请求
-      ((window as any).adsbygoogle = (window as any).adsbygoogle || []).push({});
+      const w = window as Window & { adsbygoogle?: unknown[] };
+      w.adsbygoogle = w.adsbygoogle || [];
+      w.adsbygoogle.push({});
       isAdLoaded.current = true;
     } catch (error) {
       console.error('AdSense error:', error);

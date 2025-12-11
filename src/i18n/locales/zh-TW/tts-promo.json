@@ -41,6 +41,11 @@
       "startCreating": "免費開始創作",
       "noCreditCard": "無需信用卡",
       "noSignup": "無需註冊帳號"
+    },
+    "explore": {
+      "title": "探索多語言 AI 語音",
+      "subtitle": "我們的文字轉語音服務支援 190+ 種語言。選擇您需要的語言，開始使用高品質 AI 語音創建內容。",
+      "exploreMore": "探索更多"
     }
   }
 }

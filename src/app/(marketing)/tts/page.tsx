@@ -7,6 +7,7 @@ import { Play, Pause, Mic, Download, Sparkles, ChevronUp, Loader2, Globe, Check 
 import { useLanguage } from '@/contexts/LanguageContext';
 import { GradientButton } from '@/components/ui';
 import { AdBanner } from '@/components/ads';
+import { LanguageExploreGrid, type LanguageCardItem } from '@/components/features/tts-promo';
 import { listVoices } from '@/actions/voice';
 import { getLatestRelease, incrementDownloadCountByVersion } from '@/actions/admin/app-releases';
 import { getVoiceSampleUrl } from '@/types/voice';
@@ -46,6 +47,13 @@ const STATS_CONFIG = [
   { value: '3200+', labelKey: 'ttsPromo.stats.voices', highlight: true },
   { value: '190+', labelKey: 'ttsPromo.stats.languages', highlight: true },
   { value: '100%', labelKey: 'ttsPromo.stats.free', highlight: true, isFree: true },
+];
+
+// Language explore grid - links to language-specific landing pages
+const EXPLORE_LANGUAGES: LanguageCardItem[] = [
+  { code: 'en-US', name: 'English', flag: '🇺🇸', href: '/tts/english' },
+  { code: 'th-TH', name: 'ภาษาไทย', flag: '🇹🇭', href: '/tts/thai' },
+  { code: 'id-ID', name: 'Bahasa Indonesia', flag: '🇮🇩', href: '/tts/indonesian' },
 ];
 
 // Map UI locale to voice locale
@@ -728,6 +736,15 @@ export default function TTSPromoPage() {
           </p>
         </div>
       </section>
+
+      {/* ========== Language Explore Section ========== */}
+      <LanguageExploreGrid
+        title={t('ttsPromo.explore.title') || 'Explore AI Voices in Multiple Languages'}
+        subtitle={t('ttsPromo.explore.subtitle') || 'Our text-to-speech service supports 190+ languages. Select your preferred language and start creating content with high-quality AI voices.'}
+        languages={EXPLORE_LANGUAGES}
+        exploreMoreText={t('ttsPromo.explore.exploreMore') || 'Explore More'}
+        exploreMoreHref="/studio/tts"
+      />
     </div>
   );
 }

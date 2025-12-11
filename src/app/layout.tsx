@@ -32,7 +32,57 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  // 基础 SEO
+  title: {
+    default: "Voicica AI - Free AI Text to Speech Online | 3000+ Voices",
+    template: "%s | Voicica AI",
+  },
+  description: "Free AI text to speech generator with 3000+ natural voices in 40+ languages. Create professional voiceovers instantly. No signup required. 100% free.",
+  keywords: ["text to speech", "AI voice generator", "free TTS", "voiceover", "text to voice", "AI voiceover", "speech synthesis"],
+  authors: [{ name: "Voicica AI" }],
+  creator: "Voicica AI",
+  publisher: "Voicica AI",
 
+  // Open Graph (社交分享)
+  openGraph: {
+    type: "website",
+    locale: "en_US",
+    url: "https://voicica.ai",
+    siteName: "Voicica AI",
+    title: "Voicica AI - Free AI Text to Speech Online",
+    description: "Free AI voiceover generator with 3000+ voices. Just type and generate natural voiceovers instantly.",
+    images: [
+      {
+        url: "https://voicica.ai/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "Voicica AI - Free Text to Speech",
+      },
+    ],
+  },
+
+  // Twitter Card
+  twitter: {
+    card: "summary_large_image",
+    title: "Voicica AI - Free AI Text to Speech Online",
+    description: "Free AI voiceover generator with 3000+ voices in 40+ languages.",
+    images: ["https://voicica.ai/og-image.png"],
+  },
+
+  // 搜索引擎指令
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
+
+  // 其他
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
@@ -49,6 +99,16 @@ export const metadata: Metadata = {
   // Google AdSense 验证
   other: {
     "google-adsense-account": process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID || "",
+  },
+  // 备用语言链接（帮助 Google 理解多语言网站）
+  alternates: {
+    canonical: "https://voicica.ai",
+    languages: {
+      "en-US": "https://voicica.ai",
+      "zh-CN": "https://voicica.ai",
+      "zh-TW": "https://voicica.ai",
+      "th-TH": "https://voicica.ai",
+    },
   },
 };
 

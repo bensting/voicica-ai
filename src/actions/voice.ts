@@ -15,7 +15,15 @@ type voices = Awaited<ReturnType<typeof prisma.voices.findFirst>>;
 // ==================== 数据转换 ====================
 
 // 将数据库模型转换为返回类型
+// 注意：从缓存返回的数据，Date 已被序列化为字符串
 function toVoice(model: NonNullable<voices>): Voice {
+  // 处理 Date 或已序列化的字符串
+  const formatDate = (date: Date | string | null | undefined): string | undefined => {
+    if (!date) return undefined;
+    if (typeof date === 'string') return date;
+    return date.toISOString();
+  };
+
   return {
     id: String(model.id),
     name: model.name,
@@ -32,8 +40,8 @@ function toVoice(model: NonNullable<voices>): Voice {
     style_list: model.style_list as string[],
     is_active: model.is_active,
     sort_order: model.sort_order,
-    created_at: model.created_at?.toISOString(),
-    updated_at: model.updated_at?.toISOString(),
+    created_at: formatDate(model.created_at),
+    updated_at: formatDate(model.updated_at),
   };
 }
 

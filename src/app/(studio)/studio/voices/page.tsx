@@ -142,6 +142,7 @@ export default function VoicesPage() {
         selectedLocale={selectedLanguage}
         availableLocales={availableLanguages}
         onSelect={handleLanguageSelect}
+        showAllOption={false}
       />
 
       {/* ========== Voice Grid ========== */}

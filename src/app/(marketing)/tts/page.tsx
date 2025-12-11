@@ -8,7 +8,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { GradientButton } from '@/components/ui';
 import { AdBanner } from '@/components/ads';
 import { LanguageExploreGrid, type LanguageCardItem } from '@/components/features/tts-promo';
-import { listVoices } from '@/actions/voice';
+import { getPromoVoices } from '@/actions/voice';
 import { getLatestRelease, incrementDownloadCountByVersion } from '@/actions/admin/app-releases';
 import { getVoiceSampleUrl } from '@/types/voice';
 import type { Voice } from '@/types/voice';
@@ -207,51 +207,29 @@ export default function TTSPromoPage() {
     setSelectedLanguage('en-US');
   }, [searchParams, uiLocale, setLocale]);
 
-  // Load voices from database
+  // Load voices from database (using cached getPromoVoices)
   useEffect(() => {
     if (!selectedLanguage) return; // Wait for language to be initialized
+
+    const locale = selectedLanguage; // Capture for TypeScript narrowing
 
     async function loadVoices() {
       setLoading(true);
       try {
         if (selectedRole === 'All') {
           // For "All" mode: fetch Celebrity first, then Professional
-          const [celebrityResponse, professionalResponse] = await Promise.all([
-            listVoices({
-              locale: selectedLanguage ?? undefined,
-              role: 'Celebrity',
-              is_active: true,
-              page: 1,
-              page_size: 22,
-            }),
-            listVoices({
-              locale: selectedLanguage ?? undefined,
-              role: 'Professional',
-              is_active: true,
-              page: 1,
-              page_size: 22,
-            }),
+          const [celebrityVoices, professionalVoices] = await Promise.all([
+            getPromoVoices(locale, 'Celebrity', 20),
+            getPromoVoices(locale, 'Professional', 20),
           ]);
 
-          // Sort each by sort_order descending
-          const sortedCelebrity = celebrityResponse.voices.sort((a, b) => b.sort_order - a.sort_order);
-          const sortedProfessional = professionalResponse.voices.sort((a, b) => b.sort_order - a.sort_order);
-
-          // Combine: Celebrity first, then Professional, take 22 total
-          const combinedVoices = [...sortedCelebrity, ...sortedProfessional].slice(0, 22);
+          // Combine: Celebrity first, then Professional, take 20 total
+          const combinedVoices = [...celebrityVoices, ...professionalVoices].slice(0, 20);
           setVoices(combinedVoices);
         } else {
           // For specific role filter
-          const response = await listVoices({
-            locale: selectedLanguage ?? undefined,
-            role: selectedRole,
-            is_active: true,
-            page: 1,
-            page_size: 22,
-          });
-          // Sort by sort_order descending
-          const sortedVoices = response.voices.sort((a, b) => b.sort_order - a.sort_order);
-          setVoices(sortedVoices);
+          const voices = await getPromoVoices(locale, selectedRole, 20);
+          setVoices(voices);
         }
       } catch (error) {
         console.error('Failed to load voices:', error);
@@ -533,14 +511,14 @@ export default function TTSPromoPage() {
             <>
               {/* Mobile: 4 columns */}
               <div className="grid grid-cols-4 gap-3 md:hidden">
-                {[...Array(22)].map((_, i) => (
+                {[...Array(20)].map((_, i) => (
                   <div key={i} className="aspect-square rounded-full bg-gray-800 animate-pulse" />
                 ))}
               </div>
-              {/* Desktop: 12 + 10 layout */}
+              {/* Desktop: 10 + 10 layout */}
               <div className="hidden md:block">
                 <div className="flex justify-center gap-4 mb-4">
-                  {[...Array(12)].map((_, i) => (
+                  {[...Array(10)].map((_, i) => (
                     <div key={i} className="w-16 h-16 lg:w-20 lg:h-20 flex-shrink-0 rounded-full bg-gray-800 animate-pulse" />
                   ))}
                 </div>
@@ -594,11 +572,11 @@ export default function TTSPromoPage() {
                 ))}
               </div>
 
-              {/* Desktop: First row 12, second row 10 */}
+              {/* Desktop: First row 10, second row 10 */}
               <div className="hidden md:block">
-                {/* First row: 12 voices */}
+                {/* First row: 10 voices */}
                 <div className="flex justify-center gap-4 mb-6">
-                  {voices.slice(0, 12).map((voice) => (
+                  {voices.slice(0, 10).map((voice) => (
                     <div key={voice.id} className="flex flex-col items-center gap-2 flex-shrink-0">
                       <button
                         onClick={() => handlePlayVoice(voice)}
@@ -638,7 +616,7 @@ export default function TTSPromoPage() {
                 </div>
                 {/* Second row: 10 voices */}
                 <div className="flex justify-center gap-4">
-                  {voices.slice(12, 22).map((voice) => (
+                  {voices.slice(10, 20).map((voice) => (
                     <div key={voice.id} className="flex flex-col items-center gap-2 flex-shrink-0">
                       <button
                         onClick={() => handlePlayVoice(voice)}

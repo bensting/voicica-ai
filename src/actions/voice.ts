@@ -105,20 +105,17 @@ const getCachedCelebrityLocales = unstable_cache(
   { revalidate: CACHE_REVALIDATE }
 );
 
-// 缓存：按 locale 查询语音列表（最常用的查询）
+// 缓存：按 locale 缓存全部语音（核心缓存策略）
+// 每个 locale 的语音数量有限（通常 < 500），一次性缓存全部
+// 客户端按需过滤（gender/role）和分页
 const getCachedVoicesByLocale = unstable_cache(
-  async (locale: string, page: number, pageSize: number) => {
+  async (locale: string) => {
     const where = { is_active: true, locale };
-    const [total, voices] = await Promise.all([
-      prisma.voices.count({ where }),
-      prisma.voices.findMany({
-        where,
-        orderBy: [{ provider: 'desc' }, { sort_order: 'asc' }, { created_at: 'desc' }],
-        skip: (page - 1) * pageSize,
-        take: pageSize,
-      }),
-    ]);
-    return { voices, total };
+    const voices = await prisma.voices.findMany({
+      where,
+      orderBy: [{ sort_order: 'desc' }, { provider: 'desc' }, { created_at: 'desc' }],
+    });
+    return voices;
   },
   ['voices-by-locale'],
   { revalidate: CACHE_REVALIDATE }
@@ -166,7 +163,7 @@ const getCachedPromoVoices = unstable_cache(
 
 /**
  * 获取语音列表（支持过滤和分页）
- * 简单 locale 过滤使用缓存，复杂过滤走数据库
+ * 优先使用 locale 缓存，在缓存数据上做客户端过滤和分页
  */
 export async function listVoices(filters: VoiceFilters = {}): Promise<VoiceListResponse> {
   try {
@@ -183,15 +180,39 @@ export async function listVoices(filters: VoiceFilters = {}): Promise<VoiceListR
       page_size = 20,
     } = filters;
 
-    // 简单 locale 过滤且无其他条件时，使用缓存
-    const isSimpleLocaleQuery = locale && is_active === true &&
-      !provider && !country && !role && !gender && !language && !tag;
+    // 有 locale 时，使用缓存 + 客户端过滤
+    if (locale && is_active === true) {
+      const allVoices = await getCachedVoicesByLocale(locale);
 
-    if (isSimpleLocaleQuery) {
-      const { voices, total } = await getCachedVoicesByLocale(locale, page, page_size);
+      // 客户端过滤
+      let filteredVoices = allVoices;
+
+      if (provider) {
+        filteredVoices = filteredVoices.filter(v => v.provider === provider);
+      }
+      if (country) {
+        filteredVoices = filteredVoices.filter(v => v.country === country);
+      }
+      if (role) {
+        filteredVoices = filteredVoices.filter(v => v.role === role);
+      }
+      if (gender) {
+        filteredVoices = filteredVoices.filter(v => v.gender === gender);
+      }
+      if (tag) {
+        filteredVoices = filteredVoices.filter(v =>
+          v.tags && Array.isArray(v.tags) && v.tags.includes(tag)
+        );
+      }
+
+      // 客户端分页
+      const total = filteredVoices.length;
       const total_pages = Math.ceil(total / page_size);
+      const start = (page - 1) * page_size;
+      const paginatedVoices = filteredVoices.slice(start, start + page_size);
+
       return {
-        voices: voices.map(toVoice),
+        voices: paginatedVoices.map(toVoice),
         total,
         page,
         page_size,
@@ -199,7 +220,7 @@ export async function listVoices(filters: VoiceFilters = {}): Promise<VoiceListR
       };
     }
 
-    // 复杂查询走数据库
+    // 无 locale 或需要复杂查询时走数据库
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const where: Record<string, any> = {
       is_active,
@@ -227,10 +248,9 @@ export async function listVoices(filters: VoiceFilters = {}): Promise<VoiceListR
     const total = await prisma.voices.count({ where });
 
     // 分页查询
-    // provider 排序：microsoft 在前，google 在后（按字母顺序 asc: google < microsoft）
     const voices = await prisma.voices.findMany({
       where,
-      orderBy: [{ provider: 'desc' }, { sort_order: 'asc' }, { created_at: 'desc' }],
+      orderBy: [{ sort_order: 'desc' }, { provider: 'desc' }, { created_at: 'desc' }],
       skip: (page - 1) * page_size,
       take: page_size,
     });
@@ -379,6 +399,35 @@ export async function getPromoVoices(locale: string, role: string, pageSize: num
     return voices.map(toVoice);
   } catch (error) {
     console.error('[getPromoVoices] 数据库查询失败:', error);
+    return [];
+  }
+}
+
+/**
+ * 获取首页 TTS 演示用的语音列表（使用缓存）
+ * 复用 getCachedVoicesByLocale 缓存，从中截取需要的数量
+ */
+export async function getSampleVoices(locale: string, limit: number = 3): Promise<Voice[]> {
+  try {
+    const voices = await getCachedVoicesByLocale(locale);
+    // 截取需要的数量
+    return voices.slice(0, limit).map(toVoice);
+  } catch (error) {
+    console.error('[getSampleVoices] 数据库查询失败:', error);
+    return [];
+  }
+}
+
+/**
+ * 获取指定 locale 的全部语音（使用缓存）
+ * 用于 /studio/voices 页面，客户端做过滤和分页
+ */
+export async function getVoicesByLocale(locale: string): Promise<Voice[]> {
+  try {
+    const voices = await getCachedVoicesByLocale(locale);
+    return voices.map(toVoice);
+  } catch (error) {
+    console.error('[getVoicesByLocale] 数据库查询失败:', error);
     return [];
   }
 }

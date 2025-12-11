@@ -149,13 +149,13 @@ export default function EnglishTTSPage() {
       try {
         if (selectedRole === 'All') {
           const [celebrityVoices, professionalVoices] = await Promise.all([
-            getPromoVoices(selectedLanguage, 'Celebrity', 22),
-            getPromoVoices(selectedLanguage, 'Professional', 22),
+            getPromoVoices(selectedLanguage, 'Celebrity', 20),
+            getPromoVoices(selectedLanguage, 'Professional', 20),
           ]);
-          const combinedVoices = [...celebrityVoices, ...professionalVoices].slice(0, 22);
+          const combinedVoices = [...celebrityVoices, ...professionalVoices].slice(0, 20);
           setVoices(combinedVoices);
         } else {
-          const result = await getPromoVoices(selectedLanguage, selectedRole, 22);
+          const result = await getPromoVoices(selectedLanguage, selectedRole, 20);
           setVoices(result);
         }
       } catch (error) {

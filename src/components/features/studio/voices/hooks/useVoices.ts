@@ -63,7 +63,7 @@ export function useVoices({ locale, authLoading }: UseVoicesProps): UseVoicesRet
   // Voices data state
   const [voices, setVoices] = useState<Voice[]>([]);
   const [loading, setLoading] = useState(true);
-  const [loadingMore, setLoadingMore] = useState(false);
+  const [loadingMore] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   // Pagination state (kept for compatibility, but all data loaded at once)

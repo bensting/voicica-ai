@@ -211,14 +211,16 @@ export default function TTSPromoPage() {
   useEffect(() => {
     if (!selectedLanguage) return; // Wait for language to be initialized
 
+    const locale = selectedLanguage; // Capture for TypeScript narrowing
+
     async function loadVoices() {
       setLoading(true);
       try {
         if (selectedRole === 'All') {
           // For "All" mode: fetch Celebrity first, then Professional
           const [celebrityVoices, professionalVoices] = await Promise.all([
-            getPromoVoices(selectedLanguage, 'Celebrity', 20),
-            getPromoVoices(selectedLanguage, 'Professional', 20),
+            getPromoVoices(locale, 'Celebrity', 20),
+            getPromoVoices(locale, 'Professional', 20),
           ]);
 
           // Combine: Celebrity first, then Professional, take 20 total
@@ -226,7 +228,7 @@ export default function TTSPromoPage() {
           setVoices(combinedVoices);
         } else {
           // For specific role filter
-          const voices = await getPromoVoices(selectedLanguage, selectedRole, 20);
+          const voices = await getPromoVoices(locale, selectedRole, 20);
           setVoices(voices);
         }
       } catch (error) {

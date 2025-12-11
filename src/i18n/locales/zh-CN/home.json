@@ -1,8 +1,10 @@
 {
   "home": {
-    "heroTitle": "一站式 AI 解决方案",
-    "heroTitleHighlight": "视频、音乐和配音",
-    "heroDescription": "在一个平台上拥有创建高质量视频、音乐和配音所需的一切。无需技术技能。立即在 Voicica 中将您的最佳创意变为现实。",
+    "heroTitle": "100% 免费的文字转语音",
+    "heroSubtitle": "无限语音，完全免费。",
+    "heroFeature1": "超过 300 种语音，支持 40+ 种语言。",
+    "heroFeature2": "只需输入文字，即刻生成自然配音。",
+    "heroCTA": "免费生成配音",
     "exploreVoices": "探索语音",
     "viewPricing": "查看定价",
     "whyChoose": "为什么选择 Voicica AI？",
@@ -13,11 +15,11 @@
     "startCreating": "立即开始创建"
   },
   "cta": {
-    "title": "视频、配音和音乐创作的一站式 AI 平台",
+    "title": "人人可用的免费 AI 配音",
     "getStarted": "免费开始使用！",
     "viewPricing": "查看我们的计划和价格",
     "features": {
-      "moneyBack": "30 天退款保证",
+      "moneyBack": "100% 免费使用",
       "support": "免费技术支持",
       "secure": "100% 安全",
       "updates": "定期更新"

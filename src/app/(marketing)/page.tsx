@@ -9,15 +9,10 @@ import FAQ from '@/components/sections/faq';
 import CTA from '@/components/sections/CTA';
 import { useLanguage } from '@/contexts/LanguageContext';
 
-// Hero Configuration
-const HERO_CONFIG = {
-  backgroundVideo: 'https://pub-dc353f0aede3432493780267c47faff7.r2.dev/voice-labs-assets/banner.mp4',
-};
-
 // Hero Action Buttons Configuration
 const HERO_ACTIONS = [
   {
-    textKey: 'studio.tts',
+    textKey: 'home.heroCTA',
     route: '/studio/tts',
     icon: Mic
   }
@@ -46,16 +41,22 @@ export default function Home() {
     };
   });
 
+  // TTS Hero features
+  const heroFeatures = [
+    t('home.heroFeature1'),
+    t('home.heroFeature2'),
+  ];
+
   return (
     <div className="min-h-screen">
-      {/* Hero Section */}
+      {/* Hero Section - TTS 变体：渐变背景 + 声波动效 */}
       <Hero
         brandName="Voicica"
         title={t('home.heroTitle')}
-        highlight={t('home.heroTitleHighlight')}
-        description={t('home.heroDescription')}
+        subtitle={t('home.heroSubtitle')}
+        features={heroFeatures}
         actionButtons={actionButtons}
-        backgroundVideo={HERO_CONFIG.backgroundVideo}
+        variant="tts"
       />
 
       {/* TTS Samples Section */}

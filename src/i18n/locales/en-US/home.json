@@ -1,8 +1,10 @@
 {
   "home": {
-    "heroTitle": "One Stop AI Solution for",
-    "heroTitleHighlight": "Video, Music, and Voiceover",
-    "heroDescription": "Everything you need to create high-quality videos with music and voiceovers in one place. No technical skills required. Bring your best ideas to life in Voicica now.",
+    "heroTitle": "100% Free Text-to-Voice for Everyone",
+    "heroSubtitle": "Unlimited voices. Zero cost.",
+    "heroFeature1": "Choose from 300+ voices across 40+ languages.",
+    "heroFeature2": "Just type and instantly generate natural voiceovers.",
+    "heroCTA": "Generate Free Voiceover",
     "exploreVoices": "Explore Voices",
     "viewPricing": "View Pricing",
     "whyChoose": "Why Choose Voicica AI?",
@@ -13,11 +15,11 @@
     "startCreating": "Start Creating Now"
   },
   "cta": {
-    "title": "All-in-One AI Platform for Video, Voiceover & Music Creation.",
+    "title": "Free AI Voiceovers for Everyone",
     "getStarted": "Get started, it's free!",
     "viewPricing": "View Our Plans and Pricing",
     "features": {
-      "moneyBack": "30 Days Money Back Guarantee",
+      "moneyBack": "100% Free to Use",
       "support": "Free Technical Support",
       "secure": "100% Secure",
       "updates": "Regular Updates"

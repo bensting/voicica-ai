@@ -14,13 +14,26 @@ android {
         applicationId "ai.voicica.app"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 2
+        versionCode 4
         versionName "1.0.35"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {
              // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.
              // Default: https://android.googlesource.com/platform/frameworks/base/+/282e181b58cf72b6ca770dc7ca5f91f135444502/tools/aapt/AaptAssets.cpp#61
             ignoreAssetsPattern '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
+        }
+    }
+
+    // 产品风味：区分 Google Play 版本和独立 APK 版本
+    flavorDimensions "distribution"
+    productFlavors {
+        // Google Play 版本：不含 APK 安装权限
+        playStore {
+            dimension "distribution"
+        }
+        // 独立版本：包含 APK 自动更新功能
+        standalone {
+            dimension "distribution"
         }
     }
 

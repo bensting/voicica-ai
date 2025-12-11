@@ -1,14 +1,14 @@
 {
   "version": "1.0.35",
-  "buildNumber": 2,
+  "buildNumber": 4,
   "description": "原生应用版本（Android/iOS 应用壳）",
   "changelog": [
     {
-      "version": "1.0.29",
-      "buildNumber": 1,
-      "date": "2024-12-05",
+      "version": "1.0.35",
+      "buildNumber": 4,
+      "date": "2024-12-11",
       "changes": [
-        "新增自动更新"
+        "abb 打包"
       ]
     }
   ],

@@ -2,13 +2,31 @@
 
 /**
  * 用户模块 Server Actions
+ *
+ * 使用 React cache() 在同一请求内去重数据库查询
  */
 import prisma from '@/lib/prisma';
+import { cache } from 'react';
 import { getCurrentUser, getUserOrAnonymous } from '@/lib/auth-firebase';
 import { uploadImage } from '@/lib/services/r2-storage';
 import { v4 as uuidv4 } from 'uuid';
 import type { UserProfile, CreditsInfo, CreditHistoryResponse } from '@/types/user';
 import { Prisma } from '@prisma/client';
+
+// ==================== 请求级缓存 ====================
+// 同一次请求内，相同 userId 只查一次数据库
+
+const getCachedUser = cache(async (userId: string) => {
+  return prisma.users.findUnique({
+    where: { user_id: userId },
+  });
+});
+
+const getCachedAnonymousUser = cache(async (userId: string) => {
+  return prisma.anonymous_users.findUnique({
+    where: { user_id: userId },
+  });
+});
 
 /**
  * 获取当前用户资料
@@ -206,15 +224,14 @@ export async function getUserCredits(): Promise<{ credits: number; total_used: n
 
 /**
  * 获取用户资料（统一接口，支持正式用户和匿名用户）
+ * 使用 React cache() 在同一请求内去重
  */
 export async function getUnifiedUserProfile(): Promise<UserProfile> {
   const unifiedUser = await getUserOrAnonymous();
 
   if (unifiedUser.is_anonymous) {
-    // 匿名用户
-    const anonUser = await prisma.anonymous_users.findUnique({
-      where: { user_id: unifiedUser.user_id },
-    });
+    // 匿名用户（使用缓存）
+    const anonUser = await getCachedAnonymousUser(unifiedUser.user_id);
 
     if (!anonUser) {
       throw new Error('匿名用户不存在');
@@ -233,10 +250,8 @@ export async function getUnifiedUserProfile(): Promise<UserProfile> {
       expires_at: anonUser.expires_at?.toISOString() || null,
     };
   } else {
-    // 正式用户
-    const user = await prisma.users.findUnique({
-      where: { user_id: unifiedUser.user_id },
-    });
+    // 正式用户（使用缓存）
+    const user = await getCachedUser(unifiedUser.user_id);
 
     if (!user) {
       throw new Error('用户不存在');
@@ -259,19 +274,14 @@ export async function getUnifiedUserProfile(): Promise<UserProfile> {
 
 /**
  * 获取积分余额（统一接口，支持正式用户和匿名用户）
+ * 使用 React cache() 在同一请求内去重
  */
 export async function getUnifiedCredits(): Promise<CreditsInfo> {
   const unifiedUser = await getUserOrAnonymous();
 
   if (unifiedUser.is_anonymous) {
-    const anonUser = await prisma.anonymous_users.findUnique({
-      where: { user_id: unifiedUser.user_id },
-      select: {
-        credits: true,
-        total_credits_used: true,
-        expires_at: true,
-      },
-    });
+    // 使用缓存查询
+    const anonUser = await getCachedAnonymousUser(unifiedUser.user_id);
 
     if (!anonUser) {
       throw new Error('匿名用户不存在');
@@ -284,13 +294,8 @@ export async function getUnifiedCredits(): Promise<CreditsInfo> {
       expires_at: anonUser.expires_at?.toISOString() || null,
     };
   } else {
-    const user = await prisma.users.findUnique({
-      where: { user_id: unifiedUser.user_id },
-      select: {
-        credits: true,
-        total_credits_used: true,
-      },
-    });
+    // 使用缓存查询
+    const user = await getCachedUser(unifiedUser.user_id);
 
     if (!user) {
       throw new Error('用户不存在');

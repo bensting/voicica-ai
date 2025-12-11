@@ -1,29 +1,32 @@
 {
   "ttsPromo": {
     "stats": {
+      "voices": "Voices",
+      "languages": "Languages",
       "downloads": "Downloads",
-      "reviews": "Reviews"
+      "reviews": "Reviews",
+      "free": "FREE"
     },
     "hero": {
-      "title1": "Sound like",
-      "titleCelebrities": "Celebrities",
-      "title2": ", Movie",
-      "title3": "Characters &",
-      "titlePoliticians": "Politicians",
-      "description": "Create audio using the voices of celebrities, politicians, movie characters, or even your own voice. Discover what's possible with",
+      "badge": "100% Free • No Sign-up Required",
+      "title1": "Free AI",
+      "titleHighlight1": "Text to Speech",
+      "title2": "Generator",
+      "subtitle": "3200+ Voices • 190+ Languages",
+      "description": "Transform text into natural speech instantly. Celebrity voices, professional narrators, or clone your own voice.",
       "brandName": "Voicica AI",
       "downloadApk": "Download",
       "comingSoon": "Coming Soon",
-      "tryNow": "Try Now",
+      "tryNow": "Start Free",
       "webVersion": "Web Version"
     },
     "samples": {
       "title1": "Listen to real",
       "title2": "examples of our",
-      "titleHighlight": "AI Voice Changer",
-      "description": "Our AI-models are trained to mimic the original speaker in emotions, tone and pronounciations. We have achieve hyper-realistic voice clones - and with just a few seconds of audio, you can even clone your own custom Voice.",
+      "titleHighlight": "AI Voices",
+      "description": "Hyper-realistic voice cloning with emotions, tone and natural pronunciation.",
       "noVoices": "No voices available for this language.",
-      "exploreAll": "Explore all AI Characters"
+      "exploreAll": "Explore all 3200+ Voices"
     },
     "filters": {
       "all": "All",
@@ -31,12 +34,13 @@
       "professional": "Professional"
     },
     "cta": {
-      "aiVoiceCloning": "AI-Powered Voice Cloning",
-      "exportAudio": "Export High-Quality Audio",
-      "voiceModels": "100+ Voice Models",
-      "startCreating": "Start Creating Now",
-      "noCreditCard": "No credit card required",
-      "freeTier": "Free tier available"
+      "feature1": "3200+ AI Voices in 190+ Languages",
+      "feature2": "Download MP3/WAV - Unlimited",
+      "feature3": "Clone Your Own Voice",
+      "feature4": "100% Free Forever",
+      "startCreating": "Start Creating - It's Free",
+      "noCreditCard": "No credit card",
+      "noSignup": "No sign-up required"
     }
   }
 }

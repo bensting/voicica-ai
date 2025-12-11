@@ -1,29 +1,32 @@
 {
   "ttsPromo": {
     "stats": {
+      "voices": "语音",
+      "languages": "语言",
       "downloads": "下载量",
-      "reviews": "评价"
+      "reviews": "评价",
+      "free": "免费"
     },
     "hero": {
-      "title1": "模仿",
-      "titleCelebrities": "明星",
-      "title2": "、电影",
-      "title3": "角色和",
-      "titlePoliticians": "政治人物",
-      "description": "使用明星、政治人物、电影角色的声音创作音频，甚至可以克隆你自己的声音。探索",
+      "badge": "100% 免费 • 无需注册",
+      "title1": "免费 AI",
+      "titleHighlight1": "文字转语音",
+      "title2": "生成器",
+      "subtitle": "3200+ 语音 • 190+ 语言",
+      "description": "即时将文字转换为自然语音。明星声音、专业配音员，或克隆你自己的声音。",
       "brandName": "Voicica AI",
       "downloadApk": "下载",
       "comingSoon": "即将推出",
-      "tryNow": "立即体验",
+      "tryNow": "免费开始",
       "webVersion": "网页版"
     },
     "samples": {
       "title1": "试听我们",
-      "title2": "AI 变声器",
-      "titleHighlight": "的真实示例",
-      "description": "我们的 AI 模型经过训练，能够模仿原说话者的情感、语调和发音。我们实现了超逼真的语音克隆——只需几秒钟的音频，您就可以克隆自己的声音。",
+      "title2": "AI 语音的",
+      "titleHighlight": "真实示例",
+      "description": "超逼真的语音克隆，具有情感、语调和自然发音。",
       "noVoices": "该语言暂无可用语音。",
-      "exploreAll": "探索全部 AI 角色"
+      "exploreAll": "探索全部 3200+ 语音"
     },
     "filters": {
       "all": "全部",
@@ -31,12 +34,13 @@
       "professional": "专业"
     },
     "cta": {
-      "aiVoiceCloning": "AI 驱动的语音克隆",
-      "exportAudio": "导出高品质音频",
-      "voiceModels": "100+ 语音模型",
-      "startCreating": "立即开始创作",
+      "feature1": "3200+ AI 语音，190+ 语言",
+      "feature2": "无限下载 MP3/WAV",
+      "feature3": "克隆你自己的声音",
+      "feature4": "永久 100% 免费",
+      "startCreating": "免费开始创作",
       "noCreditCard": "无需信用卡",
-      "freeTier": "提供免费套餐"
+      "noSignup": "无需注册账号"
     }
   }
 }

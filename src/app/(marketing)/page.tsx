@@ -60,11 +60,11 @@ export default function Home() {
         variant="tts"
       />
 
+      {/* 广告位 - Hero 底部（首屏曝光最高） */}
+      <AdBanner slot="HOME_HERO_BOTTOM" variant="section" />
+
       {/* TTS Samples Section */}
       <TTSSamples />
-
-      {/* 广告位 - TTS Samples 下方 */}
-      <AdBanner slot="HOME_AFTER_SAMPLES" variant="section" />
 
       {/* CTA Section */}
       <CTA titleKey="cta.title" />

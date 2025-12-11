@@ -39,26 +39,26 @@ const SEO_CONFIG: Record<Locale, {
   ogLocale: string;
 }> = {
   'en-US': {
-    title: "Voicica AI - Free AI Text to Speech Online | 3000+ Voices",
-    description: "Free AI text to speech generator with 3000+ natural voices in 40+ languages. Create professional voiceovers instantly. No signup required. 100% free.",
+    title: "Voicica AI - Free AI Text to Speech Online | 3200+ Voices",
+    description: "Free AI text to speech generator with 3200+ natural voices in 190+ languages. Create professional voiceovers instantly. No signup required. 100% free.",
     keywords: ["text to speech", "AI voice generator", "free TTS", "voiceover", "text to voice", "AI voiceover", "speech synthesis"],
     ogLocale: "en_US",
   },
   'zh-CN': {
-    title: "Voicica AI - 免费AI文字转语音 | 3000+语音",
-    description: "免费AI配音生成器，3000+自然语音，支持40+种语言。只需输入文字，即刻生成专业配音。无需注册，100%免费。",
+    title: "Voicica AI - 免费AI文字转语音 | 3200+语音",
+    description: "免费AI配音生成器，3200+自然语音，支持190+种语言。只需输入文字，即刻生成专业配音。无需注册，100%免费。",
     keywords: ["文字转语音", "AI配音", "免费TTS", "语音合成", "AI语音生成器", "在线配音"],
     ogLocale: "zh_CN",
   },
   'zh-TW': {
-    title: "Voicica AI - 免費AI文字轉語音 | 3000+語音",
-    description: "免費AI配音生成器，3000+自然語音，支援40+種語言。只需輸入文字，即刻生成專業配音。無需註冊，100%免費。",
+    title: "Voicica AI - 免費AI文字轉語音 | 3200+語音",
+    description: "免費AI配音生成器，3200+自然語音，支援190+種語言。只需輸入文字，即刻生成專業配音。無需註冊，100%免費。",
     keywords: ["文字轉語音", "AI配音", "免費TTS", "語音合成", "AI語音生成器", "線上配音"],
     ogLocale: "zh_TW",
   },
   'th-TH': {
-    title: "Voicica AI - แปลงข้อความเป็นเสียงฟรี | เสียง 3000+",
-    description: "เครื่องมือสร้างเสียงพากย์ AI ฟรี มีเสียงธรรมชาติกว่า 3000 เสียง รองรับ 40+ ภาษา แค่พิมพ์ข้อความก็สร้างเสียงพากย์ระดับมืออาชีพได้ทันที ไม่ต้องสมัคร ฟรี 100%",
+    title: "Voicica AI - แปลงข้อความเป็นเสียงฟรี | เสียง 3200+",
+    description: "เครื่องมือสร้างเสียงพากย์ AI ฟรี มีเสียงธรรมชาติกว่า 3200 เสียง รองรับ 190+ ภาษา แค่พิมพ์ข้อความก็สร้างเสียงพากย์ระดับมืออาชีพได้ทันที ไม่ต้องสมัคร ฟรี 100%",
     keywords: ["แปลงข้อความเป็นเสียง", "AI พากย์เสียง", "TTS ฟรี", "สร้างเสียงพากย์", "AI สังเคราะห์เสียง", "text to speech ไทย"],
     ogLocale: "th_TH",
   },

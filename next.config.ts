@@ -30,6 +30,8 @@ const nextConfig: NextConfig = {
 
   // 配置外部图片域名
   images: {
+    // 禁用 Vercel 图片优化（节省配额）
+    unoptimized: true,
     remotePatterns: [
       {
         protocol: 'https',

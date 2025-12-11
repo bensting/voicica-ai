@@ -41,6 +41,11 @@
       "startCreating": "免费开始创作",
       "noCreditCard": "无需信用卡",
       "noSignup": "无需注册账号"
+    },
+    "explore": {
+      "title": "探索多语言 AI 语音",
+      "subtitle": "我们的文字转语音服务支持 190+ 种语言。选择您需要的语言，开始使用高品质 AI 语音创建内容。",
+      "exploreMore": "探索更多"
     }
   }
 }

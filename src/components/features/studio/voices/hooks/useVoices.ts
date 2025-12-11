@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { listVoices, getUsedVoiceNames } from '@/actions/voice';
+import { getVoicesByLocale, getUsedVoiceNames } from '@/actions/voice';
 import type { Voice } from '@/types/voice';
 import { getVoiceSampleUrl } from '@/types/voice';
 import type { LocaleOption } from '@/types/config';
@@ -66,11 +66,10 @@ export function useVoices({ locale, authLoading }: UseVoicesProps): UseVoicesRet
   const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Pagination state
+  // Pagination state (kept for compatibility, but all data loaded at once)
   const [currentPage, setCurrentPage] = useState(1);
   const [total, setTotal] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
-  const pageSize = 50; // Show more voices initially to fill the screen
 
   // Search state
   const [searchQuery, setSearchQuery] = useState('');
@@ -98,6 +97,7 @@ export function useVoices({ locale, authLoading }: UseVoicesProps): UseVoicesRet
   const hasInitializedRef = useRef(false);
 
   // Initialize language from localStorage on client side (only once)
+  // Note: No longer supports "all" option - must select a specific language
   useEffect(() => {
     if (hasInitializedRef.current) return;
     hasInitializedRef.current = true;
@@ -107,19 +107,15 @@ export function useVoices({ locale, authLoading }: UseVoicesProps): UseVoicesRet
 
     let initialLang: LocaleOption | null = null;
 
-    if (savedLanguageCode) {
-      if (savedLanguageCode === 'all') {
-        initialLang = null;
-      } else {
-        initialLang = availableLanguages.find(lang => lang.code === savedLanguageCode) ?? null;
-      }
+    if (savedLanguageCode && savedLanguageCode !== 'all') {
+      initialLang = availableLanguages.find(lang => lang.code === savedLanguageCode) ?? null;
     }
 
-    // If no saved language, use current locale or fallback to en-US
-    if (!savedLanguageCode) {
+    // If no saved language or was "all", use current locale or fallback to en-US
+    if (!initialLang) {
       initialLang = availableLanguages.find(lang => lang.code === locale)
         ?? availableLanguages.find(lang => lang.code === 'en-US')
-        ?? null;
+        ?? availableLanguages[0]; // Fallback to first available language
     }
 
     setSelectedLanguage(initialLang);
@@ -133,123 +129,53 @@ export function useVoices({ locale, authLoading }: UseVoicesProps): UseVoicesRet
     }
   }, [usedOnly, usedVoiceNames.length]);
 
-  // Load voices (initial load or refresh)
+  // Load all voices for current locale (uses server cache)
+  // Client-side filtering and pagination for better UX
   const loadVoices = useCallback(async () => {
+    if (!selectedLanguage) return;
+
     try {
       setLoading(true);
       setError(null);
 
-      // Build API params
-      // When usedOnly is enabled, don't apply locale/gender/role filters
-      const params: {
-        is_active: boolean;
-        page: number;
-        page_size: number;
-        locale?: string;
-        gender?: string;
-        role?: string;
-      } = {
-        is_active: true,
-        page: 1,
-        page_size: usedOnly ? 1000 : pageSize, // Load more when filtering by usedOnly
-      };
+      // Fetch all voices for the locale (cached on server)
+      const allVoices = await getVoicesByLocale(selectedLanguage.code);
 
-      // Only apply filters when usedOnly is NOT enabled
-      if (!usedOnly) {
-        if (selectedLanguage) {
-          params.locale = selectedLanguage.code;
-        }
-
-        if (selectedGender !== 'all') {
-          params.gender = selectedGender;
-        }
-
-        if (selectedRole !== 'all') {
-          params.role = selectedRole;
-        }
-      }
-
-      const response = await listVoices(params);
-
-      setVoices(response.voices as Voice[]);
-      setTotal(response.total);
-      setTotalPages(response.total_pages);
-      setCurrentPage(response.page);
+      setVoices(allVoices);
+      setTotal(allVoices.length);
+      // No server-side pagination needed - all data loaded at once
+      setTotalPages(1);
+      setCurrentPage(1);
     } catch (err) {
       console.error('Failed to load voices:', err);
       setError('Failed to load voices');
     } finally {
       setLoading(false);
     }
-  }, [selectedLanguage, selectedGender, selectedRole, pageSize, usedOnly]);
+  }, [selectedLanguage]);
 
-  // Load more voices (pagination)
+  // Load more voices - not needed with new strategy but keep for compatibility
   const loadMoreVoices = useCallback(async () => {
-    if (loadingMore || currentPage >= totalPages) return;
+    // All voices are loaded at once, no more to load
+    return;
+  }, []);
 
-    try {
-      setLoadingMore(true);
-      const nextPage = currentPage + 1;
-
-      // Build API params
-      const params: {
-        is_active: boolean;
-        page: number;
-        page_size: number;
-        locale?: string;
-        gender?: string;
-        role?: string;
-      } = {
-        is_active: true,
-        page: nextPage,
-        page_size: pageSize,
-      };
-
-      if (selectedLanguage) {
-        params.locale = selectedLanguage.code;
-      }
-
-      if (selectedGender !== 'all') {
-        params.gender = selectedGender;
-      }
-
-      if (selectedRole !== 'all') {
-        params.role = selectedRole;
-      }
-
-      const response = await listVoices(params);
-
-      setVoices((prev) => [...prev, ...(response.voices as Voice[])]);
-      setTotal(response.total);
-      setTotalPages(response.total_pages);
-      setCurrentPage(response.page);
-    } catch (err) {
-      console.error('Failed to load more voices:', err);
-    } finally {
-      setLoadingMore(false);
-    }
-  }, [loadingMore, currentPage, totalPages, selectedLanguage, selectedGender, selectedRole, pageSize]);
-
-  // Initial load and reload when filters change
+  // Initial load and reload when language changes
   // Wait for authentication and language initialization to complete before loading voices
   useEffect(() => {
     // Skip if auth is still loading or language not initialized
-    if (authLoading || !isLanguageInitialized) {
+    if (authLoading || !isLanguageInitialized || !selectedLanguage) {
       return;
     }
 
-    // Load voices for both authenticated and anonymous users
-    // API client will handle authentication automatically:
-    // - Authenticated users: use Firebase token
-    // - Anonymous users: use device fingerprint
     void loadVoices();
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedLanguage, selectedGender, selectedRole, usedOnly, authLoading, isLanguageInitialized]); // 直接依赖 filter 值，避免 loadVoices 引用变化导致多次请求
+  }, [selectedLanguage, authLoading, isLanguageInitialized]);
 
-  // Filter voices based on search query and usedOnly (client-side)
-  // Other filters (language, gender) are handled by API
+  // Filter voices based on all criteria (client-side)
+  // All filtering is now done on client side using cached data
   const filteredVoices = voices.filter((voice) => {
-    // Search filter (client-side for better UX)
+    // Search filter
     if (searchQuery) {
       const voiceName = voice.display_name.toLowerCase();
       if (!voiceName.includes(searchQuery.toLowerCase())) {
@@ -257,13 +183,19 @@ export function useVoices({ locale, authLoading }: UseVoicesProps): UseVoicesRet
       }
     }
 
-    // Used only filter (client-side)
-    // When usedOnly is enabled, only show voices that user has used
-    // If user has never used any voice, this will correctly show empty list
-    if (usedOnly) {
-      if (!usedVoiceNames.includes(voice.name)) {
-        return false;
-      }
+    // Gender filter
+    if (selectedGender !== 'all' && voice.gender !== selectedGender) {
+      return false;
+    }
+
+    // Role filter
+    if (selectedRole !== 'all' && voice.role !== selectedRole) {
+      return false;
+    }
+
+    // Used only filter
+    if (usedOnly && !usedVoiceNames.includes(voice.name)) {
+      return false;
     }
 
     return true;

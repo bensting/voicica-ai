@@ -138,8 +138,11 @@ export async function generateMetadata(): Promise<Metadata> {
       telephone: false,
     },
     icons: {
-      icon: "/icon.svg",
-      apple: "/icon.svg",
+      icon: [
+        { url: "/favicon.ico", sizes: "any" },
+        { url: "/icons/icon-192x192.png", sizes: "192x192", type: "image/png" },
+      ],
+      apple: "/icons/icon-192x192.png",
     },
     // Google AdSense 验证
     other: {

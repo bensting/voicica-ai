@@ -18,35 +18,35 @@ import { getPromoVoices } from '@/actions/voice';
 import { getLatestRelease, incrementDownloadCountByVersion } from '@/actions/admin/app-releases';
 import type { Voice } from '@/types/voice';
 
-// Indonesian language TTS landing page - hardcoded content for SEO
-// Text to Speech AI Gratis Bahasa Indonesia
+// English language TTS landing page - hardcoded content for SEO
+// Free AI Text to Speech Generator - English
 
-// Language options - Indonesian first, then Southeast Asian languages
+// Language options - English first
 const LANGUAGE_OPTIONS: LanguageOption[] = [
-  { code: 'id-ID', name: 'Bahasa Indonesia', flag: '🇮🇩' },
-  { code: 'en-US', name: 'English', flag: '🇺🇸' },
+  { code: 'en-US', name: 'English (US)', flag: '🇺🇸' },
+  { code: 'en-GB', name: 'English (UK)', flag: '🇬🇧' },
+  { code: 'en-AU', name: 'English (AU)', flag: '🇦🇺' },
   { code: 'zh-CN', name: '简体中文', flag: '🇨🇳' },
   { code: 'zh-TW', name: '繁體中文', flag: '🇹🇼' },
   { code: 'ja-JP', name: '日本語', flag: '🇯🇵' },
   { code: 'ko-KR', name: '한국어', flag: '🇰🇷' },
-  { code: 'th-TH', name: 'ภาษาไทย', flag: '🇹🇭' },
-  { code: 'vi-VN', name: 'Tiếng Việt', flag: '🇻🇳' },
-  { code: 'ms-MY', name: 'Bahasa Melayu', flag: '🇲🇾' },
-  { code: 'tl-PH', name: 'Filipino', flag: '🇵🇭' },
+  { code: 'es-ES', name: 'Español', flag: '🇪🇸' },
+  { code: 'fr-FR', name: 'Français', flag: '🇫🇷' },
+  { code: 'de-DE', name: 'Deutsch', flag: '🇩🇪' },
 ];
 
-// Role filter options - Indonesian
+// Role filter options - English
 const ROLE_OPTIONS: RoleOption[] = [
-  { code: 'All', name: 'Semua', icon: '🔥' },
-  { code: 'Celebrity', name: 'Selebriti', icon: '⭐' },
-  { code: 'Professional', name: 'Profesional', icon: '🎙️' },
+  { code: 'All', name: 'All', icon: '🔥' },
+  { code: 'Celebrity', name: 'Celebrities', icon: '⭐' },
+  { code: 'Professional', name: 'Professional', icon: '🎙️' },
 ];
 
-// Stats data - Indonesian
+// Stats data - English
 const STATS_CONFIG = [
-  { value: '3200+', label: 'Suara', highlight: true },
-  { value: '190+', label: 'Bahasa', highlight: true },
-  { value: '100%', label: 'Gratis', highlight: true, isFree: true },
+  { value: '3200+', label: 'Voices', highlight: true },
+  { value: '190+', label: 'Languages', highlight: true },
+  { value: '100%', label: 'FREE', highlight: true, isFree: true },
 ];
 
 // Language explore grid - links to other language pages
@@ -56,42 +56,42 @@ const EXPLORE_LANGUAGES: LanguageCardItem[] = [
   { code: 'id-ID', name: 'Bahasa Indonesia', flag: '🇮🇩', href: '/tts/indonesian' },
 ];
 
-// Indonesian content translations
+// English content
 const CONTENT = {
   hero: {
-    badge: '100% Gratis • Tanpa Daftar',
-    title1: 'AI',
+    badge: '100% Free • No Sign-up Required',
+    title1: 'Free AI',
     titleHighlight1: 'Text to Speech',
-    title2: 'Gratis',
-    subtitle: '3200+ Suara • 190+ Bahasa',
-    description: 'Ubah teks menjadi suara alami secara instan. Suara selebriti, narator profesional, atau kloning suara Anda sendiri.',
-    downloadApk: 'Unduh',
-    comingSoon: 'Segera Hadir',
-    tryNow: 'Mulai Gratis',
-    webVersion: 'Versi Web',
+    title2: 'Generator',
+    subtitle: '3200+ Voices • 190+ Languages',
+    description: 'Transform text into natural speech instantly. Celebrity voices, professional narrators, or clone your own voice.',
+    downloadApk: 'Download',
+    comingSoon: 'Coming Soon',
+    tryNow: 'Start Free',
+    webVersion: 'Web Version',
   },
   samples: {
-    title1: 'Dengarkan contoh',
-    title2: 'nyata dari',
-    titleHighlight: 'Suara AI',
-    description: 'Kloning suara ultra-realistis dengan emosi, nada, dan pengucapan alami.',
-    noVoices: 'Tidak ada suara tersedia untuk bahasa ini.',
-    exploreAll: 'Jelajahi semua 3200+ Suara',
+    title1: 'Listen to real',
+    title2: 'examples of our',
+    titleHighlight: 'AI Voices',
+    description: 'Hyper-realistic voice cloning with emotions, tone, and natural pronunciation.',
+    noVoices: 'No voices available for this language.',
+    exploreAll: 'Explore all 3200+ Voices',
   },
   cta: {
-    feature1: '3200+ Suara AI dalam 190+ Bahasa',
-    feature2: 'Unduh MP3/WAV Tanpa Batas',
-    feature3: 'Kloning Suara Anda Sendiri',
-    feature4: '100% Gratis Selamanya',
-    startCreating: 'Mulai Membuat - Gratis',
-    noCreditCard: 'Tanpa kartu kredit',
-    noSignup: 'Tanpa perlu daftar',
+    feature1: '3200+ AI Voices in 190+ Languages',
+    feature2: 'Download MP3/WAV - Unlimited',
+    feature3: 'Clone Your Own Voice',
+    feature4: '100% Free Forever',
+    startCreating: 'Start Creating - It\'s Free',
+    noCreditCard: 'No credit card',
+    noSignup: 'No sign-up required',
   },
 };
 
-export default function IndonesianTTSPage() {
+export default function EnglishTTSPage() {
   const router = useRouter();
-  const [selectedLanguage, setSelectedLanguage] = useState<string>('id-ID');
+  const [selectedLanguage, setSelectedLanguage] = useState<string>('en-US');
   const [selectedRole, setSelectedRole] = useState('All');
   const [voices, setVoices] = useState<Voice[]>([]);
   const [loading, setLoading] = useState(true);
@@ -148,7 +148,6 @@ export default function IndonesianTTSPage() {
       setLoading(true);
       try {
         if (selectedRole === 'All') {
-          // Fetch both Celebrity and Professional, combine them
           const [celebrityVoices, professionalVoices] = await Promise.all([
             getPromoVoices(selectedLanguage, 'Celebrity', 22),
             getPromoVoices(selectedLanguage, 'Professional', 22),
@@ -385,11 +384,11 @@ export default function IndonesianTTSPage() {
 
       {/* ========== Language Explore Section ========== */}
       <LanguageExploreGrid
-        title="Jelajahi Suara AI dalam Berbagai Bahasa"
-        subtitle="Layanan text-to-speech kami mendukung lebih dari 190 bahasa. Pilih bahasa yang Anda butuhkan dan mulai membuat konten dengan suara AI berkualitas tinggi."
+        title="Explore AI Voices in Multiple Languages"
+        subtitle="Our text-to-speech service supports 190+ languages and accents, allowing you to seamlessly transform text into natural-sounding speech."
         languages={EXPLORE_LANGUAGES}
-        currentLanguage="id-ID"
-        exploreMoreText="Jelajahi Lebih Lanjut"
+        currentLanguage="en-US"
+        exploreMoreText="Explore More"
         exploreMoreHref="/studio/tts"
       />
     </div>

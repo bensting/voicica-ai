@@ -9,8 +9,10 @@ import {
   VoiceSampleGrid,
   LanguageDropdown,
   RoleFilterTabs,
+  LanguageExploreGrid,
   type LanguageOption,
   type RoleOption,
+  type LanguageCardItem,
 } from '@/components/features/tts-promo';
 import { getPromoVoices } from '@/actions/voice';
 import { getLatestRelease, incrementDownloadCountByVersion } from '@/actions/admin/app-releases';
@@ -45,6 +47,13 @@ const STATS_CONFIG = [
   { value: '3200+', label: 'เสียง', highlight: true },
   { value: '190+', label: 'ภาษา', highlight: true },
   { value: '100%', label: 'ฟรี', highlight: true, isFree: true },
+];
+
+// Language explore grid - links to other language pages
+const EXPLORE_LANGUAGES: LanguageCardItem[] = [
+  { code: 'en-US', name: 'English', flag: '🇺🇸', href: '/tts/english' },
+  { code: 'th-TH', name: 'ภาษาไทย', flag: '🇹🇭', href: '/tts/thai' },
+  { code: 'id-ID', name: 'Bahasa Indonesia', flag: '🇮🇩', href: '/tts/indonesian' },
 ];
 
 // Thai content translations
@@ -373,6 +382,16 @@ export default function ThaiTTSPage() {
           </p>
         </div>
       </section>
+
+      {/* ========== Language Explore Section ========== */}
+      <LanguageExploreGrid
+        title="สำรวจเสียง AI ในหลายภาษา"
+        subtitle="บริการแปลงข้อความเป็นเสียงของเรารองรับมากกว่า 190 ภาษา เลือกภาษาที่คุณต้องการและเริ่มสร้างเนื้อหาด้วยเสียง AI คุณภาพสูง"
+        languages={EXPLORE_LANGUAGES}
+        currentLanguage="th-TH"
+        exploreMoreText="สำรวจเพิ่มเติม"
+        exploreMoreHref="/studio/tts"
+      />
     </div>
   );
 }

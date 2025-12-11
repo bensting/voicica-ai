@@ -1,8 +1,7 @@
 package ai.voicica.app;
 
 import android.os.Bundle;
-import android.view.View;
-import android.view.WindowManager;
+import android.webkit.WebView;
 import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
 import com.getcapacitor.BridgeActivity;
@@ -11,6 +10,9 @@ public class MainActivity extends BridgeActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // 开启 WebView 调试（Chrome DevTools 远程调试）
+        WebView.setWebContentsDebuggingEnabled(true);
 
         // Enable edge-to-edge display
         WindowCompat.setDecorFitsSystemWindows(getWindow(), false);

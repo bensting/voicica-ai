@@ -32,8 +32,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Voicica AI - One Stop AI Solution for Video, Music, and Voiceover",
-  description: "Everything you need for high-quality video with music and voiceover in one place. No technical skills required. Bring your best ideas to life on Voicica now.",
+
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
@@ -46,6 +45,10 @@ export const metadata: Metadata = {
   icons: {
     icon: "/icon.svg",
     apple: "/icon.svg",
+  },
+  // Google AdSense 验证
+  other: {
+    "google-adsense-account": process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID || "",
   },
 };
 

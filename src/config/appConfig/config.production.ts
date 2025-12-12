@@ -43,12 +43,11 @@ export const appConfig: AppConfig = {
   },
 
   /**
-   * 月度福利配置
+   * 每日任务配置
    */
-  monthly_rewards: {
-    anonymous_credits: 2000,
-    login_credits: 50000,
-    app_download_credits: 50000,
+  daily_tasks: {
+    checkin_credits: 100,
+    ad_reward_tiers: [200, 300, 400, 500, 800, 1000],
     popup_max_per_day: 2,
     enabled: true,
   },

@@ -1,0 +1,23 @@
+{
+  "dailyTasks": {
+    "title": "每日任務",
+    "subtitle": "完成任務賺取免費積分！",
+    "credits": "積分",
+
+    "loginToEarn": "登入後即可每天賺取積分！",
+    "dailyMax": "每日最多可獲得",
+    "loginNow": "立即登入",
+
+    "todayEarned": "今日進度",
+
+    "checkin": "每日簽到",
+    "claim": "領取",
+    "claimed": "已領取",
+
+    "watchAds": "看廣告賺積分",
+    "watchAdGet": "看廣告 +{{credits}}",
+    "allAdsClaimed": "今日已全部領取",
+
+    "resetTip": "任務每日零點重置"
+  }
+}

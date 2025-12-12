@@ -129,26 +129,6 @@ export default function AppDownloadModal({ isOpen, onClose }: AppDownloadModalPr
                 </svg>
               </button>
 
-              {/* Google Play - Coming Soon */}
-              <button
-                disabled
-                className="w-full flex items-center gap-2.5 p-2.5 bg-gray-100 text-gray-400 rounded-xl cursor-not-allowed"
-              >
-                <div className="w-9 h-9 rounded-lg bg-gray-200 flex items-center justify-center flex-shrink-0">
-                  <Image
-                    src="/images/stores/google-play.svg"
-                    alt="Google Play"
-                    width={20}
-                    height={20}
-                    className="opacity-40"
-                  />
-                </div>
-                <div className="text-left flex-1">
-                  <div className="font-semibold text-sm">Google Play</div>
-                  <div className="text-xs">{t('appDownload.comingSoon') || 'Coming Soon'}</div>
-                </div>
-              </button>
-
               {/* APKPure - 已上线 */}
               <button
                 onClick={() => window.open('https://apkpure.com/p/ai.voicica.app', '_blank')}
@@ -169,6 +149,26 @@ export default function AppDownloadModal({ isOpen, onClose }: AppDownloadModalPr
                 <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                 </svg>
+              </button>
+
+              {/* Google Play - Coming Soon */}
+              <button
+                disabled
+                className="w-full flex items-center gap-2.5 p-2.5 bg-gray-100 text-gray-400 rounded-xl cursor-not-allowed"
+              >
+                <div className="w-9 h-9 rounded-lg bg-gray-200 flex items-center justify-center flex-shrink-0">
+                  <Image
+                    src="/images/stores/google-play.svg"
+                    alt="Google Play"
+                    width={20}
+                    height={20}
+                    className="opacity-40"
+                  />
+                </div>
+                <div className="text-left flex-1">
+                  <div className="font-semibold text-sm">Google Play</div>
+                  <div className="text-xs">{t('appDownload.comingSoon') || 'Coming Soon'}</div>
+                </div>
               </button>
             </div>
           </div>

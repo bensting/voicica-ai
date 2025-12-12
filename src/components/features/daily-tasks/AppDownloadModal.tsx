@@ -134,7 +134,7 @@ export default function AppDownloadModal({ isOpen, onClose }: AppDownloadModalPr
                 onClick={() => window.open('https://apkpure.com/p/ai.voicica.app', '_blank')}
                 className="w-full flex items-center gap-2.5 p-2.5 bg-gray-50 hover:bg-gray-100 text-gray-700 rounded-xl transition-colors border border-gray-200"
               >
-                <div className="w-9 h-9 rounded-lg bg-[#C5E21A]/20 flex items-center justify-center flex-shrink-0">
+                <div className="w-9 h-9 rounded-lg bg-[#2ECC71]/15 flex items-center justify-center flex-shrink-0">
                   <Image
                     src="/images/stores/apkpure.svg"
                     alt="APKPure"

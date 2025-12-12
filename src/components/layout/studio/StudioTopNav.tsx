@@ -1,6 +1,6 @@
 'use client';
 
-import { Menu, X, Crown } from 'lucide-react';
+import { Menu, X, Crown, Gift } from 'lucide-react';
 import Image from 'next/image';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
@@ -12,6 +12,8 @@ import Link from 'next/link';
 interface StudioTopNavProps {
   /** 升级按钮回调（移动端和桌面端都显示） */
   onUpgradeClick?: () => void;
+  /** 每日任务按钮回调 */
+  onDailyTasksClick?: () => void;
   /** 菜单是否打开（移动端） */
   isMenuOpen?: boolean;
   /** 菜单切换回调（移动端） */
@@ -33,6 +35,7 @@ interface StudioTopNavProps {
  */
 export default function StudioTopNav({
   onUpgradeClick,
+  onDailyTasksClick,
   isMenuOpen = false,
   onMenuToggle
 }: StudioTopNavProps) {
@@ -85,7 +88,16 @@ export default function StudioTopNav({
         </div>
 
         {/* ========== 移动端右侧 (< lg) ========== */}
-        <div className="flex items-center gap-3 flex-shrink-0 mr-1 lg:hidden">
+        <div className="flex items-center gap-2 flex-shrink-0 mr-1 lg:hidden">
+          {/* Daily Tasks Button - 只显示礼物图标 */}
+          <button
+            onClick={onDailyTasksClick}
+            className="p-2 bg-gradient-to-r from-pink-500 to-purple-500 text-white rounded-lg hover:from-pink-600 hover:to-purple-600 hover:shadow-lg transition-all"
+            aria-label="Daily Tasks"
+          >
+            <Gift className="w-4 h-4" />
+          </button>
+
           {/* Upgrade Button - 只显示皇冠图标 */}
           <button
             onClick={onUpgradeClick}
@@ -104,6 +116,15 @@ export default function StudioTopNav({
 
         {/* ========== 桌面端右侧 (>= lg) ========== */}
         <div className="hidden lg:flex items-center gap-3">
+          {/* Daily Tasks Button - 图标 + 文字 */}
+          <button
+            onClick={onDailyTasksClick}
+            className="flex items-center gap-2 px-4 py-1.5 bg-gradient-to-r from-pink-500 to-purple-500 text-white rounded-lg font-medium hover:from-pink-600 hover:to-purple-600 hover:shadow-lg transition-all"
+          >
+            <Gift className="w-4 h-4" />
+            <span className="text-sm">{t('studio.dailyTasks') || '福利'}</span>
+          </button>
+
           {/* Upgrade Button - 始终显示 */}
           <button
             onClick={onUpgradeClick}

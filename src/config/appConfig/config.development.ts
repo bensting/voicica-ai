@@ -41,4 +41,15 @@ export const appConfig: AppConfig = {
   version_check: {
     check_interval_minutes: 1, // 开发环境设为 1 分钟，方便测试
   },
+
+  /**
+   * 月度福利配置
+   */
+  monthly_rewards: {
+    anonymous_credits: 2000,
+    login_credits: 50000,
+    app_download_credits: 50000,
+    popup_max_per_day: 10, // 开发环境多一些，方便测试
+    enabled: true,
+  },
 };

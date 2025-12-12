@@ -39,6 +39,22 @@ export interface VersionCheckConfig {
 }
 
 /**
+ * 月度福利配置
+ */
+export interface MonthlyRewardsConfig {
+  /** 匿名用户福利积分 */
+  anonymous_credits: number;
+  /** 登录福利积分 */
+  login_credits: number;
+  /** APP下载福利积分 */
+  app_download_credits: number;
+  /** 弹窗每日最多显示次数 */
+  popup_max_per_day: number;
+  /** 是否启用 */
+  enabled: boolean;
+}
+
+/**
  * 应用配置
  */
 export interface AppConfig {
@@ -46,4 +62,5 @@ export interface AppConfig {
   credits: CreditsConfig;
   anonymous_user: AnonymousUserConfig;
   version_check: VersionCheckConfig;
+  monthly_rewards: MonthlyRewardsConfig;
 }

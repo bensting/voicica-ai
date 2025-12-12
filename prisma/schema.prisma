@@ -279,3 +279,26 @@ model user_events {
   @@index([created_at], map: "ix_user_events_created_at")
   @@index([user_id, event], map: "ix_user_events_user_event")
 }
+
+/// 每日任务表 - 签到和广告奖励
+/// 每用户每天最多一条记录
+model daily_tasks {
+  id                    Int       @id @default(autoincrement())
+  user_id               String    @db.VarChar(128)   // 登录用户ID（必须登录）
+  date                  String    @db.VarChar(10)    // 格式: '2025-01-15'
+
+  // 签到任务
+  checkin_done          Boolean   @default(false)    // 是否已签到
+  checkin_credits       Int       @default(0)        // 签到获得的积分
+
+  // 广告奖励任务 - 递进式：200, 300, 400, 500, 800, 1000
+  ad_rewards_claimed    Int       @default(0)        // 已领取的广告档位数 (0-6)
+  ad_rewards_credits    Int       @default(0)        // 广告奖励累计获得的积分
+
+  created_at            DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at            DateTime? @updatedAt @db.Timestamptz(6)
+
+  @@unique([user_id, date], map: "uq_daily_tasks_user_date")
+  @@index([user_id], map: "ix_daily_tasks_user_id")
+  @@index([date], map: "ix_daily_tasks_date")
+}

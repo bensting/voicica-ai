@@ -7,6 +7,7 @@ import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 import { useStudio } from '@/contexts/StudioContext';
 import { useCredits } from '@/contexts/CreditsContext';
 import { useTTSGenerator } from '@/hooks/useTTSGenerator';
+import { useMonthlyCredits } from '@/hooks/useMonthlyCredits';
 import { TaskStatus } from '@/types/tts';
 import type { Voice } from '@/types/voice';
 import TextInput from '@/components/features/studio/tts/components/TextInput';
@@ -35,6 +36,10 @@ const AudioSettingsModal = dynamic(
   () => import('@/components/features/studio/tts/AudioSettingsModal'),
   { ssr: false }
 );
+const MonthlyRewardModal = dynamic(
+  () => import('@/components/features/monthly-credits/MonthlyRewardModal'),
+  { ssr: false }
+);
 
 // 将 defaultStatus 提取到组件外部，避免每次渲染创建新数组引用
 const DEFAULT_GENERATION_STATUS = [TaskStatus.SUCCESS, TaskStatus.PROCESSING, TaskStatus.PENDING];
@@ -54,6 +59,13 @@ export default function StudioTTSPage() {
   const { user, loading: authLoading } = useFirebaseAuth();
   const { setTitle } = useStudio();
   const { credits, loading: creditsLoading, refreshCredits } = useCredits();
+
+  // 月度福利 Hook
+  const {
+    shouldShowPopup: showMonthlyRewardPopup,
+    popupType: monthlyRewardPopupType,
+    dismissPopup: closeMonthlyRewardPopup,
+  } = useMonthlyCredits();
   const [isAudioModalOpen, setIsAudioModalOpen] = useState(false);
   const [isVoiceSelectorOpen, setIsVoiceSelectorOpen] = useState(false);
   const [isGeneratingModalOpen, setIsGeneratingModalOpen] = useState(false);
@@ -450,6 +462,14 @@ export default function StudioTTSPage() {
         onCancel={closeConfirmDialog}
         variant="danger"
       />
+
+      {/* Monthly Reward Modal */}
+      {showMonthlyRewardPopup && monthlyRewardPopupType && (
+        <MonthlyRewardModal
+          isOpen={showMonthlyRewardPopup}
+          onClose={closeMonthlyRewardPopup}
+        />
+      )}
     </>
   );
 }

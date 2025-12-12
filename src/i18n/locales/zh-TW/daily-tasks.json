@@ -11,11 +11,13 @@
     "todayEarned": "今日進度",
 
     "checkin": "每日簽到",
+    "oneClickClaim": "一鍵領取",
     "claim": "領取",
     "claimed": "已領取",
 
-    "watchAds": "看廣告賺積分",
-    "watchAdGet": "看廣告 +{{credits}}",
+    "watchAds": "觀看影片",
+    "watchMultiple": "觀看 {{count}} 個影片",
+    "watchAdGet": "觀看 +{{credits}}",
     "allAdsClaimed": "今日已全部領取",
 
     "resetTip": "任務每日零點重置"

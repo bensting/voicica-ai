@@ -11,11 +11,13 @@
     "todayEarned": "今日进度",
 
     "checkin": "每日签到",
+    "oneClickClaim": "一键领取",
     "claim": "领取",
     "claimed": "已领取",
 
-    "watchAds": "看广告赚积分",
-    "watchAdGet": "看广告 +{{credits}}",
+    "watchAds": "观看视频",
+    "watchMultiple": "观看 {{count}} 个视频",
+    "watchAdGet": "观看 +{{credits}}",
     "allAdsClaimed": "今日已全部领取",
 
     "resetTip": "任务每日零点重置"

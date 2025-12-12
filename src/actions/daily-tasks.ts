@@ -54,8 +54,8 @@ export async function getDailyTasksConfigAction() {
  */
 export async function getDailyTasksStatus(): Promise<DailyTasksStatus | null> {
   try {
-    const firebaseUser = await getFirebaseUserFromCookie();
-    if (!firebaseUser) {
+    const authUser = await getOptionalUser();
+    if (!authUser) {
       // 未登录用户返回 null
       return null;
     }
@@ -67,7 +67,7 @@ export async function getDailyTasksStatus(): Promise<DailyTasksStatus | null> {
     const record = await prisma.daily_tasks.findUnique({
       where: {
         user_id_date: {
-          user_id: firebaseUser.uid,
+          user_id: authUser.uid,
           date: today,
         },
       },
@@ -118,8 +118,8 @@ export async function getDailyTasksStatus(): Promise<DailyTasksStatus | null> {
  */
 export async function checkin(): Promise<TaskResult> {
   try {
-    const firebaseUser = await getFirebaseUserFromCookie();
-    if (!firebaseUser) {
+    const authUser = await getOptionalUser();
+    if (!authUser) {
       return { success: false, message: 'Please login first' };
     }
 
@@ -137,7 +137,7 @@ export async function checkin(): Promise<TaskResult> {
       const existing = await tx.daily_tasks.findUnique({
         where: {
           user_id_date: {
-            user_id: firebaseUser.uid,
+            user_id: authUser.uid,
             date: today,
           },
         },
@@ -151,12 +151,12 @@ export async function checkin(): Promise<TaskResult> {
       await tx.daily_tasks.upsert({
         where: {
           user_id_date: {
-            user_id: firebaseUser.uid,
+            user_id: authUser.uid,
             date: today,
           },
         },
         create: {
-          user_id: firebaseUser.uid,
+          user_id: authUser.uid,
           date: today,
           checkin_done: true,
           checkin_credits: credits,
@@ -169,7 +169,7 @@ export async function checkin(): Promise<TaskResult> {
 
       // 增加用户积分
       await tx.users.update({
-        where: { user_id: firebaseUser.uid },
+        where: { user_id: authUser.uid },
         data: {
           credits: { increment: credits },
         },
@@ -178,7 +178,7 @@ export async function checkin(): Promise<TaskResult> {
       // 记录积分历史
       await tx.credit_history.create({
         data: {
-          user_id: firebaseUser.uid,
+          user_id: authUser.uid,
           amount: credits,
           description: 'Daily check-in reward',
           product_type: 'daily_checkin',
@@ -205,8 +205,8 @@ export async function claimAdReward(adWatched: boolean = true): Promise<TaskResu
       return { success: false, message: 'Please watch the ad first' };
     }
 
-    const firebaseUser = await getFirebaseUserFromCookie();
-    if (!firebaseUser) {
+    const authUser = await getOptionalUser();
+    if (!authUser) {
       return { success: false, message: 'Please login first' };
     }
 
@@ -224,7 +224,7 @@ export async function claimAdReward(adWatched: boolean = true): Promise<TaskResu
       const existing = await tx.daily_tasks.findUnique({
         where: {
           user_id_date: {
-            user_id: firebaseUser.uid,
+            user_id: authUser.uid,
             date: today,
           },
         },
@@ -246,12 +246,12 @@ export async function claimAdReward(adWatched: boolean = true): Promise<TaskResu
       await tx.daily_tasks.upsert({
         where: {
           user_id_date: {
-            user_id: firebaseUser.uid,
+            user_id: authUser.uid,
             date: today,
           },
         },
         create: {
-          user_id: firebaseUser.uid,
+          user_id: authUser.uid,
           date: today,
           ad_rewards_claimed: newClaimed,
           ad_rewards_credits: credits,
@@ -264,7 +264,7 @@ export async function claimAdReward(adWatched: boolean = true): Promise<TaskResu
 
       // 增加用户积分
       await tx.users.update({
-        where: { user_id: firebaseUser.uid },
+        where: { user_id: authUser.uid },
         data: {
           credits: { increment: credits },
         },
@@ -273,7 +273,7 @@ export async function claimAdReward(adWatched: boolean = true): Promise<TaskResu
       // 记录积分历史
       await tx.credit_history.create({
         data: {
-          user_id: firebaseUser.uid,
+          user_id: authUser.uid,
           amount: credits,
           description: `Ad reward tier ${newClaimed}`,
           product_type: 'ad_reward',

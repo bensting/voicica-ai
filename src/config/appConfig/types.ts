@@ -46,8 +46,8 @@ export interface DailyTasksConfig {
   checkin_credits: number;
   /** 广告奖励积分档位（递进式） */
   ad_reward_tiers: number[];
-  /** 弹窗每日最多显示次数 */
-  popup_max_per_day: number;
+  /** 弹窗最小间隔时间（分钟） */
+  popup_interval_minutes: number;
   /** 是否启用 */
   enabled: boolean;
 }

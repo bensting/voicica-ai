@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { X, Gift, Check, Loader2, Play, LogIn } from 'lucide-react';
+import { X, Gift, Check, Loader2, Play } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 import { useDailyTasks } from '@/hooks/useDailyTasks';
@@ -93,40 +93,75 @@ export default function DailyTasksModal({ isOpen, onClose, onCreditsUpdated }: D
   };
 
   // 渲染未登录状态
-  const renderGuestContent = () => (
-    <div className="text-center">
-      {/* 图标 */}
-      <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center">
-        <Gift className="w-8 h-8 text-white" />
+  const renderGuestContent = () => {
+    const totalAdCredits = config?.ad_reward_tiers?.reduce((a, b) => a + b, 0) || 0;
+
+    return (
+      <div>
+        {/* 标题 */}
+        <div className="text-center mb-5">
+          <div className="w-14 h-14 mx-auto mb-3 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center">
+            <Gift className="w-7 h-7 text-white" />
+          </div>
+          <h3 className="text-xl font-bold text-gray-900">
+            {t('dailyTasks.title')}
+          </h3>
+          <p className="text-sm text-gray-500">
+            {t('dailyTasks.loginToEarn')}
+          </p>
+        </div>
+
+        {/* 任务列表预览 */}
+        <div className="space-y-3 mb-3">
+          {/* 签到任务 */}
+          <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl p-4 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center">
+                <Gift className="w-5 h-5 text-purple-600" />
+              </div>
+              <div>
+                <p className="font-medium text-gray-900">{t('dailyTasks.checkin')}</p>
+                <p className="text-xs text-gray-500">+{formatCredits(config?.checkin_credits || 0)} {t('dailyTasks.credits')}</p>
+              </div>
+            </div>
+            <button
+              onClick={() => setShowLoginModal(true)}
+              className="px-4 py-2 bg-purple-600 text-white font-medium text-sm rounded-lg hover:bg-purple-700 transition-colors"
+            >
+              {t('dailyTasks.claim')}
+            </button>
+          </div>
+
+          {/* 观看视频任务 */}
+          <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl p-4 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
+                <Play className="w-5 h-5 text-green-600" />
+              </div>
+              <div>
+                <p className="font-medium text-gray-900">{t('dailyTasks.watchAds')}</p>
+                <p className="text-xs text-gray-500">+{formatCredits(totalAdCredits)} {t('dailyTasks.credits')}</p>
+              </div>
+            </div>
+            <button
+              onClick={() => setShowLoginModal(true)}
+              className="px-4 py-2 bg-green-600 text-white font-medium text-sm rounded-lg hover:bg-green-700 transition-colors"
+            >
+              {t('dailyTasks.claim')}
+            </button>
+          </div>
+        </div>
+
+        {/* 总计 */}
+        <div className="bg-gray-50 rounded-xl p-3 text-center">
+          <span className="text-sm text-gray-500">{t('dailyTasks.dailyMax')}: </span>
+          <span className="text-lg font-bold text-purple-600">
+            {formatCredits((config?.checkin_credits || 0) + totalAdCredits)} {t('dailyTasks.credits')}
+          </span>
+        </div>
       </div>
-
-      {/* 标题 */}
-      <h3 className="text-2xl font-bold text-gray-900 mb-2">
-        {t('dailyTasks.title')}
-      </h3>
-      <p className="text-gray-500 mb-6">
-        {t('dailyTasks.loginToEarn')}
-      </p>
-
-      {/* 每日可获得积分预览 */}
-      <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-2xl p-6 mb-6">
-        <p className="text-sm text-gray-500 mb-2">{t('dailyTasks.dailyMax')}</p>
-        <p className="text-4xl font-bold text-purple-600">
-          {formatCredits((config?.checkin_credits || 0) + (config?.ad_reward_tiers?.reduce((a, b) => a + b, 0) || 0))}
-        </p>
-        <p className="text-sm text-gray-500">{t('dailyTasks.credits')}</p>
-      </div>
-
-      {/* 登录按钮 */}
-      <button
-        onClick={() => setShowLoginModal(true)}
-        className="w-full py-4 bg-purple-600 text-white font-semibold rounded-xl hover:bg-purple-700 transition-colors flex items-center justify-center gap-2"
-      >
-        <LogIn className="w-5 h-5" />
-        {t('dailyTasks.loginNow')}
-      </button>
-    </div>
-  );
+    );
+  };
 
   // 渲染已登录状态
   const renderLoggedInContent = () => {

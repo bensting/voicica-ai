@@ -12,8 +12,8 @@ import {
 } from '@/actions/daily-tasks';
 import type { DailyTasksConfig } from '@/config/appConfig';
 
-// 弹窗显示次数存储 key
-const POPUP_COUNT_KEY_PREFIX = 'daily_tasks_popup_';
+// 弹窗上次显示时间存储 key
+const POPUP_LAST_SHOWN_KEY = 'daily_tasks_popup_last_shown';
 
 interface UseDailyTasksReturn {
   /** 每日任务状态 */
@@ -41,29 +41,29 @@ interface UseDailyTasksReturn {
 }
 
 /**
- * 获取今天的日期字符串
+ * 获取上次弹窗显示时间
  */
-function getTodayKey(): string {
-  return new Date().toISOString().split('T')[0];
-}
-
-/**
- * 获取今天的弹窗显示次数
- */
-function getPopupCountToday(): number {
+function getLastPopupTime(): number {
   if (typeof window === 'undefined') return 0;
-  const key = `${POPUP_COUNT_KEY_PREFIX}${getTodayKey()}`;
-  return parseInt(localStorage.getItem(key) || '0', 10);
+  return parseInt(localStorage.getItem(POPUP_LAST_SHOWN_KEY) || '0', 10);
 }
 
 /**
- * 增加今天的弹窗显示次数
+ * 记录弹窗显示时间
  */
-function incrementPopupCount(): void {
+function setLastPopupTime(): void {
   if (typeof window === 'undefined') return;
-  const key = `${POPUP_COUNT_KEY_PREFIX}${getTodayKey()}`;
-  const count = getPopupCountToday();
-  localStorage.setItem(key, String(count + 1));
+  localStorage.setItem(POPUP_LAST_SHOWN_KEY, String(Date.now()));
+}
+
+/**
+ * 检查是否已过间隔时间
+ */
+function hasIntervalPassed(intervalMinutes: number): boolean {
+  const lastTime = getLastPopupTime();
+  if (lastTime === 0) return true; // 从未显示过
+  const intervalMs = intervalMinutes * 60 * 1000;
+  return Date.now() - lastTime >= intervalMs;
 }
 
 /**
@@ -128,13 +128,16 @@ export function useDailyTasks(): UseDailyTasksReturn {
       return;
     }
 
+    // 检查是否已过间隔时间
+    if (!hasIntervalPassed(config.popup_interval_minutes)) {
+      setShouldShowPopup(false);
+      return;
+    }
+
     // 未登录用户：显示弹窗引导登录
     if (!user) {
-      const count = getPopupCountToday();
-      if (count < config.popup_max_per_day) {
-        setShouldShowPopup(true);
-        return;
-      }
+      setShouldShowPopup(true);
+      return;
     }
 
     // 已登录用户：如果还有任务未完成，显示弹窗
@@ -144,11 +147,8 @@ export function useDailyTasks(): UseDailyTasksReturn {
         status.adRewardsClaimed < (config.ad_reward_tiers?.length || 0);
 
       if (hasUnclaimedTasks) {
-        const count = getPopupCountToday();
-        if (count < config.popup_max_per_day) {
-          setShouldShowPopup(true);
-          return;
-        }
+        setShouldShowPopup(true);
+        return;
       }
     }
 
@@ -157,7 +157,7 @@ export function useDailyTasks(): UseDailyTasksReturn {
 
   // 标记弹窗已显示
   const markPopupShown = useCallback(() => {
-    incrementPopupCount();
+    setLastPopupTime();
   }, []);
 
   // 关闭弹窗

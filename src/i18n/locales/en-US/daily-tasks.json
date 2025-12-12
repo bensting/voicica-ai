@@ -11,11 +11,13 @@
     "todayEarned": "Today's Progress",
 
     "checkin": "Daily Check-in",
+    "oneClickClaim": "One-click claim",
     "claim": "Claim",
     "claimed": "Claimed",
 
-    "watchAds": "Watch Ads for Credits",
-    "watchAdGet": "Watch Ad +{{credits}}",
+    "watchAds": "Watch Videos",
+    "watchMultiple": "Watch {{count}} videos",
+    "watchAdGet": "Watch +{{credits}}",
     "allAdsClaimed": "All Claimed Today",
 
     "resetTip": "Tasks reset daily at midnight"

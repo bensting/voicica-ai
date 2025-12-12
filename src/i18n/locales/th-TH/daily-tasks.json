@@ -11,11 +11,13 @@
     "todayEarned": "ความคืบหน้าวันนี้",
 
     "checkin": "เช็คอินประจำวัน",
+    "oneClickClaim": "รับด้วยคลิกเดียว",
     "claim": "รับ",
     "claimed": "รับแล้ว",
 
-    "watchAds": "ดูโฆษณารับเครดิต",
-    "watchAdGet": "ดูโฆษณา +{{credits}}",
+    "watchAds": "ดูวิดีโอ",
+    "watchMultiple": "ดู {{count}} วิดีโอ",
+    "watchAdGet": "ดู +{{credits}}",
     "allAdsClaimed": "รับครบแล้ววันนี้",
 
     "resetTip": "ภารกิจรีเซ็ตทุกเที่ยงคืน"

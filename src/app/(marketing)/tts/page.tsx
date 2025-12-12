@@ -3,13 +3,13 @@
 import { useState, useRef, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Image from 'next/image';
-import { Play, Pause, Mic, Download, Sparkles, ChevronUp, Loader2, Globe, Check, Smartphone } from 'lucide-react';
+import { Play, Pause, Mic, Download, Sparkles, ChevronUp, Loader2, Globe, Check } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { GradientButton } from '@/components/ui';
 import { AdBanner } from '@/components/ads';
 import { LanguageExploreGrid, type LanguageCardItem } from '@/components/features/tts-promo';
+import { AppDownloadButtons } from '@/components/features/app-download';
 import { getPromoVoices } from '@/actions/voice';
-import { getLatestRelease, incrementDownloadCountByVersion } from '@/actions/admin/app-releases';
 import { getVoiceSampleUrl } from '@/types/voice';
 import type { Voice } from '@/types/voice';
 
@@ -110,54 +110,6 @@ export default function TTSPromoPage() {
   const [loading, setLoading] = useState(true);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
-
-  // APK download state
-  const [apkInfo, setApkInfo] = useState<{
-    version: string;
-    download_url: string;
-  } | null>(null);
-
-  // Device detection state
-  const [deviceType, setDeviceType] = useState<'android' | 'ios' | 'desktop'>('desktop');
-
-  // Detect device type
-  useEffect(() => {
-    const userAgent = navigator.userAgent.toLowerCase();
-    if (/android/.test(userAgent)) {
-      setDeviceType('android');
-    } else if (/iphone|ipad|ipod/.test(userAgent)) {
-      setDeviceType('ios');
-    } else {
-      setDeviceType('desktop');
-    }
-  }, []);
-
-  // Load latest APK info
-  useEffect(() => {
-    async function loadApkInfo() {
-      try {
-        const release = await getLatestRelease('android');
-        if (release) {
-          setApkInfo({
-            version: release.version,
-            download_url: release.download_url,
-          });
-        }
-      } catch (error) {
-        console.error('Failed to load APK info:', error);
-      }
-    }
-    loadApkInfo();
-  }, []);
-
-  // Handle APK download with tracking
-  const handleApkDownload = async () => {
-    if (!apkInfo) return;
-    // Track download count
-    await incrementDownloadCountByVersion('android', apkInfo.version);
-    // Trigger download
-    window.open(apkInfo.download_url, '_blank');
-  };
 
   // Initialize language with priority: URL param > UI locale > browser language > English
   useEffect(() => {
@@ -380,89 +332,30 @@ export default function TTSPromoPage() {
             ))}
           </div>
 
-          {/* Download & Try Buttons */}
-          {/* 桌面端显示多个按钮，移动端根据设备类型显示 */}
-          <div className={`flex justify-center gap-3 ${deviceType === 'desktop' ? 'flex-wrap' : ''}`}>
-            {/* Android APK - 主推，仅在非 iOS 设备上显示 */}
-            {deviceType !== 'ios' && (
-              apkInfo ? (
+          {/* Download Buttons - 使用公共组件 */}
+          <div className="flex justify-center">
+            <div className="w-full max-w-sm bg-gray-900/60 backdrop-blur-sm rounded-2xl p-4 border border-gray-800">
+              <AppDownloadButtons variant="dark" showSectionHeaders={true} />
+
+              {/* Web Version 入口 */}
+              <div className="mt-4 pt-4 border-t border-gray-700">
                 <button
-                  onClick={handleApkDownload}
-                  className={`flex items-center gap-3 bg-gradient-to-r from-purple-600 to-pink-600 rounded-xl px-4 py-3 hover:from-purple-700 hover:to-pink-700 transition-colors shadow-lg shadow-purple-500/20 ${deviceType === 'desktop' ? 'w-[180px]' : 'flex-1 max-w-[180px]'}`}
+                  onClick={handleGetStarted}
+                  className="w-full flex items-center gap-2.5 p-2.5 bg-gradient-to-r from-purple-600/20 to-pink-600/20 hover:from-purple-600/30 hover:to-pink-600/30 text-white rounded-xl transition-colors border border-purple-500/30"
                 >
-                  <div className="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center flex-shrink-0">
-                    <Smartphone className="w-4 h-4 text-white" />
+                  <div className="w-9 h-9 rounded-lg bg-purple-500/20 flex items-center justify-center flex-shrink-0">
+                    <Globe className="w-4 h-4 text-purple-400" />
                   </div>
-                  <div className="text-left">
-                    <div className="text-[10px] text-white/70 uppercase tracking-wide">{t('ttsPromo.hero.downloadApk')}</div>
-                    <div className="text-sm font-semibold text-white">Android</div>
+                  <div className="text-left flex-1">
+                    <div className="font-semibold text-sm">{t('ttsPromo.hero.webVersion')}</div>
+                    <div className="text-xs text-gray-400">{t('ttsPromo.hero.tryNow')}</div>
                   </div>
+                  <svg className="w-4 h-4 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
                 </button>
-              ) : (
-                <div className={`flex items-center gap-3 bg-gray-900/50 border border-gray-700/50 rounded-xl px-4 py-3 opacity-50 cursor-not-allowed ${deviceType === 'desktop' ? 'w-[180px]' : 'flex-1 max-w-[180px]'}`}>
-                  <div className="w-8 h-8 rounded-lg bg-gray-700 flex items-center justify-center flex-shrink-0">
-                    <Smartphone className="w-4 h-4 text-gray-500" />
-                  </div>
-                  <div className="text-left">
-                    <div className="text-[10px] text-gray-500 uppercase tracking-wide">Android</div>
-                    <div className="text-sm font-semibold text-gray-400">{t('ttsPromo.hero.comingSoon')}</div>
-                  </div>
-                </div>
-              )
-            )}
-
-            {/* APKPure - 仅在桌面端或 Android 设备上显示 */}
-            {(deviceType === 'desktop' || deviceType === 'android') && (
-              <button
-                onClick={() => window.open('https://apkpure.com/p/ai.voicica.app', '_blank')}
-                className={`flex items-center gap-3 bg-gray-900/80 border border-gray-700 rounded-xl px-4 py-3 hover:bg-gray-800 transition-colors ${deviceType === 'desktop' ? 'w-[180px]' : 'flex-1 max-w-[180px]'}`}
-              >
-                <div className="w-8 h-8 rounded-lg bg-[#2ECC71]/20 flex items-center justify-center flex-shrink-0">
-                  <svg viewBox="0 0 24 24" className="w-5 h-5" fill="url(#apkpureGradTts)">
-                    <defs>
-                      <linearGradient id="apkpureGradTts" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" style={{ stopColor: '#54D989' }} />
-                        <stop offset="100%" style={{ stopColor: '#2ECC71' }} />
-                      </linearGradient>
-                    </defs>
-                    <path d="M12 2L2 22h6l1.5-4h5l1.5 4h6L12 2zm0 7l2.5 7h-5L12 9z"/>
-                  </svg>
-                </div>
-                <div className="text-left">
-                  <div className="text-[10px] text-gray-400 uppercase tracking-wide">GET IT ON</div>
-                  <div className="text-sm font-semibold text-white">APKPure</div>
-                </div>
-              </button>
-            )}
-
-            {/* iOS - 仅在非 Android 设备上显示 */}
-            {deviceType !== 'android' && (
-              <div className={`flex items-center gap-3 bg-gray-900/50 border border-gray-700/50 rounded-xl px-4 py-3 opacity-50 cursor-not-allowed ${deviceType === 'desktop' ? 'w-[180px]' : 'flex-1 max-w-[180px]'}`}>
-                <div className="w-8 h-8 rounded-lg bg-gray-700 flex items-center justify-center flex-shrink-0">
-                  <svg viewBox="0 0 24 24" className="w-4 h-4 text-gray-400" fill="currentColor">
-                    <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
-                  </svg>
-                </div>
-                <div className="text-left">
-                  <div className="text-[10px] text-gray-500 uppercase tracking-wide">iOS</div>
-                  <div className="text-sm font-semibold text-gray-400">{t('ttsPromo.hero.comingSoon')}</div>
-                </div>
               </div>
-            )}
-
-            {/* Web Version - 次要样式 */}
-            <button
-              onClick={handleGetStarted}
-              className={`flex items-center gap-3 bg-gray-900/80 border border-purple-500/50 rounded-xl px-4 py-3 hover:bg-gray-800 hover:border-purple-500 transition-colors ${deviceType === 'desktop' ? 'w-[180px]' : 'flex-1 max-w-[180px]'}`}
-            >
-              <div className="w-8 h-8 rounded-lg bg-purple-500/20 flex items-center justify-center flex-shrink-0">
-                <Globe className="w-4 h-4 text-purple-400" />
-              </div>
-              <div className="text-left">
-                <div className="text-[10px] text-gray-400 uppercase tracking-wide whitespace-nowrap">{t('ttsPromo.hero.tryNow')}</div>
-                <div className="text-sm font-semibold text-white whitespace-nowrap">{t('ttsPromo.hero.webVersion')}</div>
-              </div>
-            </button>
+            </div>
           </div>
         </div>
       </section>

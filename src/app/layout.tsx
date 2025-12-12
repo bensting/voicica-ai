@@ -196,12 +196,13 @@ export default async function RootLayout({
               <UserProvider>
                 <CreditsProvider>
                   <AudioSettingsProvider>
-                    <DeviceFingerprintProvider />
-                    <CapacitorProvider />
-                    {children}
-                    <PWAUpdatePrompt />
-                    <AppUpdatePrompt />
-                    <ServerActionErrorHandler />
+                    <DeviceFingerprintProvider>
+                      <CapacitorProvider />
+                      {children}
+                      <PWAUpdatePrompt />
+                      <AppUpdatePrompt />
+                      <ServerActionErrorHandler />
+                    </DeviceFingerprintProvider>
                   </AudioSettingsProvider>
                 </CreditsProvider>
               </UserProvider>

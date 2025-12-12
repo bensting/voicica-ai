@@ -3,12 +3,11 @@
 import { useState, useRef, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Image from 'next/image';
-import { Play, Pause, Mic, Download, Sparkles, ChevronUp, Loader2, Globe, Check } from 'lucide-react';
+import { Play, Pause, Mic, Download, Sparkles, ChevronUp, Loader2, Check, Globe } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { GradientButton } from '@/components/ui';
 import { AdBanner } from '@/components/ads';
-import { LanguageExploreGrid, type LanguageCardItem } from '@/components/features/tts-promo';
-import { AppDownloadButtons } from '@/components/features/app-download';
+import { LanguageExploreGrid, TTSHeroSection, type LanguageCardItem } from '@/components/features/tts-promo';
 import { getPromoVoices } from '@/actions/voice';
 import { getVoiceSampleUrl } from '@/types/voice';
 import type { Voice } from '@/types/voice';
@@ -280,85 +279,21 @@ export default function TTSPromoPage() {
   return (
     <div className="min-h-screen bg-[#0a0a0f]">
       {/* ========== Hero Section ========== */}
-      <section className="relative pt-20 pb-4 px-4 overflow-hidden">
-        {/* Background gradient */}
-        <div className="absolute inset-0 bg-gradient-to-b from-purple-900/20 via-transparent to-transparent" />
-
-        {/* Animated background elements */}
-        <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute top-20 left-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl" />
-          <div className="absolute top-40 right-1/4 w-80 h-80 bg-pink-500/10 rounded-full blur-3xl" />
-        </div>
-
-        <div className="relative z-10 max-w-6xl mx-auto">
-          {/* Free Badge */}
-          <div className="flex justify-center mb-4">
-            <div className="inline-flex items-center gap-2 bg-green-500/20 border border-green-500/30 rounded-full px-4 py-1.5">
-              <Check className="w-4 h-4 text-green-400" />
-              <span className="text-green-400 text-sm font-medium">{t('ttsPromo.hero.badge')}</span>
-            </div>
-          </div>
-
-          {/* Main Headline */}
-          <div className="text-center mb-4">
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-3 leading-tight">
-              {t('ttsPromo.hero.title1')}{' '}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">
-                {t('ttsPromo.hero.titleHighlight1')}
-              </span>
-              <br />
-              {t('ttsPromo.hero.title2')}
-            </h1>
-
-            {/* Subtitle with stats */}
-            <p className="text-xl md:text-2xl font-semibold text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-400 mb-3">
-              {t('ttsPromo.hero.subtitle')}
-            </p>
-
-            <p className="text-gray-300 text-lg md:text-xl max-w-2xl mx-auto leading-relaxed">
-              {t('ttsPromo.hero.description')}
-            </p>
-          </div>
-
-          {/* Stats Row */}
-          <div className="flex justify-center gap-6 md:gap-10 mb-6">
-            {STATS_CONFIG.map((stat, index) => (
-              <div key={index} className="text-center">
-                <div className={`text-2xl md:text-3xl font-bold ${stat.isFree ? 'text-green-400' : 'text-purple-400'}`}>
-                  {stat.value}
-                </div>
-                <div className="text-xs md:text-sm text-gray-400">{t(stat.labelKey)}</div>
-              </div>
-            ))}
-          </div>
-
-          {/* Download Buttons - 使用公共组件 */}
-          <div className="flex justify-center">
-            <div className="w-full max-w-sm bg-gray-900/60 backdrop-blur-sm rounded-2xl p-4 border border-gray-800">
-              <AppDownloadButtons variant="dark" showSectionHeaders={true} />
-
-              {/* Web Version 入口 */}
-              <div className="mt-4 pt-4 border-t border-gray-700">
-                <button
-                  onClick={handleGetStarted}
-                  className="w-full flex items-center gap-2.5 p-2.5 bg-gradient-to-r from-purple-600/20 to-pink-600/20 hover:from-purple-600/30 hover:to-pink-600/30 text-white rounded-xl transition-colors border border-purple-500/30"
-                >
-                  <div className="w-9 h-9 rounded-lg bg-purple-500/20 flex items-center justify-center flex-shrink-0">
-                    <Globe className="w-4 h-4 text-purple-400" />
-                  </div>
-                  <div className="text-left flex-1">
-                    <div className="font-semibold text-sm">{t('ttsPromo.hero.webVersion')}</div>
-                    <div className="text-xs text-gray-400">{t('ttsPromo.hero.tryNow')}</div>
-                  </div>
-                  <svg className="w-4 h-4 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      <TTSHeroSection
+        badge={t('ttsPromo.hero.badge')}
+        title1={t('ttsPromo.hero.title1')}
+        titleHighlight={t('ttsPromo.hero.titleHighlight1')}
+        title2={t('ttsPromo.hero.title2')}
+        subtitle={t('ttsPromo.hero.subtitle')}
+        description={t('ttsPromo.hero.description')}
+        stats={STATS_CONFIG.map(stat => ({
+          value: stat.value,
+          label: t(stat.labelKey),
+          isFree: stat.isFree,
+        }))}
+        webVersionText={t('ttsPromo.hero.webVersion')}
+        tryNowText={t('ttsPromo.hero.tryNow')}
+      />
 
       {/* 广告位 - Hero 底部 */}
       <AdBanner slot="TTS_HERO_BOTTOM" variant="section" className="bg-[#0a0a0f]" />

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { X, Gift, Check, Loader2, Play } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -36,13 +36,6 @@ export default function DailyTasksModal({ isOpen, onClose, onCreditsUpdated }: D
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [lastClaimedCredits, setLastClaimedCredits] = useState<number | null>(null);
 
-  // 标记弹窗已显示
-  useEffect(() => {
-    if (isOpen) {
-      markPopupShown();
-    }
-  }, [isOpen, markPopupShown]);
-
   // 登录成功后刷新状态
   useEffect(() => {
     if (user && showLoginModal) {
@@ -51,16 +44,22 @@ export default function DailyTasksModal({ isOpen, onClose, onCreditsUpdated }: D
     }
   }, [user, showLoginModal, refresh]);
 
+  // 关闭弹窗时标记已显示
+  const handleClose = useCallback(() => {
+    markPopupShown();
+    onClose();
+  }, [markPopupShown, onClose]);
+
   // 按 ESC 键关闭
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && isOpen) {
-        onClose();
+        handleClose();
       }
     };
     document.addEventListener('keydown', handleEscape);
     return () => document.removeEventListener('keydown', handleEscape);
-  }, [isOpen, onClose]);
+  }, [isOpen, handleClose]);
 
   // 处理签到
   const handleCheckin = async () => {
@@ -316,7 +315,7 @@ export default function DailyTasksModal({ isOpen, onClose, onCreditsUpdated }: D
     <>
       <div
         className="fixed inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm z-[9998]"
-        onClick={onClose}
+        onClick={handleClose}
       >
         {/* 弹窗内容 */}
         <div
@@ -325,7 +324,7 @@ export default function DailyTasksModal({ isOpen, onClose, onCreditsUpdated }: D
         >
           {/* 关闭按钮 */}
           <button
-            onClick={onClose}
+            onClick={handleClose}
             className="absolute top-4 right-4 p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full transition-colors z-10"
             aria-label="Close"
           >

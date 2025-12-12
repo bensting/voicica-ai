@@ -1,0 +1,23 @@
+{
+  "dailyTasks": {
+    "title": "Daily Tasks",
+    "subtitle": "Complete tasks to earn free credits!",
+    "credits": "Credits",
+
+    "loginToEarn": "Login to start earning credits daily!",
+    "dailyMax": "Daily Maximum",
+    "loginNow": "Login Now",
+
+    "todayEarned": "Today's Progress",
+
+    "checkin": "Daily Check-in",
+    "claim": "Claim",
+    "claimed": "Claimed",
+
+    "watchAds": "Watch Ads for Credits",
+    "watchAdGet": "Watch Ad +{{credits}}",
+    "allAdsClaimed": "All Claimed Today",
+
+    "resetTip": "Tasks reset daily at midnight"
+  }
+}

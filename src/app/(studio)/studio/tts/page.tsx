@@ -7,7 +7,7 @@ import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 import { useStudio } from '@/contexts/StudioContext';
 import { useCredits } from '@/contexts/CreditsContext';
 import { useTTSGenerator } from '@/hooks/useTTSGenerator';
-import { useMonthlyCredits } from '@/hooks/useMonthlyCredits';
+import { useDailyTasks } from '@/hooks/useDailyTasks';
 import { TaskStatus } from '@/types/tts';
 import type { Voice } from '@/types/voice';
 import TextInput from '@/components/features/studio/tts/components/TextInput';
@@ -36,8 +36,8 @@ const AudioSettingsModal = dynamic(
   () => import('@/components/features/studio/tts/AudioSettingsModal'),
   { ssr: false }
 );
-const MonthlyRewardModal = dynamic(
-  () => import('@/components/features/monthly-credits/MonthlyRewardModal'),
+const DailyTasksModal = dynamic(
+  () => import('@/components/features/daily-tasks/DailyTasksModal'),
   { ssr: false }
 );
 
@@ -60,12 +60,11 @@ export default function StudioTTSPage() {
   const { setTitle } = useStudio();
   const { credits, loading: creditsLoading, refreshCredits } = useCredits();
 
-  // 月度福利 Hook
+  // 每日任务 Hook
   const {
-    shouldShowPopup: showMonthlyRewardPopup,
-    popupType: monthlyRewardPopupType,
-    dismissPopup: closeMonthlyRewardPopup,
-  } = useMonthlyCredits();
+    shouldShowPopup: showDailyTasksPopup,
+    dismissPopup: closeDailyTasksPopup,
+  } = useDailyTasks();
   const [isAudioModalOpen, setIsAudioModalOpen] = useState(false);
   const [isVoiceSelectorOpen, setIsVoiceSelectorOpen] = useState(false);
   const [isGeneratingModalOpen, setIsGeneratingModalOpen] = useState(false);
@@ -463,11 +462,12 @@ export default function StudioTTSPage() {
         variant="danger"
       />
 
-      {/* Monthly Reward Modal */}
-      {showMonthlyRewardPopup && monthlyRewardPopupType && (
-        <MonthlyRewardModal
-          isOpen={showMonthlyRewardPopup}
-          onClose={closeMonthlyRewardPopup}
+      {/* Daily Tasks Modal */}
+      {showDailyTasksPopup && (
+        <DailyTasksModal
+          isOpen={showDailyTasksPopup}
+          onClose={closeDailyTasksPopup}
+          onCreditsUpdated={refreshCredits}
         />
       )}
     </>

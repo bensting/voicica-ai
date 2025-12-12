@@ -20,6 +20,11 @@
     "watchAdGet": "Watch +{{credits}}",
     "allAdsClaimed": "All Claimed Today",
 
+    "loadingAd": "Loading ad...",
+    "adInterrupted": "Please watch the full video to earn rewards",
+    "adUnavailable": "No ads available, please try again later",
+    "adError": "Failed to load ad, please try again later",
+
     "resetTip": "Tasks reset daily at midnight"
   }
 }

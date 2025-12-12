@@ -6,6 +6,8 @@ import { X, Gift, Check, Loader2, Play } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 import { useDailyTasks } from '@/hooks/useDailyTasks';
+import { useAppLixirAd, type AdStatus } from '@/components/features/ads/AppLixirRewardedAd';
+import { getAppLixirConfig } from '@/config/appConfig';
 import LoginModal from '@/components/features/auth/LoginModal';
 
 interface DailyTasksModalProps {
@@ -35,6 +37,56 @@ export default function DailyTasksModal({ isOpen, onClose, onCreditsUpdated }: D
 
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [lastClaimedCredits, setLastClaimedCredits] = useState<number | null>(null);
+  const [adLoading, setAdLoading] = useState(false);
+  const [adError, setAdError] = useState<string | null>(null);
+
+  // 获取 AppLixir 配置
+  const appLixirConfig = getAppLixirConfig();
+
+  // 广告观看成功回调
+  const handleAdWatched = useCallback(async () => {
+    console.log('✅ [DailyTasks] Ad watched, claiming reward...');
+    setAdLoading(true);
+    const result = await doClaimAdReward();
+    setAdLoading(false);
+    if (result.success && result.credits) {
+      setLastClaimedCredits(result.credits);
+      onCreditsUpdated?.();
+      setTimeout(() => setLastClaimedCredits(null), 2000);
+    }
+  }, [doClaimAdReward, onCreditsUpdated]);
+
+  // 广告关闭回调（用户中途退出）
+  const handleAdClosed = useCallback(() => {
+    console.log('⚠️ [DailyTasks] Ad closed by user');
+    setAdLoading(false);
+    setAdError(t('dailyTasks.adInterrupted') || '广告未看完，无法获得奖励');
+    setTimeout(() => setAdError(null), 3000);
+  }, [t]);
+
+  // 广告错误回调
+  const handleAdError = useCallback((status: AdStatus) => {
+    console.error('❌ [DailyTasks] Ad error:', status);
+    setAdLoading(false);
+    if (status === 'ad-unavailable') {
+      setAdError(t('dailyTasks.adUnavailable') || '暂无可用广告，请稍后再试');
+    } else {
+      setAdError(t('dailyTasks.adError') || '广告加载失败，请稍后再试');
+    }
+    setTimeout(() => setAdError(null), 3000);
+  }, [t]);
+
+  // 初始化 AppLixir 广告
+  const { showAd } = useAppLixirAd({
+    config: {
+      zoneId: appLixirConfig.zone_id,
+      devId: appLixirConfig.dev_id,
+      gameId: appLixirConfig.game_id,
+    },
+    onAdWatched: handleAdWatched,
+    onAdClosed: handleAdClosed,
+    onAdError: handleAdError,
+  });
 
   // 登录成功后刷新状态
   useEffect(() => {
@@ -73,16 +125,31 @@ export default function DailyTasksModal({ isOpen, onClose, onCreditsUpdated }: D
   };
 
   // 处理看广告领奖励
-  const handleWatchAd = async () => {
-    // TODO: 第二阶段接入真实广告
-    // 目前模拟：点击即成功
-    const result = await doClaimAdReward();
-    if (result.success && result.credits) {
-      setLastClaimedCredits(result.credits);
-      onCreditsUpdated?.();
-      setTimeout(() => setLastClaimedCredits(null), 2000);
+  const handleWatchAd = useCallback(() => {
+    if (adLoading) return;
+
+    setAdError(null);
+    setAdLoading(true);
+
+    // 检查 AppLixir 是否启用
+    if (appLixirConfig.enabled && appLixirConfig.dev_id > 0) {
+      // 使用真实广告
+      console.log('🎬 [DailyTasks] Showing AppLixir ad...');
+      showAd();
+    } else {
+      // 模拟广告（开发环境或未配置时）
+      console.log('🎬 [DailyTasks] Simulating ad (dev mode)...');
+      setTimeout(async () => {
+        const result = await doClaimAdReward();
+        setAdLoading(false);
+        if (result.success && result.credits) {
+          setLastClaimedCredits(result.credits);
+          onCreditsUpdated?.();
+          setTimeout(() => setLastClaimedCredits(null), 2000);
+        }
+      }, 1000);
     }
-  };
+  }, [adLoading, appLixirConfig.enabled, appLixirConfig.dev_id, showAd, doClaimAdReward, onCreditsUpdated]);
 
   if (!isOpen || !config?.enabled) return null;
 
@@ -276,15 +343,25 @@ export default function DailyTasksModal({ isOpen, onClose, onCreditsUpdated }: D
             })}
           </div>
 
+          {/* 广告错误提示 */}
+          {adError && (
+            <div className="mb-3 p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-600 text-center">
+              {adError}
+            </div>
+          )}
+
           {/* 看广告按钮 */}
           {status.nextAdReward !== null ? (
             <button
               onClick={handleWatchAd}
-              disabled={claiming}
-              className="w-full py-3 bg-green-600 text-white font-semibold rounded-xl hover:bg-green-700 transition-colors flex items-center justify-center gap-2"
+              disabled={claiming || adLoading}
+              className="w-full py-3 bg-green-600 text-white font-semibold rounded-xl hover:bg-green-700 transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {claiming ? (
-                <Loader2 className="w-5 h-5 animate-spin" />
+              {(claiming || adLoading) ? (
+                <>
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                  <span>{t('dailyTasks.loadingAd') || '加载广告中...'}</span>
+                </>
               ) : (
                 <>
                   <Play className="w-5 h-5" />

@@ -51,4 +51,14 @@ export const appConfig: AppConfig = {
     popup_interval_minutes: 1, // 开发环境 1 分钟，方便测试
     enabled: true,
   },
+
+  /**
+   * AppLixir 广告配置
+   */
+  applixir: {
+    dev_id: 8990,   // Account ID
+    zone_id: 2050,  // Zone ID (Development)
+    game_id: 9561,  // Site ID
+    enabled: true,  // 开发环境也启用，方便测试
+  },
 };

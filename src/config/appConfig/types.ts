@@ -53,6 +53,20 @@ export interface DailyTasksConfig {
 }
 
 /**
+ * AppLixir 广告配置
+ */
+export interface AppLixirConfig {
+  /** 开发者 ID */
+  dev_id: number;
+  /** Zone ID */
+  zone_id: number;
+  /** Game ID */
+  game_id: number;
+  /** 是否启用（false 时使用模拟广告） */
+  enabled: boolean;
+}
+
+/**
  * 应用配置
  */
 export interface AppConfig {
@@ -61,4 +75,5 @@ export interface AppConfig {
   anonymous_user: AnonymousUserConfig;
   version_check: VersionCheckConfig;
   daily_tasks: DailyTasksConfig;
+  applixir: AppLixirConfig;
 }

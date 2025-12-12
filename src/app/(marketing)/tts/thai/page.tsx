@@ -10,12 +10,12 @@ import {
   LanguageDropdown,
   RoleFilterTabs,
   LanguageExploreGrid,
+  TTSHeroSection,
   type LanguageOption,
   type RoleOption,
   type LanguageCardItem,
 } from '@/components/features/tts-promo';
 import { getPromoVoices } from '@/actions/voice';
-import { getLatestRelease, incrementDownloadCountByVersion } from '@/actions/admin/app-releases';
 import type { Voice } from '@/types/voice';
 
 // Thai language TTS landing page - hardcoded content for SEO

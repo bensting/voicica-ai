@@ -12,9 +12,7 @@ export type AdStatus =
   | 'ad-clicked';     // 用户点击了广告
 
 interface AppLixirConfig {
-  zoneId: number;
-  devId: number;
-  gameId: number;
+  apiKey: string;
 }
 
 interface UseAppLixirOptions {
@@ -24,16 +22,17 @@ interface UseAppLixirOptions {
   onAdError?: (status: AdStatus) => void;
 }
 
+// 容器 ID
+const CONTAINER_ID = 'applixir-container';
+
 // 声明全局函数类型
 declare global {
   interface Window {
-    invokeApplixirVideoUnit: (options: {
-      zoneId: number;
-      devId: number;
-      gameId: number;
-      adStatusCb: (status: string) => void;
-      fallback?: number;
-      verbosity?: number;
+    initializeAndOpenPlayer: (options: {
+      apiKey: string;
+      injectionElementId: string;
+      adStatusCallbackFn: (status: string) => void;
+      adErrorCallbackFn: (error: { getError: () => { data: { errorCode?: number; errorMessage?: string } } }) => void;
     }) => void;
   }
 }
@@ -56,6 +55,15 @@ export function useAppLixirAd({ config, onAdWatched, onAdClosed, onAdError }: Us
       return;
     }
 
+    // 添加容器 div（如果不存在）
+    if (!document.getElementById(CONTAINER_ID)) {
+      const container = document.createElement('div');
+      container.id = CONTAINER_ID;
+      // 设置高 z-index 确保广告显示在最上层
+      container.style.cssText = 'position: relative; z-index: 99999;';
+      document.body.appendChild(container);
+    }
+
     const script = document.createElement('script');
     script.id = 'applixir-sdk';
     script.src = 'https://cdn.applixir.com/applixir.app.v6.0.1.js';
@@ -69,20 +77,6 @@ export function useAppLixirAd({ config, onAdWatched, onAdClosed, onAdError }: Us
     };
     document.head.appendChild(script);
 
-    // 添加容器 div（如果不存在）
-    if (!document.getElementById('applixir_vanishing_div')) {
-      const container = document.createElement('div');
-      container.id = 'applixir_vanishing_div';
-      container.style.cssText = 'position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 99999; display: none;';
-
-      const iframe = document.createElement('iframe');
-      iframe.id = 'applixir_parent';
-      iframe.style.cssText = 'width: 100%; height: 100%; border: none;';
-
-      container.appendChild(iframe);
-      document.body.appendChild(container);
-    }
-
     return () => {
       // 清理（可选，一般不需要移除）
     };
@@ -91,7 +85,7 @@ export function useAppLixirAd({ config, onAdWatched, onAdClosed, onAdError }: Us
   // 显示广告
   const showAd = useCallback(() => {
     if (typeof window === 'undefined') return;
-    if (!window.invokeApplixirVideoUnit) {
+    if (!window.initializeAndOpenPlayer) {
       console.error('❌ [AppLixir] SDK not loaded yet');
       onAdError?.('ad-error');
       return;
@@ -103,12 +97,6 @@ export function useAppLixirAd({ config, onAdWatched, onAdClosed, onAdError }: Us
 
     isShowingRef.current = true;
 
-    // 显示容器
-    const container = document.getElementById('applixir_vanishing_div');
-    if (container) {
-      container.style.display = 'block';
-    }
-
     // 状态回调
     const adStatusCallback = (status: string) => {
       console.log('📺 [AppLixir] Ad status:', status);
@@ -117,23 +105,19 @@ export function useAppLixirAd({ config, onAdWatched, onAdClosed, onAdError }: Us
         case 'ad-watched':
           // 用户看完了广告，发奖励！
           isShowingRef.current = false;
-          if (container) container.style.display = 'none';
           onAdWatched?.();
           break;
 
         case 'ad-interrupted':
           // 用户中途关闭
           isShowingRef.current = false;
-          if (container) container.style.display = 'none';
           onAdClosed?.();
           break;
 
         case 'ad-unavailable':
-        case 'ad-error':
-          // 广告不可用或出错
+          // 广告不可用
           isShowingRef.current = false;
-          if (container) container.style.display = 'none';
-          onAdError?.(status as AdStatus);
+          onAdError?.('ad-unavailable');
           break;
 
         case 'ad-started':
@@ -145,22 +129,39 @@ export function useAppLixirAd({ config, onAdWatched, onAdClosed, onAdError }: Us
           // 用户点击了广告
           console.log('👆 [AppLixir] Ad clicked');
           break;
+
+        default:
+          console.log('📺 [AppLixir] Unknown status:', status);
+      }
+    };
+
+    // 错误回调
+    const adErrorCallback = (error: { getError: () => { data: { errorCode?: number; errorMessage?: string } } }) => {
+      const errorData = error.getError();
+      const errorInfo = errorData?.data || {};
+      console.error('❌ [AppLixir] Error:', errorInfo);
+      isShowingRef.current = false;
+
+      // 错误码 303 = 无可用广告
+      if (errorInfo.errorCode === 303 || errorInfo.errorMessage?.includes('No Ads')) {
+        onAdError?.('ad-unavailable');
+      } else {
+        onAdError?.('ad-error');
       }
     };
 
     // 调用 SDK 显示广告
-    window.invokeApplixirVideoUnit({
-      zoneId: config.zoneId,
-      devId: config.devId,
-      gameId: config.gameId,
-      adStatusCb: adStatusCallback,
-      fallback: 1,
-      verbosity: 0,
+    console.log('🎬 [AppLixir] Opening player...');
+    window.initializeAndOpenPlayer({
+      apiKey: config.apiKey,
+      injectionElementId: CONTAINER_ID,
+      adStatusCallbackFn: adStatusCallback,
+      adErrorCallbackFn: adErrorCallback,
     });
-  }, [config, onAdWatched, onAdClosed, onAdError]);
+  }, [config.apiKey, onAdWatched, onAdClosed, onAdError]);
 
   // 检查是否可以显示广告
-  const isReady = scriptLoadedRef.current && typeof window !== 'undefined' && !!window.invokeApplixirVideoUnit;
+  const isReady = scriptLoadedRef.current && typeof window !== 'undefined' && !!window.initializeAndOpenPlayer;
 
   return {
     showAd,

@@ -8,7 +8,9 @@ import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 import { useDailyTasks } from '@/hooks/useDailyTasks';
 import { useAppLixirAd, type AdStatus } from '@/components/features/ads/AppLixirRewardedAd';
 import { getAppLixirConfig } from '@/config/appConfig';
+import { isNativeApp } from '@/lib/capacitor';
 import LoginModal from '@/components/features/auth/LoginModal';
+import AppDownloadModal from './AppDownloadModal';
 
 interface DailyTasksModalProps {
   /** 是否显示 */
@@ -36,6 +38,7 @@ export default function DailyTasksModal({ isOpen, onClose, onCreditsUpdated }: D
   } = useDailyTasks();
 
   const [showLoginModal, setShowLoginModal] = useState(false);
+  const [showDownloadModal, setShowDownloadModal] = useState(false);
   const [lastClaimedCredits, setLastClaimedCredits] = useState<number | null>(null);
   const [adLoading, setAdLoading] = useState(false);
   const [adError, setAdError] = useState<string | null>(null);
@@ -79,9 +82,7 @@ export default function DailyTasksModal({ isOpen, onClose, onCreditsUpdated }: D
   // 初始化 AppLixir 广告
   const { showAd } = useAppLixirAd({
     config: {
-      zoneId: appLixirConfig.zone_id,
-      devId: appLixirConfig.dev_id,
-      gameId: appLixirConfig.game_id,
+      apiKey: appLixirConfig.api_key,
     },
     onAdWatched: handleAdWatched,
     onAdClosed: handleAdClosed,
@@ -128,12 +129,18 @@ export default function DailyTasksModal({ isOpen, onClose, onCreditsUpdated }: D
   const handleWatchAd = useCallback(() => {
     if (adLoading) return;
 
+    // Web 端：弹出下载 App 引导页
+    if (!isNativeApp()) {
+      console.log('📱 [DailyTasks] Web platform, showing download modal...');
+      setShowDownloadModal(true);
+      return;
+    }
+
     setAdError(null);
     setAdLoading(true);
 
-    // 检查 AppLixir 是否启用
-    if (appLixirConfig.enabled && appLixirConfig.dev_id > 0) {
-      // 使用真实广告
+    // 原生 App：使用真实广告
+    if (appLixirConfig.enabled && appLixirConfig.api_key) {
       console.log('🎬 [DailyTasks] Showing AppLixir ad...');
       showAd();
     } else {
@@ -149,7 +156,7 @@ export default function DailyTasksModal({ isOpen, onClose, onCreditsUpdated }: D
         }
       }, 1000);
     }
-  }, [adLoading, appLixirConfig.enabled, appLixirConfig.dev_id, showAd, doClaimAdReward, onCreditsUpdated]);
+  }, [adLoading, appLixirConfig.enabled, appLixirConfig.api_key, showAd, doClaimAdReward, onCreditsUpdated]);
 
   if (!isOpen || !config?.enabled) return null;
 
@@ -231,7 +238,15 @@ export default function DailyTasksModal({ isOpen, onClose, onCreditsUpdated }: D
 
   // 渲染已登录状态
   const renderLoggedInContent = () => {
-    if (!status) return null;
+    // 加载中显示骨架屏
+    if (!status) {
+      return (
+        <div className="flex flex-col items-center justify-center py-12">
+          <Loader2 className="w-8 h-8 animate-spin text-purple-500 mb-3" />
+          <p className="text-sm text-gray-500">{t('common.loading') || '加载中...'}</p>
+        </div>
+      );
+    }
 
     const adTiers = config?.ad_reward_tiers || [];
     const totalAdCredits = adTiers.reduce((sum, v) => sum + v, 0);
@@ -391,7 +406,9 @@ export default function DailyTasksModal({ isOpen, onClose, onCreditsUpdated }: D
   const modalContent = (
     <>
       <div
-        className="fixed inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm z-[9998]"
+        className={`fixed inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm transition-all z-[9998] ${
+          adLoading ? 'opacity-0 pointer-events-none' : 'opacity-100'
+        }`}
         onClick={handleClose}
       >
         {/* 弹窗内容 */}
@@ -426,6 +443,12 @@ export default function DailyTasksModal({ isOpen, onClose, onCreditsUpdated }: D
       <LoginModal
         isOpen={showLoginModal}
         onClose={() => setShowLoginModal(false)}
+      />
+
+      {/* App 下载引导弹窗 */}
+      <AppDownloadModal
+        isOpen={showDownloadModal}
+        onClose={() => setShowDownloadModal(false)}
       />
     </>
   );

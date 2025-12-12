@@ -56,9 +56,7 @@ export const appConfig: AppConfig = {
    * AppLixir 广告配置
    */
   applixir: {
-    dev_id: 8990,   // Account ID
-    zone_id: 2050,  // Zone ID (Development)
-    game_id: 9561,  // Site ID
+    api_key: '6efa877c-8828-4355-977a-fd57996ddcbf',
     enabled: true,  // 开发环境也启用，方便测试
   },
 };

@@ -56,12 +56,8 @@ export interface DailyTasksConfig {
  * AppLixir 广告配置
  */
 export interface AppLixirConfig {
-  /** 开发者 ID */
-  dev_id: number;
-  /** Zone ID */
-  zone_id: number;
-  /** Game ID */
-  game_id: number;
+  /** API Key - 从 AppLixir 后台获取 */
+  api_key: string;
   /** 是否启用（false 时使用模拟广告） */
   enabled: boolean;
 }

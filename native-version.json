@@ -1,10 +1,10 @@
 {
-  "version": "1.0.35",
+  "version": "1.0.37",
   "buildNumber": 4,
   "description": "原生应用版本（Android/iOS 应用壳）",
   "changelog": [
     {
-      "version": "1.0.35",
+      "version": "1.0.37",
       "buildNumber": 4,
       "date": "2024-12-11",
       "changes": [

@@ -381,7 +381,7 @@ export default function TTSPromoPage() {
           </div>
 
           {/* Download & Try Buttons */}
-          {/* 桌面端显示3个按钮，移动端根据设备类型显示2个并排 */}
+          {/* 桌面端显示多个按钮，移动端根据设备类型显示 */}
           <div className={`flex justify-center gap-3 ${deviceType === 'desktop' ? 'flex-wrap' : ''}`}>
             {/* Android APK - 仅在非 iOS 设备上显示 */}
             {deviceType !== 'ios' && (
@@ -405,6 +405,20 @@ export default function TTSPromoPage() {
                   </div>
                 </div>
               )
+            )}
+
+            {/* APKPure - 仅在桌面端或 Android 设备上显示 */}
+            {(deviceType === 'desktop' || deviceType === 'android') && (
+              <button
+                onClick={() => window.open('https://apkpure.com/p/ai.voicica.app', '_blank')}
+                className={`flex items-center gap-3 bg-gray-900/80 border border-gray-700 rounded-xl px-4 py-3 hover:bg-gray-800 transition-colors ${deviceType === 'desktop' ? 'w-[180px]' : 'flex-1 max-w-[180px]'}`}
+              >
+                <span className="text-2xl">🛒</span>
+                <div className="text-left">
+                  <div className="text-[10px] text-gray-400 uppercase tracking-wide">GET IT ON</div>
+                  <div className="text-sm font-semibold text-white">APKPure</div>
+                </div>
+              </button>
             )}
 
             {/* iOS - 仅在非 Android 设备上显示 */}

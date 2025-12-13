@@ -12,10 +12,12 @@ export interface AdMobConfig {
     android: string;
     ios: string;
   };
-  /** 开屏广告单元 */
-  appOpen: {
+  /** 插页式广告单元（启动广告） */
+  interstitial: {
     android: string;
     ios: string;
+    /** 显示间隔（分钟） */
+    intervalMinutes: number;
   };
   /** 是否启用 */
   enabled: boolean;
@@ -32,9 +34,10 @@ const devConfig: AdMobConfig = {
     android: 'ca-app-pub-3940256099942544/5224354917',
     ios: 'ca-app-pub-3940256099942544/1712485313',
   },
-  appOpen: {
-    android: 'ca-app-pub-3940256099942544/9257395921',
-    ios: 'ca-app-pub-3940256099942544/5575463023',
+  interstitial: {
+    android: 'ca-app-pub-3940256099942544/1033173712',
+    ios: 'ca-app-pub-3940256099942544/4411468910',
+    intervalMinutes: 5, // 开发环境 5 分钟，方便测试
   },
   enabled: false,
 };
@@ -49,9 +52,10 @@ const prodConfig: AdMobConfig = {
     android: 'ca-app-pub-5946279989031789/2057707104',
     ios: '', // iOS 激励广告（待创建）
   },
-  appOpen: {
-    android: 'ca-app-pub-5946279989031789/6006343368',
-    ios: '', // iOS 开屏广告（待创建）
+  interstitial: {
+    android: 'ca-app-pub-5946279989031789/1915055115',
+    ios: '', // iOS 插页式广告（待创建）
+    intervalMinutes: 30, // 生产环境 30 分钟
   },
   enabled: true,
 };
@@ -68,10 +72,10 @@ export function getRewardedAdUnitId(platform: 'android' | 'ios'): string {
 }
 
 /**
- * 获取开屏广告单元 ID
+ * 获取插页式广告单元 ID（启动广告）
  */
-export function getAppOpenAdUnitId(platform: 'android' | 'ios'): string {
-  return admobConfig.appOpen[platform];
+export function getInterstitialAdUnitId(platform: 'android' | 'ios'): string {
+  return admobConfig.interstitial[platform];
 }
 
 /**

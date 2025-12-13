@@ -10,6 +10,7 @@ import { useTTSGenerator } from '@/hooks/useTTSGenerator';
 import { useDailyTasks } from '@/hooks/useDailyTasks';
 import { TaskStatus } from '@/types/tts';
 import type { Voice } from '@/types/voice';
+import { calculateVoiceCost, type VoiceType } from '@/config/creditsCost';
 import TextInput from '@/components/features/studio/tts/components/TextInput';
 import VoiceSelector from '@/components/features/studio/tts/components/VoiceSelector';
 import VoiceSelectButton from '@/components/features/studio/tts/components/VoiceSelectButton';
@@ -276,6 +277,24 @@ export default function StudioTTSPage() {
     [selectedVoice?.display_name, authLoading, isLocaleReady, t]
   );
 
+  // 计算预计消耗的积分
+  const estimatedCredits = useMemo(() => {
+    if (!text || text.length === 0 || !selectedVoice) {
+      return 0;
+    }
+    // 根据语音 role 映射到计费类型
+    const mapRoleToVoiceType = (role: string): VoiceType => {
+      const normalizedRole = role.toLowerCase();
+      if (normalizedRole === 'celebrity') return 'celebrity';
+      if (normalizedRole === 'professional') return 'professional';
+      if (normalizedRole === 'special') return 'special';
+      if (normalizedRole === 'clone') return 'clone';
+      return 'standard';
+    };
+    const voiceType = mapRoleToVoiceType(selectedVoice.role);
+    return calculateVoiceCost(text.length, voiceType);
+  }, [text, selectedVoice]);
+
   return (
     <>
       {/* Mobile Layout */}
@@ -319,6 +338,7 @@ export default function StudioTTSPage() {
               onOpenSettings={handleOpenSettings}
               isGenerating={isGenerating}
               canGenerate={canGenerate}
+              estimatedCredits={estimatedCredits}
             />
           </div>
         </div>
@@ -377,6 +397,7 @@ export default function StudioTTSPage() {
                   remainingCredits={credits}
                   creditsLoading={creditsLoading}
                   onClear={handleClearText}
+                  estimatedCredits={estimatedCredits}
                 />
               </div>
 

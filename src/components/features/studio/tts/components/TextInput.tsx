@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
-import { Trash2, ChevronRight, Gift, CreditCard, Sparkles } from 'lucide-react';
+import { Trash2, ChevronRight, Gift, CreditCard, Sparkles, Coins } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 import CreditsIcon from '@/components/icons/CreditsIcon';
@@ -29,6 +29,8 @@ interface TextInputProps {
   remainingCredits?: number;
   creditsLoading?: boolean;
   onClear?: () => void;
+  /** 预计消耗的积分数 */
+  estimatedCredits?: number;
 }
 
 /**
@@ -48,6 +50,7 @@ export default function TextInput({
   remainingCredits = 0,
   creditsLoading = false,
   onClear,
+  estimatedCredits,
 }: TextInputProps) {
   const { t } = useLanguage();
   const { user } = useFirebaseAuth();
@@ -254,6 +257,12 @@ export default function TextInput({
                       <path d="M8 5v14l11-7z" />
                     </svg>
                     <span>{t('tts.input.generateSpeech')}</span>
+                    {estimatedCredits !== undefined && estimatedCredits > 0 && (
+                      <span className="flex items-center gap-1 bg-white/20 px-2 py-0.5 rounded-full text-sm">
+                        <Coins className="w-3.5 h-3.5" />
+                        {estimatedCredits >= 1000 ? `${(estimatedCredits / 1000).toFixed(1)}k` : estimatedCredits}
+                      </span>
+                    )}
                   </>
                 )}
               </button>

@@ -302,3 +302,21 @@ model daily_tasks {
   @@index([user_id], map: "ix_daily_tasks_user_id")
   @@index([date], map: "ix_daily_tasks_date")
 }
+
+/// AdMob 激励广告奖励交易记录
+/// 用于 Server-Side Verification (SSV) 防重放攻击
+model ad_reward_transactions {
+  id              Int       @id @default(autoincrement())
+  transaction_id  String    @unique @db.VarChar(255)  // AdMob 交易 ID（唯一）
+  user_id         String    @db.VarChar(128)          // 用户 ID
+  tier            Int?                                 // 奖励档位（0-5 对应 200-1000）
+  timestamp       DateTime  @db.Timestamptz(6)        // 广告完成时间
+  ad_unit         String?   @db.VarChar(100)          // 广告单元 ID
+  reward_amount   Int       @default(0)               // AdMob 配置的奖励数量
+  processed       Boolean   @default(false)           // 是否已处理
+  created_at      DateTime  @default(now()) @db.Timestamptz(6)
+
+  @@index([user_id], map: "ix_ad_reward_transactions_user_id")
+  @@index([timestamp], map: "ix_ad_reward_transactions_timestamp")
+  @@index([processed], map: "ix_ad_reward_transactions_processed")
+}

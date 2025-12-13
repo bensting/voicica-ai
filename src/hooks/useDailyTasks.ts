@@ -11,6 +11,7 @@ import {
   type TaskResult,
 } from '@/actions/daily-tasks';
 import type { DailyTasksConfig } from '@/config/appConfig';
+import { useAdMob } from './useAdMob';
 
 // 弹窗上次显示时间存储 key
 const POPUP_LAST_SHOWN_KEY = 'daily_tasks_popup_last_shown';
@@ -28,6 +29,10 @@ interface UseDailyTasksReturn {
   error: string | null;
   /** 是否应该显示弹窗 */
   shouldShowPopup: boolean;
+  /** 是否在原生应用中 */
+  isNativeApp: boolean;
+  /** 广告是否准备好 */
+  isAdReady: boolean;
   /** 刷新状态 */
   refresh: () => Promise<void>;
   /** 签到 */
@@ -71,6 +76,7 @@ function hasIntervalPassed(intervalMinutes: number): boolean {
  */
 export function useDailyTasks(): UseDailyTasksReturn {
   const { user, loading: authLoading } = useFirebaseAuth();
+  const { showRewardedAd, isNative, isReady: isAdReady } = useAdMob();
   const [status, setStatus] = useState<DailyTasksStatus | null>(null);
   const [config, setConfig] = useState<DailyTasksConfig | null>(null);
   const [loading, setLoading] = useState(true);
@@ -190,7 +196,18 @@ export function useDailyTasks(): UseDailyTasksReturn {
     try {
       setClaiming(true);
       setError(null);
-      const result = await claimAdReward(true); // 第一阶段模拟广告已观看
+
+      // 显示激励广告
+      console.log('[DailyTasks] 开始显示激励广告...');
+      const adWatched = await showRewardedAd();
+
+      if (!adWatched) {
+        console.log('[DailyTasks] 用户未完成广告观看');
+        return { success: false, message: '请观看完整广告以获得奖励' };
+      }
+
+      console.log('[DailyTasks] 广告观看成功，领取奖励...');
+      const result = await claimAdReward(true);
       if (result.success) {
         await refresh();
       }
@@ -202,7 +219,7 @@ export function useDailyTasks(): UseDailyTasksReturn {
     } finally {
       setClaiming(false);
     }
-  }, [refresh]);
+  }, [refresh, showRewardedAd]);
 
   return {
     status,
@@ -211,6 +228,8 @@ export function useDailyTasks(): UseDailyTasksReturn {
     claiming,
     error,
     shouldShowPopup,
+    isNativeApp: isNative,
+    isAdReady,
     refresh,
     doCheckin,
     doClaimAdReward,

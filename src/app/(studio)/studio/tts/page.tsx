@@ -277,9 +277,10 @@ export default function StudioTTSPage() {
     [selectedVoice?.display_name, authLoading, isLocaleReady, t]
   );
 
-  // 计算预计消耗的积分
+  // 计算预计消耗的积分（去掉首尾空格后计算）
   const estimatedCredits = useMemo(() => {
-    if (!text || text.length === 0 || !selectedVoice) {
+    const trimmedText = text?.trim() || '';
+    if (trimmedText.length === 0 || !selectedVoice) {
       return 0;
     }
     // 根据语音 role 映射到计费类型
@@ -292,7 +293,7 @@ export default function StudioTTSPage() {
       return 'standard';
     };
     const voiceType = mapRoleToVoiceType(selectedVoice.role);
-    return calculateVoiceCost(text.length, voiceType);
+    return calculateVoiceCost(trimmedText.length, voiceType);
   }, [text, selectedVoice]);
 
   return (

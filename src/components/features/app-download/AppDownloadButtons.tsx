@@ -96,32 +96,32 @@ export default function AppDownloadButtons({
   // 样式配置
   const styles = {
     modal: {
-      container: compact ? 'space-y-2' : 'space-y-3',
-      sectionHeader: 'flex items-center gap-1.5 mb-1.5',
-      sectionTitle: 'font-semibold text-gray-900 text-sm',
-      buttonGroup: compact ? 'space-y-1.5' : 'space-y-2',
-      primaryButton: `w-full flex items-center gap-2 ${compact ? 'p-2' : 'p-2.5'} bg-gradient-to-r from-purple-600 to-pink-500 text-white rounded-xl hover:from-purple-700 hover:to-pink-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-md`,
-      secondaryButton: `w-full flex items-center gap-2 ${compact ? 'p-2' : 'p-2.5'} bg-gray-50 hover:bg-gray-100 text-gray-700 rounded-xl transition-colors border border-gray-200`,
-      disabledButton: `w-full flex items-center gap-2 ${compact ? 'p-2' : 'p-2.5'} bg-gray-100 text-gray-400 rounded-xl cursor-not-allowed`,
-      iconContainer: `${compact ? 'w-8 h-8' : 'w-9 h-9'} rounded-lg flex items-center justify-center flex-shrink-0`,
+      container: compact ? 'space-y-1.5' : 'space-y-3',
+      sectionHeader: compact ? 'flex items-center gap-1 mb-1' : 'flex items-center gap-1.5 mb-1.5',
+      sectionTitle: compact ? 'font-semibold text-gray-900 text-xs' : 'font-semibold text-gray-900 text-sm',
+      buttonGroup: compact ? 'space-y-1' : 'space-y-2',
+      primaryButton: `w-full flex items-center gap-2 ${compact ? 'p-1.5' : 'p-2.5'} bg-gradient-to-r from-purple-600 to-pink-500 text-white ${compact ? 'rounded-lg' : 'rounded-xl'} hover:from-purple-700 hover:to-pink-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-md`,
+      secondaryButton: `w-full flex items-center gap-2 ${compact ? 'p-1.5' : 'p-2.5'} bg-gray-50 hover:bg-gray-100 text-gray-700 ${compact ? 'rounded-lg' : 'rounded-xl'} transition-colors border border-gray-200`,
+      disabledButton: `w-full flex items-center gap-2 ${compact ? 'p-1.5' : 'p-2.5'} bg-gray-100 text-gray-400 ${compact ? 'rounded-lg' : 'rounded-xl'} cursor-not-allowed`,
+      iconContainer: `${compact ? 'w-7 h-7' : 'w-9 h-9'} ${compact ? 'rounded-md' : 'rounded-lg'} flex items-center justify-center flex-shrink-0`,
       primaryIconBg: 'bg-white/20',
-      textPrimary: 'font-semibold text-sm',
-      textSecondary: 'text-xs',
-      arrow: 'w-4 h-4',
+      textPrimary: compact ? 'font-semibold text-xs' : 'font-semibold text-sm',
+      textSecondary: compact ? 'text-[10px]' : 'text-xs',
+      arrow: compact ? 'w-3.5 h-3.5' : 'w-4 h-4',
     },
     dark: {
-      container: compact ? 'space-y-2' : 'space-y-3',
-      sectionHeader: 'flex items-center gap-1.5 mb-1.5',
-      sectionTitle: 'font-semibold text-white text-sm',
-      buttonGroup: compact ? 'space-y-1.5' : 'space-y-2',
-      primaryButton: `w-full flex items-center gap-2 ${compact ? 'p-2' : 'p-2.5'} bg-gradient-to-r from-purple-600 to-pink-500 text-white rounded-xl hover:from-purple-700 hover:to-pink-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-purple-500/20`,
-      secondaryButton: `w-full flex items-center gap-2 ${compact ? 'p-2' : 'p-2.5'} bg-gray-800/80 hover:bg-gray-700 text-white rounded-xl transition-colors border border-gray-700`,
-      disabledButton: `w-full flex items-center gap-2 ${compact ? 'p-2' : 'p-2.5'} bg-gray-800/50 text-gray-500 rounded-xl cursor-not-allowed border border-gray-700/50`,
-      iconContainer: `${compact ? 'w-8 h-8' : 'w-9 h-9'} rounded-lg flex items-center justify-center flex-shrink-0`,
+      container: compact ? 'space-y-1.5' : 'space-y-3',
+      sectionHeader: compact ? 'flex items-center gap-1 mb-1' : 'flex items-center gap-1.5 mb-1.5',
+      sectionTitle: compact ? 'font-semibold text-white text-xs' : 'font-semibold text-white text-sm',
+      buttonGroup: compact ? 'space-y-1' : 'space-y-2',
+      primaryButton: `w-full flex items-center gap-2 ${compact ? 'p-1.5' : 'p-2.5'} bg-gradient-to-r from-purple-600 to-pink-500 text-white ${compact ? 'rounded-lg' : 'rounded-xl'} hover:from-purple-700 hover:to-pink-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-purple-500/20`,
+      secondaryButton: `w-full flex items-center gap-2 ${compact ? 'p-1.5' : 'p-2.5'} bg-gray-800/80 hover:bg-gray-700 text-white ${compact ? 'rounded-lg' : 'rounded-xl'} transition-colors border border-gray-700`,
+      disabledButton: `w-full flex items-center gap-2 ${compact ? 'p-1.5' : 'p-2.5'} bg-gray-800/50 text-gray-500 ${compact ? 'rounded-lg' : 'rounded-xl'} cursor-not-allowed border border-gray-700/50`,
+      iconContainer: `${compact ? 'w-7 h-7' : 'w-9 h-9'} ${compact ? 'rounded-md' : 'rounded-lg'} flex items-center justify-center flex-shrink-0`,
       primaryIconBg: 'bg-white/20',
-      textPrimary: 'font-semibold text-sm',
-      textSecondary: 'text-xs',
-      arrow: 'w-4 h-4',
+      textPrimary: compact ? 'font-semibold text-xs' : 'font-semibold text-sm',
+      textSecondary: compact ? 'text-[10px]' : 'text-xs',
+      arrow: compact ? 'w-3.5 h-3.5' : 'w-4 h-4',
     },
   };
 
@@ -133,7 +133,7 @@ export default function AppDownloadButtons({
       <div>
         {showSectionHeaders && (
           <div className={s.sectionHeader}>
-            <div className="w-5 h-5 rounded bg-[#3DDC84] flex items-center justify-center">
+            <div className={`${compact ? 'w-4 h-4' : 'w-5 h-5'} rounded bg-[#3DDC84] flex items-center justify-center`}>
               <AndroidIcon />
             </div>
             <span className={s.sectionTitle}>Android</span>
@@ -148,7 +148,7 @@ export default function AppDownloadButtons({
             className={s.primaryButton}
           >
             <div className={`${s.iconContainer} ${s.primaryIconBg}`}>
-              <Smartphone className="w-4 h-4" />
+              <Smartphone className={compact ? 'w-3.5 h-3.5' : 'w-4 h-4'} />
             </div>
             <div className="text-left flex-1">
               <div className={s.textPrimary}>
@@ -169,7 +169,7 @@ export default function AppDownloadButtons({
             className={s.secondaryButton}
           >
             <div className={`${s.iconContainer} bg-[#2ECC71]/15`}>
-              <APKPureIcon />
+              <APKPureIcon className={compact ? 'w-4 h-4' : 'w-5 h-5'} />
             </div>
             <div className="text-left flex-1">
               <div className={s.textPrimary}>APKPure</div>
@@ -183,7 +183,7 @@ export default function AppDownloadButtons({
           {/* Google Play - Coming Soon */}
           <button disabled className={s.disabledButton}>
             <div className={`${s.iconContainer} ${variant === 'modal' ? 'bg-gray-200' : 'bg-gray-700'}`}>
-              <GooglePlayIcon className="w-5 h-5 opacity-50" />
+              <GooglePlayIcon className={`${compact ? 'w-4 h-4' : 'w-5 h-5'} opacity-50`} />
             </div>
             <div className="text-left flex-1">
               <div className={s.textPrimary}>Google Play</div>
@@ -197,7 +197,7 @@ export default function AppDownloadButtons({
       <div>
         {showSectionHeaders && (
           <div className={s.sectionHeader}>
-            <div className="w-5 h-5 rounded bg-gray-800 flex items-center justify-center">
+            <div className={`${compact ? 'w-4 h-4' : 'w-5 h-5'} rounded bg-gray-800 flex items-center justify-center`}>
               <AppleIcon />
             </div>
             <span className={s.sectionTitle}>iOS</span>
@@ -208,7 +208,7 @@ export default function AppDownloadButtons({
           {/* App Store - Coming Soon */}
           <button disabled className={s.disabledButton}>
             <div className={`${s.iconContainer} ${variant === 'modal' ? 'bg-gray-200' : 'bg-gray-700'}`}>
-              <AppStoreIcon className="w-5 h-5 opacity-50" color={variant === 'modal' ? '#9CA3AF' : '#6B7280'} />
+              <AppStoreIcon className={`${compact ? 'w-4 h-4' : 'w-5 h-5'} opacity-50`} color={variant === 'modal' ? '#9CA3AF' : '#6B7280'} />
             </div>
             <div className="text-left flex-1">
               <div className={s.textPrimary}>App Store</div>

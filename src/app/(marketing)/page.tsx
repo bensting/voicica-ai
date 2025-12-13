@@ -61,7 +61,7 @@ export default function Home() {
       />
 
       {/* 广告位 - Hero 底部（首屏曝光最高） */}
-      <AdBanner slot="HOME_HERO_BOTTOM" variant="section" />
+      <AdBanner variant="section" />
 
       {/* TTS Samples Section */}
       <TTSSamples />

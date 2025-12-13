@@ -146,7 +146,7 @@ export async function generateMetadata(): Promise<Metadata> {
     },
     // Google AdSense 验证
     other: {
-      "google-adsense-account": process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID || "",
+      "google-adsense-account": "ca-pub-5946279989031789",
     },
     // 备用语言链接（帮助 Google 理解多语言网站）
     alternates: {
@@ -213,14 +213,12 @@ export default async function RootLayout({
           <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID} />
         )}
         {/* Google AdSense */}
-        {process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID && (
-          <Script
-            async
-            src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID}`}
-            crossOrigin="anonymous"
-            strategy="lazyOnload"
-          />
-        )}
+        <Script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5946279989031789"
+          crossOrigin="anonymous"
+          strategy="lazyOnload"
+        />
         <SpeedInsights sampleRate={0.1} />
       </body>
     </html>

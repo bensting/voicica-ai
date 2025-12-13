@@ -18,7 +18,7 @@ export {
 export {
   admobConfig,
   getRewardedAdUnitId,
-  getAppOpenAdUnitId,
+  getInterstitialAdUnitId,
   isAdMobEnabled,
   type AdMobConfig,
 } from './admob';

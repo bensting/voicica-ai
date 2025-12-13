@@ -51,12 +51,4 @@ export const appConfig: AppConfig = {
     popup_interval_minutes: 1, // 开发环境 1 分钟，方便测试
     enabled: true,
   },
-
-  /**
-   * AppLixir 广告配置（Web 端）
-   */
-  applixir: {
-    api_key: '6efa877c-8828-4355-977a-fd57996ddcbf',
-    enabled: true,  // 开发环境也启用，方便测试
-  },
 };

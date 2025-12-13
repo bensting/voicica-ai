@@ -53,16 +53,6 @@ export interface DailyTasksConfig {
 }
 
 /**
- * AppLixir 广告配置（Web 端）
- */
-export interface AppLixirConfig {
-  /** API Key - 从 AppLixir 后台获取 */
-  api_key: string;
-  /** 是否启用（false 时使用模拟广告） */
-  enabled: boolean;
-}
-
-/**
  * 应用配置
  */
 export interface AppConfig {
@@ -71,5 +61,4 @@ export interface AppConfig {
   anonymous_user: AnonymousUserConfig;
   version_check: VersionCheckConfig;
   daily_tasks: DailyTasksConfig;
-  applixir: AppLixirConfig;
 }

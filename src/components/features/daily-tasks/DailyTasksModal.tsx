@@ -154,7 +154,7 @@ export default function DailyTasksModal({ isOpen, onClose, onCreditsUpdated }: D
         }
       }, 1000);
     }
-  }, [adLoading, applixirConfig.enabled, applixirConfig.apiKey, showAd, doClaimAdReward, onCreditsUpdated]);
+  }, [adLoading, showAd, doClaimAdReward, onCreditsUpdated]);
 
   if (!isOpen || !config?.enabled) return null;
 

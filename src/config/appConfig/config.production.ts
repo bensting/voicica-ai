@@ -24,8 +24,8 @@ export const appConfig: AppConfig = {
    * 用户积分配置
    */
   credits: {
-    anonymous_user: 5,
-    registered_user: 20,
+    anonymous_user: 0,
+    registered_user: 0,
   },
 
   /**

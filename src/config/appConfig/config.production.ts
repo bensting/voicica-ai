@@ -53,11 +53,23 @@ export const appConfig: AppConfig = {
   },
 
   /**
-   * AppLixir 广告配置
+   * AppLixir 广告配置（Web 端）
    * 从 AppLixir 后台 (https://www.applixir.com/) 的 GENERAL 页面获取 API Key
    */
   applixir: {
     api_key: '6efa877c-8828-4355-977a-fd57996ddcbf',
+    enabled: true,  // 生产环境启用真实广告
+  },
+
+  /**
+   * AdMob 广告配置（移动端）
+   * 从 Google AdMob 后台获取
+   */
+  admob: {
+    android_app_id: 'ca-app-pub-5946279989031789~1671706051',
+    ios_app_id: '', // iOS 应用 ID（待创建）
+    android_rewarded_ad_unit_id: 'ca-app-pub-5946279989031789/2057707104',
+    ios_rewarded_ad_unit_id: '', // iOS 激励广告单元 ID（待创建）
     enabled: true,  // 生产环境启用真实广告
   },
 };

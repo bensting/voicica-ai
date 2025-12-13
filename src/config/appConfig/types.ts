@@ -53,12 +53,28 @@ export interface DailyTasksConfig {
 }
 
 /**
- * AppLixir 广告配置
+ * AppLixir 广告配置（Web 端）
  */
 export interface AppLixirConfig {
   /** API Key - 从 AppLixir 后台获取 */
   api_key: string;
   /** 是否启用（false 时使用模拟广告） */
+  enabled: boolean;
+}
+
+/**
+ * AdMob 广告配置（移动端）
+ */
+export interface AdMobConfig {
+  /** Android 应用 ID */
+  android_app_id: string;
+  /** iOS 应用 ID */
+  ios_app_id: string;
+  /** Android 激励广告单元 ID */
+  android_rewarded_ad_unit_id: string;
+  /** iOS 激励广告单元 ID */
+  ios_rewarded_ad_unit_id: string;
+  /** 是否启用（false 时使用测试广告） */
   enabled: boolean;
 }
 
@@ -72,4 +88,5 @@ export interface AppConfig {
   version_check: VersionCheckConfig;
   daily_tasks: DailyTasksConfig;
   applixir: AppLixirConfig;
+  admob: AdMobConfig;
 }

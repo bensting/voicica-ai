@@ -7,7 +7,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 import { useDailyTasks } from '@/hooks/useDailyTasks';
 import { useAppLixirAd, type AdStatus } from '@/components/features/ads/AppLixirRewardedAd';
-import { getAppLixirConfig } from '@/config/appConfig';
+import { applixirConfig } from '@/config/ads';
 import { isNativeApp } from '@/lib/capacitor';
 import LoginModal from '@/components/features/auth/LoginModal';
 import AppDownloadModal from './AppDownloadModal';
@@ -43,8 +43,6 @@ export default function DailyTasksModal({ isOpen, onClose, onCreditsUpdated }: D
   const [adLoading, setAdLoading] = useState(false);
   const [adError, setAdError] = useState<string | null>(null);
 
-  // 获取 AppLixir 配置
-  const appLixirConfig = getAppLixirConfig();
 
   // 广告观看成功回调
   const handleAdWatched = useCallback(async () => {
@@ -82,7 +80,7 @@ export default function DailyTasksModal({ isOpen, onClose, onCreditsUpdated }: D
   // 初始化 AppLixir 广告
   const { showAd } = useAppLixirAd({
     config: {
-      apiKey: appLixirConfig.api_key,
+      apiKey: applixirConfig.apiKey,
     },
     onAdWatched: handleAdWatched,
     onAdClosed: handleAdClosed,
@@ -140,7 +138,7 @@ export default function DailyTasksModal({ isOpen, onClose, onCreditsUpdated }: D
     setAdLoading(true);
 
     // 原生 App：使用真实广告
-    if (appLixirConfig.enabled && appLixirConfig.api_key) {
+    if (applixirConfig.enabled && applixirConfig.apiKey) {
       console.log('🎬 [DailyTasks] Showing AppLixir ad...');
       showAd();
     } else {
@@ -156,7 +154,7 @@ export default function DailyTasksModal({ isOpen, onClose, onCreditsUpdated }: D
         }
       }, 1000);
     }
-  }, [adLoading, appLixirConfig.enabled, appLixirConfig.api_key, showAd, doClaimAdReward, onCreditsUpdated]);
+  }, [adLoading, applixirConfig.enabled, applixirConfig.apiKey, showAd, doClaimAdReward, onCreditsUpdated]);
 
   if (!isOpen || !config?.enabled) return null;
 

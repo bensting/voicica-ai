@@ -1,7 +1,7 @@
 'use client';
 
 import AdSense from './AdSense';
-import { adsenseConfig } from '@/config/adsense';
+import { adsenseConfig } from '@/config/ads';
 
 interface AdBannerProps {
   // 变体样式

@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
-import { adsenseConfig } from '@/config/adsense';
+import { adsenseConfig } from '@/config/ads';
 
 interface AdSenseProps {
   // 广告单元 ID

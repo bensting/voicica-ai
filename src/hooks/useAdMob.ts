@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { Capacitor } from '@capacitor/core';
-import { getAdMobConfig } from '@/config/appConfig';
+import { admobConfig } from '@/config/ads';
 
 /**
  * AdMob 激励广告状态
@@ -53,20 +53,19 @@ export function useAdMob(): UseAdMobReturn {
   // 检测是否在原生环境
   const isNative = Capacitor.isNativePlatform();
 
-  // 获取配置
-  const config = getAdMobConfig();
-  const isEnabled = config.enabled && isNative;
+  // 是否启用
+  const isEnabled = admobConfig.enabled && isNative;
 
   // 获取当前平台的广告单元 ID
   const getAdUnitId = useCallback(() => {
     const platform = Capacitor.getPlatform();
     if (platform === 'android') {
-      return config.android_rewarded_ad_unit_id;
+      return admobConfig.rewarded.android;
     } else if (platform === 'ios') {
-      return config.ios_rewarded_ad_unit_id;
+      return admobConfig.rewarded.ios;
     }
     return '';
-  }, [config]);
+  }, []);
 
   // 动态导入 AdMob 模块（仅在原生环境）
   useEffect(() => {

@@ -59,17 +59,4 @@ export const appConfig: AppConfig = {
     api_key: '6efa877c-8828-4355-977a-fd57996ddcbf',
     enabled: true,  // 开发环境也启用，方便测试
   },
-
-  /**
-   * AdMob 广告配置（移动端）
-   * 开发环境使用 Google 提供的测试广告 ID
-   * https://developers.google.com/admob/android/test-ads
-   */
-  admob: {
-    android_app_id: 'ca-app-pub-3940256099942544~3347511713', // Google 测试应用 ID
-    ios_app_id: 'ca-app-pub-3940256099942544~1458002511', // Google 测试应用 ID
-    android_rewarded_ad_unit_id: 'ca-app-pub-3940256099942544/5224354917', // Google 测试激励广告
-    ios_rewarded_ad_unit_id: 'ca-app-pub-3940256099942544/1712485313', // Google 测试激励广告
-    enabled: false,  // 开发环境使用测试广告
-  },
 };

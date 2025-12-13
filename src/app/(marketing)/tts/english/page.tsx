@@ -149,7 +149,7 @@ export default function EnglishTTSPage() {
       />
 
       {/* Ad Banner */}
-      <AdBanner slot="TTS_HERO_BOTTOM" variant="section" className="bg-[#0a0a0f]" />
+      <AdBanner variant="section" className="bg-[#0a0a0f]" />
 
       {/* ========== Voice Samples Section ========== */}
       <section className="pt-4 pb-4 px-4">

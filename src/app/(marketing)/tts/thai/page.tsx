@@ -96,52 +96,6 @@ export default function ThaiTTSPage() {
   const [voices, setVoices] = useState<Voice[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // APK download state
-  const [apkInfo, setApkInfo] = useState<{
-    version: string;
-    download_url: string;
-  } | null>(null);
-
-  // Device detection state
-  const [deviceType, setDeviceType] = useState<'android' | 'ios' | 'desktop'>('desktop');
-
-  // Detect device type
-  useEffect(() => {
-    const userAgent = navigator.userAgent.toLowerCase();
-    if (/android/.test(userAgent)) {
-      setDeviceType('android');
-    } else if (/iphone|ipad|ipod/.test(userAgent)) {
-      setDeviceType('ios');
-    } else {
-      setDeviceType('desktop');
-    }
-  }, []);
-
-  // Load latest APK info
-  useEffect(() => {
-    async function loadApkInfo() {
-      try {
-        const release = await getLatestRelease('android');
-        if (release) {
-          setApkInfo({
-            version: release.version,
-            download_url: release.download_url,
-          });
-        }
-      } catch (error) {
-        console.error('Failed to load APK info:', error);
-      }
-    }
-    loadApkInfo();
-  }, []);
-
-  // Handle APK download with tracking
-  const handleApkDownload = async () => {
-    if (!apkInfo) return;
-    await incrementDownloadCountByVersion('android', apkInfo.version);
-    window.open(apkInfo.download_url, '_blank');
-  };
-
   // Load voices using cached API
   useEffect(() => {
     async function loadVoices() {
@@ -183,109 +137,17 @@ export default function ThaiTTSPage() {
   return (
     <div className="min-h-screen bg-[#0a0a0f]">
       {/* ========== Hero Section ========== */}
-      <section className="relative pt-20 pb-4 px-4 overflow-hidden">
-        {/* Background gradient */}
-        <div className="absolute inset-0 bg-gradient-to-b from-purple-900/20 via-transparent to-transparent" />
-
-        {/* Animated background elements */}
-        <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute top-20 left-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl" />
-          <div className="absolute top-40 right-1/4 w-80 h-80 bg-pink-500/10 rounded-full blur-3xl" />
-        </div>
-
-        <div className="relative z-10 max-w-6xl mx-auto">
-          {/* Free Badge */}
-          <div className="flex justify-center mb-4">
-            <div className="inline-flex items-center gap-2 bg-green-500/20 border border-green-500/30 rounded-full px-4 py-1.5">
-              <Check className="w-4 h-4 text-green-400" />
-              <span className="text-green-400 text-sm font-medium">{CONTENT.hero.badge}</span>
-            </div>
-          </div>
-
-          {/* Main Headline */}
-          <div className="text-center mb-4">
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-3 leading-tight">
-              {CONTENT.hero.title1}{' '}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">
-                {CONTENT.hero.titleHighlight1}
-              </span>
-              <br />
-              {CONTENT.hero.title2}
-            </h1>
-
-            {/* Subtitle with stats */}
-            <p className="text-xl md:text-2xl font-semibold text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-400 mb-3">
-              {CONTENT.hero.subtitle}
-            </p>
-
-            <p className="text-gray-300 text-lg md:text-xl max-w-2xl mx-auto leading-relaxed">
-              {CONTENT.hero.description}
-            </p>
-          </div>
-
-          {/* Stats Row */}
-          <div className="flex justify-center gap-6 md:gap-10 mb-6">
-            {STATS_CONFIG.map((stat, index) => (
-              <div key={index} className="text-center">
-                <div className={`text-2xl md:text-3xl font-bold ${stat.isFree ? 'text-green-400' : 'text-purple-400'}`}>
-                  {stat.value}
-                </div>
-                <div className="text-xs md:text-sm text-gray-400">{stat.label}</div>
-              </div>
-            ))}
-          </div>
-
-          {/* Download & Try Buttons */}
-          <div className={`flex justify-center gap-3 ${deviceType === 'desktop' ? 'flex-wrap' : ''}`}>
-            {/* Android APK */}
-            {deviceType !== 'ios' && (
-              apkInfo ? (
-                <button
-                  onClick={handleApkDownload}
-                  className={`flex items-center gap-3 bg-gray-900/80 border border-gray-700 rounded-xl px-4 py-3 hover:bg-gray-800 transition-colors ${deviceType === 'desktop' ? 'w-[180px]' : 'flex-1 max-w-[180px]'}`}
-                >
-                  <span className="text-2xl">📱</span>
-                  <div className="text-left">
-                    <div className="text-[10px] text-gray-400 uppercase tracking-wide">{CONTENT.hero.downloadApk}</div>
-                    <div className="text-sm font-semibold text-white">Android</div>
-                  </div>
-                </button>
-              ) : (
-                <div className={`flex items-center gap-3 bg-gray-900/50 border border-gray-700/50 rounded-xl px-4 py-3 opacity-50 cursor-not-allowed ${deviceType === 'desktop' ? 'w-[180px]' : 'flex-1 max-w-[180px]'}`}>
-                  <span className="text-2xl">📱</span>
-                  <div className="text-left">
-                    <div className="text-[10px] text-gray-500 uppercase tracking-wide">Android</div>
-                    <div className="text-sm font-semibold text-gray-400">{CONTENT.hero.comingSoon}</div>
-                  </div>
-                </div>
-              )
-            )}
-
-            {/* iOS */}
-            {deviceType !== 'android' && (
-              <div className={`flex items-center gap-3 bg-gray-900/50 border border-gray-700/50 rounded-xl px-4 py-3 opacity-50 cursor-not-allowed ${deviceType === 'desktop' ? 'w-[180px]' : 'flex-1 max-w-[180px]'}`}>
-                <span className="text-2xl">🍎</span>
-                <div className="text-left">
-                  <div className="text-[10px] text-gray-500 uppercase tracking-wide">iOS</div>
-                  <div className="text-sm font-semibold text-gray-400">{CONTENT.hero.comingSoon}</div>
-                </div>
-              </div>
-            )}
-
-            {/* Web Version */}
-            <button
-              onClick={handleGetStarted}
-              className={`flex items-center gap-3 bg-gradient-to-r from-purple-600 to-pink-600 border border-purple-500/30 rounded-xl px-4 py-3 hover:from-purple-700 hover:to-pink-700 transition-colors ${deviceType === 'desktop' ? 'w-[180px]' : 'flex-1 max-w-[180px]'}`}
-            >
-              <span className="text-2xl">🌐</span>
-              <div className="text-left">
-                <div className="text-[10px] text-purple-200 uppercase tracking-wide whitespace-nowrap">{CONTENT.hero.tryNow}</div>
-                <div className="text-sm font-semibold text-white whitespace-nowrap">{CONTENT.hero.webVersion}</div>
-              </div>
-            </button>
-          </div>
-        </div>
-      </section>
+      <TTSHeroSection
+        badge={CONTENT.hero.badge}
+        title1={CONTENT.hero.title1}
+        titleHighlight={CONTENT.hero.titleHighlight1}
+        title2={CONTENT.hero.title2}
+        subtitle={CONTENT.hero.subtitle}
+        description={CONTENT.hero.description}
+        stats={STATS_CONFIG}
+        webVersionText={CONTENT.hero.webVersion}
+        tryNowText={CONTENT.hero.tryNow}
+      />
 
       {/* Ad Banner */}
       <AdBanner slot="TTS_HERO_BOTTOM" variant="section" className="bg-[#0a0a0f]" />

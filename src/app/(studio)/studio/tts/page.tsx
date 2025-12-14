@@ -59,7 +59,7 @@ export default function StudioTTSPage() {
   const { locale, isReady: isLocaleReady, t } = useLanguage();
   const { user, loading: authLoading } = useFirebaseAuth();
   const { setTitle } = useStudio();
-  const { credits, loading: creditsLoading, refreshCredits } = useCredits();
+  const { credits, permanentCredits, monthlyCredits, loading: creditsLoading, refreshCredits } = useCredits();
 
   // 每日任务 Hook
   const {
@@ -317,6 +317,8 @@ export default function StudioTTSPage() {
               availableCharacters={availableCharacters}
               disabled={isGenerating}
               remainingCredits={credits}
+              permanentCredits={permanentCredits}
+              monthlyCredits={monthlyCredits}
               creditsLoading={creditsLoading}
               onClear={handleClearText}
             />
@@ -396,6 +398,8 @@ export default function StudioTTSPage() {
                   isGenerating={isGenerating}
                   canGenerate={canGenerate}
                   remainingCredits={credits}
+                  permanentCredits={permanentCredits}
+                  monthlyCredits={monthlyCredits}
                   creditsLoading={creditsLoading}
                   onClear={handleClearText}
                   estimatedCredits={estimatedCredits}

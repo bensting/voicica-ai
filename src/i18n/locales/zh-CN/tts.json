@@ -19,6 +19,8 @@
     "input": {
       "placeholder": "在此输入文本，我们将自动识别并转换为对应的语音。",
       "creditsLeft": "积分",
+      "permanent": "永久",
+      "monthly": "当月",
       "characterCount": "{current} / {max}",
       "generateSpeech": "生成语音",
       "generating": "生成中...",

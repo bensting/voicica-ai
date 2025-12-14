@@ -4,6 +4,17 @@ echo ========================================
 echo   Android 打包脚本
 echo ========================================
 echo.
+
+REM 读取版本信息
+for /f "tokens=2 delims=:," %%a in ('type native-version.json ^| findstr /C:"\"version\""') do set "RAW_VERSION=%%a"
+for /f "tokens=2 delims=:," %%a in ('type native-version.json ^| findstr /C:"\"buildNumber\""') do set "RAW_BUILD=%%a"
+REM 去除引号和空格
+set "APP_VERSION=%RAW_VERSION: =%"
+set "APP_VERSION=%APP_VERSION:"=%"
+set "BUILD_NUMBER=%RAW_BUILD: =%"
+
+echo 当前版本: v%APP_VERSION% (Build %BUILD_NUMBER%)
+echo.
 echo 请选择打包类型:
 echo   1. 测试环境 APK  (ai-voice-labs.com)
 echo   2. 生产环境 APK  (voicica.ai) - 独立版本
@@ -15,7 +26,7 @@ if "%choice%"=="1" (
     set FLAVOR=standalone
     set BUILD_CMD=assembleStandaloneRelease
     set BUILD_OUTPUT=android\app\build\outputs\apk\standalone\release\app-standalone-release.apk
-    set FINAL_NAME=voicica-test.apk
+    set FINAL_NAME=voicica-test-%APP_VERSION%-b%BUILD_NUMBER%.apk
     set OUTPUT_NAME=测试 APK
     set SERVER_URL=https://ai-voice-labs.com/studio
     set ENV_NAME=测试环境
@@ -23,7 +34,7 @@ if "%choice%"=="1" (
     set FLAVOR=standalone
     set BUILD_CMD=assembleStandaloneRelease
     set BUILD_OUTPUT=android\app\build\outputs\apk\standalone\release\app-standalone-release.apk
-    set FINAL_NAME=voicica-release.apk
+    set FINAL_NAME=voicica-release-%APP_VERSION%-b%BUILD_NUMBER%.apk
     set OUTPUT_NAME=生产 APK
     set SERVER_URL=https://www.voicica.ai/studio
     set ENV_NAME=生产环境
@@ -31,7 +42,7 @@ if "%choice%"=="1" (
     set FLAVOR=playStore
     set BUILD_CMD=bundlePlayStoreRelease
     set BUILD_OUTPUT=android\app\build\outputs\bundle\playStoreRelease\app-playStore-release.aab
-    set FINAL_NAME=voicica-release.aab
+    set FINAL_NAME=voicica-release-%APP_VERSION%-b%BUILD_NUMBER%.aab
     set OUTPUT_NAME=生产 AAB
     set SERVER_URL=https://www.voicica.ai/studio
     set ENV_NAME=生产环境

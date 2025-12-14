@@ -21,11 +21,11 @@ export const appConfig: AppConfig = {
   },
 
   /**
-   * 用户积分配置
+   * 新用户首次登录用户积分配置
    */
   credits: {
-    anonymous_user: 0,
-    registered_user: 0,
+    anonymous_user: 500,
+    registered_user: 1000,
   },
 
   /**

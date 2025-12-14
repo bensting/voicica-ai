@@ -4,6 +4,7 @@
  * - AdSense: Web 端展示广告
  * - AppLixir: Web 端激励广告
  * - AdMob: 移动端广告（激励广告、插页式广告）
+ * - Rewarded: 激励广告统一配置（AppLixir/AdMob 切换）
  */
 
 // AdSense (Web 展示广告)
@@ -31,3 +32,13 @@ export {
   isAdMobEnabled,
   type AdMobConfig,
 } from './admob';
+
+// 激励广告统一配置
+export {
+  rewardedAdConfig,
+  getRewardedAdProvider,
+  shouldUseAdMob,
+  shouldUseAppLixir,
+  type RewardedAdProvider,
+  type RewardedAdConfig,
+} from './rewarded';

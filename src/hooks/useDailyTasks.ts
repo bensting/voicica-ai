@@ -11,7 +11,8 @@ import {
   type TaskResult,
 } from '@/actions/daily-tasks';
 import type { DailyTasksConfig } from '@/config/appConfig';
-import { useAdMob } from './useAdMob';
+import { useRewardedAd } from './useRewardedAd';
+import { Capacitor } from '@capacitor/core';
 
 // 弹窗上次显示时间存储 key
 const POPUP_LAST_SHOWN_KEY = 'daily_tasks_popup_last_shown';
@@ -76,7 +77,8 @@ function hasIntervalPassed(intervalMinutes: number): boolean {
  */
 export function useDailyTasks(): UseDailyTasksReturn {
   const { user, loading: authLoading } = useFirebaseAuth();
-  const { showRewardedAd, isNative, isReady: isAdReady } = useAdMob();
+  const { showRewardedAd, isReady: isAdReady } = useRewardedAd();
+  const isNative = Capacitor.isNativePlatform();
   const [status, setStatus] = useState<DailyTasksStatus | null>(null);
   const [config, setConfig] = useState<DailyTasksConfig | null>(null);
   const [loading, setLoading] = useState(true);

@@ -28,7 +28,7 @@ const CONTAINER_ID = 'applixir-container';
 // 声明全局函数类型
 declare global {
   interface Window {
-    initializeAndOpenPlayer: (options: {
+    initializeAndOpenPlayer?: (options: {
       apiKey: string;
       injectionElementId: string;
       adStatusCallbackFn: (status: string) => void;

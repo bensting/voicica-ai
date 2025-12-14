@@ -21,11 +21,11 @@ export const appConfig: AppConfig = {
   },
 
   /**
-   * 用户积分配置
+   * 新用户首次登录用户积分配置
    */
   credits: {
-    anonymous_user: 0,
-    registered_user: 0,
+    anonymous_user: 500,
+    registered_user: 1000,
   },
 
   /**
@@ -36,7 +36,7 @@ export const appConfig: AppConfig = {
   },
 
   /**
-   * 版本检测配置
+   * APK 版本检测配置
    */
   version_check: {
     check_interval_minutes: 5,

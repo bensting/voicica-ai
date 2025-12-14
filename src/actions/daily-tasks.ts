@@ -167,11 +167,12 @@ export async function checkin(): Promise<TaskResult> {
         },
       });
 
-      // 增加用户积分
+      // 增加用户当月积分（每日任务获得的积分计入当月积分）
       await tx.users.update({
         where: { user_id: authUser.uid },
         data: {
           credits: { increment: credits },
+          monthly_credits: { increment: credits },
         },
       });
 
@@ -262,11 +263,12 @@ export async function claimAdReward(adWatched: boolean = true): Promise<TaskResu
         },
       });
 
-      // 增加用户积分
+      // 增加用户当月积分（广告奖励计入当月积分）
       await tx.users.update({
         where: { user_id: authUser.uid },
         data: {
           credits: { increment: credits },
+          monthly_credits: { increment: credits },
         },
       });
 

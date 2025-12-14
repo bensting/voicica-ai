@@ -26,7 +26,12 @@ interface TextInputProps {
   onGenerate?: () => void;
   isGenerating?: boolean;
   canGenerate?: boolean;
+  /** 总积分 */
   remainingCredits?: number;
+  /** 永久积分（购买、注册赠送） */
+  permanentCredits?: number;
+  /** 当月积分（每日任务） */
+  monthlyCredits?: number;
   creditsLoading?: boolean;
   onClear?: () => void;
   /** 预计消耗的积分数 */
@@ -48,6 +53,8 @@ export default function TextInput({
   isGenerating = false,
   canGenerate = false,
   remainingCredits = 0,
+  permanentCredits = 0,
+  monthlyCredits = 0,
   creditsLoading = false,
   onClear,
   estimatedCredits,
@@ -146,7 +153,15 @@ export default function TextInput({
                   <span className="w-1.5 h-1.5 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
                 </span>
               ) : (
-                remainingCredits.toLocaleString()
+                <>
+                  {remainingCredits.toLocaleString()}
+                  {/* 已登录用户显示积分明细 */}
+                  {user && (permanentCredits > 0 || monthlyCredits > 0) && (
+                    <span className="text-xs text-gray-500 font-normal ml-1">
+                      ({permanentCredits.toLocaleString()} {t('tts.input.permanent')} + {monthlyCredits.toLocaleString()} {t('tts.input.monthly')})
+                    </span>
+                  )}
+                </>
               )}{' '}
               {t('tts.input.creditsLeft')}
             </span>

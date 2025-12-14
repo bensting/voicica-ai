@@ -166,7 +166,10 @@ model users {
   name               String?              @db.VarChar(255)
   photo_url          String?              @db.VarChar(500)
   phone              String?              @db.VarChar(20)
-  credits            Int
+  credits            Int                  // 总积分（向后兼容，= permanent + monthly）
+  permanent_credits  Int                  @default(0) // 永久积分（购买、注册赠送）
+  monthly_credits    Int                  @default(0) // 当月积分（每日任务）
+  monthly_credits_reset_at DateTime?      @db.Timestamptz(6) // 当月积分上次重置时间
   total_credits_used Int
   id                 Int                  @id(map: "pk_users") @default(autoincrement())
   created_at         DateTime             @default(now()) @db.Timestamptz(6)

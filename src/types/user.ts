@@ -10,9 +10,9 @@ export interface UserProfile {
   name: string | null;
   photo_url: string | null;
   phone: string | null; // 电话号码（含国家代码）
-  credits: number; // 总积分（= permanent_credits + monthly_credits）
-  permanent_credits: number; // 永久积分（购买、注册赠送，永不过期）
-  monthly_credits: number; // 当月积分（每日任务，月底重置）
+  credits: number; // 永久积分（购买、注册赠送，永不过期）
+  monthly_credits: number; // 当月积分（每日任务，月初重置）
+  // 总可用积分 = credits + monthly_credits
   total_credits_used: number;
 
   // 用户类型标识
@@ -30,9 +30,9 @@ export interface UserUpdateRequest {
 
 // 积分信息
 export interface CreditsInfo {
-  credits: number; // 总积分
-  permanent_credits: number; // 永久积分
-  monthly_credits: number; // 当月积分
+  credits: number; // 永久积分（购买、注册赠送）
+  monthly_credits: number; // 当月积分（每日任务）
+  // 总可用积分 = credits + monthly_credits
   total_used: number;
   is_anonymous: boolean;
   expires_at: string | null;

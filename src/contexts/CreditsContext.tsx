@@ -54,8 +54,9 @@ export function CreditsProvider({ children }: CreditsProviderProps) {
       setLoading(true);
       setError(null);
       const response = await getUnifiedCredits();
-      setCredits(response.credits);
-      setPermanentCredits(response.permanent_credits);
+      // 总积分 = 永久积分(credits) + 当月积分(monthly_credits)
+      setCredits(response.credits + response.monthly_credits);
+      setPermanentCredits(response.credits);
       setMonthlyCredits(response.monthly_credits);
     } catch (err) {
       const error = err as Error;
@@ -83,8 +84,9 @@ export function CreditsProvider({ children }: CreditsProviderProps) {
     if (user && profile) {
       // 如果没有本地覆盖值，使用 profile 中的积分
       if (localOverride === null) {
-        setCredits(profile.credits);
-        setPermanentCredits(profile.permanent_credits);
+        // 总积分 = 永久积分(credits) + 当月积分(monthly_credits)
+        setCredits(profile.credits + profile.monthly_credits);
+        setPermanentCredits(profile.credits);
         setMonthlyCredits(profile.monthly_credits);
       }
       setLoading(false);

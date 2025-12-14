@@ -47,14 +47,12 @@ async function checkAndResetMonthlyCredits(userId: string): Promise<{
     user.monthly_credits_reset_at < firstDayOfMonth;
 
   if (needsReset && user.monthly_credits > 0) {
-    // 重置当月积分
+    // 重置当月积分（永久积分 credits 不受影响）
     await prisma.users.update({
       where: { user_id: userId },
       data: {
         monthly_credits: 0,
         monthly_credits_reset_at: new Date(),
-        // 同步更新总积分（减去被重置的当月积分）
-        credits: { decrement: user.monthly_credits },
       },
     });
 
@@ -111,7 +109,6 @@ export async function getCurrentUserProfile(): Promise<UserProfile> {
         name: authUser.name || null,
         photo_url: authUser.picture || null,
         credits: 0,
-        permanent_credits: 0,
         monthly_credits: 0,
         monthly_credits_reset_at: new Date(),
         total_credits_used: 0,
@@ -138,7 +135,6 @@ export async function getCurrentUserProfile(): Promise<UserProfile> {
     photo_url: user.photo_url,
     phone: user.phone,
     credits: user.credits,
-    permanent_credits: user.permanent_credits,
     monthly_credits: user.monthly_credits,
     total_credits_used: user.total_credits_used,
     is_anonymous: false,
@@ -201,7 +197,6 @@ export async function updateUserProfile(data: {
     photo_url: user.photo_url,
     phone: user.phone,
     credits: user.credits,
-    permanent_credits: user.permanent_credits,
     monthly_credits: user.monthly_credits,
     total_credits_used: user.total_credits_used,
     is_anonymous: false,
@@ -324,7 +319,6 @@ export async function getUnifiedUserProfile(): Promise<UserProfile> {
       photo_url: null,
       phone: null,
       credits: anonUser.credits,
-      permanent_credits: anonUser.credits,
       monthly_credits: 0,
       total_credits_used: anonUser.total_credits_used,
       is_anonymous: true,
@@ -351,7 +345,6 @@ export async function getUnifiedUserProfile(): Promise<UserProfile> {
       photo_url: user.photo_url,
       phone: user.phone,
       credits: user.credits,
-      permanent_credits: user.permanent_credits,
       monthly_credits: user.monthly_credits,
       total_credits_used: user.total_credits_used,
       is_anonymous: false,
@@ -378,7 +371,6 @@ export async function getUnifiedCredits(): Promise<CreditsInfo> {
     // 匿名用户没有每日任务，全部算作永久积分
     return {
       credits: anonUser.credits,
-      permanent_credits: anonUser.credits,
       monthly_credits: 0,
       total_used: anonUser.total_credits_used,
       is_anonymous: true,
@@ -399,7 +391,6 @@ export async function getUnifiedCredits(): Promise<CreditsInfo> {
 
     return {
       credits: user.credits,
-      permanent_credits: user.permanent_credits,
       monthly_credits: user.monthly_credits,
       total_used: user.total_credits_used,
       is_anonymous: false,

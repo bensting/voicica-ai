@@ -20,6 +20,8 @@ export interface CheckCreditsResult {
 /**
  * 检查用户积分是否足够
  *
+ * 正式用户总可用积分 = credits（永久积分） + monthly_credits（当月积分）
+ *
  * @param userId 用户 ID
  * @param required 所需积分
  * @param isAnonymous 是否为匿名用户
@@ -40,15 +42,18 @@ export async function checkCredits(
   } else {
     const user = await prisma.users.findUnique({
       where: { user_id: userId },
-      select: { credits: true },
+      select: { credits: true, monthly_credits: true },
     });
-    const current = user?.credits ?? 0;
+    // 总可用积分 = 永久积分 + 当月积分
+    const current = (user?.credits ?? 0) + (user?.monthly_credits ?? 0);
     return { hasEnough: current >= required, current };
   }
 }
 
 /**
  * 获取用户当前积分
+ *
+ * 正式用户总可用积分 = credits（永久积分） + monthly_credits（当月积分）
  *
  * @param userId 用户 ID
  * @param isAnonymous 是否为匿名用户
@@ -67,16 +72,17 @@ export async function getCredits(
   } else {
     const user = await prisma.users.findUnique({
       where: { user_id: userId },
-      select: { credits: true },
+      select: { credits: true, monthly_credits: true },
     });
-    return user?.credits ?? 0;
+    // 总可用积分 = 永久积分 + 当月积分
+    return (user?.credits ?? 0) + (user?.monthly_credits ?? 0);
   }
 }
 
 /**
  * 扣除积分并记录到历史
  *
- * 扣减顺序：先扣当月积分(monthly_credits)，再扣永久积分(permanent_credits)
+ * 扣减顺序：先扣当月积分(monthly_credits)，再扣永久积分(credits)
  *
  * @param userId 用户 ID
  * @param amount 扣除数量
@@ -106,26 +112,25 @@ export async function deductCredits(
       },
     });
   } else {
-    // 正式用户：先扣当月积分，再扣永久积分
+    // 正式用户：先扣当月积分，再扣永久积分(credits)
     const user = await prisma.users.findUnique({
       where: { user_id: userId },
-      select: { monthly_credits: true, permanent_credits: true },
+      select: { monthly_credits: true, credits: true },
     });
 
     if (!user) {
       throw new Error('用户不存在');
     }
 
-    // 计算扣减分配
+    // 计算扣减分配：先扣当月积分，再扣永久积分
     const fromMonthly = Math.min(user.monthly_credits, amount);
-    const fromPermanent = amount - fromMonthly;
+    const fromCredits = amount - fromMonthly;
 
     await prisma.users.update({
       where: { user_id: userId },
       data: {
-        credits: { decrement: amount },
+        credits: { decrement: fromCredits },
         monthly_credits: { decrement: fromMonthly },
-        permanent_credits: { decrement: fromPermanent },
         total_credits_used: { increment: amount },
       },
     });
@@ -148,7 +153,7 @@ export async function deductCredits(
 /**
  * 增加积分并记录到历史
  *
- * 购买/订阅/退款增加的积分会加到 permanent_credits（永不过期）
+ * 购买/订阅/退款增加的积分会加到 credits（永久积分，永不过期）
  *
  * @param userId 用户 ID
  * @param amount 增加数量
@@ -180,12 +185,11 @@ export async function addCredits(
       },
     });
   } else {
-    // 正式用户：购买/订阅/退款增加的积分加到 permanent_credits
+    // 正式用户：购买/订阅/退款增加的积分加到 credits（永久积分）
     await prisma.users.update({
       where: { user_id: userId },
       data: {
         credits: { increment: amount },
-        permanent_credits: { increment: amount },
         ...(updateTotalUsed ? { total_credits_used: { decrement: amount } } : {}),
       },
     });
@@ -237,11 +241,20 @@ export async function checkAndDeductCredits(
 }
 
 /**
+ * 积分扣减详情（用于精确返还）
+ */
+export interface DeductionBreakdown {
+  fromCredits: number;      // 从永久积分扣减的数量
+  fromMonthlyCredits: number; // 从当月积分扣减的数量
+  total: number;            // 总扣减数量
+}
+
+/**
  * 原子性扣除积分（使用事务）
  *
  * 使用乐观锁机制，确保扣除时余额充足，避免竞态条件
  * 适用于高并发场景（如任务队列处理）
- * 扣减顺序：先扣当月积分(monthly_credits)，再扣永久积分(permanent_credits)
+ * 扣减顺序：先扣当月积分(monthly_credits)，再扣永久积分(credits)
  *
  * @param userId 用户 ID
  * @param amount 扣除数量
@@ -249,6 +262,7 @@ export async function checkAndDeductCredits(
  * @param isAnonymous 是否为匿名用户
  * @param description 描述信息
  * @param taskId 任务 ID（可选）
+ * @returns 扣减详情，包含从各积分池扣减的具体数量
  * @throws {Error} 余额不足时抛出错误
  */
 export async function deductCreditsAtomic(
@@ -258,10 +272,16 @@ export async function deductCreditsAtomic(
   isAnonymous: boolean,
   description: string,
   taskId?: string
-): Promise<void> {
+): Promise<DeductionBreakdown> {
+  let breakdown: DeductionBreakdown = {
+    fromCredits: 0,
+    fromMonthlyCredits: 0,
+    total: amount,
+  };
+
   await prisma.$transaction(async (tx) => {
     if (isAnonymous) {
-      // 匿名用户：直接从 credits 扣减
+      // 匿名用户：直接从 credits 扣减（匿名用户没有 monthly_credits）
       const result = await tx.anonymous_users.updateMany({
         where: {
           user_id: userId,
@@ -276,37 +296,43 @@ export async function deductCreditsAtomic(
       if (result.count === 0) {
         throw new Error('积分扣减失败，余额不足');
       }
+
+      breakdown = {
+        fromCredits: amount,
+        fromMonthlyCredits: 0,
+        total: amount,
+      };
     } else {
       // 正式用户：先查询当前积分分布，再计算扣减分配
       const user = await tx.users.findUnique({
         where: { user_id: userId },
-        select: { credits: true, monthly_credits: true, permanent_credits: true },
+        select: { credits: true, monthly_credits: true },
       });
 
-      if (!user || user.credits < amount) {
+      // 总可用积分 = 永久积分 + 当月积分
+      const totalCredits = (user?.credits ?? 0) + (user?.monthly_credits ?? 0);
+      if (!user || totalCredits < amount) {
         throw new Error('积分扣减失败，余额不足');
       }
 
-      // 计算扣减分配：先扣当月积分，再扣永久积分
+      // 计算扣减分配：先扣当月积分，再扣永久积分(credits)
       const fromMonthly = Math.min(user.monthly_credits, amount);
-      const fromPermanent = amount - fromMonthly;
+      const fromCredits = amount - fromMonthly;
 
-      const result = await tx.users.updateMany({
-        where: {
-          user_id: userId,
-          credits: { gte: amount },
-        },
+      await tx.users.update({
+        where: { user_id: userId },
         data: {
-          credits: { decrement: amount },
+          credits: { decrement: fromCredits },
           monthly_credits: { decrement: fromMonthly },
-          permanent_credits: { decrement: fromPermanent },
           total_credits_used: { increment: amount },
         },
       });
 
-      if (result.count === 0) {
-        throw new Error('积分扣减失败，余额不足');
-      }
+      breakdown = {
+        fromCredits,
+        fromMonthlyCredits: fromMonthly,
+        total: amount,
+      };
     }
 
     // 记录到 credit_history
@@ -321,5 +347,62 @@ export async function deductCreditsAtomic(
     });
   });
 
-  console.log(`✅ [deductCreditsAtomic] 原子性扣除积分成功: ${amount}, 用户: ${userId}`);
+  console.log(`✅ [deductCreditsAtomic] 原子性扣除积分成功: ${amount} (永久: ${breakdown.fromCredits}, 当月: ${breakdown.fromMonthlyCredits}), 用户: ${userId}`);
+
+  return breakdown;
+}
+
+/**
+ * 精确返还积分（根据扣减详情返还到原处）
+ *
+ * @param userId 用户 ID
+ * @param breakdown 扣减详情
+ * @param productType 产品类型
+ * @param isAnonymous 是否为匿名用户
+ * @param description 描述信息
+ * @param taskId 任务 ID（可选）
+ */
+export async function refundCredits(
+  userId: string,
+  breakdown: DeductionBreakdown,
+  productType: ProductType,
+  isAnonymous: boolean,
+  description: string,
+  taskId?: string
+): Promise<void> {
+  await prisma.$transaction(async (tx) => {
+    if (isAnonymous) {
+      // 匿名用户：返还到 credits
+      await tx.anonymous_users.update({
+        where: { user_id: userId },
+        data: {
+          credits: { increment: breakdown.total },
+          total_credits_used: { decrement: breakdown.total },
+        },
+      });
+    } else {
+      // 正式用户：精确返还到原来的积分池
+      await tx.users.update({
+        where: { user_id: userId },
+        data: {
+          credits: { increment: breakdown.fromCredits },
+          monthly_credits: { increment: breakdown.fromMonthlyCredits },
+          total_credits_used: { decrement: breakdown.total },
+        },
+      });
+    }
+
+    // 记录到 credit_history
+    await tx.credit_history.create({
+      data: {
+        user_id: userId,
+        amount: breakdown.total,
+        description,
+        product_type: productType,
+        task_id: taskId,
+      },
+    });
+  });
+
+  console.log(`✅ [refundCredits] 精确返还积分成功: ${breakdown.total} (永久: ${breakdown.fromCredits}, 当月: ${breakdown.fromMonthlyCredits}), 用户: ${userId}`);
 }

@@ -21,15 +21,19 @@ export interface AdMobConfig {
   };
   /** 是否启用 */
   enabled: boolean;
+  /** 是否使用测试广告（上架前测试用） */
+  useTestAds: boolean;
 }
 
 /**
- * 开发环境配置（使用 Google 测试广告 ID）
+ * Google 官方测试广告 ID
  * https://developers.google.com/admob/android/test-ads
  */
-const devConfig: AdMobConfig = {
-  androidAppId: 'ca-app-pub-3940256099942544~3347511713',
-  iosAppId: 'ca-app-pub-3940256099942544~1458002511',
+export const TEST_AD_IDS = {
+  appId: {
+    android: 'ca-app-pub-3940256099942544~3347511713',
+    ios: 'ca-app-pub-3940256099942544~1458002511',
+  },
   rewarded: {
     android: 'ca-app-pub-3940256099942544/5224354917',
     ios: 'ca-app-pub-3940256099942544/1712485313',
@@ -37,17 +41,25 @@ const devConfig: AdMobConfig = {
   interstitial: {
     android: 'ca-app-pub-3940256099942544/1033173712',
     ios: 'ca-app-pub-3940256099942544/4411468910',
-    intervalMinutes: 5, // 开发环境 5 分钟，方便测试
   },
-  enabled: false,
+  appOpen: {
+    android: 'ca-app-pub-3940256099942544/9257395921',
+    ios: 'ca-app-pub-3940256099942544/5575463023',
+  },
+  banner: {
+    android: 'ca-app-pub-3940256099942544/6300978111',
+    ios: 'ca-app-pub-3940256099942544/2934735716',
+  },
 };
 
 /**
- * 生产环境配置
+ * 真实广告 ID（上架后使用）
  */
-const prodConfig: AdMobConfig = {
-  androidAppId: 'ca-app-pub-5946279989031789~1671706051',
-  iosAppId: '', // iOS 应用 ID（待创建）
+const REAL_AD_IDS = {
+  appId: {
+    android: 'ca-app-pub-5946279989031789~1671706051',
+    ios: '', // iOS 应用 ID（待创建）
+  },
   rewarded: {
     android: 'ca-app-pub-5946279989031789/2057707104',
     ios: '', // iOS 激励广告（待创建）
@@ -55,14 +67,59 @@ const prodConfig: AdMobConfig = {
   interstitial: {
     android: 'ca-app-pub-5946279989031789/1915055115',
     ios: '', // iOS 插页式广告（待创建）
+  },
+};
+
+/**
+ * 开发环境配置（使用测试广告）
+ */
+const devConfig: AdMobConfig = {
+  androidAppId: TEST_AD_IDS.appId.android,
+  iosAppId: TEST_AD_IDS.appId.ios,
+  rewarded: TEST_AD_IDS.rewarded,
+  interstitial: {
+    ...TEST_AD_IDS.interstitial,
+    intervalMinutes: 1, // 开发环境 1 分钟，方便测试
+  },
+  enabled: true, // 开发环境启用，使用测试广告
+  useTestAds: true,
+};
+
+/**
+ * 生产环境配置
+ *
+ * ⚠️ 重要：上架前将 useTestAds 设为 true 进行测试
+ * 上架并通过审核后，改为 false 使用真实广告
+ */
+const prodConfig: AdMobConfig = {
+  androidAppId: REAL_AD_IDS.appId.android,
+  iosAppId: REAL_AD_IDS.appId.ios,
+  rewarded: REAL_AD_IDS.rewarded,
+  interstitial: {
+    ...REAL_AD_IDS.interstitial,
     intervalMinutes: 30, // 生产环境 30 分钟
   },
   enabled: true,
+  useTestAds: true, // ⚠️ 上架后改为 false
 };
 
 // 根据环境选择配置
 const isProduction = process.env.NODE_ENV === 'production';
-export const admobConfig: AdMobConfig = isProduction ? prodConfig : devConfig;
+const baseConfig = isProduction ? prodConfig : devConfig;
+
+// 如果启用测试广告，替换为测试 ID
+export const admobConfig: AdMobConfig = baseConfig.useTestAds
+  ? {
+      ...baseConfig,
+      androidAppId: TEST_AD_IDS.appId.android,
+      iosAppId: TEST_AD_IDS.appId.ios,
+      rewarded: TEST_AD_IDS.rewarded,
+      interstitial: {
+        ...TEST_AD_IDS.interstitial,
+        intervalMinutes: baseConfig.interstitial.intervalMinutes,
+      },
+    }
+  : baseConfig;
 
 /**
  * 获取激励广告单元 ID

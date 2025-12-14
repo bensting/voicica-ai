@@ -14,21 +14,24 @@ set /p choice="输入选项 (1/2/3): "
 if "%choice%"=="1" (
     set FLAVOR=standalone
     set BUILD_CMD=assembleStandaloneRelease
-    set OUTPUT_PATH=android\app\build\outputs\apk\standalone\release\app-standalone-release.apk
+    set BUILD_OUTPUT=android\app\build\outputs\apk\standalone\release\app-standalone-release.apk
+    set FINAL_NAME=voicica-test.apk
     set OUTPUT_NAME=测试 APK
     set SERVER_URL=https://ai-voice-labs.com/studio
     set ENV_NAME=测试环境
 ) else if "%choice%"=="2" (
     set FLAVOR=standalone
     set BUILD_CMD=assembleStandaloneRelease
-    set OUTPUT_PATH=android\app\build\outputs\apk\standalone\release\app-standalone-release.apk
+    set BUILD_OUTPUT=android\app\build\outputs\apk\standalone\release\app-standalone-release.apk
+    set FINAL_NAME=voicica-release.apk
     set OUTPUT_NAME=生产 APK
     set SERVER_URL=https://www.voicica.ai/studio
     set ENV_NAME=生产环境
 ) else if "%choice%"=="3" (
     set FLAVOR=playStore
     set BUILD_CMD=bundlePlayStoreRelease
-    set OUTPUT_PATH=android\app\build\outputs\bundle\playStoreRelease\app-playStore-release.aab
+    set BUILD_OUTPUT=android\app\build\outputs\bundle\playStoreRelease\app-playStore-release.aab
+    set FINAL_NAME=voicica-release.aab
     set OUTPUT_NAME=生产 AAB
     set SERVER_URL=https://www.voicica.ai/studio
     set ENV_NAME=生产环境
@@ -89,6 +92,17 @@ if %errorlevel% neq 0 (
 cd ..
 
 echo.
+echo [5/5] 复制并重命名输出文件...
+set OUTPUT_DIR=build-output
+if not exist %OUTPUT_DIR% mkdir %OUTPUT_DIR%
+copy /Y "%BUILD_OUTPUT%" "%OUTPUT_DIR%\%FINAL_NAME%"
+if %errorlevel% neq 0 (
+    echo 错误: 文件复制失败
+    pause
+    exit /b 1
+)
+
+echo.
 echo ========================================
 echo   打包完成!
 echo ========================================
@@ -99,6 +113,9 @@ echo   - 服务器: %SERVER_URL%
 echo   - 类型: %OUTPUT_NAME%
 echo.
 echo 文件位置:
-echo   %OUTPUT_PATH%
+echo   %CD%\%OUTPUT_DIR%\%FINAL_NAME%
+echo.
+echo 原始位置:
+echo   %BUILD_OUTPUT%
 echo.
 pause

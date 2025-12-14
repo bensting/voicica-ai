@@ -12,6 +12,7 @@ import { CreditsProvider } from "@/contexts/CreditsContext";
 import { AudioSettingsProvider } from "@/contexts/AudioSettingsContext";
 import PWAUpdatePrompt from "@/components/layout/PWAUpdatePrompt";
 import AppUpdatePrompt from "@/components/native/AppUpdatePrompt";
+import GooglePlayUpdatePrompt from "@/components/native/GooglePlayUpdatePrompt";
 import LanguageLoadingWrapper from "@/components/providers/LanguageLoadingWrapper";
 import DeviceFingerprintProvider from "@/components/providers/DeviceFingerprintProvider";
 import CapacitorProvider from "@/components/providers/CapacitorProvider";
@@ -201,6 +202,7 @@ export default async function RootLayout({
                       {children}
                       <PWAUpdatePrompt />
                       <AppUpdatePrompt />
+                      <GooglePlayUpdatePrompt />
                       <ServerActionErrorHandler />
                     </DeviceFingerprintProvider>
                   </AudioSettingsProvider>

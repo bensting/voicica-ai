@@ -51,4 +51,13 @@ export const appConfig: AppConfig = {
     popup_interval_minutes: 1, // 开发环境 1 分钟，方便测试
     enabled: true,
   },
+
+  /**
+   * Google Play 应用更新配置
+   */
+  app_update: {
+    enabled: false, // 开发环境禁用
+    check_interval_minutes: 1,
+    install_prompt_delay_seconds: 3,
+  },
 };

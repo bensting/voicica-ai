@@ -51,4 +51,13 @@ export const appConfig: AppConfig = {
     popup_interval_minutes: 30, // 生产环境每 30 分钟最多弹出一次
     enabled: true,
   },
+
+  /**
+   * Google Play 应用更新配置
+   */
+  app_update: {
+    enabled: true,
+    check_interval_minutes: 60, // 每小时检查一次
+    install_prompt_delay_seconds: 3, // 下载完成后 3 秒提示安装
+  },
 };

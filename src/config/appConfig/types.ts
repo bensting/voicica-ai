@@ -53,6 +53,18 @@ export interface DailyTasksConfig {
 }
 
 /**
+ * Google Play 应用更新配置
+ */
+export interface AppUpdateConfig {
+  /** 是否启用应用内更新检查 */
+  enabled: boolean;
+  /** 检查更新间隔（分钟） */
+  check_interval_minutes: number;
+  /** 下载完成后延迟提示安装（秒） */
+  install_prompt_delay_seconds: number;
+}
+
+/**
  * 应用配置
  */
 export interface AppConfig {
@@ -61,4 +73,5 @@ export interface AppConfig {
   anonymous_user: AnonymousUserConfig;
   version_check: VersionCheckConfig;
   daily_tasks: DailyTasksConfig;
+  app_update: AppUpdateConfig;
 }

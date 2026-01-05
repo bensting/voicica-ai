@@ -7,8 +7,10 @@ import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 import { useStudio } from '@/contexts/StudioContext';
 import { useCredits } from '@/contexts/CreditsContext';
 import { useTTSGenerator } from '@/hooks/useTTSGenerator';
+import { useDailyTasks } from '@/hooks/useDailyTasks';
 import { TaskStatus } from '@/types/tts';
 import type { Voice } from '@/types/voice';
+import { calculateVoiceCost, type VoiceType } from '@/config/creditsCost';
 import TextInput from '@/components/features/studio/tts/components/TextInput';
 import VoiceSelector from '@/components/features/studio/tts/components/VoiceSelector';
 import VoiceSelectButton from '@/components/features/studio/tts/components/VoiceSelectButton';
@@ -35,6 +37,10 @@ const AudioSettingsModal = dynamic(
   () => import('@/components/features/studio/tts/AudioSettingsModal'),
   { ssr: false }
 );
+const DailyTasksModal = dynamic(
+  () => import('@/components/features/daily-tasks/DailyTasksModal'),
+  { ssr: false }
+);
 
 // 将 defaultStatus 提取到组件外部，避免每次渲染创建新数组引用
 const DEFAULT_GENERATION_STATUS = [TaskStatus.SUCCESS, TaskStatus.PROCESSING, TaskStatus.PENDING];
@@ -53,7 +59,13 @@ export default function StudioTTSPage() {
   const { locale, isReady: isLocaleReady, t } = useLanguage();
   const { user, loading: authLoading } = useFirebaseAuth();
   const { setTitle } = useStudio();
-  const { credits, loading: creditsLoading, refreshCredits } = useCredits();
+  const { credits, permanentCredits, monthlyCredits, loading: creditsLoading, refreshCredits } = useCredits();
+
+  // 每日任务 Hook
+  const {
+    shouldShowPopup: showDailyTasksPopup,
+    dismissPopup: closeDailyTasksPopup,
+  } = useDailyTasks();
   const [isAudioModalOpen, setIsAudioModalOpen] = useState(false);
   const [isVoiceSelectorOpen, setIsVoiceSelectorOpen] = useState(false);
   const [isGeneratingModalOpen, setIsGeneratingModalOpen] = useState(false);
@@ -265,6 +277,25 @@ export default function StudioTTSPage() {
     [selectedVoice?.display_name, authLoading, isLocaleReady, t]
   );
 
+  // 计算预计消耗的积分（去掉首尾空格后计算）
+  const estimatedCredits = useMemo(() => {
+    const trimmedText = text?.trim() || '';
+    if (trimmedText.length === 0 || !selectedVoice) {
+      return 0;
+    }
+    // 根据语音 role 映射到计费类型
+    const mapRoleToVoiceType = (role: string): VoiceType => {
+      const normalizedRole = role.toLowerCase();
+      if (normalizedRole === 'celebrity') return 'celebrity';
+      if (normalizedRole === 'professional') return 'professional';
+      if (normalizedRole === 'special') return 'special';
+      if (normalizedRole === 'clone') return 'clone';
+      return 'standard';
+    };
+    const voiceType = mapRoleToVoiceType(selectedVoice.role);
+    return calculateVoiceCost(trimmedText.length, voiceType);
+  }, [text, selectedVoice]);
+
   return (
     <>
       {/* Mobile Layout */}
@@ -286,6 +317,8 @@ export default function StudioTTSPage() {
               availableCharacters={availableCharacters}
               disabled={isGenerating}
               remainingCredits={credits}
+              permanentCredits={permanentCredits}
+              monthlyCredits={monthlyCredits}
               creditsLoading={creditsLoading}
               onClear={handleClearText}
             />
@@ -308,6 +341,7 @@ export default function StudioTTSPage() {
               onOpenSettings={handleOpenSettings}
               isGenerating={isGenerating}
               canGenerate={canGenerate}
+              estimatedCredits={estimatedCredits}
             />
           </div>
         </div>
@@ -364,8 +398,11 @@ export default function StudioTTSPage() {
                   isGenerating={isGenerating}
                   canGenerate={canGenerate}
                   remainingCredits={credits}
+                  permanentCredits={permanentCredits}
+                  monthlyCredits={monthlyCredits}
                   creditsLoading={creditsLoading}
                   onClear={handleClearText}
+                  estimatedCredits={estimatedCredits}
                 />
               </div>
 
@@ -450,6 +487,15 @@ export default function StudioTTSPage() {
         onCancel={closeConfirmDialog}
         variant="danger"
       />
+
+      {/* Daily Tasks Modal */}
+      {showDailyTasksPopup && (
+        <DailyTasksModal
+          isOpen={showDailyTasksPopup}
+          onClose={closeDailyTasksPopup}
+          onCreditsUpdated={refreshCredits}
+        />
+      )}
     </>
   );
 }

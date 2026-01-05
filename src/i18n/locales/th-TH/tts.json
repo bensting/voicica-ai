@@ -19,6 +19,8 @@
     "input": {
       "placeholder": "ป้อนข้อความที่นี่ เราจะแปลงเป็นเสียงพูดให้โดยอัตโนมัติ",
       "creditsLeft": "เครดิต",
+      "permanent": "ถาวร",
+      "monthly": "รายเดือน",
       "characterCount": "{current} / {max}",
       "generateSpeech": "สร้างเสียง",
       "generating": "กำลังสร้าง...",

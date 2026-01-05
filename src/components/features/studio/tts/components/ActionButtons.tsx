@@ -1,6 +1,6 @@
 'use client';
 
-import { Loader2, Play } from 'lucide-react';
+import { Loader2, Play, Coins } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 interface ActionButtonsProps {
@@ -8,6 +8,8 @@ interface ActionButtonsProps {
   onOpenSettings?: () => void;
   isGenerating: boolean;
   canGenerate: boolean;
+  /** 预计消耗的积分数 */
+  estimatedCredits?: number;
 }
 
 /**
@@ -21,8 +23,18 @@ export default function ActionButtons({
   onOpenSettings,
   isGenerating,
   canGenerate,
+  estimatedCredits,
 }: ActionButtonsProps) {
   const { t } = useLanguage();
+
+  // 格式化积分显示（大数字用 k 表示）
+  const formatCredits = (credits: number) => {
+    if (credits >= 1000) {
+      return `${(credits / 1000).toFixed(1)}k`;
+    }
+    return credits.toString();
+  };
+
   return (
     <>
       {/* Mobile: Settings + Generate buttons */}
@@ -58,6 +70,12 @@ export default function ActionButtons({
                 <path d="M8 5v14l11-7z" />
               </svg>
               <span className="text-sm">{t('tts.input.generateSpeech')}</span>
+              {estimatedCredits !== undefined && estimatedCredits > 0 && (
+                <span className="flex items-center gap-0.5 bg-white/20 px-1.5 py-0.5 rounded-full text-xs">
+                  <Coins className="w-3 h-3" />
+                  {formatCredits(estimatedCredits)}
+                </span>
+              )}
             </>
           )}
         </button>
@@ -81,7 +99,13 @@ export default function ActionButtons({
         ) : (
           <>
             <Play className="w-5 h-5" />
-            GENERATE
+            <span>{t('tts.input.generateSpeech')}</span>
+            {estimatedCredits !== undefined && estimatedCredits > 0 && (
+              <span className="flex items-center gap-1 bg-white/20 px-2 py-0.5 rounded-full text-sm font-medium">
+                <Coins className="w-4 h-4" />
+                {formatCredits(estimatedCredits)}
+              </span>
+            )}
           </>
         )}
       </button>

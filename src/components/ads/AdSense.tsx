@@ -1,9 +1,7 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
-
-// AdSense 发布商 ID（需要替换为你的实际 ID）
-const ADSENSE_CLIENT_ID = process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID || '';
+import { adsenseConfig } from '@/config/ads';
 
 interface AdSenseProps {
   // 广告单元 ID
@@ -20,10 +18,6 @@ interface AdSenseProps {
 
 /**
  * Google AdSense 广告组件
- *
- * 使用前需要：
- * 1. 在 .env.local 中设置 NEXT_PUBLIC_ADSENSE_CLIENT_ID
- * 2. 在 AdSense 控制台创建广告单元获取 adSlot
  */
 export default function AdSense({
   adSlot,
@@ -36,8 +30,8 @@ export default function AdSense({
   const isAdLoaded = useRef(false);
 
   useEffect(() => {
-    // 仅在生产环境且有 client ID 时加载广告
-    if (!ADSENSE_CLIENT_ID || process.env.NODE_ENV !== 'production') {
+    // 仅在启用时加载广告
+    if (!adsenseConfig.enabled) {
       return;
     }
 
@@ -57,14 +51,14 @@ export default function AdSense({
     }
   }, []);
 
-  // 开发环境显示占位符
-  if (!ADSENSE_CLIENT_ID || process.env.NODE_ENV !== 'production') {
+  // 未启用时显示占位符
+  if (!adsenseConfig.enabled) {
     return (
       <div
         className={`bg-gray-100 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center text-gray-400 ${className}`}
         style={{ minHeight: '100px', ...style }}
       >
-        <span className="text-sm">广告位 (AdSlot: {adSlot})</span>
+        <span className="text-sm">Ad</span>
       </div>
     );
   }
@@ -74,7 +68,7 @@ export default function AdSense({
       ref={adRef}
       className={`adsbygoogle ${className}`}
       style={{ display: 'block', ...style }}
-      data-ad-client={ADSENSE_CLIENT_ID}
+      data-ad-client={adsenseConfig.clientId}
       data-ad-slot={adSlot}
       data-ad-format={adFormat}
       data-full-width-responsive={fullWidthResponsive}

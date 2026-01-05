@@ -5,10 +5,14 @@ import android.webkit.WebView;
 import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
 import com.getcapacitor.BridgeActivity;
+import ai.voicica.app.plugins.AppodealPlugin;
 
 public class MainActivity extends BridgeActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // 注册自定义插件
+        registerPlugin(AppodealPlugin.class);
+
         super.onCreate(savedInstanceState);
 
         // 开启 WebView 调试（Chrome DevTools 远程调试）

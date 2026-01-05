@@ -33,5 +33,15 @@
     "installComplete": "ติดตั้งเสร็จสิ้น",
     "downloadError": "ดาวน์โหลดล้มเหลว",
     "permissionRequired": "กรุณาให้สิทธิ์ติดตั้งแอปจากแหล่งที่ไม่รู้จักแล้วลองอีกครั้ง"
+  },
+  "googlePlayUpdate": {
+    "updateAvailable": "มีเวอร์ชันใหม่",
+    "updateReady": "พร้อมติดตั้งแล้ว",
+    "downloadInBackground": "กำลังดาวน์โหลดเบื้องหลัง...",
+    "downloadComplete": "ดาวน์โหลดเสร็จแล้ว รีสตาร์ทเพื่ออัปเดต",
+    "update": "อัปเดต",
+    "install": "ติดตั้งเลย",
+    "later": "ภายหลัง",
+    "progress": "กำลังดาวน์โหลด... {{progress}}%"
   }
 }

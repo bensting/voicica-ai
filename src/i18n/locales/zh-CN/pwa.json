@@ -33,5 +33,15 @@
     "installComplete": "安装完成",
     "downloadError": "下载失败",
     "permissionRequired": "请授权安装未知来源应用后重试"
+  },
+  "googlePlayUpdate": {
+    "updateAvailable": "发现新版本",
+    "updateReady": "更新已就绪",
+    "downloadInBackground": "正在后台下载...",
+    "downloadComplete": "下载完成，重启应用以完成更新",
+    "update": "更新",
+    "install": "立即安装",
+    "later": "稍后",
+    "progress": "下载中... {{progress}}%"
   }
 }

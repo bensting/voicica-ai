@@ -13,7 +13,7 @@ import { synthesizeSpeech as fishAudioSynthesize } from '@/lib/services/fish-aud
 import { uploadAudio } from '@/lib/services/r2-storage';
 import { ProductType } from '@/config/productType';
 import type { TtsQueuePayload } from '@/lib/queue/tts-queue';
-import { deductCreditsAtomic, addCredits } from '@/lib/credits';
+import { deductCreditsAtomic, refundCredits, type DeductionBreakdown } from '@/lib/credits';
 
 // 允许长时间运行（最多 5 分钟）
 export const maxDuration = 300;
@@ -24,7 +24,7 @@ async function handleTTSTask(req: NextRequest) {
   const { taskId, userId, text, voiceName, language, style, speed, pitch, volume, creditsCost, isAnonymous } = payload;
 
   console.log(`🚀 [Queue] 开始处理 TTS 任务: ${taskId}`);
-  let creditsDeducted = false;
+  let deductionBreakdown: DeductionBreakdown | null = null;
 
   try {
     // 1. 幂等性检查：获取任务记录并验证状态
@@ -63,8 +63,8 @@ async function handleTTSTask(req: NextRequest) {
 
     console.log(`🔓 [Queue] 任务 ${taskId} 状态已锁定为 PROCESSING`);
 
-    // 3. 扣减积分并记录历史（使用原子性扣除避免竞态条件）
-    await deductCreditsAtomic(
+    // 3. 扣减积分并记录历史（使用原子性扣除避免竞态条件，返回扣减详情用于失败时精确返还）
+    deductionBreakdown = await deductCreditsAtomic(
       userId,
       creditsCost,
       ProductType.TEXT_TO_SPEECH,
@@ -72,7 +72,6 @@ async function handleTTSTask(req: NextRequest) {
       `TTS: ${text.substring(0, 30)}${text.length > 30 ? '...' : ''}`,
       taskId
     );
-    creditsDeducted = true;
 
     // 4. 更新进度到 20%
     await prisma.tts_records.update({
@@ -218,17 +217,16 @@ async function handleTTSTask(req: NextRequest) {
   } catch (error) {
     console.error(`❌ [Queue] TTS 任务处理失败: ${taskId}`, error);
 
-    // 如果积分已扣减，退还积分并记录历史
-    if (creditsDeducted) {
+    // 如果积分已扣减，精确返还到原来的积分池
+    if (deductionBreakdown) {
       try {
-        await addCredits(
+        await refundCredits(
           userId,
-          creditsCost,
+          deductionBreakdown,
           ProductType.TEXT_TO_SPEECH,
           isAnonymous,
-          'TTS Task failed，return credits',
-          taskId,
-          true // updateTotalUsed = true，退还时需要减少累计使用量
+          'TTS Task failed, refund credits',
+          taskId
         );
       } catch (refundError) {
         console.error('积分退还失败:', refundError);

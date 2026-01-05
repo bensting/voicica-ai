@@ -166,7 +166,9 @@ model users {
   name               String?              @db.VarChar(255)
   photo_url          String?              @db.VarChar(500)
   phone              String?              @db.VarChar(20)
-  credits            Int
+  credits            Int                  // 永久积分（购买、注册赠送，永不过期）
+  monthly_credits    Int                  @default(0) // 当月积分（每日任务，月初重置）
+  monthly_credits_reset_at DateTime?      @db.Timestamptz(6) // 当月积分上次重置时间
   total_credits_used Int
   id                 Int                  @id(map: "pk_users") @default(autoincrement())
   created_at         DateTime             @default(now()) @db.Timestamptz(6)
@@ -278,4 +280,45 @@ model user_events {
   @@index([event], map: "ix_user_events_event")
   @@index([created_at], map: "ix_user_events_created_at")
   @@index([user_id, event], map: "ix_user_events_user_event")
+}
+
+/// 每日任务表 - 签到和广告奖励
+/// 每用户每天最多一条记录
+model daily_tasks {
+  id                    Int       @id @default(autoincrement())
+  user_id               String    @db.VarChar(128)   // 登录用户ID（必须登录）
+  date                  String    @db.VarChar(10)    // 格式: '2025-01-15'
+
+  // 签到任务
+  checkin_done          Boolean   @default(false)    // 是否已签到
+  checkin_credits       Int       @default(0)        // 签到获得的积分
+
+  // 广告奖励任务 - 递进式：200, 300, 400, 500, 800, 1000
+  ad_rewards_claimed    Int       @default(0)        // 已领取的广告档位数 (0-6)
+  ad_rewards_credits    Int       @default(0)        // 广告奖励累计获得的积分
+
+  created_at            DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at            DateTime? @updatedAt @db.Timestamptz(6)
+
+  @@unique([user_id, date], map: "uq_daily_tasks_user_date")
+  @@index([user_id], map: "ix_daily_tasks_user_id")
+  @@index([date], map: "ix_daily_tasks_date")
+}
+
+/// AdMob 激励广告奖励交易记录
+/// 用于 Server-Side Verification (SSV) 防重放攻击
+model ad_reward_transactions {
+  id              Int       @id @default(autoincrement())
+  transaction_id  String    @unique @db.VarChar(255)  // AdMob 交易 ID（唯一）
+  user_id         String    @db.VarChar(128)          // 用户 ID
+  tier            Int?                                 // 奖励档位（0-5 对应 200-1000）
+  timestamp       DateTime  @db.Timestamptz(6)        // 广告完成时间
+  ad_unit         String?   @db.VarChar(100)          // 广告单元 ID
+  reward_amount   Int       @default(0)               // AdMob 配置的奖励数量
+  processed       Boolean   @default(false)           // 是否已处理
+  created_at      DateTime  @default(now()) @db.Timestamptz(6)
+
+  @@index([user_id], map: "ix_ad_reward_transactions_user_id")
+  @@index([timestamp], map: "ix_ad_reward_transactions_timestamp")
+  @@index([processed], map: "ix_ad_reward_transactions_processed")
 }

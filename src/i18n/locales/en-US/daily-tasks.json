@@ -1,0 +1,30 @@
+{
+  "dailyTasks": {
+    "title": "Daily Tasks",
+    "subtitle": "Complete tasks to earn free credits!",
+    "credits": "Credits",
+
+    "loginToEarn": "Login to start earning credits daily!",
+    "dailyMax": "Daily Maximum",
+    "loginNow": "Login Now",
+
+    "todayEarned": "Today's Progress",
+
+    "checkin": "Daily Check-in",
+    "oneClickClaim": "One-click claim",
+    "claim": "Claim",
+    "claimed": "Claimed",
+
+    "watchAds": "Watch Videos",
+    "watchMultiple": "Watch {{count}} videos",
+    "watchAdGet": "Watch +{{credits}}",
+    "allAdsClaimed": "All Claimed Today",
+
+    "loadingAd": "Loading ad...",
+    "adInterrupted": "Please watch the full video to earn rewards",
+    "adUnavailable": "No ads available, please try again later",
+    "adError": "Failed to load ad, please try again later",
+
+    "resetTip": "Tasks reset daily at midnight"
+  }
+}

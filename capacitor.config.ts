@@ -107,6 +107,15 @@ const config: CapacitorConfig = {
       skipNativeAuth: false,
       providers: ['google.com'],
     },
+    // AdMob 广告配置
+    AdMob: {
+      // Android 应用 ID（生产环境）
+      appIdAndroid: 'ca-app-pub-5946279989031789~1671706051',
+      // iOS 应用 ID（待创建）
+      appIdIos: '',
+      // 使用测试设备（开发时启用）
+      requestTrackingAuthorization: true,
+    },
   },
 };
 

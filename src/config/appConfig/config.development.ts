@@ -21,11 +21,11 @@ export const appConfig: AppConfig = {
   },
 
   /**
-   * 用户积分配置
+   * 新用户首次登录用户积分配置
    */
   credits: {
-    anonymous_user: 5,
-    registered_user: 10,
+    anonymous_user: 500,
+    registered_user: 1000,
   },
 
   /**
@@ -40,5 +40,24 @@ export const appConfig: AppConfig = {
    */
   version_check: {
     check_interval_minutes: 1, // 开发环境设为 1 分钟，方便测试
+  },
+
+  /**
+   * 每日任务配置
+   */
+  daily_tasks: {
+    checkin_credits: 100,
+    ad_reward_tiers: [200, 300, 400, 500, 800, 1000],
+    popup_interval_minutes: 1, // 开发环境 1 分钟，方便测试
+    enabled: true,
+  },
+
+  /**
+   * Google Play 应用更新配置
+   */
+  app_update: {
+    enabled: false, // 开发环境禁用
+    check_interval_minutes: 1,
+    install_prompt_delay_seconds: 3,
   },
 };

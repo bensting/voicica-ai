@@ -3,6 +3,7 @@
 import { useEffect } from 'react';
 import { initCapacitor, isNativeApp, onBackButton } from '@/lib/capacitor';
 import { useRouter } from 'next/navigation';
+import { useAppStartAd } from '@/hooks/useAppStartAd';
 
 /**
  * Capacitor Provider
@@ -10,6 +11,9 @@ import { useRouter } from 'next/navigation';
  */
 export default function CapacitorProvider() {
   const router = useRouter();
+
+  // 启动广告
+  useAppStartAd();
 
   useEffect(() => {
     // 初始化 Capacitor

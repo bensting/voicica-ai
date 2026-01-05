@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
-import { Trash2, ChevronRight, Gift, CreditCard, Sparkles } from 'lucide-react';
+import { Trash2, ChevronRight, Gift, CreditCard, Sparkles, Coins } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 import CreditsIcon from '@/components/icons/CreditsIcon';
@@ -26,9 +26,16 @@ interface TextInputProps {
   onGenerate?: () => void;
   isGenerating?: boolean;
   canGenerate?: boolean;
+  /** 总积分 */
   remainingCredits?: number;
+  /** 永久积分（购买、注册赠送） */
+  permanentCredits?: number;
+  /** 当月积分（每日任务） */
+  monthlyCredits?: number;
   creditsLoading?: boolean;
   onClear?: () => void;
+  /** 预计消耗的积分数 */
+  estimatedCredits?: number;
 }
 
 /**
@@ -46,8 +53,11 @@ export default function TextInput({
   isGenerating = false,
   canGenerate = false,
   remainingCredits = 0,
+  permanentCredits = 0,
+  monthlyCredits = 0,
   creditsLoading = false,
   onClear,
+  estimatedCredits,
 }: TextInputProps) {
   const { t } = useLanguage();
   const { user } = useFirebaseAuth();
@@ -135,7 +145,7 @@ export default function TextInput({
           {/* Left: Remaining Credits and More Menu for non-logged-in users */}
           <div className="flex items-center gap-1.5 relative" ref={moreMenuRef}>
             <CreditsIcon className="w-4 h-4 lg:w-5 lg:h-5 text-amber-500" />
-            <span className="text-sm lg:text-base font-medium text-gray-700">
+            <span className="text-sm lg:text-base font-medium text-gray-700 group/credits relative">
               {creditsLoading ? (
                 <span className="inline-flex items-center gap-0.5">
                   <span className="w-1.5 h-1.5 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
@@ -143,7 +153,26 @@ export default function TextInput({
                   <span className="w-1.5 h-1.5 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
                 </span>
               ) : (
-                remainingCredits.toLocaleString()
+                <span className="cursor-default">
+                  {remainingCredits.toLocaleString()}
+                  {/* 已登录用户：hover 时显示积分明细 tooltip */}
+                  {user && (
+                    <span className="absolute left-0 bottom-full mb-2 px-3 py-2 bg-gray-800 text-white text-xs rounded-lg shadow-lg whitespace-nowrap opacity-0 invisible group-hover/credits:opacity-100 group-hover/credits:visible transition-all duration-200 z-50">
+                      <span className="flex flex-col gap-1">
+                        <span className="flex items-center justify-between gap-4">
+                          <span className="text-gray-300">{t('tts.input.permanent')}:</span>
+                          <span className="font-medium">{permanentCredits.toLocaleString()}</span>
+                        </span>
+                        <span className="flex items-center justify-between gap-4">
+                          <span className="text-gray-300">{t('tts.input.monthly')}:</span>
+                          <span className="font-medium">{monthlyCredits.toLocaleString()}</span>
+                        </span>
+                      </span>
+                      {/* Tooltip arrow */}
+                      <span className="absolute left-4 top-full border-4 border-transparent border-t-gray-800" />
+                    </span>
+                  )}
+                </span>
               )}{' '}
               {t('tts.input.creditsLeft')}
             </span>
@@ -254,6 +283,12 @@ export default function TextInput({
                       <path d="M8 5v14l11-7z" />
                     </svg>
                     <span>{t('tts.input.generateSpeech')}</span>
+                    {estimatedCredits !== undefined && estimatedCredits > 0 && (
+                      <span className="flex items-center gap-1 bg-white/20 px-2 py-0.5 rounded-full text-sm">
+                        <Coins className="w-3.5 h-3.5" />
+                        {estimatedCredits >= 1000 ? `${(estimatedCredits / 1000).toFixed(1)}k` : estimatedCredits}
+                      </span>
+                    )}
                   </>
                 )}
               </button>

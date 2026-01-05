@@ -21,7 +21,7 @@ export const creditsCostConfig: CreditsCostConfig = {
  * 计费规则：每 unit_chars 个字符消耗对应积分，不足也按一个单位计算
  */
 export const voiceCostConfig: VoiceCostConfig = {
-  unit_chars: 100,
+  unit_chars: 1,
   standard: 1,
   professional: 1,
   celebrity: 2,

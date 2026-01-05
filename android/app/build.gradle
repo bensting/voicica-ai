@@ -14,8 +14,8 @@ android {
         applicationId "ai.voicica.app"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 4
-        versionName "1.0.35"
+        versionCode 6
+        versionName "1.0.37"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {
              // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.
@@ -86,6 +86,12 @@ dependencies {
     androidTestImplementation "androidx.test.ext:junit:$androidxJunitVersion"
     androidTestImplementation "androidx.test.espresso:espresso-core:$androidxEspressoCoreVersion"
     implementation project(':capacitor-cordova-android-plugins')
+    // Google Play Billing Library (required for Google Play in-app purchases)
+    implementation "com.android.billingclient:billing:7.1.1"
+    // Pangle AdMob Mediation Adapter (for in-app bidding)
+    implementation "com.google.ads.mediation:pangle:7.8.0.8.0"
+    // Appodeal SDK (激励视频广告)
+    implementation 'com.appodeal.ads:sdk:3.3.3.+'
 }
 
 apply from: 'capacitor.build.gradle'

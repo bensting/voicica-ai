@@ -10,9 +10,24 @@ import { SplashScreen } from '@capacitor/splash-screen';
 
 /**
  * 检测是否在原生 App 中运行
+ *
+ * 由于使用远程加载模式（server.url），Capacitor.isNativePlatform() 会返回 false，
+ * 因此需要通过 User-Agent 来检测。
+ * capacitor.config.ts 中配置了 appendUserAgent: 'VoicicaApp'
  */
 export const isNativeApp = (): boolean => {
-  return Capacitor.isNativePlatform();
+  // 优先检查 Capacitor 原生平台标识
+  if (Capacitor.isNativePlatform()) {
+    return true;
+  }
+
+  // 远程加载模式：通过 User-Agent 检测
+  if (typeof window !== 'undefined' && typeof navigator !== 'undefined') {
+    const userAgent = navigator.userAgent || '';
+    return userAgent.includes('VoicicaApp');
+  }
+
+  return false;
 };
 
 /**

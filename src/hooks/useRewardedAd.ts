@@ -184,7 +184,15 @@ export function useRewardedAd(): UseRewardedAdReturn {
 
           // 监听加载失败
           await appodeal.addListener('rewardedVideoFailedToLoad', () => {
+            appodealReadyRef.current = false;
             console.warn('[RewardedAd] Appodeal ad failed to load');
+          });
+
+          // 监听广告关闭 - 重新缓存下一个广告
+          await appodeal.addListener('rewardedVideoClosed', () => {
+            appodealReadyRef.current = false;
+            console.log('[RewardedAd] Appodeal ad closed, caching next ad...');
+            appodeal.cacheRewardedVideo();
           });
 
           // 初始化 SDK

@@ -31,7 +31,7 @@ const TEST_APP_KEYS = {
  * 从 Appodeal 后台获取: https://app.appodeal.com/
  */
 const REAL_APP_KEYS = {
-  android: '', // 填入你的 Android App Key
+  android: '8573a31362e775f428d4d18bd00a90af8d10861c35589d29', // 填入你的 Android App Key
   ios: '',     // 填入你的 iOS App Key
 };
 
@@ -40,7 +40,7 @@ const REAL_APP_KEYS = {
  */
 const devConfig: AppodealConfig = {
   enabled: false, // 开发环境默认关闭，使用 AdMob 测试广告
-  androidAppKey: 8573a31362e775f428d4d18bd00a90af8d10861c35589d29,
+  androidAppKey: TEST_APP_KEYS.android,
   iosAppKey: TEST_APP_KEYS.ios,
   testMode: true,
 };
@@ -55,10 +55,10 @@ const devConfig: AppodealConfig = {
  * 4. 在 rewarded.ts 中将 provider 设为 'appodeal'
  */
 const prodConfig: AppodealConfig = {
-  enabled: true, // ⚠️ 配置好 App Key 后改为 true
-  androidAppKey: 8573a31362e775f428d4d18bd00a90af8d10861c35589d29,
+  enabled: true,
+  androidAppKey: TEST_APP_KEYS.android, // 使用测试 Key，正式上线后改为 REAL_APP_KEYS.android
   iosAppKey: REAL_APP_KEYS.ios,
-  testMode: false, // ⚠️ 上架后改为 false
+  testMode: false,
 };
 
 // 根据环境选择配置

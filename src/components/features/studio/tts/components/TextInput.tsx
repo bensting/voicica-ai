@@ -145,7 +145,7 @@ export default function TextInput({
           {/* Left: Remaining Credits and More Menu for non-logged-in users */}
           <div className="flex items-center gap-1.5 relative" ref={moreMenuRef}>
             <CreditsIcon className="w-4 h-4 lg:w-5 lg:h-5 text-amber-500" />
-            <span className="text-sm lg:text-base font-medium text-gray-700">
+            <span className="text-sm lg:text-base font-medium text-gray-700 group/credits relative">
               {creditsLoading ? (
                 <span className="inline-flex items-center gap-0.5">
                   <span className="w-1.5 h-1.5 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
@@ -153,15 +153,26 @@ export default function TextInput({
                   <span className="w-1.5 h-1.5 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
                 </span>
               ) : (
-                <>
+                <span className="cursor-default">
                   {remainingCredits.toLocaleString()}
-                  {/* 已登录用户显示积分明细 */}
-                  {user && (permanentCredits > 0 || monthlyCredits > 0) && (
-                    <span className="text-xs text-gray-500 font-normal ml-1">
-                      ({permanentCredits.toLocaleString()} {t('tts.input.permanent')} + {monthlyCredits.toLocaleString()} {t('tts.input.monthly')})
+                  {/* 已登录用户：hover 时显示积分明细 tooltip */}
+                  {user && (
+                    <span className="absolute left-0 bottom-full mb-2 px-3 py-2 bg-gray-800 text-white text-xs rounded-lg shadow-lg whitespace-nowrap opacity-0 invisible group-hover/credits:opacity-100 group-hover/credits:visible transition-all duration-200 z-50">
+                      <span className="flex flex-col gap-1">
+                        <span className="flex items-center justify-between gap-4">
+                          <span className="text-gray-300">{t('tts.input.permanent')}:</span>
+                          <span className="font-medium">{permanentCredits.toLocaleString()}</span>
+                        </span>
+                        <span className="flex items-center justify-between gap-4">
+                          <span className="text-gray-300">{t('tts.input.monthly')}:</span>
+                          <span className="font-medium">{monthlyCredits.toLocaleString()}</span>
+                        </span>
+                      </span>
+                      {/* Tooltip arrow */}
+                      <span className="absolute left-4 top-full border-4 border-transparent border-t-gray-800" />
                     </span>
                   )}
-                </>
+                </span>
               )}{' '}
               {t('tts.input.creditsLeft')}
             </span>

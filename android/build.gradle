@@ -23,6 +23,8 @@ allprojects {
         mavenCentral()
         // Pangle SDK Repository
         maven { url 'https://artifact.bytedance.com/repository/pangle/' }
+        // Appodeal SDK Repository
+        maven { url 'https://artifactory.appodeal.com/appodeal' }
     }
 }
 

@@ -3,7 +3,7 @@
 /**
  * 统一激励广告 Hook
  *
- * 根据配置自动切换 AppLixir（Web）和 AdMob（原生）
+ * 根据配置自动切换 AppLixir（Web）、AdMob（原生）或 Appodeal（原生）
  *
  * 使用方式：
  * ```tsx
@@ -20,9 +20,14 @@
 
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { Capacitor } from '@capacitor/core';
-import { shouldUseAdMob, type RewardedAdProvider } from '@/config/ads';
+import {
+  shouldUseAdMob,
+  shouldUseAppodeal,
+  shouldUseAppLixir,
+} from '@/config/ads';
 import { applixirConfig } from '@/config/ads/applixir';
 import { admobConfig } from '@/config/ads/admob';
+import { appodealConfig, getAppodealAppKey } from '@/config/ads/appodeal';
 
 export type RewardedAdStatus = 'idle' | 'loading' | 'ready' | 'showing' | 'rewarded' | 'error';
 
@@ -30,7 +35,7 @@ interface UseRewardedAdReturn {
   /** 当前状态 */
   status: RewardedAdStatus;
   /** 当前使用的广告提供商 */
-  provider: 'applixir' | 'admob' | 'none';
+  provider: 'applixir' | 'admob' | 'appodeal' | 'none';
   /** 是否准备好显示广告 */
   isReady: boolean;
   /** 错误信息 */
@@ -61,23 +66,30 @@ export function useRewardedAd(): UseRewardedAdReturn {
   const [status, setStatus] = useState<RewardedAdStatus>('idle');
   const [error, setError] = useState<string | null>(null);
   const [AdMob, setAdMob] = useState<typeof import('@capacitor-community/admob').AdMob | null>(null);
+  const [AppodealPlugin, setAppodealPlugin] = useState<typeof import('@/plugins/appodeal').Appodeal | null>(null);
 
   const applixirLoadedRef = useRef(false);
   const admobReadyRef = useRef(false);
+  const appodealReadyRef = useRef(false);
   const rewardedRef = useRef(false);
 
   // 检测平台
   const isNative = Capacitor.isNativePlatform();
   const useAdMob = shouldUseAdMob(isNative);
+  const useAppodeal = shouldUseAppodeal(isNative);
+  const useAppLixir = shouldUseAppLixir(isNative);
 
   // 当前使用的提供商
-  const provider: 'applixir' | 'admob' | 'none' = useAdMob
-    ? (admobConfig.enabled ? 'admob' : 'none')
-    : (applixirConfig.enabled ? 'applixir' : 'none');
+  const provider: 'applixir' | 'admob' | 'appodeal' | 'none' = (() => {
+    if (useAppodeal && appodealConfig.enabled) return 'appodeal';
+    if (useAdMob && admobConfig.enabled) return 'admob';
+    if (useAppLixir && applixirConfig.enabled) return 'applixir';
+    return 'none';
+  })();
 
   // ==================== AppLixir 初始化 ====================
   useEffect(() => {
-    if (useAdMob || !applixirConfig.enabled) return;
+    if (provider !== 'applixir') return;
     if (applixirLoadedRef.current) return;
     if (typeof window === 'undefined') return;
 
@@ -110,11 +122,11 @@ export function useRewardedAd(): UseRewardedAdReturn {
       setStatus('error');
     };
     document.head.appendChild(script);
-  }, [useAdMob]);
+  }, [provider]);
 
   // ==================== AdMob 初始化 ====================
   useEffect(() => {
-    if (!useAdMob || !admobConfig.enabled) return;
+    if (provider !== 'admob') return;
     if (!isNative) return;
 
     import('@capacitor-community/admob')
@@ -139,7 +151,59 @@ export function useRewardedAd(): UseRewardedAdReturn {
       .catch((err) => {
         console.error('[RewardedAd] AdMob module load failed:', err);
       });
-  }, [useAdMob, isNative]);
+  }, [provider, isNative]);
+
+  // ==================== Appodeal 初始化 ====================
+  useEffect(() => {
+    if (provider !== 'appodeal') return;
+    if (!isNative) return;
+    if (appodealReadyRef.current) return;
+
+    import('@/plugins/appodeal')
+      .then(async (module) => {
+        const appodeal = module.Appodeal;
+        setAppodealPlugin(appodeal);
+
+        try {
+          const platform = Capacitor.getPlatform() as 'android' | 'ios';
+          const appKey = getAppodealAppKey(platform);
+
+          if (!appKey) {
+            console.warn('[RewardedAd] No Appodeal app key for platform:', platform);
+            setError('Appodeal app key not configured');
+            setStatus('error');
+            return;
+          }
+
+          // 监听广告加载完成
+          await appodeal.addListener('rewardedVideoLoaded', () => {
+            appodealReadyRef.current = true;
+            setStatus('ready');
+            console.log('[RewardedAd] Appodeal ad loaded');
+          });
+
+          // 监听加载失败
+          await appodeal.addListener('rewardedVideoFailedToLoad', () => {
+            console.warn('[RewardedAd] Appodeal ad failed to load');
+          });
+
+          // 初始化 SDK
+          await appodeal.initialize({
+            appKey,
+            testMode: appodealConfig.testMode,
+          });
+
+          console.log('[RewardedAd] Appodeal initialized');
+        } catch (err) {
+          console.error('[RewardedAd] Appodeal init failed:', err);
+          setError('Appodeal initialization failed');
+          setStatus('error');
+        }
+      })
+      .catch((err) => {
+        console.error('[RewardedAd] Appodeal module load failed:', err);
+      });
+  }, [provider, isNative]);
 
   // 预加载 AdMob 广告
   const prepareAdMobAd = useCallback(async (adMob: typeof import('@capacitor-community/admob').AdMob) => {
@@ -266,14 +330,56 @@ export function useRewardedAd(): UseRewardedAdReturn {
       }
     }
 
+    // ---- Appodeal ----
+    if (provider === 'appodeal' && AppodealPlugin) {
+      try {
+        setStatus('showing');
+
+        // 检查广告是否已加载
+        const { isLoaded } = await AppodealPlugin.isRewardedVideoLoaded();
+        if (!isLoaded) {
+          // 尝试缓存并等待
+          await AppodealPlugin.cacheRewardedVideo();
+          let waited = 0;
+          while (waited < 10000) {
+            const check = await AppodealPlugin.isRewardedVideoLoaded();
+            if (check.isLoaded) break;
+            await new Promise((r) => setTimeout(r, 100));
+            waited += 100;
+          }
+        }
+
+        // 显示广告
+        const result = await AppodealPlugin.showRewardedVideo();
+
+        if (result.rewarded) {
+          setStatus('rewarded');
+          console.log('[RewardedAd] Appodeal reward earned:', result);
+          return true;
+        } else {
+          setStatus('idle');
+          if (result.error) {
+            console.warn('[RewardedAd] Appodeal:', result.error);
+          }
+          return false;
+        }
+      } catch (err) {
+        console.error('[RewardedAd] Appodeal show failed:', err);
+        setError('Failed to show ad');
+        setStatus('error');
+        return false;
+      }
+    }
+
     return false;
-  }, [provider, AdMob, prepareAdMobAd]);
+  }, [provider, AdMob, AppodealPlugin, prepareAdMobAd]);
 
   // 计算是否准备好
   const isReady =
     provider === 'none' ||
     (provider === 'applixir' && applixirLoadedRef.current) ||
-    (provider === 'admob' && admobReadyRef.current);
+    (provider === 'admob' && admobReadyRef.current) ||
+    (provider === 'appodeal' && appodealReadyRef.current);
 
   return {
     status,

@@ -156,7 +156,12 @@ export default function DailyTasksModal({ isOpen, onClose, onCreditsUpdated }: D
     }
   }, [adLoading, showAd, doClaimAdReward, onCreditsUpdated]);
 
-  if (!isOpen || !config?.enabled) return null;
+  // 如果弹窗未打开，不渲染
+  if (!isOpen) return null;
+
+  // 如果配置未加载或未启用，显示加载状态
+  const isConfigLoading = !config;
+  const isDisabled = config && !config.enabled;
 
   // 格式化积分数字
   const formatCredits = (credits: number) => {
@@ -425,15 +430,26 @@ export default function DailyTasksModal({ isOpen, onClose, onCreditsUpdated }: D
 
           {/* 内容区域 */}
           <div className="p-6">
-            {user ? renderLoggedInContent() : renderGuestContent()}
+            {isConfigLoading ? (
+              <div className="flex flex-col items-center justify-center py-12">
+                <Loader2 className="w-8 h-8 animate-spin text-purple-500 mb-3" />
+                <p className="text-sm text-gray-500">{t('common.loading') || '加载中...'}</p>
+              </div>
+            ) : isDisabled ? (
+              <div className="flex flex-col items-center justify-center py-12">
+                <p className="text-sm text-gray-500">{t('dailyTasks.disabled') || '每日任务暂未开放'}</p>
+              </div>
+            ) : user ? renderLoggedInContent() : renderGuestContent()}
           </div>
 
           {/* 底部提示 */}
-          <div className="px-6 pb-5 text-center">
-            <p className="text-xs text-gray-400">
-              {t('dailyTasks.resetTip')}
-            </p>
-          </div>
+          {!isConfigLoading && !isDisabled && (
+            <div className="px-6 pb-5 text-center">
+              <p className="text-xs text-gray-400">
+                {t('dailyTasks.resetTip')}
+              </p>
+            </div>
+          )}
         </div>
       </div>
 

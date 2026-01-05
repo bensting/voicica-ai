@@ -88,10 +88,9 @@ dependencies {
     implementation project(':capacitor-cordova-android-plugins')
     // Google Play Billing Library (required for Google Play in-app purchases)
     implementation "com.android.billingclient:billing:7.1.1"
-    // Pangle AdMob Mediation Adapter (for in-app bidding)
-    implementation "com.google.ads.mediation:pangle:7.8.0.8.0"
     // Appodeal SDK (激励视频广告)
-    implementation 'com.appodeal.ads:sdk:3.3.3.+'
+    // 注意：不能与 Pangle AdMob Mediation 同时使用（有依赖冲突）
+    implementation 'com.appodeal.ads:sdk:3.12.0.+'
 }
 
 apply from: 'capacitor.build.gradle'

@@ -39,10 +39,10 @@ const REAL_APP_KEYS = {
  * 开发环境配置
  */
 const devConfig: AppodealConfig = {
-  enabled: false, // 开发环境默认关闭，使用 AdMob 测试广告
+  enabled: true, // 开发环境也启用 Appodeal
   androidAppKey: TEST_APP_KEYS.android,
   iosAppKey: TEST_APP_KEYS.ios,
-  testMode: true,
+  testMode: false, // 使用真实广告（测试广告没有关闭按钮）
 };
 
 /**

@@ -23,6 +23,11 @@ public class AppodealPlugin extends Plugin {
     private boolean isInitialized = false;
     private PluginCall pendingRewardCall = null;
 
+    // 奖励状态
+    private boolean hasReward = false;
+    private double rewardedAmount = 0;
+    private String rewardedName = null;
+
     /**
      * 初始化 Appodeal SDK
      *
@@ -126,31 +131,59 @@ public class AppodealPlugin extends Plugin {
                 data.put("name", name);
                 notifyListeners("rewardedVideoFinished", data);
 
-                // 用户完整观看视频，发放奖励
-                if (pendingRewardCall != null) {
-                    JSObject result = new JSObject();
-                    result.put("rewarded", true);
-                    result.put("amount", amount);
-                    result.put("name", name);
-                    pendingRewardCall.resolve(result);
-                    pendingRewardCall = null;
-                }
+                // 标记已完成
+                rewardedAmount = amount;
+                rewardedName = name;
+                hasReward = true;
+
+                // 测试广告可能没有关闭按钮，延迟后自动处理结果
+                getActivity().runOnUiThread(() -> {
+                    new android.os.Handler().postDelayed(() -> {
+                        if (pendingRewardCall != null && hasReward) {
+                            Log.d(TAG, "Auto-resolving reward after timeout");
+                            JSObject result = new JSObject();
+                            result.put("rewarded", true);
+                            result.put("amount", rewardedAmount);
+                            result.put("name", rewardedName);
+                            pendingRewardCall.resolve(result);
+                            pendingRewardCall = null;
+
+                            // 重置状态
+                            hasReward = false;
+                            rewardedAmount = 0;
+                            rewardedName = null;
+                        }
+                    }, 2000); // 2秒后自动返回结果
+                });
             }
 
             @Override
             public void onRewardedVideoClosed(boolean finished) {
-                Log.d(TAG, "Rewarded video closed, finished: " + finished);
+                Log.d(TAG, "Rewarded video closed, finished: " + finished + ", hasReward: " + hasReward);
                 JSObject data = new JSObject();
                 data.put("finished", finished);
                 notifyListeners("rewardedVideoClosed", data);
 
-                // 如果用户中途关闭（未完成观看）
-                if (!finished && pendingRewardCall != null) {
+                // 统一在关闭时处理结果
+                if (pendingRewardCall != null) {
                     JSObject result = new JSObject();
-                    result.put("rewarded", false);
-                    result.put("error", "Ad closed before completion");
+                    if (hasReward) {
+                        // 用户完整观看了广告
+                        result.put("rewarded", true);
+                        result.put("amount", rewardedAmount);
+                        result.put("name", rewardedName);
+                    } else {
+                        // 用户中途关闭
+                        result.put("rewarded", false);
+                        result.put("error", "Ad closed before completion");
+                    }
                     pendingRewardCall.resolve(result);
                     pendingRewardCall = null;
+
+                    // 重置奖励状态
+                    hasReward = false;
+                    rewardedAmount = 0;
+                    rewardedName = null;
                 }
             }
 

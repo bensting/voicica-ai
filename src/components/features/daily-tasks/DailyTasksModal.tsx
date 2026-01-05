@@ -95,19 +95,24 @@ export default function DailyTasksModal({ isOpen, onClose, onCreditsUpdated }: D
       // 原生 App：使用 useDailyTasks 中的 doClaimAdReward（内部使用 useRewardedAd）
       console.log('🎬 [DailyTasks] Starting ad via doClaimAdReward...');
       const result = await doClaimAdReward();
+      console.log('🎬 [DailyTasks] doClaimAdReward result:', result);
 
       if (result.success && result.credits) {
         setLastClaimedCredits(result.credits);
         onCreditsUpdated?.();
         setTimeout(() => setLastClaimedCredits(null), 2000);
       } else if (!result.success) {
-        setAdError(result.message || '领取失败');
-        setTimeout(() => setAdError(null), 3000);
+        // 显示详细错误信息用于调试
+        const errorMsg = result.message || '领取失败';
+        console.error('❌ [DailyTasks] Claim failed:', errorMsg);
+        setAdError(errorMsg);
+        setTimeout(() => setAdError(null), 5000);
       }
     } catch (err) {
       console.error('❌ [DailyTasks] Ad error:', err);
-      setAdError('广告加载失败，请稍后再试');
-      setTimeout(() => setAdError(null), 3000);
+      const errorMsg = err instanceof Error ? err.message : '广告加载失败，请稍后再试';
+      setAdError(errorMsg);
+      setTimeout(() => setAdError(null), 5000);
     } finally {
       setAdLoading(false);
     }

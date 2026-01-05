@@ -347,8 +347,8 @@ export function useRewardedAd(): UseRewardedAdReturn {
         let appodeal = AppodealPlugin;
         if (!appodeal) {
           console.log('[RewardedAd] Appodeal plugin not loaded, loading now...');
-          const module = await import('@/plugins/appodeal');
-          appodeal = module.Appodeal;
+          const appodealModule = await import('@/plugins/appodeal');
+          appodeal = appodealModule.Appodeal;
 
           // 初始化 SDK
           const platform = Capacitor.getPlatform() as 'android' | 'ios';

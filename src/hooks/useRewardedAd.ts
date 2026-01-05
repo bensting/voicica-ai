@@ -339,26 +339,57 @@ export function useRewardedAd(): UseRewardedAdReturn {
     }
 
     // ---- Appodeal ----
-    if (provider === 'appodeal' && AppodealPlugin) {
+    if (provider === 'appodeal') {
       try {
+        setStatus('loading');
+
+        // 如果插件还没加载，动态加载它
+        let appodeal = AppodealPlugin;
+        if (!appodeal) {
+          console.log('[RewardedAd] Appodeal plugin not loaded, loading now...');
+          const module = await import('@/plugins/appodeal');
+          appodeal = module.Appodeal;
+
+          // 初始化 SDK
+          const platform = Capacitor.getPlatform() as 'android' | 'ios';
+          const appKey = getAppodealAppKey(platform);
+
+          if (!appKey) {
+            console.warn('[RewardedAd] No Appodeal app key for platform:', platform);
+            setError('Appodeal app key not configured');
+            setStatus('error');
+            return false;
+          }
+
+          await appodeal.initialize({
+            appKey,
+            testMode: appodealConfig.testMode,
+          });
+          console.log('[RewardedAd] Appodeal initialized on-demand');
+        }
+
         setStatus('showing');
 
         // 检查广告是否已加载
-        const { isLoaded } = await AppodealPlugin.isRewardedVideoLoaded();
+        const { isLoaded } = await appodeal.isRewardedVideoLoaded();
         if (!isLoaded) {
           // 尝试缓存并等待
-          await AppodealPlugin.cacheRewardedVideo();
+          console.log('[RewardedAd] Ad not loaded, caching...');
+          await appodeal.cacheRewardedVideo();
           let waited = 0;
-          while (waited < 10000) {
-            const check = await AppodealPlugin.isRewardedVideoLoaded();
-            if (check.isLoaded) break;
-            await new Promise((r) => setTimeout(r, 100));
-            waited += 100;
+          while (waited < 15000) {
+            const check = await appodeal.isRewardedVideoLoaded();
+            if (check.isLoaded) {
+              console.log('[RewardedAd] Ad loaded after', waited, 'ms');
+              break;
+            }
+            await new Promise((r) => setTimeout(r, 200));
+            waited += 200;
           }
         }
 
         // 显示广告
-        const result = await AppodealPlugin.showRewardedVideo();
+        const result = await appodeal.showRewardedVideo();
 
         if (result.rewarded) {
           setStatus('rewarded');

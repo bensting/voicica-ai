@@ -6,8 +6,6 @@ import { X, Gift, Check, Loader2, Play } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 import { useDailyTasks } from '@/hooks/useDailyTasks';
-import { useAppLixirAd, type AdStatus } from '@/components/features/ads/AppLixirRewardedAd';
-import { applixirConfig } from '@/config/ads';
 import { isNativeApp } from '@/lib/capacitor';
 import LoginModal from '@/components/features/auth/LoginModal';
 import AppDownloadModal from './AppDownloadModal';
@@ -42,50 +40,6 @@ export default function DailyTasksModal({ isOpen, onClose, onCreditsUpdated }: D
   const [lastClaimedCredits, setLastClaimedCredits] = useState<number | null>(null);
   const [adLoading, setAdLoading] = useState(false);
   const [adError, setAdError] = useState<string | null>(null);
-
-
-  // 广告观看成功回调
-  const handleAdWatched = useCallback(async () => {
-    console.log('✅ [DailyTasks] Ad watched, claiming reward...');
-    setAdLoading(true);
-    const result = await doClaimAdReward();
-    setAdLoading(false);
-    if (result.success && result.credits) {
-      setLastClaimedCredits(result.credits);
-      onCreditsUpdated?.();
-      setTimeout(() => setLastClaimedCredits(null), 2000);
-    }
-  }, [doClaimAdReward, onCreditsUpdated]);
-
-  // 广告关闭回调（用户中途退出）
-  const handleAdClosed = useCallback(() => {
-    console.log('⚠️ [DailyTasks] Ad closed by user');
-    setAdLoading(false);
-    setAdError(t('dailyTasks.adInterrupted') || '广告未看完，无法获得奖励');
-    setTimeout(() => setAdError(null), 3000);
-  }, [t]);
-
-  // 广告错误回调
-  const handleAdError = useCallback((status: AdStatus) => {
-    console.error('❌ [DailyTasks] Ad error:', status);
-    setAdLoading(false);
-    if (status === 'ad-unavailable') {
-      setAdError(t('dailyTasks.adUnavailable') || '暂无可用广告，请稍后再试');
-    } else {
-      setAdError(t('dailyTasks.adError') || '广告加载失败，请稍后再试');
-    }
-    setTimeout(() => setAdError(null), 3000);
-  }, [t]);
-
-  // 初始化 AppLixir 广告
-  const { showAd } = useAppLixirAd({
-    config: {
-      apiKey: applixirConfig.apiKey,
-    },
-    onAdWatched: handleAdWatched,
-    onAdClosed: handleAdClosed,
-    onAdError: handleAdError,
-  });
 
   // 登录成功后刷新状态
   useEffect(() => {
@@ -124,8 +78,8 @@ export default function DailyTasksModal({ isOpen, onClose, onCreditsUpdated }: D
   };
 
   // 处理看广告领奖励
-  const handleWatchAd = useCallback(() => {
-    if (adLoading) return;
+  const handleWatchAd = useCallback(async () => {
+    if (adLoading || claiming) return;
 
     // Web 端：弹出下载 App 引导页
     if (!isNativeApp()) {
@@ -137,24 +91,27 @@ export default function DailyTasksModal({ isOpen, onClose, onCreditsUpdated }: D
     setAdError(null);
     setAdLoading(true);
 
-    // 原生 App：使用真实广告
-    if (applixirConfig.enabled && applixirConfig.apiKey) {
-      console.log('🎬 [DailyTasks] Showing AppLixir ad...');
-      showAd();
-    } else {
-      // 模拟广告（开发环境或未配置时）
-      console.log('🎬 [DailyTasks] Simulating ad (dev mode)...');
-      setTimeout(async () => {
-        const result = await doClaimAdReward();
-        setAdLoading(false);
-        if (result.success && result.credits) {
-          setLastClaimedCredits(result.credits);
-          onCreditsUpdated?.();
-          setTimeout(() => setLastClaimedCredits(null), 2000);
-        }
-      }, 1000);
+    try {
+      // 原生 App：使用 useDailyTasks 中的 doClaimAdReward（内部使用 useRewardedAd）
+      console.log('🎬 [DailyTasks] Starting ad via doClaimAdReward...');
+      const result = await doClaimAdReward();
+
+      if (result.success && result.credits) {
+        setLastClaimedCredits(result.credits);
+        onCreditsUpdated?.();
+        setTimeout(() => setLastClaimedCredits(null), 2000);
+      } else if (!result.success) {
+        setAdError(result.message || '领取失败');
+        setTimeout(() => setAdError(null), 3000);
+      }
+    } catch (err) {
+      console.error('❌ [DailyTasks] Ad error:', err);
+      setAdError('广告加载失败，请稍后再试');
+      setTimeout(() => setAdError(null), 3000);
+    } finally {
+      setAdLoading(false);
     }
-  }, [adLoading, showAd, doClaimAdReward, onCreditsUpdated]);
+  }, [adLoading, claiming, doClaimAdReward, onCreditsUpdated]);
 
   // 如果弹窗未打开，不渲染
   if (!isOpen) return null;

@@ -21,6 +21,18 @@ export interface TtsResult {
 }
 
 /**
+ * XML 转义，防止特殊字符破坏 SSML 结构
+ */
+function escapeXml(text: string): string {
+  return text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&apos;');
+}
+
+/**
  * 构建 SSML (Speech Synthesis Markup Language)
  * 支持 Azure 特有的 mstts:express-as 标签用于设置语音风格
  */
@@ -47,8 +59,11 @@ function buildSsml(request: TtsRequest): string {
   // 音量：前端 1-100，直接使用
   const volumeVal = Math.round(volume);
 
+  // 转义文本中的特殊字符
+  const safeText = escapeXml(text);
+
   // 构建内容部分（带或不带 style）
-  const prosodyContent = `<prosody rate="${rateStr}" pitch="${pitchStr}" volume="${volumeVal}">${text}</prosody>`;
+  const prosodyContent = `<prosody rate="${rateStr}" pitch="${pitchStr}" volume="${volumeVal}">${safeText}</prosody>`;
 
   // 如果指定了 style 且不是 default，使用 mstts:express-as 包裹
   const voiceContent = style && style !== 'default'

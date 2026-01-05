@@ -1,0 +1,30 @@
+{
+  "dailyTasks": {
+    "title": "每日任務",
+    "subtitle": "完成任務賺取免費積分！",
+    "credits": "積分",
+
+    "loginToEarn": "登入後即可每天賺取積分！",
+    "dailyMax": "每日最多可獲得",
+    "loginNow": "立即登入",
+
+    "todayEarned": "今日進度",
+
+    "checkin": "每日簽到",
+    "oneClickClaim": "一鍵領取",
+    "claim": "領取",
+    "claimed": "已領取",
+
+    "watchAds": "觀看影片",
+    "watchMultiple": "觀看 {{count}} 個影片",
+    "watchAdGet": "觀看 +{{credits}}",
+    "allAdsClaimed": "今日已全部領取",
+
+    "loadingAd": "載入廣告中...",
+    "adInterrupted": "廣告未看完，無法獲得獎勵",
+    "adUnavailable": "暫無可用廣告，請稍後再試",
+    "adError": "廣告載入失敗，請稍後再試",
+
+    "resetTip": "任務每日零點重置"
+  }
+}

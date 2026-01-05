@@ -19,6 +19,8 @@
     "input": {
       "placeholder": "在此輸入文本，我們將自動識別並轉換為對應的語音。",
       "creditsLeft": "積分",
+      "permanent": "永久",
+      "monthly": "當月",
       "characterCount": "{current} / {max}",
       "generateSpeech": "生成語音",
       "generating": "生成中...",

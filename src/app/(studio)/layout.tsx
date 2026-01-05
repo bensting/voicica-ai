@@ -1,10 +1,18 @@
 'use client';
 
 import { useState } from 'react';
+import dynamic from 'next/dynamic';
 import StudioSidebar from '@/components/layout/studio/StudioSidebar';
 import StudioTopNav from '@/components/layout/studio/StudioTopNav';
 import UpgradeModal from '@/components/features/pricing/UpgradeModal';
 import { StudioProvider } from '@/contexts/StudioContext';
+import { useCredits } from '@/contexts/CreditsContext';
+
+// 动态导入每日任务弹窗
+const DailyTasksModal = dynamic(
+  () => import('@/components/features/daily-tasks/DailyTasksModal'),
+  { ssr: false }
+);
 
 function StudioLayoutContent({
   children,
@@ -13,9 +21,15 @@ function StudioLayoutContent({
 }) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isUpgradeModalOpen, setIsUpgradeModalOpen] = useState(false);
+  const [isDailyTasksModalOpen, setIsDailyTasksModalOpen] = useState(false);
+  const { refreshCredits } = useCredits();
 
   const handleUpgradeClick = () => {
     setIsUpgradeModalOpen(true);
+  };
+
+  const handleDailyTasksClick = () => {
+    setIsDailyTasksModalOpen(true);
   };
 
   return (
@@ -23,6 +37,7 @@ function StudioLayoutContent({
       {/* ========== 顶部导航 (响应式，移动端和桌面端统一) ========== */}
       <StudioTopNav
         onUpgradeClick={handleUpgradeClick}
+        onDailyTasksClick={handleDailyTasksClick}
         isMenuOpen={isMobileMenuOpen}
         onMenuToggle={setIsMobileMenuOpen}
       />
@@ -49,6 +64,15 @@ function StudioLayoutContent({
         <UpgradeModal
           isOpen={isUpgradeModalOpen}
           onClose={() => setIsUpgradeModalOpen(false)}
+        />
+      )}
+
+      {/* ========== Daily Tasks Modal ========== */}
+      {isDailyTasksModalOpen && (
+        <DailyTasksModal
+          isOpen={isDailyTasksModalOpen}
+          onClose={() => setIsDailyTasksModalOpen(false)}
+          onCreditsUpdated={refreshCredits}
         />
       )}
     </div>

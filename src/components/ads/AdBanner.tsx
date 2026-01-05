@@ -1,22 +1,9 @@
 'use client';
 
 import AdSense from './AdSense';
-
-// 预定义的广告位 Slot ID（需要在 AdSense 控制台创建后替换）
-export const AD_SLOTS = {
-  // 首页 - Hero 底部（首屏曝光最高）
-  HOME_HERO_BOTTOM: process.env.NEXT_PUBLIC_AD_SLOT_HOME_HERO || 'xxxxxxxxxx',
-  // 首页 - TTS Samples 下方
-  HOME_AFTER_SAMPLES: process.env.NEXT_PUBLIC_AD_SLOT_HOME_SAMPLES || 'xxxxxxxxxx',
-  // TTS 落地页 - Hero 底部
-  TTS_HERO_BOTTOM: process.env.NEXT_PUBLIC_AD_SLOT_TTS_HERO || 'xxxxxxxxxx',
-  // 通用横幅
-  BANNER: process.env.NEXT_PUBLIC_AD_SLOT_BANNER || 'xxxxxxxxxx',
-} as const;
+import { adsenseConfig } from '@/config/ads';
 
 interface AdBannerProps {
-  // 使用预定义的广告位
-  slot: keyof typeof AD_SLOTS | string;
   // 变体样式
   variant?: 'inline' | 'section';
   // 自定义类名
@@ -24,16 +11,14 @@ interface AdBannerProps {
 }
 
 /**
- * 广告横幅组件 - 封装常用广告位
+ * 广告横幅组件
+ *
+ * 使用通用广告单元，简化配置
  */
 export default function AdBanner({
-  slot,
   variant = 'inline',
   className = '',
 }: AdBannerProps) {
-  // 获取实际的 slot ID
-  const adSlot = slot in AD_SLOTS ? AD_SLOTS[slot as keyof typeof AD_SLOTS] : slot;
-
   // 根据变体设置样式
   const variantStyles = {
     inline: 'my-4',
@@ -43,7 +28,7 @@ export default function AdBanner({
   return (
     <div className={`${variantStyles[variant]} ${className}`}>
       <AdSense
-        adSlot={adSlot}
+        adSlot={adsenseConfig.slots.banner}
         adFormat="auto"
         fullWidthResponsive={true}
         style={{ minHeight: '90px' }}

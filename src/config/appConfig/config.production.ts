@@ -21,11 +21,11 @@ export const appConfig: AppConfig = {
   },
 
   /**
-   * 用户积分配置
+   * 新用户首次登录用户积分配置
    */
   credits: {
-    anonymous_user: 5,
-    registered_user: 20,
+    anonymous_user: 500,
+    registered_user: 1000,
   },
 
   /**
@@ -36,9 +36,28 @@ export const appConfig: AppConfig = {
   },
 
   /**
-   * 版本检测配置
+   * APK 版本检测配置
    */
   version_check: {
     check_interval_minutes: 5,
+  },
+
+  /**
+   * 每日任务配置
+   */
+  daily_tasks: {
+    checkin_credits: 100,
+    ad_reward_tiers: [200, 300, 400, 500, 800, 1000],
+    popup_interval_minutes: 30, // 生产环境每 30 分钟最多弹出一次
+    enabled: true,
+  },
+
+  /**
+   * Google Play 应用更新配置
+   */
+  app_update: {
+    enabled: true,
+    check_interval_minutes: 60, // 每小时检查一次
+    install_prompt_delay_seconds: 3, // 下载完成后 3 秒提示安装
   },
 };

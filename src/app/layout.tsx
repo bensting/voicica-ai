@@ -12,6 +12,7 @@ import { CreditsProvider } from "@/contexts/CreditsContext";
 import { AudioSettingsProvider } from "@/contexts/AudioSettingsContext";
 import PWAUpdatePrompt from "@/components/layout/PWAUpdatePrompt";
 import AppUpdatePrompt from "@/components/native/AppUpdatePrompt";
+import GooglePlayUpdatePrompt from "@/components/native/GooglePlayUpdatePrompt";
 import LanguageLoadingWrapper from "@/components/providers/LanguageLoadingWrapper";
 import DeviceFingerprintProvider from "@/components/providers/DeviceFingerprintProvider";
 import CapacitorProvider from "@/components/providers/CapacitorProvider";
@@ -146,7 +147,7 @@ export async function generateMetadata(): Promise<Metadata> {
     },
     // Google AdSense 验证
     other: {
-      "google-adsense-account": process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID || "",
+      "google-adsense-account": "ca-pub-5946279989031789",
     },
     // 备用语言链接（帮助 Google 理解多语言网站）
     alternates: {
@@ -196,12 +197,14 @@ export default async function RootLayout({
               <UserProvider>
                 <CreditsProvider>
                   <AudioSettingsProvider>
-                    <DeviceFingerprintProvider />
-                    <CapacitorProvider />
-                    {children}
-                    <PWAUpdatePrompt />
-                    <AppUpdatePrompt />
-                    <ServerActionErrorHandler />
+                    <DeviceFingerprintProvider>
+                      <CapacitorProvider />
+                      {children}
+                      <PWAUpdatePrompt />
+                      <AppUpdatePrompt />
+                      <GooglePlayUpdatePrompt />
+                      <ServerActionErrorHandler />
+                    </DeviceFingerprintProvider>
                   </AudioSettingsProvider>
                 </CreditsProvider>
               </UserProvider>
@@ -212,14 +215,12 @@ export default async function RootLayout({
           <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID} />
         )}
         {/* Google AdSense */}
-        {process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID && (
-          <Script
-            async
-            src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID}`}
-            crossOrigin="anonymous"
-            strategy="lazyOnload"
-          />
-        )}
+        <Script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5946279989031789"
+          crossOrigin="anonymous"
+          strategy="lazyOnload"
+        />
         <SpeedInsights sampleRate={0.1} />
       </body>
     </html>

@@ -6,7 +6,7 @@
 
 import { appConfig as devConfig } from './config.development';
 import { appConfig as prodConfig } from './config.production';
-import type { AppConfig, TtsSamplesConfig } from './types';
+import type { AppConfig, TtsSamplesConfig, DailyTasksConfig, AppUpdateConfig } from './types';
 
 // 导出语音成本相关功能（从 creditsCost 重新导出以保持向后兼容）
 export {
@@ -23,7 +23,7 @@ const isProduction = process.env.NODE_ENV === 'production';
 export const appConfig: AppConfig = isProduction ? prodConfig : devConfig;
 
 // 导出类型
-export type { AppConfig, TtsSamplesConfig };
+export type { AppConfig, TtsSamplesConfig, DailyTasksConfig, AppUpdateConfig };
 
 /**
  * 获取 TTS 试听配置
@@ -44,4 +44,18 @@ export function getSampleLocales(): string[] {
  */
 export function getSampleTextMaxLength(): number {
   return appConfig.tts_samples.sample_text_max_length;
+}
+
+/**
+ * 获取每日任务配置
+ */
+export function getDailyTasksConfig(): DailyTasksConfig {
+  return appConfig.daily_tasks;
+}
+
+/**
+ * 获取应用更新配置
+ */
+export function getAppUpdateConfig(): AppUpdateConfig {
+  return appConfig.app_update;
 }

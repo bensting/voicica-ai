@@ -33,5 +33,15 @@
     "installComplete": "Installation complete",
     "downloadError": "Download failed",
     "permissionRequired": "Please grant permission to install unknown apps and try again"
+  },
+  "googlePlayUpdate": {
+    "updateAvailable": "Update Available",
+    "updateReady": "Update Ready to Install",
+    "downloadInBackground": "Downloading in background...",
+    "downloadComplete": "Download complete. Restart to apply update.",
+    "update": "Update",
+    "install": "Install Now",
+    "later": "Later",
+    "progress": "Downloading... {{progress}}%"
   }
 }

@@ -1,0 +1,10 @@
+<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="apkpureGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#54D989"/>
+      <stop offset="100%" style="stop-color:#2ECC71"/>
+    </linearGradient>
+  </defs>
+  <!-- A shape logo -->
+  <path fill="url(#apkpureGrad)" d="M12 2L2 22h6l1.5-4h5l1.5 4h6L12 2zm0 7l2.5 7h-5L12 9z"/>
+</svg>

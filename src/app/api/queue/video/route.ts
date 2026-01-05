@@ -17,7 +17,7 @@ import {
 import { uploadVideo } from '@/lib/services/r2-storage';
 import { ProductType } from '@/config/productType';
 import type { VideoQueuePayload } from '@/lib/queue/video-queue';
-import { deductCreditsAtomic, addCredits } from '@/lib/credits';
+import { deductCreditsAtomic, refundCredits, type DeductionBreakdown } from '@/lib/credits';
 
 // 允许长时间运行（Hobby 计划最大 300 秒）
 export const maxDuration = 300;
@@ -40,7 +40,7 @@ async function handleVideoTask(req: NextRequest) {
   } = payload;
 
   console.log(`🚀 [VideoQueue] 开始处理视频任务: ${taskId}`);
-  let creditsDeducted = false;
+  let deductionBreakdown: DeductionBreakdown | null = null;
 
   try {
     // 1. 幂等性检查：获取任务记录并验证状态
@@ -85,8 +85,8 @@ async function handleVideoTask(req: NextRequest) {
 
     console.log(`🔓 [VideoQueue] 任务 ${taskId} 状态已锁定为 PROCESSING`);
 
-    // 3. 扣减积分
-    await deductCreditsAtomic(
+    // 3. 扣减积分（返回扣减详情用于失败时精确返还）
+    deductionBreakdown = await deductCreditsAtomic(
       userId,
       creditsCost,
       ProductType.TEXT_TO_VIDEO,
@@ -94,7 +94,6 @@ async function handleVideoTask(req: NextRequest) {
       `Video: ${prompt.substring(0, 30)}${prompt.length > 30 ? '...' : ''}`,
       taskId
     );
-    creditsDeducted = true;
 
     // 4. 更新进度到 20%
     await prisma.video_records.update({
@@ -178,17 +177,16 @@ async function handleVideoTask(req: NextRequest) {
   } catch (error) {
     console.error(`❌ [VideoQueue] 视频任务处理失败: ${taskId}`, error);
 
-    // 如果积分已扣减，退还积分
-    if (creditsDeducted) {
+    // 如果积分已扣减，精确返还到原来的积分池
+    if (deductionBreakdown) {
       try {
-        await addCredits(
+        await refundCredits(
           userId,
-          creditsCost,
+          deductionBreakdown,
           ProductType.TEXT_TO_VIDEO,
           isAnonymous,
-          '视频任务失败，积分退还',
-          taskId,
-          true
+          'Video task failed, refund credits',
+          taskId
         );
       } catch (refundError) {
         console.error('积分退还失败:', refundError);

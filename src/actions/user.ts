@@ -13,6 +13,64 @@ import { v4 as uuidv4 } from 'uuid';
 import type { UserProfile, CreditsInfo, CreditHistoryResponse } from '@/types/user';
 import { Prisma } from '@prisma/client';
 
+// ==================== 积分工具函数 ====================
+
+/**
+ * 获取本月1号的日期（用于判断是否需要重置当月积分）
+ */
+function getFirstDayOfMonth(): Date {
+  const now = new Date();
+  return new Date(now.getFullYear(), now.getMonth(), 1, 0, 0, 0, 0);
+}
+
+/**
+ * 检查并重置当月积分（懒加载方式）
+ * 如果上次重置时间早于本月1号，则重置 monthly_credits 为 0
+ */
+async function checkAndResetMonthlyCredits(userId: string): Promise<{
+  wasReset: boolean;
+  monthlyCredits: number;
+}> {
+  const firstDayOfMonth = getFirstDayOfMonth();
+
+  const user = await prisma.users.findUnique({
+    where: { user_id: userId },
+    select: { monthly_credits: true, monthly_credits_reset_at: true },
+  });
+
+  if (!user) {
+    return { wasReset: false, monthlyCredits: 0 };
+  }
+
+  // 如果从未重置过，或上次重置在本月1号之前，需要重置
+  const needsReset = !user.monthly_credits_reset_at ||
+    user.monthly_credits_reset_at < firstDayOfMonth;
+
+  if (needsReset && user.monthly_credits > 0) {
+    // 重置当月积分（永久积分 credits 不受影响）
+    await prisma.users.update({
+      where: { user_id: userId },
+      data: {
+        monthly_credits: 0,
+        monthly_credits_reset_at: new Date(),
+      },
+    });
+
+    console.log(`🔄 [Credits] 用户 ${userId} 当月积分已重置: ${user.monthly_credits} -> 0`);
+    return { wasReset: true, monthlyCredits: 0 };
+  }
+
+  // 如果没有积分需要重置，只更新重置时间
+  if (needsReset) {
+    await prisma.users.update({
+      where: { user_id: userId },
+      data: { monthly_credits_reset_at: new Date() },
+    });
+  }
+
+  return { wasReset: false, monthlyCredits: user.monthly_credits };
+}
+
 // ==================== 请求级缓存 ====================
 // 同一次请求内，相同 userId 只查一次数据库
 
@@ -32,6 +90,7 @@ const getCachedAnonymousUser = cache(async (userId: string) => {
  * 获取当前用户资料
  *
  * 需要认证，首次登录自动注册
+ * 包含懒加载当月积分重置逻辑
  */
 export async function getCurrentUserProfile(): Promise<UserProfile> {
   const authUser = await getCurrentUser();
@@ -50,10 +109,22 @@ export async function getCurrentUserProfile(): Promise<UserProfile> {
         name: authUser.name || null,
         photo_url: authUser.picture || null,
         credits: 0,
+        monthly_credits: 0,
+        monthly_credits_reset_at: new Date(),
         total_credits_used: 0,
       },
     });
     console.log(`新用户注册: ${authUser.uid}`);
+  } else {
+    // 检查并重置当月积分（懒加载）
+    const { wasReset } = await checkAndResetMonthlyCredits(authUser.uid);
+    if (wasReset) {
+      // 重新获取更新后的用户数据
+      user = await prisma.users.findUnique({
+        where: { user_id: authUser.uid },
+      });
+      if (!user) throw new Error('用户不存在');
+    }
   }
 
   return {
@@ -64,6 +135,7 @@ export async function getCurrentUserProfile(): Promise<UserProfile> {
     photo_url: user.photo_url,
     phone: user.phone,
     credits: user.credits,
+    monthly_credits: user.monthly_credits,
     total_credits_used: user.total_credits_used,
     is_anonymous: false,
     expires_at: null,
@@ -125,6 +197,7 @@ export async function updateUserProfile(data: {
     photo_url: user.photo_url,
     phone: user.phone,
     credits: user.credits,
+    monthly_credits: user.monthly_credits,
     total_credits_used: user.total_credits_used,
     is_anonymous: false,
     expires_at: null,
@@ -237,6 +310,7 @@ export async function getUnifiedUserProfile(): Promise<UserProfile> {
       throw new Error('匿名用户不存在');
     }
 
+    // 匿名用户没有每日任务，全部算作永久积分
     return {
       id: anonUser.id,
       user_id: anonUser.user_id,
@@ -245,13 +319,19 @@ export async function getUnifiedUserProfile(): Promise<UserProfile> {
       photo_url: null,
       phone: null,
       credits: anonUser.credits,
+      monthly_credits: 0,
       total_credits_used: anonUser.total_credits_used,
       is_anonymous: true,
       expires_at: anonUser.expires_at?.toISOString() || null,
     };
   } else {
-    // 正式用户（使用缓存）
-    const user = await getCachedUser(unifiedUser.user_id);
+    // 正式用户：先检查当月积分重置
+    await checkAndResetMonthlyCredits(unifiedUser.user_id);
+
+    // 重新获取用户数据（不使用缓存，确保拿到最新数据）
+    const user = await prisma.users.findUnique({
+      where: { user_id: unifiedUser.user_id },
+    });
 
     if (!user) {
       throw new Error('用户不存在');
@@ -265,6 +345,7 @@ export async function getUnifiedUserProfile(): Promise<UserProfile> {
       photo_url: user.photo_url,
       phone: user.phone,
       credits: user.credits,
+      monthly_credits: user.monthly_credits,
       total_credits_used: user.total_credits_used,
       is_anonymous: false,
       expires_at: null,
@@ -274,7 +355,7 @@ export async function getUnifiedUserProfile(): Promise<UserProfile> {
 
 /**
  * 获取积分余额（统一接口，支持正式用户和匿名用户）
- * 使用 React cache() 在同一请求内去重
+ * 包含懒加载当月积分重置逻辑
  */
 export async function getUnifiedCredits(): Promise<CreditsInfo> {
   const unifiedUser = await getUserOrAnonymous();
@@ -287,15 +368,22 @@ export async function getUnifiedCredits(): Promise<CreditsInfo> {
       throw new Error('匿名用户不存在');
     }
 
+    // 匿名用户没有每日任务，全部算作永久积分
     return {
       credits: anonUser.credits,
+      monthly_credits: 0,
       total_used: anonUser.total_credits_used,
       is_anonymous: true,
       expires_at: anonUser.expires_at?.toISOString() || null,
     };
   } else {
-    // 使用缓存查询
-    const user = await getCachedUser(unifiedUser.user_id);
+    // 正式用户：先检查当月积分重置
+    await checkAndResetMonthlyCredits(unifiedUser.user_id);
+
+    // 重新获取用户数据（不使用缓存，确保拿到最新数据）
+    const user = await prisma.users.findUnique({
+      where: { user_id: unifiedUser.user_id },
+    });
 
     if (!user) {
       throw new Error('用户不存在');
@@ -303,6 +391,7 @@ export async function getUnifiedCredits(): Promise<CreditsInfo> {
 
     return {
       credits: user.credits,
+      monthly_credits: user.monthly_credits,
       total_used: user.total_credits_used,
       is_anonymous: false,
       expires_at: null,

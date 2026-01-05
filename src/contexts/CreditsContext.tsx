@@ -9,7 +9,12 @@ import { getUnifiedCredits } from '@/actions/user';
  * Credits Context 状态
  */
 interface CreditsContextState {
+  /** 总积分（= permanentCredits + monthlyCredits） */
   credits: number;
+  /** 永久积分（购买、注册赠送，永不过期） */
+  permanentCredits: number;
+  /** 当月积分（每日任务，月底重置） */
+  monthlyCredits: number;
   loading: boolean;
   error: string | null;
   refreshCredits: () => Promise<void>;
@@ -36,6 +41,8 @@ export function CreditsProvider({ children }: CreditsProviderProps) {
   const { user, loading: authLoading } = useFirebaseAuth();
   const { profile, loading: profileLoading, refreshProfile } = useUser();
   const [credits, setCredits] = useState(0);
+  const [permanentCredits, setPermanentCredits] = useState(0);
+  const [monthlyCredits, setMonthlyCredits] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   // 标记是否使用本地覆盖值（用于乐观更新）
@@ -47,7 +54,10 @@ export function CreditsProvider({ children }: CreditsProviderProps) {
       setLoading(true);
       setError(null);
       const response = await getUnifiedCredits();
-      setCredits(response.credits);
+      // 总积分 = 永久积分(credits) + 当月积分(monthly_credits)
+      setCredits(response.credits + response.monthly_credits);
+      setPermanentCredits(response.credits);
+      setMonthlyCredits(response.monthly_credits);
     } catch (err) {
       const error = err as Error;
       if (error.message !== '未提供认证信息' && error.message !== '未登录') {
@@ -55,6 +65,8 @@ export function CreditsProvider({ children }: CreditsProviderProps) {
         setError('Failed to fetch credits');
       }
       setCredits(0);
+      setPermanentCredits(0);
+      setMonthlyCredits(0);
     } finally {
       setLoading(false);
     }
@@ -72,7 +84,10 @@ export function CreditsProvider({ children }: CreditsProviderProps) {
     if (user && profile) {
       // 如果没有本地覆盖值，使用 profile 中的积分
       if (localOverride === null) {
-        setCredits(profile.credits);
+        // 总积分 = 永久积分(credits) + 当月积分(monthly_credits)
+        setCredits(profile.credits + profile.monthly_credits);
+        setPermanentCredits(profile.credits);
+        setMonthlyCredits(profile.monthly_credits);
       }
       setLoading(false);
       setError(null);
@@ -126,6 +141,8 @@ export function CreditsProvider({ children }: CreditsProviderProps) {
 
   const value: CreditsContextState = {
     credits,
+    permanentCredits,
+    monthlyCredits,
     loading,
     error,
     refreshCredits,

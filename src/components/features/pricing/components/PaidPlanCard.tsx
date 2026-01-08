@@ -203,8 +203,8 @@ export default function PaidPlanCard({ plan }: PaidPlanCardProps) {
 
           if (verifyResult.success) {
             console.log('✅ [handleUpgrade] Purchase verified, subscription:', verifyResult.subscriptionId);
-            // 购买成功，跳转到成功页面
-            window.location.href = '/studio/payment/success';
+            // 购买成功，跳转到成功页面（带 Google Play 标识）
+            window.location.href = `/studio/payment/success?source=google_play&subscription_id=${verifyResult.subscriptionId}`;
           } else {
             console.error('❌ [handleUpgrade] Verification failed:', verifyResult.error);
             alert(verifyResult.error || 'Failed to verify purchase');

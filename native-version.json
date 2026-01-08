@@ -1,14 +1,14 @@
 {
-  "version": "1.0.39",
-  "buildNumber": 7,
+  "version": "1.1.0",
+  "buildNumber": 8,
   "description": "原生应用版本（Android/iOS 应用壳）",
   "changelog": [
     {
-      "version": "1.0.39",
-      "buildNumber": 7,
+      "version": "1.1.0",
+      "buildNumber": 8,
       "date": "2024-01-08",
       "changes": [
-        "add google pay"
+        "fix google pay"
       ]
     }
   ],

@@ -47,18 +47,17 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
   // 获取启用的社交登录方式
   const socialProviders = getEnabledLoginProviders();
 
-  // 登录成功后自动关闭模态框（注册过程中或显示验证成功提示时不关闭）
+  // 登录成功后自动关闭模态框（仅在登录模式下，注册模式不受影响）
   useEffect(() => {
-    if (user && isOpen && !isSigningUp && !verificationEmailSent) {
+    if (user && isOpen && mode === 'login') {
       console.log('✅ 登录成功，关闭模态框');
       onClose();
       // 重置表单
       setEmail('');
       setPassword('');
       setError(null);
-      setMode('login');
     }
-  }, [user, isOpen, onClose, isSigningUp, verificationEmailSent]);
+  }, [user, isOpen, onClose, mode]);
 
   // 按 ESC 键关闭
   useEffect(() => {

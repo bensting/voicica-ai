@@ -124,6 +124,48 @@ export function useRewardedAd(): UseRewardedAdReturn {
     document.head.appendChild(script);
   }, [provider]);
 
+  // 预加载 AdMob 广告
+  const prepareAdMobAd = useCallback(async (adMob: typeof import('@capacitor-community/admob').AdMob) => {
+    try {
+      const platform = Capacitor.getPlatform();
+      const adId = platform === 'android' ? admobConfig.rewarded.android : admobConfig.rewarded.ios;
+
+      if (!adId) {
+        console.warn('[RewardedAd] No ad unit ID for platform:', platform);
+        return;
+      }
+
+      const { RewardAdPluginEvents } = await import('@capacitor-community/admob');
+
+      // 监听加载完成
+      await adMob.addListener(RewardAdPluginEvents.Loaded, () => {
+        admobReadyRef.current = true;
+        setStatus('ready');
+        console.log('[RewardedAd] AdMob ad loaded');
+      });
+
+      // 监听奖励
+      await adMob.addListener(RewardAdPluginEvents.Rewarded, () => {
+        rewardedRef.current = true;
+        console.log('[RewardedAd] AdMob reward earned');
+      });
+
+      // 监听关闭
+      await adMob.addListener(RewardAdPluginEvents.Dismissed, () => {
+        // 关闭后重新预加载
+        prepareAdMobAd(adMob);
+      });
+
+      // 预加载
+      await adMob.prepareRewardVideoAd({
+        adId,
+        isTesting: admobConfig.useTestAds,
+      });
+    } catch (err) {
+      console.error('[RewardedAd] AdMob prepare failed:', err);
+    }
+  }, []);
+
   // ==================== AdMob 初始化 ====================
   useEffect(() => {
     if (provider !== 'admob') return;
@@ -212,48 +254,6 @@ export function useRewardedAd(): UseRewardedAdReturn {
         console.error('[RewardedAd] Appodeal module load failed:', err);
       });
   }, [provider, isNative]);
-
-  // 预加载 AdMob 广告
-  const prepareAdMobAd = useCallback(async (adMob: typeof import('@capacitor-community/admob').AdMob) => {
-    try {
-      const platform = Capacitor.getPlatform();
-      const adId = platform === 'android' ? admobConfig.rewarded.android : admobConfig.rewarded.ios;
-
-      if (!adId) {
-        console.warn('[RewardedAd] No ad unit ID for platform:', platform);
-        return;
-      }
-
-      const { RewardAdPluginEvents } = await import('@capacitor-community/admob');
-
-      // 监听加载完成
-      await adMob.addListener(RewardAdPluginEvents.Loaded, () => {
-        admobReadyRef.current = true;
-        setStatus('ready');
-        console.log('[RewardedAd] AdMob ad loaded');
-      });
-
-      // 监听奖励
-      await adMob.addListener(RewardAdPluginEvents.Rewarded, () => {
-        rewardedRef.current = true;
-        console.log('[RewardedAd] AdMob reward earned');
-      });
-
-      // 监听关闭
-      await adMob.addListener(RewardAdPluginEvents.Dismissed, () => {
-        // 关闭后重新预加载
-        prepareAdMobAd(adMob);
-      });
-
-      // 预加载
-      await adMob.prepareRewardVideoAd({
-        adId,
-        isTesting: admobConfig.useTestAds,
-      });
-    } catch (err) {
-      console.error('[RewardedAd] AdMob prepare failed:', err);
-    }
-  }, []);
 
   // ==================== 显示广告 ====================
   const showRewardedAd = useCallback(async (): Promise<boolean> => {

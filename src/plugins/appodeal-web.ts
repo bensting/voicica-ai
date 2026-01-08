@@ -11,6 +11,7 @@ import type {
   ShowRewardedVideoResult,
   IsLoadedResult,
   CanShowResult,
+  SetAdTimeoutOptions,
 } from './appodeal';
 
 /**
@@ -67,5 +68,10 @@ export class AppodealWeb extends WebPlugin implements AppodealPlugin {
   async canShow(): Promise<CanShowResult> {
     console.log('[Appodeal Web] canShow');
     return { canShow: this.initialized };
+  }
+
+  async setAdTimeout(options: SetAdTimeoutOptions): Promise<void> {
+    console.log('[Appodeal Web] setAdTimeout:', options.timeout, 'seconds');
+    // Web 环境下只是记录，不需要实际超时处理
   }
 }

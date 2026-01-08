@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useCallback } from 'react';
 import { Capacitor } from '@capacitor/core';
+import { App } from '@capacitor/app';
 import { admobConfig } from '@/config/ads';
 
 const LAST_AD_SHOWN_KEY = 'app_start_ad_last_shown';
@@ -77,9 +78,9 @@ export function useAppStartAd() {
     }
   }, [isEnabled]);
 
-  // 初始化并显示广告
-  useEffect(() => {
-    if (!isNative || !isEnabled || hasShownRef.current) return;
+  // 尝试显示广告的通用方法
+  const tryShowAd = useCallback(async () => {
+    if (!isEnabled) return;
 
     // 检查是否应该显示广告
     if (!shouldShowAd()) {
@@ -87,27 +88,54 @@ export function useAppStartAd() {
       return;
     }
 
-    // 动态导入 AdMob
-    import('@capacitor-community/admob')
-      .then(async (module) => {
+    // 如果 AdMob 还没初始化，先初始化
+    if (!adMobRef.current) {
+      try {
+        const module = await import('@capacitor-community/admob');
         adMobRef.current = module.AdMob;
 
-        // 初始化 AdMob
         await module.AdMob.initialize({
           testingDevices: process.env.NODE_ENV === 'development' ? ['YOUR_TEST_DEVICE_ID'] : [],
           initializeForTesting: process.env.NODE_ENV === 'development',
         });
-
-        // 延迟显示广告，让页面先加载完成
-        setTimeout(() => {
-          if (!hasShownRef.current) {
-            hasShownRef.current = true;
-            showInterstitialAd();
-          }
-        }, 1500); // 1.5 秒后显示
-      })
-      .catch((error) => {
+      } catch (error) {
         console.error('[AppStartAd] AdMob 加载失败:', error);
-      });
-  }, [isNative, isEnabled, showInterstitialAd]);
+        return;
+      }
+    }
+
+    // 显示广告
+    showInterstitialAd();
+  }, [isEnabled, showInterstitialAd]);
+
+  // 初始化：首次启动时显示广告
+  useEffect(() => {
+    if (!isNative || !isEnabled || hasShownRef.current) return;
+
+    hasShownRef.current = true;
+
+    // 延迟显示广告，让页面先加载完成
+    const timer = setTimeout(() => {
+      tryShowAd();
+    }, 1500);
+
+    return () => clearTimeout(timer);
+  }, [isNative, isEnabled, tryShowAd]);
+
+  // 监听 APP 从后台恢复
+  useEffect(() => {
+    if (!isNative || !isEnabled) return;
+
+    const listener = App.addListener('appStateChange', ({ isActive }) => {
+      if (isActive) {
+        console.log('[AppStartAd] APP 从后台恢复');
+        // APP 恢复时检查是否应该显示广告
+        tryShowAd();
+      }
+    });
+
+    return () => {
+      listener.then(l => l.remove());
+    };
+  }, [isNative, isEnabled, tryShowAd]);
 }

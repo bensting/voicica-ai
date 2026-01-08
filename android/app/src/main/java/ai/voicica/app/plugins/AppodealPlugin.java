@@ -1,6 +1,16 @@
 package ai.voicica.app.plugins;
 
+import android.animation.ObjectAnimator;
+import android.graphics.Color;
+import android.graphics.PixelFormat;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.View;
+import android.view.WindowManager;
+import android.view.animation.LinearInterpolator;
+import android.widget.ProgressBar;
 
 import com.appodeal.ads.Appodeal;
 import com.appodeal.ads.RewardedVideoCallbacks;
@@ -15,18 +25,32 @@ import com.getcapacitor.annotation.CapacitorPlugin;
  * Appodeal 广告插件
  *
  * 提供激励视频广告功能，用于每日任务中的"观看视频赚积分"
+ * 包含超时保护机制：显示顶部进度条，超时后强制关闭广告
  */
 @CapacitorPlugin(name = "Appodeal")
 public class AppodealPlugin extends Plugin {
 
     private static final String TAG = "AppodealPlugin";
+    private static final int DEFAULT_TIMEOUT_SECONDS = 60; // 默认超时时间（秒）
+
     private boolean isInitialized = false;
     private PluginCall pendingRewardCall = null;
+
+    // 超时处理
+    private Handler timeoutHandler = new Handler(Looper.getMainLooper());
+    private Runnable timeoutRunnable = null;
+    private int adTimeoutSeconds = DEFAULT_TIMEOUT_SECONDS;
+
+    // 进度条相关
+    private ProgressBar progressBar = null;
+    private WindowManager windowManager = null;
+    private ObjectAnimator progressAnimator = null;
 
     // 奖励状态
     private boolean hasReward = false;
     private double rewardedAmount = 0;
     private String rewardedName = null;
+    private boolean isAdShowing = false;
 
     /**
      * 初始化 Appodeal SDK
@@ -109,7 +133,12 @@ public class AppodealPlugin extends Plugin {
             @Override
             public void onRewardedVideoShown() {
                 Log.d(TAG, "Rewarded video shown");
+                isAdShowing = true;
                 notifyListeners("rewardedVideoShown", new JSObject());
+
+                // 显示进度条并启动超时计时器
+                showProgressBar();
+                startTimeoutTimer();
             }
 
             @Override
@@ -154,6 +183,12 @@ public class AppodealPlugin extends Plugin {
             @Override
             public void onRewardedVideoClosed(boolean finished) {
                 Log.d(TAG, "Rewarded video closed, finished: " + finished + ", hasReward: " + hasReward);
+                isAdShowing = false;
+
+                // 清理进度条和超时计时器
+                hideProgressBar();
+                cancelTimeoutTimer();
+
                 JSObject data = new JSObject();
                 data.put("finished", finished);
                 notifyListeners("rewardedVideoClosed", data);
@@ -265,5 +300,154 @@ public class AppodealPlugin extends Plugin {
         JSObject result = new JSObject();
         result.put("canShow", canShow);
         call.resolve(result);
+    }
+
+    /**
+     * 设置广告超时时间（秒）
+     */
+    @PluginMethod
+    public void setAdTimeout(PluginCall call) {
+        Integer timeout = call.getInt("timeout", DEFAULT_TIMEOUT_SECONDS);
+        adTimeoutSeconds = timeout;
+        Log.d(TAG, "Ad timeout set to " + adTimeoutSeconds + " seconds");
+        call.resolve();
+    }
+
+    /**
+     * 显示顶部进度条
+     */
+    private void showProgressBar() {
+        getActivity().runOnUiThread(() -> {
+            try {
+                if (progressBar != null) {
+                    hideProgressBar();
+                }
+
+                windowManager = (WindowManager) getActivity().getSystemService(android.content.Context.WINDOW_SERVICE);
+
+                // 创建水平进度条
+                progressBar = new ProgressBar(getActivity(), null, android.R.attr.progressBarStyleHorizontal);
+                progressBar.setMax(1000);
+                progressBar.setProgress(1000);
+                progressBar.setScaleY(2f); // 加粗进度条
+
+                // 设置进度条颜色为紫色（与 APP 主题一致）
+                progressBar.getProgressDrawable().setColorFilter(
+                    Color.parseColor("#9333EA"), // 紫色
+                    android.graphics.PorterDuff.Mode.SRC_IN
+                );
+
+                // 设置窗口参数
+                WindowManager.LayoutParams params = new WindowManager.LayoutParams(
+                    WindowManager.LayoutParams.MATCH_PARENT,
+                    16, // 高度 16px
+                    WindowManager.LayoutParams.TYPE_APPLICATION_PANEL,
+                    WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE |
+                    WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL |
+                    WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN,
+                    PixelFormat.TRANSLUCENT
+                );
+                params.gravity = Gravity.TOP;
+                params.token = getActivity().getWindow().getDecorView().getWindowToken();
+
+                windowManager.addView(progressBar, params);
+
+                // 启动进度条动画（从满到空）
+                progressAnimator = ObjectAnimator.ofInt(progressBar, "progress", 1000, 0);
+                progressAnimator.setDuration(adTimeoutSeconds * 1000L);
+                progressAnimator.setInterpolator(new LinearInterpolator());
+                progressAnimator.start();
+
+                Log.d(TAG, "Progress bar shown");
+            } catch (Exception e) {
+                Log.e(TAG, "Failed to show progress bar", e);
+            }
+        });
+    }
+
+    /**
+     * 隐藏进度条
+     */
+    private void hideProgressBar() {
+        getActivity().runOnUiThread(() -> {
+            try {
+                if (progressAnimator != null) {
+                    progressAnimator.cancel();
+                    progressAnimator = null;
+                }
+
+                if (progressBar != null && windowManager != null) {
+                    windowManager.removeView(progressBar);
+                    progressBar = null;
+                    Log.d(TAG, "Progress bar hidden");
+                }
+            } catch (Exception e) {
+                Log.e(TAG, "Failed to hide progress bar", e);
+            }
+        });
+    }
+
+    /**
+     * 启动超时计时器
+     */
+    private void startTimeoutTimer() {
+        cancelTimeoutTimer();
+
+        timeoutRunnable = () -> {
+            Log.d(TAG, "Ad timeout reached (" + adTimeoutSeconds + "s), forcing close");
+
+            if (isAdShowing) {
+                isAdShowing = false;
+
+                // 隐藏进度条
+                hideProgressBar();
+
+                // 强制给奖励（因为用户已经等待了足够长的时间）
+                if (pendingRewardCall != null) {
+                    Log.d(TAG, "Timeout: giving reward to user");
+                    JSObject result = new JSObject();
+                    result.put("rewarded", true);
+                    result.put("amount", 1.0);
+                    result.put("name", "timeout_reward");
+                    result.put("timeout", true); // 标记是超时给的奖励
+                    pendingRewardCall.resolve(result);
+                    pendingRewardCall = null;
+                }
+
+                // 重置奖励状态
+                hasReward = false;
+                rewardedAmount = 0;
+                rewardedName = null;
+
+                // 通知前端广告超时关闭
+                JSObject data = new JSObject();
+                data.put("timeout", true);
+                notifyListeners("rewardedVideoClosed", data);
+
+                // 尝试关闭广告（返回上一个 Activity）
+                getActivity().runOnUiThread(() -> {
+                    try {
+                        // 尝试按返回键关闭广告
+                        getActivity().onBackPressed();
+                    } catch (Exception e) {
+                        Log.e(TAG, "Failed to close ad activity", e);
+                    }
+                });
+            }
+        };
+
+        timeoutHandler.postDelayed(timeoutRunnable, adTimeoutSeconds * 1000L);
+        Log.d(TAG, "Timeout timer started: " + adTimeoutSeconds + " seconds");
+    }
+
+    /**
+     * 取消超时计时器
+     */
+    private void cancelTimeoutTimer() {
+        if (timeoutRunnable != null) {
+            timeoutHandler.removeCallbacks(timeoutRunnable);
+            timeoutRunnable = null;
+            Log.d(TAG, "Timeout timer cancelled");
+        }
     }
 }

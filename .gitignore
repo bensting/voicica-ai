@@ -93,3 +93,5 @@ keystore.properties
 # Release temporary files
 .release-notes.md
 .releases.json
+
+build-output/*

@@ -62,7 +62,7 @@ echo.
 echo 正在构建 %OUTPUT_NAME% (%FLAVOR%)...
 echo.
 
-echo [1/4] 同步原生版本号...
+echo [1/6] 同步原生版本号...
 call npm run native:version:sync
 if %errorlevel% neq 0 (
     echo 错误: 版本同步失败
@@ -71,7 +71,7 @@ if %errorlevel% neq 0 (
 )
 
 echo.
-echo [2/4] 构建 Web 资源...
+echo [2/6] 构建 Web 资源...
 call npm run build
 if %errorlevel% neq 0 (
     echo 错误: Web 构建失败
@@ -80,7 +80,7 @@ if %errorlevel% neq 0 (
 )
 
 echo.
-echo [3/4] 同步到 Android 项目...
+echo [3/6] 同步到 Android 项目...
 echo      服务器地址: %SERVER_URL%
 set CAPACITOR_SERVER_URL=%SERVER_URL%
 call npx cap sync android
@@ -91,7 +91,16 @@ if %errorlevel% neq 0 (
 )
 
 echo.
-echo [4/4] 打包 %OUTPUT_NAME%...
+echo [4/6] 清理 Gradle 缓存 (确保原生代码更新)...
+cd android
+call gradlew clean
+if %errorlevel% neq 0 (
+    echo 警告: Gradle 清理失败，继续构建...
+)
+cd ..
+
+echo.
+echo [5/6] 打包 %OUTPUT_NAME%...
 cd android
 call gradlew %BUILD_CMD%
 if %errorlevel% neq 0 (
@@ -103,7 +112,7 @@ if %errorlevel% neq 0 (
 cd ..
 
 echo.
-echo [5/5] 复制并重命名输出文件...
+echo [6/6] 复制并重命名输出文件...
 set OUTPUT_DIR=build-output
 if not exist %OUTPUT_DIR% mkdir %OUTPUT_DIR%
 copy /Y "%BUILD_OUTPUT%" "%OUTPUT_DIR%\%FINAL_NAME%"

@@ -28,6 +28,16 @@ export interface ShowRewardedVideoResult {
   name?: string;
   /** 错误信息（如果失败） */
   error?: string;
+  /** 是否是超时强制给的奖励 */
+  timeout?: boolean;
+}
+
+/**
+ * 设置超时时间选项
+ */
+export interface SetAdTimeoutOptions {
+  /** 超时时间（秒） */
+  timeout: number;
 }
 
 /**
@@ -73,6 +83,12 @@ export interface AppodealPlugin {
    * 检查是否可以显示广告（基于频率规则）
    */
   canShow(): Promise<CanShowResult>;
+
+  /**
+   * 设置广告超时时间（秒）
+   * 超时后会强制关闭广告并给予奖励
+   */
+  setAdTimeout(options: SetAdTimeoutOptions): Promise<void>;
 
   /**
    * 添加事件监听器

@@ -370,6 +370,17 @@ export default function DailyTasksModal({ isOpen, onClose, onCreditsUpdated }: D
 
   const modalContent = (
     <>
+      {/* 广告加载中覆盖层 */}
+      {adLoading && (
+        <div className="fixed inset-0 flex flex-col items-center justify-center bg-black/70 backdrop-blur-sm z-[9999]">
+          <div className="bg-white rounded-2xl p-8 flex flex-col items-center shadow-2xl">
+            <Loader2 className="w-12 h-12 animate-spin text-purple-500 mb-4" />
+            <p className="text-gray-700 font-medium">{t('dailyTasks.loadingAd') || '加载广告中...'}</p>
+            <p className="text-gray-400 text-sm mt-1">{t('dailyTasks.pleaseWait') || '请稍候'}</p>
+          </div>
+        </div>
+      )}
+
       <div
         className={`fixed inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm transition-all z-[9998] ${
           adLoading ? 'opacity-0 pointer-events-none' : 'opacity-100'

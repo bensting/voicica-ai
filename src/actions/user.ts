@@ -74,12 +74,6 @@ async function checkAndResetMonthlyCredits(userId: string): Promise<{
 // ==================== 请求级缓存 ====================
 // 同一次请求内，相同 userId 只查一次数据库
 
-const getCachedUser = cache(async (userId: string) => {
-  return prisma.users.findUnique({
-    where: { user_id: userId },
-  });
-});
-
 const getCachedAnonymousUser = cache(async (userId: string) => {
   return prisma.anonymous_users.findUnique({
     where: { user_id: userId },

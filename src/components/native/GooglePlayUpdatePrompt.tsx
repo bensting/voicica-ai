@@ -16,7 +16,6 @@ import { useLanguage } from '@/contexts/LanguageContext';
 export function GooglePlayUpdatePrompt() {
   const {
     status,
-    progress,
     isAndroid,
     hasUpdate,
     isReadyToInstall,

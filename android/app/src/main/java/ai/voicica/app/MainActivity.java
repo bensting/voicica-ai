@@ -6,12 +6,14 @@ import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
 import com.getcapacitor.BridgeActivity;
 import ai.voicica.app.plugins.AppodealPlugin;
+import ai.voicica.app.plugins.GooglePlayBillingPlugin;
 
 public class MainActivity extends BridgeActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         // 注册自定义插件
         registerPlugin(AppodealPlugin.class);
+        registerPlugin(GooglePlayBillingPlugin.class);
 
         super.onCreate(savedInstanceState);
 

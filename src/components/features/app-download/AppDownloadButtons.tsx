@@ -1,9 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { Smartphone } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { getLatestRelease } from '@/actions/admin/app-releases';
 
 interface AppDownloadButtonsProps {
   /** 显示模式：modal 用于弹窗内，dark 用于深色背景页面 */
@@ -33,19 +30,6 @@ const AppStoreIcon = ({ className = 'w-5 h-5', color = 'currentColor' }: { class
   </svg>
 );
 
-// APKPure 图标
-const APKPureIcon = ({ className = 'w-5 h-5' }: { className?: string }) => (
-  <svg viewBox="0 0 24 24" className={className}>
-    <defs>
-      <linearGradient id="apkpureGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-        <stop offset="0%" style={{ stopColor: '#54D989' }} />
-        <stop offset="100%" style={{ stopColor: '#2ECC71' }} />
-      </linearGradient>
-    </defs>
-    <path fill="url(#apkpureGrad)" d="M12 2L2 22h6l1.5-4h5l1.5 4h6L12 2zm0 7l2.5 7h-5L12 9z"/>
-  </svg>
-);
-
 // Android 图标
 const AndroidIcon = () => (
   <svg viewBox="0 0 24 24" className="w-3 h-3 text-white" fill="currentColor">
@@ -71,27 +55,9 @@ export default function AppDownloadButtons({
   className = '',
 }: AppDownloadButtonsProps) {
   const { t } = useLanguage();
-  const [apkDownloadUrl, setApkDownloadUrl] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
 
-  // 获取最新版本下载链接
-  useEffect(() => {
-    setLoading(true);
-    getLatestRelease('android')
-      .then((release) => {
-        if (release) {
-          setApkDownloadUrl(release.download_url);
-        }
-      })
-      .finally(() => setLoading(false));
-  }, []);
-
-  // 处理 APK 下载
-  const handleApkDownload = () => {
-    if (apkDownloadUrl) {
-      window.open(apkDownloadUrl, '_blank');
-    }
-  };
+  // Google Play 商店链接
+  const googlePlayUrl = 'https://play.google.com/store/apps/details?id=ai.voicica.app';
 
   // 样式配置
   const styles = {
@@ -141,54 +107,23 @@ export default function AppDownloadButtons({
         )}
 
         <div className={s.buttonGroup}>
-          {/* 官网 APK 下载 - 主推，使用手机图标 */}
+          {/* Google Play - 主要下载渠道 */}
           <button
-            onClick={handleApkDownload}
-            disabled={loading || !apkDownloadUrl}
+            onClick={() => window.open(googlePlayUrl, '_blank')}
             className={s.primaryButton}
           >
             <div className={`${s.iconContainer} ${s.primaryIconBg}`}>
-              <Smartphone className={compact ? 'w-3.5 h-3.5' : 'w-4 h-4'} />
+              <GooglePlayIcon className={compact ? 'w-4 h-4' : 'w-5 h-5'} />
             </div>
             <div className="text-left flex-1">
-              <div className={s.textPrimary}>
-                {t('appDownload.officialApk') || '官网直接下载'}
-              </div>
+              <div className={s.textPrimary}>Google Play</div>
               <div className={`${s.textSecondary} text-white/70`}>
-                {loading ? (t('appDownload.loading') || '加载中...') : 'APK'}
+                {t('appDownload.freeDownload') || 'Free Download'}
               </div>
             </div>
             <svg className={s.arrow} fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
-          </button>
-
-          {/* APKPure */}
-          <button
-            onClick={() => window.open('https://apkpure.com/p/ai.voicica.app', '_blank')}
-            className={s.secondaryButton}
-          >
-            <div className={`${s.iconContainer} bg-[#2ECC71]/15`}>
-              <APKPureIcon className={compact ? 'w-4 h-4' : 'w-5 h-5'} />
-            </div>
-            <div className="text-left flex-1">
-              <div className={s.textPrimary}>APKPure</div>
-              <div className={`${s.textSecondary} ${variant === 'modal' ? 'text-gray-500' : 'text-gray-400'}`}>APK</div>
-            </div>
-            <svg className={`${s.arrow} ${variant === 'modal' ? 'text-gray-400' : 'text-gray-500'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-            </svg>
-          </button>
-
-          {/* Google Play - Coming Soon */}
-          <button disabled className={s.disabledButton}>
-            <div className={`${s.iconContainer} ${variant === 'modal' ? 'bg-gray-200' : 'bg-gray-700'}`}>
-              <GooglePlayIcon className={`${compact ? 'w-4 h-4' : 'w-5 h-5'} opacity-50`} />
-            </div>
-            <div className="text-left flex-1">
-              <div className={s.textPrimary}>Google Play</div>
-              <div className={s.textSecondary}>{t('appDownload.comingSoon') || 'Coming Soon'}</div>
-            </div>
           </button>
         </div>
       </div>

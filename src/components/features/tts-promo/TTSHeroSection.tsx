@@ -110,6 +110,13 @@ export default function TTSHeroSection({
 
             {/* Web Version 入口 */}
             <div className="mt-1.5 pt-1.5 border-t border-gray-700">
+              {/* Web 区域标题 */}
+              <div className="flex items-center gap-1 mb-1">
+                <div className="w-4 h-4 rounded bg-purple-500 flex items-center justify-center">
+                  <Globe className="w-2.5 h-2.5 text-white" />
+                </div>
+                <span className="font-semibold text-white text-xs">Web</span>
+              </div>
               <button
                 onClick={handleGetStarted}
                 className="w-full flex items-center gap-2 p-1.5 bg-gradient-to-r from-purple-600/20 to-pink-600/20 hover:from-purple-600/30 hover:to-pink-600/30 text-white rounded-lg transition-colors border border-purple-500/30"

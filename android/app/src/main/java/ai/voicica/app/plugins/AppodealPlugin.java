@@ -131,30 +131,21 @@ public class AppodealPlugin extends Plugin {
                 data.put("name", name);
                 notifyListeners("rewardedVideoFinished", data);
 
-                // 标记已完成
+                // 立即返回奖励结果（不等待广告关闭，因为测试广告可能没有关闭按钮）
+                if (pendingRewardCall != null) {
+                    Log.d(TAG, "Immediately resolving reward");
+                    JSObject result = new JSObject();
+                    result.put("rewarded", true);
+                    result.put("amount", amount);
+                    result.put("name", name);
+                    pendingRewardCall.resolve(result);
+                    pendingRewardCall = null;
+                }
+
+                // 标记已处理
+                hasReward = true;
                 rewardedAmount = amount;
                 rewardedName = name;
-                hasReward = true;
-
-                // 测试广告可能没有关闭按钮，延迟后自动处理结果
-                getActivity().runOnUiThread(() -> {
-                    new android.os.Handler().postDelayed(() -> {
-                        if (pendingRewardCall != null && hasReward) {
-                            Log.d(TAG, "Auto-resolving reward after timeout");
-                            JSObject result = new JSObject();
-                            result.put("rewarded", true);
-                            result.put("amount", rewardedAmount);
-                            result.put("name", rewardedName);
-                            pendingRewardCall.resolve(result);
-                            pendingRewardCall = null;
-
-                            // 重置状态
-                            hasReward = false;
-                            rewardedAmount = 0;
-                            rewardedName = null;
-                        }
-                    }, 2000); // 2秒后自动返回结果
-                });
             }
 
             @Override

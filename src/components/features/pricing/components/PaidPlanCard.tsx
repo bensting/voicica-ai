@@ -8,9 +8,9 @@ import { trackUserEvent } from '@/actions/user';
 import { BillingCycle } from '../hooks/usePricing';
 import { getCurrencySymbol, getCurrencyFromLocale } from '@/config/currency';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useGooglePlayBilling } from '@/hooks/useGooglePlayBilling';
 import LoginPrompt from './LoginPrompt';
 import CreditsSlider from './CreditsSlider';
-import CreditsUsageModal from './CreditsUsageModal';
 
 interface PaidPlanCardProps {
   plan: PricingPlan;
@@ -21,12 +21,16 @@ interface PaidPlanCardProps {
 export default function PaidPlanCard({ plan }: PaidPlanCardProps) {
   const { user } = useFirebaseAuth();
   const { locale, t } = useLanguage();
+  const { purchase: googlePlayPurchase, shouldUseGooglePlay, isLoading: gpLoading } = useGooglePlayBilling();
   const [isLoading, setIsLoading] = useState(false);
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
-  const [showCreditsUsageModal, setShowCreditsUsageModal] = useState(false);
+
+  // 合并 loading 状态
+  const isProcessing = isLoading || gpLoading;
 
   // 积分档位状态（优先使用配置中的 default，否则选中中间档位）
   const hasCreditTiers = plan.credit_tiers && plan.credit_tiers.length > 0;
+  const hasMultipleTiers = plan.credit_tiers && plan.credit_tiers.length > 1;
   const defaultTierIndex = useMemo(() => {
     if (!hasCreditTiers) return 0;
     // 查找配置中标记为 default 的档位
@@ -97,13 +101,6 @@ export default function PaidPlanCard({ plan }: PaidPlanCardProps) {
     };
   }, [currentTier, preferredCurrency]);
 
-  // 计算每日价格
-  const perDayPrice = useMemo(() => {
-    if (!priceInfo?.discountedPrice && !priceInfo?.originalPrice) return null;
-    const price = priceInfo.discountedPrice ?? priceInfo.originalPrice ?? 0;
-    const days = plan.cycle_days || 7; // 默认7天
-    return (price / days).toFixed(2);
-  }, [priceInfo, plan.cycle_days]);
 
   // 获取当前积分数
   const currentCredits = useMemo(() => {
@@ -164,6 +161,7 @@ export default function PaidPlanCard({ plan }: PaidPlanCardProps) {
     console.log('🔵 [handleUpgrade] Start - Plan:', plan.plan_name);
     console.log('🔵 [handleUpgrade] Product ID:', currentProductId);
     console.log('🔵 [handleUpgrade] User:', user?.uid || 'Not logged in');
+    console.log('🔵 [handleUpgrade] Use Google Play:', shouldUseGooglePlay);
 
     if (!currentProductId) {
       console.error('❌ Product ID not found');
@@ -176,19 +174,42 @@ export default function PaidPlanCard({ plan }: PaidPlanCardProps) {
       return;
     }
 
+    // 记录 Buy Now 点击事件
+    trackUserEvent('buy_now_clicked', {
+      plan: plan.plan_name,
+      product_id: currentProductId,
+      credits: currentCredits,
+      price: priceInfo?.display,
+      currency: priceInfo?.currency,
+      source: 'upgrade_modal',
+      payment_method: shouldUseGooglePlay ? 'google_play' : 'stripe',
+    });
+
+    // Android 原生平台使用 Google Play Billing
+    if (shouldUseGooglePlay) {
+      try {
+        const result = await googlePlayPurchase(currentProductId);
+        if (result.success) {
+          console.log('✅ [handleUpgrade] Google Play purchase successful:', result);
+          // 购买成功，跳转到成功页面
+          window.location.href = '/studio/payment/success';
+        } else if (result.cancelled) {
+          // 用户取消，不显示错误
+          console.log('🔵 [handleUpgrade] Purchase cancelled by user');
+        } else if (result.error) {
+          alert(result.error);
+        }
+      } catch (error) {
+        console.error('❌ [handleUpgrade] Google Play error:', error);
+        alert(error instanceof Error ? error.message : 'Purchase failed. Please try again.');
+      }
+      return;
+    }
+
+    // Web 平台使用 Stripe
     setIsLoading(true);
 
     try {
-      // 记录 Buy Now 点击事件
-      trackUserEvent('buy_now_clicked', {
-        plan: plan.plan_name,
-        product_id: currentProductId,
-        credits: currentCredits,
-        price: priceInfo?.display,
-        currency: priceInfo?.currency,
-        source: 'upgrade_modal',
-      });
-
       const successUrl = process.env.NEXT_PUBLIC_PAYMENT_SUCCESS_URL || `${window.location.origin}/studio/payment/success`;
       const cancelUrl = process.env.NEXT_PUBLIC_PAYMENT_CANCEL_URL || `${window.location.origin}/studio/payment/cancel`;
       const currency = priceInfo?.currency?.toLowerCase() || 'usd';
@@ -238,10 +259,6 @@ export default function PaidPlanCard({ plan }: PaidPlanCardProps) {
       <LoginPrompt
         isOpen={showLoginPrompt}
         onClose={() => setShowLoginPrompt(false)}
-      />
-      <CreditsUsageModal
-        isOpen={showCreditsUsageModal}
-        onClose={() => setShowCreditsUsageModal(false)}
       />
 
       <div className={`relative rounded-2xl p-6 flex flex-col transition-colors ${
@@ -297,33 +314,20 @@ export default function PaidPlanCard({ plan }: PaidPlanCardProps) {
                   </span>
                 )}
               </div>
-              {/* 每日价格 */}
-              {perDayPrice && (
-                <div className="text-sm text-gray-500 mt-1">
-                  {getCurrencySymbol(priceInfo.currency)}{perDayPrice} {t('pricing.perDay')}
-                </div>
-              )}
             </>
           ) : (
             <div className="text-gray-500">Price not available</div>
           )}
         </div>
 
-        {/* 积分滑块 */}
-        {hasCreditTiers && (
+        {/* 积分滑块 - 仅多档位时显示 */}
+        {hasMultipleTiers && (
           <div className="mb-6">
             <CreditsSlider
               tiers={plan.credit_tiers!}
               selectedIndex={selectedTierIndex}
               onChange={setSelectedTierIndex}
             />
-          </div>
-        )}
-
-        {/* 当前积分显示（无滑块时） */}
-        {!hasCreditTiers && (
-          <div className="text-sm text-gray-600 mb-4">
-            {currentCredits.toLocaleString()} {t('pricing.creditsPerCycle')}
           </div>
         )}
 
@@ -356,10 +360,10 @@ export default function PaidPlanCard({ plan }: PaidPlanCardProps) {
         {/* CTA Button */}
         <button
           onClick={handleUpgrade}
-          disabled={!currentProductId || isLoading}
+          disabled={!currentProductId || isProcessing}
           className="w-full rounded-xl font-semibold py-3 mb-4 transition-colors bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:from-purple-600 hover:to-pink-600 disabled:opacity-50"
         >
-          {isLoading ? (
+          {isProcessing ? (
             <span className="flex items-center justify-center gap-2">
               <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24" fill="none">
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
@@ -372,21 +376,6 @@ export default function PaidPlanCard({ plan }: PaidPlanCardProps) {
           )}
         </button>
 
-        {/* Credits Usage Rules 链接 */}
-        <button
-          onClick={() => setShowCreditsUsageModal(true)}
-          className="flex items-center justify-between w-full text-sm text-purple-600 hover:text-purple-700 transition-colors py-2"
-        >
-          <span className="flex items-center gap-1">
-            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-              <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-            </svg>
-            {t('pricing.creditsUsageRules')}
-          </span>
-          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-          </svg>
-        </button>
       </div>
     </>
   );

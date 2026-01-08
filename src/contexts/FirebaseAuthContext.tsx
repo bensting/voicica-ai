@@ -36,6 +36,11 @@ import { useLanguage } from '@/contexts/LanguageContext';
 // Capacitor Firebase Auth 插件（仅在原生环境中使用）
 import { FirebaseAuthentication } from '@capacitor-firebase/authentication';
 
+interface SignUpResult {
+  success: boolean;
+  verificationEmailSent?: boolean;
+}
+
 interface FirebaseAuthContextType {
   user: User | null;
   loading: boolean;
@@ -45,7 +50,7 @@ interface FirebaseAuthContextType {
   signInWithApple: () => Promise<void>;
   signInWithFacebook: () => Promise<void>;
   signInWithEmail: (email: string, password: string) => Promise<void>;
-  signUpWithEmail: (email: string, password: string) => Promise<void>;
+  signUpWithEmail: (email: string, password: string) => Promise<SignUpResult>;
   resetPassword: (email: string) => Promise<void>;
   signOut: () => Promise<void>;
 }
@@ -263,39 +268,28 @@ export function FirebaseAuthProvider({ children }: { children: React.ReactNode }
   }, []);
 
   // 邮箱密码注册（注册后发送验证邮件，用户需要验证后才能登录）
-  const signUpWithEmail = useCallback(async (email: string, password: string) => {
-    try {
-      // 创建用户
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+  const signUpWithEmail = useCallback(async (email: string, password: string): Promise<SignUpResult> => {
+    // 创建用户
+    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
 
-      // 设置邮件语言
-      const languageCodeMap: Record<string, string> = {
-        'en-US': 'en',
-        'zh-CN': 'zh-CN',
-        'zh-TW': 'zh-TW',
-        'th-TH': 'th',
-      };
-      auth.languageCode = languageCodeMap[locale] || 'en';
+    // 设置邮件语言
+    const languageCodeMap: Record<string, string> = {
+      'en-US': 'en',
+      'zh-CN': 'zh-CN',
+      'zh-TW': 'zh-TW',
+      'th-TH': 'th',
+    };
+    auth.languageCode = languageCodeMap[locale] || 'en';
 
-      // 发送验证邮件
-      await sendEmailVerification(userCredential.user);
-      console.log('[FirebaseAuth] 邮箱注册成功，验证邮件已发送');
+    // 发送验证邮件
+    await sendEmailVerification(userCredential.user);
+    console.log('[FirebaseAuth] 邮箱注册成功，验证邮件已发送');
 
-      // 注册后立即登出，要求用户验证邮箱后才能登录
-      await firebaseSignOut(auth);
+    // 注册后立即登出，要求用户验证邮箱后才能登录
+    await firebaseSignOut(auth);
 
-      // 抛出特殊标记，让前端知道需要验证邮箱
-      const verificationError = new Error('EMAIL_VERIFICATION_SENT');
-      (verificationError as Error & { code: string }).code = 'auth/email-verification-sent';
-      throw verificationError;
-    } catch (error) {
-      // 如果是验证邮件发送成功的标记，继续抛出
-      if ((error as Error & { code?: string })?.code === 'auth/email-verification-sent') {
-        throw error;
-      }
-      console.error('[FirebaseAuth] 邮箱注册失败:', error);
-      throw error;
-    }
+    // 返回成功结果
+    return { success: true, verificationEmailSent: true };
   }, [locale]);
 
   // 发送密码重置邮件

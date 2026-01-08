@@ -281,15 +281,21 @@ export function FirebaseAuthProvider({ children }: { children: React.ReactNode }
     };
     auth.languageCode = languageCodeMap[locale] || 'en';
 
-    // 发送验证邮件
-    await sendEmailVerification(userCredential.user);
-    console.log('[FirebaseAuth] 邮箱注册成功，验证邮件已发送');
+    // 尝试发送验证邮件（失败也继续，用户可以在登录时重新发送）
+    let emailSent = false;
+    try {
+      await sendEmailVerification(userCredential.user);
+      emailSent = true;
+      console.log('[FirebaseAuth] 邮箱注册成功，验证邮件已发送');
+    } catch (err) {
+      console.warn('[FirebaseAuth] 验证邮件发送失败，用户可在登录时重试:', err);
+    }
 
     // 注册后立即登出，要求用户验证邮箱后才能登录
     await firebaseSignOut(auth);
 
     // 返回成功结果
-    return { success: true, verificationEmailSent: true };
+    return { success: true, verificationEmailSent: emailSent };
   }, [locale]);
 
   // 发送密码重置邮件

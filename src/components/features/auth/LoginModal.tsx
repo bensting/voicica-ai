@@ -170,9 +170,8 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
     setIsSigningUp(true); // 防止注册过程中模态框自动关闭
     try {
       const result = await signUpWithEmail(email, password);
-      // 验证邮件已发送，显示独立的成功提示框
-      if (result.verificationEmailSent) {
-        // 显示成功提示框（覆盖在登录弹窗之上）
+      // 注册成功，显示提示
+      if (result.success) {
         setVerificationEmailSent(true);
       }
     } catch (err: unknown) {

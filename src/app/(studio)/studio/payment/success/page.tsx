@@ -77,7 +77,21 @@ function PaymentSuccessContent() {
   useEffect(() => {
     const verifyPayment = async () => {
       try {
-        // 等待 Firebase Auth 初始化
+        // 检查是否是 Google Play 购买（已在前端验证完成）
+        const source = searchParams.get('source');
+        if (source === 'google_play') {
+          console.log('✅ [支付验证] Google Play 购买，已在前端验证');
+          const subscriptionId = searchParams.get('subscription_id');
+          setPaymentDetails({
+            orderId: `GP-${subscriptionId || Date.now()}`,
+            subscriptionId: subscriptionId || undefined,
+            message: 'Google Play purchase verified',
+          });
+          setStatus('success');
+          return;
+        }
+
+        // Stripe 支付：等待 Firebase Auth 初始化
         const { auth } = await import('@/lib/firebase');
 
         console.log('⏳ [支付验证] 等待 Firebase Auth 初始化...');

@@ -47,9 +47,9 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
   // 获取启用的社交登录方式
   const socialProviders = getEnabledLoginProviders();
 
-  // 登录成功后自动关闭模态框（注册过程中不关闭）
+  // 登录成功后自动关闭模态框（注册过程中或显示验证成功提示时不关闭）
   useEffect(() => {
-    if (user && isOpen && !isSigningUp) {
+    if (user && isOpen && !isSigningUp && !verificationEmailSent) {
       console.log('✅ 登录成功，关闭模态框');
       onClose();
       // 重置表单
@@ -58,7 +58,7 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
       setError(null);
       setMode('login');
     }
-  }, [user, isOpen, onClose, isSigningUp]);
+  }, [user, isOpen, onClose, isSigningUp, verificationEmailSent]);
 
   // 按 ESC 键关闭
   useEffect(() => {

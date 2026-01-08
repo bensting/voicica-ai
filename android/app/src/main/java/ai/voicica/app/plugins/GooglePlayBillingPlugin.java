@@ -4,7 +4,18 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
-import com.android.billingclient.api.*;
+import com.android.billingclient.api.AcknowledgePurchaseParams;
+import com.android.billingclient.api.BillingClient;
+import com.android.billingclient.api.BillingClientStateListener;
+import com.android.billingclient.api.BillingFlowParams;
+import com.android.billingclient.api.BillingResult;
+import com.android.billingclient.api.PendingPurchasesParams;
+import com.android.billingclient.api.ProductDetails;
+import com.android.billingclient.api.ProductDetailsResponseListener;
+import com.android.billingclient.api.Purchase;
+import com.android.billingclient.api.PurchasesUpdatedListener;
+import com.android.billingclient.api.QueryProductDetailsParams;
+import com.android.billingclient.api.QueryPurchasesParams;
 import com.getcapacitor.JSObject;
 import com.getcapacitor.Plugin;
 import com.getcapacitor.PluginCall;
@@ -53,15 +64,11 @@ public class GooglePlayBillingPlugin extends Plugin implements PurchasesUpdatedL
             @Override
             public void onBillingServiceDisconnected() {
                 Log.w(TAG, "Billing service disconnected, will retry");
-                // 重新连接
                 initBillingClient();
             }
         });
     }
 
-    /**
-     * 检查是否已连接
-     */
     @PluginMethod
     public void isReady(PluginCall call) {
         JSObject result = new JSObject();
@@ -69,9 +76,6 @@ public class GooglePlayBillingPlugin extends Plugin implements PurchasesUpdatedL
         call.resolve(result);
     }
 
-    /**
-     * 获取产品信息
-     */
     @PluginMethod
     public void getProducts(PluginCall call) {
         String productIdsJson = call.getString("productIds");
@@ -80,7 +84,6 @@ public class GooglePlayBillingPlugin extends Plugin implements PurchasesUpdatedL
             return;
         }
 
-        // 解析产品 ID 列表
         List<QueryProductDetailsParams.Product> productList = new ArrayList<>();
         String[] productIds = productIdsJson.split(",");
         for (String productId : productIds) {
@@ -96,40 +99,39 @@ public class GooglePlayBillingPlugin extends Plugin implements PurchasesUpdatedL
                 .setProductList(productList)
                 .build();
 
-        billingClient.queryProductDetailsAsync(params, (billingResult, productDetailsList) -> {
-            if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK && productDetailsList != null) {
-                JSObject result = new JSObject();
-                StringBuilder productsJson = new StringBuilder("[");
-                for (int i = 0; i < productDetailsList.size(); i++) {
-                    ProductDetails details = productDetailsList.get(i);
-                    if (i > 0) productsJson.append(",");
-                    productsJson.append("{");
-                    productsJson.append("\"productId\":\"").append(details.getProductId()).append("\",");
-                    productsJson.append("\"name\":\"").append(details.getName()).append("\",");
-                    productsJson.append("\"title\":\"").append(details.getTitle()).append("\"");
+        billingClient.queryProductDetailsAsync(params, new ProductDetailsResponseListener() {
+            @Override
+            public void onProductDetailsResponse(@NonNull BillingResult billingResult, @NonNull List<ProductDetails> list) {
+                if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK) {
+                    JSObject result = new JSObject();
+                    StringBuilder productsJson = new StringBuilder("[");
+                    for (int i = 0; i < list.size(); i++) {
+                        ProductDetails details = list.get(i);
+                        if (i > 0) productsJson.append(",");
+                        productsJson.append("{");
+                        productsJson.append("\"productId\":\"").append(details.getProductId()).append("\",");
+                        productsJson.append("\"name\":\"").append(details.getName()).append("\",");
+                        productsJson.append("\"title\":\"").append(details.getTitle()).append("\"");
 
-                    // 获取订阅价格
-                    List<ProductDetails.SubscriptionOfferDetails> offers = details.getSubscriptionOfferDetails();
-                    if (offers != null && !offers.isEmpty()) {
-                        ProductDetails.PricingPhase phase = offers.get(0).getPricingPhases().getPricingPhaseList().get(0);
-                        productsJson.append(",\"price\":\"").append(phase.getFormattedPrice()).append("\"");
-                        productsJson.append(",\"priceAmountMicros\":").append(phase.getPriceAmountMicros());
-                        productsJson.append(",\"priceCurrencyCode\":\"").append(phase.getPriceCurrencyCode()).append("\"");
+                        List<ProductDetails.SubscriptionOfferDetails> offers = details.getSubscriptionOfferDetails();
+                        if (offers != null && !offers.isEmpty()) {
+                            ProductDetails.PricingPhase phase = offers.get(0).getPricingPhases().getPricingPhaseList().get(0);
+                            productsJson.append(",\"price\":\"").append(phase.getFormattedPrice()).append("\"");
+                            productsJson.append(",\"priceAmountMicros\":").append(phase.getPriceAmountMicros());
+                            productsJson.append(",\"priceCurrencyCode\":\"").append(phase.getPriceCurrencyCode()).append("\"");
+                        }
+                        productsJson.append("}");
                     }
-                    productsJson.append("}");
+                    productsJson.append("]");
+                    result.put("products", productsJson.toString());
+                    call.resolve(result);
+                } else {
+                    call.reject("Failed to get products: " + billingResult.getDebugMessage());
                 }
-                productsJson.append("]");
-                result.put("products", productsJson.toString());
-                call.resolve(result);
-            } else {
-                call.reject("Failed to get products: " + billingResult.getDebugMessage());
             }
         });
     }
 
-    /**
-     * 发起购买
-     */
     @PluginMethod
     public void purchase(PluginCall call) {
         String productId = call.getString("productId");
@@ -143,10 +145,8 @@ public class GooglePlayBillingPlugin extends Plugin implements PurchasesUpdatedL
             return;
         }
 
-        // 保存 call 以便在回调中使用
         pendingPurchaseCall = call;
 
-        // 先查询产品详情
         List<QueryProductDetailsParams.Product> productList = new ArrayList<>();
         productList.add(
             QueryProductDetailsParams.Product.newBuilder()
@@ -159,49 +159,53 @@ public class GooglePlayBillingPlugin extends Plugin implements PurchasesUpdatedL
                 .setProductList(productList)
                 .build();
 
-        billingClient.queryProductDetailsAsync(queryParams, (billingResult, productDetailsList) -> {
-            if (billingResult.getResponseCode() != BillingClient.BillingResponseCode.OK || productDetailsList == null || productDetailsList.isEmpty()) {
-                pendingPurchaseCall.reject("Product not found: " + productId);
-                pendingPurchaseCall = null;
-                return;
-            }
-
-            ProductDetails productDetails = productDetailsList.get(0);
-            List<ProductDetails.SubscriptionOfferDetails> offers = productDetails.getSubscriptionOfferDetails();
-
-            if (offers == null || offers.isEmpty()) {
-                pendingPurchaseCall.reject("No subscription offers available");
-                pendingPurchaseCall = null;
-                return;
-            }
-
-            // 构建购买参数
-            List<BillingFlowParams.ProductDetailsParams> productDetailsParamsList = new ArrayList<>();
-            productDetailsParamsList.add(
-                BillingFlowParams.ProductDetailsParams.newBuilder()
-                    .setProductDetails(productDetails)
-                    .setOfferToken(offers.get(0).getOfferToken())
-                    .build()
-            );
-
-            BillingFlowParams billingFlowParams = BillingFlowParams.newBuilder()
-                    .setProductDetailsParamsList(productDetailsParamsList)
-                    .build();
-
-            // 启动购买流程
-            getActivity().runOnUiThread(() -> {
-                BillingResult result = billingClient.launchBillingFlow(getActivity(), billingFlowParams);
-                if (result.getResponseCode() != BillingClient.BillingResponseCode.OK) {
-                    pendingPurchaseCall.reject("Failed to launch billing flow: " + result.getDebugMessage());
-                    pendingPurchaseCall = null;
+        billingClient.queryProductDetailsAsync(queryParams, new ProductDetailsResponseListener() {
+            @Override
+            public void onProductDetailsResponse(@NonNull BillingResult billingResult, @NonNull List<ProductDetails> list) {
+                if (billingResult.getResponseCode() != BillingClient.BillingResponseCode.OK || list.isEmpty()) {
+                    if (pendingPurchaseCall != null) {
+                        pendingPurchaseCall.reject("Product not found: " + productId);
+                        pendingPurchaseCall = null;
+                    }
+                    return;
                 }
-            });
+
+                ProductDetails productDetails = list.get(0);
+                List<ProductDetails.SubscriptionOfferDetails> offers = productDetails.getSubscriptionOfferDetails();
+
+                if (offers == null || offers.isEmpty()) {
+                    if (pendingPurchaseCall != null) {
+                        pendingPurchaseCall.reject("No subscription offers available");
+                        pendingPurchaseCall = null;
+                    }
+                    return;
+                }
+
+                List<BillingFlowParams.ProductDetailsParams> productDetailsParamsList = new ArrayList<>();
+                productDetailsParamsList.add(
+                    BillingFlowParams.ProductDetailsParams.newBuilder()
+                        .setProductDetails(productDetails)
+                        .setOfferToken(offers.get(0).getOfferToken())
+                        .build()
+                );
+
+                BillingFlowParams billingFlowParams = BillingFlowParams.newBuilder()
+                        .setProductDetailsParamsList(productDetailsParamsList)
+                        .build();
+
+                getActivity().runOnUiThread(() -> {
+                    BillingResult result = billingClient.launchBillingFlow(getActivity(), billingFlowParams);
+                    if (result.getResponseCode() != BillingClient.BillingResponseCode.OK) {
+                        if (pendingPurchaseCall != null) {
+                            pendingPurchaseCall.reject("Failed to launch billing flow: " + result.getDebugMessage());
+                            pendingPurchaseCall = null;
+                        }
+                    }
+                });
+            }
         });
     }
 
-    /**
-     * 购买结果回调
-     */
     @Override
     public void onPurchasesUpdated(@NonNull BillingResult billingResult, List<Purchase> purchases) {
         if (pendingPurchaseCall == null) {
@@ -211,7 +215,6 @@ public class GooglePlayBillingPlugin extends Plugin implements PurchasesUpdatedL
 
         if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK && purchases != null) {
             for (Purchase purchase : purchases) {
-                // 确认购买
                 handlePurchase(purchase);
             }
         } else if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.USER_CANCELED) {
@@ -226,12 +229,8 @@ public class GooglePlayBillingPlugin extends Plugin implements PurchasesUpdatedL
         }
     }
 
-    /**
-     * 确认购买
-     */
     private void handlePurchase(Purchase purchase) {
         if (purchase.getPurchaseState() == Purchase.PurchaseState.PURCHASED) {
-            // 确认购买（订阅类型）
             if (!purchase.isAcknowledged()) {
                 AcknowledgePurchaseParams acknowledgePurchaseParams =
                         AcknowledgePurchaseParams.newBuilder()
@@ -245,7 +244,6 @@ public class GooglePlayBillingPlugin extends Plugin implements PurchasesUpdatedL
                 });
             }
 
-            // 返回购买成功结果
             if (pendingPurchaseCall != null) {
                 JSObject result = new JSObject();
                 result.put("success", true);
@@ -259,9 +257,6 @@ public class GooglePlayBillingPlugin extends Plugin implements PurchasesUpdatedL
         }
     }
 
-    /**
-     * 恢复购买（查询已购买的订阅）
-     */
     @PluginMethod
     public void restorePurchases(PluginCall call) {
         QueryPurchasesParams params = QueryPurchasesParams.newBuilder()

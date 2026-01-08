@@ -21,6 +21,7 @@ import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   sendPasswordResetEmail,
+  sendEmailVerification,
   GoogleAuthProvider,
   TwitterAuthProvider,
   FacebookAuthProvider,
@@ -261,16 +262,41 @@ export function FirebaseAuthProvider({ children }: { children: React.ReactNode }
     }
   }, []);
 
-  // 邮箱密码注册
+  // 邮箱密码注册（注册后发送验证邮件，用户需要验证后才能登录）
   const signUpWithEmail = useCallback(async (email: string, password: string) => {
     try {
-      await createUserWithEmailAndPassword(auth, email, password);
-      console.log('[FirebaseAuth] 邮箱注册成功');
+      // 创建用户
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+
+      // 设置邮件语言
+      const languageCodeMap: Record<string, string> = {
+        'en-US': 'en',
+        'zh-CN': 'zh-CN',
+        'zh-TW': 'zh-TW',
+        'th-TH': 'th',
+      };
+      auth.languageCode = languageCodeMap[locale] || 'en';
+
+      // 发送验证邮件
+      await sendEmailVerification(userCredential.user);
+      console.log('[FirebaseAuth] 邮箱注册成功，验证邮件已发送');
+
+      // 注册后立即登出，要求用户验证邮箱后才能登录
+      await firebaseSignOut(auth);
+
+      // 抛出特殊标记，让前端知道需要验证邮箱
+      const verificationError = new Error('EMAIL_VERIFICATION_SENT');
+      (verificationError as Error & { code: string }).code = 'auth/email-verification-sent';
+      throw verificationError;
     } catch (error) {
+      // 如果是验证邮件发送成功的标记，继续抛出
+      if ((error as Error & { code?: string })?.code === 'auth/email-verification-sent') {
+        throw error;
+      }
       console.error('[FirebaseAuth] 邮箱注册失败:', error);
       throw error;
     }
-  }, []);
+  }, [locale]);
 
   // 发送密码重置邮件
   const resetPassword = useCallback(async (email: string) => {

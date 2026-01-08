@@ -41,6 +41,7 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [resetEmailSent, setResetEmailSent] = useState(false);
+  const [verificationEmailSent, setVerificationEmailSent] = useState(false);
 
   // 获取启用的社交登录方式
   const socialProviders = getEnabledLoginProviders();
@@ -77,6 +78,7 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
     setPassword('');
     setError(null);
     setResetEmailSent(false);
+    setVerificationEmailSent(false);
   };
 
   // 验证邮箱格式
@@ -103,6 +105,19 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
     setLoading(true);
     try {
       await signInWithEmail(email, password);
+
+      // 登录成功后检查邮箱是否已验证
+      const { auth } = await import('@/lib/firebase');
+      const currentUser = auth.currentUser;
+      if (currentUser && !currentUser.emailVerified) {
+        // 邮箱未验证，登出并提示
+        const { signOut: firebaseSignOut, sendEmailVerification } = await import('firebase/auth');
+        // 重新发送验证邮件
+        await sendEmailVerification(currentUser);
+        await firebaseSignOut(auth);
+        setError(t('login.emailNotVerified'));
+        return;
+      }
     } catch (err: unknown) {
       console.error('邮箱登录失败:', err);
       // 根据错误码显示具体错误信息
@@ -134,6 +149,7 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
   const handleEmailSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+    setVerificationEmailSent(false);
 
     // 验证
     if (!validateEmail(email)) {
@@ -155,6 +171,11 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
         ? (err as { code: string }).code
         : '';
       switch (errorCode) {
+        case 'auth/email-verification-sent':
+          // 验证邮件已发送，显示成功提示
+          setVerificationEmailSent(true);
+          setError(null);
+          break;
         case 'auth/email-already-in-use':
           setError(t('login.emailAlreadyInUse'));
           break;
@@ -407,14 +428,36 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
                 {t('login.createAccountTitle')}
               </h2>
 
+              {/* 验证邮件发送成功提示 */}
+              {verificationEmailSent && (
+                <div className="mb-4 p-4 bg-green-50 border border-green-200 rounded-lg">
+                  <div className="flex items-start gap-3">
+                    <svg className="w-6 h-6 text-green-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <div>
+                      <p className="text-green-800 font-medium">{t('login.verificationEmailSent')}</p>
+                      <p className="text-green-700 text-sm mt-1">{t('login.checkInboxToVerify')}</p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => switchMode('login')}
+                    className="mt-4 w-full py-3 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 transition-colors"
+                  >
+                    {t('login.goToLogin')}
+                  </button>
+                </div>
+              )}
+
               {/* 错误提示 */}
-              {error && (
+              {error && !verificationEmailSent && (
                 <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm">
                   {error}
                 </div>
               )}
 
-              {/* 邮箱密码注册表单 */}
+              {/* 邮箱密码注册表单 - 验证邮件发送成功后隐藏 */}
+              {!verificationEmailSent && (
               <form onSubmit={handleEmailSignup} className="space-y-4">
                 {/* 邮箱输入框 */}
                 <div>
@@ -474,6 +517,7 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
                   {loading ? t('common.loading') : t('login.createAccountButton')}
                 </button>
               </form>
+              )}
 
               {/* 返回登录链接 */}
               <div className="mt-6 text-center">

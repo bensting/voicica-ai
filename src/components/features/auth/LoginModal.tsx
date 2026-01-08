@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { X, Eye, EyeOff, ArrowLeft } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -44,20 +44,23 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
   const [verificationEmailSent, setVerificationEmailSent] = useState(false);
   const [isSigningUp, setIsSigningUp] = useState(false); // 防止注册过程中自动关闭
 
-  // 调试：检测组件是否被重新挂载
-  useEffect(() => {
-    console.log('[LoginModal] 组件挂载，初始 mode:', mode);
-    return () => console.log('[LoginModal] 组件卸载');
-  }, []);
+  // 跟踪 user 的前一个值，只有从 null 变为非 null 才是真正的登录成功
+  const prevUserRef = useRef(user);
+  // 标记是否是邮箱登录（邮箱登录需要手动控制关闭，不自动关闭）
+  const isEmailLoginRef = useRef(false);
 
   // 获取启用的社交登录方式
   const socialProviders = getEnabledLoginProviders();
 
-  // 登录成功后自动关闭模态框（仅在登录模式下，注册模式不受影响）
+  // 登录成功后自动关闭模态框（仅社交登录，邮箱登录需要手动控制）
   useEffect(() => {
-    console.log('[LoginModal] useEffect triggered:', { user: !!user, isOpen, mode });
-    if (user && isOpen && mode === 'login') {
-      console.log('✅ 登录成功，关闭模态框');
+    const prevUser = prevUserRef.current;
+    prevUserRef.current = user;
+
+    // 只有当 user 从 null 变为非 null 时才关闭（真正的登录成功）
+    // 邮箱登录不自动关闭（需要先检查邮箱验证状态）
+    if (!prevUser && user && isOpen && mode === 'login' && !isEmailLoginRef.current) {
+      console.log('✅ 社交登录成功，自动关闭模态框');
       onClose();
       // 重置表单
       setEmail('');
@@ -111,6 +114,7 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
     }
 
     setLoading(true);
+    isEmailLoginRef.current = true; // 标记为邮箱登录，禁止 useEffect 自动关闭
     try {
       await signInWithEmail(email, password);
 
@@ -130,6 +134,9 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
         setError(t('login.emailNotVerified'));
         return;
       }
+      // 邮箱已验证，手动关闭 modal
+      isEmailLoginRef.current = false;
+      onClose();
     } catch (err: unknown) {
       console.error('邮箱登录失败:', err);
       // 根据错误码显示具体错误信息
@@ -246,6 +253,7 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
   const handleSocialLogin = async (providerId: string) => {
     setLoading(true);
     setError(null);
+    isEmailLoginRef.current = false; // 重置，允许 useEffect 自动关闭
 
     try {
       switch (providerId) {

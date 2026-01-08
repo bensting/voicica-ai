@@ -21,6 +21,7 @@ import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   sendPasswordResetEmail,
+  sendEmailVerification,
   GoogleAuthProvider,
   TwitterAuthProvider,
   FacebookAuthProvider,
@@ -35,6 +36,11 @@ import { useLanguage } from '@/contexts/LanguageContext';
 // Capacitor Firebase Auth 插件（仅在原生环境中使用）
 import { FirebaseAuthentication } from '@capacitor-firebase/authentication';
 
+interface SignUpResult {
+  success: boolean;
+  verificationEmailSent?: boolean;
+}
+
 interface FirebaseAuthContextType {
   user: User | null;
   loading: boolean;
@@ -44,7 +50,7 @@ interface FirebaseAuthContextType {
   signInWithApple: () => Promise<void>;
   signInWithFacebook: () => Promise<void>;
   signInWithEmail: (email: string, password: string) => Promise<void>;
-  signUpWithEmail: (email: string, password: string) => Promise<void>;
+  signUpWithEmail: (email: string, password: string) => Promise<SignUpResult>;
   resetPassword: (email: string) => Promise<void>;
   signOut: () => Promise<void>;
 }
@@ -261,16 +267,36 @@ export function FirebaseAuthProvider({ children }: { children: React.ReactNode }
     }
   }, []);
 
-  // 邮箱密码注册
-  const signUpWithEmail = useCallback(async (email: string, password: string) => {
+  // 邮箱密码注册（注册后发送验证邮件，用户需要验证后才能登录）
+  const signUpWithEmail = useCallback(async (email: string, password: string): Promise<SignUpResult> => {
+    // 创建用户
+    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+
+    // 设置邮件语言
+    const languageCodeMap: Record<string, string> = {
+      'en-US': 'en',
+      'zh-CN': 'zh-CN',
+      'zh-TW': 'zh-TW',
+      'th-TH': 'th',
+    };
+    auth.languageCode = languageCodeMap[locale] || 'en';
+
+    // 尝试发送验证邮件（失败也继续，用户可以在登录时重新发送）
+    let emailSent = false;
     try {
-      await createUserWithEmailAndPassword(auth, email, password);
-      console.log('[FirebaseAuth] 邮箱注册成功');
-    } catch (error) {
-      console.error('[FirebaseAuth] 邮箱注册失败:', error);
-      throw error;
+      await sendEmailVerification(userCredential.user);
+      emailSent = true;
+      console.log('[FirebaseAuth] 邮箱注册成功，验证邮件已发送');
+    } catch (err) {
+      console.warn('[FirebaseAuth] 验证邮件发送失败，用户可在登录时重试:', err);
     }
-  }, []);
+
+    // 注册后立即登出，要求用户验证邮箱后才能登录
+    await firebaseSignOut(auth);
+
+    // 返回成功结果
+    return { success: true, verificationEmailSent: emailSent };
+  }, [locale]);
 
   // 发送密码重置邮件
   const resetPassword = useCallback(async (email: string) => {

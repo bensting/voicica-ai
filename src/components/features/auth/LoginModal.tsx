@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { X, Eye, EyeOff, ArrowLeft } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -41,22 +41,31 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [resetEmailSent, setResetEmailSent] = useState(false);
+  const [verificationEmailSent, setVerificationEmailSent] = useState(false);
+  // 跟踪 user 的前一个值，只有从 null 变为非 null 才是真正的登录成功
+  const prevUserRef = useRef(user);
+  // 标记是否是邮箱登录（邮箱登录需要手动控制关闭，不自动关闭）
+  const isEmailLoginRef = useRef(false);
 
   // 获取启用的社交登录方式
   const socialProviders = getEnabledLoginProviders();
 
-  // 登录成功后自动关闭模态框
+  // 登录成功后自动关闭模态框（仅社交登录，邮箱登录需要手动控制）
   useEffect(() => {
-    if (user && isOpen) {
-      console.log('✅ 登录成功，关闭模态框');
+    const prevUser = prevUserRef.current;
+    prevUserRef.current = user;
+
+    // 只有当 user 从 null 变为非 null 时才关闭（真正的登录成功）
+    // 邮箱登录不自动关闭（需要先检查邮箱验证状态）
+    if (!prevUser && user && isOpen && mode === 'login' && !isEmailLoginRef.current) {
+      console.log('✅ 社交登录成功，自动关闭模态框');
       onClose();
       // 重置表单
       setEmail('');
       setPassword('');
       setError(null);
-      setMode('login');
     }
-  }, [user, isOpen, onClose]);
+  }, [user, isOpen, onClose, mode]);
 
   // 按 ESC 键关闭
   useEffect(() => {
@@ -77,6 +86,7 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
     setPassword('');
     setError(null);
     setResetEmailSent(false);
+    setVerificationEmailSent(false);
   };
 
   // 验证邮箱格式
@@ -101,8 +111,29 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
     }
 
     setLoading(true);
+    isEmailLoginRef.current = true; // 标记为邮箱登录，禁止 useEffect 自动关闭
     try {
       await signInWithEmail(email, password);
+
+      // 登录成功后检查邮箱是否已验证
+      const { auth } = await import('@/lib/firebase');
+      const currentUser = auth.currentUser;
+      if (currentUser && !currentUser.emailVerified) {
+        // 邮箱未验证，登出并提示
+        const { signOut: firebaseSignOut, sendEmailVerification } = await import('firebase/auth');
+        // 尝试重新发送验证邮件（忽略 too-many-requests 错误）
+        try {
+          await sendEmailVerification(currentUser);
+        } catch {
+          // 发送失败（可能是请求太频繁），忽略错误
+        }
+        await firebaseSignOut(auth);
+        setError(t('login.emailNotVerified'));
+        return;
+      }
+      // 邮箱已验证，手动关闭 modal
+      isEmailLoginRef.current = false;
+      onClose();
     } catch (err: unknown) {
       console.error('邮箱登录失败:', err);
       // 根据错误码显示具体错误信息
@@ -147,9 +178,12 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
 
     setLoading(true);
     try {
-      await signUpWithEmail(email, password);
+      const result = await signUpWithEmail(email, password);
+      // 注册成功，显示提示
+      if (result.success) {
+        setVerificationEmailSent(true);
+      }
     } catch (err: unknown) {
-      console.error('邮箱注册失败:', err);
       // 根据错误码显示具体错误信息
       const errorCode = err && typeof err === 'object' && 'code' in err
         ? (err as { code: string }).code
@@ -214,6 +248,7 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
   const handleSocialLogin = async (providerId: string) => {
     setLoading(true);
     setError(null);
+    isEmailLoginRef.current = false; // 重置，允许 useEffect 自动关闭
 
     try {
       switch (providerId) {
@@ -407,8 +442,23 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
                 {t('login.createAccountTitle')}
               </h2>
 
+              {/* 验证邮件发送成功提示 */}
+              {verificationEmailSent && (
+                <div className="mb-4 p-4 bg-green-50 border border-green-200 rounded-lg">
+                  <div className="flex items-start gap-3">
+                    <svg className="w-6 h-6 text-green-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <div>
+                      <p className="text-green-800 font-medium">{t('login.verificationEmailSent')}</p>
+                      <p className="text-green-700 text-sm mt-1">{t('login.checkInboxToVerify')}</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
               {/* 错误提示 */}
-              {error && (
+              {error && !verificationEmailSent && (
                 <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm">
                   {error}
                 </div>
@@ -505,6 +555,8 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
   );
 
   // 使用 Portal 渲染到 body，确保最高层级
+  if (!isOpen) return null;
+
   return typeof window !== 'undefined'
     ? createPortal(modalContent, document.body)
     : null;

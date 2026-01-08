@@ -18,21 +18,22 @@ export default function LoginButton() {
   const { t } = useLanguage();
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
-  // 加载中显示占位符
-  if (loading) {
+  // 渲染内容
+  const renderContent = () => {
+    // 加载中显示占位符
+    if (loading) {
+      return (
+        <div className="w-10 h-10 rounded-full bg-gray-200 animate-pulse"></div>
+      );
+    }
+
+    // 已登录显示用户菜单
+    if (user) {
+      return <UserMenu size="sm" />;
+    }
+
+    // 未登录显示 Login 按钮
     return (
-      <div className="w-10 h-10 rounded-full bg-gray-200 animate-pulse"></div>
-    );
-  }
-
-  // 已登录显示用户菜单
-  if (user) {
-    return <UserMenu size="sm" />;
-  }
-
-  // 未登录显示 Login 按钮（移动端和桌面端都使用 Modal）
-  return (
-    <>
       <button
         onClick={() => setIsLoginModalOpen(true)}
         className="flex items-center gap-1.5 px-4 py-1.5 sm:px-6 sm:py-2 bg-white text-black rounded-full hover:bg-gray-200 transition-colors font-medium text-sm sm:text-base"
@@ -47,8 +48,14 @@ export default function LoginButton() {
         </svg>
         <span className="hidden sm:inline">{t('navbar.login')}</span>
       </button>
+    );
+  };
 
-      {/* 只在打开时渲染 Modal，避免 useSearchParams 在静态生成时报错 */}
+  return (
+    <>
+      {renderContent()}
+
+      {/* LoginModal 始终存在，不受 user 状态影响，避免注册时组件被卸载导致状态丢失 */}
       {isLoginModalOpen && (
         <LoginModal
           isOpen={isLoginModalOpen}

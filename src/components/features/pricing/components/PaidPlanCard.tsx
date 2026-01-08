@@ -5,6 +5,7 @@ import { PricingPlan } from '@/types/subscription';
 import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 import { createStripeCheckout } from '@/actions/payment';
 import { trackUserEvent } from '@/actions/user';
+import { verifyGooglePlayPurchase } from '@/actions/google-play';
 import { BillingCycle } from '../hooks/usePricing';
 import { getCurrencySymbol, getCurrencyFromLocale } from '@/config/currency';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -187,12 +188,27 @@ export default function PaidPlanCard({ plan }: PaidPlanCardProps) {
 
     // Android 原生平台使用 Google Play Billing
     if (shouldUseGooglePlay) {
+      setIsLoading(true);
       try {
         const result = await googlePlayPurchase(currentProductId);
-        if (result.success) {
+        if (result.success && result.purchaseToken) {
           console.log('✅ [handleUpgrade] Google Play purchase successful:', result);
-          // 购买成功，跳转到成功页面
-          window.location.href = '/studio/payment/success';
+
+          // 调用后端验证购买并发放积分
+          const verifyResult = await verifyGooglePlayPurchase({
+            purchaseToken: result.purchaseToken,
+            productId: result.productId || currentProductId,
+            orderId: result.orderId,
+          });
+
+          if (verifyResult.success) {
+            console.log('✅ [handleUpgrade] Purchase verified, subscription:', verifyResult.subscriptionId);
+            // 购买成功，跳转到成功页面
+            window.location.href = '/studio/payment/success';
+          } else {
+            console.error('❌ [handleUpgrade] Verification failed:', verifyResult.error);
+            alert(verifyResult.error || 'Failed to verify purchase');
+          }
         } else if (result.cancelled) {
           // 用户取消，不显示错误
           console.log('🔵 [handleUpgrade] Purchase cancelled by user');
@@ -202,6 +218,8 @@ export default function PaidPlanCard({ plan }: PaidPlanCardProps) {
       } catch (error) {
         console.error('❌ [handleUpgrade] Google Play error:', error);
         alert(error instanceof Error ? error.message : 'Purchase failed. Please try again.');
+      } finally {
+        setIsLoading(false);
       }
       return;
     }

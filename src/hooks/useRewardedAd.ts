@@ -151,7 +151,7 @@ export function useRewardedAd(): UseRewardedAdReturn {
       .catch((err) => {
         console.error('[RewardedAd] AdMob module load failed:', err);
       });
-  }, [provider, isNative]);
+  }, [provider, isNative, prepareAdMobAd]);
 
   // ==================== Appodeal 初始化 ====================
   useEffect(() => {

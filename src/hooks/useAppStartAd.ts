@@ -91,10 +91,10 @@ export function useAppStartAd() {
     // 如果 AdMob 还没初始化，先初始化
     if (!adMobRef.current) {
       try {
-        const module = await import('@capacitor-community/admob');
-        adMobRef.current = module.AdMob;
+        const admobModule = await import('@capacitor-community/admob');
+        adMobRef.current = admobModule.AdMob;
 
-        await module.AdMob.initialize({
+        await admobModule.AdMob.initialize({
           testingDevices: process.env.NODE_ENV === 'development' ? ['YOUR_TEST_DEVICE_ID'] : [],
           initializeForTesting: process.env.NODE_ENV === 'development',
         });

@@ -21,6 +21,7 @@
     "allAdsClaimed": "今日已全部领取",
 
     "loadingAd": "加载广告中...",
+    "pleaseWait": "请稍候",
     "adInterrupted": "广告未看完，无法获得奖励",
     "adUnavailable": "暂无可用广告，请稍后再试",
     "adError": "广告加载失败，请稍后再试",

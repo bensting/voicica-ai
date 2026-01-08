@@ -42,8 +42,6 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
   const [error, setError] = useState<string | null>(null);
   const [resetEmailSent, setResetEmailSent] = useState(false);
   const [verificationEmailSent, setVerificationEmailSent] = useState(false);
-  const [isSigningUp, setIsSigningUp] = useState(false); // 防止注册过程中自动关闭
-
   // 跟踪 user 的前一个值，只有从 null 变为非 null 才是真正的登录成功
   const prevUserRef = useRef(user);
   // 标记是否是邮箱登录（邮箱登录需要手动控制关闭，不自动关闭）
@@ -89,7 +87,6 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
     setError(null);
     setResetEmailSent(false);
     setVerificationEmailSent(false);
-    setIsSigningUp(false);
   };
 
   // 验证邮箱格式
@@ -180,7 +177,6 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
     }
 
     setLoading(true);
-    setIsSigningUp(true); // 防止注册过程中模态框自动关闭
     try {
       const result = await signUpWithEmail(email, password);
       // 注册成功，显示提示
@@ -207,7 +203,6 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
       }
     } finally {
       setLoading(false);
-      setIsSigningUp(false);
     }
   };
 

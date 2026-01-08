@@ -54,6 +54,9 @@ public class AppodealPlugin extends Plugin {
                 // 设置测试模式
                 Appodeal.setTesting(testMode);
 
+                // 启用安全区域支持（避免圆角/刘海屏遮挡广告UI元素）
+                Appodeal.setUseSafeArea(true);
+
                 // 设置自动缓存
                 Appodeal.setAutoCache(Appodeal.REWARDED_VIDEO, true);
 

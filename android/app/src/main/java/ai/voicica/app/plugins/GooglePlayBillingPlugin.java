@@ -140,11 +140,38 @@ public class GooglePlayBillingPlugin extends Plugin implements PurchasesUpdatedL
             return;
         }
 
+        // 如果 BillingClient 没准备好，尝试重新连接
         if (!billingClient.isReady()) {
-            call.reject("Billing client not ready");
+            Log.d(TAG, "Billing client not ready, reconnecting...");
+            billingClient.startConnection(new BillingClientStateListener() {
+                @Override
+                public void onBillingSetupFinished(@NonNull BillingResult billingResult) {
+                    if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK) {
+                        Log.d(TAG, "Billing client reconnected, proceeding with purchase");
+                        // 连接成功，继续购买流程
+                        executePurchase(call, productId);
+                    } else {
+                        Log.e(TAG, "Billing client reconnection failed: " + billingResult.getDebugMessage());
+                        JSObject result = new JSObject();
+                        result.put("success", false);
+                        result.put("cancelled", false);
+                        result.put("error", "Unable to connect to Google Play. Please check your internet connection.");
+                        call.resolve(result);
+                    }
+                }
+
+                @Override
+                public void onBillingServiceDisconnected() {
+                    Log.w(TAG, "Billing service disconnected during purchase");
+                }
+            });
             return;
         }
 
+        executePurchase(call, productId);
+    }
+
+    private void executePurchase(PluginCall call, String productId) {
         pendingPurchaseCall = call;
 
         List<QueryProductDetailsParams.Product> productList = new ArrayList<>();
@@ -225,7 +252,24 @@ public class GooglePlayBillingPlugin extends Plugin implements PurchasesUpdatedL
             pendingPurchaseCall.resolve(result);
             pendingPurchaseCall = null;
         } else {
-            pendingPurchaseCall.reject("Purchase failed: " + billingResult.getDebugMessage());
+            // 返回错误信息而不是 reject，便于前端处理
+            JSObject result = new JSObject();
+            result.put("success", false);
+            result.put("cancelled", false);
+            String errorMsg = billingResult.getDebugMessage();
+            if (errorMsg == null || errorMsg.isEmpty()) {
+                // 根据响应码提供默认错误信息
+                int code = billingResult.getResponseCode();
+                if (code == BillingClient.BillingResponseCode.ITEM_ALREADY_OWNED) {
+                    errorMsg = "You already have an active subscription.";
+                } else if (code == BillingClient.BillingResponseCode.ITEM_NOT_OWNED) {
+                    errorMsg = "Subscription not found.";
+                } else {
+                    errorMsg = "Purchase could not be completed. Please try again.";
+                }
+            }
+            result.put("error", errorMsg);
+            pendingPurchaseCall.resolve(result);
             pendingPurchaseCall = null;
         }
     }

@@ -212,12 +212,16 @@ export default function PaidPlanCard({ plan }: PaidPlanCardProps) {
         } else if (result.cancelled) {
           // 用户取消，不显示错误
           console.log('🔵 [handleUpgrade] Purchase cancelled by user');
-        } else if (result.error) {
-          alert(result.error);
+        } else {
+          // 显示错误信息，如果为空则显示默认消息
+          const errorMsg = result.error || 'Purchase could not be completed. Please try again.';
+          console.log('🔵 [handleUpgrade] Purchase error:', errorMsg);
+          alert(errorMsg);
         }
       } catch (error) {
         console.error('❌ [handleUpgrade] Google Play error:', error);
-        alert(error instanceof Error ? error.message : 'Purchase failed. Please try again.');
+        const errorMsg = error instanceof Error ? error.message : 'Purchase failed. Please try again.';
+        alert(errorMsg);
       } finally {
         setIsLoading(false);
       }

@@ -35,7 +35,9 @@ public class GooglePlayBillingPlugin extends Plugin implements PurchasesUpdatedL
     private void initBillingClient() {
         billingClient = BillingClient.newBuilder(getContext())
                 .setListener(this)
-                .enablePendingPurchases()
+                .enablePendingPurchases(
+                    PendingPurchasesParams.newBuilder().enableOneTimeProducts().build()
+                )
                 .build();
 
         billingClient.startConnection(new BillingClientStateListener() {
@@ -95,7 +97,7 @@ public class GooglePlayBillingPlugin extends Plugin implements PurchasesUpdatedL
                 .build();
 
         billingClient.queryProductDetailsAsync(params, (billingResult, productDetailsList) -> {
-            if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK) {
+            if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK && productDetailsList != null) {
                 JSObject result = new JSObject();
                 StringBuilder productsJson = new StringBuilder("[");
                 for (int i = 0; i < productDetailsList.size(); i++) {
@@ -158,7 +160,7 @@ public class GooglePlayBillingPlugin extends Plugin implements PurchasesUpdatedL
                 .build();
 
         billingClient.queryProductDetailsAsync(queryParams, (billingResult, productDetailsList) -> {
-            if (billingResult.getResponseCode() != BillingClient.BillingResponseCode.OK || productDetailsList.isEmpty()) {
+            if (billingResult.getResponseCode() != BillingClient.BillingResponseCode.OK || productDetailsList == null || productDetailsList.isEmpty()) {
                 pendingPurchaseCall.reject("Product not found: " + productId);
                 pendingPurchaseCall = null;
                 return;

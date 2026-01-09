@@ -9,6 +9,7 @@ import { useDailyTasks } from '@/hooks/useDailyTasks';
 import { isNativeApp } from '@/lib/capacitor';
 import LoginModal from '@/components/features/auth/LoginModal';
 import AppDownloadModal from './AppDownloadModal';
+import CelebrationEffect from './CelebrationEffect';
 
 interface DailyTasksModalProps {
   /** 是否显示 */
@@ -38,6 +39,7 @@ export default function DailyTasksModal({ isOpen, onClose, onCreditsUpdated }: D
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showDownloadModal, setShowDownloadModal] = useState(false);
   const [lastClaimedCredits, setLastClaimedCredits] = useState<number | null>(null);
+  const [showCelebration, setShowCelebration] = useState(false);
   const [adLoading, setAdLoading] = useState(false);
   const [adError, setAdError] = useState<string | null>(null);
 
@@ -71,9 +73,8 @@ export default function DailyTasksModal({ isOpen, onClose, onCreditsUpdated }: D
     const result = await doCheckin();
     if (result.success && result.credits) {
       setLastClaimedCredits(result.credits);
+      setShowCelebration(true);
       onCreditsUpdated?.();
-      // 2秒后清除提示
-      setTimeout(() => setLastClaimedCredits(null), 2000);
     }
   };
 
@@ -99,8 +100,8 @@ export default function DailyTasksModal({ isOpen, onClose, onCreditsUpdated }: D
 
       if (result.success && result.credits) {
         setLastClaimedCredits(result.credits);
+        setShowCelebration(true);
         onCreditsUpdated?.();
-        setTimeout(() => setLastClaimedCredits(null), 2000);
       } else if (!result.success) {
         // 显示详细错误信息用于调试
         const errorMsg = result.message || '领取失败';
@@ -356,17 +357,15 @@ export default function DailyTasksModal({ isOpen, onClose, onCreditsUpdated }: D
           )}
         </div>
 
-        {/* 领取成功提示 */}
-        {lastClaimedCredits !== null && (
-          <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-[10000] pointer-events-none">
-            <div className="bg-black/80 text-white px-6 py-3 rounded-xl text-lg font-bold animate-bounce">
-              +{formatCredits(lastClaimedCredits)} {t('dailyTasks.credits')}!
-            </div>
-          </div>
-        )}
       </div>
     );
   };
+
+  // 庆祝效果完成后清理状态
+  const handleCelebrationComplete = useCallback(() => {
+    setShowCelebration(false);
+    setLastClaimedCredits(null);
+  }, []);
 
   const modalContent = (
     <>
@@ -437,6 +436,14 @@ export default function DailyTasksModal({ isOpen, onClose, onCreditsUpdated }: D
         isOpen={showDownloadModal}
         onClose={() => setShowDownloadModal(false)}
       />
+
+      {/* 庆祝效果 */}
+      {showCelebration && lastClaimedCredits !== null && (
+        <CelebrationEffect
+          credits={lastClaimedCredits}
+          onComplete={handleCelebrationComplete}
+        />
+      )}
     </>
   );
 

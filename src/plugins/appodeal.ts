@@ -55,6 +55,13 @@ export interface CanShowResult {
 }
 
 /**
+ * 检查悬浮窗权限结果
+ */
+export interface OverlayPermissionResult {
+  hasPermission: boolean;
+}
+
+/**
  * Appodeal 插件接口
  */
 export interface AppodealPlugin {
@@ -89,6 +96,16 @@ export interface AppodealPlugin {
    * 超时后会强制关闭广告并给予奖励
    */
   setAdTimeout(options: SetAdTimeoutOptions): Promise<void>;
+
+  /**
+   * 检查是否有悬浮窗权限（用于显示广告超时进度条）
+   */
+  checkOverlayPermission(): Promise<OverlayPermissionResult>;
+
+  /**
+   * 请求悬浮窗权限（打开系统设置页面让用户授权）
+   */
+  requestOverlayPermission(): Promise<void>;
 
   /**
    * 添加事件监听器

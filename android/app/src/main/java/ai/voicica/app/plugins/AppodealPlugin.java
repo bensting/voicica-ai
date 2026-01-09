@@ -3,8 +3,10 @@ package ai.voicica.app.plugins;
 import android.animation.ObjectAnimator;
 import android.graphics.Color;
 import android.graphics.PixelFormat;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
@@ -314,9 +316,64 @@ public class AppodealPlugin extends Plugin {
     }
 
     /**
+     * 检查是否有悬浮窗权限（用于显示广告超时进度条）
+     */
+    @PluginMethod
+    public void checkOverlayPermission(PluginCall call) {
+        boolean hasPermission = canDrawOverlays();
+        JSObject result = new JSObject();
+        result.put("hasPermission", hasPermission);
+        call.resolve(result);
+    }
+
+    /**
+     * 请求悬浮窗权限（打开系统设置页面）
+     */
+    @PluginMethod
+    public void requestOverlayPermission(PluginCall call) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (!Settings.canDrawOverlays(getContext())) {
+                try {
+                    android.content.Intent intent = new android.content.Intent(
+                        Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                        android.net.Uri.parse("package:" + getContext().getPackageName())
+                    );
+                    getActivity().startActivity(intent);
+                    call.resolve();
+                } catch (Exception e) {
+                    Log.e(TAG, "Failed to open overlay permission settings", e);
+                    call.reject("Failed to open settings: " + e.getMessage());
+                }
+            } else {
+                // 已有权限
+                call.resolve();
+            }
+        } else {
+            // Android 6.0 以下不需要
+            call.resolve();
+        }
+    }
+
+    /**
+     * 检查是否有悬浮窗权限
+     */
+    private boolean canDrawOverlays() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            return Settings.canDrawOverlays(getContext());
+        }
+        return true; // Android 6.0 以下不需要特殊权限
+    }
+
+    /**
      * 显示顶部进度条
      */
     private void showProgressBar() {
+        // 检查悬浮窗权限
+        if (!canDrawOverlays()) {
+            Log.w(TAG, "No overlay permission, progress bar will not be shown. Timeout will still work.");
+            return;
+        }
+
         getActivity().runOnUiThread(() -> {
             try {
                 if (progressBar != null) {
@@ -329,7 +386,7 @@ public class AppodealPlugin extends Plugin {
                 progressBar = new ProgressBar(getActivity(), null, android.R.attr.progressBarStyleHorizontal);
                 progressBar.setMax(1000);
                 progressBar.setProgress(1000);
-                progressBar.setScaleY(2f); // 加粗进度条
+                progressBar.setScaleY(3f); // 加粗进度条
 
                 // 设置进度条颜色为紫色（与 APP 主题一致）
                 progressBar.getProgressDrawable().setColorFilter(
@@ -337,18 +394,24 @@ public class AppodealPlugin extends Plugin {
                     android.graphics.PorterDuff.Mode.SRC_IN
                 );
 
-                // 设置窗口参数
+                // 设置窗口参数 - 使用 TYPE_APPLICATION_OVERLAY 可以显示在其他 Activity 上层
+                int windowType;
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    windowType = WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY;
+                } else {
+                    windowType = WindowManager.LayoutParams.TYPE_SYSTEM_ALERT;
+                }
+
                 WindowManager.LayoutParams params = new WindowManager.LayoutParams(
                     WindowManager.LayoutParams.MATCH_PARENT,
-                    16, // 高度 16px
-                    WindowManager.LayoutParams.TYPE_APPLICATION_PANEL,
+                    24, // 高度 24px（更明显）
+                    windowType,
                     WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE |
                     WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL |
                     WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN,
                     PixelFormat.TRANSLUCENT
                 );
                 params.gravity = Gravity.TOP;
-                params.token = getActivity().getWindow().getDecorView().getWindowToken();
 
                 windowManager.addView(progressBar, params);
 
@@ -358,7 +421,7 @@ public class AppodealPlugin extends Plugin {
                 progressAnimator.setInterpolator(new LinearInterpolator());
                 progressAnimator.start();
 
-                Log.d(TAG, "Progress bar shown");
+                Log.d(TAG, "Progress bar shown with overlay permission");
             } catch (Exception e) {
                 Log.e(TAG, "Failed to show progress bar", e);
             }

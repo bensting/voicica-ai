@@ -1,8 +1,17 @@
 {
-  "version": "1.1.1",
-  "buildNumber": 12,
+  "version": "1.1.2",
+  "buildNumber": 13,
   "description": "原生应用版本（Android/iOS 应用壳）",
   "changelog": [
+    {
+      "version": "1.1.2",
+      "buildNumber": 13,
+      "date": "2024-01-09",
+      "changes": [
+        "使用 TYPE_APPLICATION_OVERLAY 显示广告超时进度条",
+        "添加悬浮窗权限检测和请求功能"
+      ]
+    },
     {
       "version": "1.1.1",
       "buildNumber": 12,

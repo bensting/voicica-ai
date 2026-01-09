@@ -12,6 +12,7 @@ import type {
   IsLoadedResult,
   CanShowResult,
   SetAdTimeoutOptions,
+  OverlayPermissionResult,
 } from './appodeal';
 
 /**
@@ -73,5 +74,16 @@ export class AppodealWeb extends WebPlugin implements AppodealPlugin {
   async setAdTimeout(options: SetAdTimeoutOptions): Promise<void> {
     console.log('[Appodeal Web] setAdTimeout:', options.timeout, 'seconds');
     // Web 环境下只是记录，不需要实际超时处理
+  }
+
+  async checkOverlayPermission(): Promise<OverlayPermissionResult> {
+    console.log('[Appodeal Web] checkOverlayPermission');
+    // Web 环境下总是返回 true
+    return { hasPermission: true };
+  }
+
+  async requestOverlayPermission(): Promise<void> {
+    console.log('[Appodeal Web] requestOverlayPermission');
+    // Web 环境下不需要请求权限
   }
 }

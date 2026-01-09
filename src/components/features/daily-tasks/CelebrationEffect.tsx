@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 
 interface CelebrationEffectProps {
   credits: number;
@@ -19,6 +19,10 @@ export default function CelebrationEffect({ credits, onComplete }: CelebrationEf
     size: number;
   }>>([]);
 
+  // 使用 ref 保存 onComplete 回调，避免重新触发 effect
+  const onCompleteRef = useRef(onComplete);
+  onCompleteRef.current = onComplete;
+
   useEffect(() => {
     // 生成随机彩色纸屑
     const colors = ['#8B5CF6', '#EC4899', '#10B981', '#F59E0B', '#3B82F6', '#EF4444'];
@@ -33,11 +37,11 @@ export default function CelebrationEffect({ credits, onComplete }: CelebrationEf
 
     // 2.5秒后触发完成回调
     const timer = setTimeout(() => {
-      onComplete?.();
+      onCompleteRef.current?.();
     }, 2500);
 
     return () => clearTimeout(timer);
-  }, [onComplete]);
+  }, []); // 空依赖数组，只在挂载时执行一次
 
   return (
     <div className="fixed inset-0 z-[10001] pointer-events-none overflow-hidden">

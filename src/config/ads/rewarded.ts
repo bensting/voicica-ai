@@ -58,7 +58,7 @@ const devConfig: RewardedAdConfig = {
  */
 const prodConfig: RewardedAdConfig = {
   provider: 'auto', // 自动选择：原生用 nativeProvider，Web 用 AppLixir
-  nativeProvider: 'appodeal', // ⚠️ 切换到 Appodeal 时改为 'appodeal'
+  nativeProvider: 'admob', // 使用 AdMob 激励广告
 };
 
 // 根据环境选择配置

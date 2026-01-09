@@ -5,13 +5,9 @@ echo   Android 打包脚本
 echo ========================================
 echo.
 
-REM 读取版本信息
-for /f "tokens=2 delims=:," %%a in ('type native-version.json ^| findstr /C:"\"version\""') do set "RAW_VERSION=%%a"
-for /f "tokens=2 delims=:," %%a in ('type native-version.json ^| findstr /C:"\"buildNumber\""') do set "RAW_BUILD=%%a"
-REM 去除引号和空格
-set "APP_VERSION=%RAW_VERSION: =%"
-set "APP_VERSION=%APP_VERSION:"=%"
-set "BUILD_NUMBER=%RAW_BUILD: =%"
+REM 读取版本信息（使用 PowerShell 解析 JSON，更可靠）
+for /f "usebackq" %%a in (`powershell -Command "(Get-Content native-version.json | ConvertFrom-Json).version"`) do set "APP_VERSION=%%a"
+for /f "usebackq" %%a in (`powershell -Command "(Get-Content native-version.json | ConvertFrom-Json).buildNumber"`) do set "BUILD_NUMBER=%%a"
 
 echo 当前版本: v%APP_VERSION% (Build %BUILD_NUMBER%)
 echo.

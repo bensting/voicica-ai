@@ -8,7 +8,7 @@ import { admobConfig } from '@/config/ads';
 const LAST_AD_SHOWN_KEY = 'app_start_ad_last_shown';
 
 // 从配置获取间隔时间（毫秒）
-const getAdShowInterval = () => admobConfig.interstitial.intervalMinutes * 60 * 1000;
+const getAdShowInterval = () => admobConfig.appOpen.intervalMinutes * 60 * 1000;
 
 /**
  * 获取上次显示广告的时间
@@ -38,43 +38,47 @@ function shouldShowAd(): boolean {
 /**
  * App 启动广告 Hook
  *
- * 在原生 App 启动时显示插页式广告
+ * 在原生 App 启动时显示 App Open 广告
+ * - 使用自定义原生插件实现
  * - 仅在原生环境生效
  * - 有间隔限制，避免频繁显示
  */
 export function useAppStartAd() {
   const hasShownRef = useRef(false);
-  const adMobRef = useRef<typeof import('@capacitor-community/admob').AdMob | null>(null);
+  const isInitializedRef = useRef(false);
+  const appOpenAdRef = useRef<typeof import('@/plugins/app-open-ad').AppOpenAd | null>(null);
 
   const isNative = Capacitor.isNativePlatform();
   const isEnabled = admobConfig.enabled && isNative;
 
-  // 显示插页式广告
-  const showInterstitialAd = useCallback(async () => {
-    if (!adMobRef.current || !isEnabled) return;
+  // 加载并显示 App Open 广告
+  const showAppOpenAd = useCallback(async () => {
+    if (!appOpenAdRef.current || !isEnabled) return;
 
     const platform = Capacitor.getPlatform() as 'android' | 'ios';
-    const adUnitId = admobConfig.interstitial[platform];
+    const adUnitId = admobConfig.appOpen[platform];
 
     if (!adUnitId) {
-      console.log('[AppStartAd] 广告单元 ID 未配置');
+      console.log('[AppStartAd] App Open 广告单元 ID 未配置');
       return;
     }
 
     try {
-      console.log('[AppStartAd] 准备插页式广告...');
-      await adMobRef.current.prepareInterstitial({
-        adId: adUnitId,
-        isTesting: process.env.NODE_ENV === 'development',
-      });
+      // 检查广告是否已加载
+      const { loaded } = await appOpenAdRef.current.isAdLoaded();
 
-      console.log('[AppStartAd] 显示插页式广告...');
-      await adMobRef.current.showInterstitial();
+      if (!loaded) {
+        console.log('[AppStartAd] 加载 App Open 广告...');
+        await appOpenAdRef.current.loadAd({ adUnitId });
+      }
+
+      console.log('[AppStartAd] 显示 App Open 广告...');
+      await appOpenAdRef.current.showAd();
 
       setLastAdShownTime();
-      console.log('[AppStartAd] 广告显示完成');
+      console.log('[AppStartAd] App Open 广告显示完成');
     } catch (error) {
-      console.error('[AppStartAd] 广告显示失败:', error);
+      console.error('[AppStartAd] App Open 广告显示失败:', error);
     }
   }, [isEnabled]);
 
@@ -88,25 +92,26 @@ export function useAppStartAd() {
       return;
     }
 
-    // 如果 AdMob 还没初始化，先初始化
-    if (!adMobRef.current) {
+    // 如果插件还没加载，先加载并初始化
+    if (!appOpenAdRef.current) {
       try {
-        const admobModule = await import('@capacitor-community/admob');
-        adMobRef.current = admobModule.AdMob;
+        const { AppOpenAd } = await import('@/plugins/app-open-ad');
+        appOpenAdRef.current = AppOpenAd;
 
-        await admobModule.AdMob.initialize({
-          testingDevices: process.env.NODE_ENV === 'development' ? ['YOUR_TEST_DEVICE_ID'] : [],
-          initializeForTesting: process.env.NODE_ENV === 'development',
-        });
+        if (!isInitializedRef.current) {
+          await AppOpenAd.initialize();
+          isInitializedRef.current = true;
+          console.log('[AppStartAd] App Open Ad 插件初始化完成');
+        }
       } catch (error) {
-        console.error('[AppStartAd] AdMob 加载失败:', error);
+        console.error('[AppStartAd] App Open Ad 插件加载失败:', error);
         return;
       }
     }
 
     // 显示广告
-    showInterstitialAd();
-  }, [isEnabled, showInterstitialAd]);
+    showAppOpenAd();
+  }, [isEnabled, showAppOpenAd]);
 
   // 初始化：首次启动时显示广告
   useEffect(() => {

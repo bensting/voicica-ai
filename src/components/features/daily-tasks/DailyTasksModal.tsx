@@ -99,8 +99,12 @@ export default function DailyTasksModal({ isOpen, onClose, onCreditsUpdated }: D
       console.log('🎬 [DailyTasks] doClaimAdReward result:', result);
 
       if (result.success && result.credits) {
-        setLastClaimedCredits(result.credits);
-        setShowCelebration(true);
+        const earnedCredits = result.credits;
+        // 延迟显示庆祝效果，确保状态刷新完成后再显示
+        setTimeout(() => {
+          setLastClaimedCredits(earnedCredits);
+          setShowCelebration(true);
+        }, 500);
         onCreditsUpdated?.();
       } else if (!result.success) {
         // 显示详细错误信息用于调试

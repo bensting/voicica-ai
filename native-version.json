@@ -1,8 +1,19 @@
 {
-  "version": "1.1.4",
-  "buildNumber": 15,
+  "version": "1.1.5",
+  "buildNumber": 16,
   "description": "原生应用版本（Android/iOS 应用壳）",
   "changelog": [
+    {
+      "version": "1.1.5",
+      "buildNumber": 16,
+      "date": "2025-01-09",
+      "changes": [
+        "新增 App Open 广告原生插件",
+        "开屏广告改用 App Open 格式",
+        "激励广告切换到 AdMob",
+        "完善广告配置"
+      ]
+    },
     {
       "version": "1.1.4",
       "buildNumber": 15,

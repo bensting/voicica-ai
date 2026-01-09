@@ -12,8 +12,13 @@ export interface AdMobConfig {
     android: string;
     ios: string;
   };
-  /** 插页式广告单元（启动广告） */
+  /** 插页式广告单元 */
   interstitial: {
+    android: string;
+    ios: string;
+  };
+  /** 开屏广告单元（App 启动时显示） */
+  appOpen: {
     android: string;
     ios: string;
     /** 显示间隔（分钟） */
@@ -68,6 +73,10 @@ const REAL_AD_IDS = {
     android: 'ca-app-pub-5946279989031789/1915055115',
     ios: '', // iOS 插页式广告（待创建）
   },
+  appOpen: {
+    android: 'ca-app-pub-5946279989031789/6006343368',
+    ios: '', // iOS 开屏广告（待创建）
+  },
 };
 
 /**
@@ -77,8 +86,9 @@ const devConfig: AdMobConfig = {
   androidAppId: TEST_AD_IDS.appId.android,
   iosAppId: TEST_AD_IDS.appId.ios,
   rewarded: TEST_AD_IDS.rewarded,
-  interstitial: {
-    ...TEST_AD_IDS.interstitial,
+  interstitial: TEST_AD_IDS.interstitial,
+  appOpen: {
+    ...TEST_AD_IDS.appOpen,
     intervalMinutes: 1, // 开发环境 1 分钟，方便测试
   },
   enabled: true, // 开发环境启用，使用测试广告
@@ -95,8 +105,9 @@ const prodConfig: AdMobConfig = {
   androidAppId: REAL_AD_IDS.appId.android,
   iosAppId: REAL_AD_IDS.appId.ios,
   rewarded: REAL_AD_IDS.rewarded,
-  interstitial: {
-    ...REAL_AD_IDS.interstitial,
+  interstitial: REAL_AD_IDS.interstitial,
+  appOpen: {
+    ...REAL_AD_IDS.appOpen,
     intervalMinutes: 30, // 生产环境 30 分钟
   },
   enabled: true,
@@ -114,9 +125,10 @@ export const admobConfig: AdMobConfig = baseConfig.useTestAds
       androidAppId: TEST_AD_IDS.appId.android,
       iosAppId: TEST_AD_IDS.appId.ios,
       rewarded: TEST_AD_IDS.rewarded,
-      interstitial: {
-        ...TEST_AD_IDS.interstitial,
-        intervalMinutes: baseConfig.interstitial.intervalMinutes,
+      interstitial: TEST_AD_IDS.interstitial,
+      appOpen: {
+        ...TEST_AD_IDS.appOpen,
+        intervalMinutes: baseConfig.appOpen.intervalMinutes,
       },
     }
   : baseConfig;
@@ -129,10 +141,17 @@ export function getRewardedAdUnitId(platform: 'android' | 'ios'): string {
 }
 
 /**
- * 获取插页式广告单元 ID（启动广告）
+ * 获取插页式广告单元 ID
  */
 export function getInterstitialAdUnitId(platform: 'android' | 'ios'): string {
   return admobConfig.interstitial[platform];
+}
+
+/**
+ * 获取开屏广告单元 ID
+ */
+export function getAppOpenAdUnitId(platform: 'android' | 'ios'): string {
+  return admobConfig.appOpen[platform];
 }
 
 /**

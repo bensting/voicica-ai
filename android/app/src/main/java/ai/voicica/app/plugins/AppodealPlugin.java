@@ -55,9 +55,14 @@ public class AppodealPlugin extends Plugin {
     private LinearLayout overlayContainer = null;
     private TextView adCounterText = null;
     private ProgressBar progressBar = null;
+    private TextView closeButton = null;
     private Handler progressHandler = new Handler(Looper.getMainLooper());
     private Runnable progressRunnable = null;
+    private Runnable showCloseButtonRunnable = null;
     private long adStartTime = 0;
+
+    // 关闭按钮延迟（可配置）
+    private int closeButtonDelaySeconds = 15; // 默认15秒
 
     /**
      * 初始化 Appodeal SDK
@@ -115,6 +120,21 @@ public class AppodealPlugin extends Plugin {
             call.resolve();
         } else {
             call.reject("Invalid ad count. Must be between 1 and 5.");
+        }
+    }
+
+    /**
+     * 设置关闭按钮显示延迟（秒）
+     */
+    @PluginMethod
+    public void setCloseButtonDelay(PluginCall call) {
+        Integer delay = call.getInt("delay", 15);
+        if (delay != null && delay >= 5 && delay <= 60) {
+            closeButtonDelaySeconds = delay;
+            Log.d(TAG, "Close button delay set to " + closeButtonDelaySeconds + " seconds");
+            call.resolve();
+        } else {
+            call.reject("Invalid delay. Must be between 5 and 60 seconds.");
         }
     }
 
@@ -185,6 +205,10 @@ public class AppodealPlugin extends Plugin {
                 adStartTime = System.currentTimeMillis();
                 updateOverlayUI();
                 startProgressUpdate();
+
+                // 隐藏关闭按钮（如果之前显示过），然后重新调度
+                hideCloseButton();
+                scheduleShowCloseButton();
             }
 
             @Override
@@ -199,16 +223,29 @@ public class AppodealPlugin extends Plugin {
 
             @Override
             public void onRewardedVideoFinished(double amount, String name) {
-                Log.d(TAG, "Rewarded video finished, amount: " + amount + ", name: " + name);
-                JSObject data = new JSObject();
-                data.put("amount", amount);
-                data.put("name", name);
-                notifyListeners("rewardedVideoFinished", data);
+                completedAds++;
+                Log.d(TAG, "Rewarded video finished, ad " + completedAds + "/" + totalAdCount);
 
                 // 累计奖励
                 totalRewardAmount += amount;
                 rewardName = name;
-                completedAds++;
+
+                // 通知前端广告完成
+                JSObject data = new JSObject();
+                data.put("amount", amount);
+                data.put("name", name);
+                data.put("adIndex", completedAds);
+                data.put("totalAds", totalAdCount);
+                notifyListeners("rewardedVideoFinished", data);
+
+                // 只在第1个广告完成时发送领奖事件
+                if (completedAds == 1) {
+                    Log.d(TAG, "First ad completed, triggering reward claim");
+                    JSObject rewardData = new JSObject();
+                    rewardData.put("adIndex", 1);
+                    rewardData.put("totalAds", totalAdCount);
+                    notifyListeners("claimRewardNow", rewardData);
+                }
             }
 
             @Override
@@ -413,13 +450,39 @@ public class AppodealPlugin extends Plugin {
                 overlayContainer.setBackgroundColor(Color.parseColor("#CC000000")); // 半透明黑色
                 overlayContainer.setPadding(dpToPx(16), dpToPx(8), dpToPx(16), dpToPx(8));
 
+                // 第一行：广告计数器 + 关闭按钮
+                LinearLayout topRow = new LinearLayout(getActivity());
+                topRow.setOrientation(LinearLayout.HORIZONTAL);
+                topRow.setGravity(Gravity.CENTER_VERTICAL);
+
                 // 创建广告计数器文字
                 adCounterText = new TextView(getActivity());
                 adCounterText.setTextColor(Color.WHITE);
                 adCounterText.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
                 adCounterText.setTypeface(null, Typeface.BOLD);
                 adCounterText.setText("Ad 1 of " + totalAdCount);
-                overlayContainer.addView(adCounterText);
+                LinearLayout.LayoutParams counterParams = new LinearLayout.LayoutParams(
+                    0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f
+                );
+                adCounterText.setLayoutParams(counterParams);
+                topRow.addView(adCounterText);
+
+                // 创建关闭按钮（初始隐藏）
+                closeButton = new TextView(getActivity());
+                closeButton.setText("✕ Skip");
+                closeButton.setTextColor(Color.WHITE);
+                closeButton.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
+                closeButton.setTypeface(null, Typeface.BOLD);
+                closeButton.setBackgroundColor(Color.parseColor("#E53935")); // 红色背景
+                closeButton.setPadding(dpToPx(12), dpToPx(4), dpToPx(12), dpToPx(4));
+                closeButton.setVisibility(View.GONE); // 初始隐藏
+                closeButton.setOnClickListener(v -> {
+                    Log.d(TAG, "Close button clicked, forcing ad sequence end");
+                    forceCloseAdSequence();
+                });
+                topRow.addView(closeButton);
+
+                overlayContainer.addView(topRow);
 
                 // 创建进度条
                 progressBar = new ProgressBar(getActivity(), null, android.R.attr.progressBarStyleHorizontal);
@@ -439,7 +502,7 @@ public class AppodealPlugin extends Plugin {
                 );
                 overlayContainer.addView(progressBar);
 
-                // 窗口参数
+                // 窗口参数 - 注意：需要可点击
                 int windowType;
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                     windowType = WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY;
@@ -451,7 +514,6 @@ public class AppodealPlugin extends Plugin {
                     WindowManager.LayoutParams.MATCH_PARENT,
                     WindowManager.LayoutParams.WRAP_CONTENT,
                     windowType,
-                    WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE |
                     WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL |
                     WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN,
                     PixelFormat.TRANSLUCENT
@@ -468,18 +530,79 @@ public class AppodealPlugin extends Plugin {
     }
 
     /**
+     * 延迟显示关闭按钮
+     */
+    private void scheduleShowCloseButton() {
+        cancelShowCloseButton();
+
+        showCloseButtonRunnable = () -> {
+            getActivity().runOnUiThread(() -> {
+                if (closeButton != null) {
+                    closeButton.setVisibility(View.VISIBLE);
+                    Log.d(TAG, "Close button shown after " + closeButtonDelaySeconds + " seconds");
+                }
+            });
+        };
+
+        progressHandler.postDelayed(showCloseButtonRunnable, closeButtonDelaySeconds * 1000L);
+        Log.d(TAG, "Close button scheduled to show in " + closeButtonDelaySeconds + " seconds");
+    }
+
+    /**
+     * 取消显示关闭按钮的定时器
+     */
+    private void cancelShowCloseButton() {
+        if (showCloseButtonRunnable != null) {
+            progressHandler.removeCallbacks(showCloseButtonRunnable);
+            showCloseButtonRunnable = null;
+        }
+    }
+
+    /**
+     * 隐藏关闭按钮（播放下一个广告时重置）
+     */
+    private void hideCloseButton() {
+        getActivity().runOnUiThread(() -> {
+            if (closeButton != null) {
+                closeButton.setVisibility(View.GONE);
+            }
+        });
+    }
+
+    /**
+     * 强制关闭广告序列
+     */
+    private void forceCloseAdSequence() {
+        Log.d(TAG, "Force closing ad sequence");
+
+        // 结束广告序列（已完成的广告仍然有效）
+        finishAdSequence(completedAds > 0, "User skipped");
+
+        // 尝试关闭广告界面
+        getActivity().runOnUiThread(() -> {
+            try {
+                getActivity().onBackPressed();
+            } catch (Exception e) {
+                Log.e(TAG, "Failed to close ad activity", e);
+            }
+        });
+    }
+
+    /**
      * 隐藏悬浮层
      */
     private void hideOverlay() {
         getActivity().runOnUiThread(() -> {
             try {
                 stopProgressUpdate();
+                cancelShowCloseButton();
 
                 if (overlayContainer != null && windowManager != null) {
                     windowManager.removeView(overlayContainer);
                     overlayContainer = null;
                     adCounterText = null;
                     progressBar = null;
+                    closeButton = null;
                     Log.d(TAG, "Overlay hidden");
                 }
             } catch (Exception e) {

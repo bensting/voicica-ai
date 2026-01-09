@@ -26,6 +26,14 @@ export interface SetAdCountOptions {
 }
 
 /**
+ * 设置关闭按钮延迟选项
+ */
+export interface SetCloseButtonDelayOptions {
+  /** 关闭按钮显示延迟（秒，5-60） */
+  delay: number;
+}
+
+/**
  * 显示激励视频的结果
  */
 export interface ShowRewardedVideoResult {
@@ -78,6 +86,12 @@ export interface AppodealPlugin {
    * @param options 包含 count 字段（1-5）
    */
   setAdCount(options: SetAdCountOptions): Promise<void>;
+
+  /**
+   * 设置关闭按钮显示延迟
+   * @param options 包含 delay 字段（5-60秒）
+   */
+  setCloseButtonDelay(options: SetCloseButtonDelayOptions): Promise<void>;
 
   /**
    * 检查激励视频是否已加载
@@ -135,7 +149,12 @@ export interface AppodealPlugin {
 
   addListener(
     eventName: 'rewardedVideoFinished',
-    listenerFunc: (data: { amount: number; name: string }) => void
+    listenerFunc: (data: { amount: number; name: string; adIndex: number; totalAds: number }) => void
+  ): Promise<{ remove: () => void }>;
+
+  addListener(
+    eventName: 'claimRewardNow',
+    listenerFunc: (data: { adIndex: number; totalAds: number }) => void
   ): Promise<{ remove: () => void }>;
 
   addListener(

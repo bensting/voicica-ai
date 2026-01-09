@@ -9,6 +9,7 @@ import type {
   AppodealPlugin,
   AppodealInitOptions,
   SetAdCountOptions,
+  SetCloseButtonDelayOptions,
   ShowRewardedVideoResult,
   IsLoadedResult,
   CanShowResult,
@@ -37,6 +38,10 @@ export class AppodealWeb extends WebPlugin implements AppodealPlugin {
   async setAdCount(options: SetAdCountOptions): Promise<void> {
     console.log('[Appodeal Web] setAdCount:', options.count);
     this.adCount = options.count;
+  }
+
+  async setCloseButtonDelay(options: SetCloseButtonDelayOptions): Promise<void> {
+    console.log('[Appodeal Web] setCloseButtonDelay:', options.delay, 'seconds');
   }
 
   async isRewardedVideoLoaded(): Promise<IsLoadedResult> {

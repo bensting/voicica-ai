@@ -16,6 +16,8 @@ export interface AppodealConfig {
   testMode: boolean;
   /** 连续播放广告数量（1-5，默认2） */
   adCount: number;
+  /** 关闭按钮显示延迟（秒，5-60，默认15） */
+  closeButtonDelaySeconds: number;
 }
 
 /**
@@ -46,6 +48,7 @@ const devConfig: AppodealConfig = {
   iosAppKey: TEST_APP_KEYS.ios,
   testMode: false, // 使用真实广告（测试广告没有关闭按钮）
   adCount: 2, // 连续播放 2 个广告
+  closeButtonDelaySeconds: 30, // 15秒后显示关闭按钮
 };
 
 /**
@@ -63,6 +66,7 @@ const prodConfig: AppodealConfig = {
   iosAppKey: REAL_APP_KEYS.ios,
   testMode: false,
   adCount: 2, // 连续播放 2 个广告
+  closeButtonDelaySeconds: 15, // 15秒后显示关闭按钮
 };
 
 // 根据环境选择配置

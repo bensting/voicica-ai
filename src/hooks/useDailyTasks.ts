@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 import {
   getDailyTasksStatus,
@@ -193,22 +193,68 @@ export function useDailyTasks(): UseDailyTasksReturn {
     }
   }, [refresh]);
 
+  // 用于跟踪奖励是否已领取
+  const rewardClaimedRef = useRef(false);
+  const claimResultRef = useRef<TaskResult | null>(null);
+
   // 领取广告奖励
   const doClaimAdReward = useCallback(async (): Promise<TaskResult> => {
     try {
       setClaiming(true);
       setError(null);
+      rewardClaimedRef.current = false;
+      claimResultRef.current = null;
+
+      // 如果是原生平台且使用 Appodeal，监听 claimRewardNow 事件
+      const isNative = Capacitor.isNativePlatform();
+      let listenerRemove: (() => void) | null = null;
+
+      if (isNative) {
+        try {
+          const { Appodeal } = await import('@/plugins/appodeal');
+          const listener = await Appodeal.addListener('claimRewardNow', async (data) => {
+            console.log('[DailyTasks] 收到 claimRewardNow 事件, adIndex:', data.adIndex);
+
+            // 只在第一次收到事件时领取奖励
+            if (!rewardClaimedRef.current) {
+              rewardClaimedRef.current = true;
+              console.log('[DailyTasks] 第1个广告完成，立即领取奖励...');
+              const result = await claimAdReward(true);
+              claimResultRef.current = result;
+              console.log('[DailyTasks] 奖励领取结果:', result);
+              if (result.success) {
+                refresh(); // 刷新状态（不等待）
+              }
+            }
+          });
+          listenerRemove = () => listener.remove();
+        } catch (err) {
+          console.warn('[DailyTasks] 无法监听 Appodeal 事件:', err);
+        }
+      }
 
       // 显示激励广告
       console.log('[DailyTasks] 开始显示激励广告...');
       const adWatched = await showRewardedAd();
+
+      // 移除监听器
+      if (listenerRemove) {
+        listenerRemove();
+      }
 
       if (!adWatched) {
         console.log('[DailyTasks] 用户未完成广告观看');
         return { success: false, message: '请观看完整广告以获得奖励' };
       }
 
-      console.log('[DailyTasks] 广告观看成功，领取奖励...');
+      // 如果奖励已经在广告播放过程中领取了，返回那个结果
+      if (rewardClaimedRef.current && claimResultRef.current) {
+        console.log('[DailyTasks] 奖励已在广告过程中领取');
+        return claimResultRef.current;
+      }
+
+      // 兜底：如果事件没有触发，在广告结束后领取
+      console.log('[DailyTasks] 广告观看成功，领取奖励（兜底）...');
       const result = await claimAdReward(true);
       if (result.success) {
         await refresh();

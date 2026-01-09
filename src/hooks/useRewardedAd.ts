@@ -246,7 +246,10 @@ export function useRewardedAd(): UseRewardedAdReturn {
           // 设置连续广告数量
           await appodeal.setAdCount({ count: appodealConfig.adCount });
 
-          console.log('[RewardedAd] Appodeal initialized, adCount:', appodealConfig.adCount);
+          // 设置关闭按钮延迟
+          await appodeal.setCloseButtonDelay({ delay: appodealConfig.closeButtonDelaySeconds });
+
+          console.log('[RewardedAd] Appodeal initialized, adCount:', appodealConfig.adCount, 'closeDelay:', appodealConfig.closeButtonDelaySeconds);
         } catch (err) {
           console.error('[RewardedAd] Appodeal init failed:', err);
           setError('Appodeal initialization failed');
@@ -372,7 +375,10 @@ export function useRewardedAd(): UseRewardedAdReturn {
           // 设置连续广告数量
           await appodeal.setAdCount({ count: appodealConfig.adCount });
 
-          console.log('[RewardedAd] Appodeal initialized on-demand, adCount:', appodealConfig.adCount);
+          // 设置关闭按钮延迟
+          await appodeal.setCloseButtonDelay({ delay: appodealConfig.closeButtonDelaySeconds });
+
+          console.log('[RewardedAd] Appodeal initialized on-demand, adCount:', appodealConfig.adCount, 'closeDelay:', appodealConfig.closeButtonDelaySeconds);
         }
 
         setStatus('showing');

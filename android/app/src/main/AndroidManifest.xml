@@ -55,5 +55,7 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="29" />
     <uses-permission android:name="com.android.vending.BILLING" />
+    <!-- 悬浮窗权限：用于在广告上层显示超时进度条（运行时检测，不强制要求） -->
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <!-- REQUEST_INSTALL_PACKAGES 权限在 standalone flavor 中单独声明 -->
 </manifest>

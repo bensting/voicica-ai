@@ -1,16 +1,20 @@
 package ai.voicica.app.plugins;
 
-import android.animation.ObjectAnimator;
 import android.graphics.Color;
 import android.graphics.PixelFormat;
+import android.graphics.Typeface;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
+import android.provider.Settings;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
 import android.view.WindowManager;
-import android.view.animation.LinearInterpolator;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.appodeal.ads.Appodeal;
 import com.appodeal.ads.RewardedVideoCallbacks;
@@ -24,38 +28,44 @@ import com.getcapacitor.annotation.CapacitorPlugin;
 /**
  * Appodeal 广告插件
  *
- * 提供激励视频广告功能，用于每日任务中的"观看视频赚积分"
- * 包含超时保护机制：显示顶部进度条，超时后强制关闭广告
+ * 提供激励视频广告功能，支持连续播放多个广告
+ * 包含顶部进度条和广告计数器显示
  */
 @CapacitorPlugin(name = "Appodeal")
 public class AppodealPlugin extends Plugin {
 
     private static final String TAG = "AppodealPlugin";
-    private static final int DEFAULT_TIMEOUT_SECONDS = 60; // 默认超时时间（秒）
+    private static final int DEFAULT_AD_COUNT = 2; // 默认连续播放广告数量
+    private static final int PROGRESS_UPDATE_INTERVAL = 100; // 进度更新间隔（毫秒）
+    private static final int ESTIMATED_AD_DURATION = 30000; // 预估广告时长（毫秒）
 
     private boolean isInitialized = false;
     private PluginCall pendingRewardCall = null;
 
-    // 超时处理
-    private Handler timeoutHandler = new Handler(Looper.getMainLooper());
-    private Runnable timeoutRunnable = null;
-    private int adTimeoutSeconds = DEFAULT_TIMEOUT_SECONDS;
+    // 连续广告配置
+    private int totalAdCount = DEFAULT_AD_COUNT;
+    private int currentAdIndex = 0;
+    private int completedAds = 0;
+    private double totalRewardAmount = 0;
+    private String rewardName = null;
+    private boolean isAdSequenceRunning = false;
 
-    // 进度条相关
-    private ProgressBar progressBar = null;
+    // 悬浮层 UI
     private WindowManager windowManager = null;
-    private ObjectAnimator progressAnimator = null;
+    private LinearLayout overlayContainer = null;
+    private TextView adCounterText = null;
+    private ProgressBar progressBar = null;
+    private TextView closeButton = null;
+    private Handler progressHandler = new Handler(Looper.getMainLooper());
+    private Runnable progressRunnable = null;
+    private Runnable showCloseButtonRunnable = null;
+    private long adStartTime = 0;
 
-    // 奖励状态
-    private boolean hasReward = false;
-    private double rewardedAmount = 0;
-    private String rewardedName = null;
-    private boolean isAdShowing = false;
+    // 关闭按钮延迟（可配置）
+    private int closeButtonDelaySeconds = 15; // 默认15秒
 
     /**
      * 初始化 Appodeal SDK
-     *
-     * @param call 包含 appKey 参数
      */
     @PluginMethod
     public void initialize(PluginCall call) {
@@ -75,19 +85,12 @@ public class AppodealPlugin extends Plugin {
 
         getActivity().runOnUiThread(() -> {
             try {
-                // 设置测试模式
                 Appodeal.setTesting(testMode);
-
-                // 启用安全区域支持（避免圆角/刘海屏遮挡广告UI元素）
                 Appodeal.setUseSafeArea(true);
-
-                // 设置自动缓存
                 Appodeal.setAutoCache(Appodeal.REWARDED_VIDEO, true);
 
-                // 设置回调
                 setupRewardedVideoCallbacks();
 
-                // 初始化 SDK（仅激励视频）
                 Appodeal.initialize(
                     getActivity(),
                     appKey,
@@ -106,6 +109,73 @@ public class AppodealPlugin extends Plugin {
     }
 
     /**
+     * 设置连续播放广告数量
+     */
+    @PluginMethod
+    public void setAdCount(PluginCall call) {
+        Integer count = call.getInt("count", DEFAULT_AD_COUNT);
+        if (count != null && count > 0 && count <= 5) {
+            totalAdCount = count;
+            Log.d(TAG, "Ad count set to " + totalAdCount);
+            call.resolve();
+        } else {
+            call.reject("Invalid ad count. Must be between 1 and 5.");
+        }
+    }
+
+    /**
+     * 设置关闭按钮显示延迟（秒）
+     */
+    @PluginMethod
+    public void setCloseButtonDelay(PluginCall call) {
+        Integer delay = call.getInt("delay", 15);
+        if (delay != null && delay >= 5 && delay <= 60) {
+            closeButtonDelaySeconds = delay;
+            Log.d(TAG, "Close button delay set to " + closeButtonDelaySeconds + " seconds");
+            call.resolve();
+        } else {
+            call.reject("Invalid delay. Must be between 5 and 60 seconds.");
+        }
+    }
+
+    /**
+     * 检查悬浮窗权限
+     */
+    @PluginMethod
+    public void checkOverlayPermission(PluginCall call) {
+        boolean hasPermission = canDrawOverlays();
+        JSObject result = new JSObject();
+        result.put("hasPermission", hasPermission);
+        call.resolve(result);
+    }
+
+    /**
+     * 请求悬浮窗权限
+     */
+    @PluginMethod
+    public void requestOverlayPermission(PluginCall call) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (!Settings.canDrawOverlays(getContext())) {
+                try {
+                    android.content.Intent intent = new android.content.Intent(
+                        Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                        android.net.Uri.parse("package:" + getContext().getPackageName())
+                    );
+                    getActivity().startActivity(intent);
+                    call.resolve();
+                } catch (Exception e) {
+                    Log.e(TAG, "Failed to open overlay permission settings", e);
+                    call.reject("Failed to open settings: " + e.getMessage());
+                }
+            } else {
+                call.resolve();
+            }
+        } else {
+            call.resolve();
+        }
+    }
+
+    /**
      * 设置激励视频回调
      */
     private void setupRewardedVideoCallbacks() {
@@ -121,24 +191,24 @@ public class AppodealPlugin extends Plugin {
                 Log.e(TAG, "Rewarded video failed to load");
                 notifyListeners("rewardedVideoFailedToLoad", new JSObject());
 
-                if (pendingRewardCall != null) {
-                    JSObject result = new JSObject();
-                    result.put("rewarded", false);
-                    result.put("error", "Failed to load ad");
-                    pendingRewardCall.resolve(result);
-                    pendingRewardCall = null;
+                if (isAdSequenceRunning) {
+                    // 加载失败，结束广告序列
+                    finishAdSequence(false, "Failed to load ad");
                 }
             }
 
             @Override
             public void onRewardedVideoShown() {
-                Log.d(TAG, "Rewarded video shown");
-                isAdShowing = true;
+                Log.d(TAG, "Rewarded video shown, ad " + (currentAdIndex + 1) + " of " + totalAdCount);
                 notifyListeners("rewardedVideoShown", new JSObject());
 
-                // 显示进度条并启动超时计时器
-                showProgressBar();
-                startTimeoutTimer();
+                adStartTime = System.currentTimeMillis();
+                updateOverlayUI();
+                startProgressUpdate();
+
+                // 隐藏关闭按钮（如果之前显示过），然后重新调度
+                hideCloseButton();
+                scheduleShowCloseButton();
             }
 
             @Override
@@ -146,73 +216,62 @@ public class AppodealPlugin extends Plugin {
                 Log.e(TAG, "Rewarded video show failed");
                 notifyListeners("rewardedVideoShowFailed", new JSObject());
 
-                if (pendingRewardCall != null) {
-                    JSObject result = new JSObject();
-                    result.put("rewarded", false);
-                    result.put("error", "Failed to show ad");
-                    pendingRewardCall.resolve(result);
-                    pendingRewardCall = null;
+                if (isAdSequenceRunning) {
+                    finishAdSequence(false, "Failed to show ad");
                 }
             }
 
             @Override
             public void onRewardedVideoFinished(double amount, String name) {
-                Log.d(TAG, "Rewarded video finished, amount: " + amount + ", name: " + name);
+                completedAds++;
+                Log.d(TAG, "Rewarded video finished, ad " + completedAds + "/" + totalAdCount);
+
+                // 累计奖励
+                totalRewardAmount += amount;
+                rewardName = name;
+
+                // 通知前端广告完成
                 JSObject data = new JSObject();
                 data.put("amount", amount);
                 data.put("name", name);
+                data.put("adIndex", completedAds);
+                data.put("totalAds", totalAdCount);
                 notifyListeners("rewardedVideoFinished", data);
 
-                // 立即返回奖励结果（不等待广告关闭，因为测试广告可能没有关闭按钮）
-                if (pendingRewardCall != null) {
-                    Log.d(TAG, "Immediately resolving reward");
-                    JSObject result = new JSObject();
-                    result.put("rewarded", true);
-                    result.put("amount", amount);
-                    result.put("name", name);
-                    pendingRewardCall.resolve(result);
-                    pendingRewardCall = null;
+                // 只在第1个广告完成时发送领奖事件
+                if (completedAds == 1) {
+                    Log.d(TAG, "First ad completed, triggering reward claim");
+                    JSObject rewardData = new JSObject();
+                    rewardData.put("adIndex", 1);
+                    rewardData.put("totalAds", totalAdCount);
+                    notifyListeners("claimRewardNow", rewardData);
                 }
-
-                // 标记已处理
-                hasReward = true;
-                rewardedAmount = amount;
-                rewardedName = name;
             }
 
             @Override
             public void onRewardedVideoClosed(boolean finished) {
-                Log.d(TAG, "Rewarded video closed, finished: " + finished + ", hasReward: " + hasReward);
-                isAdShowing = false;
+                Log.d(TAG, "Rewarded video closed, finished: " + finished +
+                      ", completed: " + completedAds + "/" + totalAdCount);
 
-                // 清理进度条和超时计时器
-                hideProgressBar();
-                cancelTimeoutTimer();
+                stopProgressUpdate();
 
                 JSObject data = new JSObject();
                 data.put("finished", finished);
                 notifyListeners("rewardedVideoClosed", data);
 
-                // 统一在关闭时处理结果
-                if (pendingRewardCall != null) {
-                    JSObject result = new JSObject();
-                    if (hasReward) {
-                        // 用户完整观看了广告
-                        result.put("rewarded", true);
-                        result.put("amount", rewardedAmount);
-                        result.put("name", rewardedName);
-                    } else {
-                        // 用户中途关闭
-                        result.put("rewarded", false);
-                        result.put("error", "Ad closed before completion");
-                    }
-                    pendingRewardCall.resolve(result);
-                    pendingRewardCall = null;
+                if (isAdSequenceRunning) {
+                    currentAdIndex++;
 
-                    // 重置奖励状态
-                    hasReward = false;
-                    rewardedAmount = 0;
-                    rewardedName = null;
+                    // 检查是否还有更多广告要播放
+                    if (currentAdIndex < totalAdCount && finished) {
+                        // 延迟一下再播放下一个广告
+                        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                            showNextAd();
+                        }, 500);
+                    } else {
+                        // 广告序列结束
+                        finishAdSequence(completedAds > 0, null);
+                    }
                 }
             }
 
@@ -242,9 +301,7 @@ public class AppodealPlugin extends Plugin {
     }
 
     /**
-     * 显示激励视频广告
-     *
-     * @return 返回 Promise，包含 rewarded 字段表示是否获得奖励
+     * 显示激励视频广告（连续播放）
      */
     @PluginMethod
     public void showRewardedVideo(PluginCall call) {
@@ -253,26 +310,82 @@ public class AppodealPlugin extends Plugin {
             return;
         }
 
+        if (isAdSequenceRunning) {
+            call.reject("Ad sequence already running");
+            return;
+        }
+
+        // 重置状态
+        currentAdIndex = 0;
+        completedAds = 0;
+        totalRewardAmount = 0;
+        rewardName = null;
+        isAdSequenceRunning = true;
+        pendingRewardCall = call;
+
+        // 显示悬浮层
+        showOverlay();
+
+        // 开始播放广告
+        showNextAd();
+    }
+
+    /**
+     * 显示下一个广告
+     */
+    private void showNextAd() {
         getActivity().runOnUiThread(() -> {
             if (Appodeal.isLoaded(Appodeal.REWARDED_VIDEO)) {
-                // 保存 call 以便在回调中使用
-                pendingRewardCall = call;
-
+                Log.d(TAG, "Showing ad " + (currentAdIndex + 1) + " of " + totalAdCount);
+                updateOverlayUI();
                 boolean shown = Appodeal.show(getActivity(), Appodeal.REWARDED_VIDEO);
                 if (!shown) {
-                    pendingRewardCall = null;
-                    JSObject result = new JSObject();
-                    result.put("rewarded", false);
-                    result.put("error", "Failed to show ad");
-                    call.resolve(result);
+                    finishAdSequence(completedAds > 0, "Failed to show ad");
                 }
             } else {
-                JSObject result = new JSObject();
-                result.put("rewarded", false);
-                result.put("error", "Ad not loaded");
-                call.resolve(result);
+                Log.d(TAG, "Ad not loaded, caching...");
+                Appodeal.cache(getActivity(), Appodeal.REWARDED_VIDEO);
+
+                // 等待广告加载（最多 10 秒）
+                new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                    if (Appodeal.isLoaded(Appodeal.REWARDED_VIDEO)) {
+                        showNextAd();
+                    } else {
+                        finishAdSequence(completedAds > 0, "Ad not available");
+                    }
+                }, 10000);
             }
         });
+    }
+
+    /**
+     * 结束广告序列
+     */
+    private void finishAdSequence(boolean rewarded, String error) {
+        isAdSequenceRunning = false;
+        hideOverlay();
+
+        if (pendingRewardCall != null) {
+            JSObject result = new JSObject();
+            result.put("rewarded", rewarded);
+            result.put("completedAds", completedAds);
+            result.put("totalAds", totalAdCount);
+            if (rewarded) {
+                result.put("amount", totalRewardAmount);
+                result.put("name", rewardName);
+            }
+            if (error != null) {
+                result.put("error", error);
+            }
+            pendingRewardCall.resolve(result);
+            pendingRewardCall = null;
+        }
+
+        // 重置状态
+        currentAdIndex = 0;
+        completedAds = 0;
+        totalRewardAmount = 0;
+        rewardName = null;
     }
 
     /**
@@ -292,7 +405,7 @@ public class AppodealPlugin extends Plugin {
     }
 
     /**
-     * 检查是否可以显示广告（基于频率规则等）
+     * 检查是否可以显示广告
      */
     @PluginMethod
     public void canShow(PluginCall call) {
@@ -302,152 +415,257 @@ public class AppodealPlugin extends Plugin {
         call.resolve(result);
     }
 
+    // ==================== 悬浮层 UI ====================
+
     /**
-     * 设置广告超时时间（秒）
+     * 检查悬浮窗权限
      */
-    @PluginMethod
-    public void setAdTimeout(PluginCall call) {
-        Integer timeout = call.getInt("timeout", DEFAULT_TIMEOUT_SECONDS);
-        adTimeoutSeconds = timeout;
-        Log.d(TAG, "Ad timeout set to " + adTimeoutSeconds + " seconds");
-        call.resolve();
+    private boolean canDrawOverlays() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            return Settings.canDrawOverlays(getContext());
+        }
+        return true;
     }
 
     /**
-     * 显示顶部进度条
+     * 显示悬浮层
      */
-    private void showProgressBar() {
+    private void showOverlay() {
+        if (!canDrawOverlays()) {
+            Log.w(TAG, "No overlay permission, UI will not be shown");
+            return;
+        }
+
         getActivity().runOnUiThread(() -> {
             try {
-                if (progressBar != null) {
-                    hideProgressBar();
+                if (overlayContainer != null) {
+                    hideOverlay();
                 }
 
                 windowManager = (WindowManager) getActivity().getSystemService(android.content.Context.WINDOW_SERVICE);
 
-                // 创建水平进度条
+                // 创建容器
+                overlayContainer = new LinearLayout(getActivity());
+                overlayContainer.setOrientation(LinearLayout.VERTICAL);
+                overlayContainer.setBackgroundColor(Color.parseColor("#CC000000")); // 半透明黑色
+                overlayContainer.setPadding(dpToPx(16), dpToPx(8), dpToPx(16), dpToPx(8));
+
+                // 第一行：广告计数器 + 关闭按钮
+                LinearLayout topRow = new LinearLayout(getActivity());
+                topRow.setOrientation(LinearLayout.HORIZONTAL);
+                topRow.setGravity(Gravity.CENTER_VERTICAL);
+
+                // 创建广告计数器文字
+                adCounterText = new TextView(getActivity());
+                adCounterText.setTextColor(Color.WHITE);
+                adCounterText.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
+                adCounterText.setTypeface(null, Typeface.BOLD);
+                adCounterText.setText("Ad 1 of " + totalAdCount);
+                LinearLayout.LayoutParams counterParams = new LinearLayout.LayoutParams(
+                    0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f
+                );
+                adCounterText.setLayoutParams(counterParams);
+                topRow.addView(adCounterText);
+
+                // 创建关闭按钮（初始隐藏）
+                closeButton = new TextView(getActivity());
+                closeButton.setText("✕ Skip");
+                closeButton.setTextColor(Color.WHITE);
+                closeButton.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
+                closeButton.setTypeface(null, Typeface.BOLD);
+                closeButton.setBackgroundColor(Color.parseColor("#E53935")); // 红色背景
+                closeButton.setPadding(dpToPx(12), dpToPx(4), dpToPx(12), dpToPx(4));
+                closeButton.setVisibility(View.GONE); // 初始隐藏
+                closeButton.setOnClickListener(v -> {
+                    Log.d(TAG, "Close button clicked, forcing ad sequence end");
+                    forceCloseAdSequence();
+                });
+                topRow.addView(closeButton);
+
+                overlayContainer.addView(topRow);
+
+                // 创建进度条
                 progressBar = new ProgressBar(getActivity(), null, android.R.attr.progressBarStyleHorizontal);
                 progressBar.setMax(1000);
-                progressBar.setProgress(1000);
-                progressBar.setScaleY(2f); // 加粗进度条
+                progressBar.setProgress(0);
+                LinearLayout.LayoutParams progressParams = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    dpToPx(4)
+                );
+                progressParams.topMargin = dpToPx(6);
+                progressBar.setLayoutParams(progressParams);
 
-                // 设置进度条颜色为紫色（与 APP 主题一致）
+                // 设置进度条颜色
                 progressBar.getProgressDrawable().setColorFilter(
                     Color.parseColor("#9333EA"), // 紫色
                     android.graphics.PorterDuff.Mode.SRC_IN
                 );
+                overlayContainer.addView(progressBar);
 
-                // 设置窗口参数
+                // 窗口参数 - 注意：需要可点击
+                int windowType;
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    windowType = WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY;
+                } else {
+                    windowType = WindowManager.LayoutParams.TYPE_SYSTEM_ALERT;
+                }
+
                 WindowManager.LayoutParams params = new WindowManager.LayoutParams(
                     WindowManager.LayoutParams.MATCH_PARENT,
-                    16, // 高度 16px
-                    WindowManager.LayoutParams.TYPE_APPLICATION_PANEL,
-                    WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE |
+                    WindowManager.LayoutParams.WRAP_CONTENT,
+                    windowType,
                     WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL |
                     WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN,
                     PixelFormat.TRANSLUCENT
                 );
                 params.gravity = Gravity.TOP;
-                params.token = getActivity().getWindow().getDecorView().getWindowToken();
 
-                windowManager.addView(progressBar, params);
+                windowManager.addView(overlayContainer, params);
+                Log.d(TAG, "Overlay shown");
 
-                // 启动进度条动画（从满到空）
-                progressAnimator = ObjectAnimator.ofInt(progressBar, "progress", 1000, 0);
-                progressAnimator.setDuration(adTimeoutSeconds * 1000L);
-                progressAnimator.setInterpolator(new LinearInterpolator());
-                progressAnimator.start();
-
-                Log.d(TAG, "Progress bar shown");
             } catch (Exception e) {
-                Log.e(TAG, "Failed to show progress bar", e);
+                Log.e(TAG, "Failed to show overlay", e);
             }
         });
     }
 
     /**
-     * 隐藏进度条
+     * 延迟显示关闭按钮
      */
-    private void hideProgressBar() {
+    private void scheduleShowCloseButton() {
+        cancelShowCloseButton();
+
+        showCloseButtonRunnable = () -> {
+            getActivity().runOnUiThread(() -> {
+                if (closeButton != null) {
+                    closeButton.setVisibility(View.VISIBLE);
+                    Log.d(TAG, "Close button shown after " + closeButtonDelaySeconds + " seconds");
+                }
+            });
+        };
+
+        progressHandler.postDelayed(showCloseButtonRunnable, closeButtonDelaySeconds * 1000L);
+        Log.d(TAG, "Close button scheduled to show in " + closeButtonDelaySeconds + " seconds");
+    }
+
+    /**
+     * 取消显示关闭按钮的定时器
+     */
+    private void cancelShowCloseButton() {
+        if (showCloseButtonRunnable != null) {
+            progressHandler.removeCallbacks(showCloseButtonRunnable);
+            showCloseButtonRunnable = null;
+        }
+    }
+
+    /**
+     * 隐藏关闭按钮（播放下一个广告时重置）
+     */
+    private void hideCloseButton() {
+        getActivity().runOnUiThread(() -> {
+            if (closeButton != null) {
+                closeButton.setVisibility(View.GONE);
+            }
+        });
+    }
+
+    /**
+     * 强制关闭广告序列
+     */
+    private void forceCloseAdSequence() {
+        Log.d(TAG, "Force closing ad sequence");
+
+        // 结束广告序列（已完成的广告仍然有效）
+        finishAdSequence(completedAds > 0, "User skipped");
+
+        // 尝试关闭广告界面
         getActivity().runOnUiThread(() -> {
             try {
-                if (progressAnimator != null) {
-                    progressAnimator.cancel();
-                    progressAnimator = null;
-                }
-
-                if (progressBar != null && windowManager != null) {
-                    windowManager.removeView(progressBar);
-                    progressBar = null;
-                    Log.d(TAG, "Progress bar hidden");
-                }
+                getActivity().onBackPressed();
             } catch (Exception e) {
-                Log.e(TAG, "Failed to hide progress bar", e);
+                Log.e(TAG, "Failed to close ad activity", e);
             }
         });
     }
 
     /**
-     * 启动超时计时器
+     * 隐藏悬浮层
      */
-    private void startTimeoutTimer() {
-        cancelTimeoutTimer();
+    private void hideOverlay() {
+        getActivity().runOnUiThread(() -> {
+            try {
+                stopProgressUpdate();
+                cancelShowCloseButton();
 
-        timeoutRunnable = () -> {
-            Log.d(TAG, "Ad timeout reached (" + adTimeoutSeconds + "s), forcing close");
-
-            if (isAdShowing) {
-                isAdShowing = false;
-
-                // 隐藏进度条
-                hideProgressBar();
-
-                // 强制给奖励（因为用户已经等待了足够长的时间）
-                if (pendingRewardCall != null) {
-                    Log.d(TAG, "Timeout: giving reward to user");
-                    JSObject result = new JSObject();
-                    result.put("rewarded", true);
-                    result.put("amount", 1.0);
-                    result.put("name", "timeout_reward");
-                    result.put("timeout", true); // 标记是超时给的奖励
-                    pendingRewardCall.resolve(result);
-                    pendingRewardCall = null;
+                if (overlayContainer != null && windowManager != null) {
+                    windowManager.removeView(overlayContainer);
+                    overlayContainer = null;
+                    adCounterText = null;
+                    progressBar = null;
+                    closeButton = null;
+                    Log.d(TAG, "Overlay hidden");
                 }
+            } catch (Exception e) {
+                Log.e(TAG, "Failed to hide overlay", e);
+            }
+        });
+    }
 
-                // 重置奖励状态
-                hasReward = false;
-                rewardedAmount = 0;
-                rewardedName = null;
+    /**
+     * 更新悬浮层 UI
+     */
+    private void updateOverlayUI() {
+        getActivity().runOnUiThread(() -> {
+            if (adCounterText != null) {
+                adCounterText.setText("Ad " + (currentAdIndex + 1) + " of " + totalAdCount);
+            }
+            if (progressBar != null) {
+                progressBar.setProgress(0);
+            }
+        });
+    }
 
-                // 通知前端广告超时关闭
-                JSObject data = new JSObject();
-                data.put("timeout", true);
-                notifyListeners("rewardedVideoClosed", data);
+    /**
+     * 开始更新进度条
+     */
+    private void startProgressUpdate() {
+        stopProgressUpdate();
 
-                // 尝试关闭广告（返回上一个 Activity）
-                getActivity().runOnUiThread(() -> {
-                    try {
-                        // 尝试按返回键关闭广告
-                        getActivity().onBackPressed();
-                    } catch (Exception e) {
-                        Log.e(TAG, "Failed to close ad activity", e);
+        progressRunnable = new Runnable() {
+            @Override
+            public void run() {
+                if (progressBar != null && adStartTime > 0) {
+                    long elapsed = System.currentTimeMillis() - adStartTime;
+                    int progress = (int) ((elapsed * 1000) / ESTIMATED_AD_DURATION);
+                    progress = Math.min(progress, 1000);
+                    progressBar.setProgress(progress);
+
+                    if (progress < 1000) {
+                        progressHandler.postDelayed(this, PROGRESS_UPDATE_INTERVAL);
                     }
-                });
+                }
             }
         };
 
-        timeoutHandler.postDelayed(timeoutRunnable, adTimeoutSeconds * 1000L);
-        Log.d(TAG, "Timeout timer started: " + adTimeoutSeconds + " seconds");
+        progressHandler.postDelayed(progressRunnable, PROGRESS_UPDATE_INTERVAL);
     }
 
     /**
-     * 取消超时计时器
+     * 停止更新进度条
      */
-    private void cancelTimeoutTimer() {
-        if (timeoutRunnable != null) {
-            timeoutHandler.removeCallbacks(timeoutRunnable);
-            timeoutRunnable = null;
-            Log.d(TAG, "Timeout timer cancelled");
+    private void stopProgressUpdate() {
+        if (progressRunnable != null) {
+            progressHandler.removeCallbacks(progressRunnable);
+            progressRunnable = null;
         }
+        adStartTime = 0;
+    }
+
+    /**
+     * dp 转 px
+     */
+    private int dpToPx(int dp) {
+        float density = getActivity().getResources().getDisplayMetrics().density;
+        return Math.round(dp * density);
     }
 }

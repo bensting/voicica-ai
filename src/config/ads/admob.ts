@@ -100,7 +100,7 @@ const prodConfig: AdMobConfig = {
     intervalMinutes: 30, // 生产环境 30 分钟
   },
   enabled: true,
-  useTestAds: true, // ⚠️ 上架后改为 false
+  useTestAds: false, // 使用真实广告
 };
 
 // 根据环境选择配置

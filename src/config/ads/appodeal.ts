@@ -14,8 +14,10 @@ export interface AppodealConfig {
   iosAppKey: string;
   /** 是否开启测试模式 */
   testMode: boolean;
-  /** 广告超时时间（秒），超时后强制关闭并给奖励 */
-  adTimeoutSeconds: number;
+  /** 连续播放广告数量（1-5，默认2） */
+  adCount: number;
+  /** 关闭按钮显示延迟（秒，5-60，默认15） */
+  closeButtonDelaySeconds: number;
 }
 
 /**
@@ -45,7 +47,8 @@ const devConfig: AppodealConfig = {
   androidAppKey: TEST_APP_KEYS.android,
   iosAppKey: TEST_APP_KEYS.ios,
   testMode: false, // 使用真实广告（测试广告没有关闭按钮）
-  adTimeoutSeconds: 60, // 60 秒超时
+  adCount: 2, // 连续播放 2 个广告
+  closeButtonDelaySeconds: 30, // 15秒后显示关闭按钮
 };
 
 /**
@@ -62,7 +65,8 @@ const prodConfig: AppodealConfig = {
   androidAppKey: TEST_APP_KEYS.android, // 使用测试 Key，正式上线后改为 REAL_APP_KEYS.android
   iosAppKey: REAL_APP_KEYS.ios,
   testMode: false,
-  adTimeoutSeconds: 60, // 60 秒超时
+  adCount: 2, // 连续播放 2 个广告
+  closeButtonDelaySeconds: 15, // 15秒后显示关闭按钮
 };
 
 // 根据环境选择配置

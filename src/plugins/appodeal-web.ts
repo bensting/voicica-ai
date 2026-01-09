@@ -8,10 +8,12 @@ import { WebPlugin } from '@capacitor/core';
 import type {
   AppodealPlugin,
   AppodealInitOptions,
+  SetAdCountOptions,
+  SetCloseButtonDelayOptions,
   ShowRewardedVideoResult,
   IsLoadedResult,
   CanShowResult,
-  SetAdTimeoutOptions,
+  OverlayPermissionResult,
 } from './appodeal';
 
 /**
@@ -20,6 +22,7 @@ import type {
 export class AppodealWeb extends WebPlugin implements AppodealPlugin {
   private initialized = false;
   private testMode = false;
+  private adCount = 2;
 
   async initialize(options: AppodealInitOptions): Promise<void> {
     console.log('[Appodeal Web] Initialize with options:', options);
@@ -32,27 +35,42 @@ export class AppodealWeb extends WebPlugin implements AppodealPlugin {
     }, 1000);
   }
 
+  async setAdCount(options: SetAdCountOptions): Promise<void> {
+    console.log('[Appodeal Web] setAdCount:', options.count);
+    this.adCount = options.count;
+  }
+
+  async setCloseButtonDelay(options: SetCloseButtonDelayOptions): Promise<void> {
+    console.log('[Appodeal Web] setCloseButtonDelay:', options.delay, 'seconds');
+  }
+
   async isRewardedVideoLoaded(): Promise<IsLoadedResult> {
     console.log('[Appodeal Web] isRewardedVideoLoaded');
     return { isLoaded: this.initialized };
   }
 
   async showRewardedVideo(): Promise<ShowRewardedVideoResult> {
-    console.log('[Appodeal Web] showRewardedVideo');
+    console.log('[Appodeal Web] showRewardedVideo, adCount:', this.adCount);
 
     if (!this.initialized) {
       return { rewarded: false, error: 'Not initialized' };
     }
 
-    // 模拟显示广告
+    // 模拟显示多个广告
     this.notifyListeners('rewardedVideoShown', {});
 
     // 模拟用户观看完成（2秒后）
     return new Promise((resolve) => {
       setTimeout(() => {
-        this.notifyListeners('rewardedVideoFinished', { amount: 1, name: 'credits' });
+        this.notifyListeners('rewardedVideoFinished', { amount: this.adCount, name: 'credits' });
         this.notifyListeners('rewardedVideoClosed', { finished: true });
-        resolve({ rewarded: true, amount: 1, name: 'credits' });
+        resolve({
+          rewarded: true,
+          completedAds: this.adCount,
+          totalAds: this.adCount,
+          amount: this.adCount,
+          name: 'credits',
+        });
       }, 2000);
     });
   }
@@ -70,8 +88,12 @@ export class AppodealWeb extends WebPlugin implements AppodealPlugin {
     return { canShow: this.initialized };
   }
 
-  async setAdTimeout(options: SetAdTimeoutOptions): Promise<void> {
-    console.log('[Appodeal Web] setAdTimeout:', options.timeout, 'seconds');
-    // Web 环境下只是记录，不需要实际超时处理
+  async checkOverlayPermission(): Promise<OverlayPermissionResult> {
+    console.log('[Appodeal Web] checkOverlayPermission');
+    return { hasPermission: true };
+  }
+
+  async requestOverlayPermission(): Promise<void> {
+    console.log('[Appodeal Web] requestOverlayPermission');
   }
 }

@@ -119,6 +119,12 @@ export default function DailyTasksModal({ isOpen, onClose, onCreditsUpdated }: D
     }
   }, [adLoading, claiming, doClaimAdReward, onCreditsUpdated]);
 
+  // 庆祝效果完成后清理状态
+  const handleCelebrationComplete = useCallback(() => {
+    setShowCelebration(false);
+    setLastClaimedCredits(null);
+  }, []);
+
   // 如果弹窗未打开，不渲染
   if (!isOpen) return null;
 
@@ -360,12 +366,6 @@ export default function DailyTasksModal({ isOpen, onClose, onCreditsUpdated }: D
       </div>
     );
   };
-
-  // 庆祝效果完成后清理状态
-  const handleCelebrationComplete = useCallback(() => {
-    setShowCelebration(false);
-    setLastClaimedCredits(null);
-  }, []);
 
   const modalContent = (
     <>

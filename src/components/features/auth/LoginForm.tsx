@@ -1,10 +1,12 @@
 'use client';
 
-import Link from 'next/link';
+import { useState } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useLogin } from '@/hooks/useLogin';
 import { getEnabledLoginProviders } from '@/config/loginProviders';
 import SocialLoginButton from './SocialLoginButton';
+import BottomSheet from '@/components/ui/BottomSheet';
+import { TermsContent, PrivacyContent } from '@/components/features/legal';
 
 /**
  * 登录表单容器组件
@@ -17,6 +19,7 @@ import SocialLoginButton from './SocialLoginButton';
 export default function LoginForm() {
   const { t } = useLanguage();
   const { loading, error, isReturningUser, handleLogin } = useLogin();
+  const [legalSheet, setLegalSheet] = useState<'terms' | 'privacy' | null>(null);
 
   return (
     <div className="w-full max-w-md">
@@ -63,14 +66,40 @@ export default function LoginForm() {
       {/* 服务条款 */}
       <p className="text-center text-sm text-gray-500 mt-8">
         {t('login.termsPrefix')}{' '}
-        <Link href="/terms" className="text-purple-600 hover:underline">
+        <button
+          type="button"
+          onClick={() => setLegalSheet('terms')}
+          className="text-purple-600 hover:underline"
+        >
           {t('login.terms')}
-        </Link>{' '}
+        </button>{' '}
         {t('login.termsAnd')}{' '}
-        <Link href="/privacy" className="text-purple-600 hover:underline">
+        <button
+          type="button"
+          onClick={() => setLegalSheet('privacy')}
+          className="text-purple-600 hover:underline"
+        >
           {t('login.privacy')}
-        </Link>
+        </button>
       </p>
+
+      {/* Terms Bottom Sheet */}
+      <BottomSheet
+        isOpen={legalSheet === 'terms'}
+        onClose={() => setLegalSheet(null)}
+        title={t('login.terms')}
+      >
+        <TermsContent />
+      </BottomSheet>
+
+      {/* Privacy Bottom Sheet */}
+      <BottomSheet
+        isOpen={legalSheet === 'privacy'}
+        onClose={() => setLegalSheet(null)}
+        title={t('login.privacy')}
+      >
+        <PrivacyContent />
+      </BottomSheet>
     </div>
   );
 }

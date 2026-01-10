@@ -27,7 +27,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const { user, loading: authLoading } = useFirebaseAuth();
+  const { user, loading: authLoading, isRegistering } = useFirebaseAuth();
 
   // 获取用户资料（带重试机制）
   const fetchProfile = async (retryCount = 0) => {
@@ -90,22 +90,30 @@ export function UserProvider({ children }: { children: ReactNode }) {
   // 等待认证完成后再获取用户数据
   useEffect(() => {
     // 只在认证状态确定后才执行
-    if (!authLoading) {
-      if (user) {
-        console.log('👤 认证完成，获取用户数据...');
-        // 延迟一小段时间确保 cookie 已设置
-        const timer = setTimeout(() => {
-          fetchProfile();
-        }, 100);
-        return () => clearTimeout(timer);
-      } else {
-        console.log('👤 认证完成，用户未登录');
-        setProfile(null);
-        setError(null);
-      }
+    if (authLoading) return;
+
+    // 注册过程中不响应认证状态变化
+    // createUserWithEmailAndPassword 会短暂登录用户，然后立即登出
+    // 这里忽略这个临时状态变化
+    if (isRegistering) {
+      console.log('👤 UserContext: 注册中，跳过用户数据获取');
+      return;
+    }
+
+    if (user) {
+      console.log('👤 认证完成，获取用户数据...');
+      // 延迟一小段时间确保 cookie 已设置
+      const timer = setTimeout(() => {
+        fetchProfile();
+      }, 100);
+      return () => clearTimeout(timer);
+    } else {
+      console.log('👤 认证完成，用户未登录');
+      setProfile(null);
+      setError(null);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user, authLoading]);
+  }, [user, authLoading, isRegistering]);
 
   return (
     <UserContext.Provider

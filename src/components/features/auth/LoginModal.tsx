@@ -116,25 +116,11 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
     setLoading(true);
     isEmailLoginRef.current = true; // 标记为邮箱登录，禁止 useEffect 自动关闭
     try {
+      // signInWithEmail 会自动检查邮箱验证状态
+      // 如果邮箱未验证，会抛出 auth/email-not-verified 错误
       await signInWithEmail(email, password);
 
-      // 登录成功后检查邮箱是否已验证
-      const { auth } = await import('@/lib/firebase');
-      const currentUser = auth.currentUser;
-      if (currentUser && !currentUser.emailVerified) {
-        // 邮箱未验证，登出并提示
-        const { signOut: firebaseSignOut, sendEmailVerification } = await import('firebase/auth');
-        // 尝试重新发送验证邮件（忽略 too-many-requests 错误）
-        try {
-          await sendEmailVerification(currentUser);
-        } catch {
-          // 发送失败（可能是请求太频繁），忽略错误
-        }
-        await firebaseSignOut(auth);
-        setError(t('login.emailNotVerified'));
-        return;
-      }
-      // 邮箱已验证，手动关闭 modal
+      // 登录成功（邮箱已验证），手动关闭 modal
       isEmailLoginRef.current = false;
       onClose();
     } catch (err: unknown) {
@@ -144,6 +130,9 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
         ? (err as { code: string }).code
         : '';
       switch (errorCode) {
+        case 'auth/email-not-verified':
+          setError(t('login.emailNotVerified'));
+          break;
         case 'auth/user-not-found':
           setError(t('login.userNotFound'));
           break;

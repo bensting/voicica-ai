@@ -6,7 +6,6 @@ import Image from 'next/image';
 import { Play, Pause, Mic, Download, Sparkles, ChevronUp, Loader2, Check, Globe } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { GradientButton } from '@/components/ui';
-import { AdBanner } from '@/components/ads';
 import { LanguageExploreGrid, TTSHeroSection, type LanguageCardItem } from '@/components/features/tts-promo';
 import { getPromoVoices } from '@/actions/voice';
 import { getVoiceSampleUrl } from '@/types/voice';
@@ -294,9 +293,6 @@ export default function TTSPromoPage() {
         webVersionText={t('ttsPromo.hero.webVersion')}
         tryNowText={t('ttsPromo.hero.tryNow')}
       />
-
-      {/* 广告位 - Hero 底部 */}
-      <AdBanner variant="section" className="bg-[#0a0a0f]" />
 
       {/* ========== Voice Samples Section ========== */}
       <section className="pt-4 pb-4 px-4">

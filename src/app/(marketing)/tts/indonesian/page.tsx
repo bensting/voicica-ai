@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Mic, Download, Sparkles, Globe, Check } from 'lucide-react';
 import { GradientButton } from '@/components/ui';
-import { AdBanner } from '@/components/ads';
 import {
   VoiceSampleGrid,
   LanguageDropdown,
@@ -148,9 +147,6 @@ export default function IndonesianTTSPage() {
         webVersionText={CONTENT.hero.webVersion}
         tryNowText={CONTENT.hero.tryNow}
       />
-
-      {/* Ad Banner */}
-      <AdBanner variant="section" className="bg-[#0a0a0f]" />
 
       {/* ========== Voice Samples Section ========== */}
       <section className="pt-4 pb-4 px-4">

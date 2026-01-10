@@ -539,7 +539,7 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
               {/* 协议说明 */}
               <div className="mt-6 text-center text-xs text-gray-500 px-4">
                 {t('login.agreementText')}{' '}
-                <a href="/license" className="text-purple-600 hover:underline">
+                <a href="/terms" className="text-purple-600 hover:underline">
                   {t('login.licensePolicy')}
                 </a>{' '}
                 {t('login.and')}{' '}

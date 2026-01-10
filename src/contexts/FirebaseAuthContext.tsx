@@ -9,6 +9,7 @@
  * - 提供登录/登出方法
  * - 支持多种登录方式（Google, Apple, Twitter等）
  * - 在 Capacitor 原生应用中使用原生登录（避免 WebView 限制）
+ * - 支持账户关联（同一邮箱的不同登录方式自动关联）
  */
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import {
@@ -22,12 +23,14 @@ import {
   createUserWithEmailAndPassword,
   sendPasswordResetEmail,
   sendEmailVerification,
+  linkWithCredential,
   GoogleAuthProvider,
   TwitterAuthProvider,
   FacebookAuthProvider,
   OAuthProvider,
   type User,
   type AuthProvider,
+  type AuthCredential,
 } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
 import { isInAppBrowser, isCapacitorNative } from '@/config/inAppBrowser';
@@ -41,10 +44,25 @@ interface SignUpResult {
   verificationEmailSent?: boolean;
 }
 
+/**
+ * 账户关联状态
+ * 当用户尝试用社交登录，但该邮箱已存在邮箱密码账户时触发
+ */
+interface AccountLinkingState {
+  email: string;
+  credential: AuthCredential;
+  providerName: string;
+}
+
 interface FirebaseAuthContextType {
   user: User | null;
   loading: boolean;
   token: string | null;
+  // 注册中标志（用于防止其他 hooks 在注册过程中响应临时的认证状态变化）
+  isRegistering: boolean;
+  // 账户关联状态
+  accountLinking: AccountLinkingState | null;
+  // 登录方法
   signInWithGoogle: () => Promise<void>;
   signInWithTwitter: () => Promise<void>;
   signInWithApple: () => Promise<void>;
@@ -53,6 +71,9 @@ interface FirebaseAuthContextType {
   signUpWithEmail: (email: string, password: string) => Promise<SignUpResult>;
   resetPassword: (email: string) => Promise<void>;
   signOut: () => Promise<void>;
+  // 账户关联方法
+  linkAccountWithPassword: (password: string) => Promise<void>;
+  cancelAccountLinking: () => void;
 }
 
 const FirebaseAuthContext = createContext<FirebaseAuthContextType | undefined>(undefined);
@@ -61,6 +82,8 @@ export function FirebaseAuthProvider({ children }: { children: React.ReactNode }
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [token, setToken] = useState<string | null>(null);
+  const [accountLinking, setAccountLinking] = useState<AccountLinkingState | null>(null);
+  const [isRegistering, setIsRegistering] = useState(false);
   const { locale } = useLanguage();
 
   // 处理 redirect 登录结果（应用内浏览器使用 redirect 方式）
@@ -164,9 +187,47 @@ export function FirebaseAuthProvider({ children }: { children: React.ReactNode }
   };
 
   /**
+   * 检查是否为账户已存在的错误（需要关联账户）
+   */
+  const isAccountExistsError = (error: unknown): boolean => {
+    const err = error as { code?: string };
+    return err?.code === 'auth/account-exists-with-different-credential';
+  };
+
+  /**
+   * 从错误中提取凭据信息
+   */
+  const extractCredentialFromError = (error: unknown, providerName: string): { email: string; credential: AuthCredential } | null => {
+    const err = error as {
+      customData?: { email?: string };
+      credential?: AuthCredential;
+    };
+
+    const email = err?.customData?.email;
+
+    // 根据 provider 类型获取 credential
+    let credential: AuthCredential | null = null;
+    if (providerName === 'Google') {
+      credential = GoogleAuthProvider.credentialFromError(error as Parameters<typeof GoogleAuthProvider.credentialFromError>[0]);
+    } else if (providerName === 'Facebook') {
+      credential = FacebookAuthProvider.credentialFromError(error as Parameters<typeof FacebookAuthProvider.credentialFromError>[0]);
+    } else if (providerName === 'Twitter') {
+      credential = TwitterAuthProvider.credentialFromError(error as Parameters<typeof TwitterAuthProvider.credentialFromError>[0]);
+    } else if (providerName === 'Apple') {
+      credential = OAuthProvider.credentialFromError(error as Parameters<typeof OAuthProvider.credentialFromError>[0]);
+    }
+
+    if (email && credential) {
+      return { email, credential };
+    }
+    return null;
+  };
+
+  /**
    * 通用登录方法：自动选择 popup 或 redirect 方式
    * - 普通浏览器使用 popup（体验更好）
    * - 应用内浏览器使用 redirect（避免被阻止）
+   * - 处理账户关联场景
    */
   const signInWithProvider = useCallback(async (provider: AuthProvider, providerName: string) => {
     try {
@@ -182,6 +243,21 @@ export function FirebaseAuthProvider({ children }: { children: React.ReactNode }
         console.log(`[FirebaseAuth] 用户取消了 ${providerName} 登录`);
         return;
       }
+
+      // 检测账户已存在错误（需要关联）
+      if (isAccountExistsError(error)) {
+        const extracted = extractCredentialFromError(error, providerName);
+        if (extracted) {
+          console.log(`[FirebaseAuth] 检测到账户冲突，邮箱 ${extracted.email} 已存在，需要关联账户`);
+          setAccountLinking({
+            email: extracted.email,
+            credential: extracted.credential,
+            providerName,
+          });
+          return; // 不抛出错误，让 UI 显示关联弹窗
+        }
+      }
+
       console.error(`[FirebaseAuth] ${providerName} 登录失败:`, error);
       throw error;
     }
@@ -268,34 +344,44 @@ export function FirebaseAuthProvider({ children }: { children: React.ReactNode }
   }, []);
 
   // 邮箱密码注册（注册后发送验证邮件，用户需要验证后才能登录）
+  // 注意：createUserWithEmailAndPassword 会自动登录用户，然后我们立即登出
+  // 设置 isRegistering 标志防止其他 hooks 响应这个临时的认证状态变化
   const signUpWithEmail = useCallback(async (email: string, password: string): Promise<SignUpResult> => {
-    // 创建用户
-    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    // 设置注册中标志，防止其他组件响应临时的认证状态
+    setIsRegistering(true);
 
-    // 设置邮件语言
-    const languageCodeMap: Record<string, string> = {
-      'en-US': 'en',
-      'zh-CN': 'zh-CN',
-      'zh-TW': 'zh-TW',
-      'th-TH': 'th',
-    };
-    auth.languageCode = languageCodeMap[locale] || 'en';
-
-    // 尝试发送验证邮件（失败也继续，用户可以在登录时重新发送）
-    let emailSent = false;
     try {
-      await sendEmailVerification(userCredential.user);
-      emailSent = true;
-      console.log('[FirebaseAuth] 邮箱注册成功，验证邮件已发送');
-    } catch (err) {
-      console.warn('[FirebaseAuth] 验证邮件发送失败，用户可在登录时重试:', err);
+      // 创建用户（Firebase 会自动登录）
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+
+      // 设置邮件语言
+      const languageCodeMap: Record<string, string> = {
+        'en-US': 'en',
+        'zh-CN': 'zh-CN',
+        'zh-TW': 'zh-TW',
+        'th-TH': 'th',
+      };
+      auth.languageCode = languageCodeMap[locale] || 'en';
+
+      // 尝试发送验证邮件（失败也继续，用户可以在登录时重新发送）
+      let emailSent = false;
+      try {
+        await sendEmailVerification(userCredential.user);
+        emailSent = true;
+        console.log('[FirebaseAuth] 邮箱注册成功，验证邮件已发送');
+      } catch (err) {
+        console.warn('[FirebaseAuth] 验证邮件发送失败，用户可在登录时重试:', err);
+      }
+
+      // 注册后立即登出，要求用户验证邮箱后才能登录
+      await firebaseSignOut(auth);
+
+      // 返回成功结果
+      return { success: true, verificationEmailSent: emailSent };
+    } finally {
+      // 确保无论成功还是失败都清除注册中标志
+      setIsRegistering(false);
     }
-
-    // 注册后立即登出，要求用户验证邮箱后才能登录
-    await firebaseSignOut(auth);
-
-    // 返回成功结果
-    return { success: true, verificationEmailSent: emailSent };
   }, [locale]);
 
   // 发送密码重置邮件
@@ -335,10 +421,50 @@ export function FirebaseAuthProvider({ children }: { children: React.ReactNode }
     }
   }, []);
 
+  /**
+   * 使用密码关联账户
+   * 当用户尝试用社交登录，但邮箱已存在邮箱密码账户时调用
+   * 1. 先用邮箱密码登录
+   * 2. 然后关联社交账户凭据
+   * 3. 完成后，两种方式都可以登录
+   */
+  const linkAccountWithPassword = useCallback(async (password: string) => {
+    if (!accountLinking) {
+      throw new Error('No account linking in progress');
+    }
+
+    const { email, credential, providerName } = accountLinking;
+
+    try {
+      // 1. 先用邮箱密码登录
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      console.log('[FirebaseAuth] 邮箱密码登录成功，准备关联账户');
+
+      // 2. 关联社交账户凭据
+      await linkWithCredential(userCredential.user, credential);
+      console.log(`[FirebaseAuth] 账户关联成功！${providerName} 已关联到 ${email}`);
+
+      // 3. 清除关联状态
+      setAccountLinking(null);
+    } catch (error) {
+      console.error('[FirebaseAuth] 账户关联失败:', error);
+      throw error;
+    }
+  }, [accountLinking]);
+
+  /**
+   * 取消账户关联
+   */
+  const cancelAccountLinking = useCallback(() => {
+    setAccountLinking(null);
+  }, []);
+
   const value: FirebaseAuthContextType = {
     user,
     loading,
     token,
+    isRegistering,
+    accountLinking,
     signInWithGoogle,
     signInWithTwitter,
     signInWithApple,
@@ -347,6 +473,8 @@ export function FirebaseAuthProvider({ children }: { children: React.ReactNode }
     signUpWithEmail,
     resetPassword,
     signOut,
+    linkAccountWithPassword,
+    cancelAccountLinking,
   };
 
   return <FirebaseAuthContext.Provider value={value}>{children}</FirebaseAuthContext.Provider>;

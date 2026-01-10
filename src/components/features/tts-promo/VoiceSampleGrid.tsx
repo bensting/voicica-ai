@@ -147,15 +147,18 @@ export default function VoiceSampleGrid({
           ) : (
             <div className="absolute inset-0 bg-gradient-to-br from-purple-600 via-pink-500 to-orange-400" />
           )}
-          <div className={`absolute inset-0 flex items-center justify-center bg-black/40 transition-opacity ${
-            isPlaying || isLoading ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
+          {/* Always visible play icon overlay */}
+          <div className={`absolute inset-0 flex items-center justify-center transition-all ${
+            isPlaying || isLoading ? 'bg-black/50' : 'group-hover:bg-black/30'
           }`}>
             {isLoading ? (
               <Loader2 className="w-6 h-6 text-white animate-spin" />
             ) : isPlaying ? (
               <Pause className="w-6 h-6 text-white" />
             ) : (
-              <Play className="w-6 h-6 text-white ml-0.5" />
+              <div className="w-8 h-8 rounded-full bg-black/60 flex items-center justify-center group-hover:bg-purple-600 transition-colors shadow-lg">
+                <Play className="w-4 h-4 text-white ml-0.5" />
+              </div>
             )}
           </div>
           {isPlaying && (

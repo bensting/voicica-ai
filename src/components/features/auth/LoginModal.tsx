@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useRef } from 'react';
 import { createPortal } from 'react-dom';
+import Link from 'next/link';
 import { X, Eye, EyeOff, ArrowLeft } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
@@ -539,13 +540,13 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
               {/* 协议说明 */}
               <div className="mt-6 text-center text-xs text-gray-500 px-4">
                 {t('login.agreementText')}{' '}
-                <a href="/terms" className="text-purple-600 hover:underline">
+                <Link href="/terms" className="text-purple-600 hover:underline">
                   {t('login.licensePolicy')}
-                </a>{' '}
+                </Link>{' '}
                 {t('login.and')}{' '}
-                <a href="/privacy" className="text-purple-600 hover:underline">
+                <Link href="/privacy" className="text-purple-600 hover:underline">
                   {t('login.privacyPolicy')}
-                </a>
+                </Link>
               </div>
             </>
           )}

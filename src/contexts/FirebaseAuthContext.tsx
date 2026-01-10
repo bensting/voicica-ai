@@ -84,6 +84,9 @@ export function FirebaseAuthProvider({ children }: { children: React.ReactNode }
   const [token, setToken] = useState<string | null>(null);
   const [accountLinking, setAccountLinking] = useState<AccountLinkingState | null>(null);
   const [isRegistering, setIsRegistering] = useState(false);
+  // 使用 ref 来同步检查注册状态，因为 state 更新是异步的
+  // onAuthStateChanged 可能在 state 传播到子组件之前就触发
+  const isRegisteringRef = React.useRef(false);
   const { locale } = useLanguage();
 
   // 处理 redirect 登录结果（应用内浏览器使用 redirect 方式）
@@ -102,6 +105,14 @@ export function FirebaseAuthProvider({ children }: { children: React.ReactNode }
   // 监听认证状态变化
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+      // 注册过程中跳过状态更新
+      // createUserWithEmailAndPassword 会短暂登录用户，然后我们立即登出
+      // 在这期间不应该更新 user 状态，避免触发其他 context 的副作用
+      if (isRegisteringRef.current) {
+        console.log('[FirebaseAuth] 注册中，跳过 onAuthStateChanged 状态更新');
+        return;
+      }
+
       if (firebaseUser) {
         // 强制刷新 token，确保获取最新的有效 token
         const idToken = await firebaseUser.getIdToken(true);
@@ -347,7 +358,8 @@ export function FirebaseAuthProvider({ children }: { children: React.ReactNode }
   // 注意：createUserWithEmailAndPassword 会自动登录用户，然后我们立即登出
   // 设置 isRegistering 标志防止其他 hooks 响应这个临时的认证状态变化
   const signUpWithEmail = useCallback(async (email: string, password: string): Promise<SignUpResult> => {
-    // 设置注册中标志，防止其他组件响应临时的认证状态
+    // 同时设置 ref 和 state，ref 用于同步检查（onAuthStateChanged 中），state 用于通知子组件
+    isRegisteringRef.current = true;
     setIsRegistering(true);
 
     try {
@@ -380,6 +392,7 @@ export function FirebaseAuthProvider({ children }: { children: React.ReactNode }
       return { success: true, verificationEmailSent: emailSent };
     } finally {
       // 确保无论成功还是失败都清除注册中标志
+      isRegisteringRef.current = false;
       setIsRegistering(false);
     }
   }, [locale]);

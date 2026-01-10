@@ -161,9 +161,19 @@ export function useDailyTasks(): UseDailyTasksReturn {
     setShouldShowPopup(false);
   }, []);
 
+  // 用于防止签到重复调用
+  const checkinInProgressRef = useRef(false);
+
   // 签到
   const doCheckin = useCallback(async (): Promise<TaskResult> => {
+    // 防止重复调用
+    if (checkinInProgressRef.current) {
+      console.log('[useDailyTasks] doCheckin already in progress, skipping');
+      return { success: false, message: 'Already processing' };
+    }
+
     try {
+      checkinInProgressRef.current = true;
       setClaiming(true);
       setError(null);
       const result = await checkin();
@@ -177,6 +187,7 @@ export function useDailyTasks(): UseDailyTasksReturn {
       return { success: false, message };
     } finally {
       setClaiming(false);
+      checkinInProgressRef.current = false;
     }
   }, [refresh]);
 

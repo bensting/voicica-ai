@@ -1,45 +1,17 @@
 'use client';
 
-import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Mic, Download, Sparkles, Globe, Check } from 'lucide-react';
 import { GradientButton } from '@/components/ui';
 import {
-  VoiceSampleGrid,
-  LanguageDropdown,
-  RoleFilterTabs,
+  VoiceSelectorSection,
   LanguageExploreGrid,
   TTSHeroSection,
-  type LanguageOption,
-  type RoleOption,
   type LanguageCardItem,
 } from '@/components/features/tts-promo';
-import { getPromoVoices } from '@/actions/voice';
-import type { Voice } from '@/types/voice';
 
 // English language TTS landing page - hardcoded content for SEO
 // Free AI Text to Speech Generator - English
-
-// Language options - English first
-const LANGUAGE_OPTIONS: LanguageOption[] = [
-  { code: 'en-US', name: 'English (US)', flag: '🇺🇸' },
-  { code: 'en-GB', name: 'English (UK)', flag: '🇬🇧' },
-  { code: 'en-AU', name: 'English (AU)', flag: '🇦🇺' },
-  { code: 'zh-CN', name: '简体中文', flag: '🇨🇳' },
-  { code: 'zh-TW', name: '繁體中文', flag: '🇹🇼' },
-  { code: 'ja-JP', name: '日本語', flag: '🇯🇵' },
-  { code: 'ko-KR', name: '한국어', flag: '🇰🇷' },
-  { code: 'es-ES', name: 'Español', flag: '🇪🇸' },
-  { code: 'fr-FR', name: 'Français', flag: '🇫🇷' },
-  { code: 'de-DE', name: 'Deutsch', flag: '🇩🇪' },
-];
-
-// Role filter options - English
-const ROLE_OPTIONS: RoleOption[] = [
-  { code: 'All', name: 'All', icon: '🔥' },
-  { code: 'Celebrity', name: 'Celebrities', icon: '⭐' },
-  { code: 'Professional', name: 'Professional', icon: '🎙️' },
-];
 
 // Stats data - English
 const STATS_CONFIG = [
@@ -64,10 +36,8 @@ const CONTENT = {
     title2: 'Generator',
     subtitle: '3200+ Voices • 190+ Languages',
     description: 'Transform text into natural speech instantly. Celebrity voices, professional narrators, or clone your own voice.',
-    downloadApk: 'Download',
-    comingSoon: 'Coming Soon',
-    tryNow: 'Start Free',
     webVersion: 'Web Version',
+    tryNow: 'Start Free',
   },
   samples: {
     title1: 'Listen to real',
@@ -90,46 +60,9 @@ const CONTENT = {
 
 export default function EnglishTTSPage() {
   const router = useRouter();
-  const [selectedLanguage, setSelectedLanguage] = useState<string>('en-US');
-  const [selectedRole, setSelectedRole] = useState('All');
-  const [voices, setVoices] = useState<Voice[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  // Load voices using cached API
-  useEffect(() => {
-    async function loadVoices() {
-      setLoading(true);
-      try {
-        if (selectedRole === 'All') {
-          const [celebrityVoices, professionalVoices] = await Promise.all([
-            getPromoVoices(selectedLanguage, 'Celebrity', 20),
-            getPromoVoices(selectedLanguage, 'Professional', 20),
-          ]);
-          const combinedVoices = [...celebrityVoices, ...professionalVoices].slice(0, 20);
-          setVoices(combinedVoices);
-        } else {
-          const result = await getPromoVoices(selectedLanguage, selectedRole, 20);
-          setVoices(result);
-        }
-      } catch (error) {
-        console.error('Failed to load voices:', error);
-      } finally {
-        setLoading(false);
-      }
-    }
-    loadVoices();
-  }, [selectedLanguage, selectedRole]);
 
   const handleGetStarted = () => {
     router.push('/studio/tts');
-  };
-
-  const handleLanguageSelect = (code: string) => {
-    setSelectedLanguage(code);
-  };
-
-  const handleRoleSelect = (code: string) => {
-    setSelectedRole(code);
   };
 
   return (
@@ -164,26 +97,9 @@ export default function EnglishTTSPage() {
             </p>
           </div>
 
-          {/* Language Selector + Role Filter */}
-          <div className="flex justify-center mb-4 px-2">
-            <div className="flex items-center gap-0.5 md:gap-1 bg-gray-800/50 border border-gray-700 rounded-full px-1.5 md:px-2 py-1">
-              <LanguageDropdown
-                options={LANGUAGE_OPTIONS}
-                selected={selectedLanguage}
-                onSelect={handleLanguageSelect}
-              />
-              <RoleFilterTabs
-                options={ROLE_OPTIONS}
-                selected={selectedRole}
-                onSelect={handleRoleSelect}
-              />
-            </div>
-          </div>
-
-          {/* Voice Grid */}
-          <VoiceSampleGrid
-            voices={voices}
-            loading={loading}
+          {/* Voice Selector Section */}
+          <VoiceSelectorSection
+            defaultLanguage="en-US"
             emptyText={CONTENT.samples.noVoices}
           />
 

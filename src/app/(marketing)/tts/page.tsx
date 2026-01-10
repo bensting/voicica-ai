@@ -1,35 +1,11 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Mic, Download, Sparkles, ChevronUp, Check, Globe } from 'lucide-react';
+import { Mic, Download, Sparkles, Check, Globe } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { GradientButton } from '@/components/ui';
-import { LanguageExploreGrid, TTSHeroSection, VoiceSampleGrid, type LanguageCardItem } from '@/components/features/tts-promo';
-import { getPromoVoices } from '@/actions/voice';
-import type { Voice } from '@/types/voice';
-
-// Language options with flag emojis
-const LANGUAGE_OPTIONS = [
-  { code: 'en-US', name: 'English', flag: '🇺🇸' },
-  { code: 'zh-CN', name: '简体中文', flag: '🇨🇳' },
-  { code: 'zh-TW', name: '繁體中文', flag: '🇹🇼' },
-  { code: 'ja-JP', name: '日本語', flag: '🇯🇵' },
-  { code: 'ko-KR', name: '한국어', flag: '🇰🇷' },
-  { code: 'es-ES', name: 'Español', flag: '🇪🇸' },
-  { code: 'fr-FR', name: 'Français', flag: '🇫🇷' },
-  { code: 'de-DE', name: 'Deutsch', flag: '🇩🇪' },
-  { code: 'ar-SA', name: 'العربية', flag: '🇸🇦' },
-  { code: 'ru-RU', name: 'Русский', flag: '🇷🇺' },
-  { code: 'pt-BR', name: 'Português', flag: '🇧🇷' },
-  { code: 'tr-TR', name: 'Turkish', flag: '🇹🇷' },
-  { code: 'nb-NO', name: 'Norwegian', flag: '🇳🇴' },
-  { code: 'sk-SK', name: 'Slovak', flag: '🇸🇰' },
-  { code: 'hi-IN', name: 'Hindi', flag: '🇮🇳' },
-  { code: 'sv-SE', name: 'Swedish', flag: '🇸🇪' },
-  { code: 'ga-IE', name: 'Irish', flag: '🇮🇪' },
-  { code: 'lv-LV', name: 'Latvian', flag: '🇱🇻' },
-];
+import { LanguageExploreGrid, TTSHeroSection, VoiceSelectorSection, ALL_LANGUAGES, type LanguageCardItem } from '@/components/features/tts-promo';
 
 // Stats data - will be populated with translations
 const STATS_CONFIG = [
@@ -60,7 +36,6 @@ function getBrowserVoiceLocale(): string | null {
   const browserLang = navigator.language || (navigator as { userLanguage?: string }).userLanguage;
   if (!browserLang) return null;
 
-  // Exact match first
   const langCode = browserLang.toLowerCase();
 
   // Check for Chinese variants
@@ -90,11 +65,7 @@ export default function TTSPromoPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { t, locale: uiLocale, setLocale } = useLanguage();
-  const [selectedLanguage, setSelectedLanguage] = useState<string | null>(null);
-  const [isLanguageDropdownOpen, setIsLanguageDropdownOpen] = useState(false);
-  const [voices, setVoices] = useState<Voice[]>([]);
-  const [loading, setLoading] = useState(true);
-  const dropdownRef = useRef<HTMLDivElement>(null);
+  const [defaultLanguage, setDefaultLanguage] = useState<string | null>(null);
 
   // Initialize language with priority: URL param > UI locale > browser language > English
   useEffect(() => {
@@ -102,9 +73,9 @@ export default function TTSPromoPage() {
 
     // Priority 1: URL parameter
     if (langParam) {
-      const validLang = LANGUAGE_OPTIONS.find(l => l.code === langParam);
+      const validLang = ALL_LANGUAGES.find(l => l.code === langParam);
       if (validLang) {
-        setSelectedLanguage(langParam);
+        setDefaultLanguage(langParam);
         // Also set the page locale based on URL parameter
         const uiLocaleMap: Record<string, 'en-US' | 'zh-CN' | 'zh-TW' | 'th-TH'> = {
           'zh-CN': 'zh-CN',
@@ -128,70 +99,34 @@ export default function TTSPromoPage() {
 
     // Priority 2: Website UI locale (from LanguageContext)
     const uiVoiceLocale = UI_TO_VOICE_LOCALE_MAP[uiLocale];
-    if (uiVoiceLocale && LANGUAGE_OPTIONS.find(l => l.code === uiVoiceLocale)) {
-      setSelectedLanguage(uiVoiceLocale);
+    if (uiVoiceLocale && ALL_LANGUAGES.find(l => l.code === uiVoiceLocale)) {
+      setDefaultLanguage(uiVoiceLocale);
       return;
     }
 
     // Priority 3: Browser language
     const browserLocale = getBrowserVoiceLocale();
-    if (browserLocale && LANGUAGE_OPTIONS.find(l => l.code === browserLocale)) {
-      setSelectedLanguage(browserLocale);
+    if (browserLocale && ALL_LANGUAGES.find(l => l.code === browserLocale)) {
+      setDefaultLanguage(browserLocale);
       return;
     }
 
     // Priority 4: Default to English
-    setSelectedLanguage('en-US');
+    setDefaultLanguage('en-US');
   }, [searchParams, uiLocale, setLocale]);
-
-  // Load voices from database (using cached getPromoVoices)
-  useEffect(() => {
-    if (!selectedLanguage) return; // Wait for language to be initialized
-
-    const locale = selectedLanguage; // Capture for TypeScript narrowing
-
-    async function loadVoices() {
-      setLoading(true);
-      try {
-        // Fetch both Celebrity and Professional voices
-        const [celebrityVoices, professionalVoices] = await Promise.all([
-          getPromoVoices(locale, 'Celebrity', 20),
-          getPromoVoices(locale, 'Professional', 20),
-        ]);
-
-        // Combine: Celebrity first, then Professional, take 20 total
-        const combinedVoices = [...celebrityVoices, ...professionalVoices].slice(0, 20);
-        setVoices(combinedVoices);
-      } catch (error) {
-        console.error('Failed to load voices:', error);
-      } finally {
-        setLoading(false);
-      }
-    }
-    loadVoices();
-  }, [selectedLanguage]);
-
-  // Close dropdown when clicking outside
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setIsLanguageDropdownOpen(false);
-      }
-    }
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
 
   const handleGetStarted = () => {
     router.push('/studio/tts');
   };
 
-  const handleLanguageSelect = (code: string) => {
-    setSelectedLanguage(code);
-    setIsLanguageDropdownOpen(false);
-  };
-
-  const selectedLangOption = LANGUAGE_OPTIONS.find(l => l.code === selectedLanguage) || LANGUAGE_OPTIONS[0];
+  // Wait for language to be determined
+  if (!defaultLanguage) {
+    return (
+      <div className="min-h-screen bg-[#0a0a0f] flex items-center justify-center">
+        <div className="animate-pulse text-gray-400">Loading...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#0a0a0f]">
@@ -229,44 +164,9 @@ export default function TTSPromoPage() {
             </p>
           </div>
 
-          {/* Language Selector */}
-          <div className="flex justify-center mb-4 px-2">
-            <div ref={dropdownRef} className="relative">
-              <button
-                onClick={() => setIsLanguageDropdownOpen(!isLanguageDropdownOpen)}
-                className="flex items-center gap-2 bg-gray-800/80 hover:bg-gray-700 border border-gray-600 rounded-full px-4 py-2 text-white transition-colors min-w-[140px] justify-between text-sm"
-              >
-                <span className="flex items-center gap-2">
-                  <span>{selectedLangOption.flag}</span>
-                  <span>{selectedLangOption.name}</span>
-                </span>
-                <ChevronUp className={`w-4 h-4 flex-shrink-0 transition-transform ${isLanguageDropdownOpen ? '' : 'rotate-180'}`} />
-              </button>
-
-              {/* Dropdown Menu - Opens downward */}
-              {isLanguageDropdownOpen && (
-                <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-48 bg-gray-900 rounded-xl shadow-xl border border-gray-700 py-2 z-50 max-h-80 overflow-y-auto">
-                  {LANGUAGE_OPTIONS.map((lang) => (
-                    <button
-                      key={lang.code}
-                      onClick={() => handleLanguageSelect(lang.code)}
-                      className={`w-full text-left px-4 py-2.5 text-sm flex items-center gap-3 hover:bg-gray-800 transition-colors ${
-                        selectedLanguage === lang.code ? 'text-purple-400 bg-gray-800' : 'text-gray-300'
-                      }`}
-                    >
-                      <span className="text-lg">{lang.flag}</span>
-                      <span>{lang.name}</span>
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Voice Grid */}
-          <VoiceSampleGrid
-            voices={voices}
-            loading={loading}
+          {/* Voice Selector Section */}
+          <VoiceSelectorSection
+            defaultLanguage={defaultLanguage}
             emptyText={t('ttsPromo.samples.noVoices')}
           />
 

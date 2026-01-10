@@ -4,13 +4,12 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 import {
   getDailyTasksStatus,
-  getDailyTasksConfigAction,
   checkin,
   claimAdReward,
   type DailyTasksStatus,
   type TaskResult,
 } from '@/actions/daily-tasks';
-import type { DailyTasksConfig } from '@/config/appConfig';
+import { getDailyTasksConfig, type DailyTasksConfig } from '@/config/appConfig';
 import { useRewardedAd } from './useRewardedAd';
 import { Capacitor } from '@capacitor/core';
 
@@ -80,25 +79,13 @@ export function useDailyTasks(): UseDailyTasksReturn {
   const { showRewardedAd, isReady: isAdReady } = useRewardedAd();
   const isNative = Capacitor.isNativePlatform();
   const [status, setStatus] = useState<DailyTasksStatus | null>(null);
-  const [config, setConfig] = useState<DailyTasksConfig | null>(null);
+  // 直接从客户端同步获取配置，无需 Server Action 网络请求
+  const [config] = useState<DailyTasksConfig | null>(() => getDailyTasksConfig());
   const [loading, setLoading] = useState(true);
   const [claiming, setClaiming] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [shouldShowPopup, setShouldShowPopup] = useState(false);
   const [popupDismissed, setPopupDismissed] = useState(false);
-
-  // 加载配置
-  useEffect(() => {
-    async function loadConfig() {
-      try {
-        const cfg = await getDailyTasksConfigAction();
-        setConfig(cfg);
-      } catch (err) {
-        console.error('❌ [useDailyTasks] 加载配置失败:', err);
-      }
-    }
-    loadConfig();
-  }, []);
 
   // 加载状态
   const refresh = useCallback(async () => {

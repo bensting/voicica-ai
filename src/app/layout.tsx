@@ -17,6 +17,7 @@ import LanguageLoadingWrapper from "@/components/providers/LanguageLoadingWrappe
 import DeviceFingerprintProvider from "@/components/providers/DeviceFingerprintProvider";
 import CapacitorProvider from "@/components/providers/CapacitorProvider";
 import ServerActionErrorHandler from "@/components/providers/ServerActionErrorHandler";
+import AccountLinkingModal from "@/components/features/auth/AccountLinkingModal";
 
 // 支持的语言列表
 const SUPPORTED_LOCALES = ['en-US', 'zh-CN', 'zh-TW', 'th-TH'] as const;
@@ -204,6 +205,7 @@ export default async function RootLayout({
                       <AppUpdatePrompt />
                       <GooglePlayUpdatePrompt />
                       <ServerActionErrorHandler />
+                      <AccountLinkingModal />
                     </DeviceFingerprintProvider>
                   </AudioSettingsProvider>
                 </CreditsProvider>

@@ -18,6 +18,7 @@ import DeviceFingerprintProvider from "@/components/providers/DeviceFingerprintP
 import CapacitorProvider from "@/components/providers/CapacitorProvider";
 import ServerActionErrorHandler from "@/components/providers/ServerActionErrorHandler";
 import AccountLinkingModal from "@/components/features/auth/AccountLinkingModal";
+import { AdMobProvider } from "@/contexts/AdMobContext";
 
 // 支持的语言列表
 const SUPPORTED_LOCALES = ['en-US', 'zh-CN', 'zh-TW', 'th-TH'] as const;
@@ -199,13 +200,15 @@ export default async function RootLayout({
                 <CreditsProvider>
                   <AudioSettingsProvider>
                     <DeviceFingerprintProvider>
-                      <CapacitorProvider />
-                      {children}
-                      <PWAUpdatePrompt />
-                      <AppUpdatePrompt />
-                      <GooglePlayUpdatePrompt />
-                      <ServerActionErrorHandler />
-                      <AccountLinkingModal />
+                      <AdMobProvider>
+                        <CapacitorProvider />
+                        {children}
+                        <PWAUpdatePrompt />
+                        <AppUpdatePrompt />
+                        <GooglePlayUpdatePrompt />
+                        <ServerActionErrorHandler />
+                        <AccountLinkingModal />
+                      </AdMobProvider>
                     </DeviceFingerprintProvider>
                   </AudioSettingsProvider>
                 </CreditsProvider>

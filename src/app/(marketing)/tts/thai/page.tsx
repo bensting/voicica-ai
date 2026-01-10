@@ -1,45 +1,17 @@
 'use client';
 
-import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Mic, Download, Sparkles, Globe, Check } from 'lucide-react';
 import { GradientButton } from '@/components/ui';
 import {
-  VoiceSampleGrid,
-  LanguageDropdown,
-  RoleFilterTabs,
+  VoiceSelectorSection,
   LanguageExploreGrid,
   TTSHeroSection,
-  type LanguageOption,
-  type RoleOption,
   type LanguageCardItem,
 } from '@/components/features/tts-promo';
-import { getPromoVoices } from '@/actions/voice';
-import type { Voice } from '@/types/voice';
 
 // Thai language TTS landing page - hardcoded content for SEO
 // เครื่องมือแปลงข้อความเป็นเสียง AI ฟรี ภาษาไทย
-
-// Language options - Thai first, then Southeast Asian languages
-const LANGUAGE_OPTIONS: LanguageOption[] = [
-  { code: 'th-TH', name: 'ภาษาไทย', flag: '🇹🇭' },
-  { code: 'en-US', name: 'English', flag: '🇺🇸' },
-  { code: 'zh-CN', name: '简体中文', flag: '🇨🇳' },
-  { code: 'zh-TW', name: '繁體中文', flag: '🇹🇼' },
-  { code: 'ja-JP', name: '日本語', flag: '🇯🇵' },
-  { code: 'ko-KR', name: '한국어', flag: '🇰🇷' },
-  { code: 'id-ID', name: 'Bahasa Indonesia', flag: '🇮🇩' },
-  { code: 'vi-VN', name: 'Tiếng Việt', flag: '🇻🇳' },
-  { code: 'ms-MY', name: 'Bahasa Melayu', flag: '🇲🇾' },
-  { code: 'tl-PH', name: 'Filipino', flag: '🇵🇭' },
-];
-
-// Role filter options - Thai
-const ROLE_OPTIONS: RoleOption[] = [
-  { code: 'All', name: 'ทั้งหมด', icon: '🔥' },
-  { code: 'Celebrity', name: 'คนดัง', icon: '⭐' },
-  { code: 'Professional', name: 'มืออาชีพ', icon: '🎙️' },
-];
 
 // Stats data - Thai
 const STATS_CONFIG = [
@@ -64,10 +36,8 @@ const CONTENT = {
     title2: 'ฟรี',
     subtitle: '3200+ เสียง • 190+ ภาษา',
     description: 'แปลงข้อความเป็นเสียงพูดธรรมชาติทันที เสียงคนดัง นักพากย์มืออาชีพ หรือโคลนเสียงของคุณเอง',
-    downloadApk: 'ดาวน์โหลด',
-    comingSoon: 'เร็วๆ นี้',
-    tryNow: 'เริ่มฟรี',
     webVersion: 'เวอร์ชันเว็บ',
+    tryNow: 'เริ่มฟรี',
   },
   samples: {
     title1: 'ฟังตัวอย่างจริง',
@@ -90,47 +60,9 @@ const CONTENT = {
 
 export default function ThaiTTSPage() {
   const router = useRouter();
-  const [selectedLanguage, setSelectedLanguage] = useState<string>('th-TH');
-  const [selectedRole, setSelectedRole] = useState('All');
-  const [voices, setVoices] = useState<Voice[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  // Load voices using cached API
-  useEffect(() => {
-    async function loadVoices() {
-      setLoading(true);
-      try {
-        if (selectedRole === 'All') {
-          // Fetch both Celebrity and Professional, combine them
-          const [celebrityVoices, professionalVoices] = await Promise.all([
-            getPromoVoices(selectedLanguage, 'Celebrity', 20),
-            getPromoVoices(selectedLanguage, 'Professional', 20),
-          ]);
-          const combinedVoices = [...celebrityVoices, ...professionalVoices].slice(0, 22);
-          setVoices(combinedVoices);
-        } else {
-          const result = await getPromoVoices(selectedLanguage, selectedRole, 20);
-          setVoices(result);
-        }
-      } catch (error) {
-        console.error('Failed to load voices:', error);
-      } finally {
-        setLoading(false);
-      }
-    }
-    loadVoices();
-  }, [selectedLanguage, selectedRole]);
 
   const handleGetStarted = () => {
     router.push('/studio/tts');
-  };
-
-  const handleLanguageSelect = (code: string) => {
-    setSelectedLanguage(code);
-  };
-
-  const handleRoleSelect = (code: string) => {
-    setSelectedRole(code);
   };
 
   return (
@@ -165,26 +97,9 @@ export default function ThaiTTSPage() {
             </p>
           </div>
 
-          {/* Language Selector + Role Filter */}
-          <div className="flex justify-center mb-4 px-2">
-            <div className="flex items-center gap-0.5 md:gap-1 bg-gray-800/50 border border-gray-700 rounded-full px-1.5 md:px-2 py-1">
-              <LanguageDropdown
-                options={LANGUAGE_OPTIONS}
-                selected={selectedLanguage}
-                onSelect={handleLanguageSelect}
-              />
-              <RoleFilterTabs
-                options={ROLE_OPTIONS}
-                selected={selectedRole}
-                onSelect={handleRoleSelect}
-              />
-            </div>
-          </div>
-
-          {/* Voice Grid */}
-          <VoiceSampleGrid
-            voices={voices}
-            loading={loading}
+          {/* Voice Selector Section */}
+          <VoiceSelectorSection
+            defaultLanguage="th-TH"
             emptyText={CONTENT.samples.noVoices}
           />
 

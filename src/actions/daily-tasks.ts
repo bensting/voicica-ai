@@ -115,6 +115,7 @@ export async function getDailyTasksStatus(): Promise<DailyTasksStatus | null> {
 
 /**
  * 签到领取积分
+ * 使用原子操作防止并发重复领取
  */
 export async function checkin(): Promise<TaskResult> {
   try {
@@ -133,39 +134,42 @@ export async function checkin(): Promise<TaskResult> {
 
     // 使用事务确保原子操作
     const result = await prisma.$transaction(async (tx) => {
-      // 查询或创建今日任务记录
-      const existing = await tx.daily_tasks.findUnique({
+      // 先尝试创建记录（如果不存在）
+      // 使用 createMany + skipDuplicates 确保只有一个请求能成功创建
+      const createResult = await tx.daily_tasks.createMany({
+        data: [{
+          user_id: authUser.uid,
+          date: today,
+          checkin_done: false,
+          checkin_credits: 0,
+          ad_rewards_claimed: 0,
+          ad_rewards_credits: 0,
+        }],
+        skipDuplicates: true,
+      });
+
+      console.log(`[checkin] createMany result: ${createResult.count} rows created`);
+
+      // 使用 updateMany 原子更新，只有 checkin_done = false 时才会更新成功
+      const updateResult = await tx.daily_tasks.updateMany({
         where: {
-          user_id_date: {
-            user_id: authUser.uid,
-            date: today,
-          },
+          user_id: authUser.uid,
+          date: today,
+          checkin_done: false, // 关键：只更新未签到的记录
+        },
+        data: {
+          checkin_done: true,
+          checkin_credits: credits,
         },
       });
 
-      if (existing?.checkin_done) {
+      // 如果没有更新任何记录，说明已经签到过了
+      if (updateResult.count === 0) {
+        console.log('[checkin] Already checked in today (updateMany returned 0)');
         return { success: false, message: 'Already checked in today' };
       }
 
-      // 更新或创建记录
-      await tx.daily_tasks.upsert({
-        where: {
-          user_id_date: {
-            user_id: authUser.uid,
-            date: today,
-          },
-        },
-        create: {
-          user_id: authUser.uid,
-          date: today,
-          checkin_done: true,
-          checkin_credits: credits,
-        },
-        update: {
-          checkin_done: true,
-          checkin_credits: credits,
-        },
-      });
+      console.log(`[checkin] Successfully checked in, updating credits...`);
 
       // 增加用户当月积分（每日任务获得的积分计入当月积分）
       await tx.users.update({
@@ -198,6 +202,7 @@ export async function checkin(): Promise<TaskResult> {
 
 /**
  * 领取广告奖励
+ * 使用原子操作防止并发重复领取
  * @param adWatched 是否真的看完了广告（第一阶段模拟为 true）
  */
 export async function claimAdReward(adWatched: boolean = true): Promise<TaskResult> {
@@ -221,68 +226,70 @@ export async function claimAdReward(adWatched: boolean = true): Promise<TaskResu
 
     // 使用事务确保原子操作
     const result = await prisma.$transaction(async (tx) => {
-      // 查询今日任务记录
-      const existing = await tx.daily_tasks.findUnique({
-        where: {
-          user_id_date: {
-            user_id: authUser.uid,
-            date: today,
-          },
-        },
-      });
-
-      const currentClaimed = existing?.ad_rewards_claimed ?? 0;
-
-      // 检查是否还有可领取的档位
-      if (currentClaimed >= tiers.length) {
-        return { success: false, message: 'All ad rewards claimed today' };
-      }
-
-      // 获取当前档位的奖励积分
-      const credits = tiers[currentClaimed];
-      const newClaimed = currentClaimed + 1;
-      const newTotalAdCredits = (existing?.ad_rewards_credits ?? 0) + credits;
-
-      // 更新或创建记录
-      await tx.daily_tasks.upsert({
-        where: {
-          user_id_date: {
-            user_id: authUser.uid,
-            date: today,
-          },
-        },
-        create: {
+      // 先尝试创建记录（如果不存在）
+      await tx.daily_tasks.createMany({
+        data: [{
           user_id: authUser.uid,
           date: today,
-          ad_rewards_claimed: newClaimed,
-          ad_rewards_credits: credits,
-        },
-        update: {
-          ad_rewards_claimed: newClaimed,
-          ad_rewards_credits: newTotalAdCredits,
-        },
+          checkin_done: false,
+          checkin_credits: 0,
+          ad_rewards_claimed: 0,
+          ad_rewards_credits: 0,
+        }],
+        skipDuplicates: true,
       });
 
-      // 增加用户当月积分（广告奖励计入当月积分）
-      await tx.users.update({
-        where: { user_id: authUser.uid },
-        data: {
-          credits: { increment: credits },
-          monthly_credits: { increment: credits },
-        },
-      });
+      // 尝试每个档位，从 0 开始
+      for (let tierIndex = 0; tierIndex < tiers.length; tierIndex++) {
+        // 使用原子更新：只有当 ad_rewards_claimed 等于当前 tierIndex 时才更新
+        const credits = tiers[tierIndex];
+        const newClaimed = tierIndex + 1;
 
-      // 记录积分历史
-      await tx.credit_history.create({
-        data: {
-          user_id: authUser.uid,
-          amount: credits,
-          description: `Ad reward tier ${newClaimed}`,
-          product_type: 'ad_reward',
-        },
-      });
+        // 计算新的累计积分（基于档位）
+        const newTotalAdCredits = tiers.slice(0, newClaimed).reduce((sum, v) => sum + v, 0);
 
-      return { success: true, credits };
+        const updateResult = await tx.daily_tasks.updateMany({
+          where: {
+            user_id: authUser.uid,
+            date: today,
+            ad_rewards_claimed: tierIndex, // 关键：只更新当前档位等于 tierIndex 的记录
+          },
+          data: {
+            ad_rewards_claimed: newClaimed,
+            ad_rewards_credits: newTotalAdCredits,
+          },
+        });
+
+        // 如果更新成功，说明成功领取了这个档位
+        if (updateResult.count > 0) {
+          console.log(`[claimAdReward] Successfully claimed tier ${newClaimed}, credits: ${credits}`);
+
+          // 增加用户当月积分
+          await tx.users.update({
+            where: { user_id: authUser.uid },
+            data: {
+              credits: { increment: credits },
+              monthly_credits: { increment: credits },
+            },
+          });
+
+          // 记录积分历史
+          await tx.credit_history.create({
+            data: {
+              user_id: authUser.uid,
+              amount: credits,
+              description: `Ad reward tier ${newClaimed}`,
+              product_type: 'ad_reward',
+            },
+          });
+
+          return { success: true, credits };
+        }
+      }
+
+      // 所有档位都已领取
+      console.log('[claimAdReward] All ad rewards claimed today');
+      return { success: false, message: 'All ad rewards claimed today' };
     });
 
     return result;

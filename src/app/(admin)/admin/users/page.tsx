@@ -16,6 +16,7 @@ interface RegisteredUser {
   email: string | null;
   name: string | null;
   photo_url: string | null;
+  auth_provider: string | null;
   credits: number;
   total_credits_used: number;
   created_at: Date;
@@ -172,6 +173,21 @@ export default function UsersManagementPage() {
     });
   };
 
+  // 格式化认证方式显示
+  const formatAuthProvider = (provider: string | null) => {
+    if (!provider) return { label: '-', color: 'gray' };
+
+    const providerConfig: Record<string, { label: string; color: string }> = {
+      google: { label: 'Google', color: 'red' },
+      apple: { label: 'Apple', color: 'gray' },
+      password: { label: '邮箱密码', color: 'blue' },
+      facebook: { label: 'Facebook', color: 'indigo' },
+      x: { label: 'X', color: 'gray' },
+    };
+
+    return providerConfig[provider] || { label: provider, color: 'gray' };
+  };
+
   return (
     <div>
       {/* 页面标题 */}
@@ -249,6 +265,7 @@ export default function UsersManagementPage() {
                 <thead className="bg-gray-50 border-b border-gray-200">
                   <tr>
                     <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">用户</th>
+                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">注册方式</th>
                     <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">积分</th>
                     <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">已用积分</th>
                     <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">订阅</th>
@@ -259,7 +276,7 @@ export default function UsersManagementPage() {
                 <tbody className="divide-y divide-gray-200">
                   {registeredLoading ? (
                     <tr>
-                      <td colSpan={6} className="px-4 py-8 text-center text-gray-500">
+                      <td colSpan={7} className="px-4 py-8 text-center text-gray-500">
                         <div className="flex items-center justify-center gap-2">
                           <div className="w-5 h-5 border-2 border-purple-600 border-t-transparent rounded-full animate-spin" />
                           加载中...
@@ -268,7 +285,7 @@ export default function UsersManagementPage() {
                     </tr>
                   ) : registeredUsers.length === 0 ? (
                     <tr>
-                      <td colSpan={6} className="px-4 py-8 text-center text-gray-500">
+                      <td colSpan={7} className="px-4 py-8 text-center text-gray-500">
                         没有找到用户
                       </td>
                     </tr>
@@ -299,6 +316,24 @@ export default function UsersManagementPage() {
                               <div className="text-xs text-gray-500">{user.email}</div>
                             </div>
                           </div>
+                        </td>
+                        <td className="px-4 py-3">
+                          {(() => {
+                            const { label, color } = formatAuthProvider(user.auth_provider);
+                            const colorClasses: Record<string, string> = {
+                              red: 'bg-red-100 text-red-700',
+                              blue: 'bg-blue-100 text-blue-700',
+                              indigo: 'bg-indigo-100 text-indigo-700',
+                              gray: 'bg-gray-100 text-gray-600',
+                            };
+                            return user.auth_provider ? (
+                              <span className={`inline-flex items-center px-2 py-0.5 text-xs font-medium rounded ${colorClasses[color] || colorClasses.gray}`}>
+                                {label}
+                              </span>
+                            ) : (
+                              <span className="text-xs text-gray-400">-</span>
+                            );
+                          })()}
                         </td>
                         <td className="px-4 py-3">
                           <span className="font-medium text-gray-900">

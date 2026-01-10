@@ -61,6 +61,25 @@ async function verifyFirebaseToken(headersList: Awaited<ReturnType<typeof header
 }
 
 /**
+ * 从 Firebase sign_in_provider 转换为简化的 auth_provider 名称
+ */
+function normalizeAuthProvider(signInProvider?: string): string | null {
+  if (!signInProvider) return null;
+
+  // Firebase sign_in_provider 值映射
+  const providerMap: Record<string, string> = {
+    'google.com': 'google',
+    'apple.com': 'apple',
+    'facebook.com': 'facebook',
+    'twitter.com': 'x',
+    'password': 'password',
+    'anonymous': 'anonymous',
+  };
+
+  return providerMap[signInProvider] || signInProvider;
+}
+
+/**
  * 创建或更新 Firebase 用户到数据库
  */
 async function createOrUpdateFirebaseUser(decodedToken: {
@@ -68,14 +87,19 @@ async function createOrUpdateFirebaseUser(decodedToken: {
   email?: string;
   name?: string;
   picture?: string;
+  firebase?: { sign_in_provider?: string };
 }): Promise<void> {
   const existingUser = await prisma.users.findUnique({
     where: { user_id: decodedToken.uid },
   });
 
+  // 获取认证方式
+  const authProvider = normalizeAuthProvider(decodedToken.firebase?.sign_in_provider);
+
   if (existingUser) {
     // 只更新 email（email 以 Firebase 为准），name 和 photo_url 保留用户自己设置的值
     // 只有当数据库中为空时才用 Firebase 的值填充
+    // auth_provider 只在首次记录，后续不更新（用户可能关联多种登录方式）
     await prisma.users.update({
       where: { user_id: decodedToken.uid },
       data: {
@@ -83,6 +107,8 @@ async function createOrUpdateFirebaseUser(decodedToken: {
         // 保留用户自己设置的 name 和 photo_url，只有为空时才用 Firebase 填充
         name: existingUser.name || decodedToken.name,
         photo_url: existingUser.photo_url || decodedToken.picture,
+        // 如果原来没有记录 auth_provider，现在补上
+        auth_provider: existingUser.auth_provider || authProvider,
         updated_at: new Date(),
       },
     });
@@ -97,6 +123,7 @@ async function createOrUpdateFirebaseUser(decodedToken: {
         email: decodedToken.email || `${decodedToken.uid}@firebase.user`,
         name: decodedToken.name || (decodedToken.email ? decodedToken.email.split('@')[0] : 'Firebase User'),
         photo_url: decodedToken.picture,
+        auth_provider: authProvider,
         credits: initialCredits,
         total_credits_used: 0,
       },
@@ -113,7 +140,7 @@ async function createOrUpdateFirebaseUser(decodedToken: {
       },
     });
 
-    console.log(`✅ [Firebase Auth] 新用户已创建: ${decodedToken.uid}, 赠送积分: ${initialCredits}`);
+    console.log(`✅ [Firebase Auth] 新用户已创建: ${decodedToken.uid}, 认证方式: ${authProvider}, 赠送积分: ${initialCredits}`);
   }
 }
 

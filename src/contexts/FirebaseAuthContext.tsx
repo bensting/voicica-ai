@@ -87,6 +87,10 @@ export function FirebaseAuthProvider({ children }: { children: React.ReactNode }
   // 使用 ref 来同步检查注册状态，因为 state 更新是异步的
   // onAuthStateChanged 可能在 state 传播到子组件之前就触发
   const isRegisteringRef = React.useRef(false);
+  // 用于处理异步竞态条件的版本计数器
+  // 当检测到邮箱未验证需要登出时，增加版本号
+  // onAuthStateChanged 完成异步操作后检查版本号，如果不匹配则跳过状态更新
+  const authStateVersionRef = React.useRef(0);
   const { locale } = useLanguage();
 
   // 处理 redirect 登录结果（应用内浏览器使用 redirect 方式）
@@ -113,9 +117,18 @@ export function FirebaseAuthProvider({ children }: { children: React.ReactNode }
         return;
       }
 
+      // 捕获当前版本号，用于检测异步操作期间是否有新的认证状态变化
+      const currentVersion = authStateVersionRef.current;
+
       if (firebaseUser) {
         // 强制刷新 token，确保获取最新的有效 token
         const idToken = await firebaseUser.getIdToken(true);
+
+        // 检查版本号是否变化（如果变化说明有新的登录/登出操作，跳过本次更新）
+        if (authStateVersionRef.current !== currentVersion) {
+          console.log('[FirebaseAuth] 检测到版本变化，跳过过期的状态更新');
+          return;
+        }
 
         // 先设置 cookie，确保服务端能验证 token
         try {
@@ -128,6 +141,12 @@ export function FirebaseAuthProvider({ children }: { children: React.ReactNode }
           console.error('[FirebaseAuth] 设置 cookie 失败:', err);
         }
 
+        // 再次检查版本号
+        if (authStateVersionRef.current !== currentVersion) {
+          console.log('[FirebaseAuth] 检测到版本变化，跳过过期的状态更新');
+          return;
+        }
+
         // cookie 设置完成后，再更新状态（这样 UserContext 获取数据时 cookie 已就绪）
         setUser(firebaseUser);
         setToken(idToken);
@@ -137,6 +156,12 @@ export function FirebaseAuthProvider({ children }: { children: React.ReactNode }
           await fetch('/api/auth/set-token', { method: 'DELETE' });
         } catch (err) {
           console.error('[FirebaseAuth] 清除 cookie 失败:', err);
+        }
+
+        // 检查版本号
+        if (authStateVersionRef.current !== currentVersion) {
+          console.log('[FirebaseAuth] 检测到版本变化，跳过过期的状态更新');
+          return;
         }
 
         // cookie 清除完成后再更新状态
@@ -344,9 +369,37 @@ export function FirebaseAuthProvider({ children }: { children: React.ReactNode }
   }, [signInWithProvider]);
 
   // 邮箱密码登录
+  // 检查邮箱是否已验证，未验证则不允许登录
   const signInWithEmail = useCallback(async (email: string, password: string) => {
     try {
-      await signInWithEmailAndPassword(auth, email, password);
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+
+      // 检查邮箱是否已验证
+      if (!userCredential.user.emailVerified) {
+        console.log('[FirebaseAuth] 邮箱未验证，尝试重新发送验证邮件并登出');
+
+        // 增加版本号，使正在进行的 onAuthStateChanged 异步操作失效
+        // 这样即使登录触发的 onAuthStateChanged 还在处理中，也会因为版本号不匹配而跳过状态更新
+        authStateVersionRef.current += 1;
+        console.log('[FirebaseAuth] 增加版本号:', authStateVersionRef.current);
+
+        // 尝试重新发送验证邮件（忽略错误，可能是请求太频繁）
+        try {
+          await sendEmailVerification(userCredential.user);
+          console.log('[FirebaseAuth] 验证邮件已重新发送');
+        } catch (err) {
+          console.warn('[FirebaseAuth] 重新发送验证邮件失败（可能请求太频繁）:', err);
+        }
+
+        // 登出用户
+        await firebaseSignOut(auth);
+
+        // 抛出自定义错误
+        const error = new Error('Email not verified') as Error & { code: string };
+        error.code = 'auth/email-not-verified';
+        throw error;
+      }
+
       console.log('[FirebaseAuth] 邮箱登录成功');
     } catch (error) {
       console.error('[FirebaseAuth] 邮箱登录失败:', error);

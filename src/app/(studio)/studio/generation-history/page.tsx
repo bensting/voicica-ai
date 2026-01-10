@@ -15,7 +15,7 @@ import { useGenerationHistory } from '@/components/features/studio/generation-hi
  * Uses CSS media queries to show/hide views (no JS state, better performance)
  */
 export default function GenerationHistoryPage() {
-  const { user, loading: authLoading } = useFirebaseAuth();
+  const { user, loading: authLoading, isRegistering } = useFirebaseAuth();
   const { t } = useLanguage();
 
   // Use custom hook for all business logic
@@ -42,6 +42,7 @@ export default function GenerationHistoryPage() {
   } = useGenerationHistory({
     user,
     authLoading,
+    isRegistering, // 防止注册过程中的认证状态变化触发数据请求
     accumulateData: true, // Enable infinite scroll for both mobile and desktop
     t, // 传入翻译函数
   });

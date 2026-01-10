@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useLogin } from '@/hooks/useLogin';
 import { getEnabledLoginProviders } from '@/config/loginProviders';
@@ -62,13 +63,13 @@ export default function LoginForm() {
       {/* 服务条款 */}
       <p className="text-center text-sm text-gray-500 mt-8">
         {t('login.termsPrefix')}{' '}
-        <a href="/terms" className="text-purple-600 hover:underline">
+        <Link href="/terms" className="text-purple-600 hover:underline">
           {t('login.terms')}
-        </a>{' '}
+        </Link>{' '}
         {t('login.termsAnd')}{' '}
-        <a href="/privacy" className="text-purple-600 hover:underline">
+        <Link href="/privacy" className="text-purple-600 hover:underline">
           {t('login.privacy')}
-        </a>
+        </Link>
       </p>
     </div>
   );

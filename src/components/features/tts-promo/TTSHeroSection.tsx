@@ -1,8 +1,8 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { Globe, Check } from 'lucide-react';
-import { AppDownloadButtons } from '@/components/features/app-download';
+import Image from 'next/image';
+import { Check } from 'lucide-react';
 
 interface TTSHeroSectionProps {
   /** 顶部徽章文字 */
@@ -29,6 +29,9 @@ interface TTSHeroSectionProps {
   tryNowText: string;
 }
 
+// Google Play 商店链接
+const GOOGLE_PLAY_URL = 'https://play.google.com/store/apps/details?id=ai.voicica.app';
+
 /**
  * TTS 落地页 Hero 区域组件
  * 包含徽章、标题、统计数据和下载按钮
@@ -42,7 +45,6 @@ export default function TTSHeroSection({
   description,
   stats,
   webVersionText,
-  tryNowText,
 }: TTSHeroSectionProps) {
   const router = useRouter();
 
@@ -92,7 +94,7 @@ export default function TTSHeroSection({
         </div>
 
         {/* Stats Row */}
-        <div className="flex justify-center gap-5 md:gap-8 mb-3">
+        <div className="flex justify-center gap-5 md:gap-8 mb-4">
           {stats.map((stat, index) => (
             <div key={index} className="text-center">
               <div className={`text-xl md:text-2xl font-bold ${stat.isFree ? 'text-green-400' : 'text-purple-400'}`}>
@@ -103,37 +105,48 @@ export default function TTSHeroSection({
           ))}
         </div>
 
-        {/* Download Buttons */}
-        <div className="flex justify-center">
-          <div className="w-full max-w-xs bg-gray-900/60 backdrop-blur-sm rounded-xl p-2.5 border border-gray-800">
-            <AppDownloadButtons variant="dark" showSectionHeaders={true} compact={true} />
+        {/* App Store Badges */}
+        <div className="flex flex-col items-center gap-3">
+          {/* Store Badges Row */}
+          <div className="flex items-start justify-center gap-4">
+            {/* Google Play Badge - Active (Left) */}
+            <a
+              href={GOOGLE_PLAY_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="transition-transform hover:scale-105"
+            >
+              <Image
+                src="/images/stores/google-play-badge.svg"
+                alt="Get it on Google Play"
+                width={162}
+                height={48}
+                className="h-12 w-auto"
+              />
+            </a>
 
-            {/* Web Version 入口 */}
-            <div className="mt-1.5 pt-1.5 border-t border-gray-700">
-              {/* Web 区域标题 */}
-              <div className="flex items-center gap-1 mb-1">
-                <div className="w-4 h-4 rounded bg-purple-500 flex items-center justify-center">
-                  <Globe className="w-2.5 h-2.5 text-white" />
-                </div>
-                <span className="font-semibold text-white text-xs">Web</span>
+            {/* App Store Badge - Coming Soon (Right, Grayed out) */}
+            <div className="flex flex-col items-center gap-1">
+              <div className="opacity-40 grayscale pointer-events-none">
+                <Image
+                  src="/images/stores/app-store-badge.svg"
+                  alt="Download on App Store"
+                  width={144}
+                  height={48}
+                  className="h-12 w-auto"
+                />
               </div>
-              <button
-                onClick={handleGetStarted}
-                className="w-full flex items-center gap-2 p-1.5 bg-gradient-to-r from-purple-600/20 to-pink-600/20 hover:from-purple-600/30 hover:to-pink-600/30 text-white rounded-lg transition-colors border border-purple-500/30"
-              >
-                <div className="w-7 h-7 rounded-md bg-purple-500/20 flex items-center justify-center flex-shrink-0">
-                  <Globe className="w-3.5 h-3.5 text-purple-400" />
-                </div>
-                <div className="text-left flex-1">
-                  <div className="font-semibold text-xs">{webVersionText}</div>
-                  <div className="text-[10px] text-gray-400">{tryNowText}</div>
-                </div>
-                <svg className="w-3.5 h-3.5 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                </svg>
-              </button>
+              <span className="text-gray-500 text-[10px]">Coming Soon</span>
             </div>
           </div>
+
+          {/* Web Version Link */}
+          <button
+            onClick={handleGetStarted}
+            className="text-gray-400 hover:text-purple-400 text-sm transition-colors flex items-center gap-1"
+          >
+            {webVersionText} →
+          </button>
         </div>
       </div>
     </section>

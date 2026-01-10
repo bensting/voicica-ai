@@ -1,6 +1,6 @@
 /**
  * TTS 推广页语言配置
- * 所有支持的语言列表，组件会根据 defaultLanguage 自动排序
+ * 所有支持的语言列表、统计数据、落地页链接等共享配置
  */
 
 export interface LanguageOption {
@@ -8,6 +8,27 @@ export interface LanguageOption {
   name: string;
   flag: string;
 }
+
+export interface LanguagePageItem {
+  code: string;
+  name: string;
+  flag: string;
+  href: string;
+}
+
+// 统计数值 - 所有页面共享
+export const STATS_VALUES = {
+  voices: '3200+',
+  languages: '190+',
+  free: '100%',
+} as const;
+
+// 语言落地页链接 - 所有页面共享
+export const EXPLORE_LANGUAGE_PAGES: LanguagePageItem[] = [
+  { code: 'en-US', name: 'English', flag: '🇺🇸', href: '/tts/english' },
+  { code: 'th-TH', name: 'ภาษาไทย', flag: '🇹🇭', href: '/tts/thai' },
+  { code: 'id-ID', name: 'Bahasa Indonesia', flag: '🇮🇩', href: '/tts/indonesian' },
+];
 
 // 所有支持的语言列表
 export const ALL_LANGUAGES: LanguageOption[] = [

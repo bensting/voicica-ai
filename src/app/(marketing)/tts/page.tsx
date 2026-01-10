@@ -1,25 +1,17 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { Mic, Download, Sparkles, Check, Globe } from 'lucide-react';
+import { useSearchParams } from 'next/navigation';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { GradientButton } from '@/components/ui';
-import { LanguageExploreGrid, TTSHeroSection, VoiceSelectorSection, ALL_LANGUAGES, type LanguageCardItem } from '@/components/features/tts-promo';
-
-// Stats data - will be populated with translations
-const STATS_CONFIG = [
-  { value: '3200+', labelKey: 'ttsPromo.stats.voices', highlight: true },
-  { value: '190+', labelKey: 'ttsPromo.stats.languages', highlight: true },
-  { value: '100%', labelKey: 'ttsPromo.stats.free', highlight: true, isFree: true },
-];
-
-// Language explore grid - links to language-specific landing pages
-const EXPLORE_LANGUAGES: LanguageCardItem[] = [
-  { code: 'en-US', name: 'English', flag: '🇺🇸', href: '/tts/english' },
-  { code: 'th-TH', name: 'ภาษาไทย', flag: '🇹🇭', href: '/tts/thai' },
-  { code: 'id-ID', name: 'Bahasa Indonesia', flag: '🇮🇩', href: '/tts/indonesian' },
-];
+import {
+  TTSHeroSection,
+  VoiceSamplesSection,
+  TTSCTASection,
+  LanguageExploreGrid,
+  ALL_LANGUAGES,
+  EXPLORE_LANGUAGE_PAGES,
+  STATS_VALUES,
+} from '@/components/features/tts-promo';
 
 // Map UI locale to voice locale
 const UI_TO_VOICE_LOCALE_MAP: Record<string, string> = {
@@ -62,7 +54,6 @@ function getBrowserVoiceLocale(): string | null {
 }
 
 export default function TTSPromoPage() {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const { t, locale: uiLocale, setLocale } = useLanguage();
   const [defaultLanguage, setDefaultLanguage] = useState<string | null>(null);
@@ -115,10 +106,6 @@ export default function TTSPromoPage() {
     setDefaultLanguage('en-US');
   }, [searchParams, uiLocale, setLocale]);
 
-  const handleGetStarted = () => {
-    router.push('/studio/tts');
-  };
-
   // Wait for language to be determined
   if (!defaultLanguage) {
     return (
@@ -130,7 +117,6 @@ export default function TTSPromoPage() {
 
   return (
     <div className="min-h-screen bg-[#0a0a0f]">
-      {/* ========== Hero Section ========== */}
       <TTSHeroSection
         badge={t('ttsPromo.hero.badge')}
         title1={t('ttsPromo.hero.title1')}
@@ -138,96 +124,39 @@ export default function TTSPromoPage() {
         title2={t('ttsPromo.hero.title2')}
         subtitle={t('ttsPromo.hero.subtitle')}
         description={t('ttsPromo.hero.description')}
-        stats={STATS_CONFIG.map(stat => ({
-          value: stat.value,
-          label: t(stat.labelKey),
-          isFree: stat.isFree,
-        }))}
+        stats={[
+          { value: STATS_VALUES.voices, label: t('ttsPromo.stats.voices') },
+          { value: STATS_VALUES.languages, label: t('ttsPromo.stats.languages') },
+          { value: STATS_VALUES.free, label: t('ttsPromo.stats.free'), isFree: true },
+        ]}
         webVersionText={t('ttsPromo.hero.webVersion')}
         tryNowText={t('ttsPromo.hero.tryNow')}
       />
 
-      {/* ========== Voice Samples Section ========== */}
-      <section className="pt-4 pb-4 px-4">
-        <div className="max-w-4xl mx-auto">
-          {/* Section Header - Hidden on mobile */}
-          <div className="hidden md:block text-center mb-4">
-            <h2 className="text-3xl font-bold text-white mb-2">
-              {t('ttsPromo.samples.title1')}<br />
-              {t('ttsPromo.samples.title2')}{' '}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">
-                {t('ttsPromo.samples.titleHighlight')}
-              </span>
-            </h2>
-            <p className="text-gray-400 max-w-2xl mx-auto">
-              {t('ttsPromo.samples.description')}
-            </p>
-          </div>
+      <VoiceSamplesSection
+        defaultLanguage={defaultLanguage}
+        title1={t('ttsPromo.samples.title1')}
+        title2={t('ttsPromo.samples.title2')}
+        titleHighlight={t('ttsPromo.samples.titleHighlight')}
+        description={t('ttsPromo.samples.description')}
+        emptyText={t('ttsPromo.samples.noVoices')}
+        exploreAllText={t('ttsPromo.samples.exploreAll') || 'Explore all AI Characters'}
+      />
 
-          {/* Voice Selector Section */}
-          <VoiceSelectorSection
-            defaultLanguage={defaultLanguage}
-            emptyText={t('ttsPromo.samples.noVoices')}
-          />
+      <TTSCTASection
+        feature1={t('ttsPromo.cta.feature1')}
+        feature2={t('ttsPromo.cta.feature2')}
+        feature3={t('ttsPromo.cta.feature3')}
+        feature4={t('ttsPromo.cta.feature4')}
+        startCreatingText={t('ttsPromo.cta.startCreating')}
+        noCreditCardText={t('ttsPromo.cta.noCreditCard')}
+        noSignupText={t('ttsPromo.cta.noSignup')}
+      />
 
-          {/* Explore All Characters Button */}
-          <div className="text-center mt-6">
-            <button
-              onClick={() => router.push('/studio/voices')}
-              className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400 font-semibold text-sm hover:opacity-80 transition-opacity"
-            >
-              {t('ttsPromo.samples.exploreAll') || 'Explore all AI Characters'} →
-            </button>
-          </div>
-        </div>
-      </section>
-
-      {/* ========== CTA Section ========== */}
-      <section className="py-8 px-4 bg-gradient-to-t from-purple-900/30 to-transparent">
-        <div className="max-w-4xl mx-auto text-center">
-          {/* Features - 2x2 grid on mobile, inline on desktop */}
-          <div className="grid grid-cols-2 md:flex md:justify-center gap-3 md:gap-6 mb-6">
-            <div className="flex items-center gap-2 text-gray-300 text-sm">
-              <Globe className="w-4 h-4 text-purple-400 flex-shrink-0" />
-              <span>{t('ttsPromo.cta.feature1')}</span>
-            </div>
-            <div className="flex items-center gap-2 text-gray-300 text-sm">
-              <Download className="w-4 h-4 text-purple-400 flex-shrink-0" />
-              <span>{t('ttsPromo.cta.feature2')}</span>
-            </div>
-            <div className="flex items-center gap-2 text-gray-300 text-sm">
-              <Mic className="w-4 h-4 text-purple-400 flex-shrink-0" />
-              <span>{t('ttsPromo.cta.feature3')}</span>
-            </div>
-            <div className="flex items-center gap-2 text-gray-300 text-sm">
-              <Check className="w-4 h-4 text-green-400 flex-shrink-0" />
-              <span className="text-green-400 font-medium">{t('ttsPromo.cta.feature4')}</span>
-            </div>
-          </div>
-
-          {/* CTA Button */}
-          <div className="flex justify-center">
-            <GradientButton
-              size="lg"
-              className="min-w-[280px] py-5 text-lg"
-              onClick={handleGetStarted}
-            >
-              <Sparkles className="w-6 h-6 mr-2" />
-              {t('ttsPromo.cta.startCreating')}
-            </GradientButton>
-          </div>
-
-          <p className="mt-4 text-gray-500 text-sm">
-            {t('ttsPromo.cta.noCreditCard')} • {t('ttsPromo.cta.noSignup')}
-          </p>
-        </div>
-      </section>
-
-      {/* ========== Language Explore Section ========== */}
       <LanguageExploreGrid
         title={t('ttsPromo.explore.title') || 'Explore AI Voices in Multiple Languages'}
         subtitle={t('ttsPromo.explore.subtitle') || 'Our text-to-speech service supports 190+ languages. Select your preferred language and start creating content with high-quality AI voices.'}
-        languages={EXPLORE_LANGUAGES}
+        languages={EXPLORE_LANGUAGE_PAGES}
         exploreMoreText={t('ttsPromo.explore.exploreMore') || 'Explore More'}
         exploreMoreHref="/studio/tts"
       />

@@ -1,14 +1,12 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import Image from 'next/image';
-import { Play, Pause, Mic, Download, Sparkles, ChevronUp, Loader2, Check, Globe } from 'lucide-react';
+import { Mic, Download, Sparkles, ChevronUp, Check, Globe } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { GradientButton } from '@/components/ui';
-import { LanguageExploreGrid, TTSHeroSection, type LanguageCardItem } from '@/components/features/tts-promo';
+import { LanguageExploreGrid, TTSHeroSection, VoiceSampleGrid, type LanguageCardItem } from '@/components/features/tts-promo';
 import { getPromoVoices } from '@/actions/voice';
-import { getVoiceSampleUrl } from '@/types/voice';
 import type { Voice } from '@/types/voice';
 
 // Language options with flag emojis
@@ -31,13 +29,6 @@ const LANGUAGE_OPTIONS = [
   { code: 'sv-SE', name: 'Swedish', flag: '🇸🇪' },
   { code: 'ga-IE', name: 'Irish', flag: '🇮🇪' },
   { code: 'lv-LV', name: 'Latvian', flag: '🇱🇻' },
-];
-
-// Role filter options
-const ROLE_OPTIONS = [
-  { code: 'All', nameKey: 'ttsPromo.filters.all', icon: '🔥' },
-  { code: 'Celebrity', nameKey: 'ttsPromo.filters.celebrities', icon: '⭐' },
-  { code: 'Professional', nameKey: 'ttsPromo.filters.professional', icon: '🎙️' },
 ];
 
 // Stats data - will be populated with translations
@@ -99,14 +90,10 @@ export default function TTSPromoPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { t, locale: uiLocale, setLocale } = useLanguage();
-  const [playingId, setPlayingId] = useState<string | null>(null);
-  const [loadingId, setLoadingId] = useState<string | null>(null);
   const [selectedLanguage, setSelectedLanguage] = useState<string | null>(null);
-  const [selectedRole, setSelectedRole] = useState('All');
   const [isLanguageDropdownOpen, setIsLanguageDropdownOpen] = useState(false);
   const [voices, setVoices] = useState<Voice[]>([]);
   const [loading, setLoading] = useState(true);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   // Initialize language with priority: URL param > UI locale > browser language > English
@@ -166,21 +153,15 @@ export default function TTSPromoPage() {
     async function loadVoices() {
       setLoading(true);
       try {
-        if (selectedRole === 'All') {
-          // For "All" mode: fetch Celebrity first, then Professional
-          const [celebrityVoices, professionalVoices] = await Promise.all([
-            getPromoVoices(locale, 'Celebrity', 20),
-            getPromoVoices(locale, 'Professional', 20),
-          ]);
+        // Fetch both Celebrity and Professional voices
+        const [celebrityVoices, professionalVoices] = await Promise.all([
+          getPromoVoices(locale, 'Celebrity', 20),
+          getPromoVoices(locale, 'Professional', 20),
+        ]);
 
-          // Combine: Celebrity first, then Professional, take 20 total
-          const combinedVoices = [...celebrityVoices, ...professionalVoices].slice(0, 20);
-          setVoices(combinedVoices);
-        } else {
-          // For specific role filter
-          const voices = await getPromoVoices(locale, selectedRole, 20);
-          setVoices(voices);
-        }
+        // Combine: Celebrity first, then Professional, take 20 total
+        const combinedVoices = [...celebrityVoices, ...professionalVoices].slice(0, 20);
+        setVoices(combinedVoices);
       } catch (error) {
         console.error('Failed to load voices:', error);
       } finally {
@@ -188,7 +169,7 @@ export default function TTSPromoPage() {
       }
     }
     loadVoices();
-  }, [selectedLanguage, selectedRole]);
+  }, [selectedLanguage]);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -201,59 +182,6 @@ export default function TTSPromoPage() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // Handle voice sample play/pause
-  const handlePlayVoice = (voice: Voice) => {
-    if (playingId === voice.id) {
-      // Pause current
-      audioRef.current?.pause();
-      setPlayingId(null);
-      setLoadingId(null);
-    } else if (loadingId === voice.id) {
-      // Already loading, ignore click
-      return;
-    } else {
-      // Stop previous and play new
-      audioRef.current?.pause();
-      setPlayingId(null);
-
-      const sampleUrl = getVoiceSampleUrl(voice);
-      if (sampleUrl) {
-        setLoadingId(voice.id);
-        const audio = new Audio(sampleUrl);
-
-        audio.oncanplaythrough = () => {
-          // Audio loaded, start playing
-          setLoadingId(null);
-          setPlayingId(voice.id);
-          audio.play().catch(() => {
-            setPlayingId(null);
-            setLoadingId(null);
-          });
-        };
-
-        audio.onended = () => {
-          setPlayingId(null);
-          setLoadingId(null);
-        };
-
-        audio.onerror = () => {
-          setPlayingId(null);
-          setLoadingId(null);
-        };
-
-        audio.load();
-        audioRef.current = audio;
-      }
-    }
-  };
-
-  // Cleanup audio on unmount
-  useEffect(() => {
-    return () => {
-      audioRef.current?.pause();
-    };
-  }, []);
-
   const handleGetStarted = () => {
     router.push('/studio/tts');
   };
@@ -261,16 +189,6 @@ export default function TTSPromoPage() {
   const handleLanguageSelect = (code: string) => {
     setSelectedLanguage(code);
     setIsLanguageDropdownOpen(false);
-    // Stop any playing audio when changing language
-    audioRef.current?.pause();
-    setPlayingId(null);
-  };
-
-  const handleRoleSelect = (code: string) => {
-    setSelectedRole(code);
-    // Stop any playing audio when changing role
-    audioRef.current?.pause();
-    setPlayingId(null);
   };
 
   const selectedLangOption = LANGUAGE_OPTIONS.find(l => l.code === selectedLanguage) || LANGUAGE_OPTIONS[0];
@@ -346,160 +264,11 @@ export default function TTSPromoPage() {
           </div>
 
           {/* Voice Grid */}
-          {loading ? (
-            <>
-              {/* Mobile: 4 columns */}
-              <div className="grid grid-cols-4 gap-3 md:hidden">
-                {[...Array(20)].map((_, i) => (
-                  <div key={i} className="aspect-square rounded-full bg-gray-800 animate-pulse" />
-                ))}
-              </div>
-              {/* Desktop: 10 + 10 layout */}
-              <div className="hidden md:block">
-                <div className="flex justify-center gap-4 mb-4">
-                  {[...Array(10)].map((_, i) => (
-                    <div key={i} className="w-16 h-16 lg:w-20 lg:h-20 flex-shrink-0 rounded-full bg-gray-800 animate-pulse" />
-                  ))}
-                </div>
-                <div className="flex justify-center gap-4">
-                  {[...Array(10)].map((_, i) => (
-                    <div key={i} className="w-16 h-16 lg:w-20 lg:h-20 flex-shrink-0 rounded-full bg-gray-800 animate-pulse" />
-                  ))}
-                </div>
-              </div>
-            </>
-          ) : voices.length > 0 ? (
-            <>
-              {/* Mobile: 4 columns grid */}
-              <div className="grid grid-cols-4 gap-3 md:hidden">
-                {voices.map((voice) => (
-                  <div key={voice.id} className="flex flex-col items-center gap-1">
-                    <button
-                      onClick={() => handlePlayVoice(voice)}
-                      className="group relative aspect-square w-full rounded-full overflow-hidden transition-transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                    >
-                      {voice.avatar_url ? (
-                        <Image
-                          src={voice.avatar_url}
-                          alt={voice.display_name}
-                          fill
-                          className="object-cover"
-                          sizes="25vw"
-                        />
-                      ) : (
-                        <div className="absolute inset-0 bg-gradient-to-br from-purple-600 via-pink-500 to-orange-400" />
-                      )}
-                      <div className={`absolute inset-0 flex items-center justify-center bg-black/40 transition-opacity ${
-                        playingId === voice.id || loadingId === voice.id ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
-                      }`}>
-                        {loadingId === voice.id ? (
-                          <Loader2 className="w-6 h-6 text-white animate-spin" />
-                        ) : playingId === voice.id ? (
-                          <Pause className="w-6 h-6 text-white" />
-                        ) : (
-                          <Play className="w-6 h-6 text-white ml-0.5" />
-                        )}
-                      </div>
-                      {playingId === voice.id && (
-                        <div className="absolute inset-0 border-3 border-purple-500 rounded-full animate-pulse" />
-                      )}
-                    </button>
-                    <span className="text-[10px] text-gray-400 text-center w-full truncate px-1">
-                      {voice.display_name}
-                    </span>
-                  </div>
-                ))}
-              </div>
-
-              {/* Desktop: First row 10, second row 10 */}
-              <div className="hidden md:block">
-                {/* First row: 10 voices */}
-                <div className="flex justify-center gap-4 mb-6">
-                  {voices.slice(0, 10).map((voice) => (
-                    <div key={voice.id} className="flex flex-col items-center gap-2 flex-shrink-0">
-                      <button
-                        onClick={() => handlePlayVoice(voice)}
-                        className="group relative w-16 h-16 lg:w-20 lg:h-20 rounded-full overflow-hidden transition-transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                      >
-                        {voice.avatar_url ? (
-                          <Image
-                            src={voice.avatar_url}
-                            alt={voice.display_name}
-                            fill
-                            className="object-cover"
-                            sizes="80px"
-                          />
-                        ) : (
-                          <div className="absolute inset-0 bg-gradient-to-br from-purple-600 via-pink-500 to-orange-400" />
-                        )}
-                        <div className={`absolute inset-0 flex items-center justify-center bg-black/40 transition-opacity ${
-                          playingId === voice.id || loadingId === voice.id ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
-                        }`}>
-                          {loadingId === voice.id ? (
-                            <Loader2 className="w-6 h-6 text-white animate-spin" />
-                          ) : playingId === voice.id ? (
-                            <Pause className="w-6 h-6 text-white" />
-                          ) : (
-                            <Play className="w-6 h-6 text-white ml-0.5" />
-                          )}
-                        </div>
-                        {playingId === voice.id && (
-                          <div className="absolute inset-0 border-3 border-purple-500 rounded-full animate-pulse" />
-                        )}
-                      </button>
-                      <span className="text-xs text-gray-400 text-center w-16 lg:w-20 truncate">
-                        {voice.display_name}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-                {/* Second row: 10 voices */}
-                <div className="flex justify-center gap-4">
-                  {voices.slice(10, 20).map((voice) => (
-                    <div key={voice.id} className="flex flex-col items-center gap-2 flex-shrink-0">
-                      <button
-                        onClick={() => handlePlayVoice(voice)}
-                        className="group relative w-16 h-16 lg:w-20 lg:h-20 rounded-full overflow-hidden transition-transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                      >
-                        {voice.avatar_url ? (
-                          <Image
-                            src={voice.avatar_url}
-                            alt={voice.display_name}
-                            fill
-                            className="object-cover"
-                            sizes="80px"
-                          />
-                        ) : (
-                          <div className="absolute inset-0 bg-gradient-to-br from-purple-600 via-pink-500 to-orange-400" />
-                        )}
-                        <div className={`absolute inset-0 flex items-center justify-center bg-black/40 transition-opacity ${
-                          playingId === voice.id || loadingId === voice.id ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
-                        }`}>
-                          {loadingId === voice.id ? (
-                            <Loader2 className="w-6 h-6 text-white animate-spin" />
-                          ) : playingId === voice.id ? (
-                            <Pause className="w-6 h-6 text-white" />
-                          ) : (
-                            <Play className="w-6 h-6 text-white ml-0.5" />
-                          )}
-                        </div>
-                        {playingId === voice.id && (
-                          <div className="absolute inset-0 border-3 border-purple-500 rounded-full animate-pulse" />
-                        )}
-                      </button>
-                      <span className="text-xs text-gray-400 text-center w-16 lg:w-20 truncate">
-                        {voice.display_name}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </>
-          ) : (
-            <div className="text-center py-12">
-              <p className="text-gray-400">{t('ttsPromo.samples.noVoices')}</p>
-            </div>
-          )}
+          <VoiceSampleGrid
+            voices={voices}
+            loading={loading}
+            emptyText={t('ttsPromo.samples.noVoices')}
+          />
 
           {/* Explore All Characters Button */}
           <div className="text-center mt-6">

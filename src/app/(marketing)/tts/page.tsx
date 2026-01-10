@@ -311,56 +311,37 @@ export default function TTSPromoPage() {
             </p>
           </div>
 
-          {/* Language Selector + Role Filter Tabs (with border box) */}
+          {/* Language Selector */}
           <div className="flex justify-center mb-4 px-2">
-            <div className="flex items-center gap-0.5 md:gap-1 bg-gray-800/50 border border-gray-700 rounded-full px-1.5 md:px-2 py-1">
-              {/* Language Selector */}
-              <div ref={dropdownRef} className="relative">
-                <button
-                  onClick={() => setIsLanguageDropdownOpen(!isLanguageDropdownOpen)}
-                  className="flex items-center gap-1 md:gap-2 bg-gray-800/80 hover:bg-gray-700 border border-gray-600 rounded-full px-2 md:px-4 py-1.5 md:py-2 text-white transition-colors min-w-[90px] md:min-w-[140px] justify-between text-xs md:text-sm"
-                >
-                  <span className="flex items-center gap-1 md:gap-2">
-                    <span className="text-xs">{selectedLangOption.flag}</span>
-                    <span className="truncate max-w-[50px] md:max-w-none">{selectedLangOption.name}</span>
-                  </span>
-                  <ChevronUp className={`w-3 h-3 md:w-4 md:h-4 flex-shrink-0 transition-transform ${isLanguageDropdownOpen ? '' : 'rotate-180'}`} />
-                </button>
+            <div ref={dropdownRef} className="relative">
+              <button
+                onClick={() => setIsLanguageDropdownOpen(!isLanguageDropdownOpen)}
+                className="flex items-center gap-2 bg-gray-800/80 hover:bg-gray-700 border border-gray-600 rounded-full px-4 py-2 text-white transition-colors min-w-[140px] justify-between text-sm"
+              >
+                <span className="flex items-center gap-2">
+                  <span>{selectedLangOption.flag}</span>
+                  <span>{selectedLangOption.name}</span>
+                </span>
+                <ChevronUp className={`w-4 h-4 flex-shrink-0 transition-transform ${isLanguageDropdownOpen ? '' : 'rotate-180'}`} />
+              </button>
 
-                {/* Dropdown Menu - Opens downward */}
-                {isLanguageDropdownOpen && (
-                  <div className="absolute top-full left-0 mt-2 w-48 bg-gray-900 rounded-xl shadow-xl border border-gray-700 py-2 z-50 max-h-80 overflow-y-auto">
-                    {LANGUAGE_OPTIONS.map((lang) => (
-                      <button
-                        key={lang.code}
-                        onClick={() => handleLanguageSelect(lang.code)}
-                        className={`w-full text-left px-4 py-2.5 text-sm flex items-center gap-3 hover:bg-gray-800 transition-colors ${
-                          selectedLanguage === lang.code ? 'text-purple-400 bg-gray-800' : 'text-gray-300'
-                        }`}
-                      >
-                        <span className="text-lg">{lang.flag}</span>
-                        <span>{lang.name}</span>
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              {/* Role Filter Tabs */}
-              {ROLE_OPTIONS.map((role) => (
-                <button
-                  key={role.code}
-                  onClick={() => handleRoleSelect(role.code)}
-                  className={`flex items-center gap-1 px-2 md:px-3 py-1.5 md:py-2 text-xs md:text-sm font-medium transition-all rounded-full whitespace-nowrap ${
-                    selectedRole === role.code
-                      ? 'text-yellow-400 bg-gray-700/50'
-                      : 'text-gray-400 hover:text-gray-300 hover:bg-gray-700/30'
-                  }`}
-                >
-                  <span className={selectedRole === role.code ? '' : 'opacity-60'}>{role.icon}</span>
-                  <span>{t(role.nameKey)}</span>
-                </button>
-              ))}
+              {/* Dropdown Menu - Opens downward */}
+              {isLanguageDropdownOpen && (
+                <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-48 bg-gray-900 rounded-xl shadow-xl border border-gray-700 py-2 z-50 max-h-80 overflow-y-auto">
+                  {LANGUAGE_OPTIONS.map((lang) => (
+                    <button
+                      key={lang.code}
+                      onClick={() => handleLanguageSelect(lang.code)}
+                      className={`w-full text-left px-4 py-2.5 text-sm flex items-center gap-3 hover:bg-gray-800 transition-colors ${
+                        selectedLanguage === lang.code ? 'text-purple-400 bg-gray-800' : 'text-gray-300'
+                      }`}
+                    >
+                      <span className="text-lg">{lang.flag}</span>
+                      <span>{lang.name}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
 

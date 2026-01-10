@@ -21,6 +21,7 @@ export async function getAdminUserList(params: {
     email: string | null;
     name: string | null;
     photo_url: string | null;
+    auth_provider: string | null;
     credits: number;
     total_credits_used: number;
     created_at: Date;
@@ -72,6 +73,7 @@ export async function getAdminUserList(params: {
     email: u.email,
     name: u.name,
     photo_url: u.photo_url,
+    auth_provider: u.auth_provider,
     credits: u.credits,
     total_credits_used: u.total_credits_used,
     created_at: u.created_at,

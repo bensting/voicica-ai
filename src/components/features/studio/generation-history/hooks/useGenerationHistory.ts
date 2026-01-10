@@ -51,6 +51,7 @@ async function downloadAudio(audioUrl: string, filename: string): Promise<void> 
 interface UseGenerationHistoryProps {
   user: { uid: string } | null;
   authLoading?: boolean;
+  isRegistering?: boolean; // 注册中标志，防止在注册过程中响应临时的认证状态
   pageSize?: number;
   accumulateData?: boolean; // For infinite scroll on mobile
   defaultStatus?: TaskStatus | TaskStatus[] | null; // 默认状态过滤
@@ -101,6 +102,7 @@ interface UseGenerationHistoryReturn {
 export function useGenerationHistory({
   user,
   authLoading = false,
+  isRegistering = false,
   pageSize: initialPageSize = 20,
   accumulateData = false,
   defaultStatus = TaskStatus.SUCCESS,
@@ -356,6 +358,11 @@ export function useGenerationHistory({
     // Don't fetch if still checking authentication status
     if (authLoading) return;
 
+    // Don't respond to auth state changes during registration
+    // This prevents race conditions when createUserWithEmailAndPassword
+    // briefly signs in the user before we sign them out
+    if (isRegistering) return;
+
     const currentUserId = user?.uid ?? null;
     const prevUserId = prevUserRef.current;
 
@@ -379,7 +386,7 @@ export function useGenerationHistory({
     hasFetchedRef.current = true;
     void fetchRecords();
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user, authLoading]); // 移除 fetchRecords 依赖，避免无限循环
+  }, [user, authLoading, isRegistering]); // 移除 fetchRecords 依赖，避免无限循环
 
   // Fetch records when page, filters, or status changes (skip initial render)
   useEffect(() => {

@@ -57,7 +57,7 @@ const DEFAULT_GENERATION_STATUS = [TaskStatus.SUCCESS, TaskStatus.PROCESSING, Ta
  */
 export default function StudioTTSPage() {
   const { locale, isReady: isLocaleReady, t } = useLanguage();
-  const { user, loading: authLoading } = useFirebaseAuth();
+  const { user, loading: authLoading, isRegistering } = useFirebaseAuth();
   const { setTitle } = useStudio();
   const { credits, permanentCredits, monthlyCredits, loading: creditsLoading, refreshCredits } = useCredits();
 
@@ -145,6 +145,7 @@ export default function StudioTTSPage() {
   } = useGenerationHistory({
     user,
     authLoading,
+    isRegistering, // 防止注册过程中的认证状态变化触发数据请求
     pageSize: 6,
     defaultStatus: DEFAULT_GENERATION_STATUS, // 只查询这三种状态，不查询 FAILURE
     onTaskCompleted: () => {

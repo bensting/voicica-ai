@@ -124,7 +124,10 @@ export function useRewardedAd(): UseRewardedAdReturn {
     document.head.appendChild(script);
   }, [provider]);
 
-  // 预加载 AdMob 广告
+  // 用于跟踪 AdMob 监听器是否已添加
+  const admobListenersAddedRef = useRef(false);
+
+  // 预加载 AdMob 广告（只负责预加载，不添加监听器）
   const prepareAdMobAd = useCallback(async (adMob: typeof import('@capacitor-community/admob').AdMob) => {
     try {
       const platform = Capacitor.getPlatform();
@@ -135,26 +138,7 @@ export function useRewardedAd(): UseRewardedAdReturn {
         return;
       }
 
-      const { RewardAdPluginEvents } = await import('@capacitor-community/admob');
-
-      // 监听加载完成
-      await adMob.addListener(RewardAdPluginEvents.Loaded, () => {
-        admobReadyRef.current = true;
-        setStatus('ready');
-        console.log('[RewardedAd] AdMob ad loaded');
-      });
-
-      // 监听奖励
-      await adMob.addListener(RewardAdPluginEvents.Rewarded, () => {
-        rewardedRef.current = true;
-        console.log('[RewardedAd] AdMob reward earned');
-      });
-
-      // 监听关闭
-      await adMob.addListener(RewardAdPluginEvents.Dismissed, () => {
-        // 关闭后重新预加载
-        prepareAdMobAd(adMob);
-      });
+      console.log('[RewardedAd] Preparing AdMob ad...');
 
       // 预加载
       await adMob.prepareRewardVideoAd({
@@ -165,6 +149,39 @@ export function useRewardedAd(): UseRewardedAdReturn {
       console.error('[RewardedAd] AdMob prepare failed:', err);
     }
   }, []);
+
+  // 初始化 AdMob 监听器（只执行一次）
+  const setupAdMobListeners = useCallback(async (adMob: typeof import('@capacitor-community/admob').AdMob) => {
+    if (admobListenersAddedRef.current) {
+      console.log('[RewardedAd] AdMob listeners already added, skipping');
+      return;
+    }
+
+    const { RewardAdPluginEvents } = await import('@capacitor-community/admob');
+
+    // 监听加载完成
+    await adMob.addListener(RewardAdPluginEvents.Loaded, () => {
+      admobReadyRef.current = true;
+      setStatus('ready');
+      console.log('[RewardedAd] AdMob ad loaded and ready');
+    });
+
+    // 监听奖励
+    await adMob.addListener(RewardAdPluginEvents.Rewarded, () => {
+      rewardedRef.current = true;
+      console.log('[RewardedAd] AdMob reward earned');
+    });
+
+    // 监听关闭 - 关闭后重新预加载下一个广告
+    await adMob.addListener(RewardAdPluginEvents.Dismissed, () => {
+      console.log('[RewardedAd] AdMob ad dismissed, preparing next ad...');
+      admobReadyRef.current = false;
+      prepareAdMobAd(adMob);
+    });
+
+    admobListenersAddedRef.current = true;
+    console.log('[RewardedAd] AdMob listeners setup complete');
+  }, [prepareAdMobAd]);
 
   // ==================== AdMob 初始化 ====================
   useEffect(() => {
@@ -182,7 +199,10 @@ export function useRewardedAd(): UseRewardedAdReturn {
           });
           console.log('[RewardedAd] AdMob initialized');
 
-          // 预加载广告
+          // 设置监听器（只执行一次）
+          await setupAdMobListeners(module.AdMob);
+
+          // 预加载第一个广告
           await prepareAdMobAd(module.AdMob);
         } catch (err) {
           console.error('[RewardedAd] AdMob init failed:', err);
@@ -193,7 +213,7 @@ export function useRewardedAd(): UseRewardedAdReturn {
       .catch((err) => {
         console.error('[RewardedAd] AdMob module load failed:', err);
       });
-  }, [provider, isNative, prepareAdMobAd]);
+  }, [provider, isNative, prepareAdMobAd, setupAdMobListeners]);
 
   // ==================== Appodeal 初始化 ====================
   useEffect(() => {

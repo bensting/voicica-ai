@@ -402,7 +402,13 @@ export function FirebaseAuthProvider({ children }: { children: React.ReactNode }
 
       console.log('[FirebaseAuth] 邮箱登录成功');
     } catch (error) {
-      console.error('[FirebaseAuth] 邮箱登录失败:', error);
+      // 邮箱未验证是预期的业务逻辑错误，不需要 error 级别
+      const err = error as { code?: string };
+      if (err?.code === 'auth/email-not-verified') {
+        console.log('[FirebaseAuth] 邮箱登录被拒绝：邮箱未验证');
+      } else {
+        console.error('[FirebaseAuth] 邮箱登录失败:', error);
+      }
       throw error;
     }
   }, []);

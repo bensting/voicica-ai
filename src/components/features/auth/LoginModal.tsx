@@ -2,11 +2,12 @@
 
 import { useEffect, useState, useRef } from 'react';
 import { createPortal } from 'react-dom';
-import Link from 'next/link';
 import { X, Eye, EyeOff, ArrowLeft } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 import { getEnabledLoginProviders } from '@/config/loginProviders';
+import BottomSheet from '@/components/ui/BottomSheet';
+import { TermsContent, PrivacyContent } from '@/components/features/legal';
 
 interface LoginModalProps {
   isOpen: boolean;
@@ -43,6 +44,7 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
   const [error, setError] = useState<string | null>(null);
   const [resetEmailSent, setResetEmailSent] = useState(false);
   const [verificationEmailSent, setVerificationEmailSent] = useState(false);
+  const [legalSheet, setLegalSheet] = useState<'terms' | 'privacy' | null>(null);
   // 跟踪 user 的前一个值，只有从 null 变为非 null 才是真正的登录成功
   const prevUserRef = useRef(user);
   // 标记是否是邮箱登录（邮箱登录需要手动控制关闭，不自动关闭）
@@ -540,13 +542,21 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
               {/* 协议说明 */}
               <div className="mt-6 text-center text-xs text-gray-500 px-4">
                 {t('login.agreementText')}{' '}
-                <Link href="/terms" className="text-purple-600 hover:underline">
+                <button
+                  type="button"
+                  onClick={() => setLegalSheet('terms')}
+                  className="text-purple-600 hover:underline"
+                >
                   {t('login.licensePolicy')}
-                </Link>{' '}
+                </button>{' '}
                 {t('login.and')}{' '}
-                <Link href="/privacy" className="text-purple-600 hover:underline">
+                <button
+                  type="button"
+                  onClick={() => setLegalSheet('privacy')}
+                  className="text-purple-600 hover:underline"
+                >
                   {t('login.privacyPolicy')}
-                </Link>
+                </button>
               </div>
             </>
           )}
@@ -559,6 +569,29 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
   if (!isOpen) return null;
 
   return typeof window !== 'undefined'
-    ? createPortal(modalContent, document.body)
+    ? createPortal(
+        <>
+          {modalContent}
+
+          {/* Terms Bottom Sheet */}
+          <BottomSheet
+            isOpen={legalSheet === 'terms'}
+            onClose={() => setLegalSheet(null)}
+            title={t('login.licensePolicy')}
+          >
+            <TermsContent />
+          </BottomSheet>
+
+          {/* Privacy Bottom Sheet */}
+          <BottomSheet
+            isOpen={legalSheet === 'privacy'}
+            onClose={() => setLegalSheet(null)}
+            title={t('login.privacyPolicy')}
+          >
+            <PrivacyContent />
+          </BottomSheet>
+        </>,
+        document.body
+      )
     : null;
 }

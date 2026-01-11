@@ -28,14 +28,27 @@ async function getAndroidPublisherClient() {
 
   // 处理私钥格式：环境变量中可能是 \n 字符串或实际换行符
   let privateKey = rawPrivateKey;
+
+  console.log('[GooglePlayAPI] 初始化客户端...');
+  console.log('[GooglePlayAPI] clientEmail:', clientEmail);
+  console.log('[GooglePlayAPI] privateKey 长度:', rawPrivateKey.length);
+  console.log('[GooglePlayAPI] privateKey 前50字符:', rawPrivateKey.substring(0, 50));
+  console.log('[GooglePlayAPI] privateKey 包含 \\n:', rawPrivateKey.includes('\\n'));
+  console.log('[GooglePlayAPI] privateKey 包含真实换行:', rawPrivateKey.includes('\n'));
+
   // 如果包含字面量 \n（不是真正的换行），则替换为真正的换行符
   if (privateKey.includes('\\n')) {
     privateKey = privateKey.replace(/\\n/g, '\n');
+    console.log('[GooglePlayAPI] 已将 \\n 替换为真实换行');
   }
   // 如果被引号包裹，去掉引号
   if (privateKey.startsWith('"') && privateKey.endsWith('"')) {
     privateKey = privateKey.slice(1, -1).replace(/\\n/g, '\n');
+    console.log('[GooglePlayAPI] 已去掉引号');
   }
+
+  console.log('[GooglePlayAPI] 处理后 privateKey 前100字符:', privateKey.substring(0, 100));
+  console.log('[GooglePlayAPI] 处理后 privateKey 是否以 BEGIN 开头:', privateKey.includes('-----BEGIN'));
 
   const auth = new google.auth.GoogleAuth({
     credentials: {
@@ -125,9 +138,20 @@ export async function verifySubscriptionWithGooglePlay(
       orderId: subscription.latestOrderId || undefined,
     };
   } catch (error: unknown) {
+    // 详细记录错误信息
+    console.error('[GooglePlayAPI] 验证出错，完整错误:', JSON.stringify(error, null, 2));
+    console.error('[GooglePlayAPI] 错误类型:', typeof error);
+    if (error instanceof Error) {
+      console.error('[GooglePlayAPI] Error message:', error.message);
+      console.error('[GooglePlayAPI] Error stack:', error.stack);
+    }
+
     // Google API 错误处理
     if (error && typeof error === 'object' && 'code' in error) {
-      const apiError = error as { code: number; message?: string };
+      const apiError = error as { code: number; message?: string; errors?: unknown[] };
+      console.error('[GooglePlayAPI] API 错误码:', apiError.code);
+      console.error('[GooglePlayAPI] API 错误信息:', apiError.message);
+      console.error('[GooglePlayAPI] API 错误详情:', JSON.stringify(apiError.errors, null, 2));
 
       if (apiError.code === 400) {
         console.error('[GooglePlayAPI] 无效的 purchaseToken');

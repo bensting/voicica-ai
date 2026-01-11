@@ -20,16 +20,27 @@ async function getAndroidPublisherClient() {
   // 使用服务账号认证
   // 优先使用 Google Play 专用服务账号，否则使用 Firebase 服务账号
   const clientEmail = process.env.GOOGLE_PLAY_CLIENT_EMAIL || process.env.FIREBASE_ADMIN_CLIENT_EMAIL;
-  const privateKey = process.env.GOOGLE_PLAY_PRIVATE_KEY || process.env.FIREBASE_ADMIN_PRIVATE_KEY;
+  const rawPrivateKey = process.env.GOOGLE_PLAY_PRIVATE_KEY || process.env.FIREBASE_ADMIN_PRIVATE_KEY;
 
-  if (!clientEmail || !privateKey) {
+  if (!clientEmail || !rawPrivateKey) {
     throw new Error('Google Play API credentials not configured');
+  }
+
+  // 处理私钥格式：环境变量中可能是 \n 字符串或实际换行符
+  let privateKey = rawPrivateKey;
+  // 如果包含字面量 \n（不是真正的换行），则替换为真正的换行符
+  if (privateKey.includes('\\n')) {
+    privateKey = privateKey.replace(/\\n/g, '\n');
+  }
+  // 如果被引号包裹，去掉引号
+  if (privateKey.startsWith('"') && privateKey.endsWith('"')) {
+    privateKey = privateKey.slice(1, -1).replace(/\\n/g, '\n');
   }
 
   const auth = new google.auth.GoogleAuth({
     credentials: {
       client_email: clientEmail,
-      private_key: privateKey.replace(/\\n/g, '\n'),
+      private_key: privateKey,
     },
     scopes: ['https://www.googleapis.com/auth/androidpublisher'],
   });

@@ -4,6 +4,10 @@
  * Google Play Billing Server Actions
  *
  * 处理 Google Play 订阅购买的验证和积分发放
+ *
+ * 安全说明：
+ * - 所有购买都必须通过 Google Play API 验证真实性
+ * - 不能信任客户端传来的任何数据
  */
 
 import prisma from '@/lib/prisma';
@@ -12,6 +16,7 @@ import { getCreditTierByProductId } from '@/config/subscription';
 import { addCredits } from '@/lib/credits';
 import { ProductType } from '@/config/productType';
 import { googlePlayProducts } from '@/config/payment/google-play';
+import { verifySubscriptionWithGooglePlay } from '@/lib/google-play-api';
 
 // Google Play 产品 ID 到 Stripe 产品 ID 的映射（反向查找）
 function getStripeProductIdFromGooglePlay(googlePlayProductId: string): string | null {
@@ -25,6 +30,12 @@ function getStripeProductIdFromGooglePlay(googlePlayProductId: string): string |
 
 /**
  * 验证 Google Play 购买并发放积分
+ *
+ * 安全流程：
+ * 1. 调用 Google Play API 验证 purchaseToken 的真实性
+ * 2. 确认订阅状态有效（ACTIVE 或 IN_GRACE_PERIOD）
+ * 3. 使用 API 返回的 productId（不信任客户端传来的）
+ * 4. 发放积分
  */
 export async function verifyGooglePlayPurchase(params: {
   purchaseToken: string;
@@ -35,15 +46,37 @@ export async function verifyGooglePlayPurchase(params: {
   error?: string;
   subscriptionId?: number;
 }> {
-  const { purchaseToken, productId, orderId } = params;
+  const { purchaseToken, productId: clientProductId, orderId: clientOrderId } = params;
 
   try {
     const authUser = await getCurrentUser();
     const userId = authUser.uid;
 
-    console.log(`🔵 [GooglePlay] 验证购买: productId=${productId}, orderId=${orderId}`);
+    console.log(`🔵 [GooglePlay] 开始验证购买...`);
 
-    // 检查是否已处理过此购买（防止重复发放）
+    // ========== 第一步：调用 Google Play API 验证 purchaseToken ==========
+    const verification = await verifySubscriptionWithGooglePlay(purchaseToken);
+
+    if (!verification.valid) {
+      console.error(`❌ [GooglePlay] API 验证失败: ${verification.error}`);
+      return {
+        success: false,
+        error: verification.error || 'Purchase verification failed',
+      };
+    }
+
+    // 使用 Google Play API 返回的真实数据，不信任客户端
+    const verifiedProductId = verification.productId || clientProductId;
+    const verifiedOrderId = verification.orderId || clientOrderId;
+
+    console.log(`✅ [GooglePlay] API 验证通过:`, {
+      productId: verifiedProductId,
+      orderId: verifiedOrderId,
+      state: verification.subscriptionState,
+      expiryTime: verification.expiryTime,
+    });
+
+    // ========== 第二步：检查是否已处理过此购买（防止重复发放）==========
     const existingSubscription = await prisma.user_subscriptions.findFirst({
       where: {
         external_transaction_id: purchaseToken,
@@ -59,10 +92,11 @@ export async function verifyGooglePlayPurchase(params: {
       };
     }
 
-    // 将 Google Play 产品 ID 转换为 Stripe 产品 ID（用于查找配置）
-    const stripeProductId = getStripeProductIdFromGooglePlay(productId);
+    // ========== 第三步：查找订阅计划配置 ==========
+    // 使用验证后的 productId
+    const stripeProductId = getStripeProductIdFromGooglePlay(verifiedProductId);
     if (!stripeProductId) {
-      console.error(`❌ [GooglePlay] 未知产品 ID: ${productId}`);
+      console.error(`❌ [GooglePlay] 未知产品 ID: ${verifiedProductId}`);
       return { success: false, error: 'Unknown product ID' };
     }
 
@@ -75,10 +109,16 @@ export async function verifyGooglePlayPurchase(params: {
 
     const { plan, tier } = result;
 
-    // 计算订阅日期
+    // ========== 第四步：创建订阅记录并发放积分 ==========
+    // 计算订阅日期（优先使用 API 返回的过期时间）
     const now = new Date();
-    const endDate = new Date(now);
-    endDate.setDate(endDate.getDate() + plan.cycle_days);
+    let endDate: Date;
+    if (verification.expiryTime) {
+      endDate = new Date(verification.expiryTime);
+    } else {
+      endDate = new Date(now);
+      endDate.setDate(endDate.getDate() + plan.cycle_days);
+    }
 
     // 创建订阅记录
     const subscription = await prisma.user_subscriptions.create({
@@ -88,7 +128,7 @@ export async function verifyGooglePlayPurchase(params: {
         product_type: null,
         platform: 'google_play',
         external_transaction_id: purchaseToken,
-        external_subscription_id: orderId || null,
+        external_subscription_id: verifiedOrderId || null,
         request_id: `gp_${purchaseToken.substring(0, 50)}`,
         status: 'ACTIVE',
         start_date: now,
@@ -96,7 +136,7 @@ export async function verifyGooglePlayPurchase(params: {
         credits_allocated: tier.credits,
         amount: null, // Google Play 不提供金额
         currency: null,
-        auto_renew: true,
+        auto_renew: verification.autoRenewing ?? true,
         cancel_at_period_end: false,
         activated_at: now,
       },
@@ -127,10 +167,12 @@ export async function verifyGooglePlayPurchase(params: {
         currency: null,
         credits_change: tier.credits,
         metadata: {
-          product_id: productId,
-          order_id: orderId,
+          product_id: verifiedProductId,
+          order_id: verifiedOrderId,
           plan_name: plan.plan_name,
           cycle_days: plan.cycle_days,
+          verified_state: verification.subscriptionState,
+          expiry_time: verification.expiryTime,
         },
       },
     });

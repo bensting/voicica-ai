@@ -7,7 +7,6 @@ import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 import { useStudio } from '@/contexts/StudioContext';
 import { useCredits } from '@/contexts/CreditsContext';
 import { useTTSGenerator } from '@/hooks/useTTSGenerator';
-import { useDailyTasks } from '@/hooks/useDailyTasks';
 import { TaskStatus } from '@/types/tts';
 import type { Voice } from '@/types/voice';
 import { calculateVoiceCost, type VoiceType } from '@/config/creditsCost';
@@ -37,10 +36,6 @@ const AudioSettingsModal = dynamic(
   () => import('@/components/features/studio/tts/AudioSettingsModal'),
   { ssr: false }
 );
-const DailyTasksModal = dynamic(
-  () => import('@/components/features/daily-tasks/DailyTasksModal'),
-  { ssr: false }
-);
 
 // 将 defaultStatus 提取到组件外部，避免每次渲染创建新数组引用
 const DEFAULT_GENERATION_STATUS = [TaskStatus.SUCCESS, TaskStatus.PROCESSING, TaskStatus.PENDING];
@@ -61,11 +56,6 @@ export default function StudioTTSPage() {
   const { setTitle } = useStudio();
   const { credits, permanentCredits, monthlyCredits, loading: creditsLoading, refreshCredits } = useCredits();
 
-  // 每日任务 Hook
-  const {
-    shouldShowPopup: showDailyTasksPopup,
-    dismissPopup: closeDailyTasksPopup,
-  } = useDailyTasks();
   const [isAudioModalOpen, setIsAudioModalOpen] = useState(false);
   const [isVoiceSelectorOpen, setIsVoiceSelectorOpen] = useState(false);
   const [isGeneratingModalOpen, setIsGeneratingModalOpen] = useState(false);
@@ -488,15 +478,6 @@ export default function StudioTTSPage() {
         onCancel={closeConfirmDialog}
         variant="danger"
       />
-
-      {/* Daily Tasks Modal */}
-      {showDailyTasksPopup && (
-        <DailyTasksModal
-          isOpen={showDailyTasksPopup}
-          onClose={closeDailyTasksPopup}
-          onCreditsUpdated={refreshCredits}
-        />
-      )}
     </>
   );
 }

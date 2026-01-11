@@ -80,7 +80,6 @@ export function useRewardedAd(): UseRewardedAdReturn {
     rewarded: admobRewarded,
     resetRewarded: resetAdMobRewarded,
     prepareAd: prepareAdMobAd,
-    isLoading: admobIsLoading,
   } = useAdMob();
 
   // 检测平台

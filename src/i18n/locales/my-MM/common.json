@@ -1,0 +1,92 @@
+{
+  "common": {
+    "brand": "Voicica AI",
+    "cancel": "ပယ်ဖျက်",
+    "close": "ပိတ်",
+    "retry": "ထပ်စမ်း",
+    "loading": "ဖွင့်နေသည်...",
+    "download": "ဒေါင်းလုဒ်",
+    "share": "မျှဝေ",
+    "delete": "ဖျက်",
+    "later": "နောက်မှ",
+    "refresh": "ပြန်လည်စတင်"
+  },
+  "app": {
+    "updateAvailable": "အပ်ဒိတ်ရရှိနိုင်ပါပြီ",
+    "refreshRequired": "ဗားရှင်းအသစ်ရရှိနိုင်ပါပြီ။ ဆက်လက်အသုံးပြုရန် ပြန်လည်စတင်ပါ။"
+  },
+  "creditInfo": {
+    "currentCredits": "လက်ရှိခရက်ဒစ်များ:",
+    "loginForMore": "ခရက်ဒစ်ပိုရရန် အကောင့်ဝင်ပါ",
+    "deductionNotice": "{{actionName}} အောင်မြင်ပြီးနောက် ခရက်ဒစ် {{count}} ခုနုတ်ယူပါမည်"
+  },
+  "productCategory": {
+    "aiVideo": "AI ဗီဒီယို",
+    "aiMusic": "AI တေးဂီတ",
+    "aiVoice": "AI အသံ"
+  },
+  "navbar": {
+    "explore": "ရှာဖွေ",
+    "pricing": "စျေးနှုန်း",
+    "faq": "မေးလေ့ရှိသောမေးခွန်းများ",
+    "blog": "ဘလော့ဂ်",
+    "myVoiceModels": "ကျွန်ုပ်၏အသံမော်ဒယ်များ",
+    "generationHistory": "ထုတ်လုပ်မှုမှတ်တမ်း",
+    "subscription": "စာရင်းသွင်းခြင်း",
+    "profile": "ပရိုဖိုင်",
+    "login": "အကောင့်ဝင်",
+    "logout": "အကောင့်ထွက်",
+    "myStudio": "ကျွန်ုပ်၏စတူဒီယို"
+  },
+  "nav": {
+    "studio": "စတူဒီယို",
+    "pricing": "စျေးနှုန်း",
+    "faq": "မေးလေ့ရှိသောမေးခွန်းများ",
+    "generationHistory": "ထုတ်လုပ်မှုမှတ်တမ်း",
+    "freeTools": "အခမဲ့ကိရိယာများ",
+    "textToSpeech": "စာသားမှအသံသို့",
+    "textToSpeechDesc": "စာသားကို သဘာဝအသံအဖြစ်ပြောင်းလဲပါ",
+    "tiktokDownloader": "TikTok ဒေါင်းလုဒ်",
+    "tiktokDownloaderDesc": "ရေစာမပါဘဲ TikTok ဗီဒီယိုများဒေါင်းလုဒ်လုပ်ပါ",
+    "youtubeDownloader": "YouTube ဒေါင်းလုဒ်",
+    "youtubeDownloaderDesc": "YouTube ဗီဒီယိုနှင့်အသံများဒေါင်းလုဒ်လုပ်ပါ"
+  },
+  "language": {
+    "en": "English",
+    "zhCN": "简体中文",
+    "zhTW": "繁體中文"
+  },
+  "footer": {
+    "tagline": "AI ကိုလက်ခံပါ၊ ရိုးရှင်းမှုကိုလက်ခံပါ",
+    "followUs": "ကျွန်ုပ်တို့ကိုစောင့်ကြည့်ပါ",
+    "changeLanguage": "ဘာသာစကားပြောင်း",
+    "copyright": "မူပိုင်ခွင့်အားလုံးပိုင်ဆိုင်သည်။",
+    "info": {
+      "title": "အချက်အလက်",
+      "terms": "စည်းမျဉ်းစည်းကမ်းများ",
+      "cookie": "ကွတ်ကီးမူဝါဒ",
+      "privacy": "ကိုယ်ရေးအချက်အလက်မူဝါဒ",
+      "refund": "ငွေပြန်အမ်းမူဝါဒ",
+      "partner": "ကျွန်ုပ်တို့၏မိတ်ဖက်ဖြစ်လာပါ"
+    },
+    "about": {
+      "title": "အကြောင်း",
+      "aboutUs": "ကျွန်ုပ်တို့အကြောင်း",
+      "contact": "ဆက်သွယ်ရန်",
+      "faqs": "မေးလေ့ရှိသောမေးခွန်းများ",
+      "blogs": "ဘလော့ဂ်များ",
+      "dmca": "DMCA"
+    },
+    "products": {
+      "title": "ထိပ်တန်းထုတ်ကုန်များ",
+      "tts": "AI စာသားမှအသံသို့",
+      "tiktokDownloader": "TikTok ဒေါင်းလုဒ်",
+      "youtubeDownloader": "YouTube ဒေါင်းလုဒ်",
+      "songCover": "AI သီချင်းကာဗာဖန်တီး",
+      "musicGenerator": "AI တေးဂီတဖန်တီး",
+      "voiceCloning": "AI အသံပုံတူကူးခြင်း",
+      "voiceChanger": "အခမဲ့အသံပြောင်းကိရိယာ",
+      "api": "API (ဆော့ဖ်ဝဲရေးသူများအတွက်)"
+    }
+  }
+}

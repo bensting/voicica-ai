@@ -94,6 +94,7 @@ export interface SubscriptionPlanConfig {
     'zh-TW': string;
     'th-TH'?: string;
     'my-MM'?: string;
+    'id-ID'?: string;
   }>;
 }
 

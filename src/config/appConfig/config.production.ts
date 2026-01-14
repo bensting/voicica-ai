@@ -33,6 +33,7 @@ export const appConfig: AppConfig = {
    */
   anonymous_user: {
     expiry_days: 30,
+    tts_daily_limit: 1, // 生产环境每日 1 次免费
   },
 
   /**

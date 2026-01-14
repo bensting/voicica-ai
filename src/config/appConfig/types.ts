@@ -28,6 +28,8 @@ export interface CreditsConfig {
 export interface AnonymousUserConfig {
   /** 匿名用户过期天数 */
   expiry_days: number;
+  /** TTS 每日免费生成次数 */
+  tts_daily_limit: number;
 }
 
 /**

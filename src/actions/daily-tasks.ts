@@ -169,13 +169,12 @@ export async function checkin(): Promise<TaskResult> {
         return { success: false, message: 'Already checked in today' };
       }
 
-      console.log(`[checkin] Successfully checked in, updating credits...`);
+      console.log(`[checkin] Successfully checked in, updating monthly_credits...`);
 
-      // 增加用户当月积分（每日任务获得的积分计入当月积分）
+      // 增加用户当月积分（每日任务获得的积分只计入当月积分，不计入永久积分）
       await tx.users.update({
         where: { user_id: authUser.uid },
         data: {
-          credits: { increment: credits },
           monthly_credits: { increment: credits },
         },
       });
@@ -264,11 +263,10 @@ export async function claimAdReward(adWatched: boolean = true): Promise<TaskResu
         if (updateResult.count > 0) {
           console.log(`[claimAdReward] Successfully claimed tier ${newClaimed}, credits: ${credits}`);
 
-          // 增加用户当月积分
+          // 增加用户当月积分（广告奖励只计入当月积分，不计入永久积分）
           await tx.users.update({
             where: { user_id: authUser.uid },
             data: {
-              credits: { increment: credits },
               monthly_credits: { increment: credits },
             },
           });

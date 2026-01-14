@@ -1,0 +1,51 @@
+{
+  "tiktokDownloader": {
+    "title": "TikTok ဗီဒီယိုဒေါင်းလုဒ်",
+    "subtitle": "TikTok ဗီဒီယိုများကို ရေစာမပါအခမဲ့ဒေါင်းလုဒ်လုပ်ပါ",
+    "urlLabel": "TikTok ဗီဒီယို URL",
+    "urlPlaceholder": "TikTok ဗီဒီယိုလင့်ခ်ဤနေရာတွင်ကူးထည့်ပါ...",
+    "parseButton": "ခွဲခြမ်း",
+    "parsing": "ခွဲခြမ်းနေသည်",
+    "doNotClose": "ဤစာမျက်နှာမပိတ်ပါနှင့်",
+    "downloadButton": "ဗီဒီယိုဒေါင်းလုဒ်",
+    "downloading": "ဒေါင်းလုဒ်လုပ်နေသည်...",
+    "selectQuality": "အရည်အသွေးရွေး",
+    "untitled": "ခေါင်းစဉ်မဲ့ဗီဒီယို",
+    "emptyTitle": "TikTok ဗီဒီယိုများဒေါင်းလုဒ်",
+    "emptyDescription": "ဒေါင်းလုဒ်စတင်ရန် အပေါ်တွင် TikTok ဗီဒီယို URL ကူးထည့်ပါ။ TikTok ဗီဒီယိုဖော်မက်အားလုံးကိုထောက်ပံ့သည်။",
+    "errors": {
+      "emptyUrl": "TikTok ဗီဒီယို URL ထည့်ပါ",
+      "invalidUrl": "TikTok URL မမှန်ပါ။ TikTok ဗီဒီယိုလင့်ခ်မှန်ကန်စွာထည့်ပါ။",
+      "parseFailed": "ဗီဒီယိုခွဲခြမ်းမှုမအောင်မြင်ပါ။ URL စစ်ဆေးပြီး ထပ်စမ်းပါ။",
+      "insufficientCredits": "ခရက်ဒစ်မလုံလောက်ပါ။ လိုအပ်သည်: {{required}}, လက်ရှိ: {{current}}",
+      "unknownError": "မမျှော်လင့်ထားသောအမှားဖြစ်ပေါ်ခဲ့သည်။ နောက်မှထပ်စမ်းပါ။"
+    }
+  },
+  "youtubeDownloader": {
+    "title": "YouTube ဗီဒီယိုဒေါင်းလုဒ်",
+    "subtitle": "YouTube ဗီဒီယိုနှင့်အသံများကို အခမဲ့ဒေါင်းလုဒ်လုပ်ပါ",
+    "urlLabel": "YouTube ဗီဒီယို URL",
+    "urlPlaceholder": "YouTube ဗီဒီယိုလင့်ခ်ဤနေရာတွင်ကူးထည့်ပါ...",
+    "parseButton": "ခွဲခြမ်း",
+    "parsing": "ခွဲခြမ်းနေသည်",
+    "doNotClose": "ဤစာမျက်နှာမပိတ်ပါနှင့်",
+    "downloadButton": "ဒေါင်းလုဒ်",
+    "downloading": "ဒေါင်းလုဒ်လုပ်နေသည်...",
+    "selectQuality": "အရည်အသွေးရွေး",
+    "untitled": "ခေါင်းစဉ်မဲ့ဗီဒီယို",
+    "emptyTitle": "YouTube ဗီဒီယိုများဒေါင်းလုဒ်",
+    "emptyDescription": "ဒေါင်းလုဒ်စတင်ရန် အပေါ်တွင် YouTube ဗီဒီယို URL ကူးထည့်ပါ။ ဗီဒီယိုနှင့်အသံဖော်မက်များကိုထောက်ပံ့သည်။",
+    "tabs": {
+      "videoWithAudio": "ဗီဒီယို",
+      "videoOnly": "ဗီဒီယိုသက်သက်",
+      "audioOnly": "အသံသက်သက်"
+    },
+    "errors": {
+      "emptyUrl": "YouTube ဗီဒီယို URL ထည့်ပါ",
+      "invalidUrl": "YouTube URL မမှန်ပါ။ YouTube ဗီဒီယိုလင့်ခ်မှန်ကန်စွာထည့်ပါ။",
+      "parseFailed": "ဗီဒီယိုခွဲခြမ်းမှုမအောင်မြင်ပါ။ URL စစ်ဆေးပြီး ထပ်စမ်းပါ။",
+      "insufficientCredits": "ခရက်ဒစ်မလုံလောက်ပါ။ လိုအပ်သည်: {{required}}, လက်ရှိ: {{current}}",
+      "unknownError": "မမျှော်လင့်ထားသောအမှားဖြစ်ပေါ်ခဲ့သည်။ နောက်မှထပ်စမ်းပါ။"
+    }
+  }
+}

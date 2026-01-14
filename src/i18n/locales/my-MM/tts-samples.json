@@ -1,0 +1,48 @@
+{
+  "ttsSamples": {
+    "sectionTitle": {
+      "prefix": "Voicica AI ၏",
+      "highlight": "ထိပ်တန်းထုတ်ကုန်",
+      "suffix": "လက်မလွတ်သင့်ပါ 👍"
+    },
+    "productInfo": {
+      "title": "စာသားမှအသံသို့",
+      "headline": {
+        "prefix": "အခမဲ့",
+        "highlight": "စာသားမှအသံသို့",
+        "suffix": "လက်တွေ့ AI အသံများဖြင့်အွန်လိုင်း"
+      },
+      "features": {
+        "voices": "ဘာသာစကားနှင့်လေယူလေသိမ်း ၁၉၀+ ပါ အသံ ၃၂၀၀+",
+        "natural": "စာသားကို သဘာဝ AI အသံအဖြစ်ပြောင်းလဲပါ",
+        "parameters": "အကောင်းဆုံးရလဒ်အတွက် ပါရာမီတာချိန်ညှိမှု",
+        "download": "WAV/MP3 အသံဒေါင်းလုဒ်",
+        "voiceover": "ဗီဒီယိုများအတွက် အသံသွင်းခြင်းပြုလုပ်ရန်ပြည့်စုံ"
+      },
+      "cta": {
+        "button": "ယခုပင်စမ်းကြည့်",
+        "conversions": "TTS ပြောင်းလဲမှုများပြုလုပ်ပြီး",
+        "usersCount": "လူ ၁ သောင်း+ သုံးနေသည်..."
+      }
+    },
+    "languageSelector": {
+      "placeholder": "ဘာသာစကားရွေး",
+      "unlockTitle": "အခမဲ့အသံများပိုဖွင့်ပါ",
+      "unlockSubtitle": "ဘာသာစကားနှင့်လေယူလေသိမ်း ၁၉၀+"
+    },
+    "voiceSelector": {
+      "loading": "အသံများဖွင့်နေသည်...",
+      "placeholder": "အသံတစ်ခုရွေးပါ",
+      "unlockTitle": "အခမဲ့အသံများပိုစမ်းကြည့်ပါ",
+      "unlockSubtitle": "AI အသံ ၃၂၀၀+",
+      "noVoices": "ဤဘာသာစကားအတွက် အသံမရှိပါ"
+    },
+    "demoPanel": {
+      "textPlaceholder": "အသံအဖြစ်ပြောင်းလဲရန် စာသားထည့်ပါ...",
+      "enhanceVoice": "အသံတိုးတက်စေ",
+      "listenButton": "နားဆင်",
+      "playingButton": "ဖွင့်နေသည်...",
+      "loadingConfig": "ဖွဲ့စည်းပုံဖွင့်နေသည်..."
+    }
+  }
+}

@@ -26,6 +26,7 @@
     "adUnavailable": "No ads available, please try again later",
     "adError": "Failed to load ad, please try again later",
 
-    "resetTip": "Tasks reset daily at midnight"
+    "resetTip": "Tasks reset daily at midnight",
+    "noAdsPromo": "Don't want to watch ads? Become a member!"
   }
 }

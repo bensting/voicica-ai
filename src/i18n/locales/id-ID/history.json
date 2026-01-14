@@ -1,0 +1,25 @@
+{
+  "generationHistory": {
+    "title": "Riwayat Pembuatan",
+    "subtitle": "Lihat dan kelola pembuatan suara Anda.",
+    "generatedSpeech": "Suara yang Dibuat",
+    "clearAll": "Hapus Semua",
+    "noGenerations": "Belum ada pembuatan",
+    "noGenerationsDescription": "Pembuatan suara Anda akan muncul di sini setelah Anda mulai membuat.",
+    "allRecordsLoaded": "Semua catatan dimuat",
+    "total": "total",
+    "filters": {
+      "status": "Status",
+      "dateRange": "Tanggal",
+      "allStatus": "Semua Status",
+      "success": "Berhasil",
+      "processing": "Memproses",
+      "pending": "Menunggu",
+      "failed": "Gagal",
+      "from": "Dari",
+      "to": "Ke",
+      "apply": "Terapkan",
+      "clear": "Hapus"
+    }
+  }
+}

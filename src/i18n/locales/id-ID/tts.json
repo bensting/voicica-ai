@@ -1,0 +1,145 @@
+{
+  "tts": {
+    "title": "Teks ke Suara",
+    "upgrade": "Tingkatkan",
+    "credits": "Kredit",
+    "selectVoice": "Pilih Suara",
+    "generating": "Membuat...",
+    "generationComplete": "Pembuatan Selesai",
+    "generationFailed": "Pembuatan Gagal",
+    "processingMessage": "Audio Anda sedang dibuat, harap tunggu...",
+    "successMessage": "Audio berhasil dibuat!",
+    "generatingTip": "Ini mungkin memakan waktu beberapa detik. Anda dapat menutup ini dan memeriksa nanti di Riwayat Pembuatan.",
+    "successTip": "Audio Anda siap! Anda dapat mengunduh atau memutarnya sekarang.",
+    "taskProgress": "Kemajuan",
+    "progress": "Kemajuan",
+    "duration": "Durasi",
+    "recentAuditions": "Audisi terbaru",
+    "allRecords": "Semua catatan",
+    "input": {
+      "placeholder": "Masukkan teks Anda di sini, dan kami akan otomatis mengidentifikasi dan mengubahnya menjadi suara yang sesuai.",
+      "creditsLeft": "Kredit",
+      "permanent": "permanen",
+      "monthly": "bulanan",
+      "characterCount": "{current} / {max}",
+      "generateSpeech": "Buat Suara",
+      "generating": "Membuat...",
+      "tryExamples": "Coba contoh ini",
+      "more": "Lebih",
+      "moreMenu": {
+        "title": "Dapatkan lebih banyak kredit",
+        "signUp": "Daftar gratis",
+        "signUpDesc": "Dapatkan {{credits}} kredit gratis",
+        "pricing": "Lihat harga",
+        "pricingDesc": "Jelajahi paket langganan"
+      },
+      "examples": {
+        "greeting": {
+          "label": "Sapaan",
+          "text": "Halo! Senang bertemu dengan Anda. Apa kabar hari ini?"
+        },
+        "ebook": {
+          "label": "E-book",
+          "text": "Di sebuah desa kecil yang tenang, hiduplah seorang kakek tua yang baik hati. Setiap hari, dia akan duduk di bawah pohon besar di pintu masuk desa dan menceritakan kisah-kisah kuno."
+        },
+        "podcast": {
+          "label": "Podcast",
+          "text": "Selamat datang di acara hari ini. Dalam episode ini, kita akan menjelajahi perkembangan terbaru dalam teknologi kecerdasan buatan."
+        }
+      }
+    },
+    "errors": {
+      "selectTextAndVoice": "Silakan masukkan teks dan pilih suara",
+      "invalidParams": "Parameter tidak valid, periksa input Anda",
+      "insufficientCredits": "Kredit tidak cukup, silakan tingkatkan atau isi ulang",
+      "unauthorized": "Belum masuk atau sesi kedaluwarsa, silakan masuk lagi",
+      "taskSubmitFailed": "Gagal mengirim tugas, silakan coba lagi",
+      "taskNoId": "Pengiriman tugas gagal, tidak ada ID tugas yang dikembalikan",
+      "queryTaskFailed": "Gagal mengambil status tugas, silakan segarkan halaman",
+      "generationFailed": "Pembuatan gagal, silakan coba lagi",
+      "unknownTaskStatus": "Status tugas tidak dikenal, silakan coba lagi",
+      "INSUFFICIENT_CREDITS": "Kredit tidak cukup. Diperlukan: {{required}}, Saat ini: {{current}}",
+      "UNAUTHORIZED": "Tidak diotorisasi. Silakan masuk",
+      "NO_AUTH_INFO": "Tidak ada info autentikasi yang diberikan",
+      "TASK_NOT_FOUND": "Tugas tidak ditemukan: {{taskId}}",
+      "TASK_CREATION_FAILED": "Pembuatan tugas gagal",
+      "VALIDATION_ERROR": "Kesalahan validasi: {{field}}",
+      "TEXT_TOO_LONG": "Teks terlalu panjang. Panjang maks: {{maxLength}}, Saat ini: {{currentLength}}",
+      "RESOURCE_NOT_FOUND": "{{resource}} tidak ditemukan: {{id}}",
+      "VOICE_NOT_FOUND": "Model suara tidak ditemukan: {{voiceName}}",
+      "INTERNAL_ERROR": "Kesalahan server internal"
+    },
+    "deleteDialog": {
+      "title": "Hapus Pembuatan Suara",
+      "message": "Apakah Anda yakin ingin menghapus pembuatan suara ini? Tindakan ini tidak dapat dibatalkan dan file audio akan dihapus secara permanen.",
+      "confirmButton": "Hapus",
+      "cancelButton": "Batal",
+      "deleteFailedAlert": "Gagal menghapus catatan. Silakan coba lagi."
+    },
+    "audioSettings": {
+      "title": "Pengaturan Audio",
+      "speed": {
+        "title": "Kecepatan bicara",
+        "description": "Sesuaikan kecepatan bicara audio",
+        "current": "Kecepatan bicara saat ini"
+      },
+      "volume": {
+        "title": "Volume",
+        "description": "Pengaturan volume suara",
+        "current": "Volume saat ini"
+      },
+      "pitch": {
+        "title": "Nada",
+        "description": "Sesuaikan nada keseluruhan",
+        "current": "Nada saat ini",
+        "deep": "Dalam",
+        "dull": "Tumpul",
+        "consistent": "Konsisten",
+        "bright": "Terang",
+        "crisp": "Jernih"
+      },
+      "save": "Simpan"
+    }
+  },
+  "voiceFilters": {
+    "selectCountry": "Pilih Negara",
+    "selectLanguage": "Pilih Bahasa",
+    "allLanguages": "Semua Bahasa",
+    "selectGender": "Pilih Jenis Kelamin",
+    "searchPlaceholder": "Cari suara berdasarkan nama...",
+    "search": "Cari...",
+    "gender": "Jenis Kelamin",
+    "all": "Semua",
+    "male": "Pria",
+    "female": "Wanita",
+    "neutral": "Netral",
+    "proBasic": "Pro/Dasar",
+    "celebrity": "Selebriti",
+    "professional": "Profesional",
+    "usedOnly": "Digunakan",
+    "noUsedVoices": "Tidak ada riwayat penggunaan",
+    "noVoicesFound": "Suara tidak ditemukan",
+    "loadMoreVoices": "Muat Lebih Banyak Suara",
+    "searchLanguages": "Cari bahasa...",
+    "allVoicesLoaded": "Semua suara dimuat (total {{total}})"
+  },
+  "voices": {
+    "tags": {
+      "all": "Semua",
+      "myClone": "Klon Saya",
+      "used": "Digunakan",
+      "socialMedia": "Media Sosial",
+      "celebrities": "Selebriti",
+      "animation": "Animasi",
+      "moviesTV": "Film & TV",
+      "games": "Game",
+      "festivals": "Festival",
+      "narration": "Narasi",
+      "new": "Baru",
+      "commercial": "Komersial",
+      "audiobook": "Buku Audio",
+      "podcast": "Podcast",
+      "education": "Pendidikan"
+    }
+  }
+}

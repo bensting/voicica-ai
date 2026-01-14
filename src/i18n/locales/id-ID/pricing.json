@@ -1,0 +1,51 @@
+{
+  "pricing": {
+    "pageTitle": "Paket & Harga Voicica AI",
+    "pageSubtitle": "Voicica AI menawarkan berbagai paket pembelian untuk memenuhi kebutuhan Anda.",
+    "loading": "Memuat paket harga...",
+    "error": "Gagal memuat paket harga. Silakan coba lagi nanti.",
+    "retry": "Coba Lagi",
+    "week": "Minggu",
+    "month": "Bulan",
+    "year": "Tahun",
+    "perDay": "per hari",
+    "creditsPerCycle": "kredit per siklus",
+    "creditsUsageRules": "Aturan Penggunaan Kredit",
+    "notes": "Catatan:",
+    "creditsNote": "Kredit dapat digunakan di semua alat di Voicica AI.",
+    "buyNow": "Beli Sekarang",
+    "tryItFree": "Coba Gratis",
+    "processing": "Memproses...",
+    "renewalAt": "Perpanjangan pada",
+    "freeForEveryone": "Gratis untuk semua",
+    "mostPopular": "Paling Populer",
+    "autoRenew": "Perpanjangan otomatis. Batalkan kapan saja.",
+    "loginRequired": "Login Diperlukan",
+    "loginRequiredDesc": "Silakan masuk untuk membeli paket langganan",
+    "cancel": "Batal",
+    "signIn": "Masuk",
+    "creditsUsageGuide": {
+      "title": "Panduan Penggunaan Kredit",
+      "subtitle": "Berikut adalah kebutuhan kredit untuk setiap fitur.",
+      "feature": "Fitur",
+      "creditsRequired": "Kredit Diperlukan",
+      "standardVoice": "Suara Standar",
+      "premiumVoice": "Suara Premium",
+      "clonedVoice": "Suara Kloning"
+    }
+  },
+  "upgrade": {
+    "header": {
+      "title": "Tingkatkan Paket Anda",
+      "description": "Pilih paket yang sempurna untuk kebutuhan Anda"
+    },
+    "tabs": {
+      "textToVoice": "Teks ke Suara",
+      "voiceClone": "Kloning Suara"
+    },
+    "title": {
+      "textToVoice": "Pilih Paket Teks ke Suara",
+      "voiceClone": "Pilih Paket Kloning Suara"
+    }
+  }
+}

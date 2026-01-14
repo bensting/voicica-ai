@@ -1,0 +1,32 @@
+{
+  "dailyTasks": {
+    "title": "Tugas Harian",
+    "subtitle": "Selesaikan tugas untuk mendapatkan kredit gratis!",
+    "credits": "Kredit",
+
+    "loginToEarn": "Masuk untuk mulai mendapatkan kredit setiap hari!",
+    "dailyMax": "Maksimum Harian",
+    "loginNow": "Masuk Sekarang",
+
+    "todayEarned": "Kemajuan Hari Ini",
+
+    "checkin": "Check-in Harian",
+    "oneClickClaim": "Klaim satu klik",
+    "claim": "Klaim",
+    "claimed": "Diklaim",
+
+    "watchAds": "Tonton Video",
+    "watchMultiple": "Tonton {{count}} video",
+    "watchAdGet": "Tonton +{{credits}}",
+    "allAdsClaimed": "Semua Diklaim Hari Ini",
+
+    "loadingAd": "Memuat iklan...",
+    "pleaseWait": "Harap tunggu",
+    "adInterrupted": "Silakan tonton video lengkap untuk mendapatkan hadiah",
+    "adUnavailable": "Tidak ada iklan tersedia, silakan coba lagi nanti",
+    "adError": "Gagal memuat iklan, silakan coba lagi nanti",
+
+    "resetTip": "Tugas direset setiap hari pada tengah malam",
+    "noAdsPromo": "Tidak ingin menonton iklan? Jadilah member!"
+  }
+}

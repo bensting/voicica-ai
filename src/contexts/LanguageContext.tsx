@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useState, useEffect, useMemo, ReactNode } from 'react';
 
-type Locale = 'en-US' | 'zh-CN' | 'zh-TW' | 'th-TH' | 'my-MM';
+type Locale = 'en-US' | 'zh-CN' | 'zh-TW' | 'th-TH' | 'my-MM' | 'id-ID';
 
 interface LanguageContextType {
   locale: Locale;
@@ -16,7 +16,7 @@ const LanguageContext = createContext<LanguageContextType | undefined>(undefined
 type MessageValue = string | Record<string, unknown>;
 
 // 支持的语言列表
-const SUPPORTED_LOCALES: Locale[] = ['en-US', 'zh-CN', 'zh-TW', 'th-TH', 'my-MM'];
+const SUPPORTED_LOCALES: Locale[] = ['en-US', 'zh-CN', 'zh-TW', 'th-TH', 'my-MM', 'id-ID'];
 const DEFAULT_LOCALE: Locale = 'en-US';
 
 /**
@@ -214,4 +214,5 @@ export const locales: { code: Locale; name: string; nativeName: string }[] = [
   { code: 'zh-TW', name: 'Traditional Chinese', nativeName: '繁體中文' },
   { code: 'th-TH', name: 'Thai', nativeName: 'ภาษาไทย' },
   { code: 'my-MM', name: 'Burmese', nativeName: 'မြန်မာဘာသာ' },
+  { code: 'id-ID', name: 'Indonesian', nativeName: 'Bahasa Indonesia' },
 ];

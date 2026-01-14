@@ -1,0 +1,47 @@
+{
+  "pwa": {
+    "updateAvailable": "Versi baru tersedia",
+    "updateDescription": "Versi baru aplikasi tersedia. Klik perbarui untuk mendapatkan fitur dan peningkatan terbaru.",
+    "update": "Perbarui sekarang",
+    "later": "Nanti",
+    "installShortcut": "Instal Aplikasi",
+    "installTitle": "Instal Aplikasi",
+    "installDescription": "Instal aplikasi ini di perangkat Anda untuk akses cepat dan mudah, bahkan saat offline.",
+    "install": "Instal",
+    "feature1": "Akses cepat dari desktop atau layar beranda",
+    "feature2": "Bekerja offline dengan konten yang di-cache",
+    "feature3": "Ringan, tidak perlu app store",
+    "iosInstructions": "Langkah Instalasi:",
+    "iosStep1": "Ketuk tombol Bagikan",
+    "iosStep1b": "di bagian bawah Safari",
+    "iosStep2": "Gulir dan ketuk \"Tambahkan ke Layar Beranda\"",
+    "iosStep3": "Ketuk \"Tambah\" di pojok kanan atas",
+    "gotIt": "Mengerti"
+  },
+  "appUpdate": {
+    "title": "Versi Baru Tersedia",
+    "currentVersion": "Versi saat ini",
+    "releaseNotes": "Yang baru",
+    "forceUpdateWarning": "Ini adalah pembaruan wajib. Silakan perbarui untuk melanjutkan menggunakan aplikasi.",
+    "updateNow": "Perbarui Sekarang",
+    "later": "Nanti",
+    "cancel": "Batal",
+    "retry": "Coba Lagi",
+    "checkingPermission": "Memeriksa izin...",
+    "downloading": "Mengunduh...",
+    "installing": "Menginstal...",
+    "installComplete": "Instalasi selesai",
+    "downloadError": "Unduhan gagal",
+    "permissionRequired": "Silakan berikan izin untuk menginstal aplikasi tidak dikenal dan coba lagi"
+  },
+  "googlePlayUpdate": {
+    "updateAvailable": "Pembaruan Tersedia",
+    "updateReady": "Pembaruan Siap Diinstal",
+    "downloadInBackground": "Mengunduh di latar belakang...",
+    "downloadComplete": "Unduhan selesai. Mulai ulang untuk menerapkan pembaruan.",
+    "update": "Perbarui",
+    "install": "Instal Sekarang",
+    "later": "Nanti",
+    "progress": "Mengunduh... {{progress}}%"
+  }
+}

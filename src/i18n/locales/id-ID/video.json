@@ -1,0 +1,18 @@
+{
+  "textToVideo": "Teks ke Video",
+  "promptPlaceholder": "Jelaskan video yang ingin Anda buat. Jelaskan secara spesifik tentang aksi, adegan, gaya, dan suasana...",
+  "promptLabel": "Deskripsi Video",
+  "resolution": "Resolusi",
+  "duration": "Durasi",
+  "aspectRatio": "Rasio Aspek",
+  "creditsCost": "Biaya Kredit",
+  "model": "Model",
+  "veo31Description": "Model pembuatan video paling canggih dari Google dengan kualitas dan gerakan superior",
+  "latest": "Terbaru",
+  "generate": "Buat Video",
+  "generating": "Membuat...",
+  "generatingVideo": "Membuat video Anda...",
+  "preview": "Pratinjau",
+  "previewPlaceholder": "Video yang Anda buat akan muncul di sini",
+  "browserNotSupported": "Browser Anda tidak mendukung tag video."
+}

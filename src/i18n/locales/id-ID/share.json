@@ -1,0 +1,15 @@
+{
+  "share": {
+    "title": "Bagikan",
+    "modalTitle": "Bagikan Suara",
+    "linkLabel": "Tautan Berbagi",
+    "copy": "Salin Tautan",
+    "copied": "Disalin",
+    "moreOptions": "Opsi berbagi lainnya",
+    "download": "Unduh Audio",
+    "characters": "karakter",
+    "ctaTitle": "Buat Suara AI Anda Sendiri",
+    "ctaDescription": "Ubah teks menjadi suara alami dengan Voicica AI.",
+    "tryNow": "Coba Sekarang"
+  }
+}

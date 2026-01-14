@@ -1,0 +1,112 @@
+{
+  "settings": {
+    "title": "Pengaturan",
+    "menu": {
+      "home": "Beranda",
+      "mySubscription": "Langganan Saya",
+      "myProfile": "Profil Saya",
+      "orderList": "Daftar Pesanan",
+      "myCoupon": "Kupon Saya",
+      "messageCenter": "Pusat Pesan"
+    },
+    "basicInfo": {
+      "title": "Info Dasar",
+      "profilePicture": "Foto Profil",
+      "profilePictureHint": "PNG atau JPG, gambar dengan lebar dan tinggi yang sama direkomendasikan",
+      "uploading": "Mengunggah...",
+      "nameSurname": "Nama Lengkap",
+      "email": "Alamat Email",
+      "phone": "Telepon"
+    },
+    "actions": {
+      "save": "Simpan",
+      "saveChanges": "Simpan Perubahan",
+      "cancel": "Batal",
+      "saveSuccess": "Berhasil disimpan",
+      "saveFailed": "Gagal menyimpan, silakan coba lagi"
+    },
+    "benefits": {
+      "title": "Keuntungan Saya",
+      "credits": "Kredit",
+      "voiceCredits": "Kredit Suara",
+      "refresh": "Segarkan",
+      "viewHistory": "Lihat Riwayat"
+    }
+  },
+  "subscription": {
+    "title": "Paket Anda",
+    "changePlan": "Ganti Paket Anda",
+    "selectPlan": "Pilih paket yang paling cocok untuk Anda.",
+    "monthly": "Bulanan",
+    "yearly": "Tahunan",
+    "yearlyDiscount": "DISKON 33%",
+    "free": {
+      "name": "Gratis",
+      "badge": "Aktif",
+      "feature1": "Hingga 120 karakter per pembuatan",
+      "feature2": "900 detik pembuatan audio per bulan",
+      "feature3": "Buat hingga 5 model kloning suara"
+    },
+    "pro": {
+      "name": "Profesional",
+      "badge": "Direkomendasikan",
+      "tagline": "Buka potensi penuh",
+      "priceMonthly": "$14,99",
+      "priceYearly": "$9,99",
+      "perMonth": "/1 bulan",
+      "feature1": "Hingga 1000 karakter per pembuatan",
+      "feature2": "Penggunaan komersial diizinkan",
+      "feature3": "Pembuatan tak terbatas",
+      "feature4": "Pembuatan prioritas",
+      "feature5": "Buat model kloning suara tak terbatas",
+      "upgradeNow": "Tingkatkan Sekarang"
+    },
+    "cancel": {
+      "title": "Batalkan Langganan",
+      "warning": "Tindakan ini tidak dapat dibatalkan. Langganan Anda akan segera dibatalkan dan Anda tidak akan dikenakan biaya lagi.",
+      "note": "Kredit yang dialokasikan akan tetap tersedia untuk digunakan.",
+      "reasonLabel": "Alasan pembatalan (opsional)",
+      "reasonPlaceholder": "Beritahu kami mengapa Anda membatalkan...",
+      "confirm": "Konfirmasi",
+      "canceling": "Membatalkan..."
+    },
+    "mySubscription": {
+      "activeSection": "Aktif",
+      "inactiveSection": "Dibatalkan/Kedaluwarsa",
+      "emptyTitle": "Tidak Ada Langganan",
+      "emptyDesc": "Anda belum memiliki langganan.",
+      "noActiveSubscriptions": "Tidak ada langganan aktif",
+      "noInactiveSubscriptions": "Tidak ada langganan yang dibatalkan atau kedaluwarsa",
+      "retry": "Coba Lagi",
+      "validUntil": "Berlaku hingga:",
+      "daysLeft": "hari tersisa",
+      "credits": "kredit",
+      "cancelButton": "Batalkan Langganan",
+      "status": {
+        "TRIAL": "Uji Coba",
+        "ACTIVE": "Aktif",
+        "EXPIRED": "Kedaluwarsa",
+        "CANCELLED": "Dibatalkan",
+        "SUSPENDED": "Ditangguhkan"
+      }
+    }
+  },
+  "creditHistory": {
+    "title": "Riwayat Kredit",
+    "empty": "Belum ada riwayat kredit",
+    "date": "Tanggal",
+    "description": "Deskripsi",
+    "type": "Tipe",
+    "amount": "Kredit",
+    "scrollToLoadMore": "Gulir ke bawah untuk memuat lebih banyak",
+    "allLoaded": "Semua catatan dimuat",
+    "productType": {
+      "textToSpeech": "Teks ke Suara",
+      "voiceCloning": "Kloning Suara",
+      "youtubeDownloader": "Unduh YouTube",
+      "tiktokDownloader": "Unduh TikTok",
+      "subscription": "Langganan",
+      "other": "Lainnya"
+    }
+  }
+}

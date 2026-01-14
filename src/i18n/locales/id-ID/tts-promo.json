@@ -1,0 +1,51 @@
+{
+  "ttsPromo": {
+    "stats": {
+      "voices": "Suara",
+      "languages": "Bahasa",
+      "downloads": "Unduhan",
+      "reviews": "Ulasan",
+      "free": "GRATIS"
+    },
+    "hero": {
+      "badge": "100% Gratis • Tanpa Pendaftaran",
+      "title1": "AI Gratis",
+      "titleHighlight1": "Teks ke Suara",
+      "title2": "Generator",
+      "subtitle": "3200+ Suara • 190+ Bahasa",
+      "description": "Ubah teks menjadi suara alami secara instan. Suara selebriti, narator profesional, atau klon suara Anda sendiri.",
+      "brandName": "Voicica AI",
+      "downloadApk": "Unduh",
+      "comingSoon": "Segera Hadir",
+      "tryNow": "Mulai Gratis",
+      "webVersion": "Versi Web"
+    },
+    "samples": {
+      "title1": "Dengarkan contoh",
+      "title2": "nyata dari",
+      "titleHighlight": "Suara AI",
+      "description": "Kloning suara hiper-realistis dengan emosi, nada, dan pengucapan alami.",
+      "noVoices": "Tidak ada suara tersedia untuk bahasa ini.",
+      "exploreAll": "Jelajahi semua 3200+ Suara"
+    },
+    "filters": {
+      "all": "Semua",
+      "celebrities": "Selebriti",
+      "professional": "Profesional"
+    },
+    "cta": {
+      "feature1": "3200+ Suara AI dalam 190+ Bahasa",
+      "feature2": "Unduh MP3/WAV - Tak Terbatas",
+      "feature3": "Klon Suara Anda Sendiri",
+      "feature4": "100% Gratis Selamanya",
+      "startCreating": "Mulai Membuat - Gratis",
+      "noCreditCard": "Tanpa kartu kredit",
+      "noSignup": "Tanpa pendaftaran"
+    },
+    "explore": {
+      "title": "Jelajahi Suara AI dalam Berbagai Bahasa",
+      "subtitle": "Layanan teks ke suara kami mendukung 190+ bahasa. Pilih bahasa pilihan Anda dan mulai membuat konten dengan suara AI berkualitas tinggi.",
+      "exploreMore": "Jelajahi Lebih Lanjut"
+    }
+  }
+}

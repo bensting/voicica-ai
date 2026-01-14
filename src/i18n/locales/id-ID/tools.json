@@ -1,0 +1,51 @@
+{
+  "tiktokDownloader": {
+    "title": "Pengunduh Video TikTok",
+    "subtitle": "Unduh video TikTok tanpa watermark gratis",
+    "urlLabel": "URL Video TikTok",
+    "urlPlaceholder": "Tempel tautan video TikTok di sini...",
+    "parseButton": "Parse",
+    "parsing": "Memparse",
+    "doNotClose": "Jangan tutup halaman ini",
+    "downloadButton": "Unduh Video",
+    "downloading": "Mengunduh...",
+    "selectQuality": "Pilih Kualitas",
+    "untitled": "Video Tanpa Judul",
+    "emptyTitle": "Unduh Video TikTok",
+    "emptyDescription": "Tempel URL video TikTok di atas untuk mulai mengunduh. Mendukung semua format video TikTok.",
+    "errors": {
+      "emptyUrl": "Silakan masukkan URL video TikTok",
+      "invalidUrl": "URL TikTok tidak valid. Silakan masukkan tautan video TikTok yang valid.",
+      "parseFailed": "Gagal memparse video. Periksa URL dan coba lagi.",
+      "insufficientCredits": "Kredit tidak cukup. Diperlukan: {{required}}, Saat ini: {{current}}",
+      "unknownError": "Terjadi kesalahan tak terduga. Silakan coba lagi nanti."
+    }
+  },
+  "youtubeDownloader": {
+    "title": "Pengunduh Video YouTube",
+    "subtitle": "Unduh video dan audio YouTube gratis",
+    "urlLabel": "URL Video YouTube",
+    "urlPlaceholder": "Tempel tautan video YouTube di sini...",
+    "parseButton": "Parse",
+    "parsing": "Memparse",
+    "doNotClose": "Jangan tutup halaman ini",
+    "downloadButton": "Unduh",
+    "downloading": "Mengunduh...",
+    "selectQuality": "Pilih Kualitas",
+    "untitled": "Video Tanpa Judul",
+    "emptyTitle": "Unduh Video YouTube",
+    "emptyDescription": "Tempel URL video YouTube di atas untuk mulai mengunduh. Mendukung format video dan audio.",
+    "tabs": {
+      "videoWithAudio": "Video",
+      "videoOnly": "Video Saja",
+      "audioOnly": "Audio Saja"
+    },
+    "errors": {
+      "emptyUrl": "Silakan masukkan URL video YouTube",
+      "invalidUrl": "URL YouTube tidak valid. Silakan masukkan tautan video YouTube yang valid.",
+      "parseFailed": "Gagal memparse video. Periksa URL dan coba lagi.",
+      "insufficientCredits": "Kredit tidak cukup. Diperlukan: {{required}}, Saat ini: {{current}}",
+      "unknownError": "Terjadi kesalahan tak terduga. Silakan coba lagi nanti."
+    }
+  }
+}

@@ -1,0 +1,48 @@
+{
+  "studio": {
+    "welcomeTitle": "Hai, selamat datang di Voicica AI",
+    "welcomeSubtitle": "Buka kekuatan AI dengan alat canggih kami untuk suara, video, musik, dan seni. Wujudkan ide Anda—lebih cepat, lebih pintar, dan tanpa usaha.",
+    "featuredProducts": "Produk Unggulan",
+    "ttsDescription": "Ubah teks menjadi suara alami dengan suara AI canggih",
+    "moreToolsComing": "Lebih banyak alat segera hadir",
+    "youMightWantToTry": "Mungkin Anda ingin mencoba",
+    "tiktokDownloaderDesc": "Unduh video TikTok gratis, tanpa watermark, kualitas HD",
+    "youtubeDownloaderDesc": "Unduh video YouTube gratis, berbagai format dan resolusi",
+    "upgrade": "Tingkatkan",
+    "dailyTasks": "Hadiah",
+    "tts": "Teks ke Suara",
+    "menu": {
+      "home": "Beranda",
+      "creationHub": "Pusat Kreasi",
+      "project": "Proyek",
+      "shortVideo": "Video Pendek",
+      "aiVideoGenerator": "Generator Video AI",
+      "textToSpeech": "Teks ke Suara",
+      "generationHistory": "Riwayat Pembuatan",
+      "speechToSpeech": "Suara ke Suara",
+      "voiceCloning": "Kloning Suara",
+      "voiceoverStudio": "Studio Sulih Suara",
+      "aiSong": "Lagu AI",
+      "aiMusicMovie": "Film Musik AI",
+      "musicHistory": "Riwayat Musik",
+      "aiMusic": "Musik AI",
+      "aiCover": "Cover AI",
+      "musicTools": "Alat Musik",
+      "account": "Akun",
+      "tools": "Alat Gratis",
+      "tiktokDownloader": "Pengunduh TikTok",
+      "youtubeDownloader": "Pengunduh YouTube",
+      "textToVideo": "Teks ke Video"
+    },
+    "mobileNav": {
+      "tts": "TTS",
+      "voices": "Suara",
+      "clone": "Klon",
+      "history": "Riwayat"
+    },
+    "voices": {
+      "selectVoice": "Pilih Suara",
+      "selectVoicePrompt": "Silakan pilih suara"
+    }
+  }
+}

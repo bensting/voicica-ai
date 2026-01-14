@@ -1,0 +1,48 @@
+{
+  "ttsSamples": {
+    "sectionTitle": {
+      "prefix": "Produk Unggulan",
+      "highlight": "Voicica AI",
+      "suffix": "yang Wajib Dicoba 👍"
+    },
+    "productInfo": {
+      "title": "Teks ke Suara",
+      "headline": {
+        "prefix": "Gratis",
+        "highlight": "Teks ke Suara",
+        "suffix": "Online dengan Suara AI Realistis"
+      },
+      "features": {
+        "voices": "3200+ suara dengan 190+ bahasa & aksen",
+        "natural": "Ubah teks menjadi suara AI yang alami",
+        "parameters": "Penyesuaian parameter untuk hasil terbaik",
+        "download": "Unduh audio dalam WAV/MP3",
+        "voiceover": "Sempurna untuk membuat sulih suara video"
+      },
+      "cta": {
+        "button": "Coba Sekarang",
+        "conversions": "konversi TTS dibuat",
+        "usersCount": "10K+ orang menggunakan..."
+      }
+    },
+    "languageSelector": {
+      "placeholder": "Pilih Bahasa",
+      "unlockTitle": "Buka Lebih Banyak Suara Gratis",
+      "unlockSubtitle": "190+ bahasa & aksen"
+    },
+    "voiceSelector": {
+      "loading": "Memuat suara...",
+      "placeholder": "Pilih suara",
+      "unlockTitle": "Coba lebih banyak suara gratis",
+      "unlockSubtitle": "3200+ Suara AI",
+      "noVoices": "Tidak ada suara tersedia untuk bahasa ini"
+    },
+    "demoPanel": {
+      "textPlaceholder": "Masukkan teks untuk diubah menjadi suara...",
+      "enhanceVoice": "Tingkatkan Suara",
+      "listenButton": "Dengarkan",
+      "playingButton": "Memutar...",
+      "loadingConfig": "Memuat konfigurasi..."
+    }
+  }
+}

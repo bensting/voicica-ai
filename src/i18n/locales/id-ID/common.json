@@ -1,0 +1,92 @@
+{
+  "common": {
+    "brand": "Voicica AI",
+    "cancel": "Batal",
+    "close": "Tutup",
+    "retry": "Coba Lagi",
+    "loading": "Memuat...",
+    "download": "Unduh",
+    "share": "Bagikan",
+    "delete": "Hapus",
+    "later": "Nanti",
+    "refresh": "Segarkan"
+  },
+  "app": {
+    "updateAvailable": "Pembaruan Tersedia",
+    "refreshRequired": "Versi baru tersedia. Silakan segarkan untuk melanjutkan."
+  },
+  "creditInfo": {
+    "currentCredits": "Kredit Saat Ini:",
+    "loginForMore": "Masuk untuk kredit lebih banyak",
+    "deductionNotice": "{{count}} kredit akan dipotong setelah {{actionName}} berhasil"
+  },
+  "productCategory": {
+    "aiVideo": "Video AI",
+    "aiMusic": "Musik AI",
+    "aiVoice": "Suara AI"
+  },
+  "navbar": {
+    "explore": "Jelajahi",
+    "pricing": "Harga",
+    "faq": "FAQ",
+    "blog": "Blog",
+    "myVoiceModels": "Model Suara Saya",
+    "generationHistory": "Riwayat Pembuatan",
+    "subscription": "Langganan",
+    "profile": "Profil",
+    "login": "Masuk",
+    "logout": "Keluar",
+    "myStudio": "Studio Saya"
+  },
+  "nav": {
+    "studio": "Studio",
+    "pricing": "Harga",
+    "faq": "FAQ",
+    "generationHistory": "Riwayat Pembuatan",
+    "freeTools": "Alat Gratis",
+    "textToSpeech": "Teks ke Suara",
+    "textToSpeechDesc": "Ubah teks menjadi suara yang alami",
+    "tiktokDownloader": "Pengunduh TikTok",
+    "tiktokDownloaderDesc": "Unduh video TikTok tanpa watermark",
+    "youtubeDownloader": "Pengunduh YouTube",
+    "youtubeDownloaderDesc": "Unduh video dan audio YouTube"
+  },
+  "language": {
+    "en": "English",
+    "zhCN": "简体中文",
+    "zhTW": "繁體中文"
+  },
+  "footer": {
+    "tagline": "Rangkul AI, Rangkul Kesederhanaan",
+    "followUs": "Ikuti Kami",
+    "changeLanguage": "Ganti Bahasa",
+    "copyright": "Hak cipta dilindungi.",
+    "info": {
+      "title": "Info",
+      "terms": "Syarat & Ketentuan",
+      "cookie": "Kebijakan Cookie",
+      "privacy": "Kebijakan Privasi",
+      "refund": "Kebijakan Pengembalian",
+      "partner": "Jadilah Mitra Kami"
+    },
+    "about": {
+      "title": "Tentang",
+      "aboutUs": "Tentang Kami",
+      "contact": "Hubungi Kami",
+      "faqs": "FAQ",
+      "blogs": "Blog",
+      "dmca": "DMCA"
+    },
+    "products": {
+      "title": "Produk Unggulan",
+      "tts": "AI Teks ke Suara",
+      "tiktokDownloader": "Pengunduh TikTok",
+      "youtubeDownloader": "Pengunduh YouTube",
+      "songCover": "Generator Cover Lagu AI",
+      "musicGenerator": "Generator Musik AI",
+      "voiceCloning": "Kloning Suara AI",
+      "voiceChanger": "Pengubah Suara Gratis",
+      "api": "API (Untuk Developer)"
+    }
+  }
+}

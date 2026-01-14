@@ -1,0 +1,40 @@
+{
+  "payment": {
+    "success": {
+      "verifying": {
+        "title": "Memverifikasi Pembayaran...",
+        "description": "Harap tunggu sementara kami mengonfirmasi pembayaran Anda"
+      },
+      "success": {
+        "title": "Pembayaran Berhasil!",
+        "description": "Terima kasih atas pembelian Anda, langganan diaktifkan",
+        "orderSummary": "Ringkasan Pesanan",
+        "orderId": "ID Pesanan",
+        "subscriptionId": "ID Langganan",
+        "countdown": "Mengarahkan ke studio dalam {{count}} detik...",
+        "enterStudio": "Masuk Studio Sekarang"
+      },
+      "pending": {
+        "title": "Pembayaran Diproses",
+        "description": "Pembayaran Anda sedang diproses, langganan akan segera diaktifkan",
+        "orderId": "ID Pesanan:",
+        "refresh": "Segarkan Status",
+        "backHome": "Kembali ke Studio"
+      },
+      "failed": {
+        "title": "Verifikasi Pembayaran Gagal",
+        "description": "Maaf, kami tidak dapat memverifikasi pembayaran Anda",
+        "notice": "Jika Anda telah menyelesaikan pembayaran, silakan segarkan halaman nanti untuk memeriksa status, atau hubungi layanan pelanggan untuk bantuan.",
+        "retry": "Coba Verifikasi Lagi",
+        "backHome": "Kembali ke Studio"
+      }
+    },
+    "cancel": {
+      "title": "Pembayaran Dibatalkan",
+      "description": "Pembayaran Anda telah dibatalkan. Tidak ada biaya yang dikenakan.",
+      "notice": "Jika Anda mengalami masalah selama proses pembayaran, silakan coba lagi atau hubungi tim dukungan kami.",
+      "tryAgain": "Coba Lagi",
+      "backToStudio": "Kembali ke Studio"
+    }
+  }
+}

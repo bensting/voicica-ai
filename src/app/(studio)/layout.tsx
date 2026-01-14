@@ -109,6 +109,7 @@ function StudioLayoutContent({
           isOpen={isDailyTasksModalOpen}
           onClose={handleDailyTasksClose}
           onCreditsUpdated={refreshCredits}
+          onUpgradeClick={handleUpgradeClick}
         />
       )}
     </div>

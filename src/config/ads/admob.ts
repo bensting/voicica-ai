@@ -17,6 +17,11 @@ export interface AdMobConfig {
     android: string;
     ios: string;
   };
+  /** 插页式激励广告单元（签到用） */
+  interstitialRewarded: {
+    android: string;
+    ios: string;
+  };
   /** 开屏广告单元（App 启动时显示） */
   appOpen: {
     android: string;
@@ -47,6 +52,11 @@ export const TEST_AD_IDS = {
     android: 'ca-app-pub-3940256099942544/1033173712',
     ios: 'ca-app-pub-3940256099942544/4411468910',
   },
+  /** 插页式激励广告测试 ID */
+  interstitialRewarded: {
+    android: 'ca-app-pub-3940256099942544/5354046379',
+    ios: 'ca-app-pub-3940256099942544/6978759866',
+  },
   appOpen: {
     android: 'ca-app-pub-3940256099942544/9257395921',
     ios: 'ca-app-pub-3940256099942544/5575463023',
@@ -73,6 +83,11 @@ const REAL_AD_IDS = {
     android: 'ca-app-pub-5946279989031789/1915055115',
     ios: '', // iOS 插页式广告（待创建）
   },
+  /** 插页式激励广告（签到用） */
+  interstitialRewarded: {
+    android: 'ca-app-pub-5946279989031789/7444547539',
+    ios: '', // iOS 插页式激励广告（待创建）
+  },
   appOpen: {
     android: 'ca-app-pub-5946279989031789/6006343368',
     ios: '', // iOS 开屏广告（待创建）
@@ -87,6 +102,7 @@ const devConfig: AdMobConfig = {
   iosAppId: TEST_AD_IDS.appId.ios,
   rewarded: TEST_AD_IDS.rewarded,
   interstitial: TEST_AD_IDS.interstitial,
+  interstitialRewarded: TEST_AD_IDS.interstitialRewarded,
   appOpen: {
     ...TEST_AD_IDS.appOpen,
     intervalMinutes: 1, // 开发环境 1 分钟，方便测试
@@ -106,6 +122,7 @@ const prodConfig: AdMobConfig = {
   iosAppId: REAL_AD_IDS.appId.ios,
   rewarded: REAL_AD_IDS.rewarded,
   interstitial: REAL_AD_IDS.interstitial,
+  interstitialRewarded: REAL_AD_IDS.interstitialRewarded,
   appOpen: {
     ...REAL_AD_IDS.appOpen,
     intervalMinutes: 30, // 生产环境 30 分钟
@@ -126,6 +143,7 @@ export const admobConfig: AdMobConfig = baseConfig.useTestAds
       iosAppId: TEST_AD_IDS.appId.ios,
       rewarded: TEST_AD_IDS.rewarded,
       interstitial: TEST_AD_IDS.interstitial,
+      interstitialRewarded: TEST_AD_IDS.interstitialRewarded,
       appOpen: {
         ...TEST_AD_IDS.appOpen,
         intervalMinutes: baseConfig.appOpen.intervalMinutes,
@@ -145,6 +163,13 @@ export function getRewardedAdUnitId(platform: 'android' | 'ios'): string {
  */
 export function getInterstitialAdUnitId(platform: 'android' | 'ios'): string {
   return admobConfig.interstitial[platform];
+}
+
+/**
+ * 获取插页式激励广告单元 ID（签到用）
+ */
+export function getInterstitialRewardedAdUnitId(platform: 'android' | 'ios'): string {
+  return admobConfig.interstitialRewarded[platform];
 }
 
 /**

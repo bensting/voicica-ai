@@ -11,6 +11,7 @@ import {
 } from '@/actions/daily-tasks';
 import { getDailyTasksConfig, type DailyTasksConfig } from '@/config/appConfig';
 import { useRewardedAd } from './useRewardedAd';
+import { useInterstitialRewardedAd } from './useInterstitialRewardedAd';
 import { Capacitor } from '@capacitor/core';
 
 // 弹窗上次显示时间存储 key
@@ -77,6 +78,7 @@ function hasIntervalPassed(intervalMinutes: number): boolean {
 export function useDailyTasks(): UseDailyTasksReturn {
   const { user, loading: authLoading } = useFirebaseAuth();
   const { showRewardedAd, isReady: isAdReady } = useRewardedAd();
+  const { showInterstitialRewardedAd } = useInterstitialRewardedAd();
   const isNative = Capacitor.isNativePlatform();
   const [status, setStatus] = useState<DailyTasksStatus | null>(null);
   // 直接从客户端同步获取配置，无需 Server Action 网络请求
@@ -164,7 +166,7 @@ export function useDailyTasks(): UseDailyTasksReturn {
   // 用于防止签到重复调用
   const checkinInProgressRef = useRef(false);
 
-  // 签到
+  // 签到（需要先观看插页式激励广告）
   const doCheckin = useCallback(async (): Promise<TaskResult> => {
     // 防止重复调用
     if (checkinInProgressRef.current) {
@@ -176,6 +178,20 @@ export function useDailyTasks(): UseDailyTasksReturn {
       checkinInProgressRef.current = true;
       setClaiming(true);
       setError(null);
+
+      // 原生平台需要先观看插页式激励广告
+      if (isNative) {
+        console.log('[useDailyTasks] 开始显示签到插页式激励广告...');
+        const adWatched = await showInterstitialRewardedAd();
+
+        if (!adWatched) {
+          console.log('[useDailyTasks] 用户未完成广告观看，取消签到');
+          return { success: false, message: '请观看完整广告以完成签到' };
+        }
+        console.log('[useDailyTasks] 广告观看成功，开始签到...');
+      }
+
+      // 调用签到接口
       const result = await checkin();
       if (result.success) {
         await refresh();
@@ -189,7 +205,7 @@ export function useDailyTasks(): UseDailyTasksReturn {
       setClaiming(false);
       checkinInProgressRef.current = false;
     }
-  }, [refresh]);
+  }, [refresh, isNative, showInterstitialRewardedAd]);
 
   // 用于跟踪奖励是否已领取
   const rewardClaimedRef = useRef(false);

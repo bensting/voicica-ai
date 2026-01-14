@@ -41,7 +41,9 @@ export default function DailyTasksModal({ isOpen, onClose, onCreditsUpdated }: D
   const [lastClaimedCredits, setLastClaimedCredits] = useState<number | null>(null);
   const [showCelebration, setShowCelebration] = useState(false);
   const [adLoading, setAdLoading] = useState(false);
+  const [checkinLoading, setCheckinLoading] = useState(false);
   const [adError, setAdError] = useState<string | null>(null);
+  const [checkinError, setCheckinError] = useState<string | null>(null);
 
   // 登录成功后刷新状态
   useEffect(() => {
@@ -68,15 +70,46 @@ export default function DailyTasksModal({ isOpen, onClose, onCreditsUpdated }: D
     return () => document.removeEventListener('keydown', handleEscape);
   }, [isOpen, handleClose]);
 
-  // 处理签到
-  const handleCheckin = async () => {
-    const result = await doCheckin();
-    if (result.success && result.credits) {
-      setLastClaimedCredits(result.credits);
-      setShowCelebration(true);
-      onCreditsUpdated?.();
+  // 处理签到（原生端需要先观看插页式激励广告）
+  const handleCheckin = useCallback(async () => {
+    if (checkinLoading || claiming) return;
+
+    // Web 端：弹出下载 App 引导页
+    if (!isNativeApp()) {
+      console.log('📱 [DailyTasks] Web platform for checkin, showing download modal...');
+      setShowDownloadModal(true);
+      return;
     }
-  };
+
+    setCheckinError(null);
+    setCheckinLoading(true);
+
+    try {
+      console.log('🎬 [DailyTasks] Starting checkin with interstitial rewarded ad...');
+      const result = await doCheckin();
+      console.log('🎬 [DailyTasks] Checkin result:', result);
+
+      if (result.success && result.credits) {
+        setTimeout(() => {
+          setLastClaimedCredits(result.credits!);
+          setShowCelebration(true);
+        }, 300);
+        onCreditsUpdated?.();
+      } else if (!result.success) {
+        const errorMsg = result.message || '签到失败';
+        console.error('❌ [DailyTasks] Checkin failed:', errorMsg);
+        setCheckinError(errorMsg);
+        setTimeout(() => setCheckinError(null), 5000);
+      }
+    } catch (err) {
+      console.error('❌ [DailyTasks] Checkin error:', err);
+      const errorMsg = err instanceof Error ? err.message : '签到失败，请稍后再试';
+      setCheckinError(errorMsg);
+      setTimeout(() => setCheckinError(null), 5000);
+    } finally {
+      setCheckinLoading(false);
+    }
+  }, [checkinLoading, claiming, doCheckin, onCreditsUpdated]);
 
   // 处理看广告领奖励
   const handleWatchAd = useCallback(async () => {
@@ -278,14 +311,14 @@ export default function DailyTasksModal({ isOpen, onClose, onCreditsUpdated }: D
             </div>
             <button
               onClick={handleCheckin}
-              disabled={status.checkinDone || claiming}
+              disabled={status.checkinDone || claiming || checkinLoading}
               className={`px-4 py-2 rounded-lg font-medium text-sm transition-colors ${
                 status.checkinDone
                   ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                  : 'bg-purple-600 text-white hover:bg-purple-700'
+                  : 'bg-purple-600 text-white hover:bg-purple-700 disabled:opacity-50'
               }`}
             >
-              {claiming ? (
+              {(claiming || checkinLoading) ? (
                 <Loader2 className="w-4 h-4 animate-spin" />
               ) : status.checkinDone ? (
                 t('dailyTasks.claimed')
@@ -294,6 +327,13 @@ export default function DailyTasksModal({ isOpen, onClose, onCreditsUpdated }: D
               )}
             </button>
           </div>
+
+          {/* 签到错误提示 */}
+          {checkinError && (
+            <div className="mt-3 p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-600 text-center">
+              {checkinError}
+            </div>
+          )}
         </div>
 
         {/* 看广告赚积分 */}
@@ -374,7 +414,7 @@ export default function DailyTasksModal({ isOpen, onClose, onCreditsUpdated }: D
   const modalContent = (
     <>
       {/* 广告加载中覆盖层 */}
-      {adLoading && (
+      {(adLoading || checkinLoading) && (
         <div className="fixed inset-0 flex flex-col items-center justify-center bg-black/70 backdrop-blur-sm z-[9999]">
           <div className="bg-white rounded-2xl p-8 flex flex-col items-center shadow-2xl">
             <Loader2 className="w-12 h-12 animate-spin text-purple-500 mb-4" />
@@ -386,7 +426,7 @@ export default function DailyTasksModal({ isOpen, onClose, onCreditsUpdated }: D
 
       <div
         className={`fixed inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm transition-all z-[9998] ${
-          adLoading ? 'opacity-0 pointer-events-none' : 'opacity-100'
+          (adLoading || checkinLoading) ? 'opacity-0 pointer-events-none' : 'opacity-100'
         }`}
         onClick={handleClose}
       >

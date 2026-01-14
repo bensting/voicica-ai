@@ -23,6 +23,7 @@ export const subscriptionPlans: SubscriptionPlansConfig = {
         'zh-CN': '入门计划',
         'zh-TW': '入門計劃',
         'th-TH': 'แผนสตาร์ทเตอร์',
+        'my-MM': 'စတင်အစီအစဉ်',
       },
       billing_period: 'month',
       cycle_days: 30,

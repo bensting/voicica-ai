@@ -2,7 +2,6 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import { createPortal } from 'react-dom';
-import Link from 'next/link';
 import { X, Gift, Check, Loader2, Play, Crown } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
@@ -19,12 +18,14 @@ interface DailyTasksModalProps {
   onClose: () => void;
   /** 积分更新回调 */
   onCreditsUpdated?: () => void;
+  /** 打开升级弹窗回调 */
+  onUpgradeClick?: () => void;
 }
 
 /**
  * 每日任务弹窗组件
  */
-export default function DailyTasksModal({ isOpen, onClose, onCreditsUpdated }: DailyTasksModalProps) {
+export default function DailyTasksModal({ isOpen, onClose, onCreditsUpdated, onUpgradeClick }: DailyTasksModalProps) {
   const { t } = useLanguage();
   const { user } = useFirebaseAuth();
   const {
@@ -467,14 +468,18 @@ export default function DailyTasksModal({ isOpen, onClose, onCreditsUpdated }: D
               </p>
 
               {/* 会员推广 */}
-              <Link
-                href="/subscription"
-                onClick={handleClose}
-                className="inline-flex items-center gap-1.5 text-xs text-purple-600 hover:text-purple-700 transition-colors"
-              >
-                <Crown className="w-3.5 h-3.5" />
-                <span>{t('dailyTasks.noAdsPromo') || "Don't want to watch ads? Become a member!"}</span>
-              </Link>
+              {onUpgradeClick && (
+                <button
+                  onClick={() => {
+                    handleClose();
+                    onUpgradeClick();
+                  }}
+                  className="inline-flex items-center gap-1.5 text-xs text-purple-600 hover:text-purple-700 transition-colors"
+                >
+                  <Crown className="w-3.5 h-3.5" />
+                  <span>{t('dailyTasks.noAdsPromo') || "Don't want to watch ads? Become a member!"}</span>
+                </button>
+              )}
             </div>
           )}
         </div>
@@ -490,6 +495,7 @@ export default function DailyTasksModal({ isOpen, onClose, onCreditsUpdated }: D
       <AppDownloadModal
         isOpen={showDownloadModal}
         onClose={() => setShowDownloadModal(false)}
+        onUpgradeClick={onUpgradeClick}
       />
 
       {/* 庆祝效果 */}

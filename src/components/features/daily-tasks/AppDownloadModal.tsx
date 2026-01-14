@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
-import Link from 'next/link';
 import Image from 'next/image';
 import { X, Smartphone, Crown } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -10,6 +9,8 @@ import { useLanguage } from '@/contexts/LanguageContext';
 interface AppDownloadModalProps {
   isOpen: boolean;
   onClose: () => void;
+  /** 打开升级弹窗回调 */
+  onUpgradeClick?: () => void;
 }
 
 // Google Play 商店链接
@@ -19,7 +20,7 @@ const GOOGLE_PLAY_URL = 'https://play.google.com/store/apps/details?id=ai.voicic
  * App 下载引导弹窗
  * 在 Web 端点击"观看广告"时显示，引导用户下载 App
  */
-export default function AppDownloadModal({ isOpen, onClose }: AppDownloadModalProps) {
+export default function AppDownloadModal({ isOpen, onClose, onUpgradeClick }: AppDownloadModalProps) {
   const { t } = useLanguage();
   const [mounted, setMounted] = useState(false);
 
@@ -115,14 +116,18 @@ export default function AppDownloadModal({ isOpen, onClose }: AppDownloadModalPr
           </p>
 
           {/* 会员推广 */}
-          <Link
-            href="/subscription"
-            onClick={onClose}
-            className="inline-flex items-center gap-1.5 text-xs text-purple-600 hover:text-purple-700 transition-colors"
-          >
-            <Crown className="w-3.5 h-3.5" />
-            <span>{t('dailyTasks.noAdsPromo') || "Don't want to watch ads? Become a member!"}</span>
-          </Link>
+          {onUpgradeClick && (
+            <button
+              onClick={() => {
+                onClose();
+                onUpgradeClick();
+              }}
+              className="inline-flex items-center gap-1.5 text-xs text-purple-600 hover:text-purple-700 transition-colors"
+            >
+              <Crown className="w-3.5 h-3.5" />
+              <span>{t('dailyTasks.noAdsPromo') || "Don't want to watch ads? Become a member!"}</span>
+            </button>
+          )}
         </div>
       </div>
     </div>

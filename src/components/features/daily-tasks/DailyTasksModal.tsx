@@ -2,7 +2,8 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import { createPortal } from 'react-dom';
-import { X, Gift, Check, Loader2, Play } from 'lucide-react';
+import Link from 'next/link';
+import { X, Gift, Check, Loader2, Play, Crown } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 import { useDailyTasks } from '@/hooks/useDailyTasks';
@@ -460,10 +461,20 @@ export default function DailyTasksModal({ isOpen, onClose, onCreditsUpdated }: D
 
           {/* 底部提示 */}
           {!isConfigLoading && !isDisabled && (
-            <div className="px-6 pb-5 text-center">
+            <div className="px-6 pb-5 text-center space-y-2">
               <p className="text-xs text-gray-400">
                 {t('dailyTasks.resetTip')}
               </p>
+
+              {/* 会员推广 */}
+              <Link
+                href="/subscription"
+                onClick={handleClose}
+                className="inline-flex items-center gap-1.5 text-xs text-purple-600 hover:text-purple-700 transition-colors"
+              >
+                <Crown className="w-3.5 h-3.5" />
+                <span>{t('dailyTasks.noAdsPromo') || "Don't want to watch ads? Become a member!"}</span>
+              </Link>
             </div>
           )}
         </div>

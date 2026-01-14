@@ -6,7 +6,7 @@
 
 import { appConfig as devConfig } from './config.development';
 import { appConfig as prodConfig } from './config.production';
-import type { AppConfig, TtsSamplesConfig, DailyTasksConfig, AppUpdateConfig } from './types';
+import type { AppConfig, TtsSamplesConfig, DailyTasksConfig, AppUpdateConfig, AnonymousUserConfig } from './types';
 
 // 导出语音成本相关功能（从 creditsCost 重新导出以保持向后兼容）
 export {
@@ -23,7 +23,7 @@ const isProduction = process.env.NODE_ENV === 'production';
 export const appConfig: AppConfig = isProduction ? prodConfig : devConfig;
 
 // 导出类型
-export type { AppConfig, TtsSamplesConfig, DailyTasksConfig, AppUpdateConfig };
+export type { AppConfig, TtsSamplesConfig, DailyTasksConfig, AppUpdateConfig, AnonymousUserConfig };
 
 /**
  * 获取 TTS 试听配置
@@ -58,4 +58,11 @@ export function getDailyTasksConfig(): DailyTasksConfig {
  */
 export function getAppUpdateConfig(): AppUpdateConfig {
   return appConfig.app_update;
+}
+
+/**
+ * 获取匿名用户配置
+ */
+export function getAnonymousUserConfig(): AnonymousUserConfig {
+  return appConfig.anonymous_user;
 }

@@ -2,14 +2,18 @@
 
 import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { X, Smartphone } from 'lucide-react';
+import Link from 'next/link';
+import Image from 'next/image';
+import { X, Smartphone, Crown } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { AppDownloadButtons } from '@/components/features/app-download';
 
 interface AppDownloadModalProps {
   isOpen: boolean;
   onClose: () => void;
 }
+
+// Google Play 商店链接
+const GOOGLE_PLAY_URL = 'https://play.google.com/store/apps/details?id=ai.voicica.app';
 
 /**
  * App 下载引导弹窗
@@ -57,7 +61,7 @@ export default function AppDownloadModal({ isOpen, onClose }: AppDownloadModalPr
         </button>
 
         {/* 顶部标题 */}
-        <div className="bg-gradient-to-br from-purple-600 via-purple-500 to-pink-500 pt-8 pb-5 px-5 text-center text-white">
+        <div className="bg-gradient-to-br from-purple-600 via-purple-500 to-pink-500 pt-8 pb-6 px-5 text-center text-white">
           <div className="w-12 h-12 mx-auto mb-2 bg-white/20 backdrop-blur rounded-xl flex items-center justify-center">
             <Smartphone className="w-6 h-6" />
           </div>
@@ -69,16 +73,56 @@ export default function AppDownloadModal({ isOpen, onClose }: AppDownloadModalPr
           </p>
         </div>
 
-        {/* 下载按钮组 */}
-        <div className="px-4 py-4">
-          <AppDownloadButtons variant="modal" showSectionHeaders={true} />
+        {/* Store 徽章下载区域 */}
+        <div className="px-6 py-5">
+          <div className="flex flex-col items-center gap-4">
+            {/* Google Play Badge */}
+            <a
+              href={GOOGLE_PLAY_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="transition-transform hover:scale-105"
+            >
+              <Image
+                src="/images/stores/google-play-badge.svg"
+                alt="Get it on Google Play"
+                width={180}
+                height={53}
+                className="h-[53px] w-auto"
+              />
+            </a>
+
+            {/* App Store Badge - Coming Soon */}
+            <div className="flex flex-col items-center gap-1">
+              <div className="opacity-40 grayscale pointer-events-none">
+                <Image
+                  src="/images/stores/app-store-badge.svg"
+                  alt="Download on App Store"
+                  width={160}
+                  height={53}
+                  className="h-[53px] w-auto"
+                />
+              </div>
+              <span className="text-gray-400 text-[11px]">Coming Soon</span>
+            </div>
+          </div>
         </div>
 
         {/* 底部提示 */}
-        <div className="px-4 pb-4 text-center">
+        <div className="px-5 pb-5 text-center space-y-2">
           <p className="text-xs text-gray-400">
             {t('appDownload.tip') || '下载 App 观看视频即可获得积分奖励'}
           </p>
+
+          {/* 会员推广 */}
+          <Link
+            href="/subscription"
+            onClick={onClose}
+            className="inline-flex items-center gap-1.5 text-xs text-purple-600 hover:text-purple-700 transition-colors"
+          >
+            <Crown className="w-3.5 h-3.5" />
+            <span>{t('dailyTasks.noAdsPromo') || "Don't want to watch ads? Become a member!"}</span>
+          </Link>
         </div>
       </div>
     </div>

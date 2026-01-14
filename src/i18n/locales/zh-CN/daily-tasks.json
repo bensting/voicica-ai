@@ -26,6 +26,7 @@
     "adUnavailable": "暂无可用广告，请稍后再试",
     "adError": "广告加载失败，请稍后再试",
 
-    "resetTip": "任务每日零点重置"
+    "resetTip": "任务每日零点重置",
+    "noAdsPromo": "不想看广告？立即成为会员！"
   }
 }

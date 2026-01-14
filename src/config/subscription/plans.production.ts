@@ -24,6 +24,7 @@ export const subscriptionPlans: SubscriptionPlansConfig = {
         'zh-TW': '入門計劃',
         'th-TH': 'แผนสตาร์ทเตอร์',
         'my-MM': 'စတင်အစီအစဉ်',
+        'id-ID': 'Paket Pemula',
       },
       billing_period: 'month',
       cycle_days: 30,

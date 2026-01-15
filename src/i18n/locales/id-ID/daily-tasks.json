@@ -14,6 +14,7 @@
     "oneClickClaim": "Klaim satu klik",
     "claim": "Klaim",
     "claimed": "Diklaim",
+    "watchCheckinGet": "Tonton +{{credits}}",
 
     "watchAds": "Tonton Video",
     "watchMultiple": "Tonton {{count}} video",
@@ -22,6 +23,12 @@
 
     "loadingAd": "Memuat iklan...",
     "pleaseWait": "Harap tunggu",
+    "cancel": "Batal",
+    "cancelled": "Dibatalkan",
+    "timeout": "Waktu habis, silakan coba lagi",
+    "retry": "Coba lagi",
+    "close": "Tutup",
+    "loadFailed": "Gagal memuat",
     "adInterrupted": "Silakan tonton video lengkap untuk mendapatkan hadiah",
     "adUnavailable": "Tidak ada iklan tersedia, silakan coba lagi nanti",
     "adError": "Gagal memuat iklan, silakan coba lagi nanti",

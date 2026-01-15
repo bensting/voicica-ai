@@ -14,6 +14,7 @@
     "oneClickClaim": "一键领取",
     "claim": "领取",
     "claimed": "已领取",
+    "watchCheckinGet": "观看 +{{credits}}",
 
     "watchAds": "观看视频",
     "watchMultiple": "观看 {{count}} 个视频",
@@ -22,6 +23,12 @@
 
     "loadingAd": "加载广告中...",
     "pleaseWait": "请稍候",
+    "cancel": "取消",
+    "cancelled": "已取消",
+    "timeout": "加载超时，请重试",
+    "retry": "重试",
+    "close": "关闭",
+    "loadFailed": "加载失败",
     "adInterrupted": "广告未看完，无法获得奖励",
     "adUnavailable": "暂无可用广告，请稍后再试",
     "adError": "广告加载失败，请稍后再试",

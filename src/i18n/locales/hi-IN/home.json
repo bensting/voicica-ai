@@ -1,0 +1,33 @@
+{
+  "home": {
+    "heroTitle": "सभी के लिए 100% मुफ्त टेक्स्ट टू स्पीच",
+    "heroSubtitle": "असीमित आवाज़ें। शून्य लागत।",
+    "heroFeature1": "190+ भाषाओं में 3200+ आवाज़ों में से चुनें।",
+    "heroFeature2": "बस टाइप करें और तुरंत प्राकृतिक वॉइसओवर जनरेट करें।",
+    "heroCTA": "मुफ्त वॉइसओवर जनरेट करें",
+    "exploreVoices": "आवाज़ें खोजें",
+    "viewPricing": "मूल्य देखें",
+    "whyChoose": "Voicica AI क्यों चुनें?",
+    "getStarted": "शुरू करें",
+    "learnMore": "और जानें",
+    "readyTitle": "शुरू करने के लिए तैयार?",
+    "readyDescription": "Voicica AI के साथ अद्भुत वॉइस कंटेंट बनाने वाले हजारों उपयोगकर्ताओं से जुड़ें।",
+    "startCreating": "अभी बनाना शुरू करें"
+  },
+  "cta": {
+    "title": "सभी के लिए मुफ्त AI वॉइसओवर",
+    "getStarted": "शुरू करें, यह मुफ्त है!",
+    "viewPricing": "हमारे प्लान और मूल्य देखें",
+    "features": {
+      "moneyBack": "100% मुफ्त",
+      "support": "मुफ्त तकनीकी सहायता",
+      "secure": "100% सुरक्षित",
+      "updates": "नियमित अपडेट"
+    }
+  },
+  "ttsSamples": {
+    "titlePrefix": "Voicica AI का",
+    "titleHighlight": "स्टार प्रोडक्ट",
+    "titleSuffix": "जो आप मिस नहीं कर सकते"
+  }
+}

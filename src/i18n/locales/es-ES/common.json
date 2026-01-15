@@ -1,0 +1,92 @@
+{
+  "common": {
+    "brand": "Voicica AI",
+    "cancel": "Cancelar",
+    "close": "Cerrar",
+    "retry": "Reintentar",
+    "loading": "Cargando...",
+    "download": "Descargar",
+    "share": "Compartir",
+    "delete": "Eliminar",
+    "later": "Después",
+    "refresh": "Actualizar"
+  },
+  "app": {
+    "updateAvailable": "Actualización disponible",
+    "refreshRequired": "Hay una nueva versión disponible. Por favor, actualiza para continuar."
+  },
+  "creditInfo": {
+    "currentCredits": "Créditos actuales:",
+    "loginForMore": "Inicia sesión para obtener más créditos",
+    "deductionNotice": "Se deducirán {{count}} crédito(s) tras completar {{actionName}}"
+  },
+  "productCategory": {
+    "aiVideo": "Vídeo IA",
+    "aiMusic": "Música IA",
+    "aiVoice": "Voz IA"
+  },
+  "navbar": {
+    "explore": "Explorar",
+    "pricing": "Precios",
+    "faq": "Preguntas frecuentes",
+    "blog": "Blog",
+    "myVoiceModels": "Mis modelos de voz",
+    "generationHistory": "Historial de generación",
+    "subscription": "Suscripción",
+    "profile": "Perfil",
+    "login": "Iniciar sesión",
+    "logout": "Cerrar sesión",
+    "myStudio": "Mi estudio"
+  },
+  "nav": {
+    "studio": "Estudio",
+    "pricing": "Precios",
+    "faq": "Preguntas frecuentes",
+    "generationHistory": "Historial de generación",
+    "freeTools": "Herramientas gratuitas",
+    "textToSpeech": "Texto a voz",
+    "textToSpeechDesc": "Convierte texto en voz natural",
+    "tiktokDownloader": "Descargador de TikTok",
+    "tiktokDownloaderDesc": "Descarga vídeos de TikTok sin marca de agua",
+    "youtubeDownloader": "Descargador de YouTube",
+    "youtubeDownloaderDesc": "Descarga vídeos y audio de YouTube"
+  },
+  "language": {
+    "en": "English",
+    "zhCN": "简体中文",
+    "zhTW": "繁體中文"
+  },
+  "footer": {
+    "tagline": "Abraza la IA, abraza la simplicidad",
+    "followUs": "Síguenos",
+    "changeLanguage": "Cambiar idioma",
+    "copyright": "Todos los derechos reservados.",
+    "info": {
+      "title": "Información",
+      "terms": "Términos y condiciones",
+      "cookie": "Política de cookies",
+      "privacy": "Política de privacidad",
+      "refund": "Política de reembolso",
+      "partner": "Conviértete en socio"
+    },
+    "about": {
+      "title": "Acerca de",
+      "aboutUs": "Sobre nosotros",
+      "contact": "Contacto",
+      "faqs": "Preguntas frecuentes",
+      "blogs": "Blogs",
+      "dmca": "DMCA"
+    },
+    "products": {
+      "title": "Productos destacados",
+      "tts": "Texto a voz con IA",
+      "tiktokDownloader": "Descargador de TikTok",
+      "youtubeDownloader": "Descargador de YouTube",
+      "songCover": "Generador de covers con IA",
+      "musicGenerator": "Generador de música con IA",
+      "voiceCloning": "Clonación de voz con IA",
+      "voiceChanger": "Cambiador de voz gratuito",
+      "api": "API (Para desarrolladores)"
+    }
+  }
+}

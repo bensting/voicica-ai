@@ -1,0 +1,47 @@
+{
+  "pwa": {
+    "updateAvailable": "Có phiên bản mới",
+    "updateDescription": "Phiên bản mới của ứng dụng đã có. Nhấp cập nhật để nhận các tính năng và cải tiến mới nhất.",
+    "update": "Cập nhật ngay",
+    "later": "Để sau",
+    "installShortcut": "Cài đặt ứng dụng",
+    "installTitle": "Cài đặt ứng dụng",
+    "installDescription": "Cài đặt ứng dụng này trên thiết bị của bạn để truy cập nhanh chóng và dễ dàng, ngay cả khi offline.",
+    "install": "Cài đặt",
+    "feature1": "Truy cập nhanh từ màn hình chính hoặc desktop",
+    "feature2": "Hoạt động offline với nội dung đã lưu",
+    "feature3": "Nhẹ, không cần cửa hàng ứng dụng",
+    "iosInstructions": "Các bước cài đặt:",
+    "iosStep1": "Nhấn nút Chia sẻ",
+    "iosStep1b": "ở dưới cùng của Safari",
+    "iosStep2": "Cuộn và nhấn \"Thêm vào màn hình chính\"",
+    "iosStep3": "Nhấn \"Thêm\" ở góc trên bên phải",
+    "gotIt": "Đã hiểu"
+  },
+  "appUpdate": {
+    "title": "Có phiên bản mới",
+    "currentVersion": "Phiên bản hiện tại",
+    "releaseNotes": "Có gì mới",
+    "forceUpdateWarning": "Đây là bản cập nhật bắt buộc. Vui lòng cập nhật để tiếp tục sử dụng ứng dụng.",
+    "updateNow": "Cập nhật ngay",
+    "later": "Để sau",
+    "cancel": "Hủy",
+    "retry": "Thử lại",
+    "checkingPermission": "Đang kiểm tra quyền...",
+    "downloading": "Đang tải xuống...",
+    "installing": "Đang cài đặt...",
+    "installComplete": "Cài đặt hoàn tất",
+    "downloadError": "Tải xuống thất bại",
+    "permissionRequired": "Vui lòng cấp quyền cài đặt ứng dụng không xác định và thử lại"
+  },
+  "googlePlayUpdate": {
+    "updateAvailable": "Có bản cập nhật",
+    "updateReady": "Bản cập nhật sẵn sàng cài đặt",
+    "downloadInBackground": "Đang tải xuống nền...",
+    "downloadComplete": "Tải xuống hoàn tất. Khởi động lại để áp dụng cập nhật.",
+    "update": "Cập nhật",
+    "install": "Cài đặt ngay",
+    "later": "Để sau",
+    "progress": "Đang tải xuống... {{progress}}%"
+  }
+}

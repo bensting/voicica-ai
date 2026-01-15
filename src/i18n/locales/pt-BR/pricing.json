@@ -1,0 +1,51 @@
+{
+  "pricing": {
+    "pageTitle": "Planos e preços da Voicica AI",
+    "pageSubtitle": "Voicica AI oferece uma variedade de planos de compra para melhor atender às suas necessidades.",
+    "loading": "Carregando planos de preços...",
+    "error": "Falha ao carregar planos de preços. Por favor, tente novamente mais tarde.",
+    "retry": "Tentar novamente",
+    "week": "Semana",
+    "month": "Mês",
+    "year": "Ano",
+    "perDay": "por dia",
+    "creditsPerCycle": "créditos por ciclo",
+    "creditsUsageRules": "Regras de uso de créditos",
+    "notes": "Observações:",
+    "creditsNote": "Os créditos podem ser usados em todas as ferramentas da Voicica AI.",
+    "buyNow": "Comprar agora",
+    "tryItFree": "Experimente grátis",
+    "processing": "Processando...",
+    "renewalAt": "Renovação em",
+    "freeForEveryone": "Grátis para todos",
+    "mostPopular": "Mais popular",
+    "autoRenew": "Renovação automática. Cancele a qualquer momento.",
+    "loginRequired": "Login necessário",
+    "loginRequiredDesc": "Por favor, faça login para comprar um plano de assinatura",
+    "cancel": "Cancelar",
+    "signIn": "Entrar",
+    "creditsUsageGuide": {
+      "title": "Guia de uso de créditos",
+      "subtitle": "Abaixo estão os requisitos de créditos para cada recurso.",
+      "feature": "Recurso",
+      "creditsRequired": "Créditos necessários",
+      "standardVoice": "Voz padrão",
+      "premiumVoice": "Voz premium",
+      "clonedVoice": "Voz clonada"
+    }
+  },
+  "upgrade": {
+    "header": {
+      "title": "Faça upgrade do seu plano",
+      "description": "Escolha o plano perfeito para suas necessidades"
+    },
+    "tabs": {
+      "textToVoice": "Texto para voz",
+      "voiceClone": "Clonagem de voz"
+    },
+    "title": {
+      "textToVoice": "Escolha seu plano de texto para fala",
+      "voiceClone": "Escolha seu plano de clonagem de voz"
+    }
+  }
+}

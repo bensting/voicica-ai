@@ -1,0 +1,15 @@
+{
+  "share": {
+    "title": "Chia sẻ",
+    "modalTitle": "Chia sẻ giọng nói",
+    "linkLabel": "Liên kết chia sẻ",
+    "copy": "Sao chép liên kết",
+    "copied": "Đã sao chép",
+    "moreOptions": "Thêm tùy chọn chia sẻ",
+    "download": "Tải âm thanh",
+    "characters": "ký tự",
+    "ctaTitle": "Tạo giọng nói AI của riêng bạn",
+    "ctaDescription": "Chuyển văn bản thành giọng nói tự nhiên với Voicica AI.",
+    "tryNow": "Thử ngay"
+  }
+}

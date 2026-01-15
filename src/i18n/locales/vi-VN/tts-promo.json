@@ -1,0 +1,51 @@
+{
+  "ttsPromo": {
+    "stats": {
+      "voices": "Giọng nói",
+      "languages": "Ngôn ngữ",
+      "downloads": "Lượt tải",
+      "reviews": "Đánh giá",
+      "free": "MIỄN PHÍ"
+    },
+    "hero": {
+      "badge": "Miễn phí 100% - Không cần đăng ký",
+      "title1": "AI miễn phí",
+      "titleHighlight1": "Chuyển văn bản thành giọng nói",
+      "title2": "Tạo giọng nói",
+      "subtitle": "Hơn 3200 giọng nói - Hơn 190 ngôn ngữ",
+      "description": "Chuyển đổi văn bản thành giọng nói tự nhiên ngay lập tức. Giọng người nổi tiếng, người dẫn chuyện chuyên nghiệp, hoặc nhân bản giọng nói của riêng bạn.",
+      "brandName": "Voicica AI",
+      "downloadApk": "Tải xuống",
+      "comingSoon": "Sắp ra mắt",
+      "tryNow": "Bắt đầu miễn phí",
+      "webVersion": "Phiên bản Web"
+    },
+    "samples": {
+      "title1": "Nghe",
+      "title2": "ví dụ thực tế của",
+      "titleHighlight": "Giọng nói AI",
+      "description": "Nhân bản giọng nói siêu chân thực với cảm xúc, giọng điệu và phát âm tự nhiên.",
+      "noVoices": "Không có giọng nói cho ngôn ngữ này.",
+      "exploreAll": "Khám phá tất cả hơn 3200 giọng nói"
+    },
+    "filters": {
+      "all": "Tất cả",
+      "celebrities": "Người nổi tiếng",
+      "professional": "Chuyên nghiệp"
+    },
+    "cta": {
+      "feature1": "Hơn 3200 giọng nói AI với hơn 190 ngôn ngữ",
+      "feature2": "Tải MP3/WAV - Không giới hạn",
+      "feature3": "Nhân bản giọng nói của bạn",
+      "feature4": "Miễn phí mãi mãi 100%",
+      "startCreating": "Bắt đầu tạo - Hoàn toàn miễn phí",
+      "noCreditCard": "Không cần thẻ tín dụng",
+      "noSignup": "Không cần đăng ký"
+    },
+    "explore": {
+      "title": "Khám phá giọng nói AI trong nhiều ngôn ngữ",
+      "subtitle": "Dịch vụ chuyển văn bản thành giọng nói của chúng tôi hỗ trợ hơn 190 ngôn ngữ. Chọn ngôn ngữ ưa thích và bắt đầu tạo nội dung với giọng nói AI chất lượng cao.",
+      "exploreMore": "Khám phá thêm"
+    }
+  }
+}

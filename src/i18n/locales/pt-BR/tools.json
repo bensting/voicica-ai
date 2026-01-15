@@ -1,0 +1,51 @@
+{
+  "tiktokDownloader": {
+    "title": "Baixador de vídeos do TikTok",
+    "subtitle": "Baixe vídeos do TikTok sem marca d'água grátis",
+    "urlLabel": "URL do vídeo do TikTok",
+    "urlPlaceholder": "Cole o link do vídeo do TikTok aqui...",
+    "parseButton": "Analisar",
+    "parsing": "Analisando",
+    "doNotClose": "Por favor, não feche esta página",
+    "downloadButton": "Baixar vídeo",
+    "downloading": "Baixando...",
+    "selectQuality": "Selecionar qualidade",
+    "untitled": "Vídeo sem título",
+    "emptyTitle": "Baixar vídeos do TikTok",
+    "emptyDescription": "Cole uma URL de vídeo do TikTok acima para começar a baixar. Suporta todos os formatos de vídeo do TikTok.",
+    "errors": {
+      "emptyUrl": "Por favor, insira uma URL de vídeo do TikTok",
+      "invalidUrl": "URL do TikTok inválida. Por favor, insira um link de vídeo do TikTok válido.",
+      "parseFailed": "Falha ao analisar o vídeo. Por favor, verifique a URL e tente novamente.",
+      "insufficientCredits": "Créditos insuficientes. Necessários: {{required}}, Atuais: {{current}}",
+      "unknownError": "Ocorreu um erro inesperado. Por favor, tente novamente mais tarde."
+    }
+  },
+  "youtubeDownloader": {
+    "title": "Baixador de vídeos do YouTube",
+    "subtitle": "Baixe vídeos e áudio do YouTube grátis",
+    "urlLabel": "URL do vídeo do YouTube",
+    "urlPlaceholder": "Cole o link do vídeo do YouTube aqui...",
+    "parseButton": "Analisar",
+    "parsing": "Analisando",
+    "doNotClose": "Por favor, não feche esta página",
+    "downloadButton": "Baixar",
+    "downloading": "Baixando...",
+    "selectQuality": "Selecionar qualidade",
+    "untitled": "Vídeo sem título",
+    "emptyTitle": "Baixar vídeos do YouTube",
+    "emptyDescription": "Cole uma URL de vídeo do YouTube acima para começar a baixar. Suporta formatos de vídeo e áudio.",
+    "tabs": {
+      "videoWithAudio": "Vídeo",
+      "videoOnly": "Apenas vídeo",
+      "audioOnly": "Apenas áudio"
+    },
+    "errors": {
+      "emptyUrl": "Por favor, insira uma URL de vídeo do YouTube",
+      "invalidUrl": "URL do YouTube inválida. Por favor, insira um link de vídeo do YouTube válido.",
+      "parseFailed": "Falha ao analisar o vídeo. Por favor, verifique a URL e tente novamente.",
+      "insufficientCredits": "Créditos insuficientes. Necessários: {{required}}, Atuais: {{current}}",
+      "unknownError": "Ocorreu um erro inesperado. Por favor, tente novamente mais tarde."
+    }
+  }
+}

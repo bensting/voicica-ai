@@ -1,0 +1,145 @@
+{
+  "tts": {
+    "title": "Texto a voz",
+    "upgrade": "Mejorar",
+    "credits": "Créditos",
+    "selectVoice": "Seleccionar voz",
+    "generating": "Generando...",
+    "generationComplete": "Generación completada",
+    "generationFailed": "Generación fallida",
+    "processingMessage": "Tu audio se está generando, por favor espera...",
+    "successMessage": "¡Audio generado con éxito!",
+    "generatingTip": "Esto puede tardar unos segundos. Puedes cerrar esto y revisarlo más tarde en el Historial de generación.",
+    "successTip": "¡Tu audio está listo! Puedes descargarlo o reproducirlo ahora.",
+    "taskProgress": "Progreso",
+    "progress": "Progreso",
+    "duration": "Duración",
+    "recentAuditions": "Audiciones recientes",
+    "allRecords": "Todos los registros",
+    "input": {
+      "placeholder": "Introduce tu texto aquí, lo identificaremos automáticamente y lo convertiremos en el discurso correspondiente.",
+      "creditsLeft": "Créditos",
+      "permanent": "permanente",
+      "monthly": "mensual",
+      "characterCount": "{current} / {max}",
+      "generateSpeech": "Generar voz",
+      "generating": "Generando...",
+      "tryExamples": "Prueba estos ejemplos",
+      "more": "Más",
+      "moreMenu": {
+        "title": "Obtener más créditos",
+        "signUp": "Regístrate gratis",
+        "signUpDesc": "Obtiene {{credits}} créditos gratis",
+        "pricing": "Ver precios",
+        "pricingDesc": "Explora los planes de suscripción"
+      },
+      "examples": {
+        "greeting": {
+          "label": "Saludo",
+          "text": "¡Hola! Encantado de conocerte. ¿Cómo estás hoy?"
+        },
+        "ebook": {
+          "label": "Libro electrónico",
+          "text": "En un pequeño pueblo tranquilo, vivía un anciano bondadoso. Cada día, se sentaba bajo el gran árbol de la entrada del pueblo y contaba historias antiguas."
+        },
+        "podcast": {
+          "label": "Podcast",
+          "text": "Bienvenido al programa de hoy. En este episodio, exploraremos los últimos avances en tecnología de inteligencia artificial."
+        }
+      }
+    },
+    "errors": {
+      "selectTextAndVoice": "Por favor, introduce texto y selecciona una voz",
+      "invalidParams": "Parámetros no válidos, por favor verifica tu entrada",
+      "insufficientCredits": "Créditos insuficientes, por favor mejora tu plan o recarga",
+      "unauthorized": "No has iniciado sesión o tu sesión ha expirado, por favor inicia sesión de nuevo",
+      "taskSubmitFailed": "Error al enviar la tarea, por favor inténtalo de nuevo",
+      "taskNoId": "Error al enviar la tarea, no se devolvió ID de tarea",
+      "queryTaskFailed": "Error al consultar el estado de la tarea, por favor actualiza la página",
+      "generationFailed": "Generación fallida, por favor inténtalo de nuevo",
+      "unknownTaskStatus": "Estado de tarea desconocido, por favor inténtalo de nuevo",
+      "INSUFFICIENT_CREDITS": "Créditos insuficientes. Necesarios: {{required}}, Actuales: {{current}}",
+      "UNAUTHORIZED": "No autorizado. Por favor, inicia sesión",
+      "NO_AUTH_INFO": "No se proporcionó información de autenticación",
+      "TASK_NOT_FOUND": "Tarea no encontrada: {{taskId}}",
+      "TASK_CREATION_FAILED": "Error al crear la tarea",
+      "VALIDATION_ERROR": "Error de validación: {{field}}",
+      "TEXT_TOO_LONG": "Texto demasiado largo. Longitud máxima: {{maxLength}}, Actual: {{currentLength}}",
+      "RESOURCE_NOT_FOUND": "{{resource}} no encontrado: {{id}}",
+      "VOICE_NOT_FOUND": "Modelo de voz no encontrado: {{voiceName}}",
+      "INTERNAL_ERROR": "Error interno del servidor"
+    },
+    "deleteDialog": {
+      "title": "Eliminar generación de voz",
+      "message": "¿Estás seguro de que quieres eliminar esta generación de voz? Esta acción no se puede deshacer y el archivo de audio se eliminará permanentemente.",
+      "confirmButton": "Eliminar",
+      "cancelButton": "Cancelar",
+      "deleteFailedAlert": "Error al eliminar el registro. Por favor, inténtalo de nuevo."
+    },
+    "audioSettings": {
+      "title": "Ajustes de audio",
+      "speed": {
+        "title": "Velocidad del habla",
+        "description": "Ajusta la velocidad del audio",
+        "current": "Velocidad actual"
+      },
+      "volume": {
+        "title": "Volumen",
+        "description": "Ajuste del volumen del habla",
+        "current": "Volumen actual"
+      },
+      "pitch": {
+        "title": "Tono",
+        "description": "Ajusta el tono general",
+        "current": "Tono actual",
+        "deep": "Grave",
+        "dull": "Apagado",
+        "consistent": "Consistente",
+        "bright": "Brillante",
+        "crisp": "Nítido"
+      },
+      "save": "Guardar"
+    }
+  },
+  "voiceFilters": {
+    "selectCountry": "Seleccionar país",
+    "selectLanguage": "Seleccionar idioma",
+    "allLanguages": "Todos los idiomas",
+    "selectGender": "Seleccionar género",
+    "searchPlaceholder": "Buscar voces por nombre...",
+    "search": "Buscar...",
+    "gender": "Género",
+    "all": "Todos",
+    "male": "Masculino",
+    "female": "Femenino",
+    "neutral": "Neutro",
+    "proBasic": "Pro/Básico",
+    "celebrity": "Celebridades",
+    "professional": "Profesional",
+    "usedOnly": "Usadas",
+    "noUsedVoices": "Sin historial de uso",
+    "noVoicesFound": "No se encontraron voces",
+    "loadMoreVoices": "Cargar más voces",
+    "searchLanguages": "Buscar idiomas...",
+    "allVoicesLoaded": "Todas las voces cargadas ({{total}} en total)"
+  },
+  "voices": {
+    "tags": {
+      "all": "Todas",
+      "myClone": "Mi clon",
+      "used": "Usadas",
+      "socialMedia": "Redes sociales",
+      "celebrities": "Celebridades",
+      "animation": "Animación",
+      "moviesTV": "Cine y TV",
+      "games": "Videojuegos",
+      "festivals": "Festivales",
+      "narration": "Narración",
+      "new": "Nuevo",
+      "commercial": "Comercial",
+      "audiobook": "Audiolibro",
+      "podcast": "Podcast",
+      "education": "Educación"
+    }
+  }
+}

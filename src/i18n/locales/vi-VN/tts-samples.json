@@ -1,0 +1,48 @@
+{
+  "ttsSamples": {
+    "sectionTitle": {
+      "prefix": "Sản phẩm",
+      "highlight": "Nổi bật",
+      "suffix": "của Voicica AI không thể bỏ qua"
+    },
+    "productInfo": {
+      "title": "Chuyển văn bản thành giọng nói",
+      "headline": {
+        "prefix": "Miễn phí",
+        "highlight": "Chuyển văn bản thành giọng nói",
+        "suffix": "trực tuyến với giọng AI chân thực"
+      },
+      "features": {
+        "voices": "Hơn 3200 giọng nói với hơn 190 ngôn ngữ & giọng địa phương",
+        "natural": "Chuyển văn bản thành giọng nói AI tự nhiên",
+        "parameters": "Điều chỉnh thông số để có kết quả tốt nhất",
+        "download": "Tải âm thanh dạng WAV/MP3",
+        "voiceover": "Hoàn hảo để làm lồng tiếng cho video"
+      },
+      "cta": {
+        "button": "Thử ngay",
+        "conversions": "Lượt chuyển đổi TTS đã thực hiện",
+        "usersCount": "Hơn 10K người đang sử dụng..."
+      }
+    },
+    "languageSelector": {
+      "placeholder": "Chọn ngôn ngữ",
+      "unlockTitle": "Mở khóa thêm giọng nói miễn phí",
+      "unlockSubtitle": "Hơn 190 ngôn ngữ & giọng địa phương"
+    },
+    "voiceSelector": {
+      "loading": "Đang tải giọng nói...",
+      "placeholder": "Chọn một giọng nói",
+      "unlockTitle": "Thử thêm giọng nói miễn phí",
+      "unlockSubtitle": "Hơn 3200 giọng nói AI",
+      "noVoices": "Không có giọng nói cho ngôn ngữ này"
+    },
+    "demoPanel": {
+      "textPlaceholder": "Nhập văn bản để chuyển thành giọng nói...",
+      "enhanceVoice": "Cải thiện giọng nói",
+      "listenButton": "Nghe",
+      "playingButton": "Đang phát...",
+      "loadingConfig": "Đang tải cấu hình..."
+    }
+  }
+}

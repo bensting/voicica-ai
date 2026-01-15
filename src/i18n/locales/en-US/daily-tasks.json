@@ -14,6 +14,7 @@
     "oneClickClaim": "One-click claim",
     "claim": "Claim",
     "claimed": "Claimed",
+    "watchCheckinGet": "Watch +{{credits}}",
 
     "watchAds": "Watch Videos",
     "watchMultiple": "Watch {{count}} videos",

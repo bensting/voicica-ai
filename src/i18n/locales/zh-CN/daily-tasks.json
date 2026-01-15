@@ -14,6 +14,7 @@
     "oneClickClaim": "一键领取",
     "claim": "领取",
     "claimed": "已领取",
+    "watchCheckinGet": "观看 +{{credits}}",
 
     "watchAds": "观看视频",
     "watchMultiple": "观看 {{count}} 个视频",

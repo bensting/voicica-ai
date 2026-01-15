@@ -14,6 +14,7 @@
     "oneClickClaim": "တစ်ချက်နှိပ်ရယူ",
     "claim": "ရယူ",
     "claimed": "ရယူပြီး",
+    "watchCheckinGet": "ကြည့် +{{credits}}",
 
     "watchAds": "ဗီဒီယိုကြည့်",
     "watchMultiple": "ဗီဒီယို {{count}} ခုကြည့်",

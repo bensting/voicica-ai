@@ -57,10 +57,10 @@ export default function LanguageSwitcher({
     <div className="relative" ref={dropdownRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className={`flex items-center gap-2 transition-colors ${buttonStyles}`}
+        className={`flex items-center gap-2 transition-all ${variant === 'compact' ? 'p-2 bg-white/20 hover:bg-white/30 rounded-lg text-white' : buttonStyles}`}
         aria-label="Switch language"
       >
-        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg className={variant === 'compact' ? 'w-4 h-4' : 'w-5 h-5'} fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path
             strokeLinecap="round"
             strokeLinejoin="round"

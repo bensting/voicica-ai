@@ -28,7 +28,12 @@
     "benefits": {
       "title": "Quyền lợi của tôi",
       "credits": "Điểm",
+      "totalCredits": "Tổng điểm",
       "voiceCredits": "Điểm giọng nói",
+      "permanentCredits": "Vĩnh viễn",
+      "monthlyCredits": "Hàng tháng",
+      "permanentTip": "Từ mua hàng & thưởng, không hết hạn",
+      "monthlyTip": "Từ nhiệm vụ hàng ngày, đặt lại hàng tháng",
       "refresh": "Làm mới",
       "viewHistory": "Xem lịch sử"
     }

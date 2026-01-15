@@ -28,7 +28,12 @@
     "benefits": {
       "title": "マイ特典",
       "credits": "クレジット",
+      "totalCredits": "合計クレジット",
       "voiceCredits": "音声クレジット",
+      "permanentCredits": "永久",
+      "monthlyCredits": "月間",
+      "permanentTip": "購入・ボーナスで獲得、有効期限なし",
+      "monthlyTip": "デイリータスクで獲得、毎月リセット",
       "refresh": "更新",
       "viewHistory": "履歴を見る"
     }

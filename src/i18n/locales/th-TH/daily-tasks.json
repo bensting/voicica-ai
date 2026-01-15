@@ -14,6 +14,7 @@
     "oneClickClaim": "รับด้วยคลิกเดียว",
     "claim": "รับ",
     "claimed": "รับแล้ว",
+    "watchCheckinGet": "ดู +{{credits}}",
 
     "watchAds": "ดูวิดีโอ",
     "watchMultiple": "ดู {{count}} วิดีโอ",

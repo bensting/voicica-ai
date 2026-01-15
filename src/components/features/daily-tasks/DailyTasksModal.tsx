@@ -197,11 +197,11 @@ export default function DailyTasksModal({ isOpen, onClose, onCreditsUpdated, onU
 
         {/* 任务列表预览 */}
         <div className="space-y-3 mb-3">
-          {/* 签到任务 */}
+          {/* 签到任务（激励广告） */}
           <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl p-4 flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center">
-                <Gift className="w-5 h-5 text-purple-600" />
+                <Play className="w-5 h-5 text-purple-600" />
               </div>
               <div>
                 <p className="font-medium text-gray-900">{t('dailyTasks.checkin')}</p>
@@ -210,9 +210,10 @@ export default function DailyTasksModal({ isOpen, onClose, onCreditsUpdated, onU
             </div>
             <button
               onClick={() => setShowLoginModal(true)}
-              className="px-4 py-2 bg-purple-600 text-white font-medium text-sm rounded-lg hover:bg-purple-700 transition-colors"
+              className="px-4 py-2 bg-purple-600 text-white font-medium text-sm rounded-lg hover:bg-purple-700 transition-colors flex items-center gap-1.5"
             >
-              {t('dailyTasks.claim')}
+              <Play className="w-4 h-4" />
+              {t('dailyTasks.watchCheckinGet', { credits: formatCredits(config?.checkin_credits || 0) })}
             </button>
           </div>
 
@@ -293,7 +294,7 @@ export default function DailyTasksModal({ isOpen, onClose, onCreditsUpdated, onU
           </div>
         </div>
 
-        {/* 签到任务 */}
+        {/* 签到任务（激励广告） */}
         <div className="border border-gray-200 rounded-xl p-4 mb-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -303,7 +304,7 @@ export default function DailyTasksModal({ isOpen, onClose, onCreditsUpdated, onU
                 {status.checkinDone ? (
                   <Check className="w-5 h-5 text-green-600" />
                 ) : (
-                  <Gift className="w-5 h-5 text-purple-600" />
+                  <Play className="w-5 h-5 text-purple-600" />
                 )}
               </div>
               <div>
@@ -314,7 +315,7 @@ export default function DailyTasksModal({ isOpen, onClose, onCreditsUpdated, onU
             <button
               onClick={handleCheckin}
               disabled={status.checkinDone || claiming || checkinLoading}
-              className={`px-4 py-2 rounded-lg font-medium text-sm transition-colors ${
+              className={`px-4 py-2 rounded-lg font-medium text-sm transition-colors flex items-center gap-1.5 ${
                 status.checkinDone
                   ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
                   : 'bg-purple-600 text-white hover:bg-purple-700 disabled:opacity-50'
@@ -325,7 +326,10 @@ export default function DailyTasksModal({ isOpen, onClose, onCreditsUpdated, onU
               ) : status.checkinDone ? (
                 t('dailyTasks.claimed')
               ) : (
-                t('dailyTasks.claim')
+                <>
+                  <Play className="w-4 h-4" />
+                  {t('dailyTasks.watchCheckinGet', { credits: formatCredits(config?.checkin_credits || 0) })}
+                </>
               )}
             </button>
           </div>

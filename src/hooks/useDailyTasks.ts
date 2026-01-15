@@ -11,7 +11,6 @@ import {
 } from '@/actions/daily-tasks';
 import { getDailyTasksConfig, type DailyTasksConfig } from '@/config/appConfig';
 import { useRewardedAd } from './useRewardedAd';
-import { useInterstitialRewardedAd } from './useInterstitialRewardedAd';
 import { Capacitor } from '@capacitor/core';
 
 // 弹窗上次显示时间存储 key
@@ -79,8 +78,8 @@ function hasIntervalPassed(intervalMinutes: number): boolean {
  */
 export function useDailyTasks(): UseDailyTasksReturn {
   const { user, loading: authLoading } = useFirebaseAuth();
+  // 签到和观看视频都使用同一个激励视频广告，共享缓存，加载更快
   const { showRewardedAd, isReady: isAdReady } = useRewardedAd();
-  const { showInterstitialRewardedAd } = useInterstitialRewardedAd();
   const isNative = Capacitor.isNativePlatform();
   const [status, setStatus] = useState<DailyTasksStatus | null>(null);
   // 直接从客户端同步获取配置，无需 Server Action 网络请求
@@ -178,7 +177,7 @@ export function useDailyTasks(): UseDailyTasksReturn {
     checkinInProgressRef.current = false;
   }, []);
 
-  // 签到（需要先观看插页式激励广告）
+  // 签到（需要先观看激励视频广告）
   const doCheckin = useCallback(async (): Promise<TaskResult> => {
     // 防止重复调用
     if (checkinInProgressRef.current) {
@@ -192,10 +191,10 @@ export function useDailyTasks(): UseDailyTasksReturn {
       setClaiming(true);
       setError(null);
 
-      // 原生平台需要先观看插页式激励广告
+      // 原生平台需要先观看激励视频广告（与观看视频共享同一个广告缓存）
       if (isNative) {
-        console.log('[useDailyTasks] 开始显示签到插页式激励广告...');
-        const adWatched = await showInterstitialRewardedAd();
+        console.log('[useDailyTasks] 开始显示签到激励视频广告...');
+        const adWatched = await showRewardedAd();
 
         // 检查是否已取消
         if (cancelledRef.current) {
@@ -235,7 +234,7 @@ export function useDailyTasks(): UseDailyTasksReturn {
       }
       checkinInProgressRef.current = false;
     }
-  }, [refresh, isNative, showInterstitialRewardedAd]);
+  }, [refresh, isNative, showRewardedAd]);
 
   // 用于跟踪奖励是否已领取
   const rewardClaimedRef = useRef(false);

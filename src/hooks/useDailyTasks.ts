@@ -44,6 +44,8 @@ interface UseDailyTasksReturn {
   markPopupShown: () => void;
   /** 关闭弹窗（不再显示今天） */
   dismissPopup: () => void;
+  /** 取消正在进行的操作 */
+  cancelClaiming: () => void;
 }
 
 /**
@@ -165,6 +167,16 @@ export function useDailyTasks(): UseDailyTasksReturn {
 
   // 用于防止签到重复调用
   const checkinInProgressRef = useRef(false);
+  // 用于标记是否已取消
+  const cancelledRef = useRef(false);
+
+  // 取消正在进行的操作
+  const cancelClaiming = useCallback(() => {
+    console.log('[useDailyTasks] cancelClaiming called');
+    cancelledRef.current = true;
+    setClaiming(false);
+    checkinInProgressRef.current = false;
+  }, []);
 
   // 签到（需要先观看插页式激励广告）
   const doCheckin = useCallback(async (): Promise<TaskResult> => {
@@ -176,6 +188,7 @@ export function useDailyTasks(): UseDailyTasksReturn {
 
     try {
       checkinInProgressRef.current = true;
+      cancelledRef.current = false;
       setClaiming(true);
       setError(null);
 
@@ -184,6 +197,12 @@ export function useDailyTasks(): UseDailyTasksReturn {
         console.log('[useDailyTasks] 开始显示签到插页式激励广告...');
         const adWatched = await showInterstitialRewardedAd();
 
+        // 检查是否已取消
+        if (cancelledRef.current) {
+          console.log('[useDailyTasks] 签到已被用户取消');
+          return { success: false, message: '已取消' };
+        }
+
         if (!adWatched) {
           console.log('[useDailyTasks] 用户未完成广告观看，取消签到');
           return { success: false, message: '请观看完整广告以完成签到' };
@@ -191,18 +210,29 @@ export function useDailyTasks(): UseDailyTasksReturn {
         console.log('[useDailyTasks] 广告观看成功，开始签到...');
       }
 
+      // 检查是否已取消
+      if (cancelledRef.current) {
+        console.log('[useDailyTasks] 签到已被用户取消');
+        return { success: false, message: '已取消' };
+      }
+
       // 调用签到接口
       const result = await checkin();
-      if (result.success) {
+      if (result.success && !cancelledRef.current) {
         await refresh();
       }
       return result;
     } catch (err) {
+      if (cancelledRef.current) {
+        return { success: false, message: '已取消' };
+      }
       const message = err instanceof Error ? err.message : '签到失败';
       setError(message);
       return { success: false, message };
     } finally {
-      setClaiming(false);
+      if (!cancelledRef.current) {
+        setClaiming(false);
+      }
       checkinInProgressRef.current = false;
     }
   }, [refresh, isNative, showInterstitialRewardedAd]);
@@ -214,6 +244,7 @@ export function useDailyTasks(): UseDailyTasksReturn {
   // 领取广告奖励
   const doClaimAdReward = useCallback(async (): Promise<TaskResult> => {
     try {
+      cancelledRef.current = false;
       setClaiming(true);
       setError(null);
       rewardClaimedRef.current = false;
@@ -228,6 +259,12 @@ export function useDailyTasks(): UseDailyTasksReturn {
           const { Appodeal } = await import('@/plugins/appodeal');
           const listener = await Appodeal.addListener('claimRewardNow', async (data) => {
             console.log('[DailyTasks] 收到 claimRewardNow 事件, adIndex:', data.adIndex);
+
+            // 如果已取消，不领取奖励
+            if (cancelledRef.current) {
+              console.log('[DailyTasks] 已取消，跳过奖励领取');
+              return;
+            }
 
             // 只在第一次收到事件时领取奖励
             if (!rewardClaimedRef.current) {
@@ -256,6 +293,12 @@ export function useDailyTasks(): UseDailyTasksReturn {
         listenerRemove();
       }
 
+      // 检查是否已取消
+      if (cancelledRef.current) {
+        console.log('[DailyTasks] 广告奖励已被用户取消');
+        return { success: false, message: '已取消' };
+      }
+
       if (!adWatched) {
         console.log('[DailyTasks] 用户未完成广告观看');
         return { success: false, message: '请观看完整广告以获得奖励' };
@@ -267,19 +310,30 @@ export function useDailyTasks(): UseDailyTasksReturn {
         return claimResultRef.current;
       }
 
+      // 检查是否已取消
+      if (cancelledRef.current) {
+        console.log('[DailyTasks] 广告奖励已被用户取消');
+        return { success: false, message: '已取消' };
+      }
+
       // 兜底：如果事件没有触发，在广告结束后领取
       console.log('[DailyTasks] 广告观看成功，领取奖励（兜底）...');
       const result = await claimAdReward(true);
-      if (result.success) {
+      if (result.success && !cancelledRef.current) {
         await refresh();
       }
       return result;
     } catch (err) {
+      if (cancelledRef.current) {
+        return { success: false, message: '已取消' };
+      }
       const message = err instanceof Error ? err.message : '领取失败';
       setError(message);
       return { success: false, message };
     } finally {
-      setClaiming(false);
+      if (!cancelledRef.current) {
+        setClaiming(false);
+      }
     }
   }, [refresh, showRewardedAd]);
 
@@ -297,5 +351,6 @@ export function useDailyTasks(): UseDailyTasksReturn {
     doClaimAdReward,
     markPopupShown,
     dismissPopup,
+    cancelClaiming,
   };
 }

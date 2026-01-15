@@ -1,0 +1,33 @@
+{
+  "home": {
+    "heroTitle": "تحويل النص إلى صوت مجاني 100% للجميع",
+    "heroSubtitle": "أصوات غير محدودة. بدون تكلفة.",
+    "heroFeature1": "اختر من بين أكثر من 3200 صوت بأكثر من 190 لغة.",
+    "heroFeature2": "فقط اكتب وأنشئ تعليقات صوتية طبيعية فوراً.",
+    "heroCTA": "أنشئ تعليقاً صوتياً مجانياً",
+    "exploreVoices": "استكشف الأصوات",
+    "viewPricing": "عرض الأسعار",
+    "whyChoose": "لماذا تختار Voicica AI؟",
+    "getStarted": "ابدأ الآن",
+    "learnMore": "معرفة المزيد",
+    "readyTitle": "مستعد للبدء؟",
+    "readyDescription": "انضم إلى آلاف المستخدمين الذين ينشئون محتوى صوتي رائع مع Voicica AI.",
+    "startCreating": "ابدأ الإنشاء الآن"
+  },
+  "cta": {
+    "title": "تعليقات صوتية مجانية بالذكاء الاصطناعي للجميع",
+    "getStarted": "ابدأ، إنه مجاني!",
+    "viewPricing": "عرض خططنا وأسعارنا",
+    "features": {
+      "moneyBack": "مجاني 100% للاستخدام",
+      "support": "دعم فني مجاني",
+      "secure": "آمن 100%",
+      "updates": "تحديثات منتظمة"
+    }
+  },
+  "ttsSamples": {
+    "titlePrefix": "منتج",
+    "titleHighlight": "Voicica AI المميز",
+    "titleSuffix": "الذي لا يمكنك تفويته"
+  }
+}

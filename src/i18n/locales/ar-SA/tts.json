@@ -1,0 +1,145 @@
+{
+  "tts": {
+    "title": "تحويل النص إلى كلام",
+    "upgrade": "ترقية",
+    "credits": "الرصيد",
+    "selectVoice": "اختر صوتاً",
+    "generating": "جارٍ التوليد...",
+    "generationComplete": "اكتمل التوليد",
+    "generationFailed": "فشل التوليد",
+    "processingMessage": "جارٍ توليد الصوت، يرجى الانتظار...",
+    "successMessage": "تم توليد الصوت بنجاح!",
+    "generatingTip": "قد يستغرق هذا بضع ثوانٍ. يمكنك إغلاق هذا والتحقق لاحقاً في سجل التوليد.",
+    "successTip": "صوتك جاهز! يمكنك تحميله أو تشغيله الآن.",
+    "taskProgress": "التقدم",
+    "progress": "التقدم",
+    "duration": "المدة",
+    "recentAuditions": "التجارب الأخيرة",
+    "allRecords": "جميع السجلات",
+    "input": {
+      "placeholder": "أدخل نصك هنا، وسنقوم بتحديده وتحويله تلقائياً إلى الكلام المناسب.",
+      "creditsLeft": "الرصيد",
+      "permanent": "دائم",
+      "monthly": "شهري",
+      "characterCount": "{current} / {max}",
+      "generateSpeech": "توليد الكلام",
+      "generating": "جارٍ التوليد...",
+      "tryExamples": "جرب هذه الأمثلة",
+      "more": "المزيد",
+      "moreMenu": {
+        "title": "احصل على المزيد من الرصيد",
+        "signUp": "سجّل مجاناً",
+        "signUpDesc": "احصل على {{credits}} رصيد مجاني",
+        "pricing": "عرض الأسعار",
+        "pricingDesc": "استكشف خطط الاشتراك"
+      },
+      "examples": {
+        "greeting": {
+          "label": "تحية",
+          "text": "مرحباً! سعيد بلقائك. كيف حالك اليوم؟"
+        },
+        "ebook": {
+          "label": "كتاب إلكتروني",
+          "text": "في قرية صغيرة هادئة، عاش رجل عجوز طيب. كل يوم، كان يجلس تحت الشجرة الكبيرة عند مدخل القرية ويروي القصص القديمة."
+        },
+        "podcast": {
+          "label": "بودكاست",
+          "text": "مرحباً بكم في حلقة اليوم. في هذه الحلقة، سنستكشف أحدث التطورات في تقنية الذكاء الاصطناعي."
+        }
+      }
+    },
+    "errors": {
+      "selectTextAndVoice": "يرجى إدخال نص واختيار صوت",
+      "invalidParams": "معاملات غير صالحة، يرجى التحقق من إدخالك",
+      "insufficientCredits": "رصيد غير كافٍ، يرجى الترقية أو إعادة الشحن",
+      "unauthorized": "غير مسجل الدخول أو انتهت الجلسة، يرجى تسجيل الدخول مرة أخرى",
+      "taskSubmitFailed": "فشل إرسال المهمة، يرجى المحاولة مرة أخرى",
+      "taskNoId": "فشل إرسال المهمة، لم يتم إرجاع معرف المهمة",
+      "queryTaskFailed": "فشل الاستعلام عن حالة المهمة، يرجى تحديث الصفحة",
+      "generationFailed": "فشل التوليد، يرجى المحاولة مرة أخرى",
+      "unknownTaskStatus": "حالة مهمة غير معروفة، يرجى المحاولة مرة أخرى",
+      "INSUFFICIENT_CREDITS": "رصيد غير كافٍ. المطلوب: {{required}}، الحالي: {{current}}",
+      "UNAUTHORIZED": "غير مصرح. يرجى تسجيل الدخول",
+      "NO_AUTH_INFO": "لم يتم توفير معلومات المصادقة",
+      "TASK_NOT_FOUND": "المهمة غير موجودة: {{taskId}}",
+      "TASK_CREATION_FAILED": "فشل إنشاء المهمة",
+      "VALIDATION_ERROR": "خطأ في التحقق: {{field}}",
+      "TEXT_TOO_LONG": "النص طويل جداً. الحد الأقصى: {{maxLength}}، الحالي: {{currentLength}}",
+      "RESOURCE_NOT_FOUND": "{{resource}} غير موجود: {{id}}",
+      "VOICE_NOT_FOUND": "نموذج الصوت غير موجود: {{voiceName}}",
+      "INTERNAL_ERROR": "خطأ داخلي في الخادم"
+    },
+    "deleteDialog": {
+      "title": "حذف توليد الكلام",
+      "message": "هل أنت متأكد من حذف توليد الكلام هذا؟ لا يمكن التراجع عن هذا الإجراء وسيتم حذف ملف الصوت نهائياً.",
+      "confirmButton": "حذف",
+      "cancelButton": "إلغاء",
+      "deleteFailedAlert": "فشل حذف السجل. يرجى المحاولة مرة أخرى."
+    },
+    "audioSettings": {
+      "title": "إعدادات الصوت",
+      "speed": {
+        "title": "سرعة الكلام",
+        "description": "ضبط سرعة التحدث",
+        "current": "سرعة الكلام الحالية"
+      },
+      "volume": {
+        "title": "مستوى الصوت",
+        "description": "إعداد مستوى صوت الكلام",
+        "current": "مستوى الصوت الحالي"
+      },
+      "pitch": {
+        "title": "طبقة الصوت",
+        "description": "ضبط طبقة الصوت الإجمالية",
+        "current": "طبقة الصوت الحالية",
+        "deep": "عميق",
+        "dull": "خافت",
+        "consistent": "متسق",
+        "bright": "مشرق",
+        "crisp": "واضح"
+      },
+      "save": "حفظ"
+    }
+  },
+  "voiceFilters": {
+    "selectCountry": "اختر البلد",
+    "selectLanguage": "اختر اللغة",
+    "allLanguages": "جميع اللغات",
+    "selectGender": "اختر الجنس",
+    "searchPlaceholder": "ابحث عن الأصوات بالاسم...",
+    "search": "بحث...",
+    "gender": "الجنس",
+    "all": "الكل",
+    "male": "ذكر",
+    "female": "أنثى",
+    "neutral": "محايد",
+    "proBasic": "احترافي/أساسي",
+    "celebrity": "مشاهير",
+    "professional": "احترافي",
+    "usedOnly": "مستخدم",
+    "noUsedVoices": "لا يوجد سجل استخدام",
+    "noVoicesFound": "لم يتم العثور على أصوات",
+    "loadMoreVoices": "تحميل المزيد من الأصوات",
+    "searchLanguages": "البحث عن اللغات...",
+    "allVoicesLoaded": "تم تحميل جميع الأصوات ({{total}} إجمالي)"
+  },
+  "voices": {
+    "tags": {
+      "all": "الكل",
+      "myClone": "استنساخي",
+      "used": "مستخدم",
+      "socialMedia": "وسائل التواصل الاجتماعي",
+      "celebrities": "المشاهير",
+      "animation": "الرسوم المتحركة",
+      "moviesTV": "الأفلام والتلفزيون",
+      "games": "الألعاب",
+      "festivals": "المهرجانات",
+      "narration": "السرد",
+      "new": "جديد",
+      "commercial": "تجاري",
+      "audiobook": "الكتب الصوتية",
+      "podcast": "البودكاست",
+      "education": "التعليم"
+    }
+  }
+}

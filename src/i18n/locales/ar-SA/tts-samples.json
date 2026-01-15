@@ -1,0 +1,48 @@
+{
+  "ttsSamples": {
+    "sectionTitle": {
+      "prefix": "منتج",
+      "highlight": "Voicica AI",
+      "suffix": "المميز الذي لا يفوتك 👍"
+    },
+    "productInfo": {
+      "title": "تحويل النص إلى كلام",
+      "headline": {
+        "prefix": "تحويل",
+        "highlight": "النص إلى كلام",
+        "suffix": "مجاني عبر الإنترنت بأصوات ذكاء اصطناعي واقعية"
+      },
+      "features": {
+        "voices": "أكثر من 3200 صوت مع أكثر من 190 لغة ولهجة",
+        "natural": "تحويل النص إلى صوت ذكاء اصطناعي طبيعي",
+        "parameters": "ضبط المعاملات للحصول على أفضل نتيجة",
+        "download": "تنزيل الصوت بصيغة WAV/MP3",
+        "voiceover": "مثالي لإنشاء التعليق الصوتي للفيديوهات"
+      },
+      "cta": {
+        "button": "جربه الآن",
+        "conversions": "تحويلات تم إجراؤها",
+        "usersCount": "أكثر من 10 آلاف شخص يستخدمون..."
+      }
+    },
+    "languageSelector": {
+      "placeholder": "اختر اللغة",
+      "unlockTitle": "افتح المزيد من الأصوات المجانية",
+      "unlockSubtitle": "أكثر من 190 لغة ولهجة"
+    },
+    "voiceSelector": {
+      "loading": "جارٍ تحميل الأصوات...",
+      "placeholder": "اختر صوتاً",
+      "unlockTitle": "جرب المزيد من الأصوات مجاناً",
+      "unlockSubtitle": "أكثر من 3200 صوت ذكاء اصطناعي",
+      "noVoices": "لا تتوفر أصوات لهذه اللغة"
+    },
+    "demoPanel": {
+      "textPlaceholder": "أدخل النص لتحويله إلى كلام...",
+      "enhanceVoice": "تحسين الصوت",
+      "listenButton": "استمع",
+      "playingButton": "جارٍ التشغيل...",
+      "loadingConfig": "جارٍ تحميل الإعدادات..."
+    }
+  }
+}

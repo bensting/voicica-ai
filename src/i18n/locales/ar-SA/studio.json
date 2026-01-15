@@ -1,0 +1,48 @@
+{
+  "studio": {
+    "welcomeTitle": "مرحبًا بك في Voicica AI",
+    "welcomeSubtitle": "أطلق العنان لقوة الذكاء الاصطناعي مع أدواتنا المتطورة للصوت والفيديو والموسيقى والفن. حوّل أفكارك إلى واقع — بشكل أسرع وأذكى وبدون عناء.",
+    "featuredProducts": "المنتجات المميزة",
+    "ttsDescription": "حوّل النص إلى كلام طبيعي باستخدام أصوات الذكاء الاصطناعي المتقدمة",
+    "moreToolsComing": "المزيد من الأدوات قريبًا",
+    "youMightWantToTry": "قد ترغب في تجربة",
+    "tiktokDownloaderDesc": "حمّل فيديوهات تيك توك مجانًا، بدون علامة مائية، بجودة عالية",
+    "youtubeDownloaderDesc": "حمّل فيديوهات يوتيوب مجانًا، بصيغ ودقات متعددة",
+    "upgrade": "ترقية",
+    "dailyTasks": "المكافآت",
+    "tts": "تحويل النص إلى كلام",
+    "menu": {
+      "home": "الرئيسية",
+      "creationHub": "مركز الإنشاء",
+      "project": "المشروع",
+      "shortVideo": "فيديو قصير",
+      "aiVideoGenerator": "مولد الفيديو بالذكاء الاصطناعي",
+      "textToSpeech": "تحويل النص إلى كلام",
+      "generationHistory": "سجل التوليد",
+      "speechToSpeech": "تحويل الكلام إلى كلام",
+      "voiceCloning": "استنساخ الصوت",
+      "voiceoverStudio": "استوديو التعليق الصوتي",
+      "aiSong": "أغنية بالذكاء الاصطناعي",
+      "aiMusicMovie": "فيلم موسيقي بالذكاء الاصطناعي",
+      "musicHistory": "سجل الموسيقى",
+      "aiMusic": "موسيقى الذكاء الاصطناعي",
+      "aiCover": "غلاف بالذكاء الاصطناعي",
+      "musicTools": "أدوات الموسيقى",
+      "account": "الحساب",
+      "tools": "أدوات مجانية",
+      "tiktokDownloader": "تحميل تيك توك",
+      "youtubeDownloader": "تحميل يوتيوب",
+      "textToVideo": "تحويل النص إلى فيديو"
+    },
+    "mobileNav": {
+      "tts": "TTS",
+      "voices": "الأصوات",
+      "clone": "استنساخ",
+      "history": "السجل"
+    },
+    "voices": {
+      "selectVoice": "اختر صوتًا",
+      "selectVoicePrompt": "يرجى اختيار صوت"
+    }
+  }
+}

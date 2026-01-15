@@ -1,0 +1,18 @@
+{
+  "textToVideo": "تحويل النص إلى فيديو",
+  "promptPlaceholder": "صف الفيديو الذي تريد إنشاءه. كن محدداً بشأن الأحداث والمشاهد والأسلوب والمزاج...",
+  "promptLabel": "وصف الفيديو",
+  "resolution": "الدقة",
+  "duration": "المدة",
+  "aspectRatio": "نسبة العرض إلى الارتفاع",
+  "creditsCost": "تكلفة الأرصدة",
+  "model": "النموذج",
+  "veo31Description": "أحدث نموذج من Google لإنشاء الفيديو بجودة فائقة وحركة متميزة",
+  "latest": "الأحدث",
+  "generate": "إنشاء الفيديو",
+  "generating": "جاري الإنشاء...",
+  "generatingVideo": "جاري إنشاء الفيديو الخاص بك...",
+  "preview": "معاينة",
+  "previewPlaceholder": "سيظهر الفيديو المُنشأ هنا",
+  "browserNotSupported": "متصفحك لا يدعم عنصر الفيديو."
+}

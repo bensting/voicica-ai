@@ -28,7 +28,12 @@
     "benefits": {
       "title": "Mis beneficios",
       "credits": "Créditos",
+      "totalCredits": "Créditos totales",
       "voiceCredits": "Créditos de voz",
+      "permanentCredits": "Permanentes",
+      "monthlyCredits": "Mensuales",
+      "permanentTip": "De compras y bonos, nunca expiran",
+      "monthlyTip": "De tareas diarias, se reinician mensualmente",
       "refresh": "Actualizar",
       "viewHistory": "Ver historial"
     }

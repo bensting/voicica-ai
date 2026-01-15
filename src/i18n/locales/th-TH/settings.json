@@ -28,7 +28,12 @@
     "benefits": {
       "title": "สิทธิประโยชน์ของฉัน",
       "credits": "เครดิต",
+      "totalCredits": "เครดิตทั้งหมด",
       "voiceCredits": "เครดิตเสียง",
+      "permanentCredits": "ถาวร",
+      "monthlyCredits": "รายเดือน",
+      "permanentTip": "จากการซื้อและโบนัส ไม่มีวันหมดอายุ",
+      "monthlyTip": "จากภารกิจรายวัน รีเซ็ตทุกเดือน",
       "refresh": "รีเฟรช",
       "viewHistory": "ดูประวัติ"
     }

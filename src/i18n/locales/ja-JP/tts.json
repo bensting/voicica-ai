@@ -1,0 +1,145 @@
+{
+  "tts": {
+    "title": "テキスト読み上げ",
+    "upgrade": "アップグレード",
+    "credits": "クレジット",
+    "selectVoice": "音声を選択",
+    "generating": "生成中...",
+    "generationComplete": "生成完了",
+    "generationFailed": "生成失敗",
+    "processingMessage": "音声を生成中です。お待ちください...",
+    "successMessage": "音声の生成に成功しました！",
+    "generatingTip": "数秒かかる場合があります。このダイアログを閉じて、生成履歴で後で確認できます。",
+    "successTip": "音声の準備ができました！ダウンロードまたは再生できます。",
+    "taskProgress": "進捗",
+    "progress": "進捗",
+    "duration": "長さ",
+    "recentAuditions": "最近の試聴",
+    "allRecords": "すべての記録",
+    "input": {
+      "placeholder": "ここにテキストを入力すると、自動的に識別して対応する音声に変換します。",
+      "creditsLeft": "クレジット",
+      "permanent": "永久",
+      "monthly": "月間",
+      "characterCount": "{current} / {max}",
+      "generateSpeech": "音声を生成",
+      "generating": "生成中...",
+      "tryExamples": "サンプルを試す",
+      "more": "もっと見る",
+      "moreMenu": {
+        "title": "クレジットを獲得",
+        "signUp": "無料登録",
+        "signUpDesc": "{{credits}}クレジットを無料で獲得",
+        "pricing": "料金を見る",
+        "pricingDesc": "サブスクリプションプランを見る"
+      },
+      "examples": {
+        "greeting": {
+          "label": "挨拶",
+          "text": "こんにちは！お会いできて嬉しいです。今日はいかがお過ごしですか？"
+        },
+        "ebook": {
+          "label": "電子書籍",
+          "text": "静かな小さな村に、親切なおじいさんが住んでいました。毎日、村の入り口の大きな木の下に座って、古い物語を語っていました。"
+        },
+        "podcast": {
+          "label": "ポッドキャスト",
+          "text": "今日の番組へようこそ。このエピソードでは、人工知能技術の最新の発展について探ります。"
+        }
+      }
+    },
+    "errors": {
+      "selectTextAndVoice": "テキストを入力し、音声を選択してください",
+      "invalidParams": "無効なパラメータです。入力を確認してください",
+      "insufficientCredits": "クレジットが不足しています。アップグレードまたはチャージしてください",
+      "unauthorized": "ログインしていないか、セッションが期限切れです。再度ログインしてください",
+      "taskSubmitFailed": "タスクの送信に失敗しました。もう一度お試しください",
+      "taskNoId": "タスクの送信に失敗しました。タスクIDが返されませんでした",
+      "queryTaskFailed": "タスク状態の取得に失敗しました。ページを更新してください",
+      "generationFailed": "生成に失敗しました。もう一度お試しください",
+      "unknownTaskStatus": "不明なタスク状態です。もう一度お試しください",
+      "INSUFFICIENT_CREDITS": "クレジットが不足しています。必要：{{required}}、現在：{{current}}",
+      "UNAUTHORIZED": "認証されていません。ログインしてください",
+      "NO_AUTH_INFO": "認証情報がありません",
+      "TASK_NOT_FOUND": "タスクが見つかりません：{{taskId}}",
+      "TASK_CREATION_FAILED": "タスクの作成に失敗しました",
+      "VALIDATION_ERROR": "検証エラー：{{field}}",
+      "TEXT_TOO_LONG": "テキストが長すぎます。最大長：{{maxLength}}、現在：{{currentLength}}",
+      "RESOURCE_NOT_FOUND": "{{resource}}が見つかりません：{{id}}",
+      "VOICE_NOT_FOUND": "音声モデルが見つかりません：{{voiceName}}",
+      "INTERNAL_ERROR": "内部サーバーエラー"
+    },
+    "deleteDialog": {
+      "title": "音声生成を削除",
+      "message": "この音声生成を削除してもよろしいですか？この操作は元に戻せず、音声ファイルは完全に削除されます。",
+      "confirmButton": "削除",
+      "cancelButton": "キャンセル",
+      "deleteFailedAlert": "記録の削除に失敗しました。もう一度お試しください。"
+    },
+    "audioSettings": {
+      "title": "音声設定",
+      "speed": {
+        "title": "話速",
+        "description": "音声の話速を調整",
+        "current": "現在の話速"
+      },
+      "volume": {
+        "title": "音量",
+        "description": "音声の音量設定",
+        "current": "現在の音量"
+      },
+      "pitch": {
+        "title": "ピッチ",
+        "description": "全体のピッチを調整",
+        "current": "現在のピッチ",
+        "deep": "低い",
+        "dull": "こもった",
+        "consistent": "標準",
+        "bright": "明るい",
+        "crisp": "クリア"
+      },
+      "save": "保存"
+    }
+  },
+  "voiceFilters": {
+    "selectCountry": "国を選択",
+    "selectLanguage": "言語を選択",
+    "allLanguages": "すべての言語",
+    "selectGender": "性別を選択",
+    "searchPlaceholder": "名前で音声を検索...",
+    "search": "検索...",
+    "gender": "性別",
+    "all": "すべて",
+    "male": "男性",
+    "female": "女性",
+    "neutral": "中性",
+    "proBasic": "プロ/ベーシック",
+    "celebrity": "有名人",
+    "professional": "プロフェッショナル",
+    "usedOnly": "使用済み",
+    "noUsedVoices": "使用履歴なし",
+    "noVoicesFound": "音声が見つかりません",
+    "loadMoreVoices": "もっと読み込む",
+    "searchLanguages": "言語を検索...",
+    "allVoicesLoaded": "すべての音声を読み込みました（合計{{total}}件）"
+  },
+  "voices": {
+    "tags": {
+      "all": "すべて",
+      "myClone": "マイクローン",
+      "used": "使用済み",
+      "socialMedia": "ソーシャルメディア",
+      "celebrities": "有名人",
+      "animation": "アニメ",
+      "moviesTV": "映画＆TV",
+      "games": "ゲーム",
+      "festivals": "祭り",
+      "narration": "ナレーション",
+      "new": "新着",
+      "commercial": "コマーシャル",
+      "audiobook": "オーディオブック",
+      "podcast": "ポッドキャスト",
+      "education": "教育"
+    }
+  }
+}

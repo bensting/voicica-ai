@@ -1,0 +1,33 @@
+{
+  "home": {
+    "heroTitle": "誰でも100%無料のテキスト読み上げ",
+    "heroSubtitle": "無制限の音声。コストゼロ。",
+    "heroFeature1": "190以上の言語で3200以上の音声から選択。",
+    "heroFeature2": "入力するだけで自然なナレーションを即座に生成。",
+    "heroCTA": "無料でナレーション生成",
+    "exploreVoices": "音声を探索",
+    "viewPricing": "料金を見る",
+    "whyChoose": "なぜVoicica AIを選ぶのか？",
+    "getStarted": "始める",
+    "learnMore": "詳細を見る",
+    "readyTitle": "始める準備はできましたか？",
+    "readyDescription": "Voicica AIで素晴らしい音声コンテンツを作成している何千人ものユーザーに参加しましょう。",
+    "startCreating": "今すぐ作成を開始"
+  },
+  "cta": {
+    "title": "誰でも無料のAIナレーション",
+    "getStarted": "無料で始めましょう！",
+    "viewPricing": "プランと料金を見る",
+    "features": {
+      "moneyBack": "100%無料で利用可能",
+      "support": "無料テクニカルサポート",
+      "secure": "100%安全",
+      "updates": "定期的なアップデート"
+    }
+  },
+  "ttsSamples": {
+    "titlePrefix": "Voicica AIの",
+    "titleHighlight": "注目製品",
+    "titleSuffix": "お見逃しなく"
+  }
+}

@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useState, useEffect, useMemo, ReactNode } from 'react';
 
-type Locale = 'en-US' | 'zh-CN' | 'zh-TW' | 'th-TH' | 'my-MM' | 'id-ID';
+type Locale = 'en-US' | 'zh-CN' | 'zh-TW' | 'th-TH' | 'my-MM' | 'id-ID' | 'ja-JP' | 'vi-VN' | 'es-ES' | 'pt-BR';
 
 interface LanguageContextType {
   locale: Locale;
@@ -16,7 +16,7 @@ const LanguageContext = createContext<LanguageContextType | undefined>(undefined
 type MessageValue = string | Record<string, unknown>;
 
 // 支持的语言列表
-const SUPPORTED_LOCALES: Locale[] = ['en-US', 'zh-CN', 'zh-TW', 'th-TH', 'my-MM', 'id-ID'];
+const SUPPORTED_LOCALES: Locale[] = ['en-US', 'zh-CN', 'zh-TW', 'th-TH', 'my-MM', 'id-ID', 'ja-JP', 'vi-VN', 'es-ES', 'pt-BR'];
 const DEFAULT_LOCALE: Locale = 'en-US';
 
 /**
@@ -212,7 +212,11 @@ export const locales: { code: Locale; name: string; nativeName: string }[] = [
   { code: 'en-US', name: 'English', nativeName: 'English' },
   { code: 'zh-CN', name: 'Simplified Chinese', nativeName: '简体中文' },
   { code: 'zh-TW', name: 'Traditional Chinese', nativeName: '繁體中文' },
+  { code: 'ja-JP', name: 'Japanese', nativeName: '日本語' },
   { code: 'th-TH', name: 'Thai', nativeName: 'ภาษาไทย' },
+  { code: 'vi-VN', name: 'Vietnamese', nativeName: 'Tiếng Việt' },
   { code: 'my-MM', name: 'Burmese', nativeName: 'မြန်မာဘာသာ' },
   { code: 'id-ID', name: 'Indonesian', nativeName: 'Bahasa Indonesia' },
+  { code: 'es-ES', name: 'Spanish', nativeName: 'Español' },
+  { code: 'pt-BR', name: 'Portuguese', nativeName: 'Português' },
 ];

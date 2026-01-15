@@ -1,0 +1,145 @@
+{
+  "tts": {
+    "title": "Chuyển văn bản thành giọng nói",
+    "upgrade": "Nâng cấp",
+    "credits": "Điểm",
+    "selectVoice": "Chọn giọng nói",
+    "generating": "Đang tạo...",
+    "generationComplete": "Tạo hoàn tất",
+    "generationFailed": "Tạo thất bại",
+    "processingMessage": "Âm thanh đang được tạo, vui lòng đợi...",
+    "successMessage": "Âm thanh đã được tạo thành công!",
+    "generatingTip": "Quá trình này có thể mất vài giây. Bạn có thể đóng và kiểm tra sau trong Lịch sử tạo.",
+    "successTip": "Âm thanh của bạn đã sẵn sàng! Bạn có thể tải xuống hoặc phát ngay.",
+    "taskProgress": "Tiến độ",
+    "progress": "Tiến độ",
+    "duration": "Thời lượng",
+    "recentAuditions": "Nghe gần đây",
+    "allRecords": "Tất cả bản ghi",
+    "input": {
+      "placeholder": "Nhập văn bản của bạn vào đây, chúng tôi sẽ tự động nhận diện và chuyển đổi thành giọng nói tương ứng.",
+      "creditsLeft": "Điểm",
+      "permanent": "vĩnh viễn",
+      "monthly": "hàng tháng",
+      "characterCount": "{current} / {max}",
+      "generateSpeech": "Tạo giọng nói",
+      "generating": "Đang tạo...",
+      "tryExamples": "Thử các ví dụ",
+      "more": "Thêm",
+      "moreMenu": {
+        "title": "Nhận thêm điểm",
+        "signUp": "Đăng ký miễn phí",
+        "signUpDesc": "Nhận {{credits}} điểm miễn phí",
+        "pricing": "Xem bảng giá",
+        "pricingDesc": "Khám phá các gói đăng ký"
+      },
+      "examples": {
+        "greeting": {
+          "label": "Lời chào",
+          "text": "Xin chào! Rất vui được gặp bạn. Hôm nay bạn thế nào?"
+        },
+        "ebook": {
+          "label": "Sách điện tử",
+          "text": "Trong một ngôi làng nhỏ yên bình, có một cụ già tốt bụng sinh sống. Mỗi ngày, ông đều ngồi dưới gốc cây lớn ở đầu làng và kể những câu chuyện cổ xưa."
+        },
+        "podcast": {
+          "label": "Podcast",
+          "text": "Chào mừng đến với chương trình hôm nay. Trong tập này, chúng ta sẽ khám phá những phát triển mới nhất trong công nghệ trí tuệ nhân tạo."
+        }
+      }
+    },
+    "errors": {
+      "selectTextAndVoice": "Vui lòng nhập văn bản và chọn giọng nói",
+      "invalidParams": "Thông số không hợp lệ, vui lòng kiểm tra đầu vào",
+      "insufficientCredits": "Không đủ điểm, vui lòng nâng cấp hoặc nạp thêm",
+      "unauthorized": "Chưa đăng nhập hoặc phiên đã hết hạn, vui lòng đăng nhập lại",
+      "taskSubmitFailed": "Gửi tác vụ thất bại, vui lòng thử lại",
+      "taskNoId": "Gửi tác vụ thất bại, không có ID tác vụ",
+      "queryTaskFailed": "Truy vấn trạng thái tác vụ thất bại, vui lòng làm mới trang",
+      "generationFailed": "Tạo thất bại, vui lòng thử lại",
+      "unknownTaskStatus": "Trạng thái tác vụ không xác định, vui lòng thử lại",
+      "INSUFFICIENT_CREDITS": "Không đủ điểm. Cần: {{required}}, Hiện tại: {{current}}",
+      "UNAUTHORIZED": "Chưa được ủy quyền. Vui lòng đăng nhập",
+      "NO_AUTH_INFO": "Không có thông tin xác thực",
+      "TASK_NOT_FOUND": "Không tìm thấy tác vụ: {{taskId}}",
+      "TASK_CREATION_FAILED": "Tạo tác vụ thất bại",
+      "VALIDATION_ERROR": "Lỗi xác thực: {{field}}",
+      "TEXT_TOO_LONG": "Văn bản quá dài. Tối đa: {{maxLength}}, Hiện tại: {{currentLength}}",
+      "RESOURCE_NOT_FOUND": "Không tìm thấy {{resource}}: {{id}}",
+      "VOICE_NOT_FOUND": "Không tìm thấy mô hình giọng nói: {{voiceName}}",
+      "INTERNAL_ERROR": "Lỗi máy chủ nội bộ"
+    },
+    "deleteDialog": {
+      "title": "Xóa bản tạo giọng nói",
+      "message": "Bạn có chắc muốn xóa bản tạo giọng nói này? Hành động này không thể hoàn tác và tệp âm thanh sẽ bị xóa vĩnh viễn.",
+      "confirmButton": "Xóa",
+      "cancelButton": "Hủy",
+      "deleteFailedAlert": "Xóa bản ghi thất bại. Vui lòng thử lại."
+    },
+    "audioSettings": {
+      "title": "Cài đặt âm thanh",
+      "speed": {
+        "title": "Tốc độ nói",
+        "description": "Điều chỉnh tốc độ nói",
+        "current": "Tốc độ hiện tại"
+      },
+      "volume": {
+        "title": "Âm lượng",
+        "description": "Cài đặt âm lượng giọng nói",
+        "current": "Âm lượng hiện tại"
+      },
+      "pitch": {
+        "title": "Cao độ",
+        "description": "Điều chỉnh cao độ tổng thể",
+        "current": "Cao độ hiện tại",
+        "deep": "Trầm",
+        "dull": "Đục",
+        "consistent": "Bình thường",
+        "bright": "Sáng",
+        "crisp": "Trong"
+      },
+      "save": "Lưu"
+    }
+  },
+  "voiceFilters": {
+    "selectCountry": "Chọn quốc gia",
+    "selectLanguage": "Chọn ngôn ngữ",
+    "allLanguages": "Tất cả ngôn ngữ",
+    "selectGender": "Chọn giới tính",
+    "searchPlaceholder": "Tìm kiếm giọng nói theo tên...",
+    "search": "Tìm kiếm...",
+    "gender": "Giới tính",
+    "all": "Tất cả",
+    "male": "Nam",
+    "female": "Nữ",
+    "neutral": "Trung tính",
+    "proBasic": "Pro/Cơ bản",
+    "celebrity": "Người nổi tiếng",
+    "professional": "Chuyên nghiệp",
+    "usedOnly": "Đã dùng",
+    "noUsedVoices": "Chưa có lịch sử sử dụng",
+    "noVoicesFound": "Không tìm thấy giọng nói",
+    "loadMoreVoices": "Tải thêm giọng nói",
+    "searchLanguages": "Tìm kiếm ngôn ngữ...",
+    "allVoicesLoaded": "Đã tải tất cả giọng nói ({{total}} tổng cộng)"
+  },
+  "voices": {
+    "tags": {
+      "all": "Tất cả",
+      "myClone": "Nhân bản của tôi",
+      "used": "Đã dùng",
+      "socialMedia": "Mạng xã hội",
+      "celebrities": "Người nổi tiếng",
+      "animation": "Hoạt hình",
+      "moviesTV": "Phim & TV",
+      "games": "Trò chơi",
+      "festivals": "Lễ hội",
+      "narration": "Thuyết minh",
+      "new": "Mới",
+      "commercial": "Quảng cáo",
+      "audiobook": "Sách nói",
+      "podcast": "Podcast",
+      "education": "Giáo dục"
+    }
+  }
+}

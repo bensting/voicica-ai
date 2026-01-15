@@ -28,7 +28,12 @@
     "benefits": {
       "title": "我的權益",
       "credits": "積分",
+      "totalCredits": "總積分",
       "voiceCredits": "語音積分",
+      "permanentCredits": "永久積分",
+      "monthlyCredits": "月度積分",
+      "permanentTip": "購買和獎勵獲得，永不過期",
+      "monthlyTip": "每日任務獲得，每月重置",
       "refresh": "重新整理",
       "viewHistory": "查看歷史"
     }

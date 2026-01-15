@@ -204,44 +204,71 @@ export default function MyAccountPage() {
             </div>
 
             {/* Right: Credits Display */}
-            <div className="flex-1 flex items-center gap-3 bg-gradient-to-br from-yellow-50 to-yellow-100 px-4 py-4 rounded-xl border border-yellow-200">
-              <CreditsIcon className="w-12 h-12 text-yellow-600 shrink-0" />
-              <div className="flex-1">
-                <p className="text-xs text-gray-600 font-medium">
-                  {t('settings.benefits.credits')}
-                </p>
+            <div className="flex-1 bg-gradient-to-br from-yellow-50 to-yellow-100 px-4 py-4 rounded-xl border border-yellow-200">
+              {/* Header: Total Credits */}
+              <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-2">
-                  <p className="text-2xl font-bold text-gray-900">
+                  <CreditsIcon className="w-8 h-8 text-yellow-600 shrink-0" />
+                  <div>
+                    <p className="text-xs text-gray-500 font-medium">
+                      {t('settings.benefits.totalCredits')}
+                    </p>
+                    <p className="text-2xl font-bold text-gray-900">
+                      {((profile?.credits ?? 0) + (profile?.monthly_credits ?? 0)).toLocaleString()}
+                    </p>
+                  </div>
+                </div>
+                <button
+                  onClick={handleRefresh}
+                  disabled={isRefreshing}
+                  className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-yellow-200/50 rounded-md transition-all disabled:opacity-50"
+                  title={t('settings.benefits.refresh')}
+                >
+                  <svg
+                    className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`}
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                    />
+                  </svg>
+                </button>
+              </div>
+
+              {/* Credit Breakdown */}
+              <div className="flex gap-3 mb-2">
+                {/* Permanent Credits */}
+                <div className="flex-1 bg-white/60 rounded-lg px-3 py-2">
+                  <p className="text-[10px] text-gray-500 font-medium">
+                    {t('settings.benefits.permanentCredits')}
+                  </p>
+                  <p className="text-base font-semibold text-gray-800">
                     {(profile?.credits ?? 0).toLocaleString()}
                   </p>
-                  <button
-                    onClick={handleRefresh}
-                    disabled={isRefreshing}
-                    className="p-1 text-gray-400 hover:text-gray-600 hover:bg-yellow-200/50 rounded-md transition-all disabled:opacity-50"
-                    title={t('settings.benefits.refresh')}
-                  >
-                    <svg
-                      className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`}
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-                      />
-                    </svg>
-                  </button>
                 </div>
-                <Link
-                  href="/studio/settings/credit-history"
-                  className="text-xs font-medium text-yellow-700 hover:text-yellow-800 hover:underline"
-                >
-                  {t('settings.benefits.viewHistory')}
-                </Link>
+                {/* Monthly Credits */}
+                <div className="flex-1 bg-white/60 rounded-lg px-3 py-2">
+                  <p className="text-[10px] text-gray-500 font-medium">
+                    {t('settings.benefits.monthlyCredits')}
+                  </p>
+                  <p className="text-base font-semibold text-gray-800">
+                    {(profile?.monthly_credits ?? 0).toLocaleString()}
+                  </p>
+                </div>
               </div>
+
+              {/* View History Link */}
+              <Link
+                href="/studio/settings/credit-history"
+                className="text-xs font-medium text-yellow-700 hover:text-yellow-800 hover:underline"
+              >
+                {t('settings.benefits.viewHistory')}
+              </Link>
             </div>
           </div>
 

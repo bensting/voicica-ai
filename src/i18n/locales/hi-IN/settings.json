@@ -28,7 +28,12 @@
     "benefits": {
       "title": "मेरे लाभ",
       "credits": "क्रेडिट",
+      "totalCredits": "कुल क्रेडिट",
       "voiceCredits": "वॉइस क्रेडिट",
+      "permanentCredits": "स्थायी",
+      "monthlyCredits": "मासिक",
+      "permanentTip": "खरीदारी और बोनस से, कभी समाप्त नहीं",
+      "monthlyTip": "दैनिक कार्यों से, हर महीने रीसेट",
       "refresh": "रिफ्रेश करें",
       "viewHistory": "इतिहास देखें"
     }

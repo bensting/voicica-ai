@@ -28,7 +28,12 @@
     "benefits": {
       "title": "我的权益",
       "credits": "积分",
+      "totalCredits": "总积分",
       "voiceCredits": "语音积分",
+      "permanentCredits": "永久积分",
+      "monthlyCredits": "月度积分",
+      "permanentTip": "购买和奖励获得，永不过期",
+      "monthlyTip": "每日任务获得，每月重置",
       "refresh": "刷新",
       "viewHistory": "查看历史"
     }

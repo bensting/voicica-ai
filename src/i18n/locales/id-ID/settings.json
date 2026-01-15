@@ -28,7 +28,12 @@
     "benefits": {
       "title": "Keuntungan Saya",
       "credits": "Kredit",
+      "totalCredits": "Total Kredit",
       "voiceCredits": "Kredit Suara",
+      "permanentCredits": "Permanen",
+      "monthlyCredits": "Bulanan",
+      "permanentTip": "Dari pembelian & bonus, tidak pernah kedaluwarsa",
+      "monthlyTip": "Dari tugas harian, direset setiap bulan",
       "refresh": "Segarkan",
       "viewHistory": "Lihat Riwayat"
     }

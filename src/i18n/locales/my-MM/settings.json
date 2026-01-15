@@ -28,7 +28,12 @@
     "benefits": {
       "title": "ကျွန်ုပ်၏အကျိုးခံစားခွင့်များ",
       "credits": "ခရက်ဒစ်များ",
+      "totalCredits": "စုစုပေါင်းခရက်ဒစ်",
       "voiceCredits": "အသံခရက်ဒစ်များ",
+      "permanentCredits": "အမြဲတမ်း",
+      "monthlyCredits": "လစဉ်",
+      "permanentTip": "ဝယ်ယူမှုနှင့်ဆုကြေးမှ၊ သက်တမ်းမကုန်",
+      "monthlyTip": "နေ့စဉ်တာဝန်များမှ၊ လတိုင်းပြန်စတင်",
       "refresh": "ပြန်လည်စတင်",
       "viewHistory": "မှတ်တမ်းကြည့်ရှု"
     }

@@ -25,9 +25,11 @@
       "generateSpeech": "Buat Suara",
       "generating": "Membuat...",
       "tryExamples": "Coba contoh ini",
-      "more": "Lebih",
+      "more": "Gratis",
       "moreMenu": {
         "title": "Dapatkan lebih banyak kredit",
+        "freeCredits": "Kredit gratis",
+        "freeCreditsDesc": "Tonton video",
         "signUp": "Daftar gratis",
         "signUpDesc": "Dapatkan {{credits}} kredit gratis",
         "pricing": "Lihat harga",

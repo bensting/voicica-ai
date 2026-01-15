@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
-import { Trash2, ChevronRight, Gift, CreditCard, Sparkles, Coins } from 'lucide-react';
+import { Trash2, ChevronRight, Gift, CreditCard, Sparkles, Coins, Play } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 import CreditsIcon from '@/components/icons/CreditsIcon';
@@ -36,6 +36,8 @@ interface TextInputProps {
   onClear?: () => void;
   /** 预计消耗的积分数 */
   estimatedCredits?: number;
+  /** 打开每日任务模态框回调 */
+  onDailyTasksClick?: () => void;
 }
 
 /**
@@ -58,6 +60,7 @@ export default function TextInput({
   creditsLoading = false,
   onClear,
   estimatedCredits,
+  onDailyTasksClick,
 }: TextInputProps) {
   const { t } = useLanguage();
   const { user } = useFirebaseAuth();
@@ -217,6 +220,29 @@ export default function TextInput({
                         </p>
                       </div>
                       <ChevronRight className="w-4 h-4 text-gray-300 group-hover:text-purple-500 group-hover:translate-x-0.5 transition-all flex-shrink-0" />
+                    </button>
+                  )}
+
+                  {/* Free Credits option - watch videos to earn credits */}
+                  {onDailyTasksClick && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setShowMoreMenu(false);
+                        onDailyTasksClick();
+                      }}
+                      className="w-full px-3 py-2.5 flex items-center gap-3 hover:bg-gradient-to-r hover:from-pink-50 hover:to-pink-100 rounded-xl transition-all group"
+                    >
+                      <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-pink-500 to-purple-500 flex items-center justify-center shadow-sm group-hover:shadow-md group-hover:scale-105 transition-all">
+                        <Play className="w-4 h-4 text-white" />
+                      </div>
+                      <div className="flex-1 text-left min-w-0">
+                        <p className="text-sm font-semibold text-gray-800">{t('tts.input.moreMenu.freeCredits') || 'Free Credits'}</p>
+                        <p className="text-xs text-gray-500 truncate">
+                          {t('tts.input.moreMenu.freeCreditsDesc') || 'Watch videos'}
+                        </p>
+                      </div>
+                      <ChevronRight className="w-4 h-4 text-gray-300 group-hover:text-pink-500 group-hover:translate-x-0.5 transition-all flex-shrink-0" />
                     </button>
                   )}
 

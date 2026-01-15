@@ -25,9 +25,11 @@
       "generateSpeech": "အသံဖန်တီး",
       "generating": "ဖန်တီးနေသည်...",
       "tryExamples": "ဤနမူနာများစမ်းကြည့်ပါ",
-      "more": "ပိုပြ",
+      "more": "အခမဲ့",
       "moreMenu": {
         "title": "ခရက်ဒစ်ပိုရယူပါ",
+        "freeCredits": "အခမဲ့ခရက်ဒစ်",
+        "freeCreditsDesc": "ဗီဒီယိုကြည့်ပါ",
         "signUp": "အခမဲ့စာရင်းသွင်း",
         "signUpDesc": "အခမဲ့ခရက်ဒစ် {{credits}} ခုရယူပါ",
         "pricing": "စျေးနှုန်းကြည့်ရှု",

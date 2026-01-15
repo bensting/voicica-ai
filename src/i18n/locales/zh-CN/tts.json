@@ -25,9 +25,11 @@
       "generateSpeech": "生成语音",
       "generating": "生成中...",
       "tryExamples": "试试这些示例",
-      "more": "更多",
+      "more": "免费",
       "moreMenu": {
         "title": "获取更多积分",
+        "freeCredits": "免费积分",
+        "freeCreditsDesc": "观看视频",
         "signUp": "免费注册",
         "signUpDesc": "获得 {{credits}} 免费积分",
         "pricing": "查看价格",

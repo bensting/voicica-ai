@@ -25,9 +25,11 @@
       "generateSpeech": "توليد الكلام",
       "generating": "جارٍ التوليد...",
       "tryExamples": "جرب هذه الأمثلة",
-      "more": "المزيد",
+      "more": "مجاني",
       "moreMenu": {
         "title": "احصل على المزيد من الرصيد",
+        "freeCredits": "رصيد مجاني",
+        "freeCreditsDesc": "شاهد الفيديوهات",
         "signUp": "سجّل مجاناً",
         "signUpDesc": "احصل على {{credits}} رصيد مجاني",
         "pricing": "عرض الأسعار",

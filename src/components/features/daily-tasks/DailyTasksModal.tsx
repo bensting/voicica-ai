@@ -39,6 +39,7 @@ export default function DailyTasksModal({ isOpen, onClose, onCreditsUpdated, onU
     doClaimAdReward,
     markPopupShown,
     refresh,
+    cancelClaiming,
   } = useDailyTasks();
 
   const [showLoginModal, setShowLoginModal] = useState(false);
@@ -89,8 +90,11 @@ export default function DailyTasksModal({ isOpen, onClose, onCreditsUpdated, onU
 
   // 取消加载
   const handleCancelLoading = useCallback((type: 'checkin' | 'ad') => {
+    console.log('🚫 [DailyTasks] User cancelled', type);
     cancelledRef.current = true;
     clearAdTimeout();
+    // 调用 hook 的取消方法，重置 claiming 状态
+    cancelClaiming();
     if (type === 'checkin') {
       setCheckinLoading(false);
       setCheckinError(t('dailyTasks.cancelled') || '已取消');
@@ -107,7 +111,7 @@ export default function DailyTasksModal({ isOpen, onClose, onCreditsUpdated, onU
         setAdError(null);
       }
     }, 5000);
-  }, [t, clearAdTimeout]);
+  }, [t, clearAdTimeout, cancelClaiming]);
 
   // 重试
   const handleRetry = useCallback(() => {

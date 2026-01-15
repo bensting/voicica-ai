@@ -60,7 +60,8 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
 
     // 只有当 user 从 null 变为非 null 时才关闭（真正的登录成功）
     // 邮箱登录不自动关闭（需要先检查邮箱验证状态）
-    if (!prevUser && user && isOpen && mode === 'login' && !isEmailLoginRef.current) {
+    // 社交登录在 login 和 signup 模式下都应该自动关闭（社交登录本质上是"登录或注册"）
+    if (!prevUser && user && isOpen && !isEmailLoginRef.current) {
       console.log('✅ 社交登录成功，自动关闭模态框');
       onClose();
       // 重置表单
@@ -68,7 +69,7 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
       setPassword('');
       setError(null);
     }
-  }, [user, isOpen, onClose, mode]);
+  }, [user, isOpen, onClose]);
 
   // 按 ESC 键关闭
   useEffect(() => {

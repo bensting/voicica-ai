@@ -113,17 +113,6 @@ export default function DailyTasksModal({ isOpen, onClose, onCreditsUpdated, onU
     }, 5000);
   }, [t, clearAdTimeout, cancelClaiming]);
 
-  // 重试
-  const handleRetry = useCallback(() => {
-    const retryType = pendingRetry;
-    setPendingRetry(null);
-    if (retryType === 'checkin') {
-      handleCheckinInternal();
-    } else if (retryType === 'ad') {
-      handleWatchAdInternal();
-    }
-  }, [pendingRetry]);
-
   // 处理签到内部逻辑（原生端需要先观看插页式激励广告）
   const handleCheckinInternal = useCallback(async () => {
     if (checkinLoading || claiming) return;

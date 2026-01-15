@@ -26,8 +26,15 @@ export const STATS_VALUES = {
 // 语言落地页链接 - 所有页面共享
 export const EXPLORE_LANGUAGE_PAGES: LanguagePageItem[] = [
   { code: 'en-US', name: 'English', flag: '🇺🇸', href: '/tts/english' },
+  { code: 'zh-CN', name: '简体中文', flag: '🇨🇳', href: '/tts/chinese' },
+  { code: 'zh-TW', name: '繁體中文', flag: '🇹🇼', href: '/tts/chinese-traditional' },
+  { code: 'ja-JP', name: '日本語', flag: '🇯🇵', href: '/tts/japanese' },
+  { code: 'ko-KR', name: '한국어', flag: '🇰🇷', href: '/tts/korean' },
   { code: 'th-TH', name: 'ภาษาไทย', flag: '🇹🇭', href: '/tts/thai' },
+  { code: 'vi-VN', name: 'Tiếng Việt', flag: '🇻🇳', href: '/tts/vietnamese' },
   { code: 'id-ID', name: 'Bahasa Indonesia', flag: '🇮🇩', href: '/tts/indonesian' },
+  { code: 'es-ES', name: 'Español', flag: '🇪🇸', href: '/tts/spanish' },
+  { code: 'pt-BR', name: 'Português', flag: '🇧🇷', href: '/tts/portuguese' },
 ];
 
 // 所有支持的语言列表

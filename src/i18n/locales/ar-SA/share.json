@@ -1,0 +1,15 @@
+{
+  "share": {
+    "title": "مشاركة",
+    "modalTitle": "مشاركة الصوت",
+    "linkLabel": "رابط المشاركة",
+    "copy": "نسخ الرابط",
+    "copied": "تم النسخ",
+    "moreOptions": "المزيد من خيارات المشاركة",
+    "download": "تحميل الصوت",
+    "characters": "حرف",
+    "ctaTitle": "أنشئ صوتك الذكي الخاص",
+    "ctaDescription": "حوّل النص إلى كلام طبيعي باستخدام Voicica AI.",
+    "tryNow": "جرّب الآن"
+  }
+}

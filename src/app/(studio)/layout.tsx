@@ -5,7 +5,7 @@ import dynamic from 'next/dynamic';
 import StudioSidebar from '@/components/layout/studio/StudioSidebar';
 import StudioTopNav from '@/components/layout/studio/StudioTopNav';
 import UpgradeModal from '@/components/features/pricing/UpgradeModal';
-import { StudioProvider } from '@/contexts/StudioContext';
+import { StudioProvider, useStudio } from '@/contexts/StudioContext';
 import { useCredits } from '@/contexts/CreditsContext';
 import { useDailyTasks } from '@/hooks/useDailyTasks';
 
@@ -67,6 +67,12 @@ function StudioLayoutContent({
     setIsDailyTasksModalOpen(false);
     autoPopupHandledRef.current = false; // 重置，允许下一个周期自动弹窗
   }, [markPopupShown, dismissPopup]);
+
+  // 注册打开每日任务弹窗的回调到 StudioContext，供子组件调用
+  const { setDailyTasksCallback } = useStudio();
+  useEffect(() => {
+    setDailyTasksCallback(handleDailyTasksClick);
+  }, [setDailyTasksCallback, handleDailyTasksClick]);
 
   return (
     <div className="min-h-screen bg-gray-50">

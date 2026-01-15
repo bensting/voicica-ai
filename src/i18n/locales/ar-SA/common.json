@@ -1,0 +1,92 @@
+{
+  "common": {
+    "brand": "Voicica AI",
+    "cancel": "إلغاء",
+    "close": "إغلاق",
+    "retry": "إعادة المحاولة",
+    "loading": "جارٍ التحميل...",
+    "download": "تحميل",
+    "share": "مشاركة",
+    "delete": "حذف",
+    "later": "لاحقاً",
+    "refresh": "تحديث"
+  },
+  "app": {
+    "updateAvailable": "يتوفر تحديث",
+    "refreshRequired": "يتوفر إصدار جديد. يرجى التحديث للمتابعة."
+  },
+  "creditInfo": {
+    "currentCredits": "الرصيد الحالي:",
+    "loginForMore": "سجّل الدخول للحصول على المزيد من الرصيد",
+    "deductionNotice": "سيتم خصم {{count}} رصيد بعد نجاح {{actionName}}"
+  },
+  "productCategory": {
+    "aiVideo": "فيديو بالذكاء الاصطناعي",
+    "aiMusic": "موسيقى بالذكاء الاصطناعي",
+    "aiVoice": "صوت بالذكاء الاصطناعي"
+  },
+  "navbar": {
+    "explore": "استكشاف",
+    "pricing": "الأسعار",
+    "faq": "الأسئلة الشائعة",
+    "blog": "المدونة",
+    "myVoiceModels": "نماذج صوتي",
+    "generationHistory": "سجل التوليد",
+    "subscription": "الاشتراك",
+    "profile": "الملف الشخصي",
+    "login": "تسجيل الدخول",
+    "logout": "تسجيل الخروج",
+    "myStudio": "الاستوديو الخاص بي"
+  },
+  "nav": {
+    "studio": "الاستوديو",
+    "pricing": "الأسعار",
+    "faq": "الأسئلة الشائعة",
+    "generationHistory": "سجل التوليد",
+    "freeTools": "أدوات مجانية",
+    "textToSpeech": "تحويل النص إلى كلام",
+    "textToSpeechDesc": "تحويل النص إلى كلام طبيعي",
+    "tiktokDownloader": "تنزيل تيك توك",
+    "tiktokDownloaderDesc": "تنزيل فيديوهات تيك توك بدون علامة مائية",
+    "youtubeDownloader": "تنزيل يوتيوب",
+    "youtubeDownloaderDesc": "تنزيل فيديوهات وصوتيات يوتيوب"
+  },
+  "language": {
+    "en": "English",
+    "zhCN": "简体中文",
+    "zhTW": "繁體中文"
+  },
+  "footer": {
+    "tagline": "احتضن الذكاء الاصطناعي، احتضن البساطة",
+    "followUs": "تابعنا",
+    "changeLanguage": "تغيير اللغة",
+    "copyright": "جميع الحقوق محفوظة.",
+    "info": {
+      "title": "معلومات",
+      "terms": "الشروط والأحكام",
+      "cookie": "سياسة ملفات تعريف الارتباط",
+      "privacy": "سياسة الخصوصية",
+      "refund": "سياسة الاسترداد",
+      "partner": "كن شريكنا"
+    },
+    "about": {
+      "title": "حول",
+      "aboutUs": "من نحن",
+      "contact": "اتصل بنا",
+      "faqs": "الأسئلة الشائعة",
+      "blogs": "المدونات",
+      "dmca": "DMCA"
+    },
+    "products": {
+      "title": "منتجات مميزة",
+      "tts": "تحويل النص إلى كلام بالذكاء الاصطناعي",
+      "tiktokDownloader": "تنزيل تيك توك",
+      "youtubeDownloader": "تنزيل يوتيوب",
+      "songCover": "مولد أغلفة الأغاني بالذكاء الاصطناعي",
+      "musicGenerator": "مولد الموسيقى بالذكاء الاصطناعي",
+      "voiceCloning": "استنساخ الصوت بالذكاء الاصطناعي",
+      "voiceChanger": "مغير الصوت المجاني",
+      "api": "API (للمطورين)"
+    }
+  }
+}

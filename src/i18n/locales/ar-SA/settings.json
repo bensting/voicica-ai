@@ -1,0 +1,117 @@
+{
+  "settings": {
+    "title": "الإعدادات",
+    "menu": {
+      "home": "الرئيسية",
+      "mySubscription": "اشتراكي",
+      "myProfile": "ملفي الشخصي",
+      "orderList": "قائمة الطلبات",
+      "myCoupon": "قسائمي",
+      "messageCenter": "مركز الرسائل"
+    },
+    "basicInfo": {
+      "title": "المعلومات الأساسية",
+      "profilePicture": "صورة الملف الشخصي",
+      "profilePictureHint": "PNG أو JPG، يُنصح بالصور ذات العرض والارتفاع المتساويين",
+      "uploading": "جارٍ الرفع...",
+      "nameSurname": "الاسم واللقب",
+      "email": "البريد الإلكتروني",
+      "phone": "الهاتف"
+    },
+    "actions": {
+      "save": "حفظ",
+      "saveChanges": "حفظ التغييرات",
+      "cancel": "إلغاء",
+      "saveSuccess": "تم الحفظ بنجاح",
+      "saveFailed": "فشل الحفظ، يرجى المحاولة مرة أخرى"
+    },
+    "benefits": {
+      "title": "مزاياي",
+      "credits": "الرصيد",
+      "totalCredits": "إجمالي الرصيد",
+      "voiceCredits": "رصيد الصوت",
+      "permanentCredits": "دائم",
+      "monthlyCredits": "شهري",
+      "permanentTip": "من المشتريات والمكافآت، لا تنتهي صلاحيته",
+      "monthlyTip": "من المهام اليومية، يُعاد تعيينه شهرياً",
+      "refresh": "تحديث",
+      "viewHistory": "عرض السجل"
+    }
+  },
+  "subscription": {
+    "title": "خطتك",
+    "changePlan": "تغيير خطتك",
+    "selectPlan": "اختر الخطة الأنسب لك.",
+    "monthly": "شهري",
+    "yearly": "سنوي",
+    "yearlyDiscount": "خصم 33%",
+    "free": {
+      "name": "مجاني",
+      "badge": "نشط",
+      "feature1": "حتى 120 حرفاً لكل توليد",
+      "feature2": "900 ثانية من توليد الصوت شهرياً",
+      "feature3": "إنشاء حتى 5 نماذج استنساخ صوتي"
+    },
+    "pro": {
+      "name": "احترافي",
+      "badge": "موصى به",
+      "tagline": "أطلق العنان للإمكانات الكاملة",
+      "priceMonthly": "$14.99",
+      "priceYearly": "$9.99",
+      "perMonth": "/شهر واحد",
+      "feature1": "حتى 1000 حرف لكل توليد",
+      "feature2": "الاستخدام التجاري مسموح",
+      "feature3": "توليد غير محدود",
+      "feature4": "أولوية في التوليد",
+      "feature5": "إنشاء نماذج استنساخ صوتي غير محدودة",
+      "upgradeNow": "الترقية الآن"
+    },
+    "cancel": {
+      "title": "إلغاء الاشتراك",
+      "warning": "لا يمكن التراجع عن هذا الإجراء. سيتم إلغاء اشتراكك فوراً ولن يتم محاسبتك مرة أخرى.",
+      "note": "سيظل رصيدك المخصص متاحاً للاستخدام.",
+      "reasonLabel": "سبب الإلغاء (اختياري)",
+      "reasonPlaceholder": "أخبرنا لماذا تقوم بالإلغاء...",
+      "confirm": "تأكيد",
+      "canceling": "جارٍ الإلغاء..."
+    },
+    "mySubscription": {
+      "activeSection": "نشط",
+      "inactiveSection": "ملغى/منتهي",
+      "emptyTitle": "لا توجد اشتراكات",
+      "emptyDesc": "ليس لديك أي اشتراكات بعد.",
+      "noActiveSubscriptions": "لا توجد اشتراكات نشطة",
+      "noInactiveSubscriptions": "لا توجد اشتراكات ملغاة أو منتهية",
+      "retry": "إعادة المحاولة",
+      "validUntil": "صالح حتى:",
+      "daysLeft": "أيام متبقية",
+      "credits": "رصيد",
+      "cancelButton": "إلغاء الاشتراك",
+      "status": {
+        "TRIAL": "تجريبي",
+        "ACTIVE": "نشط",
+        "EXPIRED": "منتهي",
+        "CANCELLED": "ملغى",
+        "SUSPENDED": "معلق"
+      }
+    }
+  },
+  "creditHistory": {
+    "title": "سجل الرصيد",
+    "empty": "لا يوجد سجل رصيد بعد",
+    "date": "التاريخ",
+    "description": "الوصف",
+    "type": "النوع",
+    "amount": "الرصيد",
+    "scrollToLoadMore": "مرر للأسفل لتحميل المزيد",
+    "allLoaded": "تم تحميل جميع السجلات",
+    "productType": {
+      "textToSpeech": "تحويل النص إلى كلام",
+      "voiceCloning": "استنساخ الصوت",
+      "youtubeDownloader": "تحميل من يوتيوب",
+      "tiktokDownloader": "تحميل من تيك توك",
+      "subscription": "اشتراك",
+      "other": "أخرى"
+    }
+  }
+}

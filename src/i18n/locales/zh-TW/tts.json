@@ -25,9 +25,11 @@
       "generateSpeech": "生成語音",
       "generating": "生成中...",
       "tryExamples": "試試這些範例",
-      "more": "更多",
+      "more": "免費",
       "moreMenu": {
         "title": "獲取更多積分",
+        "freeCredits": "免費積分",
+        "freeCreditsDesc": "觀看影片",
         "signUp": "免費註冊",
         "signUpDesc": "獲得 {{credits}} 免費積分",
         "pricing": "查看價格",

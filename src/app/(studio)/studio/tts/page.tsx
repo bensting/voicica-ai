@@ -55,7 +55,7 @@ const DEFAULT_GENERATION_STATUS = [TaskStatus.SUCCESS, TaskStatus.PROCESSING, Ta
 export default function StudioTTSPage() {
   const { locale, isReady: isLocaleReady, t } = useLanguage();
   const { user, loading: authLoading, isRegistering } = useFirebaseAuth();
-  const { setTitle } = useStudio();
+  const { setTitle, openDailyTasks } = useStudio();
   const { credits, permanentCredits, monthlyCredits, loading: creditsLoading, refreshCredits } = useCredits();
 
   const [isAudioModalOpen, setIsAudioModalOpen] = useState(false);
@@ -347,6 +347,7 @@ export default function StudioTTSPage() {
               monthlyCredits={monthlyCredits}
               creditsLoading={creditsLoading}
               onClear={handleClearText}
+              onDailyTasksClick={openDailyTasks}
             />
           </div>
 
@@ -429,6 +430,7 @@ export default function StudioTTSPage() {
                   creditsLoading={creditsLoading}
                   onClear={handleClearText}
                   estimatedCredits={estimatedCredits}
+                  onDailyTasksClick={openDailyTasks}
                 />
               </div>
 

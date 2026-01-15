@@ -36,6 +36,7 @@ export const EXPLORE_LANGUAGE_PAGES: LanguagePageItem[] = [
   { code: 'es-ES', name: 'Español', flag: '🇪🇸', href: '/tts/spanish' },
   { code: 'pt-BR', name: 'Português', flag: '🇧🇷', href: '/tts/portuguese' },
   { code: 'hi-IN', name: 'हिन्दी', flag: '🇮🇳', href: '/tts/hindi' },
+  { code: 'ar-SA', name: 'العربية', flag: '🇸🇦', href: '/tts/arabic' },
 ];
 
 // 所有支持的语言列表

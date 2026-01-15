@@ -25,9 +25,11 @@
       "generateSpeech": "音声を生成",
       "generating": "生成中...",
       "tryExamples": "サンプルを試す",
-      "more": "もっと見る",
+      "more": "無料",
       "moreMenu": {
         "title": "クレジットを獲得",
+        "freeCredits": "無料クレジット",
+        "freeCreditsDesc": "動画を見る",
         "signUp": "無料登録",
         "signUpDesc": "{{credits}}クレジットを無料で獲得",
         "pricing": "料金を見る",

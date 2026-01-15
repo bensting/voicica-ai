@@ -1,0 +1,112 @@
+{
+  "settings": {
+    "title": "सेटिंग्स",
+    "menu": {
+      "home": "होम",
+      "mySubscription": "मेरी सदस्यता",
+      "myProfile": "मेरी प्रोफ़ाइल",
+      "orderList": "ऑर्डर सूची",
+      "myCoupon": "मेरा कूपन",
+      "messageCenter": "संदेश केंद्र"
+    },
+    "basicInfo": {
+      "title": "बुनियादी जानकारी",
+      "profilePicture": "प्रोफ़ाइल फ़ोटो",
+      "profilePictureHint": "PNG या JPG, समान चौड़ाई और ऊंचाई वाली छवियां अनुशंसित हैं",
+      "uploading": "अपलोड हो रहा है...",
+      "nameSurname": "नाम और उपनाम",
+      "email": "ईमेल पता",
+      "phone": "फ़ोन"
+    },
+    "actions": {
+      "save": "सहेजें",
+      "saveChanges": "परिवर्तन सहेजें",
+      "cancel": "रद्द करें",
+      "saveSuccess": "सफलतापूर्वक सहेजा गया",
+      "saveFailed": "सहेजने में विफल, कृपया पुनः प्रयास करें"
+    },
+    "benefits": {
+      "title": "मेरे लाभ",
+      "credits": "क्रेडिट",
+      "voiceCredits": "वॉइस क्रेडिट",
+      "refresh": "रिफ्रेश करें",
+      "viewHistory": "इतिहास देखें"
+    }
+  },
+  "subscription": {
+    "title": "आपका प्लान",
+    "changePlan": "अपना प्लान बदलें",
+    "selectPlan": "अपने लिए सबसे अच्छा प्लान चुनें।",
+    "monthly": "मासिक",
+    "yearly": "वार्षिक",
+    "yearlyDiscount": "33% छूट",
+    "free": {
+      "name": "मुफ्त",
+      "badge": "सक्रिय",
+      "feature1": "प्रति जनरेशन 120 अक्षर तक",
+      "feature2": "प्रति माह 900 सेकंड ऑडियो जनरेशन",
+      "feature3": "5 वॉइस क्लोन मॉडल तक बनाएं"
+    },
+    "pro": {
+      "name": "प्रोफेशनल",
+      "badge": "अनुशंसित",
+      "tagline": "पूरी क्षमता अनलॉक करें",
+      "priceMonthly": "$14.99",
+      "priceYearly": "$9.99",
+      "perMonth": "/1 महीना",
+      "feature1": "प्रति जनरेशन 1000 अक्षर तक",
+      "feature2": "व्यावसायिक उपयोग की अनुमति",
+      "feature3": "असीमित जनरेशन",
+      "feature4": "प्राथमिकता जनरेशन",
+      "feature5": "असीमित वॉइस क्लोन मॉडल बनाएं",
+      "upgradeNow": "अभी अपग्रेड करें"
+    },
+    "cancel": {
+      "title": "सदस्यता रद्द करें",
+      "warning": "यह क्रिया पूर्ववत नहीं की जा सकती। आपकी सदस्यता तुरंत रद्द हो जाएगी और आपसे फिर से शुल्क नहीं लिया जाएगा।",
+      "note": "आपके आवंटित क्रेडिट उपयोग के लिए उपलब्ध रहेंगे।",
+      "reasonLabel": "रद्द करने का कारण (वैकल्पिक)",
+      "reasonPlaceholder": "हमें बताएं कि आप क्यों रद्द कर रहे हैं...",
+      "confirm": "पुष्टि करें",
+      "canceling": "रद्द हो रहा है..."
+    },
+    "mySubscription": {
+      "activeSection": "सक्रिय",
+      "inactiveSection": "रद्द/समाप्त",
+      "emptyTitle": "कोई सदस्यता नहीं",
+      "emptyDesc": "आपकी अभी तक कोई सदस्यता नहीं है।",
+      "noActiveSubscriptions": "कोई सक्रिय सदस्यता नहीं",
+      "noInactiveSubscriptions": "कोई रद्द या समाप्त सदस्यता नहीं",
+      "retry": "पुनः प्रयास करें",
+      "validUntil": "वैध:",
+      "daysLeft": "दिन शेष",
+      "credits": "क्रेडिट",
+      "cancelButton": "सदस्यता रद्द करें",
+      "status": {
+        "TRIAL": "ट्रायल",
+        "ACTIVE": "सक्रिय",
+        "EXPIRED": "समाप्त",
+        "CANCELLED": "रद्द",
+        "SUSPENDED": "निलंबित"
+      }
+    }
+  },
+  "creditHistory": {
+    "title": "क्रेडिट इतिहास",
+    "empty": "अभी तक कोई क्रेडिट इतिहास नहीं",
+    "date": "तारीख",
+    "description": "विवरण",
+    "type": "प्रकार",
+    "amount": "क्रेडिट",
+    "scrollToLoadMore": "और लोड करने के लिए नीचे स्क्रॉल करें",
+    "allLoaded": "सभी रिकॉर्ड लोड हो गए",
+    "productType": {
+      "textToSpeech": "टेक्स्ट टू स्पीच",
+      "voiceCloning": "वॉइस क्लोनिंग",
+      "youtubeDownloader": "YouTube डाउनलोड",
+      "tiktokDownloader": "TikTok डाउनलोड",
+      "subscription": "सदस्यता",
+      "other": "अन्य"
+    }
+  }
+}

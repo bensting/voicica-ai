@@ -1,0 +1,48 @@
+{
+  "studio": {
+    "welcomeTitle": "नमस्ते, Voicica AI में आपका स्वागत है",
+    "welcomeSubtitle": "वॉइस, वीडियो, म्यूज़िक और आर्ट के लिए हमारे अत्याधुनिक टूल्स के साथ AI की शक्ति को अनलॉक करें। अपने विचारों को वास्तविकता में बदलें—तेज़, स्मार्ट और आसानी से।",
+    "featuredProducts": "प्रमुख उत्पाद",
+    "ttsDescription": "उन्नत AI आवाज़ों के साथ टेक्स्ट को प्राकृतिक-ध्वनि वाली स्पीच में बदलें",
+    "moreToolsComing": "और टूल्स जल्द आ रहे हैं",
+    "youMightWantToTry": "आप इन्हें आज़माना चाह सकते हैं",
+    "tiktokDownloaderDesc": "TikTok वीडियो मुफ्त डाउनलोड करें, बिना वॉटरमार्क, HD क्वालिटी",
+    "youtubeDownloaderDesc": "YouTube वीडियो मुफ्त डाउनलोड करें, विभिन्न फॉर्मेट और रेज़ोल्यूशन",
+    "upgrade": "अपग्रेड करें",
+    "dailyTasks": "रिवॉर्ड्स",
+    "tts": "टेक्स्ट टू स्पीच",
+    "menu": {
+      "home": "होम",
+      "creationHub": "क्रिएशन हब",
+      "project": "प्रोजेक्ट",
+      "shortVideo": "शॉर्ट वीडियो",
+      "aiVideoGenerator": "AI वीडियो जनरेटर",
+      "textToSpeech": "टेक्स्ट टू स्पीच",
+      "generationHistory": "जनरेशन इतिहास",
+      "speechToSpeech": "स्पीच टू स्पीच",
+      "voiceCloning": "वॉइस क्लोनिंग",
+      "voiceoverStudio": "वॉइसओवर स्टूडियो",
+      "aiSong": "AI गाना",
+      "aiMusicMovie": "AI म्यूज़िक मूवी",
+      "musicHistory": "म्यूज़िक इतिहास",
+      "aiMusic": "AI म्यूज़िक",
+      "aiCover": "AI कवर",
+      "musicTools": "म्यूज़िक टूल्स",
+      "account": "अकाउंट",
+      "tools": "मुफ्त टूल्स",
+      "tiktokDownloader": "TikTok डाउनलोडर",
+      "youtubeDownloader": "YouTube डाउनलोडर",
+      "textToVideo": "टेक्स्ट टू वीडियो"
+    },
+    "mobileNav": {
+      "tts": "TTS",
+      "voices": "आवाज़ें",
+      "clone": "क्लोन",
+      "history": "इतिहास"
+    },
+    "voices": {
+      "selectVoice": "आवाज़ चुनें",
+      "selectVoicePrompt": "कृपया एक आवाज़ चुनें"
+    }
+  }
+}

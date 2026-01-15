@@ -60,7 +60,8 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
 
     // 只有当 user 从 null 变为非 null 时才关闭（真正的登录成功）
     // 邮箱登录不自动关闭（需要先检查邮箱验证状态）
-    if (!prevUser && user && isOpen && mode === 'login' && !isEmailLoginRef.current) {
+    // 社交登录在 login 和 signup 模式下都应该自动关闭（社交登录本质上是"登录或注册"）
+    if (!prevUser && user && isOpen && !isEmailLoginRef.current) {
       console.log('✅ 社交登录成功，自动关闭模态框');
       onClose();
       // 重置表单
@@ -68,7 +69,7 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
       setPassword('');
       setError(null);
     }
-  }, [user, isOpen, onClose, mode]);
+  }, [user, isOpen, onClose]);
 
   // 按 ESC 键关闭
   useEffect(() => {
@@ -433,6 +434,32 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
               <h2 className="text-3xl font-bold text-center text-gray-900 mb-8">
                 {t('login.createAccountTitle')}
               </h2>
+
+              {/* 社交登录图标 - 横向排列 */}
+              <div className="flex justify-center gap-4 mb-6">
+                {socialProviders.map((provider) => (
+                  <button
+                    key={provider.id}
+                    onClick={() => handleSocialLogin(provider.id)}
+                    className="w-16 h-16 flex-shrink-0 flex items-center justify-center bg-white border-2 border-gray-200 rounded-xl hover:border-purple-300 hover:shadow-md transition-all"
+                    aria-label={`Sign up with ${provider.id}`}
+                  >
+                    {provider.icon}
+                  </button>
+                ))}
+              </div>
+
+              {/* OR 分隔符 */}
+              <div className="relative my-8">
+                <div className="absolute inset-0 flex items-center">
+                  <div className="w-full border-t border-gray-200"></div>
+                </div>
+                <div className="relative flex justify-center text-sm">
+                  <span className="px-4 bg-white text-gray-500 font-medium">
+                    {t('login.or')}
+                  </span>
+                </div>
+              </div>
 
               {/* 验证邮件发送成功提示 */}
               {verificationEmailSent && (

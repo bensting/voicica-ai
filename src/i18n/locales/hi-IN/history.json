@@ -1,0 +1,25 @@
+{
+  "generationHistory": {
+    "title": "जनरेशन इतिहास",
+    "subtitle": "अपनी स्पीच जनरेशन देखें और प्रबंधित करें।",
+    "generatedSpeech": "जनरेट की गई स्पीच",
+    "clearAll": "सभी हटाएं",
+    "noGenerations": "अभी तक कोई जनरेशन नहीं",
+    "noGenerationsDescription": "जब आप बनाना शुरू करेंगे तो आपकी स्पीच जनरेशन यहां दिखाई देंगी।",
+    "allRecordsLoaded": "सभी रिकॉर्ड लोड हो गए",
+    "total": "कुल",
+    "filters": {
+      "status": "स्थिति",
+      "dateRange": "तारीख",
+      "allStatus": "सभी स्थितियां",
+      "success": "सफल",
+      "processing": "प्रोसेसिंग",
+      "pending": "लंबित",
+      "failed": "विफल",
+      "from": "से",
+      "to": "तक",
+      "apply": "लागू करें",
+      "clear": "साफ़ करें"
+    }
+  }
+}

@@ -1,0 +1,51 @@
+{
+  "tiktokDownloader": {
+    "title": "TikTok वीडियो डाउनलोडर",
+    "subtitle": "बिना वॉटरमार्क के TikTok वीडियो मुफ्त डाउनलोड करें",
+    "urlLabel": "TikTok वीडियो URL",
+    "urlPlaceholder": "TikTok वीडियो लिंक यहां पेस्ट करें...",
+    "parseButton": "पार्स करें",
+    "parsing": "पार्स हो रहा है",
+    "doNotClose": "कृपया इस पेज को बंद न करें",
+    "downloadButton": "वीडियो डाउनलोड करें",
+    "downloading": "डाउनलोड हो रहा है...",
+    "selectQuality": "क्वालिटी चुनें",
+    "untitled": "बिना शीर्षक वीडियो",
+    "emptyTitle": "TikTok वीडियो डाउनलोड करें",
+    "emptyDescription": "डाउनलोड शुरू करने के लिए ऊपर TikTok वीडियो URL पेस्ट करें। सभी TikTok वीडियो फॉर्मेट समर्थित हैं।",
+    "errors": {
+      "emptyUrl": "कृपया TikTok वीडियो URL दर्ज करें",
+      "invalidUrl": "अमान्य TikTok URL। कृपया एक वैध TikTok वीडियो लिंक दर्ज करें।",
+      "parseFailed": "वीडियो पार्स करने में विफल। कृपया URL जांचें और पुनः प्रयास करें।",
+      "insufficientCredits": "अपर्याप्त क्रेडिट। आवश्यक: {{required}}, वर्तमान: {{current}}",
+      "unknownError": "एक अप्रत्याशित त्रुटि हुई। कृपया बाद में पुनः प्रयास करें।"
+    }
+  },
+  "youtubeDownloader": {
+    "title": "YouTube वीडियो डाउनलोडर",
+    "subtitle": "YouTube वीडियो और ऑडियो मुफ्त डाउनलोड करें",
+    "urlLabel": "YouTube वीडियो URL",
+    "urlPlaceholder": "YouTube वीडियो लिंक यहां पेस्ट करें...",
+    "parseButton": "पार्स करें",
+    "parsing": "पार्स हो रहा है",
+    "doNotClose": "कृपया इस पेज को बंद न करें",
+    "downloadButton": "डाउनलोड करें",
+    "downloading": "डाउनलोड हो रहा है...",
+    "selectQuality": "क्वालिटी चुनें",
+    "untitled": "बिना शीर्षक वीडियो",
+    "emptyTitle": "YouTube वीडियो डाउनलोड करें",
+    "emptyDescription": "डाउनलोड शुरू करने के लिए ऊपर YouTube वीडियो URL पेस्ट करें। वीडियो और ऑडियो फॉर्मेट समर्थित हैं।",
+    "tabs": {
+      "videoWithAudio": "वीडियो",
+      "videoOnly": "केवल वीडियो",
+      "audioOnly": "केवल ऑडियो"
+    },
+    "errors": {
+      "emptyUrl": "कृपया YouTube वीडियो URL दर्ज करें",
+      "invalidUrl": "अमान्य YouTube URL। कृपया एक वैध YouTube वीडियो लिंक दर्ज करें।",
+      "parseFailed": "वीडियो पार्स करने में विफल। कृपया URL जांचें और पुनः प्रयास करें।",
+      "insufficientCredits": "अपर्याप्त क्रेडिट। आवश्यक: {{required}}, वर्तमान: {{current}}",
+      "unknownError": "एक अप्रत्याशित त्रुटि हुई। कृपया बाद में पुनः प्रयास करें।"
+    }
+  }
+}

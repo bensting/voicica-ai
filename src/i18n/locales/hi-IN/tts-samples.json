@@ -1,0 +1,48 @@
+{
+  "ttsSamples": {
+    "sectionTitle": {
+      "prefix": "Voicica AI का",
+      "highlight": "स्टार प्रोडक्ट",
+      "suffix": "जो आप मिस नहीं कर सकते"
+    },
+    "productInfo": {
+      "title": "टेक्स्ट टू स्पीच",
+      "headline": {
+        "prefix": "मुफ्त",
+        "highlight": "टेक्स्ट टू स्पीच",
+        "suffix": "यथार्थवादी AI आवाज़ों के साथ ऑनलाइन"
+      },
+      "features": {
+        "voices": "190+ भाषाओं और लहजों में 3200+ आवाज़ें",
+        "natural": "टेक्स्ट को प्राकृतिक-ध्वनि वाली AI आवाज़ में बदलें",
+        "parameters": "सर्वोत्तम परिणाम के लिए पैरामीटर समायोजन",
+        "download": "WAV/MP3 में ऑडियो डाउनलोड करें",
+        "voiceover": "वीडियो के लिए वॉइसओवर बनाने के लिए बिल्कुल सही"
+      },
+      "cta": {
+        "button": "अभी आज़माएं",
+        "conversions": "TTS कन्वर्शन किए गए",
+        "usersCount": "10K+ लोग उपयोग कर रहे हैं..."
+      }
+    },
+    "languageSelector": {
+      "placeholder": "भाषा चुनें",
+      "unlockTitle": "और मुफ्त आवाज़ें अनलॉक करें",
+      "unlockSubtitle": "190+ भाषाएं और लहजे"
+    },
+    "voiceSelector": {
+      "loading": "आवाज़ें लोड हो रही हैं...",
+      "placeholder": "एक आवाज़ चुनें",
+      "unlockTitle": "और आवाज़ें मुफ्त आज़माएं",
+      "unlockSubtitle": "3200+ AI आवाज़ें",
+      "noVoices": "इस भाषा के लिए कोई आवाज़ उपलब्ध नहीं"
+    },
+    "demoPanel": {
+      "textPlaceholder": "स्पीच में बदलने के लिए टेक्स्ट दर्ज करें...",
+      "enhanceVoice": "आवाज़ बेहतर करें",
+      "listenButton": "सुनें",
+      "playingButton": "चल रहा है...",
+      "loadingConfig": "कॉन्फ़िगरेशन लोड हो रहा है..."
+    }
+  }
+}

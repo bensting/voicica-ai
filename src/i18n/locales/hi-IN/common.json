@@ -1,0 +1,92 @@
+{
+  "common": {
+    "brand": "Voicica AI",
+    "cancel": "रद्द करें",
+    "close": "बंद करें",
+    "retry": "पुनः प्रयास करें",
+    "loading": "लोड हो रहा है...",
+    "download": "डाउनलोड करें",
+    "share": "साझा करें",
+    "delete": "हटाएं",
+    "later": "बाद में",
+    "refresh": "रिफ्रेश करें"
+  },
+  "app": {
+    "updateAvailable": "अपडेट उपलब्ध है",
+    "refreshRequired": "एक नया संस्करण उपलब्ध है। कृपया जारी रखने के लिए रिफ्रेश करें।"
+  },
+  "creditInfo": {
+    "currentCredits": "वर्तमान क्रेडिट:",
+    "loginForMore": "अधिक क्रेडिट के लिए लॉगिन करें",
+    "deductionNotice": "{{actionName}} पूरा होने पर {{count}} क्रेडिट काटे जाएंगे"
+  },
+  "productCategory": {
+    "aiVideo": "AI वीडियो",
+    "aiMusic": "AI संगीत",
+    "aiVoice": "AI आवाज़"
+  },
+  "navbar": {
+    "explore": "खोजें",
+    "pricing": "मूल्य",
+    "faq": "अक्सर पूछे जाने वाले प्रश्न",
+    "blog": "ब्लॉग",
+    "myVoiceModels": "मेरे वॉइस मॉडल",
+    "generationHistory": "जनरेशन इतिहास",
+    "subscription": "सदस्यता",
+    "profile": "प्रोफ़ाइल",
+    "login": "लॉगिन",
+    "logout": "लॉगआउट",
+    "myStudio": "मेरा स्टूडियो"
+  },
+  "nav": {
+    "studio": "स्टूडियो",
+    "pricing": "मूल्य",
+    "faq": "अक्सर पूछे जाने वाले प्रश्न",
+    "generationHistory": "जनरेशन इतिहास",
+    "freeTools": "मुफ्त टूल्स",
+    "textToSpeech": "टेक्स्ट टू स्पीच",
+    "textToSpeechDesc": "टेक्स्ट को प्राकृतिक आवाज़ में बदलें",
+    "tiktokDownloader": "TikTok डाउनलोडर",
+    "tiktokDownloaderDesc": "बिना वॉटरमार्क के TikTok वीडियो डाउनलोड करें",
+    "youtubeDownloader": "YouTube डाउनलोडर",
+    "youtubeDownloaderDesc": "YouTube वीडियो और ऑडियो डाउनलोड करें"
+  },
+  "language": {
+    "en": "English",
+    "zhCN": "简体中文",
+    "zhTW": "繁體中文"
+  },
+  "footer": {
+    "tagline": "AI को अपनाएं, सरलता को अपनाएं",
+    "followUs": "हमें फॉलो करें",
+    "changeLanguage": "भाषा बदलें",
+    "copyright": "सर्वाधिकार सुरक्षित।",
+    "info": {
+      "title": "जानकारी",
+      "terms": "नियम और शर्तें",
+      "cookie": "कुकी नीति",
+      "privacy": "गोपनीयता नीति",
+      "refund": "रिफंड नीति",
+      "partner": "पार्टनर बनें"
+    },
+    "about": {
+      "title": "हमारे बारे में",
+      "aboutUs": "हमारे बारे में",
+      "contact": "संपर्क करें",
+      "faqs": "अक्सर पूछे जाने वाले प्रश्न",
+      "blogs": "ब्लॉग्स",
+      "dmca": "DMCA"
+    },
+    "products": {
+      "title": "प्रमुख उत्पाद",
+      "tts": "AI टेक्स्ट टू स्पीच",
+      "tiktokDownloader": "TikTok डाउनलोडर",
+      "youtubeDownloader": "YouTube डाउनलोडर",
+      "songCover": "AI कवर जनरेटर",
+      "musicGenerator": "AI म्यूज़िक जनरेटर",
+      "voiceCloning": "AI वॉइस क्लोनिंग",
+      "voiceChanger": "मुफ्त वॉइस चेंजर",
+      "api": "API (डेवलपर्स के लिए)"
+    }
+  }
+}

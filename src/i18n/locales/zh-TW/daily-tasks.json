@@ -23,6 +23,12 @@
 
     "loadingAd": "載入廣告中...",
     "pleaseWait": "請稍候",
+    "cancel": "取消",
+    "cancelled": "已取消",
+    "timeout": "載入逾時，請重試",
+    "retry": "重試",
+    "close": "關閉",
+    "loadFailed": "載入失敗",
     "adInterrupted": "廣告未看完，無法獲得獎勵",
     "adUnavailable": "暫無可用廣告，請稍後再試",
     "adError": "廣告載入失敗，請稍後再試",

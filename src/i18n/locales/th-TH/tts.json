@@ -25,9 +25,11 @@
       "generateSpeech": "สร้างเสียง",
       "generating": "กำลังสร้าง...",
       "tryExamples": "ลองตัวอย่างเหล่านี้",
-      "more": "เพิ่มเติม",
+      "more": "ฟรี",
       "moreMenu": {
         "title": "รับเครดิตเพิ่ม",
+        "freeCredits": "เครดิตฟรี",
+        "freeCreditsDesc": "ดูวิดีโอ",
         "signUp": "สมัครฟรี",
         "signUpDesc": "รับ {{credits}} เครดิตฟรี",
         "pricing": "ดูราคา",

@@ -25,9 +25,11 @@
       "generateSpeech": "Tạo giọng nói",
       "generating": "Đang tạo...",
       "tryExamples": "Thử các ví dụ",
-      "more": "Thêm",
+      "more": "Miễn phí",
       "moreMenu": {
         "title": "Nhận thêm điểm",
+        "freeCredits": "Điểm miễn phí",
+        "freeCreditsDesc": "Xem video",
         "signUp": "Đăng ký miễn phí",
         "signUpDesc": "Nhận {{credits}} điểm miễn phí",
         "pricing": "Xem bảng giá",

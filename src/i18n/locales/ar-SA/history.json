@@ -1,0 +1,25 @@
+{
+  "generationHistory": {
+    "title": "سجل التوليد",
+    "subtitle": "عرض وإدارة مقاطعك الصوتية المولدة.",
+    "generatedSpeech": "الكلام المولد",
+    "clearAll": "مسح الكل",
+    "noGenerations": "لا توجد تسجيلات بعد",
+    "noGenerationsDescription": "ستظهر مقاطعك الصوتية المولدة هنا بمجرد البدء في الإنشاء.",
+    "allRecordsLoaded": "تم تحميل جميع السجلات",
+    "total": "المجموع",
+    "filters": {
+      "status": "الحالة",
+      "dateRange": "التاريخ",
+      "allStatus": "جميع الحالات",
+      "success": "ناجح",
+      "processing": "قيد المعالجة",
+      "pending": "قيد الانتظار",
+      "failed": "فشل",
+      "from": "من",
+      "to": "إلى",
+      "apply": "تطبيق",
+      "clear": "مسح"
+    }
+  }
+}

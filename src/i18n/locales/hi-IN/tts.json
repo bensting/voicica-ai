@@ -25,9 +25,11 @@
       "generateSpeech": "स्पीच जनरेट करें",
       "generating": "जनरेट हो रहा है...",
       "tryExamples": "ये उदाहरण आज़माएं",
-      "more": "और",
+      "more": "मुफ्त",
       "moreMenu": {
         "title": "अधिक क्रेडिट प्राप्त करें",
+        "freeCredits": "मुफ्त क्रेडिट",
+        "freeCreditsDesc": "वीडियो देखें",
         "signUp": "मुफ्त साइन अप करें",
         "signUpDesc": "{{credits}} मुफ्त क्रेडिट पाएं",
         "pricing": "मूल्य देखें",

@@ -25,9 +25,11 @@
       "generateSpeech": "Generate Speech",
       "generating": "Generating...",
       "tryExamples": "Try these examples",
-      "more": "More",
+      "more": "Free",
       "moreMenu": {
         "title": "Get more credits",
+        "freeCredits": "Free Credits",
+        "freeCreditsDesc": "Watch videos",
         "signUp": "Sign up free",
         "signUpDesc": "Get {{credits}} free credits",
         "pricing": "View pricing",

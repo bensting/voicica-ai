@@ -1,0 +1,51 @@
+{
+  "pricing": {
+    "pageTitle": "خطط وأسعار Voicica AI",
+    "pageSubtitle": "تقدم Voicica AI مجموعة متنوعة من خطط الشراء لتلبية احتياجاتك بشكل أفضل.",
+    "loading": "جارٍ تحميل خطط الأسعار...",
+    "error": "فشل في تحميل خطط الأسعار. يرجى المحاولة مرة أخرى لاحقًا.",
+    "retry": "إعادة المحاولة",
+    "week": "أسبوع",
+    "month": "شهر",
+    "year": "سنة",
+    "perDay": "في اليوم",
+    "creditsPerCycle": "رصيد لكل دورة",
+    "creditsUsageRules": "قواعد استخدام الرصيد",
+    "notes": "ملاحظات:",
+    "creditsNote": "يمكن استخدام الرصيد في جميع الأدوات على Voicica AI.",
+    "buyNow": "اشترِ الآن",
+    "tryItFree": "جربه مجانًا",
+    "processing": "جارٍ المعالجة...",
+    "renewalAt": "التجديد في",
+    "freeForEveryone": "مجاني للجميع",
+    "mostPopular": "الأكثر شعبية",
+    "autoRenew": "تجديد تلقائي. يمكنك الإلغاء في أي وقت.",
+    "loginRequired": "تسجيل الدخول مطلوب",
+    "loginRequiredDesc": "يرجى تسجيل الدخول لشراء خطة الاشتراك",
+    "cancel": "إلغاء",
+    "signIn": "تسجيل الدخول",
+    "creditsUsageGuide": {
+      "title": "دليل استخدام الرصيد",
+      "subtitle": "فيما يلي متطلبات الرصيد لكل ميزة.",
+      "feature": "الميزة",
+      "creditsRequired": "الرصيد المطلوب",
+      "standardVoice": "صوت عادي",
+      "premiumVoice": "صوت مميز",
+      "clonedVoice": "صوت مستنسخ"
+    }
+  },
+  "upgrade": {
+    "header": {
+      "title": "ترقية خطتك",
+      "description": "اختر الخطة المثالية لاحتياجاتك"
+    },
+    "tabs": {
+      "textToVoice": "تحويل النص إلى صوت",
+      "voiceClone": "استنساخ الصوت"
+    },
+    "title": {
+      "textToVoice": "اختر خطتك لتحويل النص إلى كلام",
+      "voiceClone": "اختر خطتك لاستنساخ الصوت"
+    }
+  }
+}

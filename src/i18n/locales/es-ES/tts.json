@@ -25,9 +25,11 @@
       "generateSpeech": "Generar voz",
       "generating": "Generando...",
       "tryExamples": "Prueba estos ejemplos",
-      "more": "Más",
+      "more": "Gratis",
       "moreMenu": {
         "title": "Obtener más créditos",
+        "freeCredits": "Créditos gratis",
+        "freeCreditsDesc": "Ver videos",
         "signUp": "Regístrate gratis",
         "signUpDesc": "Obtiene {{credits}} créditos gratis",
         "pricing": "Ver precios",

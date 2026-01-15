@@ -1,0 +1,51 @@
+{
+  "ttsPromo": {
+    "stats": {
+      "voices": "Vozes",
+      "languages": "Idiomas",
+      "downloads": "Downloads",
+      "reviews": "Avaliações",
+      "free": "GRÁTIS"
+    },
+    "hero": {
+      "badge": "100% Grátis • Sem cadastro necessário",
+      "title1": "Gerador",
+      "titleHighlight1": "Texto para fala",
+      "title2": "com IA gratuito",
+      "subtitle": "Mais de 3200 vozes • Mais de 190 idiomas",
+      "description": "Transforme texto em fala natural instantaneamente. Vozes de celebridades, narradores profissionais ou clone sua própria voz.",
+      "brandName": "Voicica AI",
+      "downloadApk": "Baixar",
+      "comingSoon": "Em breve",
+      "tryNow": "Começar grátis",
+      "webVersion": "Versão web"
+    },
+    "samples": {
+      "title1": "Ouça exemplos",
+      "title2": "reais das nossas",
+      "titleHighlight": "vozes de IA",
+      "description": "Clonagem de voz hiper-realista com emoções, tom e pronúncia natural.",
+      "noVoices": "Nenhuma voz disponível para este idioma.",
+      "exploreAll": "Explorar todas as mais de 3200 vozes"
+    },
+    "filters": {
+      "all": "Todas",
+      "celebrities": "Celebridades",
+      "professional": "Profissional"
+    },
+    "cta": {
+      "feature1": "Mais de 3200 vozes de IA em mais de 190 idiomas",
+      "feature2": "Baixe MP3/WAV - Ilimitado",
+      "feature3": "Clone sua própria voz",
+      "feature4": "100% grátis para sempre",
+      "startCreating": "Comece a criar - É grátis",
+      "noCreditCard": "Sem cartão de crédito",
+      "noSignup": "Sem cadastro necessário"
+    },
+    "explore": {
+      "title": "Explore vozes de IA em múltiplos idiomas",
+      "subtitle": "Nosso serviço de texto para fala suporta mais de 190 idiomas. Selecione seu idioma preferido e comece a criar conteúdo com vozes de IA de alta qualidade.",
+      "exploreMore": "Explorar mais"
+    }
+  }
+}

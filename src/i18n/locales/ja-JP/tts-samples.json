@@ -1,0 +1,48 @@
+{
+  "ttsSamples": {
+    "sectionTitle": {
+      "prefix": "Voicica AIの",
+      "highlight": "注目製品",
+      "suffix": "お見逃しなく"
+    },
+    "productInfo": {
+      "title": "テキスト読み上げ",
+      "headline": {
+        "prefix": "無料",
+        "highlight": "テキスト読み上げ",
+        "suffix": "オンラインでリアルなAI音声"
+      },
+      "features": {
+        "voices": "190以上の言語とアクセントで3200以上の音声",
+        "natural": "テキストを自然なAI音声に変換",
+        "parameters": "より良い結果のためのパラメータ調整",
+        "download": "WAV/MP3で音声をダウンロード",
+        "voiceover": "動画のナレーション作成に最適"
+      },
+      "cta": {
+        "button": "今すぐ試す",
+        "conversions": "TTS変換実行数",
+        "usersCount": "10K以上の人が使用中..."
+      }
+    },
+    "languageSelector": {
+      "placeholder": "言語を選択",
+      "unlockTitle": "さらに無料の音声をアンロック",
+      "unlockSubtitle": "190以上の言語とアクセント"
+    },
+    "voiceSelector": {
+      "loading": "音声を読み込み中...",
+      "placeholder": "音声を選択",
+      "unlockTitle": "さらに無料で音声を試す",
+      "unlockSubtitle": "3200以上のAI音声",
+      "noVoices": "この言語の音声がありません"
+    },
+    "demoPanel": {
+      "textPlaceholder": "音声に変換するテキストを入力...",
+      "enhanceVoice": "音声を強化",
+      "listenButton": "聞く",
+      "playingButton": "再生中...",
+      "loadingConfig": "設定を読み込み中..."
+    }
+  }
+}

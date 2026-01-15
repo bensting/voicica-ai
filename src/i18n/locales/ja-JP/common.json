@@ -1,0 +1,92 @@
+{
+  "common": {
+    "brand": "Voicica AI",
+    "cancel": "キャンセル",
+    "close": "閉じる",
+    "retry": "再試行",
+    "loading": "読み込み中...",
+    "download": "ダウンロード",
+    "share": "共有",
+    "delete": "削除",
+    "later": "後で",
+    "refresh": "更新"
+  },
+  "app": {
+    "updateAvailable": "アップデートがあります",
+    "refreshRequired": "新しいバージョンが利用可能です。続行するには更新してください。"
+  },
+  "creditInfo": {
+    "currentCredits": "現在のクレジット：",
+    "loginForMore": "ログインしてクレジットを獲得",
+    "deductionNotice": "{{actionName}}完了後、{{count}}クレジットが差し引かれます"
+  },
+  "productCategory": {
+    "aiVideo": "AI動画",
+    "aiMusic": "AI音楽",
+    "aiVoice": "AI音声"
+  },
+  "navbar": {
+    "explore": "探索",
+    "pricing": "料金",
+    "faq": "よくある質問",
+    "blog": "ブログ",
+    "myVoiceModels": "マイボイスモデル",
+    "generationHistory": "生成履歴",
+    "subscription": "サブスクリプション",
+    "profile": "プロフィール",
+    "login": "ログイン",
+    "logout": "ログアウト",
+    "myStudio": "マイスタジオ"
+  },
+  "nav": {
+    "studio": "スタジオ",
+    "pricing": "料金",
+    "faq": "よくある質問",
+    "generationHistory": "生成履歴",
+    "freeTools": "無料ツール",
+    "textToSpeech": "テキスト読み上げ",
+    "textToSpeechDesc": "テキストを自然な音声に変換",
+    "tiktokDownloader": "TikTokダウンローダー",
+    "tiktokDownloaderDesc": "ウォーターマークなしでTikTok動画をダウンロード",
+    "youtubeDownloader": "YouTubeダウンローダー",
+    "youtubeDownloaderDesc": "YouTube動画と音声をダウンロード"
+  },
+  "language": {
+    "en": "English",
+    "zhCN": "简体中文",
+    "zhTW": "繁體中文"
+  },
+  "footer": {
+    "tagline": "AIを受け入れ、シンプルさを受け入れる",
+    "followUs": "フォローする",
+    "changeLanguage": "言語を変更",
+    "copyright": "All rights reserved.",
+    "info": {
+      "title": "情報",
+      "terms": "利用規約",
+      "cookie": "Cookieポリシー",
+      "privacy": "プライバシーポリシー",
+      "refund": "返金ポリシー",
+      "partner": "パートナーになる"
+    },
+    "about": {
+      "title": "会社情報",
+      "aboutUs": "会社概要",
+      "contact": "お問い合わせ",
+      "faqs": "よくある質問",
+      "blogs": "ブログ",
+      "dmca": "DMCA"
+    },
+    "products": {
+      "title": "注目製品",
+      "tts": "AI テキスト読み上げ",
+      "tiktokDownloader": "TikTokダウンローダー",
+      "youtubeDownloader": "YouTubeダウンローダー",
+      "songCover": "AI カバー曲ジェネレーター",
+      "musicGenerator": "AI 音楽ジェネレーター",
+      "voiceCloning": "AI ボイスクローニング",
+      "voiceChanger": "無料ボイスチェンジャー",
+      "api": "API（開発者向け）"
+    }
+  }
+}

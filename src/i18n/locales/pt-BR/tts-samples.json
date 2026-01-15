@@ -1,0 +1,48 @@
+{
+  "ttsSamples": {
+    "sectionTitle": {
+      "prefix": "O",
+      "highlight": "produto estrela",
+      "suffix": "da Voicica AI que você não pode perder"
+    },
+    "productInfo": {
+      "title": "Texto para fala",
+      "headline": {
+        "prefix": "Grátis",
+        "highlight": "Texto para fala",
+        "suffix": "online com vozes de IA realistas"
+      },
+      "features": {
+        "voices": "Mais de 3200 vozes em mais de 190 idiomas e sotaques",
+        "natural": "Converta texto em voz de IA natural",
+        "parameters": "Ajuste de parâmetros para melhores resultados",
+        "download": "Baixe áudio em WAV/MP3",
+        "voiceover": "Perfeito para criar locuções para vídeos"
+      },
+      "cta": {
+        "button": "Experimente agora",
+        "conversions": "Conversões de TTS realizadas",
+        "usersCount": "Mais de 10K pessoas estão usando..."
+      }
+    },
+    "languageSelector": {
+      "placeholder": "Selecionar idioma",
+      "unlockTitle": "Desbloqueie mais vozes grátis",
+      "unlockSubtitle": "Mais de 190 idiomas e sotaques"
+    },
+    "voiceSelector": {
+      "loading": "Carregando vozes...",
+      "placeholder": "Selecionar uma voz",
+      "unlockTitle": "Experimente mais vozes grátis",
+      "unlockSubtitle": "Mais de 3200 vozes de IA",
+      "noVoices": "Nenhuma voz disponível para este idioma"
+    },
+    "demoPanel": {
+      "textPlaceholder": "Digite texto para converter em fala...",
+      "enhanceVoice": "Melhorar voz",
+      "listenButton": "Ouvir",
+      "playingButton": "Reproduzindo...",
+      "loadingConfig": "Carregando configuração..."
+    }
+  }
+}

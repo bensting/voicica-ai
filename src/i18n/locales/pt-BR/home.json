@@ -1,0 +1,33 @@
+{
+  "home": {
+    "heroTitle": "Texto para fala 100% gratuito para todos",
+    "heroSubtitle": "Vozes ilimitadas. Custo zero.",
+    "heroFeature1": "Escolha entre mais de 3200 vozes em mais de 190 idiomas.",
+    "heroFeature2": "Basta digitar e gerar locuções naturais instantaneamente.",
+    "heroCTA": "Gerar locução grátis",
+    "exploreVoices": "Explorar vozes",
+    "viewPricing": "Ver preços",
+    "whyChoose": "Por que escolher Voicica AI?",
+    "getStarted": "Começar",
+    "learnMore": "Saiba mais",
+    "readyTitle": "Pronto para começar?",
+    "readyDescription": "Junte-se a milhares de usuários criando conteúdo de voz incrível com Voicica AI.",
+    "startCreating": "Comece a criar agora"
+  },
+  "cta": {
+    "title": "Locuções de IA gratuitas para todos",
+    "getStarted": "Comece, é grátis!",
+    "viewPricing": "Veja nossos planos e preços",
+    "features": {
+      "moneyBack": "100% gratuito",
+      "support": "Suporte técnico gratuito",
+      "secure": "100% seguro",
+      "updates": "Atualizações regulares"
+    }
+  },
+  "ttsSamples": {
+    "titlePrefix": "O",
+    "titleHighlight": "produto estrela",
+    "titleSuffix": "da Voicica AI que você não pode perder"
+  }
+}

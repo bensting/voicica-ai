@@ -1,0 +1,40 @@
+{
+  "payment": {
+    "success": {
+      "verifying": {
+        "title": "Đang xác minh thanh toán...",
+        "description": "Vui lòng đợi trong khi chúng tôi xác nhận thanh toán của bạn"
+      },
+      "success": {
+        "title": "Thanh toán thành công!",
+        "description": "Cảm ơn bạn đã mua hàng, gói đăng ký đã được kích hoạt",
+        "orderSummary": "Tóm tắt đơn hàng",
+        "orderId": "Mã đơn hàng",
+        "subscriptionId": "Mã đăng ký",
+        "countdown": "Chuyển hướng đến studio trong {{count}} giây...",
+        "enterStudio": "Vào Studio ngay"
+      },
+      "pending": {
+        "title": "Đang xử lý thanh toán",
+        "description": "Thanh toán của bạn đang được xử lý, gói đăng ký sẽ sớm được kích hoạt",
+        "orderId": "Mã đơn hàng:",
+        "refresh": "Làm mới trạng thái",
+        "backHome": "Quay lại Studio"
+      },
+      "failed": {
+        "title": "Xác minh thanh toán thất bại",
+        "description": "Xin lỗi, chúng tôi không thể xác minh thanh toán của bạn",
+        "notice": "Nếu bạn đã hoàn tất thanh toán, vui lòng làm mới trang sau để kiểm tra trạng thái, hoặc liên hệ bộ phận chăm sóc khách hàng để được hỗ trợ.",
+        "retry": "Thử lại xác minh",
+        "backHome": "Quay lại Studio"
+      }
+    },
+    "cancel": {
+      "title": "Thanh toán đã hủy",
+      "description": "Thanh toán của bạn đã bị hủy. Không có khoản phí nào được thu.",
+      "notice": "Nếu bạn gặp bất kỳ vấn đề nào trong quá trình thanh toán, vui lòng thử lại hoặc liên hệ đội ngũ hỗ trợ của chúng tôi.",
+      "tryAgain": "Thử lại",
+      "backToStudio": "Quay lại Studio"
+    }
+  }
+}

@@ -1,0 +1,47 @@
+{
+  "pwa": {
+    "updateAvailable": "Nova versão disponível",
+    "updateDescription": "Uma nova versão do aplicativo está disponível. Clique em atualizar para obter os recursos e melhorias mais recentes.",
+    "update": "Atualizar agora",
+    "later": "Depois",
+    "installShortcut": "Instalar aplicativo",
+    "installTitle": "Instalar aplicativo",
+    "installDescription": "Instale este aplicativo no seu dispositivo para acesso rápido e fácil, mesmo offline.",
+    "install": "Instalar",
+    "feature1": "Acesso rápido da sua área de trabalho ou tela inicial",
+    "feature2": "Funciona offline com conteúdo em cache",
+    "feature3": "Leve, não precisa de loja de aplicativos",
+    "iosInstructions": "Passos de instalação:",
+    "iosStep1": "Toque no botão Compartilhar",
+    "iosStep1b": "na parte inferior do Safari",
+    "iosStep2": "Role e toque em \"Adicionar à Tela de Início\"",
+    "iosStep3": "Toque em \"Adicionar\" no canto superior direito",
+    "gotIt": "Entendi"
+  },
+  "appUpdate": {
+    "title": "Nova versão disponível",
+    "currentVersion": "Versão atual",
+    "releaseNotes": "Novidades",
+    "forceUpdateWarning": "Esta é uma atualização obrigatória. Por favor, atualize para continuar usando o aplicativo.",
+    "updateNow": "Atualizar agora",
+    "later": "Depois",
+    "cancel": "Cancelar",
+    "retry": "Tentar novamente",
+    "checkingPermission": "Verificando permissões...",
+    "downloading": "Baixando...",
+    "installing": "Instalando...",
+    "installComplete": "Instalação concluída",
+    "downloadError": "Falha no download",
+    "permissionRequired": "Por favor, conceda permissão para instalar aplicativos desconhecidos e tente novamente"
+  },
+  "googlePlayUpdate": {
+    "updateAvailable": "Atualização disponível",
+    "updateReady": "Atualização pronta para instalar",
+    "downloadInBackground": "Baixando em segundo plano...",
+    "downloadComplete": "Download concluído. Reinicie para aplicar a atualização.",
+    "update": "Atualizar",
+    "install": "Instalar agora",
+    "later": "Depois",
+    "progress": "Baixando... {{progress}}%"
+  }
+}

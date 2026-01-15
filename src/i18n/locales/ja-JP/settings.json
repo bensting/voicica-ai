@@ -1,0 +1,112 @@
+{
+  "settings": {
+    "title": "設定",
+    "menu": {
+      "home": "ホーム",
+      "mySubscription": "マイサブスクリプション",
+      "myProfile": "マイプロフィール",
+      "orderList": "注文一覧",
+      "myCoupon": "マイクーポン",
+      "messageCenter": "メッセージセンター"
+    },
+    "basicInfo": {
+      "title": "基本情報",
+      "profilePicture": "プロフィール画像",
+      "profilePictureHint": "PNGまたはJPG、正方形の画像を推奨",
+      "uploading": "アップロード中...",
+      "nameSurname": "氏名",
+      "email": "メールアドレス",
+      "phone": "電話番号"
+    },
+    "actions": {
+      "save": "保存",
+      "saveChanges": "変更を保存",
+      "cancel": "キャンセル",
+      "saveSuccess": "保存しました",
+      "saveFailed": "保存に失敗しました。もう一度お試しください"
+    },
+    "benefits": {
+      "title": "マイ特典",
+      "credits": "クレジット",
+      "voiceCredits": "音声クレジット",
+      "refresh": "更新",
+      "viewHistory": "履歴を見る"
+    }
+  },
+  "subscription": {
+    "title": "あなたのプラン",
+    "changePlan": "プランを変更",
+    "selectPlan": "最適なプランを選択してください。",
+    "monthly": "月額",
+    "yearly": "年額",
+    "yearlyDiscount": "33%オフ",
+    "free": {
+      "name": "無料",
+      "badge": "利用中",
+      "feature1": "1回あたり最大120文字",
+      "feature2": "月900秒の音声生成",
+      "feature3": "最大5つのクローン音声モデル作成"
+    },
+    "pro": {
+      "name": "プロ",
+      "badge": "おすすめ",
+      "tagline": "すべての機能をアンロック",
+      "priceMonthly": "$14.99",
+      "priceYearly": "$9.99",
+      "perMonth": "/月",
+      "feature1": "1回あたり最大1000文字",
+      "feature2": "商用利用可能",
+      "feature3": "無制限の生成",
+      "feature4": "優先生成",
+      "feature5": "無制限のクローン音声モデル作成",
+      "upgradeNow": "今すぐアップグレード"
+    },
+    "cancel": {
+      "title": "サブスクリプションをキャンセル",
+      "warning": "この操作は元に戻せません。サブスクリプションは即座にキャンセルされ、今後請求されません。",
+      "note": "割り当てられたクレジットは引き続き使用できます。",
+      "reasonLabel": "キャンセル理由（任意）",
+      "reasonPlaceholder": "キャンセルの理由をお聞かせください...",
+      "confirm": "確認",
+      "canceling": "キャンセル中..."
+    },
+    "mySubscription": {
+      "activeSection": "有効",
+      "inactiveSection": "キャンセル済み/期限切れ",
+      "emptyTitle": "サブスクリプションなし",
+      "emptyDesc": "まだサブスクリプションがありません。",
+      "noActiveSubscriptions": "有効なサブスクリプションなし",
+      "noInactiveSubscriptions": "キャンセル済みまたは期限切れのサブスクリプションなし",
+      "retry": "再試行",
+      "validUntil": "有効期限：",
+      "daysLeft": "日残り",
+      "credits": "クレジット",
+      "cancelButton": "サブスクリプションをキャンセル",
+      "status": {
+        "TRIAL": "トライアル",
+        "ACTIVE": "有効",
+        "EXPIRED": "期限切れ",
+        "CANCELLED": "キャンセル済み",
+        "SUSPENDED": "停止中"
+      }
+    }
+  },
+  "creditHistory": {
+    "title": "クレジット履歴",
+    "empty": "まだクレジット履歴がありません",
+    "date": "日付",
+    "description": "説明",
+    "type": "種類",
+    "amount": "クレジット",
+    "scrollToLoadMore": "スクロールしてもっと読み込む",
+    "allLoaded": "すべての記録を読み込みました",
+    "productType": {
+      "textToSpeech": "テキスト読み上げ",
+      "voiceCloning": "ボイスクローニング",
+      "youtubeDownloader": "YouTubeダウンロード",
+      "tiktokDownloader": "TikTokダウンロード",
+      "subscription": "サブスクリプション",
+      "other": "その他"
+    }
+  }
+}

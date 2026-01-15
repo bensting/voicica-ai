@@ -1,0 +1,48 @@
+{
+  "studio": {
+    "welcomeTitle": "こんにちは、Voicica AIへようこそ",
+    "welcomeSubtitle": "音声、動画、音楽、アートのための最先端ツールでAIの力を解き放ちましょう。アイデアを現実に変えましょう—より速く、より賢く、簡単に。",
+    "featuredProducts": "注目製品",
+    "ttsDescription": "高度なAI音声でテキストを自然な音声に変換",
+    "moreToolsComing": "その他のツールも近日公開",
+    "youMightWantToTry": "試してみたいかも",
+    "tiktokDownloaderDesc": "TikTok動画を無料ダウンロード、ウォーターマークなし、HD品質",
+    "youtubeDownloaderDesc": "YouTube動画を無料ダウンロード、複数の形式と解像度",
+    "upgrade": "アップグレード",
+    "dailyTasks": "報酬",
+    "tts": "テキスト読み上げ",
+    "menu": {
+      "home": "ホーム",
+      "creationHub": "クリエイションハブ",
+      "project": "プロジェクト",
+      "shortVideo": "ショート動画",
+      "aiVideoGenerator": "AI動画ジェネレーター",
+      "textToSpeech": "テキスト読み上げ",
+      "generationHistory": "生成履歴",
+      "speechToSpeech": "音声変換",
+      "voiceCloning": "ボイスクローニング",
+      "voiceoverStudio": "ナレーションスタジオ",
+      "aiSong": "AI ソング",
+      "aiMusicMovie": "AI ミュージックムービー",
+      "musicHistory": "音楽履歴",
+      "aiMusic": "AI 音楽",
+      "aiCover": "AI カバー",
+      "musicTools": "音楽ツール",
+      "account": "アカウント",
+      "tools": "無料ツール",
+      "tiktokDownloader": "TikTokダウンローダー",
+      "youtubeDownloader": "YouTubeダウンローダー",
+      "textToVideo": "テキスト動画変換"
+    },
+    "mobileNav": {
+      "tts": "TTS",
+      "voices": "音声",
+      "clone": "クローン",
+      "history": "履歴"
+    },
+    "voices": {
+      "selectVoice": "音声を選択",
+      "selectVoicePrompt": "音声を選択してください"
+    }
+  }
+}

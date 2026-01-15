@@ -1,0 +1,47 @@
+{
+  "pwa": {
+    "updateAvailable": "新しいバージョンが利用可能",
+    "updateDescription": "アプリの新しいバージョンが利用可能です。最新の機能と改善を入手するには更新をクリックしてください。",
+    "update": "今すぐ更新",
+    "later": "後で",
+    "installShortcut": "アプリをインストール",
+    "installTitle": "アプリをインストール",
+    "installDescription": "このアプリをデバイスにインストールして、オフラインでも素早く簡単にアクセスできます。",
+    "install": "インストール",
+    "feature1": "デスクトップまたはホーム画面から素早くアクセス",
+    "feature2": "キャッシュされたコンテンツでオフライン動作",
+    "feature3": "軽量、アプリストア不要",
+    "iosInstructions": "インストール手順：",
+    "iosStep1": "共有ボタンをタップ",
+    "iosStep1b": "Safariの下部にある",
+    "iosStep2": "「ホーム画面に追加」をスクロールしてタップ",
+    "iosStep3": "右上の「追加」をタップ",
+    "gotIt": "了解"
+  },
+  "appUpdate": {
+    "title": "新しいバージョンが利用可能",
+    "currentVersion": "現在のバージョン",
+    "releaseNotes": "更新内容",
+    "forceUpdateWarning": "これは必須アップデートです。アプリを継続して使用するには更新してください。",
+    "updateNow": "今すぐ更新",
+    "later": "後で",
+    "cancel": "キャンセル",
+    "retry": "再試行",
+    "checkingPermission": "権限を確認中...",
+    "downloading": "ダウンロード中...",
+    "installing": "インストール中...",
+    "installComplete": "インストール完了",
+    "downloadError": "ダウンロード失敗",
+    "permissionRequired": "不明なアプリのインストール権限を許可してから再試行してください"
+  },
+  "googlePlayUpdate": {
+    "updateAvailable": "アップデートが利用可能",
+    "updateReady": "アップデートのインストール準備完了",
+    "downloadInBackground": "バックグラウンドでダウンロード中...",
+    "downloadComplete": "ダウンロード完了。再起動してアップデートを適用してください。",
+    "update": "更新",
+    "install": "今すぐインストール",
+    "later": "後で",
+    "progress": "ダウンロード中... {{progress}}%"
+  }
+}

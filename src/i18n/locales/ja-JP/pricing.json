@@ -1,0 +1,51 @@
+{
+  "pricing": {
+    "pageTitle": "Voicica AIのプランと料金",
+    "pageSubtitle": "Voicica AIはお客様のニーズに合わせた様々なプランを提供しています。",
+    "loading": "料金プランを読み込み中...",
+    "error": "料金プランの読み込みに失敗しました。後でもう一度お試しください。",
+    "retry": "再試行",
+    "week": "週間",
+    "month": "月",
+    "year": "年",
+    "perDay": "/日",
+    "creditsPerCycle": "クレジット/サイクル",
+    "creditsUsageRules": "クレジット利用規則",
+    "notes": "注意事項：",
+    "creditsNote": "クレジットはVoicica AIのすべてのツールで使用できます。",
+    "buyNow": "今すぐ購入",
+    "tryItFree": "無料で試す",
+    "processing": "処理中...",
+    "renewalAt": "更新日",
+    "freeForEveryone": "誰でも無料",
+    "mostPopular": "最も人気",
+    "autoRenew": "自動更新。いつでもキャンセル可能。",
+    "loginRequired": "ログインが必要です",
+    "loginRequiredDesc": "サブスクリプションプランを購入するにはログインしてください",
+    "cancel": "キャンセル",
+    "signIn": "ログイン",
+    "creditsUsageGuide": {
+      "title": "クレジット利用ガイド",
+      "subtitle": "以下は各機能に必要なクレジット数です。",
+      "feature": "機能",
+      "creditsRequired": "必要クレジット",
+      "standardVoice": "スタンダード音声",
+      "premiumVoice": "プレミアム音声",
+      "clonedVoice": "クローン音声"
+    }
+  },
+  "upgrade": {
+    "header": {
+      "title": "プランをアップグレード",
+      "description": "お客様のニーズに最適なプランを選択"
+    },
+    "tabs": {
+      "textToVoice": "テキスト読み上げ",
+      "voiceClone": "ボイスクローン"
+    },
+    "title": {
+      "textToVoice": "テキスト読み上げプランを選択",
+      "voiceClone": "ボイスクローンプランを選択"
+    }
+  }
+}

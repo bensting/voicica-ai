@@ -1,0 +1,48 @@
+{
+  "studio": {
+    "welcomeTitle": "Xin chào, chào mừng đến với Voicica AI",
+    "welcomeSubtitle": "Khám phá sức mạnh AI với các công cụ tiên tiến cho giọng nói, video, âm nhạc và nghệ thuật. Biến ý tưởng thành hiện thực - nhanh hơn, thông minh hơn và dễ dàng hơn.",
+    "featuredProducts": "Sản phẩm nổi bật",
+    "ttsDescription": "Chuyển văn bản thành giọng nói tự nhiên với giọng AI tiên tiến",
+    "moreToolsComing": "Thêm nhiều công cụ sắp ra mắt",
+    "youMightWantToTry": "Bạn có thể muốn thử",
+    "tiktokDownloaderDesc": "Tải video TikTok miễn phí, không watermark, chất lượng HD",
+    "youtubeDownloaderDesc": "Tải video YouTube miễn phí, nhiều định dạng và độ phân giải",
+    "upgrade": "Nâng cấp",
+    "dailyTasks": "Phần thưởng",
+    "tts": "Chuyển văn bản thành giọng nói",
+    "menu": {
+      "home": "Trang chủ",
+      "creationHub": "Trung tâm sáng tạo",
+      "project": "Dự án",
+      "shortVideo": "Video ngắn",
+      "aiVideoGenerator": "Tạo video AI",
+      "textToSpeech": "Chuyển văn bản thành giọng nói",
+      "generationHistory": "Lịch sử tạo",
+      "speechToSpeech": "Chuyển đổi giọng nói",
+      "voiceCloning": "Nhân bản giọng nói",
+      "voiceoverStudio": "Studio lồng tiếng",
+      "aiSong": "Bài hát AI",
+      "aiMusicMovie": "Phim nhạc AI",
+      "musicHistory": "Lịch sử âm nhạc",
+      "aiMusic": "Nhạc AI",
+      "aiCover": "AI Cover",
+      "musicTools": "Công cụ âm nhạc",
+      "account": "Tài khoản",
+      "tools": "Công cụ miễn phí",
+      "tiktokDownloader": "Tải video TikTok",
+      "youtubeDownloader": "Tải video YouTube",
+      "textToVideo": "Văn bản thành video"
+    },
+    "mobileNav": {
+      "tts": "TTS",
+      "voices": "Giọng nói",
+      "clone": "Nhân bản",
+      "history": "Lịch sử"
+    },
+    "voices": {
+      "selectVoice": "Chọn giọng nói",
+      "selectVoicePrompt": "Vui lòng chọn một giọng nói"
+    }
+  }
+}

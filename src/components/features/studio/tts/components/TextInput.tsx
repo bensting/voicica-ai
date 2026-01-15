@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
-import { Trash2, ChevronRight, Gift, CreditCard, Sparkles, Coins, Play } from 'lucide-react';
+import { Trash2, ChevronRight, UserPlus, CreditCard, Sparkles, Coins, Play } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 import CreditsIcon from '@/components/icons/CreditsIcon';
@@ -211,7 +211,7 @@ export default function TextInput({
                       className="w-full px-3 py-2.5 flex items-center gap-3 hover:bg-gradient-to-r hover:from-purple-50 hover:to-purple-100 rounded-xl transition-all group"
                     >
                       <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center shadow-sm group-hover:shadow-md group-hover:scale-105 transition-all">
-                        <Gift className="w-4 h-4 text-white" />
+                        <UserPlus className="w-4 h-4 text-white" />
                       </div>
                       <div className="flex-1 text-left min-w-0">
                         <p className="text-sm font-semibold text-gray-800">{t('tts.input.moreMenu.signUp') || 'Sign up free'}</p>

@@ -1,0 +1,40 @@
+{
+  "payment": {
+    "success": {
+      "verifying": {
+        "title": "Verificando pagamento...",
+        "description": "Por favor, aguarde enquanto confirmamos seu pagamento"
+      },
+      "success": {
+        "title": "Pagamento bem-sucedido!",
+        "description": "Obrigado pela sua compra, assinatura ativada",
+        "orderSummary": "Resumo do pedido",
+        "orderId": "ID do pedido",
+        "subscriptionId": "ID da assinatura",
+        "countdown": "Redirecionando para o estúdio em {{count}} segundos...",
+        "enterStudio": "Entrar no estúdio agora"
+      },
+      "pending": {
+        "title": "Pagamento em processamento",
+        "description": "Seu pagamento está sendo processado, a assinatura será ativada em breve",
+        "orderId": "ID do pedido:",
+        "refresh": "Atualizar status",
+        "backHome": "Voltar ao estúdio"
+      },
+      "failed": {
+        "title": "Verificação de pagamento falhou",
+        "description": "Desculpe, não foi possível verificar seu pagamento",
+        "notice": "Se você completou o pagamento, por favor atualize a página mais tarde para verificar o status, ou entre em contato com o suporte ao cliente.",
+        "retry": "Tentar verificação novamente",
+        "backHome": "Voltar ao estúdio"
+      }
+    },
+    "cancel": {
+      "title": "Pagamento cancelado",
+      "description": "Seu pagamento foi cancelado. Nenhuma cobrança foi realizada.",
+      "notice": "Se você encontrou algum problema durante o processo de pagamento, por favor tente novamente ou entre em contato com nossa equipe de suporte.",
+      "tryAgain": "Tentar novamente",
+      "backToStudio": "Voltar ao estúdio"
+    }
+  }
+}

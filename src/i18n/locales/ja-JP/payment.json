@@ -1,0 +1,40 @@
+{
+  "payment": {
+    "success": {
+      "verifying": {
+        "title": "支払いを確認中...",
+        "description": "支払いを確認しています。お待ちください"
+      },
+      "success": {
+        "title": "支払い完了！",
+        "description": "ご購入ありがとうございます。サブスクリプションが有効になりました",
+        "orderSummary": "注文概要",
+        "orderId": "注文ID",
+        "subscriptionId": "サブスクリプションID",
+        "countdown": "{{count}}秒後にスタジオへリダイレクトします...",
+        "enterStudio": "今すぐスタジオへ"
+      },
+      "pending": {
+        "title": "支払い処理中",
+        "description": "支払いを処理中です。まもなくサブスクリプションが有効になります",
+        "orderId": "注文ID：",
+        "refresh": "状態を更新",
+        "backHome": "スタジオに戻る"
+      },
+      "failed": {
+        "title": "支払い確認失敗",
+        "description": "申し訳ありませんが、支払いを確認できませんでした",
+        "notice": "支払いを完了した場合は、後でページを更新して状態を確認するか、カスタマーサービスにお問い合わせください。",
+        "retry": "再確認",
+        "backHome": "スタジオに戻る"
+      }
+    },
+    "cancel": {
+      "title": "支払いがキャンセルされました",
+      "description": "支払いがキャンセルされました。請求は発生していません。",
+      "notice": "支払いプロセスで問題が発生した場合は、再度お試しいただくか、サポートチームにお問い合わせください。",
+      "tryAgain": "再試行",
+      "backToStudio": "スタジオに戻る"
+    }
+  }
+}

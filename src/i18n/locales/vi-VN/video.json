@@ -1,0 +1,18 @@
+{
+  "textToVideo": "Văn bản thành video",
+  "promptPlaceholder": "Mô tả video bạn muốn tạo. Hãy cụ thể về hành động, cảnh, phong cách và tâm trạng...",
+  "promptLabel": "Mô tả video",
+  "resolution": "Độ phân giải",
+  "duration": "Thời lượng",
+  "aspectRatio": "Tỷ lệ khung hình",
+  "creditsCost": "Chi phí điểm",
+  "model": "Mô hình",
+  "veo31Description": "Mô hình tạo video tiên tiến nhất của Google với chất lượng và chuyển động vượt trội",
+  "latest": "Mới nhất",
+  "generate": "Tạo video",
+  "generating": "Đang tạo...",
+  "generatingVideo": "Đang tạo video của bạn...",
+  "preview": "Xem trước",
+  "previewPlaceholder": "Video đã tạo sẽ xuất hiện ở đây",
+  "browserNotSupported": "Trình duyệt của bạn không hỗ trợ thẻ video."
+}

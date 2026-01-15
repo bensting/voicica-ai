@@ -1,0 +1,25 @@
+{
+  "generationHistory": {
+    "title": "生成履歴",
+    "subtitle": "音声生成を表示・管理します。",
+    "generatedSpeech": "生成された音声",
+    "clearAll": "すべてクリア",
+    "noGenerations": "まだ生成がありません",
+    "noGenerationsDescription": "作成を開始すると、音声生成がここに表示されます。",
+    "allRecordsLoaded": "すべての記録を読み込みました",
+    "total": "合計",
+    "filters": {
+      "status": "状態",
+      "dateRange": "日付",
+      "allStatus": "すべての状態",
+      "success": "成功",
+      "processing": "処理中",
+      "pending": "待機中",
+      "failed": "失敗",
+      "from": "開始",
+      "to": "終了",
+      "apply": "適用",
+      "clear": "クリア"
+    }
+  }
+}

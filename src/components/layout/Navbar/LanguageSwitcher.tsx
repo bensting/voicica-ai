@@ -47,7 +47,6 @@ export default function LanguageSwitcher({
   const dropdownStyles = 'bg-white border-gray-200 shadow-xl';
   const itemStyles = 'text-gray-700 hover:bg-purple-100 hover:text-purple-700';
   const activeItemStyles = 'bg-purple-50 text-purple-600 font-medium';
-  const subTextStyles = 'text-gray-500';
 
   // 下拉菜单位置样式
   const positionStyles = dropdownPosition === 'up'
@@ -112,7 +111,6 @@ export default function LanguageSwitcher({
                   </svg>
                 )}
               </div>
-              <span className={`text-xs ${subTextStyles}`}>{loc.name}</span>
             </button>
           ))}
         </div>

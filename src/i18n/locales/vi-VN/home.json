@@ -1,0 +1,33 @@
+{
+  "home": {
+    "heroTitle": "Chuyển văn bản thành giọng nói miễn phí 100% cho mọi người",
+    "heroSubtitle": "Không giới hạn giọng nói. Hoàn toàn miễn phí.",
+    "heroFeature1": "Chọn từ hơn 3200 giọng nói với hơn 190 ngôn ngữ.",
+    "heroFeature2": "Chỉ cần nhập văn bản và tạo ngay giọng nói tự nhiên.",
+    "heroCTA": "Tạo giọng nói miễn phí",
+    "exploreVoices": "Khám phá giọng nói",
+    "viewPricing": "Xem bảng giá",
+    "whyChoose": "Tại sao chọn Voicica AI?",
+    "getStarted": "Bắt đầu ngay",
+    "learnMore": "Tìm hiểu thêm",
+    "readyTitle": "Sẵn sàng bắt đầu?",
+    "readyDescription": "Tham gia cùng hàng ngàn người dùng đang tạo nội dung giọng nói tuyệt vời với Voicica AI.",
+    "startCreating": "Bắt đầu tạo ngay"
+  },
+  "cta": {
+    "title": "Giọng nói AI miễn phí cho mọi người",
+    "getStarted": "Bắt đầu, hoàn toàn miễn phí!",
+    "viewPricing": "Xem bảng giá và gói dịch vụ",
+    "features": {
+      "moneyBack": "Sử dụng miễn phí 100%",
+      "support": "Hỗ trợ kỹ thuật miễn phí",
+      "secure": "Bảo mật 100%",
+      "updates": "Cập nhật thường xuyên"
+    }
+  },
+  "ttsSamples": {
+    "titlePrefix": "Sản phẩm",
+    "titleHighlight": "Nổi bật",
+    "titleSuffix": "của Voicica AI không thể bỏ qua"
+  }
+}

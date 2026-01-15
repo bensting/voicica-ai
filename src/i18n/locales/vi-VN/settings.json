@@ -1,0 +1,112 @@
+{
+  "settings": {
+    "title": "Cài đặt",
+    "menu": {
+      "home": "Trang chủ",
+      "mySubscription": "Gói đăng ký của tôi",
+      "myProfile": "Hồ sơ của tôi",
+      "orderList": "Danh sách đơn hàng",
+      "myCoupon": "Mã giảm giá của tôi",
+      "messageCenter": "Trung tâm tin nhắn"
+    },
+    "basicInfo": {
+      "title": "Thông tin cơ bản",
+      "profilePicture": "Ảnh đại diện",
+      "profilePictureHint": "PNG hoặc JPG, khuyến nghị ảnh có chiều rộng và chiều cao bằng nhau",
+      "uploading": "Đang tải lên...",
+      "nameSurname": "Họ và tên",
+      "email": "Địa chỉ Email",
+      "phone": "Điện thoại"
+    },
+    "actions": {
+      "save": "Lưu",
+      "saveChanges": "Lưu thay đổi",
+      "cancel": "Hủy",
+      "saveSuccess": "Lưu thành công",
+      "saveFailed": "Lưu thất bại, vui lòng thử lại"
+    },
+    "benefits": {
+      "title": "Quyền lợi của tôi",
+      "credits": "Điểm",
+      "voiceCredits": "Điểm giọng nói",
+      "refresh": "Làm mới",
+      "viewHistory": "Xem lịch sử"
+    }
+  },
+  "subscription": {
+    "title": "Gói của bạn",
+    "changePlan": "Thay đổi gói",
+    "selectPlan": "Chọn gói phù hợp nhất với bạn.",
+    "monthly": "Hàng tháng",
+    "yearly": "Hàng năm",
+    "yearlyDiscount": "Giảm 33%",
+    "free": {
+      "name": "Miễn phí",
+      "badge": "Đang dùng",
+      "feature1": "Tối đa 120 ký tự mỗi lần tạo",
+      "feature2": "900 giây tạo âm thanh mỗi tháng",
+      "feature3": "Tạo tối đa 5 mô hình nhân bản giọng nói"
+    },
+    "pro": {
+      "name": "Chuyên nghiệp",
+      "badge": "Khuyên dùng",
+      "tagline": "Mở khóa toàn bộ tiềm năng",
+      "priceMonthly": "$14.99",
+      "priceYearly": "$9.99",
+      "perMonth": "/1 tháng",
+      "feature1": "Tối đa 1000 ký tự mỗi lần tạo",
+      "feature2": "Cho phép sử dụng thương mại",
+      "feature3": "Tạo không giới hạn",
+      "feature4": "Ưu tiên tạo",
+      "feature5": "Tạo không giới hạn mô hình nhân bản giọng nói",
+      "upgradeNow": "Nâng cấp ngay"
+    },
+    "cancel": {
+      "title": "Hủy đăng ký",
+      "warning": "Hành động này không thể hoàn tác. Đăng ký của bạn sẽ bị hủy ngay lập tức và bạn sẽ không bị tính phí nữa.",
+      "note": "Điểm được phân bổ của bạn sẽ vẫn có thể sử dụng.",
+      "reasonLabel": "Lý do hủy (tùy chọn)",
+      "reasonPlaceholder": "Cho chúng tôi biết lý do bạn hủy...",
+      "confirm": "Xác nhận",
+      "canceling": "Đang hủy..."
+    },
+    "mySubscription": {
+      "activeSection": "Đang hoạt động",
+      "inactiveSection": "Đã hủy/Hết hạn",
+      "emptyTitle": "Không có đăng ký",
+      "emptyDesc": "Bạn chưa có đăng ký nào.",
+      "noActiveSubscriptions": "Không có đăng ký đang hoạt động",
+      "noInactiveSubscriptions": "Không có đăng ký đã hủy hoặc hết hạn",
+      "retry": "Thử lại",
+      "validUntil": "Có hiệu lực đến:",
+      "daysLeft": "ngày còn lại",
+      "credits": "điểm",
+      "cancelButton": "Hủy đăng ký",
+      "status": {
+        "TRIAL": "Dùng thử",
+        "ACTIVE": "Đang hoạt động",
+        "EXPIRED": "Hết hạn",
+        "CANCELLED": "Đã hủy",
+        "SUSPENDED": "Tạm ngưng"
+      }
+    }
+  },
+  "creditHistory": {
+    "title": "Lịch sử điểm",
+    "empty": "Chưa có lịch sử điểm",
+    "date": "Ngày",
+    "description": "Mô tả",
+    "type": "Loại",
+    "amount": "Điểm",
+    "scrollToLoadMore": "Cuộn xuống để tải thêm",
+    "allLoaded": "Đã tải tất cả bản ghi",
+    "productType": {
+      "textToSpeech": "Chuyển văn bản thành giọng nói",
+      "voiceCloning": "Nhân bản giọng nói",
+      "youtubeDownloader": "Tải YouTube",
+      "tiktokDownloader": "Tải TikTok",
+      "subscription": "Đăng ký",
+      "other": "Khác"
+    }
+  }
+}

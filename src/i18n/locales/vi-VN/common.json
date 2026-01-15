@@ -1,0 +1,92 @@
+{
+  "common": {
+    "brand": "Voicica AI",
+    "cancel": "Hủy",
+    "close": "Đóng",
+    "retry": "Thử lại",
+    "loading": "Đang tải...",
+    "download": "Tải xuống",
+    "share": "Chia sẻ",
+    "delete": "Xóa",
+    "later": "Để sau",
+    "refresh": "Làm mới"
+  },
+  "app": {
+    "updateAvailable": "Có bản cập nhật mới",
+    "refreshRequired": "Đã có phiên bản mới. Vui lòng làm mới để tiếp tục."
+  },
+  "creditInfo": {
+    "currentCredits": "Điểm hiện tại:",
+    "loginForMore": "Đăng nhập để nhận thêm điểm",
+    "deductionNotice": "{{count}} điểm sẽ bị trừ sau khi {{actionName}} thành công"
+  },
+  "productCategory": {
+    "aiVideo": "Video AI",
+    "aiMusic": "Nhạc AI",
+    "aiVoice": "Giọng nói AI"
+  },
+  "navbar": {
+    "explore": "Khám phá",
+    "pricing": "Bảng giá",
+    "faq": "Câu hỏi thường gặp",
+    "blog": "Blog",
+    "myVoiceModels": "Mô hình giọng nói của tôi",
+    "generationHistory": "Lịch sử tạo",
+    "subscription": "Gói đăng ký",
+    "profile": "Hồ sơ",
+    "login": "Đăng nhập",
+    "logout": "Đăng xuất",
+    "myStudio": "Studio của tôi"
+  },
+  "nav": {
+    "studio": "Studio",
+    "pricing": "Bảng giá",
+    "faq": "Câu hỏi thường gặp",
+    "generationHistory": "Lịch sử tạo",
+    "freeTools": "Công cụ miễn phí",
+    "textToSpeech": "Chuyển văn bản thành giọng nói",
+    "textToSpeechDesc": "Chuyển đổi văn bản thành giọng nói tự nhiên",
+    "tiktokDownloader": "Tải video TikTok",
+    "tiktokDownloaderDesc": "Tải video TikTok không có watermark",
+    "youtubeDownloader": "Tải video YouTube",
+    "youtubeDownloaderDesc": "Tải video và âm thanh YouTube"
+  },
+  "language": {
+    "en": "English",
+    "zhCN": "简体中文",
+    "zhTW": "繁體中文"
+  },
+  "footer": {
+    "tagline": "Đón nhận AI, Đón nhận sự đơn giản",
+    "followUs": "Theo dõi chúng tôi",
+    "changeLanguage": "Đổi ngôn ngữ",
+    "copyright": "Mọi quyền được bảo lưu.",
+    "info": {
+      "title": "Thông tin",
+      "terms": "Điều khoản & Điều kiện",
+      "cookie": "Chính sách Cookie",
+      "privacy": "Chính sách Bảo mật",
+      "refund": "Chính sách Hoàn tiền",
+      "partner": "Trở thành Đối tác"
+    },
+    "about": {
+      "title": "Về chúng tôi",
+      "aboutUs": "Giới thiệu",
+      "contact": "Liên hệ",
+      "faqs": "Câu hỏi thường gặp",
+      "blogs": "Blog",
+      "dmca": "DMCA"
+    },
+    "products": {
+      "title": "Sản phẩm nổi bật",
+      "tts": "Chuyển văn bản thành giọng nói AI",
+      "tiktokDownloader": "Tải video TikTok",
+      "youtubeDownloader": "Tải video YouTube",
+      "songCover": "Tạo bài hát AI Cover",
+      "musicGenerator": "Tạo nhạc AI",
+      "voiceCloning": "Nhân bản giọng nói AI",
+      "voiceChanger": "Đổi giọng miễn phí",
+      "api": "API (Dành cho lập trình viên)"
+    }
+  }
+}

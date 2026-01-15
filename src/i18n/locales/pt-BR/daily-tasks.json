@@ -1,0 +1,39 @@
+{
+  "dailyTasks": {
+    "title": "Tarefas diárias",
+    "subtitle": "Complete tarefas para ganhar créditos grátis!",
+    "credits": "Créditos",
+
+    "loginToEarn": "Faça login para começar a ganhar créditos diariamente!",
+    "dailyMax": "Máximo diário",
+    "loginNow": "Entrar agora",
+
+    "todayEarned": "Progresso de hoje",
+
+    "checkin": "Check-in diário",
+    "oneClickClaim": "Resgatar com um clique",
+    "claim": "Resgatar",
+    "claimed": "Resgatado",
+    "watchCheckinGet": "Assistir +{{credits}}",
+
+    "watchAds": "Assistir vídeos",
+    "watchMultiple": "Assistir {{count}} vídeos",
+    "watchAdGet": "Assistir +{{credits}}",
+    "allAdsClaimed": "Tudo resgatado hoje",
+
+    "loadingAd": "Carregando anúncio...",
+    "pleaseWait": "Por favor, aguarde",
+    "cancel": "Cancelar",
+    "cancelled": "Cancelado",
+    "timeout": "Tempo de carregamento esgotado, por favor tente novamente",
+    "retry": "Tentar novamente",
+    "close": "Fechar",
+    "loadFailed": "Falha no carregamento",
+    "adInterrupted": "Por favor, assista ao vídeo completo para ganhar recompensas",
+    "adUnavailable": "Nenhum anúncio disponível, por favor tente novamente mais tarde",
+    "adError": "Falha ao carregar anúncio, por favor tente novamente mais tarde",
+
+    "resetTip": "As tarefas são reiniciadas diariamente à meia-noite",
+    "noAdsPromo": "Não quer assistir anúncios? Torne-se membro!"
+  }
+}

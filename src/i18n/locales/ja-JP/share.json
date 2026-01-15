@@ -1,0 +1,15 @@
+{
+  "share": {
+    "title": "共有",
+    "modalTitle": "音声を共有",
+    "linkLabel": "共有リンク",
+    "copy": "リンクをコピー",
+    "copied": "コピーしました",
+    "moreOptions": "その他の共有オプション",
+    "download": "音声をダウンロード",
+    "characters": "文字",
+    "ctaTitle": "あなただけのAI音声を作成",
+    "ctaDescription": "Voicica AIでテキストを自然な音声に変換。",
+    "tryNow": "今すぐ試す"
+  }
+}

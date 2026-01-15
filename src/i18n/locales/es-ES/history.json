@@ -1,0 +1,25 @@
+{
+  "generationHistory": {
+    "title": "Historial de generación",
+    "subtitle": "Ver y gestionar tus generaciones de voz.",
+    "generatedSpeech": "Voz generada",
+    "clearAll": "Borrar todo",
+    "noGenerations": "Sin generaciones todavía",
+    "noGenerationsDescription": "Tus generaciones de voz aparecerán aquí una vez que comiences a crear.",
+    "allRecordsLoaded": "Todos los registros cargados",
+    "total": "total",
+    "filters": {
+      "status": "Estado",
+      "dateRange": "Fecha",
+      "allStatus": "Todos los estados",
+      "success": "Éxito",
+      "processing": "Procesando",
+      "pending": "Pendiente",
+      "failed": "Fallido",
+      "from": "Desde",
+      "to": "Hasta",
+      "apply": "Aplicar",
+      "clear": "Borrar"
+    }
+  }
+}

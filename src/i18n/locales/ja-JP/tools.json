@@ -1,0 +1,51 @@
+{
+  "tiktokDownloader": {
+    "title": "TikTok動画ダウンローダー",
+    "subtitle": "TikTok動画をウォーターマークなしで無料ダウンロード",
+    "urlLabel": "TikTok動画URL",
+    "urlPlaceholder": "TikTok動画リンクをここに貼り付け...",
+    "parseButton": "解析",
+    "parsing": "解析中",
+    "doNotClose": "このページを閉じないでください",
+    "downloadButton": "動画をダウンロード",
+    "downloading": "ダウンロード中...",
+    "selectQuality": "画質を選択",
+    "untitled": "タイトルなし動画",
+    "emptyTitle": "TikTok動画をダウンロード",
+    "emptyDescription": "上にTikTok動画URLを貼り付けてダウンロードを開始。すべてのTikTok動画形式に対応。",
+    "errors": {
+      "emptyUrl": "TikTok動画URLを入力してください",
+      "invalidUrl": "無効なTikTok URLです。有効なTikTok動画リンクを入力してください。",
+      "parseFailed": "動画の解析に失敗しました。URLを確認してもう一度お試しください。",
+      "insufficientCredits": "クレジットが不足しています。必要：{{required}}、現在：{{current}}",
+      "unknownError": "予期しないエラーが発生しました。後でもう一度お試しください。"
+    }
+  },
+  "youtubeDownloader": {
+    "title": "YouTube動画ダウンローダー",
+    "subtitle": "YouTube動画と音声を無料ダウンロード",
+    "urlLabel": "YouTube動画URL",
+    "urlPlaceholder": "YouTube動画リンクをここに貼り付け...",
+    "parseButton": "解析",
+    "parsing": "解析中",
+    "doNotClose": "このページを閉じないでください",
+    "downloadButton": "ダウンロード",
+    "downloading": "ダウンロード中...",
+    "selectQuality": "画質を選択",
+    "untitled": "タイトルなし動画",
+    "emptyTitle": "YouTube動画をダウンロード",
+    "emptyDescription": "上にYouTube動画URLを貼り付けてダウンロードを開始。動画と音声形式に対応。",
+    "tabs": {
+      "videoWithAudio": "動画",
+      "videoOnly": "動画のみ",
+      "audioOnly": "音声のみ"
+    },
+    "errors": {
+      "emptyUrl": "YouTube動画URLを入力してください",
+      "invalidUrl": "無効なYouTube URLです。有効なYouTube動画リンクを入力してください。",
+      "parseFailed": "動画の解析に失敗しました。URLを確認してもう一度お試しください。",
+      "insufficientCredits": "クレジットが不足しています。必要：{{required}}、現在：{{current}}",
+      "unknownError": "予期しないエラーが発生しました。後でもう一度お試しください。"
+    }
+  }
+}

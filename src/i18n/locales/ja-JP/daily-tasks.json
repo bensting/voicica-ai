@@ -1,0 +1,39 @@
+{
+  "dailyTasks": {
+    "title": "デイリータスク",
+    "subtitle": "タスクを完了して無料クレジットを獲得！",
+    "credits": "クレジット",
+
+    "loginToEarn": "ログインして毎日クレジットを獲得しましょう！",
+    "dailyMax": "1日の上限",
+    "loginNow": "今すぐログイン",
+
+    "todayEarned": "今日の進捗",
+
+    "checkin": "デイリーチェックイン",
+    "oneClickClaim": "ワンクリックで受け取る",
+    "claim": "受け取る",
+    "claimed": "受取済み",
+    "watchCheckinGet": "視聴 +{{credits}}",
+
+    "watchAds": "動画を見る",
+    "watchMultiple": "{{count}}本の動画を見る",
+    "watchAdGet": "視聴 +{{credits}}",
+    "allAdsClaimed": "本日分は全て受取済み",
+
+    "loadingAd": "広告を読み込み中...",
+    "pleaseWait": "お待ちください",
+    "cancel": "キャンセル",
+    "cancelled": "キャンセルしました",
+    "timeout": "読み込みタイムアウト、再試行してください",
+    "retry": "再試行",
+    "close": "閉じる",
+    "loadFailed": "読み込み失敗",
+    "adInterrupted": "報酬を受け取るには動画を最後まで見てください",
+    "adUnavailable": "広告がありません。後でもう一度お試しください",
+    "adError": "広告の読み込みに失敗しました。後でもう一度お試しください",
+
+    "resetTip": "タスクは毎日深夜にリセットされます",
+    "noAdsPromo": "広告を見たくないですか？メンバーになりましょう！"
+  }
+}

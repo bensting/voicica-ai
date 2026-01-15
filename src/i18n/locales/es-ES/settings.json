@@ -1,0 +1,112 @@
+{
+  "settings": {
+    "title": "Configuración",
+    "menu": {
+      "home": "Inicio",
+      "mySubscription": "Mi suscripción",
+      "myProfile": "Mi perfil",
+      "orderList": "Lista de pedidos",
+      "myCoupon": "Mi cupón",
+      "messageCenter": "Centro de mensajes"
+    },
+    "basicInfo": {
+      "title": "Información básica",
+      "profilePicture": "Foto de perfil",
+      "profilePictureHint": "PNG o JPG, se recomiendan imágenes con ancho y alto iguales",
+      "uploading": "Subiendo...",
+      "nameSurname": "Nombre y apellido",
+      "email": "Correo electrónico",
+      "phone": "Teléfono"
+    },
+    "actions": {
+      "save": "Guardar",
+      "saveChanges": "Guardar cambios",
+      "cancel": "Cancelar",
+      "saveSuccess": "Guardado correctamente",
+      "saveFailed": "Error al guardar, por favor inténtalo de nuevo"
+    },
+    "benefits": {
+      "title": "Mis beneficios",
+      "credits": "Créditos",
+      "voiceCredits": "Créditos de voz",
+      "refresh": "Actualizar",
+      "viewHistory": "Ver historial"
+    }
+  },
+  "subscription": {
+    "title": "Tu plan",
+    "changePlan": "Cambiar tu plan",
+    "selectPlan": "Elige un plan que mejor se adapte a ti.",
+    "monthly": "Mensual",
+    "yearly": "Anual",
+    "yearlyDiscount": "33% DESCUENTO",
+    "free": {
+      "name": "Gratis",
+      "badge": "Activo",
+      "feature1": "Hasta 120 caracteres por generación",
+      "feature2": "900 segundos de generación de audio por mes",
+      "feature3": "Crea hasta 5 modelos de clonación de voz"
+    },
+    "pro": {
+      "name": "Profesional",
+      "badge": "Recomendado",
+      "tagline": "Desbloquea todo el potencial",
+      "priceMonthly": "$14.99",
+      "priceYearly": "$9.99",
+      "perMonth": "/1 mes",
+      "feature1": "Hasta 1000 caracteres por generación",
+      "feature2": "Uso comercial permitido",
+      "feature3": "Generación ilimitada",
+      "feature4": "Generación prioritaria",
+      "feature5": "Crea modelos de clonación de voz ilimitados",
+      "upgradeNow": "Mejorar ahora"
+    },
+    "cancel": {
+      "title": "Cancelar suscripción",
+      "warning": "Esta acción no se puede deshacer. Tu suscripción se cancelará inmediatamente y no se te cobrará de nuevo.",
+      "note": "Tus créditos asignados permanecerán disponibles para su uso.",
+      "reasonLabel": "Motivo de la cancelación (opcional)",
+      "reasonPlaceholder": "Cuéntanos por qué estás cancelando...",
+      "confirm": "Confirmar",
+      "canceling": "Cancelando..."
+    },
+    "mySubscription": {
+      "activeSection": "Activas",
+      "inactiveSection": "Canceladas/Expiradas",
+      "emptyTitle": "Sin suscripciones",
+      "emptyDesc": "Aún no tienes ninguna suscripción.",
+      "noActiveSubscriptions": "Sin suscripciones activas",
+      "noInactiveSubscriptions": "Sin suscripciones canceladas o expiradas",
+      "retry": "Reintentar",
+      "validUntil": "Válido hasta:",
+      "daysLeft": "días restantes",
+      "credits": "créditos",
+      "cancelButton": "Cancelar suscripción",
+      "status": {
+        "TRIAL": "Prueba",
+        "ACTIVE": "Activa",
+        "EXPIRED": "Expirada",
+        "CANCELLED": "Cancelada",
+        "SUSPENDED": "Suspendida"
+      }
+    }
+  },
+  "creditHistory": {
+    "title": "Historial de créditos",
+    "empty": "Sin historial de créditos todavía",
+    "date": "Fecha",
+    "description": "Descripción",
+    "type": "Tipo",
+    "amount": "Créditos",
+    "scrollToLoadMore": "Desplázate hacia abajo para cargar más",
+    "allLoaded": "Todos los registros cargados",
+    "productType": {
+      "textToSpeech": "Texto a voz",
+      "voiceCloning": "Clonación de voz",
+      "youtubeDownloader": "Descarga de YouTube",
+      "tiktokDownloader": "Descarga de TikTok",
+      "subscription": "Suscripción",
+      "other": "Otro"
+    }
+  }
+}

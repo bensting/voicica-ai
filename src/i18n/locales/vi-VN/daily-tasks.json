@@ -1,0 +1,33 @@
+{
+  "dailyTasks": {
+    "title": "Nhiệm vụ hàng ngày",
+    "subtitle": "Hoàn thành nhiệm vụ để nhận điểm miễn phí!",
+    "credits": "Điểm",
+    "loginToEarn": "Đăng nhập để bắt đầu nhận điểm hàng ngày!",
+    "dailyMax": "Tối đa hàng ngày",
+    "loginNow": "Đăng nhập ngay",
+    "todayEarned": "Tiến độ hôm nay",
+    "checkin": "Điểm danh hàng ngày",
+    "oneClickClaim": "Nhận với một cú nhấp",
+    "claim": "Nhận",
+    "claimed": "Đã nhận",
+    "watchCheckinGet": "Xem +{{credits}}",
+    "watchAds": "Xem video",
+    "watchMultiple": "Xem {{count}} video",
+    "watchAdGet": "Xem +{{credits}}",
+    "allAdsClaimed": "Đã nhận hết hôm nay",
+    "loadingAd": "Đang tải quảng cáo...",
+    "pleaseWait": "Vui lòng đợi",
+    "cancel": "Hủy",
+    "cancelled": "Đã hủy",
+    "timeout": "Hết thời gian tải, vui lòng thử lại",
+    "retry": "Thử lại",
+    "close": "Đóng",
+    "loadFailed": "Tải thất bại",
+    "adInterrupted": "Vui lòng xem hết video để nhận phần thưởng",
+    "adUnavailable": "Không có quảng cáo, vui lòng thử lại sau",
+    "adError": "Tải quảng cáo thất bại, vui lòng thử lại sau",
+    "resetTip": "Nhiệm vụ được đặt lại hàng ngày lúc nửa đêm",
+    "noAdsPromo": "Không muốn xem quảng cáo? Trở thành thành viên!"
+  }
+}

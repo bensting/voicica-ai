@@ -1,0 +1,15 @@
+{
+  "share": {
+    "title": "Compartir",
+    "modalTitle": "Compartir voz",
+    "linkLabel": "Enlace para compartir",
+    "copy": "Copiar enlace",
+    "copied": "Copiado",
+    "moreOptions": "Más opciones para compartir",
+    "download": "Descargar audio",
+    "characters": "caracteres",
+    "ctaTitle": "Crea tu propia voz de IA",
+    "ctaDescription": "Convierte texto en voz natural con Voicica AI.",
+    "tryNow": "Probar ahora"
+  }
+}

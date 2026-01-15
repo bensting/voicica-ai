@@ -434,6 +434,32 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
                 {t('login.createAccountTitle')}
               </h2>
 
+              {/* 社交登录图标 - 横向排列 */}
+              <div className="flex justify-center gap-4 mb-6">
+                {socialProviders.map((provider) => (
+                  <button
+                    key={provider.id}
+                    onClick={() => handleSocialLogin(provider.id)}
+                    className="w-16 h-16 flex-shrink-0 flex items-center justify-center bg-white border-2 border-gray-200 rounded-xl hover:border-purple-300 hover:shadow-md transition-all"
+                    aria-label={`Sign up with ${provider.id}`}
+                  >
+                    {provider.icon}
+                  </button>
+                ))}
+              </div>
+
+              {/* OR 分隔符 */}
+              <div className="relative my-8">
+                <div className="absolute inset-0 flex items-center">
+                  <div className="w-full border-t border-gray-200"></div>
+                </div>
+                <div className="relative flex justify-center text-sm">
+                  <span className="px-4 bg-white text-gray-500 font-medium">
+                    {t('login.or')}
+                  </span>
+                </div>
+              </div>
+
               {/* 验证邮件发送成功提示 */}
               {verificationEmailSent && (
                 <div className="mb-4 p-4 bg-green-50 border border-green-200 rounded-lg">

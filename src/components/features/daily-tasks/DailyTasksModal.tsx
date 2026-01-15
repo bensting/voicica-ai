@@ -1,8 +1,8 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { createPortal } from 'react-dom';
-import { X, Gift, Check, Loader2, Play, Crown } from 'lucide-react';
+import { X, Gift, Check, Loader2, Play, Crown, RefreshCw } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 import { useDailyTasks } from '@/hooks/useDailyTasks';
@@ -10,6 +10,9 @@ import { isNativeApp } from '@/lib/capacitor';
 import LoginModal from '@/components/features/auth/LoginModal';
 import AppDownloadModal from './AppDownloadModal';
 import CelebrationEffect from './CelebrationEffect';
+
+// 广告加载超时时间（毫秒）
+const AD_LOADING_TIMEOUT = 30000;
 
 interface DailyTasksModalProps {
   /** 是否显示 */
@@ -46,6 +49,10 @@ export default function DailyTasksModal({ isOpen, onClose, onCreditsUpdated, onU
   const [checkinLoading, setCheckinLoading] = useState(false);
   const [adError, setAdError] = useState<string | null>(null);
   const [checkinError, setCheckinError] = useState<string | null>(null);
+  // 用于取消和重试
+  const [pendingRetry, setPendingRetry] = useState<'checkin' | 'ad' | null>(null);
+  const cancelledRef = useRef(false);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // 登录成功后刷新状态
   useEffect(() => {
@@ -72,8 +79,49 @@ export default function DailyTasksModal({ isOpen, onClose, onCreditsUpdated, onU
     return () => document.removeEventListener('keydown', handleEscape);
   }, [isOpen, handleClose]);
 
-  // 处理签到（原生端需要先观看插页式激励广告）
-  const handleCheckin = useCallback(async () => {
+  // 清理超时定时器
+  const clearAdTimeout = useCallback(() => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
+  }, []);
+
+  // 取消加载
+  const handleCancelLoading = useCallback((type: 'checkin' | 'ad') => {
+    cancelledRef.current = true;
+    clearAdTimeout();
+    if (type === 'checkin') {
+      setCheckinLoading(false);
+      setCheckinError(t('dailyTasks.cancelled') || '已取消');
+      setPendingRetry('checkin');
+    } else {
+      setAdLoading(false);
+      setAdError(t('dailyTasks.cancelled') || '已取消');
+      setPendingRetry('ad');
+    }
+    setTimeout(() => {
+      if (type === 'checkin') {
+        setCheckinError(null);
+      } else {
+        setAdError(null);
+      }
+    }, 5000);
+  }, [t, clearAdTimeout]);
+
+  // 重试
+  const handleRetry = useCallback(() => {
+    const retryType = pendingRetry;
+    setPendingRetry(null);
+    if (retryType === 'checkin') {
+      handleCheckinInternal();
+    } else if (retryType === 'ad') {
+      handleWatchAdInternal();
+    }
+  }, [pendingRetry]);
+
+  // 处理签到内部逻辑（原生端需要先观看插页式激励广告）
+  const handleCheckinInternal = useCallback(async () => {
     if (checkinLoading || claiming) return;
 
     // Web 端：弹出下载 App 引导页
@@ -83,12 +131,34 @@ export default function DailyTasksModal({ isOpen, onClose, onCreditsUpdated, onU
       return;
     }
 
+    cancelledRef.current = false;
     setCheckinError(null);
     setCheckinLoading(true);
+    setPendingRetry(null);
+
+    // 设置超时
+    clearAdTimeout();
+    timeoutRef.current = setTimeout(() => {
+      if (checkinLoading && !cancelledRef.current) {
+        console.warn('⏰ [DailyTasks] Checkin timeout');
+        cancelledRef.current = true;
+        setCheckinLoading(false);
+        setCheckinError(t('dailyTasks.timeout') || '加载超时，请重试');
+        setPendingRetry('checkin');
+      }
+    }, AD_LOADING_TIMEOUT);
 
     try {
       console.log('🎬 [DailyTasks] Starting checkin with interstitial rewarded ad...');
       const result = await doCheckin();
+
+      // 检查是否已被取消
+      if (cancelledRef.current) {
+        console.log('🚫 [DailyTasks] Checkin was cancelled');
+        return;
+      }
+
+      clearAdTimeout();
       console.log('🎬 [DailyTasks] Checkin result:', result);
 
       if (result.success && result.credits) {
@@ -101,20 +171,31 @@ export default function DailyTasksModal({ isOpen, onClose, onCreditsUpdated, onU
         const errorMsg = result.message || '签到失败';
         console.error('❌ [DailyTasks] Checkin failed:', errorMsg);
         setCheckinError(errorMsg);
+        setPendingRetry('checkin');
         setTimeout(() => setCheckinError(null), 5000);
       }
     } catch (err) {
+      if (cancelledRef.current) return;
+      clearAdTimeout();
       console.error('❌ [DailyTasks] Checkin error:', err);
       const errorMsg = err instanceof Error ? err.message : '签到失败，请稍后再试';
       setCheckinError(errorMsg);
+      setPendingRetry('checkin');
       setTimeout(() => setCheckinError(null), 5000);
     } finally {
-      setCheckinLoading(false);
+      if (!cancelledRef.current) {
+        setCheckinLoading(false);
+      }
     }
-  }, [checkinLoading, claiming, doCheckin, onCreditsUpdated]);
+  }, [checkinLoading, claiming, doCheckin, onCreditsUpdated, t, clearAdTimeout]);
 
-  // 处理看广告领奖励
-  const handleWatchAd = useCallback(async () => {
+  // 处理签到（包装函数）
+  const handleCheckin = useCallback(() => {
+    handleCheckinInternal();
+  }, [handleCheckinInternal]);
+
+  // 处理看广告领奖励内部逻辑
+  const handleWatchAdInternal = useCallback(async () => {
     if (adLoading || claiming) return;
 
     // Web 端：弹出下载 App 引导页
@@ -124,13 +205,35 @@ export default function DailyTasksModal({ isOpen, onClose, onCreditsUpdated, onU
       return;
     }
 
+    cancelledRef.current = false;
     setAdError(null);
     setAdLoading(true);
+    setPendingRetry(null);
+
+    // 设置超时
+    clearAdTimeout();
+    timeoutRef.current = setTimeout(() => {
+      if (adLoading && !cancelledRef.current) {
+        console.warn('⏰ [DailyTasks] Ad loading timeout');
+        cancelledRef.current = true;
+        setAdLoading(false);
+        setAdError(t('dailyTasks.timeout') || '加载超时，请重试');
+        setPendingRetry('ad');
+      }
+    }, AD_LOADING_TIMEOUT);
 
     try {
       // 原生 App：使用 useDailyTasks 中的 doClaimAdReward（内部使用 useRewardedAd）
       console.log('🎬 [DailyTasks] Starting ad via doClaimAdReward...');
       const result = await doClaimAdReward();
+
+      // 检查是否已被取消
+      if (cancelledRef.current) {
+        console.log('🚫 [DailyTasks] Ad was cancelled');
+        return;
+      }
+
+      clearAdTimeout();
       console.log('🎬 [DailyTasks] doClaimAdReward result:', result);
 
       if (result.success && result.credits) {
@@ -146,17 +249,28 @@ export default function DailyTasksModal({ isOpen, onClose, onCreditsUpdated, onU
         const errorMsg = result.message || '领取失败';
         console.error('❌ [DailyTasks] Claim failed:', errorMsg);
         setAdError(errorMsg);
+        setPendingRetry('ad');
         setTimeout(() => setAdError(null), 5000);
       }
     } catch (err) {
+      if (cancelledRef.current) return;
+      clearAdTimeout();
       console.error('❌ [DailyTasks] Ad error:', err);
       const errorMsg = err instanceof Error ? err.message : '广告加载失败，请稍后再试';
       setAdError(errorMsg);
+      setPendingRetry('ad');
       setTimeout(() => setAdError(null), 5000);
     } finally {
-      setAdLoading(false);
+      if (!cancelledRef.current) {
+        setAdLoading(false);
+      }
     }
-  }, [adLoading, claiming, doClaimAdReward, onCreditsUpdated]);
+  }, [adLoading, claiming, doClaimAdReward, onCreditsUpdated, t, clearAdTimeout]);
+
+  // 处理看广告领奖励（包装函数）
+  const handleWatchAd = useCallback(() => {
+    handleWatchAdInternal();
+  }, [handleWatchAdInternal]);
 
   // 庆祝效果完成后清理状态
   const handleCelebrationComplete = useCallback(() => {
@@ -422,17 +536,56 @@ export default function DailyTasksModal({ isOpen, onClose, onCreditsUpdated, onU
       {/* 广告加载中覆盖层 */}
       {(adLoading || checkinLoading) && (
         <div className="fixed inset-0 flex flex-col items-center justify-center bg-black/70 backdrop-blur-sm z-[9999]">
-          <div className="bg-white rounded-2xl p-8 flex flex-col items-center shadow-2xl">
+          <div className="bg-white rounded-2xl p-8 flex flex-col items-center shadow-2xl min-w-[280px]">
             <Loader2 className="w-12 h-12 animate-spin text-purple-500 mb-4" />
             <p className="text-gray-700 font-medium">{t('dailyTasks.loadingAd') || '加载广告中...'}</p>
             <p className="text-gray-400 text-sm mt-1">{t('dailyTasks.pleaseWait') || '请稍候'}</p>
+            {/* 取消按钮 */}
+            <button
+              onClick={() => handleCancelLoading(checkinLoading ? 'checkin' : 'ad')}
+              className="mt-6 px-6 py-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors text-sm"
+            >
+              {t('dailyTasks.cancel') || '取消'}
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* 重试覆盖层 */}
+      {pendingRetry && !adLoading && !checkinLoading && (
+        <div className="fixed inset-0 flex flex-col items-center justify-center bg-black/70 backdrop-blur-sm z-[9999]">
+          <div className="bg-white rounded-2xl p-8 flex flex-col items-center shadow-2xl min-w-[280px]">
+            <div className="w-12 h-12 rounded-full bg-orange-100 flex items-center justify-center mb-4">
+              <RefreshCw className="w-6 h-6 text-orange-500" />
+            </div>
+            <p className="text-gray-700 font-medium">
+              {pendingRetry === 'checkin'
+                ? (checkinError || t('dailyTasks.loadFailed') || '加载失败')
+                : (adError || t('dailyTasks.loadFailed') || '加载失败')
+              }
+            </p>
+            <div className="flex gap-3 mt-6">
+              <button
+                onClick={() => setPendingRetry(null)}
+                className="px-5 py-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors text-sm"
+              >
+                {t('dailyTasks.close') || '关闭'}
+              </button>
+              <button
+                onClick={handleRetry}
+                className="px-5 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors text-sm flex items-center gap-2"
+              >
+                <RefreshCw className="w-4 h-4" />
+                {t('dailyTasks.retry') || '重试'}
+              </button>
+            </div>
           </div>
         </div>
       )}
 
       <div
         className={`fixed inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm transition-all z-[9998] ${
-          (adLoading || checkinLoading) ? 'opacity-0 pointer-events-none' : 'opacity-100'
+          (adLoading || checkinLoading || pendingRetry) ? 'opacity-0 pointer-events-none' : 'opacity-100'
         }`}
         onClick={handleClose}
       >

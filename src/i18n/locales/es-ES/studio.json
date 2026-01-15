@@ -1,0 +1,48 @@
+{
+  "studio": {
+    "welcomeTitle": "Hola, bienvenido a Voicica AI",
+    "welcomeSubtitle": "Desbloquea el poder de la IA con nuestras herramientas de vanguardia para voz, vídeo, música y arte. Transforma tus ideas en realidad, más rápido, más inteligente y sin esfuerzo.",
+    "featuredProducts": "Productos destacados",
+    "ttsDescription": "Convierte texto en voz natural con voces de IA avanzadas",
+    "moreToolsComing": "Más herramientas próximamente",
+    "youMightWantToTry": "Quizás quieras probar",
+    "tiktokDownloaderDesc": "Descarga vídeos de TikTok gratis, sin marca de agua, calidad HD",
+    "youtubeDownloaderDesc": "Descarga vídeos de YouTube gratis, múltiples formatos y resoluciones",
+    "upgrade": "Mejorar",
+    "dailyTasks": "Recompensas",
+    "tts": "Texto a voz",
+    "menu": {
+      "home": "Inicio",
+      "creationHub": "Centro de creación",
+      "project": "Proyecto",
+      "shortVideo": "Vídeo corto",
+      "aiVideoGenerator": "Generador de vídeo IA",
+      "textToSpeech": "Texto a voz",
+      "generationHistory": "Historial de generación",
+      "speechToSpeech": "Voz a voz",
+      "voiceCloning": "Clonación de voz",
+      "voiceoverStudio": "Estudio de locución",
+      "aiSong": "Canción IA",
+      "aiMusicMovie": "Película musical IA",
+      "musicHistory": "Historial de música",
+      "aiMusic": "Música IA",
+      "aiCover": "Cover IA",
+      "musicTools": "Herramientas musicales",
+      "account": "Cuenta",
+      "tools": "Herramientas gratuitas",
+      "tiktokDownloader": "Descargador de TikTok",
+      "youtubeDownloader": "Descargador de YouTube",
+      "textToVideo": "Texto a vídeo"
+    },
+    "mobileNav": {
+      "tts": "TTS",
+      "voices": "Voces",
+      "clone": "Clonar",
+      "history": "Historial"
+    },
+    "voices": {
+      "selectVoice": "Seleccionar voz",
+      "selectVoicePrompt": "Por favor, selecciona una voz"
+    }
+  }
+}

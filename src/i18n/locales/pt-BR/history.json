@@ -1,0 +1,25 @@
+{
+  "generationHistory": {
+    "title": "Histórico de geração",
+    "subtitle": "Visualize e gerencie suas gerações de fala.",
+    "generatedSpeech": "Fala gerada",
+    "clearAll": "Limpar tudo",
+    "noGenerations": "Nenhuma geração ainda",
+    "noGenerationsDescription": "Suas gerações de fala aparecerão aqui assim que você começar a criar.",
+    "allRecordsLoaded": "Todos os registros carregados",
+    "total": "total",
+    "filters": {
+      "status": "Status",
+      "dateRange": "Data",
+      "allStatus": "Todos os status",
+      "success": "Sucesso",
+      "processing": "Processando",
+      "pending": "Pendente",
+      "failed": "Falhou",
+      "from": "De",
+      "to": "Até",
+      "apply": "Aplicar",
+      "clear": "Limpar"
+    }
+  }
+}

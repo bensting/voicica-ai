@@ -1,0 +1,25 @@
+{
+  "generationHistory": {
+    "title": "Lịch sử tạo",
+    "subtitle": "Xem và quản lý các bản tạo giọng nói của bạn.",
+    "generatedSpeech": "Giọng nói đã tạo",
+    "clearAll": "Xóa tất cả",
+    "noGenerations": "Chưa có bản tạo nào",
+    "noGenerationsDescription": "Các bản tạo giọng nói của bạn sẽ xuất hiện ở đây khi bạn bắt đầu tạo.",
+    "allRecordsLoaded": "Đã tải tất cả bản ghi",
+    "total": "tổng cộng",
+    "filters": {
+      "status": "Trạng thái",
+      "dateRange": "Ngày",
+      "allStatus": "Tất cả trạng thái",
+      "success": "Thành công",
+      "processing": "Đang xử lý",
+      "pending": "Đang chờ",
+      "failed": "Thất bại",
+      "from": "Từ",
+      "to": "Đến",
+      "apply": "Áp dụng",
+      "clear": "Xóa"
+    }
+  }
+}

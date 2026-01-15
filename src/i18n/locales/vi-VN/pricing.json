@@ -1,0 +1,51 @@
+{
+  "pricing": {
+    "pageTitle": "Gói dịch vụ & Bảng giá Voicica AI",
+    "pageSubtitle": "Voicica AI cung cấp nhiều gói dịch vụ để đáp ứng nhu cầu của bạn.",
+    "loading": "Đang tải bảng giá...",
+    "error": "Không thể tải bảng giá. Vui lòng thử lại sau.",
+    "retry": "Thử lại",
+    "week": "Tuần",
+    "month": "Tháng",
+    "year": "Năm",
+    "perDay": "mỗi ngày",
+    "creditsPerCycle": "điểm mỗi chu kỳ",
+    "creditsUsageRules": "Quy tắc sử dụng điểm",
+    "notes": "Lưu ý:",
+    "creditsNote": "Điểm có thể sử dụng cho tất cả công cụ trên Voicica AI.",
+    "buyNow": "Mua ngay",
+    "tryItFree": "Dùng thử miễn phí",
+    "processing": "Đang xử lý...",
+    "renewalAt": "Gia hạn vào",
+    "freeForEveryone": "Miễn phí cho tất cả",
+    "mostPopular": "Phổ biến nhất",
+    "autoRenew": "Tự động gia hạn. Hủy bất cứ lúc nào.",
+    "loginRequired": "Yêu cầu đăng nhập",
+    "loginRequiredDesc": "Vui lòng đăng nhập để mua gói đăng ký",
+    "cancel": "Hủy",
+    "signIn": "Đăng nhập",
+    "creditsUsageGuide": {
+      "title": "Hướng dẫn sử dụng điểm",
+      "subtitle": "Dưới đây là số điểm cần cho mỗi tính năng.",
+      "feature": "Tính năng",
+      "creditsRequired": "Điểm cần thiết",
+      "standardVoice": "Giọng nói tiêu chuẩn",
+      "premiumVoice": "Giọng nói cao cấp",
+      "clonedVoice": "Giọng nói nhân bản"
+    }
+  },
+  "upgrade": {
+    "header": {
+      "title": "Nâng cấp gói dịch vụ",
+      "description": "Chọn gói phù hợp với nhu cầu của bạn"
+    },
+    "tabs": {
+      "textToVoice": "Văn bản thành giọng nói",
+      "voiceClone": "Nhân bản giọng nói"
+    },
+    "title": {
+      "textToVoice": "Chọn gói chuyển văn bản thành giọng nói",
+      "voiceClone": "Chọn gói nhân bản giọng nói"
+    }
+  }
+}

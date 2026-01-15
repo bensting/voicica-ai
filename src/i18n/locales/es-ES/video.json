@@ -1,0 +1,18 @@
+{
+  "textToVideo": "Texto a vídeo",
+  "promptPlaceholder": "Describe el vídeo que quieres crear. Sé específico sobre acciones, escenas, estilo y ambiente...",
+  "promptLabel": "Descripción del vídeo",
+  "resolution": "Resolución",
+  "duration": "Duración",
+  "aspectRatio": "Relación de aspecto",
+  "creditsCost": "Coste en créditos",
+  "model": "Modelo",
+  "veo31Description": "El modelo de generación de vídeo más avanzado de Google con calidad superior y movimiento",
+  "latest": "Último",
+  "generate": "Generar vídeo",
+  "generating": "Generando...",
+  "generatingVideo": "Generando tu vídeo...",
+  "preview": "Vista previa",
+  "previewPlaceholder": "Tu vídeo generado aparecerá aquí",
+  "browserNotSupported": "Tu navegador no soporta la etiqueta de vídeo."
+}

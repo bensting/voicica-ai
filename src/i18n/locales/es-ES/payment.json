@@ -1,0 +1,40 @@
+{
+  "payment": {
+    "success": {
+      "verifying": {
+        "title": "Verificando pago...",
+        "description": "Por favor, espera mientras confirmamos tu pago"
+      },
+      "success": {
+        "title": "¡Pago exitoso!",
+        "description": "Gracias por tu compra, suscripción activada",
+        "orderSummary": "Resumen del pedido",
+        "orderId": "ID del pedido",
+        "subscriptionId": "ID de suscripción",
+        "countdown": "Redirigiendo al estudio en {{count}} segundos...",
+        "enterStudio": "Entrar al estudio ahora"
+      },
+      "pending": {
+        "title": "Pago en proceso",
+        "description": "Tu pago está siendo procesado, la suscripción se activará pronto",
+        "orderId": "ID del pedido:",
+        "refresh": "Actualizar estado",
+        "backHome": "Volver al estudio"
+      },
+      "failed": {
+        "title": "Verificación de pago fallida",
+        "description": "Lo sentimos, no pudimos verificar tu pago",
+        "notice": "Si has completado el pago, por favor actualiza la página más tarde para verificar el estado, o contacta con el servicio de atención al cliente para obtener ayuda.",
+        "retry": "Reintentar verificación",
+        "backHome": "Volver al estudio"
+      }
+    },
+    "cancel": {
+      "title": "Pago cancelado",
+      "description": "Tu pago ha sido cancelado. No se realizó ningún cargo.",
+      "notice": "Si encontraste algún problema durante el proceso de pago, por favor inténtalo de nuevo o contacta con nuestro equipo de soporte.",
+      "tryAgain": "Intentar de nuevo",
+      "backToStudio": "Volver al estudio"
+    }
+  }
+}

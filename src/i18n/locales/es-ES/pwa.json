@@ -1,0 +1,47 @@
+{
+  "pwa": {
+    "updateAvailable": "Nueva versión disponible",
+    "updateDescription": "Hay una nueva versión de la aplicación disponible. Haz clic en actualizar para obtener las últimas funciones y mejoras.",
+    "update": "Actualizar ahora",
+    "later": "Después",
+    "installShortcut": "Instalar aplicación",
+    "installTitle": "Instalar aplicación",
+    "installDescription": "Instala esta aplicación en tu dispositivo para un acceso rápido y fácil, incluso sin conexión.",
+    "install": "Instalar",
+    "feature1": "Acceso rápido desde tu escritorio o pantalla de inicio",
+    "feature2": "Funciona sin conexión con contenido almacenado en caché",
+    "feature3": "Ligera, no necesita tienda de aplicaciones",
+    "iosInstructions": "Pasos de instalación:",
+    "iosStep1": "Toca el botón Compartir",
+    "iosStep1b": "en la parte inferior de Safari",
+    "iosStep2": "Desplázate y toca \"Añadir a pantalla de inicio\"",
+    "iosStep3": "Toca \"Añadir\" en la esquina superior derecha",
+    "gotIt": "Entendido"
+  },
+  "appUpdate": {
+    "title": "Nueva versión disponible",
+    "currentVersion": "Versión actual",
+    "releaseNotes": "Novedades",
+    "forceUpdateWarning": "Esta es una actualización obligatoria. Por favor, actualiza para continuar usando la aplicación.",
+    "updateNow": "Actualizar ahora",
+    "later": "Después",
+    "cancel": "Cancelar",
+    "retry": "Reintentar",
+    "checkingPermission": "Verificando permisos...",
+    "downloading": "Descargando...",
+    "installing": "Instalando...",
+    "installComplete": "Instalación completada",
+    "downloadError": "Error en la descarga",
+    "permissionRequired": "Por favor, concede permiso para instalar aplicaciones desconocidas e inténtalo de nuevo"
+  },
+  "googlePlayUpdate": {
+    "updateAvailable": "Actualización disponible",
+    "updateReady": "Actualización lista para instalar",
+    "downloadInBackground": "Descargando en segundo plano...",
+    "downloadComplete": "Descarga completada. Reinicia para aplicar la actualización.",
+    "update": "Actualizar",
+    "install": "Instalar ahora",
+    "later": "Después",
+    "progress": "Descargando... {{progress}}%"
+  }
+}

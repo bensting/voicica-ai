@@ -11,7 +11,8 @@
     "later": "稍后",
     "refresh": "刷新",
     "save": "保存",
-    "saving": "保存中..."
+    "saving": "保存中...",
+    "insufficientCredits": "积分不足，请充值或升级套餐"
   },
   "app": {
     "updateAvailable": "发现新版本",

@@ -11,7 +11,8 @@
     "later": "後で",
     "refresh": "更新",
     "save": "保存",
-    "saving": "保存中..."
+    "saving": "保存中...",
+    "insufficientCredits": "クレジットが不足しています。チャージまたはプランをアップグレードしてください"
   },
   "app": {
     "updateAvailable": "アップデートがあります",

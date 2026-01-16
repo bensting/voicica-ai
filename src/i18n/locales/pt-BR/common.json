@@ -11,7 +11,8 @@
     "later": "Depois",
     "refresh": "Atualizar",
     "save": "Salvar",
-    "saving": "Salvando..."
+    "saving": "Salvando...",
+    "insufficientCredits": "Créditos insuficientes. Por favor recarregue ou atualize seu plano"
   },
   "app": {
     "updateAvailable": "Atualização disponível",

@@ -15,7 +15,13 @@
     "refresh": "重新整理",
     "save": "儲存",
     "saving": "儲存中...",
-    "insufficientCredits": "積分不足，請充值或升級方案"
+    "insufficientCredits": "積分不足，請充值或升級方案",
+    "expand": "展開",
+    "collapse": "收起",
+    "play": "播放",
+    "pause": "暫停",
+    "processing": "處理中...",
+    "generating": "生成中..."
   },
   "app": {
     "updateAvailable": "發現新版本",

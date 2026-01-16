@@ -15,7 +15,13 @@
     "refresh": "Refresh",
     "save": "Save",
     "saving": "Saving...",
-    "insufficientCredits": "Insufficient credits. Please top up or upgrade your plan."
+    "insufficientCredits": "Insufficient credits. Please top up or upgrade your plan.",
+    "expand": "Expand",
+    "collapse": "Collapse",
+    "play": "Play",
+    "pause": "Pause",
+    "processing": "Processing...",
+    "generating": "Generating..."
   },
   "app": {
     "updateAvailable": "Update Available",

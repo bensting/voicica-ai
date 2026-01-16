@@ -15,7 +15,13 @@
     "refresh": "刷新",
     "save": "保存",
     "saving": "保存中...",
-    "insufficientCredits": "积分不足，请充值或升级套餐"
+    "insufficientCredits": "积分不足，请充值或升级套餐",
+    "expand": "展开",
+    "collapse": "收起",
+    "play": "播放",
+    "pause": "暂停",
+    "processing": "处理中...",
+    "generating": "生成中..."
   },
   "app": {
     "updateAvailable": "发现新版本",

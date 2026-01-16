@@ -468,7 +468,7 @@ export default function StoryAudioModal({
                             /* 已有的段落音频（来自数据库） - 显示播放按钮 */
                             <button
                               onClick={() => handlePlayAudio(paragraph.id, paragraph.audioUrl!)}
-                              className="inline-flex items-center gap-1.5 text-xs text-white bg-green-500 hover:bg-green-600 px-3 py-1.5 rounded-full transition-colors"
+                              className="inline-flex items-center gap-1.5 text-xs text-white bg-purple-500 hover:bg-purple-600 px-3 py-1.5 rounded-full transition-colors"
                             >
                               {isPlaying ? (
                                 <>

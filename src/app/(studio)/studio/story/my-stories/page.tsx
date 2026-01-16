@@ -1,8 +1,8 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import { BookOpen, Volume2, Image, MoreVertical, Trash2, Clock, FileText, Play, Pause, Loader2, X, Pencil, AlertTriangle, Download, Sparkles, ImageIcon, LayoutGrid, Check } from 'lucide-react';
+import { BookOpen, Volume2, Image as ImageLucide, MoreVertical, Trash2, Clock, FileText, Play, Pause, Loader2, X, Pencil, AlertTriangle, Download, Sparkles, ImageIcon, LayoutGrid, Check } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useStudio } from '@/contexts/StudioContext';
 import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
@@ -451,13 +451,7 @@ function IllustrationGalleryModal({
   const [isLoading, setIsLoading] = useState(true);
   const [selectedImage, setSelectedImage] = useState<IllustrationData | null>(null);
 
-  useEffect(() => {
-    if (isOpen && story) {
-      loadIllustrations();
-    }
-  }, [isOpen, story]);
-
-  const loadIllustrations = async () => {
+  const loadIllustrations = useCallback(async () => {
     if (!story) return;
     setIsLoading(true);
     try {
@@ -470,7 +464,13 @@ function IllustrationGalleryModal({
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [story]);
+
+  useEffect(() => {
+    if (isOpen && story) {
+      loadIllustrations();
+    }
+  }, [isOpen, story, loadIllustrations]);
 
   const handleDownload = async (illustration: IllustrationData) => {
     if (!illustration.imageUrl) return;
@@ -798,7 +798,7 @@ function StoryCard({
         )}
         {story.illustrationCount > 0 && (
           <span className="flex items-center gap-1">
-            <Image className="w-3.5 h-3.5" />
+            <ImageLucide className="w-3.5 h-3.5" />
             {story.illustrationCount}
           </span>
         )}
@@ -891,7 +891,7 @@ function StoryCard({
           onClick={() => onGenerateIllustration(story)}
           className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white text-sm font-medium rounded-xl transition-all shadow-sm"
         >
-          <Image className="w-4 h-4" />
+          <ImageLucide className="w-4 h-4" />
           {t('story.generateIllustration') || 'Illustration'}
         </button>
       </div>

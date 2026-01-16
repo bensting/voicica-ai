@@ -9,11 +9,10 @@ import {
   Loader2,
   X,
   AlertTriangle,
-  Check,
   ChevronDown,
   ChevronUp,
 } from 'lucide-react';
-import { createTtsTask, getTtsTaskStatus } from '@/actions/tts';
+import { createTtsTask, getTtsTaskStatus, updateParagraphAudio } from '@/actions/tts';
 import VoiceSelectButton from '@/components/features/studio/tts/components/VoiceSelectButton';
 import type { Voice } from '@/types/voice';
 import type { UserStory, StoryParagraph } from '@/actions/story';
@@ -110,7 +109,7 @@ export default function StoryAudioModal({
   };
 
   // 轮询任务状态
-  const pollTaskStatus = async (taskId: string, paragraphId: string) => {
+  const pollTaskStatus = async (taskId: string, paragraphId: string, voiceName: string) => {
     const maxAttempts = 60; // 最多轮询 60 次（约 2 分钟）
     let attempts = 0;
 
@@ -120,14 +119,27 @@ export default function StoryAudioModal({
         const result = await getTtsTaskStatus(taskId);
 
         if (result.status === 'SUCCESS' && result.result) {
+          const audioUrl = result.result.audio_url;
+          const audioDuration = result.result.duration;
+
+          // 更新本地状态
           setParagraphAudio((prev) => ({
             ...prev,
             [paragraphId]: {
               taskId,
               status: 'SUCCESS',
-              audioUrl: result.result?.audio_url,
+              audioUrl,
             },
           }));
+
+          // 持久化到数据库
+          await updateParagraphAudio({
+            paragraphId,
+            audioUrl,
+            audioDuration,
+            voiceName,
+          });
+
           return;
         } else if (result.status === 'FAILURE') {
           setParagraphAudio((prev) => ({
@@ -241,7 +253,7 @@ export default function StoryAudioModal({
         setGeneratingParagraphId(null);
 
         // 开始轮询
-        pollTaskStatus(result.task_id, paragraph.id);
+        pollTaskStatus(result.task_id, paragraph.id, selectedVoice.name);
       } else {
         setGeneratingParagraphId(null);
       }
@@ -419,11 +431,23 @@ export default function StoryAudioModal({
                               {t('common.retry') || 'Retry'}
                             </button>
                           ) : paragraph.audioUrl && paragraph.audioStatus === 'completed' ? (
-                            /* 已有的段落音频（来自数据库） */
-                            <span className="inline-flex items-center gap-1 text-xs text-green-600 bg-green-50 px-2 py-1 rounded-full">
-                              <Check className="w-3 h-3" />
-                              {t('story.audio.generated') || 'Generated'}
-                            </span>
+                            /* 已有的段落音频（来自数据库） - 显示播放按钮 */
+                            <button
+                              onClick={() => handlePlayAudio(paragraph.id, paragraph.audioUrl!)}
+                              className="inline-flex items-center gap-1.5 text-xs text-white bg-green-500 hover:bg-green-600 px-3 py-1.5 rounded-full transition-colors"
+                            >
+                              {isPlaying ? (
+                                <>
+                                  <Pause className="w-3 h-3" />
+                                  {t('common.pause') || 'Pause'}
+                                </>
+                              ) : (
+                                <>
+                                  <Play className="w-3 h-3" />
+                                  {t('common.play') || 'Play'}
+                                </>
+                              )}
+                            </button>
                           ) : (
                             <button
                               onClick={() => handleGenerateParagraph(paragraph)}

@@ -43,7 +43,8 @@
       "selectVoiceFirst": "请先选择语音",
       "generated": "已生成",
       "generateThis": "生成此段",
-      "generateAll": "全部生成"
+      "generateAll": "全部生成",
+      "paragraphs": "段语音"
     },
     "illustration": {
       "title": "生成插图",

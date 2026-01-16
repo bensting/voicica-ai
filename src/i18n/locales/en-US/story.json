@@ -43,7 +43,8 @@
       "selectVoiceFirst": "Please select a voice first",
       "generated": "Generated",
       "generateThis": "Generate this",
-      "generateAll": "Generate All"
+      "generateAll": "Generate All",
+      "paragraphs": "paragraphs"
     },
     "illustration": {
       "title": "Generate Illustrations",

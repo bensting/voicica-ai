@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import { BookOpen, Volume2, Image as ImageLucide, MoreVertical, Trash2, Clock, FileText, Play, Pause, Loader2, X, Pencil, AlertTriangle, Download, Sparkles, ImageIcon, LayoutGrid, Check } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useStudio } from '@/contexts/StudioContext';
@@ -554,10 +555,12 @@ function IllustrationGalleryModal({
                 >
                   {illustration.status === 'completed' && illustration.imageUrl ? (
                     <>
-                      <img
+                      <Image
                         src={illustration.imageUrl}
                         alt={illustration.sceneDescription || 'Illustration'}
-                        className="w-full h-full object-cover cursor-pointer"
+                        fill
+                        unoptimized
+                        className="object-cover cursor-pointer"
                         onClick={() => setSelectedImage(illustration)}
                       />
                       {/* Overlay */}
@@ -620,11 +623,15 @@ function IllustrationGalleryModal({
           className="fixed inset-0 z-60 flex items-center justify-center bg-black/90 p-4"
           onClick={() => setSelectedImage(null)}
         >
-          <img
-            src={selectedImage.imageUrl || ''}
-            alt={selectedImage.sceneDescription || 'Illustration'}
-            className="max-w-full max-h-full object-contain rounded-lg"
-          />
+          <div className="relative w-full h-full max-w-4xl max-h-[80vh]">
+            <Image
+              src={selectedImage.imageUrl || ''}
+              alt={selectedImage.sceneDescription || 'Illustration'}
+              fill
+              unoptimized
+              className="object-contain rounded-lg"
+            />
+          </div>
           <button
             onClick={(e) => {
               e.stopPropagation();
@@ -816,10 +823,12 @@ function StoryCard({
                 key={ill.id}
                 className="relative flex-shrink-0 w-14 h-14 rounded-lg overflow-hidden bg-gray-100"
               >
-                <img
+                <Image
                   src={ill.imageUrl}
                   alt={ill.type === 'cover' ? 'Cover' : `Scene ${ill.position}`}
-                  className="w-full h-full object-cover"
+                  fill
+                  unoptimized
+                  className="object-cover"
                 />
                 {ill.type === 'cover' && (
                   <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent py-0.5">

@@ -189,8 +189,8 @@ export default function GenerateStoryPage() {
   return (
     <>
       {/* Mobile Layout */}
-      <div className="lg:hidden fixed inset-0 flex flex-col bg-gradient-to-b from-gray-50 to-white" style={{ top: 'calc(60px + var(--safe-area-inset-top, 0px))' }}>
-        <div className="flex-1 flex flex-col px-4 pt-4 gap-4 pb-3">
+      <div className="lg:hidden fixed inset-0 flex flex-col bg-gradient-to-b from-gray-50 to-white" style={{ top: 'calc(60px + var(--safe-area-inset-top, 0px))', bottom: 'calc(64px + var(--safe-area-inset-bottom, 0px))' }}>
+        <div className="flex-1 flex flex-col px-4 pt-4 gap-4 pb-3 min-h-0">
           {step === 'input' ? (
             <>
               {/* Keywords Input */}
@@ -224,7 +224,7 @@ export default function GenerateStoryPage() {
 
               {/* Error Message */}
               {error && (
-                <div className="px-4 py-3 bg-red-50 border border-red-200 rounded-xl text-red-600 text-sm">
+                <div className="flex-shrink-0 px-4 py-3 bg-red-50 border border-red-200 rounded-xl text-red-600 text-sm">
                   {error}
                 </div>
               )}
@@ -285,39 +285,41 @@ export default function GenerateStoryPage() {
                 </p>
               </div>
 
-              {/* Ideas List */}
-              <div className="flex-1 min-h-0 overflow-y-auto space-y-3">
-                {ideas.map((idea, index) => (
-                  <button
-                    key={index}
-                    onClick={() => handleSelectIdea(idea)}
-                    disabled={isGeneratingStory}
-                    className={`
-                      w-full p-4 bg-white rounded-xl border-2 text-left transition-all
-                      ${selectedIdea === idea
-                        ? 'border-purple-500 bg-purple-50'
-                        : 'border-gray-200 hover:border-purple-300 hover:shadow-md'
-                      }
-                      disabled:opacity-50 disabled:cursor-not-allowed
-                    `}
-                  >
-                    <div className="flex items-start gap-3">
-                      <div className={`
-                        flex-shrink-0 w-6 h-6 rounded-full border-2 flex items-center justify-center
+              {/* Ideas List - Scrollable */}
+              <div className="flex-1 min-h-0 overflow-y-auto -mx-4 px-4">
+                <div className="space-y-3 pb-2">
+                  {ideas.map((idea, index) => (
+                    <button
+                      key={index}
+                      onClick={() => handleSelectIdea(idea)}
+                      disabled={isGeneratingStory}
+                      className={`
+                        w-full p-4 bg-white rounded-xl border-2 text-left transition-all
                         ${selectedIdea === idea
-                          ? 'border-purple-500 bg-purple-500'
-                          : 'border-gray-300'
+                          ? 'border-purple-500 bg-purple-50'
+                          : 'border-gray-200 hover:border-purple-300 hover:shadow-md'
                         }
-                      `}>
-                        {selectedIdea === idea && <Check className="w-3 h-3 text-white" />}
+                        disabled:opacity-50 disabled:cursor-not-allowed
+                      `}
+                    >
+                      <div className="flex items-start gap-3">
+                        <div className={`
+                          flex-shrink-0 w-6 h-6 rounded-full border-2 flex items-center justify-center
+                          ${selectedIdea === idea
+                            ? 'border-purple-500 bg-purple-500'
+                            : 'border-gray-300'
+                          }
+                        `}>
+                          {selectedIdea === idea && <Check className="w-3 h-3 text-white" />}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <h3 className="font-semibold text-gray-900 mb-1">{idea.title}</h3>
+                          <p className="text-sm text-gray-600">{idea.description}</p>
+                        </div>
                       </div>
-                      <div className="flex-1 min-w-0">
-                        <h3 className="font-semibold text-gray-900 mb-1">{idea.title}</h3>
-                        <p className="text-sm text-gray-600">{idea.description}</p>
-                      </div>
-                    </div>
-                  </button>
-                ))}
+                    </button>
+                  ))}
+                </div>
               </div>
 
               {/* Error Message */}
@@ -361,9 +363,6 @@ export default function GenerateStoryPage() {
             </>
           )}
         </div>
-
-        {/* 底部导航栏占位空间 */}
-        <div className="h-[64px] flex-shrink-0" style={{ height: 'calc(64px + var(--safe-area-inset-bottom, 0px))' }} />
       </div>
 
       {/* Desktop Layout */}

@@ -9,8 +9,15 @@ import { useCredits } from '@/contexts/CreditsContext';
 import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 import { getStoryIdeas, generateStory } from '@/actions/story';
 import type { StoryIdea, GeneratedStory } from '@/lib/services/openai';
+import { calculateProductCreditsCost } from '@/config/creditsCost';
+import { ProductType } from '@/config/productType';
 import CreditsBar from '@/components/ui/CreditsBar';
 import LoginModal from '@/components/features/auth/LoginModal';
+import CreditsIcon from '@/components/icons/CreditsIcon';
+
+// 预计算积分消耗
+const STORY_IDEAS_COST = calculateProductCreditsCost(ProductType.STORY_IDEAS);
+const STORY_GENERATE_COST = calculateProductCreditsCost(ProductType.STORY_GENERATE);
 
 /**
  * Generate Story Page
@@ -245,6 +252,10 @@ export default function GenerateStoryPage() {
                     <>
                       <Sparkles className="w-5 h-5" />
                       <span>{t('story.getIdeas') || 'Get Story Ideas'}</span>
+                      <span className="ml-2 inline-flex items-center gap-0.5 px-2 py-0.5 bg-white/20 rounded-full text-sm">
+                        <CreditsIcon className="w-3.5 h-3.5" />
+                        <span>{STORY_IDEAS_COST}</span>
+                      </span>
                     </>
                   )}
                 </button>
@@ -339,6 +350,10 @@ export default function GenerateStoryPage() {
                     <>
                       <Sparkles className="w-5 h-5" />
                       <span>{t('story.generate') || 'Generate Story'}</span>
+                      <span className="ml-2 inline-flex items-center gap-0.5 px-2 py-0.5 bg-white/20 rounded-full text-sm">
+                        <CreditsIcon className="w-3.5 h-3.5" />
+                        <span>{STORY_GENERATE_COST}</span>
+                      </span>
                     </>
                   )}
                 </button>
@@ -425,6 +440,10 @@ export default function GenerateStoryPage() {
                     <>
                       <Sparkles className="w-5 h-5" />
                       <span>{t('story.getIdeas') || 'Get Story Ideas'}</span>
+                      <span className="ml-2 inline-flex items-center gap-0.5 px-2 py-0.5 bg-white/20 rounded-full text-sm">
+                        <CreditsIcon className="w-3.5 h-3.5" />
+                        <span>{STORY_IDEAS_COST}</span>
+                      </span>
                     </>
                   )}
                 </button>
@@ -517,6 +536,10 @@ export default function GenerateStoryPage() {
                     <>
                       <Sparkles className="w-5 h-5" />
                       <span>{t('story.generate') || 'Generate Story'}</span>
+                      <span className="ml-2 inline-flex items-center gap-0.5 px-2 py-0.5 bg-white/20 rounded-full text-sm">
+                        <CreditsIcon className="w-3.5 h-3.5" />
+                        <span>{STORY_GENERATE_COST}</span>
+                      </span>
                     </>
                   )}
                 </button>

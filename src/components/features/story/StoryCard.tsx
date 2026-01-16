@@ -11,7 +11,6 @@ import {
   FileText,
   Play,
   Pause,
-  Loader2,
   Pencil,
 } from 'lucide-react';
 import type { UserStory } from '@/actions/story';
@@ -70,9 +69,25 @@ export default function StoryCard({
     return content.substring(0, maxLength) + '...';
   };
 
-  // Handle audio playback
+  // 获取段落音频信息
+  const paragraphsWithAudio = (story.paragraphs || []).filter(
+    (p) => p.audioUrl && p.audioStatus === 'completed'
+  );
+  const firstParagraphAudio = paragraphsWithAudio[0];
+  const paragraphAudioCount = paragraphsWithAudio.length;
+
+  // 计算总时长（所有段落音频时长之和）
+  const totalAudioDuration = paragraphsWithAudio.reduce(
+    (sum, p) => sum + (p.audioDuration || 0),
+    0
+  );
+
+  // Check if audio is ready to play (基于段落音频)
+  const hasAudio = !!firstParagraphAudio;
+
+  // Handle audio playback (使用第一个段落音频)
   const handlePlayAudio = () => {
-    if (!story.latestAudio?.audioUrl) return;
+    if (!firstParagraphAudio?.audioUrl) return;
 
     if (isPlaying && audioElement) {
       audioElement.pause();
@@ -81,7 +96,7 @@ export default function StoryCard({
       // Create new audio element or reuse existing
       let audio = audioElement;
       if (!audio) {
-        audio = new Audio(story.latestAudio.audioUrl);
+        audio = new Audio(firstParagraphAudio.audioUrl);
         audio.onended = () => setIsPlaying(false);
         setAudioElement(audio);
       }
@@ -99,10 +114,6 @@ export default function StoryCard({
       }
     };
   }, [audioElement]);
-
-  // Check if audio is ready to play
-  const hasAudio = story.latestAudio?.audioUrl && story.latestAudio.status === 'SUCCESS';
-  const isAudioProcessing = story.latestAudio && ['PENDING', 'PROCESSING'].includes(story.latestAudio.status);
 
   return (
     <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow">
@@ -164,10 +175,10 @@ export default function StoryCard({
           <FileText className="w-3.5 h-3.5" />
           {story.wordCount} {t('story.characters') || 'chars'}
         </span>
-        {story.audioCount > 0 && (
+        {paragraphAudioCount > 0 && (
           <span className="flex items-center gap-1">
             <Volume2 className="w-3.5 h-3.5" />
-            {story.audioCount}
+            {paragraphAudioCount}
           </span>
         )}
         {story.illustrationCount > 0 && (
@@ -217,36 +228,27 @@ export default function StoryCard({
         </div>
       )}
 
-      {/* Audio Player - show if has audio */}
-      {(hasAudio || isAudioProcessing) && (
+      {/* Audio Player - show if has paragraph audio */}
+      {hasAudio && (
         <div className="px-4 pb-3">
           <div className="flex items-center gap-3 p-2 bg-purple-50 rounded-xl">
-            {isAudioProcessing ? (
-              <div className="w-9 h-9 flex items-center justify-center bg-purple-100 rounded-full">
-                <Loader2 className="w-4 h-4 text-purple-500 animate-spin" />
-              </div>
-            ) : (
-              <button
-                onClick={handlePlayAudio}
-                className="w-9 h-9 flex items-center justify-center bg-purple-500 hover:bg-purple-600 rounded-full transition-colors"
-              >
-                {isPlaying ? (
-                  <Pause className="w-4 h-4 text-white" />
-                ) : (
-                  <Play className="w-4 h-4 text-white ml-0.5" />
-                )}
-              </button>
-            )}
+            <button
+              onClick={handlePlayAudio}
+              className="w-9 h-9 flex items-center justify-center bg-purple-500 hover:bg-purple-600 rounded-full transition-colors"
+            >
+              {isPlaying ? (
+                <Pause className="w-4 h-4 text-white" />
+              ) : (
+                <Play className="w-4 h-4 text-white ml-0.5" />
+              )}
+            </button>
             <div className="flex-1 min-w-0">
               <p className="text-xs font-medium text-purple-700 truncate">
-                {isAudioProcessing
-                  ? (t('story.audioProcessing') || 'Processing...')
-                  : story.latestAudio?.voiceName
-                }
+                {paragraphAudioCount} {t('story.audio.paragraphs') || 'paragraphs'}
               </p>
-              {story.latestAudio?.duration && (
+              {totalAudioDuration > 0 && (
                 <p className="text-xs text-purple-500">
-                  {Math.floor(story.latestAudio.duration / 60)}:{String(Math.floor(story.latestAudio.duration % 60)).padStart(2, '0')}
+                  {Math.floor(totalAudioDuration / 60)}:{String(Math.floor(totalAudioDuration % 60)).padStart(2, '0')}
                 </p>
               )}
             </div>

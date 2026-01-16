@@ -25,6 +25,7 @@
     "noStoriesDesc": "你生成的故事将显示在这里",
     "generateAudio": "生成语音",
     "generateIllustration": "生成插图",
-    "characters": "字符"
+    "characters": "字符",
+    "audioProcessing": "处理中..."
   }
 }

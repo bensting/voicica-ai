@@ -25,6 +25,7 @@
     "noStoriesDesc": "你生成的故事將顯示在這裡",
     "generateAudio": "生成語音",
     "generateIllustration": "生成插圖",
-    "characters": "字元"
+    "characters": "字元",
+    "audioProcessing": "處理中..."
   }
 }

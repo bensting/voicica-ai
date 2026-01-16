@@ -30,6 +30,7 @@ export interface TtsRequest {
   speed?: number;
   pitch?: number;
   volume?: number;
+  story_id?: string; // 关联的故事 ID（可选）
 }
 
 export interface TtsTaskStatus {
@@ -82,6 +83,7 @@ export interface TtsRecord {
   created_at: Date;
   completed_at: Date | null;
   share_id: string | null;
+  story_id: string | null; // 关联的故事 ID
   voice?: TtsRecordVoice | null;
 }
 
@@ -223,6 +225,7 @@ export async function createTtsTask(request: TtsRequest): Promise<TtsTaskStatus>
         progress: 0,
         format: 'mp3',
         share_id: shareId,
+        story_id: request.story_id || null, // 关联故事（可选）
       },
     });
 
@@ -368,6 +371,7 @@ export async function getTtsRecords(limit: number = 50): Promise<TtsRecord[]> {
     created_at: r.created_at,
     completed_at: r.completed_at,
     share_id: r.share_id,
+    story_id: r.story_id,
   }));
 }
 
@@ -459,6 +463,7 @@ export async function queryTtsRecords(params: {
       created_at: r.created_at,
       completed_at: r.completed_at,
       share_id: r.share_id,
+      story_id: r.story_id,
       voice: voice ? {
         id: voice.id,
         name: voice.name,
@@ -529,6 +534,7 @@ export async function getTtsRecordById(recordId: number): Promise<TtsRecord> {
     created_at: record.created_at,
     completed_at: record.completed_at,
     share_id: record.share_id,
+    story_id: record.story_id,
     voice: voice ? {
       id: voice.id,
       name: voice.name,
@@ -657,6 +663,7 @@ export async function getTtsRecordByTaskId(taskId: string): Promise<TtsRecord> {
     created_at: record.created_at,
     completed_at: record.completed_at,
     share_id: record.share_id,
+    story_id: record.story_id,
   };
 }
 
@@ -722,6 +729,7 @@ export async function checkAndHandleStuckTask(
         created_at: record.created_at,
         completed_at: record.completed_at,
         share_id: record.share_id,
+        story_id: record.story_id,
       },
     };
   }
@@ -804,6 +812,7 @@ export async function checkAndHandleStuckTask(
         created_at: updatedRecord.created_at,
         completed_at: updatedRecord.completed_at,
         share_id: updatedRecord.share_id,
+        story_id: updatedRecord.story_id,
       },
     };
   }
@@ -837,6 +846,7 @@ export async function checkAndHandleStuckTask(
       created_at: record.created_at,
       completed_at: record.completed_at,
       share_id: record.share_id,
+      story_id: record.story_id,
     },
   };
 }

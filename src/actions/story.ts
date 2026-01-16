@@ -302,6 +302,19 @@ export async function saveStory(params: SaveStoryParams): Promise<SaveStoryResul
 }
 
 /**
+ * 故事关联的音频
+ */
+export interface StoryAudio {
+  id: number;
+  taskId: string;
+  audioUrl: string | null;
+  duration: number | null;
+  status: string;
+  voiceName: string;
+  createdAt: Date;
+}
+
+/**
  * 用户故事项
  */
 export interface UserStory {
@@ -314,6 +327,8 @@ export interface UserStory {
   videoStatus: string;
   createdAt: Date;
   illustrationCount: number;
+  audioCount: number;
+  latestAudio: StoryAudio | null; // 最新的音频
 }
 
 /**
@@ -358,7 +373,20 @@ export async function getUserStories(): Promise<GetUserStoriesResult> {
       orderBy: { created_at: 'desc' },
       include: {
         _count: {
-          select: { illustrations: true },
+          select: { illustrations: true, tts_records: true },
+        },
+        tts_records: {
+          orderBy: { created_at: 'desc' },
+          take: 1, // 只取最新的一条
+          select: {
+            id: true,
+            task_id: true,
+            audio_url: true,
+            duration: true,
+            status: true,
+            voice_name: true,
+            created_at: true,
+          },
         },
       },
     });
@@ -367,17 +395,30 @@ export async function getUserStories(): Promise<GetUserStoriesResult> {
 
     return {
       success: true,
-      stories: stories.map((story) => ({
-        id: story.id,
-        title: story.title,
-        content: story.content,
-        keywords: story.keywords,
-        wordCount: story.word_count,
-        status: story.status,
-        videoStatus: story.video_status,
-        createdAt: story.created_at,
-        illustrationCount: story._count.illustrations,
-      })),
+      stories: stories.map((story) => {
+        const latestTts = story.tts_records[0];
+        return {
+          id: story.id,
+          title: story.title,
+          content: story.content,
+          keywords: story.keywords,
+          wordCount: story.word_count,
+          status: story.status,
+          videoStatus: story.video_status,
+          createdAt: story.created_at,
+          illustrationCount: story._count.illustrations,
+          audioCount: story._count.tts_records,
+          latestAudio: latestTts ? {
+            id: latestTts.id,
+            taskId: latestTts.task_id,
+            audioUrl: latestTts.audio_url,
+            duration: latestTts.duration,
+            status: latestTts.status,
+            voiceName: latestTts.voice_name,
+            createdAt: latestTts.created_at,
+          } : null,
+        };
+      }),
     };
   } catch (error) {
     console.error('❌ [getUserStories] 获取故事失败:', error);

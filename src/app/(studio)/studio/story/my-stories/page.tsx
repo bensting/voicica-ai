@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { BookOpen, Volume2, Image, MoreVertical, Trash2, Clock, FileText } from 'lucide-react';
+import { BookOpen, Volume2, Image, MoreVertical, Trash2, Clock, FileText, Play, Pause, Loader2 } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useStudio } from '@/contexts/StudioContext';
 import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
@@ -25,6 +25,8 @@ function StoryCard({
   t: (key: string) => string;
 }) {
   const [showMenu, setShowMenu] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [audioElement, setAudioElement] = useState<HTMLAudioElement | null>(null);
 
   // Format date
   const formatDate = (date: Date) => {
@@ -40,6 +42,40 @@ function StoryCard({
     if (content.length <= maxLength) return content;
     return content.substring(0, maxLength) + '...';
   };
+
+  // Handle audio playback
+  const handlePlayAudio = () => {
+    if (!story.latestAudio?.audioUrl) return;
+
+    if (isPlaying && audioElement) {
+      audioElement.pause();
+      setIsPlaying(false);
+    } else {
+      // Create new audio element or reuse existing
+      let audio = audioElement;
+      if (!audio) {
+        audio = new Audio(story.latestAudio.audioUrl);
+        audio.onended = () => setIsPlaying(false);
+        setAudioElement(audio);
+      }
+      audio.play();
+      setIsPlaying(true);
+    }
+  };
+
+  // Cleanup audio element on unmount
+  useEffect(() => {
+    return () => {
+      if (audioElement) {
+        audioElement.pause();
+        audioElement.src = '';
+      }
+    };
+  }, [audioElement]);
+
+  // Check if audio is ready to play
+  const hasAudio = story.latestAudio?.audioUrl && story.latestAudio.status === 'SUCCESS';
+  const isAudioProcessing = story.latestAudio && ['PENDING', 'PROCESSING'].includes(story.latestAudio.status);
 
   return (
     <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow">
@@ -91,6 +127,12 @@ function StoryCard({
           <FileText className="w-3.5 h-3.5" />
           {story.wordCount} {t('story.characters') || 'chars'}
         </span>
+        {story.audioCount > 0 && (
+          <span className="flex items-center gap-1">
+            <Volume2 className="w-3.5 h-3.5" />
+            {story.audioCount}
+          </span>
+        )}
         {story.illustrationCount > 0 && (
           <span className="flex items-center gap-1">
             <Image className="w-3.5 h-3.5" />
@@ -98,6 +140,43 @@ function StoryCard({
           </span>
         )}
       </div>
+
+      {/* Audio Player - show if has audio */}
+      {(hasAudio || isAudioProcessing) && (
+        <div className="px-4 pb-3">
+          <div className="flex items-center gap-3 p-2 bg-purple-50 rounded-xl">
+            {isAudioProcessing ? (
+              <div className="w-9 h-9 flex items-center justify-center bg-purple-100 rounded-full">
+                <Loader2 className="w-4 h-4 text-purple-500 animate-spin" />
+              </div>
+            ) : (
+              <button
+                onClick={handlePlayAudio}
+                className="w-9 h-9 flex items-center justify-center bg-purple-500 hover:bg-purple-600 rounded-full transition-colors"
+              >
+                {isPlaying ? (
+                  <Pause className="w-4 h-4 text-white" />
+                ) : (
+                  <Play className="w-4 h-4 text-white ml-0.5" />
+                )}
+              </button>
+            )}
+            <div className="flex-1 min-w-0">
+              <p className="text-xs font-medium text-purple-700 truncate">
+                {isAudioProcessing
+                  ? (t('story.audioProcessing') || 'Processing...')
+                  : story.latestAudio?.voiceName
+                }
+              </p>
+              {story.latestAudio?.duration && (
+                <p className="text-xs text-purple-500">
+                  {Math.floor(story.latestAudio.duration / 60)}:{String(Math.floor(story.latestAudio.duration % 60)).padStart(2, '0')}
+                </p>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Card Actions */}
       <div className="px-4 pb-4 flex gap-2">
@@ -180,6 +259,8 @@ export default function MyStoriesPage() {
   const handleGenerateAudio = (story: UserStory) => {
     // Save story content to localStorage for TTS page to pick up
     localStorage.setItem('lastTTSInputText', story.content);
+    // Save story ID to sessionStorage for TTS to link the audio
+    sessionStorage.setItem('ttsStoryId', story.id);
     // Navigate to TTS page
     router.push('/studio/tts');
   };

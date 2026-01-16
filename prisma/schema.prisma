@@ -90,11 +90,16 @@ model tts_records {
   updated_at      DateTime? @updatedAt @db.Timestamptz(6)
   share_id        String?   @unique(map: "ix_tts_records_share_id") @db.VarChar(12)
 
+  // 关联故事（可选）
+  story_id        String?
+  story           stories?  @relation(fields: [story_id], references: [id], onDelete: SetNull)
+
   @@index([status], map: "ix_tts_records_status")
   @@index([user_id, created_at], map: "ix_tts_records_user_created")
   @@index([user_id], map: "ix_tts_records_user_id")
   @@index([user_id, status], map: "ix_tts_records_user_status")
   @@index([user_id, status, created_at], map: "ix_tts_records_user_status_created")
+  @@index([story_id], map: "ix_tts_records_story_id")
 }
 
 model user_subscriptions {
@@ -357,6 +362,7 @@ model stories {
 
   // 关联
   illustrations     story_illustrations[]
+  tts_records       tts_records[]
 
   @@index([user_id], map: "ix_stories_user_id")
   @@index([status], map: "ix_stories_status")

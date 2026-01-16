@@ -25,6 +25,7 @@
     "noStoriesDesc": "Your generated stories will appear here",
     "generateAudio": "Audio",
     "generateIllustration": "Illustration",
-    "characters": "chars"
+    "characters": "chars",
+    "audioProcessing": "Processing..."
   }
 }

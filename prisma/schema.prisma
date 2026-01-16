@@ -323,3 +323,70 @@ model ad_reward_transactions {
   @@index([timestamp], map: "ix_ad_reward_transactions_timestamp")
   @@index([processed], map: "ix_ad_reward_transactions_processed")
 }
+
+/// AI 生成的故事
+model stories {
+  id                String    @id @default(cuid())
+  user_id           String    @db.VarChar(128)
+
+  // 故事内容
+  title             String    @db.VarChar(500)
+  content           String    @db.Text
+
+  // 生成元数据
+  keywords          String?   @db.VarChar(500)   // 生成时使用的关键词
+  idea_title        String?   @db.VarChar(500)   // 选择的创意标题
+  idea_description  String?   @db.Text           // 选择的创意描述
+  locale            String    @default("en-US") @db.VarChar(20) // 生成语言
+
+  // 统计
+  word_count        Int       @default(0)        // 字数统计
+
+  // 状态
+  status            String    @default("draft") @db.VarChar(20) // draft, published
+
+  // 视频（一个故事一个视频）
+  video_url         String?                      // 视频 URL
+  video_status      String    @default("none") @db.VarChar(20) // none, pending, processing, completed, failed
+  video_duration    Int?                         // 视频时长（秒）
+  video_thumbnail   String?                      // 视频封面
+
+  // 时间
+  created_at        DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at        DateTime? @updatedAt @db.Timestamptz(6)
+
+  // 关联
+  illustrations     story_illustrations[]
+
+  @@index([user_id], map: "ix_stories_user_id")
+  @@index([status], map: "ix_stories_status")
+  @@index([user_id, status], map: "ix_stories_user_status")
+  @@index([user_id, created_at], map: "ix_stories_user_created")
+  @@index([created_at], map: "ix_stories_created_at")
+}
+
+/// 故事插图（一个故事多个插图）
+model story_illustrations {
+  id          String    @id @default(cuid())
+  story_id    String
+
+  // 图片信息
+  image_url   String?                          // 图片 URL（生成完成后填充）
+  prompt      String?   @db.Text               // AI 生成提示词
+  position    Int       @default(0)            // 在故事中的顺序
+  paragraph   Int?                             // 对应第几段（可选）
+
+  // 状态
+  status      String    @default("pending") @db.VarChar(20) // pending, processing, completed, failed
+
+  // 时间
+  created_at  DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at  DateTime? @updatedAt @db.Timestamptz(6)
+
+  // 关联
+  story       stories   @relation(fields: [story_id], references: [id], onDelete: Cascade)
+
+  @@index([story_id], map: "ix_story_illustrations_story_id")
+  @@index([position], map: "ix_story_illustrations_position")
+  @@index([status], map: "ix_story_illustrations_status")
+}

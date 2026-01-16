@@ -60,6 +60,16 @@
     "zhTW": "繁體中文",
     "th": "ไทย"
   },
+  "story": {
+    "generateTitle": "สร้างเรื่องราว",
+    "myStoriesTitle": "เรื่องราวของฉัน",
+    "myStoriesSubtitle": "ดูและจัดการเรื่องราวที่สร้างขึ้น",
+    "noStories": "ยังไม่มีเรื่องราว",
+    "noStoriesDesc": "เรื่องราวที่สร้างจะปรากฏที่นี่",
+    "generateAudio": "สร้างเสียง",
+    "generateIllustration": "สร้างภาพ",
+    "characters": "ตัวอักษร"
+  },
   "footer": {
     "tagline": "โอบรับ AI โอบรับความเรียบง่าย",
     "followUs": "ติดตามเรา",

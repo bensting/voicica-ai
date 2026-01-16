@@ -1,13 +1,14 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { createPortal } from 'react-dom';
 import { Sparkles, Loader2, X, ChevronLeft, Check } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useStudio } from '@/contexts/StudioContext';
 import { useCredits } from '@/contexts/CreditsContext';
 import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
-import { getStoryIdeas, generateStory } from '@/actions/story';
+import { getStoryIdeas, generateStory, saveStory } from '@/actions/story';
 import type { StoryIdea, GeneratedStory } from '@/lib/services/openai';
 import { calculateProductCreditsCost } from '@/config/creditsCost';
 import { ProductType } from '@/config/productType';
@@ -27,6 +28,7 @@ const STORY_GENERATE_COST = calculateProductCreditsCost(ProductType.STORY_GENERA
  * 2. 选择创意 → 生成完整故事 → 编辑保存
  */
 export default function GenerateStoryPage() {
+  const router = useRouter();
   const { t, locale } = useLanguage();
   const { setTitle, openDailyTasks } = useStudio();
   const { credits, permanentCredits, monthlyCredits, loading: creditsLoading, refreshCredits } = useCredits();
@@ -156,24 +158,33 @@ export default function GenerateStoryPage() {
   // 保存故事
   const handleSave = async () => {
     setIsSaving(true);
+    setError(null);
 
     try {
-      // TODO: 调用保存 API
-      console.log('Saving story:', { title: generatedTitle, content: generatedContent });
+      const result = await saveStory({
+        title: generatedTitle,
+        content: generatedContent,
+        keywords: keywords.trim() || undefined,
+        ideaTitle: selectedIdea?.title,
+        ideaDescription: selectedIdea?.description,
+        locale,
+      });
 
-      // 模拟保存
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      if (!result.success) {
+        setError(result.error || 'Failed to save story');
+        return;
+      }
 
-      // 关闭弹窗并重置
+      console.log('✅ Story saved:', result.storyId);
+
+      // 关闭弹窗
       setIsModalOpen(false);
-      setKeywords('');
-      setStep('input');
-      setIdeas([]);
-      setSelectedIdea(null);
 
-      // TODO: 可以跳转到 My Stories 页面或显示成功提示
+      // 跳转到 My Stories 页面
+      router.push('/studio/story/my-stories');
     } catch (err) {
       console.error('Failed to save story:', err);
+      setError(err instanceof Error ? err.message : 'Failed to save story');
     } finally {
       setIsSaving(false);
     }
@@ -330,7 +341,7 @@ export default function GenerateStoryPage() {
               )}
 
               {/* Credits Bar */}
-              <div className="flex-shrink-0 bg-white rounded-2xl shadow-sm border border-gray-200">
+              <div className="flex-shrink-0">
                 <CreditsBar
                   credits={credits}
                   permanentCredits={permanentCredits}
@@ -340,6 +351,7 @@ export default function GenerateStoryPage() {
                   showClearButton={false}
                   disabled={isGeneratingStory}
                   onDailyTasksClick={openDailyTasks}
+                  variant="standalone"
                 />
               </div>
 
@@ -527,7 +539,7 @@ export default function GenerateStoryPage() {
               )}
 
               {/* Credits Bar */}
-              <div className="flex-shrink-0 bg-white rounded-2xl shadow-sm border border-gray-200 mb-4">
+              <div className="flex-shrink-0 mb-4">
                 <CreditsBar
                   credits={credits}
                   permanentCredits={permanentCredits}
@@ -537,6 +549,7 @@ export default function GenerateStoryPage() {
                   showClearButton={false}
                   disabled={isGeneratingStory}
                   onDailyTasksClick={openDailyTasks}
+                  variant="standalone"
                 />
               </div>
 

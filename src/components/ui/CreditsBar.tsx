@@ -33,6 +33,8 @@ interface CreditsBarProps {
   disabled?: boolean;
   /** 打开每日任务模态框回调 */
   onDailyTasksClick?: () => void;
+  /** 样式变体：attached（附着在其他元素底部）或 standalone（独立卡片） */
+  variant?: 'attached' | 'standalone';
 }
 
 /**
@@ -55,6 +57,7 @@ export default function CreditsBar({
   onClear,
   disabled = false,
   onDailyTasksClick,
+  variant = 'attached',
 }: CreditsBarProps) {
   const { t } = useLanguage();
   const { user } = useFirebaseAuth();
@@ -117,9 +120,14 @@ export default function CreditsBar({
     setShowMoreMenu(!showMoreMenu);
   };
 
+  // 根据 variant 选择样式
+  const containerClassName = variant === 'standalone'
+    ? 'flex items-center justify-between px-4 py-3 bg-purple-50 rounded-2xl'
+    : 'flex items-center justify-between px-4 py-3 bg-purple-50 border-t border-purple-100 rounded-b-2xl';
+
   return (
     <>
-      <div className="flex items-center justify-between px-4 py-3 bg-purple-50 border-t border-purple-100 rounded-b-2xl">
+      <div className={containerClassName}>
         {/* Left: Credits display and More Menu */}
         <div className="flex items-center gap-1.5 relative" ref={moreMenuRef}>
           <CreditsIcon className="w-4 h-4 lg:w-5 lg:h-5 text-amber-500" />

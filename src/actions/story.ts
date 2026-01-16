@@ -215,3 +215,185 @@ export async function generateStory(title: string, description: string): Promise
     };
   }
 }
+
+/**
+ * 保存故事到数据库
+ */
+export interface SaveStoryParams {
+  title: string;
+  content: string;
+  keywords?: string;
+  ideaTitle?: string;
+  ideaDescription?: string;
+  locale?: string;
+}
+
+export interface SaveStoryResult {
+  success: boolean;
+  storyId?: string;
+  error?: string;
+  errorCode?: 'AUTH_FAILED' | 'LOGIN_REQUIRED' | 'SAVE_FAILED';
+}
+
+export async function saveStory(params: SaveStoryParams): Promise<SaveStoryResult> {
+  console.log('📖 [saveStory] 开始保存故事');
+
+  try {
+    // 1. 获取用户信息
+    const unifiedUser = await getUserOrAnonymous();
+    const userId = unifiedUser.user_id;
+    const isAnonymous = unifiedUser.is_anonymous;
+
+    console.log('📖 [saveStory] 用户认证成功:', { userId, isAnonymous });
+
+    // 2. 检查是否为匿名用户（保存功能仅限登录用户）
+    if (isAnonymous) {
+      console.log('⚠️ [saveStory] 匿名用户无法保存故事');
+      return {
+        success: false,
+        errorCode: 'LOGIN_REQUIRED',
+        error: 'Login required to save story',
+      };
+    }
+
+    // 3. 计算字数
+    const wordCount = params.content.length;
+
+    // 4. 保存到数据库
+    const { prisma } = await import('@/lib/prisma');
+
+    const story = await prisma.stories.create({
+      data: {
+        user_id: userId,
+        title: params.title,
+        content: params.content,
+        keywords: params.keywords || null,
+        idea_title: params.ideaTitle || null,
+        idea_description: params.ideaDescription || null,
+        locale: params.locale || 'en-US',
+        word_count: wordCount,
+        status: 'draft',
+      },
+    });
+
+    console.log('✅ [saveStory] 故事保存成功:', story.id);
+
+    return {
+      success: true,
+      storyId: story.id,
+    };
+  } catch (error) {
+    console.error('❌ [saveStory] 保存故事失败:', error);
+
+    if (error instanceof Error && error.message === '未提供认证信息') {
+      return {
+        success: false,
+        errorCode: 'AUTH_FAILED',
+        error: 'Authentication required',
+      };
+    }
+
+    return {
+      success: false,
+      errorCode: 'SAVE_FAILED',
+      error: error instanceof Error ? error.message : 'Failed to save story',
+    };
+  }
+}
+
+/**
+ * 用户故事项
+ */
+export interface UserStory {
+  id: string;
+  title: string;
+  content: string;
+  keywords: string | null;
+  wordCount: number;
+  status: string;
+  videoStatus: string;
+  createdAt: Date;
+  illustrationCount: number;
+}
+
+/**
+ * 获取用户故事列表结果
+ */
+export interface GetUserStoriesResult {
+  success: boolean;
+  stories?: UserStory[];
+  error?: string;
+  errorCode?: 'AUTH_FAILED' | 'LOGIN_REQUIRED' | 'FETCH_FAILED';
+}
+
+/**
+ * 获取用户的故事列表
+ */
+export async function getUserStories(): Promise<GetUserStoriesResult> {
+  console.log('📖 [getUserStories] 获取用户故事列表');
+
+  try {
+    // 1. 获取用户信息
+    const unifiedUser = await getUserOrAnonymous();
+    const userId = unifiedUser.user_id;
+    const isAnonymous = unifiedUser.is_anonymous;
+
+    console.log('📖 [getUserStories] 用户认证成功:', { userId, isAnonymous });
+
+    // 2. 检查是否为匿名用户
+    if (isAnonymous) {
+      console.log('⚠️ [getUserStories] 匿名用户无法查看故事');
+      return {
+        success: false,
+        errorCode: 'LOGIN_REQUIRED',
+        error: 'Login required to view stories',
+      };
+    }
+
+    // 3. 从数据库获取故事列表
+    const { prisma } = await import('@/lib/prisma');
+
+    const stories = await prisma.stories.findMany({
+      where: { user_id: userId },
+      orderBy: { created_at: 'desc' },
+      include: {
+        _count: {
+          select: { illustrations: true },
+        },
+      },
+    });
+
+    console.log(`✅ [getUserStories] 获取到 ${stories.length} 个故事`);
+
+    return {
+      success: true,
+      stories: stories.map((story) => ({
+        id: story.id,
+        title: story.title,
+        content: story.content,
+        keywords: story.keywords,
+        wordCount: story.word_count,
+        status: story.status,
+        videoStatus: story.video_status,
+        createdAt: story.created_at,
+        illustrationCount: story._count.illustrations,
+      })),
+    };
+  } catch (error) {
+    console.error('❌ [getUserStories] 获取故事失败:', error);
+
+    if (error instanceof Error && error.message === '未提供认证信息') {
+      return {
+        success: false,
+        errorCode: 'AUTH_FAILED',
+        error: 'Authentication required',
+      };
+    }
+
+    return {
+      success: false,
+      errorCode: 'FETCH_FAILED',
+      error: error instanceof Error ? error.message : 'Failed to fetch stories',
+    };
+  }
+}

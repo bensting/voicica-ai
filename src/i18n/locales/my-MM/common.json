@@ -59,6 +59,16 @@
     "zhCN": "简体中文",
     "zhTW": "繁體中文"
   },
+  "story": {
+    "generateTitle": "ပုံပြင်ဖန်တီးပါ",
+    "myStoriesTitle": "ကျွန်ုပ်၏ပုံပြင်များ",
+    "myStoriesSubtitle": "ဖန်တီးထားသောပုံပြင်များကိုကြည့်ရှု၍စီမံပါ",
+    "noStories": "ပုံပြင်မရှိသေးပါ",
+    "noStoriesDesc": "ဖန်တီးထားသောပုံပြင်များဒီမှာပေါ်လာမည်",
+    "generateAudio": "အသံ",
+    "generateIllustration": "ပုံဆွဲ",
+    "characters": "စာလုံး"
+  },
   "footer": {
     "tagline": "AI ကိုလက်ခံပါ၊ ရိုးရှင်းမှုကိုလက်ခံပါ",
     "followUs": "ကျွန်ုပ်တို့ကိုစောင့်ကြည့်ပါ",

@@ -12,6 +12,8 @@
     "backToInput": "Volver",
     "selectIdea": "Selecciona una idea",
     "selectIdeaDesc": "Elige una para generar la historia completa",
+    "generate": "Generar historia",
+    "generating": "Generando...",
     "editStory": "Editar historia",
     "titleLabel": "Título",
     "titlePlaceholder": "Ingresa el título de la historia...",

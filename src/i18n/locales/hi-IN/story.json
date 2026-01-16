@@ -12,6 +12,8 @@
     "backToInput": "वापस",
     "selectIdea": "एक विचार चुनें",
     "selectIdeaDesc": "पूरी कहानी बनाने के लिए एक चुनें",
+    "generate": "कहानी बनाएं",
+    "generating": "बना रहे हैं...",
     "editStory": "कहानी संपादित करें",
     "titleLabel": "शीर्षक",
     "titlePlaceholder": "कहानी का शीर्षक दर्ज करें...",

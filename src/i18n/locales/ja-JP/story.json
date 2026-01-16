@@ -12,6 +12,8 @@
     "backToInput": "戻る",
     "selectIdea": "ストーリーアイデアを選択",
     "selectIdeaDesc": "一つ選んで完全なストーリーを生成",
+    "generate": "ストーリーを生成",
+    "generating": "生成中...",
     "editStory": "ストーリーを編集",
     "titleLabel": "タイトル",
     "titlePlaceholder": "ストーリーのタイトルを入力...",

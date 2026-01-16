@@ -24,7 +24,7 @@ interface GeneratedStory {
  * 2. 选择创意 → 生成完整故事 → 编辑保存
  */
 export default function GenerateStoryPage() {
-  const { t } = useLanguage();
+  const { t, locale } = useLanguage();
   const { setTitle } = useStudio();
 
   // 步骤状态
@@ -62,7 +62,10 @@ export default function GenerateStoryPage() {
       const response = await fetch('/api/v1/story/ideas', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ keywords: keywords.trim() || undefined }),
+        body: JSON.stringify({
+          keywords: keywords.trim() || undefined,
+          locale, // 传递当前网页语言
+        }),
       });
 
       const data = await response.json();
@@ -80,9 +83,16 @@ export default function GenerateStoryPage() {
     }
   };
 
-  // 选择创意并生成完整故事
-  const handleSelectIdea = async (idea: StoryIdea) => {
+  // 选择创意（不直接生成）
+  const handleSelectIdea = (idea: StoryIdea) => {
     setSelectedIdea(idea);
+    setError(null);
+  };
+
+  // 生成完整故事
+  const handleGenerateStory = async () => {
+    if (!selectedIdea) return;
+
     setIsGeneratingStory(true);
     setError(null);
 
@@ -91,8 +101,8 @@ export default function GenerateStoryPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          title: idea.title,
-          description: idea.description,
+          title: selectedIdea.title,
+          description: selectedIdea.description,
         }),
       });
 
@@ -107,7 +117,6 @@ export default function GenerateStoryPage() {
       setIsModalOpen(true);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to generate story');
-      setSelectedIdea(null);
     } finally {
       setIsGeneratingStory(false);
     }
@@ -256,15 +265,11 @@ export default function GenerateStoryPage() {
                           : 'border-gray-300'
                         }
                       `}>
-                        {selectedIdea === idea && isGeneratingStory ? (
-                          <Loader2 className="w-3 h-3 text-white animate-spin" />
-                        ) : selectedIdea === idea ? (
-                          <Check className="w-3 h-3 text-white" />
-                        ) : null}
+                        {selectedIdea === idea && <Check className="w-3 h-3 text-white" />}
                       </div>
                       <div className="flex-1 min-w-0">
                         <h3 className="font-semibold text-gray-900 mb-1">{idea.title}</h3>
-                        <p className="text-sm text-gray-600 line-clamp-2">{idea.description}</p>
+                        <p className="text-sm text-gray-600">{idea.description}</p>
                       </div>
                     </div>
                   </button>
@@ -277,6 +282,34 @@ export default function GenerateStoryPage() {
                   {error}
                 </div>
               )}
+
+              {/* Generate Story Button */}
+              <div className="flex-shrink-0">
+                <button
+                  onClick={handleGenerateStory}
+                  disabled={!selectedIdea || isGeneratingStory}
+                  className={`
+                    w-full py-4 rounded-2xl font-semibold text-lg transition-all
+                    flex items-center justify-center gap-2
+                    ${selectedIdea && !isGeneratingStory
+                      ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg hover:shadow-xl hover:scale-[1.02] active:scale-[0.98]'
+                      : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                    }
+                  `}
+                >
+                  {isGeneratingStory ? (
+                    <>
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                      <span>{t('story.generating') || 'Generating...'}</span>
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles className="w-5 h-5" />
+                      <span>{t('story.generate') || 'Generate Story'}</span>
+                    </>
+                  )}
+                </button>
+              </div>
             </>
           )}
         </div>
@@ -367,7 +400,7 @@ export default function GenerateStoryPage() {
               </div>
 
               {/* Ideas Grid */}
-              <div className="flex-1 min-h-0 overflow-y-auto">
+              <div className="flex-1 min-h-0 overflow-y-auto mb-6">
                 <div className="grid grid-cols-2 gap-4">
                   {ideas.map((idea, index) => (
                     <button
@@ -391,11 +424,7 @@ export default function GenerateStoryPage() {
                             : 'border-gray-300'
                           }
                         `}>
-                          {selectedIdea === idea && isGeneratingStory ? (
-                            <Loader2 className="w-3 h-3 text-white animate-spin" />
-                          ) : selectedIdea === idea ? (
-                            <Check className="w-3 h-3 text-white" />
-                          ) : null}
+                          {selectedIdea === idea && <Check className="w-3 h-3 text-white" />}
                         </div>
                         <div className="flex-1 min-w-0">
                           <h3 className="font-semibold text-gray-900 mb-2">{idea.title}</h3>
@@ -409,10 +438,38 @@ export default function GenerateStoryPage() {
 
               {/* Error Message */}
               {error && (
-                <div className="mt-4 px-4 py-3 bg-red-50 border border-red-200 rounded-xl text-red-600 text-sm">
+                <div className="mb-4 px-4 py-3 bg-red-50 border border-red-200 rounded-xl text-red-600 text-sm">
                   {error}
                 </div>
               )}
+
+              {/* Generate Story Button */}
+              <div className="flex-shrink-0">
+                <button
+                  onClick={handleGenerateStory}
+                  disabled={!selectedIdea || isGeneratingStory}
+                  className={`
+                    w-full py-4 rounded-2xl font-semibold text-lg transition-all
+                    flex items-center justify-center gap-2
+                    ${selectedIdea && !isGeneratingStory
+                      ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg hover:shadow-xl hover:scale-[1.01] active:scale-[0.99]'
+                      : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                    }
+                  `}
+                >
+                  {isGeneratingStory ? (
+                    <>
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                      <span>{t('story.generating') || 'Generating...'}</span>
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles className="w-5 h-5" />
+                      <span>{t('story.generate') || 'Generate Story'}</span>
+                    </>
+                  )}
+                </button>
+              </div>
             </>
           )}
         </div>

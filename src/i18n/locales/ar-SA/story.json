@@ -12,6 +12,8 @@
     "backToInput": "رجوع",
     "selectIdea": "اختر فكرة",
     "selectIdeaDesc": "اختر واحدة لإنشاء القصة الكاملة",
+    "generate": "إنشاء القصة",
+    "generating": "جاري الإنشاء...",
     "editStory": "تعديل القصة",
     "titleLabel": "العنوان",
     "titlePlaceholder": "أدخل عنوان القصة...",

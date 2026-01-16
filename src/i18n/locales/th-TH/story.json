@@ -12,6 +12,8 @@
     "backToInput": "กลับ",
     "selectIdea": "เลือกไอเดียเรื่องราว",
     "selectIdeaDesc": "เลือกหนึ่งเพื่อสร้างเรื่องเต็ม",
+    "generate": "สร้างเรื่อง",
+    "generating": "กำลังสร้าง...",
     "editStory": "แก้ไขเรื่อง",
     "titleLabel": "ชื่อเรื่อง",
     "titlePlaceholder": "ใส่ชื่อเรื่อง...",

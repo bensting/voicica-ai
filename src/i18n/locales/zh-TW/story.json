@@ -12,6 +12,8 @@
     "backToInput": "返回",
     "selectIdea": "選擇一個故事創意",
     "selectIdeaDesc": "選擇一個來生成完整故事",
+    "generate": "生成故事",
+    "generating": "生成中...",
     "editStory": "編輯故事",
     "titleLabel": "標題",
     "titlePlaceholder": "輸入故事標題...",

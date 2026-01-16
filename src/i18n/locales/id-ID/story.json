@@ -12,6 +12,8 @@
     "backToInput": "Kembali",
     "selectIdea": "Pilih sebuah ide",
     "selectIdeaDesc": "Pilih satu untuk membuat cerita lengkap",
+    "generate": "Buat Cerita",
+    "generating": "Membuat...",
     "editStory": "Edit Cerita",
     "titleLabel": "Judul",
     "titlePlaceholder": "Masukkan judul cerita...",

@@ -12,6 +12,8 @@
     "backToInput": "Back",
     "selectIdea": "Select a story idea",
     "selectIdeaDesc": "Choose one to generate the full story",
+    "generate": "Generate Story",
+    "generating": "Generating...",
     "editStory": "Edit Story",
     "titleLabel": "Title",
     "titlePlaceholder": "Enter story title...",

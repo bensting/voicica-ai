@@ -12,6 +12,8 @@
     "backToInput": "Quay lại",
     "selectIdea": "Chọn một ý tưởng",
     "selectIdeaDesc": "Chọn một để tạo câu chuyện đầy đủ",
+    "generate": "Tạo truyện",
+    "generating": "Đang tạo...",
     "editStory": "Chỉnh sửa truyện",
     "titleLabel": "Tiêu đề",
     "titlePlaceholder": "Nhập tiêu đề truyện...",

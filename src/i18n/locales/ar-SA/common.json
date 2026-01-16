@@ -9,7 +9,9 @@
     "share": "مشاركة",
     "delete": "حذف",
     "later": "لاحقاً",
-    "refresh": "تحديث"
+    "refresh": "تحديث",
+    "save": "حفظ",
+    "saving": "جارٍ الحفظ..."
   },
   "app": {
     "updateAvailable": "يتوفر تحديث",

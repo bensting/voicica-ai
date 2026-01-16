@@ -32,7 +32,9 @@
       "tools": "免费工具",
       "tiktokDownloader": "TikTok 下载",
       "youtubeDownloader": "YouTube 下载",
-      "textToVideo": "文字转视频"
+      "textToVideo": "文字转视频",
+      "generateStory": "生成故事",
+      "myStories": "我的故事"
     },
     "mobileNav": {
       "tts": "文字转语音",

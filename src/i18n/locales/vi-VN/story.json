@@ -1,0 +1,25 @@
+{
+  "story": {
+    "nav": {
+      "generate": "Tạo truyện",
+      "myStories": "Truyện của tôi"
+    },
+    "generateTitle": "Tạo truyện",
+    "generateSubtitle": "Nhập từ khóa để nhận ý tưởng câu chuyện, sau đó tạo truyện",
+    "keywordsPlaceholder": "Nhập từ khóa (tùy chọn)... Ví dụ: tiểu hòa thượng, rồng, rừng",
+    "getIdeas": "Nhận ý tưởng",
+    "gettingIdeas": "Đang nhận ý tưởng...",
+    "backToInput": "Quay lại",
+    "selectIdea": "Chọn một ý tưởng",
+    "selectIdeaDesc": "Chọn một để tạo câu chuyện đầy đủ",
+    "editStory": "Chỉnh sửa truyện",
+    "titleLabel": "Tiêu đề",
+    "titlePlaceholder": "Nhập tiêu đề truyện...",
+    "contentLabel": "Nội dung",
+    "contentPlaceholder": "Nội dung truyện...",
+    "myStoriesTitle": "Truyện của tôi",
+    "myStoriesSubtitle": "Xem và quản lý các câu chuyện đã tạo",
+    "noStories": "Chưa có truyện nào",
+    "noStoriesDesc": "Các câu chuyện bạn tạo sẽ hiển thị ở đây"
+  }
+}

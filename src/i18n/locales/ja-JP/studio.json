@@ -32,7 +32,9 @@
       "tools": "無料ツール",
       "tiktokDownloader": "TikTokダウンローダー",
       "youtubeDownloader": "YouTubeダウンローダー",
-      "textToVideo": "テキスト動画変換"
+      "textToVideo": "テキスト動画変換",
+      "generateStory": "ストーリーを生成",
+      "myStories": "マイストーリー"
     },
     "mobileNav": {
       "tts": "TTS",

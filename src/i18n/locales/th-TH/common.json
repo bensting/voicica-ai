@@ -9,7 +9,9 @@
     "share": "แชร์",
     "delete": "ลบ",
     "later": "ภายหลัง",
-    "refresh": "รีเฟรช"
+    "refresh": "รีเฟรช",
+    "save": "บันทึก",
+    "saving": "กำลังบันทึก..."
   },
   "app": {
     "updateAvailable": "มีเวอร์ชันใหม่",

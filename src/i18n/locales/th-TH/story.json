@@ -1,0 +1,25 @@
+{
+  "story": {
+    "nav": {
+      "generate": "สร้างเรื่อง",
+      "myStories": "เรื่องของฉัน"
+    },
+    "generateTitle": "สร้างเรื่อง",
+    "generateSubtitle": "ใส่คำสำคัญเพื่อรับไอเดียเรื่องราว แล้วสร้างเรื่องของคุณ",
+    "keywordsPlaceholder": "ใส่คำสำคัญ (ไม่บังคับ)... เช่น พระน้อย, มังกร, ป่า",
+    "getIdeas": "รับไอเดียเรื่องราว",
+    "gettingIdeas": "กำลังรับไอเดีย...",
+    "backToInput": "กลับ",
+    "selectIdea": "เลือกไอเดียเรื่องราว",
+    "selectIdeaDesc": "เลือกหนึ่งเพื่อสร้างเรื่องเต็ม",
+    "editStory": "แก้ไขเรื่อง",
+    "titleLabel": "ชื่อเรื่อง",
+    "titlePlaceholder": "ใส่ชื่อเรื่อง...",
+    "contentLabel": "เนื้อหา",
+    "contentPlaceholder": "เนื้อหาเรื่อง...",
+    "myStoriesTitle": "เรื่องของฉัน",
+    "myStoriesSubtitle": "ดูและจัดการเรื่องที่สร้างไว้",
+    "noStories": "ยังไม่มีเรื่อง",
+    "noStoriesDesc": "เรื่องที่สร้างจะแสดงที่นี่"
+  }
+}

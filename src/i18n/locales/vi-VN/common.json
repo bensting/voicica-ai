@@ -9,7 +9,9 @@
     "share": "Chia sẻ",
     "delete": "Xóa",
     "later": "Để sau",
-    "refresh": "Làm mới"
+    "refresh": "Làm mới",
+    "save": "Lưu",
+    "saving": "Đang lưu..."
   },
   "app": {
     "updateAvailable": "Có bản cập nhật mới",

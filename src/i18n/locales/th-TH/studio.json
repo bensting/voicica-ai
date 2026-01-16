@@ -32,7 +32,9 @@
       "youtubeDownloader": "ดาวน์โหลด YouTube",
       "account": "บัญชี",
       "tools": "เครื่องมือฟรี",
-      "textToVideo": "ข้อความเป็นวิดีโอ"
+      "textToVideo": "ข้อความเป็นวิดีโอ",
+      "generateStory": "สร้างเรื่อง",
+      "myStories": "เรื่องของฉัน"
     },
     "mobileNav": {
       "tts": "TTS",

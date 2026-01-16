@@ -9,7 +9,9 @@
     "share": "Bagikan",
     "delete": "Hapus",
     "later": "Nanti",
-    "refresh": "Segarkan"
+    "refresh": "Segarkan",
+    "save": "Simpan",
+    "saving": "Menyimpan..."
   },
   "app": {
     "updateAvailable": "Pembaruan Tersedia",

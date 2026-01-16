@@ -32,7 +32,9 @@
       "tools": "Ferramentas gratuitas",
       "tiktokDownloader": "Baixador de TikTok",
       "youtubeDownloader": "Baixador de YouTube",
-      "textToVideo": "Texto para vídeo"
+      "textToVideo": "Texto para vídeo",
+      "generateStory": "Gerar história",
+      "myStories": "Minhas histórias"
     },
     "mobileNav": {
       "tts": "TTS",

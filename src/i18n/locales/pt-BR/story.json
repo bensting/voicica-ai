@@ -1,0 +1,25 @@
+{
+  "story": {
+    "nav": {
+      "generate": "Gerar",
+      "myStories": "Minhas histórias"
+    },
+    "generateTitle": "Gerar história",
+    "generateSubtitle": "Digite palavras-chave para obter ideias, depois gere sua história",
+    "keywordsPlaceholder": "Digite palavras-chave (opcional)... Ex: pequeno monge, dragão, floresta",
+    "getIdeas": "Obter ideias",
+    "gettingIdeas": "Obtendo ideias...",
+    "backToInput": "Voltar",
+    "selectIdea": "Selecione uma ideia",
+    "selectIdeaDesc": "Escolha uma para gerar a história completa",
+    "editStory": "Editar história",
+    "titleLabel": "Título",
+    "titlePlaceholder": "Digite o título da história...",
+    "contentLabel": "Conteúdo",
+    "contentPlaceholder": "Conteúdo da história...",
+    "myStoriesTitle": "Minhas histórias",
+    "myStoriesSubtitle": "Veja e gerencie suas histórias geradas",
+    "noStories": "Ainda não há histórias",
+    "noStoriesDesc": "Suas histórias geradas aparecerão aqui"
+  }
+}

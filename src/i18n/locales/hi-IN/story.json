@@ -1,0 +1,25 @@
+{
+  "story": {
+    "nav": {
+      "generate": "कहानी बनाएं",
+      "myStories": "मेरी कहानियां"
+    },
+    "generateTitle": "कहानी बनाएं",
+    "generateSubtitle": "विचार प्राप्त करने के लिए कीवर्ड दर्ज करें, फिर अपनी कहानी बनाएं",
+    "keywordsPlaceholder": "कीवर्ड दर्ज करें (वैकल्पिक)... जैसे: छोटा भिक्षु, ड्रैगन, जंगल",
+    "getIdeas": "विचार प्राप्त करें",
+    "gettingIdeas": "विचार प्राप्त हो रहे हैं...",
+    "backToInput": "वापस",
+    "selectIdea": "एक विचार चुनें",
+    "selectIdeaDesc": "पूरी कहानी बनाने के लिए एक चुनें",
+    "editStory": "कहानी संपादित करें",
+    "titleLabel": "शीर्षक",
+    "titlePlaceholder": "कहानी का शीर्षक दर्ज करें...",
+    "contentLabel": "सामग्री",
+    "contentPlaceholder": "कहानी की सामग्री...",
+    "myStoriesTitle": "मेरी कहानियां",
+    "myStoriesSubtitle": "अपनी बनाई कहानियां देखें और प्रबंधित करें",
+    "noStories": "अभी तक कोई कहानी नहीं",
+    "noStoriesDesc": "आपकी बनाई कहानियां यहां दिखाई देंगी"
+  }
+}

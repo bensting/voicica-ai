@@ -1,0 +1,25 @@
+{
+  "story": {
+    "nav": {
+      "generate": "ストーリー生成",
+      "myStories": "マイストーリー"
+    },
+    "generateTitle": "ストーリーを生成",
+    "generateSubtitle": "キーワードを入力してアイデアを取得し、ストーリーを生成",
+    "keywordsPlaceholder": "キーワードを入力（任意）... 例：小僧、ドラゴン、森",
+    "getIdeas": "アイデアを取得",
+    "gettingIdeas": "取得中...",
+    "backToInput": "戻る",
+    "selectIdea": "ストーリーアイデアを選択",
+    "selectIdeaDesc": "一つ選んで完全なストーリーを生成",
+    "editStory": "ストーリーを編集",
+    "titleLabel": "タイトル",
+    "titlePlaceholder": "ストーリーのタイトルを入力...",
+    "contentLabel": "内容",
+    "contentPlaceholder": "ストーリーの内容...",
+    "myStoriesTitle": "マイストーリー",
+    "myStoriesSubtitle": "生成したストーリーを表示・管理",
+    "noStories": "ストーリーがまだありません",
+    "noStoriesDesc": "生成したストーリーがここに表示されます"
+  }
+}

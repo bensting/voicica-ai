@@ -32,7 +32,9 @@
       "tools": "Công cụ miễn phí",
       "tiktokDownloader": "Tải video TikTok",
       "youtubeDownloader": "Tải video YouTube",
-      "textToVideo": "Văn bản thành video"
+      "textToVideo": "Văn bản thành video",
+      "generateStory": "Tạo truyện",
+      "myStories": "Truyện của tôi"
     },
     "mobileNav": {
       "tts": "TTS",

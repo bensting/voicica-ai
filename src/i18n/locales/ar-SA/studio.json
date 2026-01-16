@@ -32,7 +32,9 @@
       "tools": "أدوات مجانية",
       "tiktokDownloader": "تحميل تيك توك",
       "youtubeDownloader": "تحميل يوتيوب",
-      "textToVideo": "تحويل النص إلى فيديو"
+      "textToVideo": "تحويل النص إلى فيديو",
+      "generateStory": "إنشاء قصة",
+      "myStories": "قصصي"
     },
     "mobileNav": {
       "tts": "TTS",

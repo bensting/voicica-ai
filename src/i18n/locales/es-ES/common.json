@@ -9,7 +9,9 @@
     "share": "Compartir",
     "delete": "Eliminar",
     "later": "Después",
-    "refresh": "Actualizar"
+    "refresh": "Actualizar",
+    "save": "Guardar",
+    "saving": "Guardando..."
   },
   "app": {
     "updateAvailable": "Actualización disponible",

@@ -9,7 +9,9 @@
     "share": "共有",
     "delete": "削除",
     "later": "後で",
-    "refresh": "更新"
+    "refresh": "更新",
+    "save": "保存",
+    "saving": "保存中..."
   },
   "app": {
     "updateAvailable": "アップデートがあります",

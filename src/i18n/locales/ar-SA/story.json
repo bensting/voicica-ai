@@ -1,0 +1,25 @@
+{
+  "story": {
+    "nav": {
+      "generate": "إنشاء قصة",
+      "myStories": "قصصي"
+    },
+    "generateTitle": "إنشاء قصة",
+    "generateSubtitle": "أدخل كلمات مفتاحية للحصول على أفكار، ثم أنشئ قصتك",
+    "keywordsPlaceholder": "أدخل كلمات مفتاحية (اختياري)... مثال: راهب صغير، تنين، غابة",
+    "getIdeas": "احصل على أفكار",
+    "gettingIdeas": "جاري الحصول على الأفكار...",
+    "backToInput": "رجوع",
+    "selectIdea": "اختر فكرة",
+    "selectIdeaDesc": "اختر واحدة لإنشاء القصة الكاملة",
+    "editStory": "تعديل القصة",
+    "titleLabel": "العنوان",
+    "titlePlaceholder": "أدخل عنوان القصة...",
+    "contentLabel": "المحتوى",
+    "contentPlaceholder": "محتوى القصة...",
+    "myStoriesTitle": "قصصي",
+    "myStoriesSubtitle": "عرض وإدارة قصصك المُنشأة",
+    "noStories": "لا توجد قصص بعد",
+    "noStoriesDesc": "ستظهر قصصك المُنشأة هنا"
+  }
+}

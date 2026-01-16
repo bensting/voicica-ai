@@ -9,7 +9,9 @@
     "share": "Share",
     "delete": "Delete",
     "later": "Later",
-    "refresh": "Refresh"
+    "refresh": "Refresh",
+    "save": "Save",
+    "saving": "Saving..."
   },
   "app": {
     "updateAvailable": "Update Available",

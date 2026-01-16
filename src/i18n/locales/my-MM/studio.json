@@ -32,7 +32,9 @@
       "tools": "အခမဲ့ကိရိယာများ",
       "tiktokDownloader": "TikTok ဒေါင်းလုဒ်",
       "youtubeDownloader": "YouTube ဒေါင်းလုဒ်",
-      "textToVideo": "စာသားမှဗီဒီယိုသို့"
+      "textToVideo": "စာသားမှဗီဒီယိုသို့",
+      "generateStory": "ဇာတ်လမ်းဖန်တီးရန်",
+      "myStories": "ကျွန်ုပ်၏ဇာတ်လမ်းများ"
     },
     "mobileNav": {
       "tts": "TTS",

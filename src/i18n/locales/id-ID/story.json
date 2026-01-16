@@ -1,0 +1,25 @@
+{
+  "story": {
+    "nav": {
+      "generate": "Buat Cerita",
+      "myStories": "Cerita Saya"
+    },
+    "generateTitle": "Buat Cerita",
+    "generateSubtitle": "Masukkan kata kunci untuk mendapatkan ide, lalu buat ceritamu",
+    "keywordsPlaceholder": "Masukkan kata kunci (opsional)... Contoh: biksu kecil, naga, hutan",
+    "getIdeas": "Dapatkan Ide",
+    "gettingIdeas": "Mendapatkan ide...",
+    "backToInput": "Kembali",
+    "selectIdea": "Pilih sebuah ide",
+    "selectIdeaDesc": "Pilih satu untuk membuat cerita lengkap",
+    "editStory": "Edit Cerita",
+    "titleLabel": "Judul",
+    "titlePlaceholder": "Masukkan judul cerita...",
+    "contentLabel": "Konten",
+    "contentPlaceholder": "Konten cerita...",
+    "myStoriesTitle": "Cerita Saya",
+    "myStoriesSubtitle": "Lihat dan kelola cerita yang telah dibuat",
+    "noStories": "Belum ada cerita",
+    "noStoriesDesc": "Cerita yang dibuat akan muncul di sini"
+  }
+}

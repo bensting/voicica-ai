@@ -1,0 +1,25 @@
+{
+  "story": {
+    "nav": {
+      "generate": "生成故事",
+      "myStories": "我的故事"
+    },
+    "generateTitle": "生成故事",
+    "generateSubtitle": "输入关键词获取故事创意，然后生成你的故事",
+    "keywordsPlaceholder": "输入关键词（可选）... 例如：小和尚、龙、森林",
+    "getIdeas": "获取故事创意",
+    "gettingIdeas": "获取中...",
+    "backToInput": "返回",
+    "selectIdea": "选择一个故事创意",
+    "selectIdeaDesc": "选择一个来生成完整故事",
+    "editStory": "编辑故事",
+    "titleLabel": "标题",
+    "titlePlaceholder": "输入故事标题...",
+    "contentLabel": "内容",
+    "contentPlaceholder": "故事内容...",
+    "myStoriesTitle": "我的故事",
+    "myStoriesSubtitle": "查看和管理你生成的故事",
+    "noStories": "还没有故事",
+    "noStoriesDesc": "你生成的故事将显示在这里"
+  }
+}

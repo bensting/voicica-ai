@@ -32,7 +32,9 @@
       "tools": "Alat Gratis",
       "tiktokDownloader": "Pengunduh TikTok",
       "youtubeDownloader": "Pengunduh YouTube",
-      "textToVideo": "Teks ke Video"
+      "textToVideo": "Teks ke Video",
+      "generateStory": "Buat Cerita",
+      "myStories": "Cerita Saya"
     },
     "mobileNav": {
       "tts": "TTS",

@@ -9,7 +9,9 @@
     "share": "分享",
     "delete": "刪除",
     "later": "稍後",
-    "refresh": "重新整理"
+    "refresh": "重新整理",
+    "save": "儲存",
+    "saving": "儲存中..."
   },
   "app": {
     "updateAvailable": "發現新版本",

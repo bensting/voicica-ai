@@ -11,7 +11,8 @@
     "later": "لاحقاً",
     "refresh": "تحديث",
     "save": "حفظ",
-    "saving": "جارٍ الحفظ..."
+    "saving": "جارٍ الحفظ...",
+    "insufficientCredits": "رصيد غير كافٍ. يرجى الشحن أو ترقية خطتك"
   },
   "app": {
     "updateAvailable": "يتوفر تحديث",

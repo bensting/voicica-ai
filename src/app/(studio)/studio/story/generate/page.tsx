@@ -5,16 +5,9 @@ import { createPortal } from 'react-dom';
 import { Sparkles, Loader2, X, ChevronLeft, Check } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useStudio } from '@/contexts/StudioContext';
-
-interface StoryIdea {
-  title: string;
-  description: string;
-}
-
-interface GeneratedStory {
-  title: string;
-  content: string;
-}
+import { useCredits } from '@/contexts/CreditsContext';
+import { getStoryIdeas, generateStory } from '@/actions/story';
+import type { StoryIdea, GeneratedStory } from '@/lib/services/openai';
 
 /**
  * Generate Story Page
@@ -26,6 +19,7 @@ interface GeneratedStory {
 export default function GenerateStoryPage() {
   const { t, locale } = useLanguage();
   const { setTitle } = useStudio();
+  const { refreshCredits } = useCredits();
 
   // 步骤状态
   const [step, setStep] = useState<'input' | 'ideas'>('input');
@@ -59,23 +53,24 @@ export default function GenerateStoryPage() {
     setError(null);
 
     try {
-      const response = await fetch('/api/v1/story/ideas', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          keywords: keywords.trim() || undefined,
-          locale, // 传递当前网页语言
-        }),
-      });
+      const result = await getStoryIdeas(keywords.trim() || undefined, locale);
 
-      const data = await response.json();
-
-      if (!data.success) {
-        throw new Error(data.error || 'Failed to get story ideas');
+      if (!result.success) {
+        if (result.errorCode === 'INSUFFICIENT_CREDITS' && result.errorData) {
+          setError(t('common.insufficientCredits') || `Insufficient credits. Need ${result.errorData.required}, have ${result.errorData.current}`);
+        } else {
+          setError(result.error || 'Failed to get story ideas');
+        }
+        return;
       }
 
-      setIdeas(data.ideas);
+      setIdeas(result.ideas || []);
       setStep('ideas');
+
+      // 刷新积分显示
+      if (result.creditsCost && result.creditsCost > 0) {
+        refreshCredits();
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to get story ideas');
     } finally {
@@ -97,24 +92,27 @@ export default function GenerateStoryPage() {
     setError(null);
 
     try {
-      const response = await fetch('/api/v1/story/generate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          title: selectedIdea.title,
-          description: selectedIdea.description,
-        }),
-      });
+      const result = await generateStory(selectedIdea.title, selectedIdea.description);
 
-      const data = await response.json();
-
-      if (!data.success) {
-        throw new Error(data.error || 'Failed to generate story');
+      if (!result.success) {
+        if (result.errorCode === 'INSUFFICIENT_CREDITS' && result.errorData) {
+          setError(t('common.insufficientCredits') || `Insufficient credits. Need ${result.errorData.required}, have ${result.errorData.current}`);
+        } else {
+          setError(result.error || 'Failed to generate story');
+        }
+        return;
       }
 
-      setGeneratedTitle(data.story.title);
-      setGeneratedContent(data.story.content);
-      setIsModalOpen(true);
+      if (result.story) {
+        setGeneratedTitle(result.story.title);
+        setGeneratedContent(result.story.content);
+        setIsModalOpen(true);
+      }
+
+      // 刷新积分显示
+      if (result.creditsCost && result.creditsCost > 0) {
+        refreshCredits();
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to generate story');
     } finally {

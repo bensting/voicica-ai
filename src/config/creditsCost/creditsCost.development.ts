@@ -13,6 +13,8 @@ export const creditsCostConfig: CreditsCostConfig = {
   [ProductType.VOICE_CLONING]: 0, // 语音克隆待定
   [ProductType.YOUTUBE_DOWNLOADER]: 0, // YouTube 解析消耗 1 积分
   [ProductType.TIKTOK_DOWNLOADER]: 1, // TikTok 解析消耗 1 积分
+  [ProductType.STORY_IDEAS]: 1, // 故事创意生成消耗 1 积分（开发环境）
+  [ProductType.STORY_GENERATE]: 1, // 故事内容生成消耗 1 积分（开发环境）
 };
 
 /**

@@ -11,7 +11,8 @@
     "later": "Nanti",
     "refresh": "Segarkan",
     "save": "Simpan",
-    "saving": "Menyimpan..."
+    "saving": "Menyimpan...",
+    "insufficientCredits": "Kredit tidak cukup. Silakan isi ulang atau tingkatkan paket Anda"
   },
   "app": {
     "updateAvailable": "Pembaruan Tersedia",

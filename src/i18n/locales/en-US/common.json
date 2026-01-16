@@ -11,7 +11,8 @@
     "later": "Later",
     "refresh": "Refresh",
     "save": "Save",
-    "saving": "Saving..."
+    "saving": "Saving...",
+    "insufficientCredits": "Insufficient credits. Please top up or upgrade your plan."
   },
   "app": {
     "updateAvailable": "Update Available",

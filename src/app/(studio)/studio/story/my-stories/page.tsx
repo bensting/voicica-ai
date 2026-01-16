@@ -1157,19 +1157,6 @@ export default function MyStoriesPage() {
     setAudioConfirmStory(story);
   };
 
-  const handleConfirmGenerateAudio = () => {
-    if (!audioConfirmStory) return;
-
-    // Save story content to localStorage for TTS page to pick up
-    localStorage.setItem('lastTTSInputText', audioConfirmStory.content);
-    // Save story ID to sessionStorage for TTS to link the audio
-    sessionStorage.setItem('ttsStoryId', audioConfirmStory.id);
-    // Close modal
-    setAudioConfirmStory(null);
-    // Navigate to TTS page
-    router.push('/studio/tts');
-  };
-
   const handleGenerateIllustration = (story: UserStory) => {
     // Check if story already has illustrations
     if (story.illustrationCount > 0) {

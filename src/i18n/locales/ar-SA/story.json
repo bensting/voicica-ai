@@ -22,6 +22,9 @@
     "myStoriesTitle": "قصصي",
     "myStoriesSubtitle": "عرض وإدارة قصصك المُنشأة",
     "noStories": "لا توجد قصص بعد",
-    "noStoriesDesc": "ستظهر قصصك المُنشأة هنا"
+    "noStoriesDesc": "ستظهر قصصك المُنشأة هنا",
+    "generateAudio": "صوت",
+    "generateIllustration": "رسم توضيحي",
+    "characters": "حرف"
   }
 }

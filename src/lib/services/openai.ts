@@ -19,14 +19,33 @@ export interface GeneratedStory {
   content: string;
 }
 
+// 语言代码到语言名称的映射
+const localeToLanguage: Record<string, string> = {
+  'en-US': 'English',
+  'zh-CN': 'Simplified Chinese',
+  'zh-TW': 'Traditional Chinese',
+  'ja-JP': 'Japanese',
+  'th-TH': 'Thai',
+  'vi-VN': 'Vietnamese',
+  'es-ES': 'Spanish',
+  'pt-BR': 'Portuguese',
+  'hi-IN': 'Hindi',
+  'id-ID': 'Indonesian',
+  'my-MM': 'Burmese',
+  'ar-SA': 'Arabic',
+};
+
 /**
  * 生成故事创意
  * @param keywords 用户输入的关键词（可选）
+ * @param locale 网页语言设置（用于无关键词时生成对应语言的创意）
  * @returns 3-4 个故事创意
  */
-export async function generateStoryIdeas(keywords?: string): Promise<StoryIdea[]> {
+export async function generateStoryIdeas(keywords?: string, locale?: string): Promise<StoryIdea[]> {
+  const targetLanguage = localeToLanguage[locale || 'en-US'] || 'English';
+
   const prompt = keywords
-    ? `Based on the keywords "${keywords}", generate 4 creative children's story ideas. Each idea should have a title and a brief description (1-2 sentences).
+    ? `Based on the keywords "${keywords}", generate 4 creative children's story ideas. Each idea should have a title and a brief description (2-3 sentences).
 
 IMPORTANT: Detect the language of the keywords and respond in the SAME language.
 
@@ -35,13 +54,13 @@ Respond in JSON format:
   {"title": "Story Title", "description": "Brief description of the story"},
   ...
 ]`
-    : `Generate 4 creative children's story ideas. Each idea should have a title and a brief description (1-2 sentences).
+    : `Generate 4 creative and diverse children's story ideas. Each idea should have a title and a brief description (2-3 sentences).
 
-Respond in English.
+IMPORTANT: You MUST respond in ${targetLanguage}.
 
 Respond in JSON format:
 [
-  {"title": "Story Title", "description": "Brief description of the story"},
+  {"title": "Story Title in ${targetLanguage}", "description": "Brief description in ${targetLanguage}"},
   ...
 ]`;
 

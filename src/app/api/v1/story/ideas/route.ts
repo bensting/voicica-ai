@@ -10,11 +10,11 @@ import { generateStoryIdeas } from '@/lib/services/openai';
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { keywords } = body;
+    const { keywords, locale } = body;
 
-    console.log(`📖 [Story] 生成故事创意, keywords: ${keywords || '(empty)'}`);
+    console.log(`📖 [Story] 生成故事创意, keywords: ${keywords || '(empty)'}, locale: ${locale || 'en-US'}`);
 
-    const ideas = await generateStoryIdeas(keywords);
+    const ideas = await generateStoryIdeas(keywords, locale);
 
     console.log(`✅ [Story] 生成了 ${ideas.length} 个故事创意`);
 

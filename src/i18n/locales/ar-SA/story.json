@@ -33,6 +33,34 @@
     "audioConfirmMessage": "سيتم توجيهك إلى صفحة TTS لاختيار صوت وإنشاء الصوت.",
     "deleteConfirmTitle": "حذف القصة",
     "deleteConfirmMessage": "هل أنت متأكد أنك تريد حذف هذه القصة؟",
-    "deleteWarning": "لا يمكن التراجع عن هذا الإجراء."
+    "deleteWarning": "لا يمكن التراجع عن هذا الإجراء.",
+    "illustration": {
+      "title": "إنشاء الرسوم التوضيحية",
+      "selectType": "اختر نوع الإنشاء",
+      "typeCoverAndScenes": "الغلاف + المشاهد",
+      "typeCoverAndScenesDesc": "1 غلاف + 4 رسوم توضيحية للمشاهد",
+      "typeCover": "الغلاف فقط",
+      "typeCoverDesc": "1 رسم توضيحي لغلاف القصة",
+      "typeScenes": "المشاهد فقط",
+      "typeScenesDesc": "4 رسوم توضيحية للمشاهد الرئيسية",
+      "sceneCount": "عدد المشاهد",
+      "scenes": "مشاهد",
+      "keyScenes": "رسوم توضيحية للمشاهد الرئيسية",
+      "totalImages": "المجموع",
+      "images": "صور",
+      "extractingScenes": "جاري تحليل القصة...",
+      "generatingImages": "جاري إنشاء الصور...",
+      "complete": "تم!",
+      "insufficientCredits": "رصيد غير كافٍ. تحتاج {required} رصيد.",
+      "info": "سيقوم الذكاء الاصطناعي بتحليل قصتك تلقائيًا وإنشاء رسوم توضيحية جميلة.",
+      "generate": "إنشاء",
+      "generating": "جاري الإنشاء...",
+      "galleryTitle": "الرسوم التوضيحية",
+      "noIllustrations": "لا توجد رسوم توضيحية بعد",
+      "generateFirst": "إنشاء رسوم توضيحية",
+      "cover": "الغلاف",
+      "regenerate": "إعادة الإنشاء",
+      "downloadAll": "تنزيل الكل"
+    }
   }
 }

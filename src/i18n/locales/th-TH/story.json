@@ -33,6 +33,34 @@
     "audioConfirmMessage": "คุณจะถูกนำไปยังหน้า TTS เพื่อเลือกเสียงและสร้างเสียง",
     "deleteConfirmTitle": "ลบเรื่อง",
     "deleteConfirmMessage": "คุณแน่ใจหรือไม่ว่าต้องการลบเรื่องนี้?",
-    "deleteWarning": "การดำเนินการนี้ไม่สามารถยกเลิกได้"
+    "deleteWarning": "การดำเนินการนี้ไม่สามารถยกเลิกได้",
+    "illustration": {
+      "title": "สร้างภาพประกอบ",
+      "selectType": "เลือกประเภทการสร้าง",
+      "typeCoverAndScenes": "ปก + ฉาก",
+      "typeCoverAndScenesDesc": "1 ภาพปก + 4 ภาพฉาก",
+      "typeCover": "เฉพาะปก",
+      "typeCoverDesc": "1 ภาพปกเรื่อง",
+      "typeScenes": "เฉพาะฉาก",
+      "typeScenesDesc": "4 ภาพฉากสำคัญ",
+      "sceneCount": "จำนวนฉาก",
+      "scenes": "ฉาก",
+      "keyScenes": "ภาพฉากสำคัญ",
+      "totalImages": "รวม",
+      "images": "ภาพ",
+      "extractingScenes": "กำลังวิเคราะห์เรื่อง...",
+      "generatingImages": "กำลังสร้างภาพ...",
+      "complete": "เสร็จสิ้น!",
+      "insufficientCredits": "เครดิตไม่เพียงพอ ต้องการ {required} เครดิต",
+      "info": "AI จะวิเคราะห์เรื่องของคุณและสร้างภาพประกอบที่สวยงามโดยอัตโนมัติ",
+      "generate": "สร้าง",
+      "generating": "กำลังสร้าง...",
+      "galleryTitle": "ภาพประกอบ",
+      "noIllustrations": "ยังไม่มีภาพประกอบ",
+      "generateFirst": "สร้างภาพประกอบ",
+      "cover": "ปก",
+      "regenerate": "สร้างใหม่",
+      "downloadAll": "ดาวน์โหลดทั้งหมด"
+    }
   }
 }

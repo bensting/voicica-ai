@@ -30,6 +30,8 @@ export const ProductType = {
   STORY_IDEAS: 'story_ideas',
   /** 故事内容生成 */
   STORY_GENERATE: 'story_generate',
+  /** 故事插图生成 */
+  STORY_ILLUSTRATION: 'story_illustration',
 } as const;
 
 export type ProductType = typeof ProductType[keyof typeof ProductType];

@@ -15,6 +15,7 @@ export const creditsCostConfig: CreditsCostConfig = {
   [ProductType.TIKTOK_DOWNLOADER]: 1, // TikTok 解析消耗 1 积分
   [ProductType.STORY_IDEAS]: 10, // 故事创意生成消耗 1 积分（开发环境）
   [ProductType.STORY_GENERATE]: 20, // 故事内容生成消耗 1 积分（开发环境）
+  [ProductType.STORY_ILLUSTRATION]: 1, // 故事插图生成消耗 1 积分/张（开发环境）
 };
 
 /**

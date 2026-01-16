@@ -376,14 +376,26 @@ model story_illustrations {
   id          String    @id @default(cuid())
   story_id    String
 
+  // 类型
+  type        String    @default("scene") @db.VarChar(20) // cover, scene
+
   // 图片信息
   image_url   String?                          // 图片 URL（生成完成后填充）
-  prompt      String?   @db.Text               // AI 生成提示词
+  prompt      String?   @db.Text               // AI 生成提示词（英文，用于图片生成）
+  scene_description String? @db.Text           // 场景描述（原文语言，用于展示）
   position    Int       @default(0)            // 在故事中的顺序
   paragraph   Int?                             // 对应第几段（可选）
 
+  // 生成信息
+  task_id     String?   @db.VarChar(255)       // Runware task ID
+  width       Int       @default(1024)         // 图片宽度
+  height      Int       @default(1024)         // 图片高度
+  model       String?   @db.VarChar(100)       // 使用的模型
+  credits_cost Int      @default(0)            // 消耗积分
+
   // 状态
   status      String    @default("pending") @db.VarChar(20) // pending, processing, completed, failed
+  error_message String?                        // 错误信息
 
   // 时间
   created_at  DateTime  @default(now()) @db.Timestamptz(6)
@@ -395,4 +407,5 @@ model story_illustrations {
   @@index([story_id], map: "ix_story_illustrations_story_id")
   @@index([position], map: "ix_story_illustrations_position")
   @@index([status], map: "ix_story_illustrations_status")
+  @@index([type], map: "ix_story_illustrations_type")
 }

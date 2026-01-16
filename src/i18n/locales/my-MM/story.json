@@ -33,6 +33,34 @@
     "audioConfirmMessage": "အသံရွေးချယ်ပြီးဖန်တီးရန် TTS စာမျက်နှာသို့သွားပါမည်။",
     "deleteConfirmTitle": "ဇာတ်လမ်းဖျက်ရန်",
     "deleteConfirmMessage": "ဤဇာတ်လမ်းကိုဖျက်လိုသည်မှာသေချာပါသလား?",
-    "deleteWarning": "ဤလုပ်ဆောင်ချက်ကိုပြန်ပြင်၍မရပါ။"
+    "deleteWarning": "ဤလုပ်ဆောင်ချက်ကိုပြန်ပြင်၍မရပါ။",
+    "illustration": {
+      "title": "ပုံများဖန်တီးရန်",
+      "selectType": "ဖန်တီးမှုအမျိုးအစားရွေးချယ်ပါ",
+      "typeCoverAndScenes": "မျက်နှာဖုံး + မြင်ကွင်းများ",
+      "typeCoverAndScenesDesc": "1 မျက်နှာဖုံး + 4 မြင်ကွင်းပုံ",
+      "typeCover": "မျက်နှာဖုံးသာ",
+      "typeCoverDesc": "1 ဇာတ်လမ်းမျက်နှာဖုံးပုံ",
+      "typeScenes": "မြင်ကွင်းများသာ",
+      "typeScenesDesc": "4 အဓိကမြင်ကွင်းပုံများ",
+      "sceneCount": "ဇာတ်ကွက်အရေအတွက်",
+      "scenes": "ဇာတ်ကွက်",
+      "keyScenes": "အဓိကဇာတ်ကွက်ပုံများ",
+      "totalImages": "စုစုပေါင်း",
+      "images": "ပုံ",
+      "extractingScenes": "ဇာတ်လမ်းခွဲခြမ်းစိတ်ဖြာနေသည်...",
+      "generatingImages": "ပုံများဖန်တီးနေသည်...",
+      "complete": "ပြီးဆုံးပါပြီ!",
+      "insufficientCredits": "ခရက်ဒစ်မလုံလောက်ပါ။ {required} ခရက်ဒစ်လိုအပ်သည်။",
+      "info": "AI သည် သင်၏ဇာတ်လမ်းကို အလိုအလျောက်ခွဲခြမ်းစိတ်ဖြာပြီး လှပသောပုံများဖန်တီးပေးမည်။",
+      "generate": "ဖန်တီးရန်",
+      "generating": "ဖန်တီးနေသည်...",
+      "galleryTitle": "ပုံများ",
+      "noIllustrations": "ပုံများမရှိသေးပါ",
+      "generateFirst": "ပုံများဖန်တီးရန်",
+      "cover": "မျက်နှာဖုံး",
+      "regenerate": "ပြန်လည်ဖန်တီးရန်",
+      "downloadAll": "အားလုံးဒေါင်းလုဒ်လုပ်ရန်"
+    }
   }
 }

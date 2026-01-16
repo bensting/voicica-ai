@@ -317,6 +317,16 @@ export interface StoryAudio {
 /**
  * 用户故事项
  */
+/**
+ * 故事插图缩略图
+ */
+export interface StoryIllustrationThumb {
+  id: string;
+  type: string; // cover | scene
+  imageUrl: string;
+  position: number;
+}
+
 export interface UserStory {
   id: string;
   title: string;
@@ -329,6 +339,7 @@ export interface UserStory {
   illustrationCount: number;
   audioCount: number;
   latestAudio: StoryAudio | null; // 最新的音频
+  illustrations: StoryIllustrationThumb[]; // 插图缩略图
 }
 
 /**
@@ -388,6 +399,18 @@ export async function getUserStories(): Promise<GetUserStoriesResult> {
             created_at: true,
           },
         },
+        // 获取已完成的插图缩略图（封面优先，最多5张）
+        illustrations: {
+          where: { status: 'completed', image_url: { not: null } },
+          orderBy: [{ type: 'asc' }, { position: 'asc' }], // cover 在前
+          take: 5,
+          select: {
+            id: true,
+            type: true,
+            image_url: true,
+            position: true,
+          },
+        },
       },
     });
 
@@ -395,7 +418,8 @@ export async function getUserStories(): Promise<GetUserStoriesResult> {
 
     return {
       success: true,
-      stories: stories.map((story) => {
+
+        stories: stories.map((story) => {
         const latestTts = story.tts_records[0];
         return {
           id: story.id,
@@ -417,6 +441,14 @@ export async function getUserStories(): Promise<GetUserStoriesResult> {
             voiceName: latestTts.voice_name,
             createdAt: latestTts.created_at,
           } : null,
+          illustrations: story.illustrations
+            .filter((ill) => ill.image_url)
+            .map((ill) => ({
+              id: ill.id,
+              type: ill.type,
+              imageUrl: ill.image_url!,
+              position: ill.position,
+            })),
         };
       }),
     };

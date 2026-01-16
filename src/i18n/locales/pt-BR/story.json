@@ -33,6 +33,34 @@
     "audioConfirmMessage": "Você será redirecionado para a página TTS para selecionar uma voz e gerar áudio.",
     "deleteConfirmTitle": "Excluir história",
     "deleteConfirmMessage": "Tem certeza de que deseja excluir esta história?",
-    "deleteWarning": "Esta ação não pode ser desfeita."
+    "deleteWarning": "Esta ação não pode ser desfeita.",
+    "illustration": {
+      "title": "Gerar ilustrações",
+      "selectType": "Selecione o tipo de geração",
+      "typeCoverAndScenes": "Capa + Cenas",
+      "typeCoverAndScenesDesc": "1 capa + 4 ilustrações de cenas",
+      "typeCover": "Apenas capa",
+      "typeCoverDesc": "1 ilustração de capa",
+      "typeScenes": "Apenas cenas",
+      "typeScenesDesc": "4 ilustrações de cenas principais",
+      "sceneCount": "Número de cenas",
+      "scenes": "cenas",
+      "keyScenes": "ilustrações de cenas-chave",
+      "totalImages": "Total",
+      "images": "imagens",
+      "extractingScenes": "Analisando história...",
+      "generatingImages": "Gerando imagens...",
+      "complete": "Concluído!",
+      "insufficientCredits": "Créditos insuficientes. Necessário {required} créditos.",
+      "info": "A IA analisará sua história e gerará belas ilustrações automaticamente.",
+      "generate": "Gerar",
+      "generating": "Gerando...",
+      "galleryTitle": "Ilustrações",
+      "noIllustrations": "Ainda não há ilustrações",
+      "generateFirst": "Gerar ilustrações",
+      "cover": "Capa",
+      "regenerate": "Regenerar",
+      "downloadAll": "Baixar tudo"
+    }
   }
 }

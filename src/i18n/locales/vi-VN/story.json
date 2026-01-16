@@ -33,6 +33,34 @@
     "audioConfirmMessage": "Bạn sẽ được chuyển đến trang TTS để chọn giọng nói và tạo âm thanh.",
     "deleteConfirmTitle": "Xóa truyện",
     "deleteConfirmMessage": "Bạn có chắc chắn muốn xóa truyện này không?",
-    "deleteWarning": "Hành động này không thể hoàn tác."
+    "deleteWarning": "Hành động này không thể hoàn tác.",
+    "illustration": {
+      "title": "Tạo minh họa",
+      "selectType": "Chọn loại tạo",
+      "typeCoverAndScenes": "Bìa + Cảnh",
+      "typeCoverAndScenesDesc": "1 bìa + 4 minh họa cảnh",
+      "typeCover": "Chỉ bìa",
+      "typeCoverDesc": "1 minh họa bìa truyện",
+      "typeScenes": "Chỉ cảnh",
+      "typeScenesDesc": "4 minh họa cảnh chính",
+      "sceneCount": "Số lượng cảnh",
+      "scenes": "cảnh",
+      "keyScenes": "hình ảnh cảnh quan trọng",
+      "totalImages": "Tổng cộng",
+      "images": "hình ảnh",
+      "extractingScenes": "Đang phân tích truyện...",
+      "generatingImages": "Đang tạo hình ảnh...",
+      "complete": "Hoàn thành!",
+      "insufficientCredits": "Không đủ tín dụng. Cần {required} tín dụng.",
+      "info": "AI sẽ tự động phân tích truyện và tạo minh họa đẹp mắt.",
+      "generate": "Tạo",
+      "generating": "Đang tạo...",
+      "galleryTitle": "Minh họa",
+      "noIllustrations": "Chưa có minh họa",
+      "generateFirst": "Tạo minh họa",
+      "cover": "Bìa",
+      "regenerate": "Tạo lại",
+      "downloadAll": "Tải tất cả"
+    }
   }
 }

@@ -33,6 +33,34 @@
     "audioConfirmMessage": "確認後、音声生成ページに移動し、音声を選択して生成できます。",
     "deleteConfirmTitle": "ストーリーを削除",
     "deleteConfirmMessage": "このストーリーを削除してもよろしいですか？",
-    "deleteWarning": "この操作は取り消せません。"
+    "deleteWarning": "この操作は取り消せません。",
+    "illustration": {
+      "title": "イラストを生成",
+      "selectType": "生成タイプを選択",
+      "typeCoverAndScenes": "表紙 + シーン",
+      "typeCoverAndScenesDesc": "1枚の表紙 + 4枚のシーンイラスト",
+      "typeCover": "表紙のみ",
+      "typeCoverDesc": "1枚のストーリー表紙イラスト",
+      "typeScenes": "シーンのみ",
+      "typeScenesDesc": "4枚の重要シーンイラスト",
+      "sceneCount": "シーン数",
+      "scenes": "シーン",
+      "keyScenes": "枚の重要シーンイラスト",
+      "totalImages": "合計",
+      "images": "枚",
+      "extractingScenes": "ストーリーを分析中...",
+      "generatingImages": "画像を生成中...",
+      "complete": "完了！",
+      "insufficientCredits": "クレジットが不足しています。{required}クレジットが必要です。",
+      "info": "AIがストーリーを自動分析し、美しいイラストを生成します。",
+      "generate": "生成",
+      "generating": "生成中...",
+      "galleryTitle": "イラスト",
+      "noIllustrations": "イラストはまだありません",
+      "generateFirst": "イラストを生成",
+      "cover": "表紙",
+      "regenerate": "再生成",
+      "downloadAll": "すべてダウンロード"
+    }
   }
 }

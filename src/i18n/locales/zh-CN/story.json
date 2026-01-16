@@ -33,6 +33,34 @@
     "audioConfirmMessage": "点击确认后将跳转到语音生成页面，您可以选择语音并生成音频。",
     "deleteConfirmTitle": "删除故事",
     "deleteConfirmMessage": "确定要删除这个故事吗？",
-    "deleteWarning": "此操作无法撤销。"
+    "deleteWarning": "此操作无法撤销。",
+    "illustration": {
+      "title": "生成插图",
+      "selectType": "选择生成类型",
+      "typeCoverAndScenes": "封面 + 场景",
+      "typeCoverAndScenesDesc": "1 张封面 + 4 张场景插图",
+      "typeCover": "仅封面",
+      "typeCoverDesc": "1 张故事封面插图",
+      "typeScenes": "仅场景",
+      "typeScenesDesc": "4 张关键场景插图",
+      "sceneCount": "场景数量",
+      "scenes": "张场景",
+      "keyScenes": "张关键场景插图",
+      "totalImages": "共计",
+      "images": "张图片",
+      "extractingScenes": "分析故事中...",
+      "generatingImages": "生成图片中...",
+      "complete": "完成！",
+      "insufficientCredits": "积分不足，需要 {required} 积分。",
+      "info": "AI 将自动分析您的故事并生成精美插图。",
+      "generate": "生成",
+      "generating": "生成中...",
+      "galleryTitle": "插图",
+      "noIllustrations": "还没有插图",
+      "generateFirst": "生成插图",
+      "cover": "封面",
+      "regenerate": "重新生成",
+      "downloadAll": "下载全部"
+    }
   }
 }

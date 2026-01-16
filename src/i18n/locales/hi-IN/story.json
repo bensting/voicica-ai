@@ -33,6 +33,34 @@
     "audioConfirmMessage": "आप TTS पेज पर जाएंगे जहां आवाज़ चुनकर ऑडियो बना सकते हैं।",
     "deleteConfirmTitle": "कहानी हटाएं",
     "deleteConfirmMessage": "क्या आप वाकई इस कहानी को हटाना चाहते हैं?",
-    "deleteWarning": "यह क्रिया पूर्ववत नहीं की जा सकती।"
+    "deleteWarning": "यह क्रिया पूर्ववत नहीं की जा सकती।",
+    "illustration": {
+      "title": "चित्र बनाएं",
+      "selectType": "प्रकार चुनें",
+      "typeCoverAndScenes": "कवर + दृश्य",
+      "typeCoverAndScenesDesc": "1 कवर + 4 दृश्य चित्र",
+      "typeCover": "केवल कवर",
+      "typeCoverDesc": "1 कहानी कवर चित्र",
+      "typeScenes": "केवल दृश्य",
+      "typeScenesDesc": "4 मुख्य दृश्य चित्र",
+      "sceneCount": "दृश्यों की संख्या",
+      "scenes": "दृश्य",
+      "keyScenes": "प्रमुख दृश्य चित्र",
+      "totalImages": "कुल",
+      "images": "चित्र",
+      "extractingScenes": "कहानी का विश्लेषण...",
+      "generatingImages": "चित्र बना रहे हैं...",
+      "complete": "पूर्ण!",
+      "insufficientCredits": "अपर्याप्त क्रेडिट। {required} क्रेडिट चाहिए।",
+      "info": "AI स्वचालित रूप से आपकी कहानी का विश्लेषण करेगा और सुंदर चित्र बनाएगा।",
+      "generate": "बनाएं",
+      "generating": "बना रहे हैं...",
+      "galleryTitle": "चित्र",
+      "noIllustrations": "अभी तक कोई चित्र नहीं",
+      "generateFirst": "चित्र बनाएं",
+      "cover": "कवर",
+      "regenerate": "फिर से बनाएं",
+      "downloadAll": "सभी डाउनलोड करें"
+    }
   }
 }

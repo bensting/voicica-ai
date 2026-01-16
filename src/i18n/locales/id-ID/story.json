@@ -33,6 +33,34 @@
     "audioConfirmMessage": "Anda akan diarahkan ke halaman TTS untuk memilih suara dan membuat audio.",
     "deleteConfirmTitle": "Hapus Cerita",
     "deleteConfirmMessage": "Apakah Anda yakin ingin menghapus cerita ini?",
-    "deleteWarning": "Tindakan ini tidak dapat dibatalkan."
+    "deleteWarning": "Tindakan ini tidak dapat dibatalkan.",
+    "illustration": {
+      "title": "Buat Ilustrasi",
+      "selectType": "Pilih jenis pembuatan",
+      "typeCoverAndScenes": "Sampul + Adegan",
+      "typeCoverAndScenesDesc": "1 sampul + 4 ilustrasi adegan",
+      "typeCover": "Hanya Sampul",
+      "typeCoverDesc": "1 ilustrasi sampul cerita",
+      "typeScenes": "Hanya Adegan",
+      "typeScenesDesc": "4 ilustrasi adegan utama",
+      "sceneCount": "Jumlah adegan",
+      "scenes": "adegan",
+      "keyScenes": "ilustrasi adegan kunci",
+      "totalImages": "Total",
+      "images": "gambar",
+      "extractingScenes": "Menganalisis cerita...",
+      "generatingImages": "Membuat gambar...",
+      "complete": "Selesai!",
+      "insufficientCredits": "Kredit tidak cukup. Butuh {required} kredit.",
+      "info": "AI akan menganalisis cerita Anda dan membuat ilustrasi indah secara otomatis.",
+      "generate": "Buat",
+      "generating": "Membuat...",
+      "galleryTitle": "Ilustrasi",
+      "noIllustrations": "Belum ada ilustrasi",
+      "generateFirst": "Buat Ilustrasi",
+      "cover": "Sampul",
+      "regenerate": "Buat Ulang",
+      "downloadAll": "Unduh Semua"
+    }
   }
 }

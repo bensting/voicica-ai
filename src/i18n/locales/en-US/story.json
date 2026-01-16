@@ -33,6 +33,34 @@
     "audioConfirmMessage": "You will be redirected to the TTS page to select a voice and generate audio.",
     "deleteConfirmTitle": "Delete Story",
     "deleteConfirmMessage": "Are you sure you want to delete this story?",
-    "deleteWarning": "This action cannot be undone."
+    "deleteWarning": "This action cannot be undone.",
+    "illustration": {
+      "title": "Generate Illustrations",
+      "selectType": "Select generation type",
+      "typeCoverAndScenes": "Cover + Scenes",
+      "typeCoverAndScenesDesc": "1 cover + 4 scene illustrations",
+      "typeCover": "Cover Only",
+      "typeCoverDesc": "1 story cover illustration",
+      "typeScenes": "Scenes Only",
+      "typeScenesDesc": "4 key scene illustrations",
+      "sceneCount": "Number of scenes",
+      "scenes": "scenes",
+      "keyScenes": "key scene illustrations",
+      "totalImages": "Total",
+      "images": "images",
+      "extractingScenes": "Analyzing story...",
+      "generatingImages": "Generating images...",
+      "complete": "Complete!",
+      "insufficientCredits": "Insufficient credits. Need {required} credits.",
+      "info": "AI will analyze your story and generate beautiful illustrations automatically.",
+      "generate": "Generate",
+      "generating": "Generating...",
+      "galleryTitle": "Illustrations",
+      "noIllustrations": "No illustrations yet",
+      "generateFirst": "Generate Illustrations",
+      "cover": "Cover",
+      "regenerate": "Regenerate",
+      "downloadAll": "Download All"
+    }
   }
 }

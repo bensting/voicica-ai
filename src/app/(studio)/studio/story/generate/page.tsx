@@ -6,8 +6,11 @@ import { Sparkles, Loader2, X, ChevronLeft, Check } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useStudio } from '@/contexts/StudioContext';
 import { useCredits } from '@/contexts/CreditsContext';
+import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 import { getStoryIdeas, generateStory } from '@/actions/story';
 import type { StoryIdea, GeneratedStory } from '@/lib/services/openai';
+import CreditsBar from '@/components/ui/CreditsBar';
+import LoginModal from '@/components/features/auth/LoginModal';
 
 /**
  * Generate Story Page
@@ -18,11 +21,15 @@ import type { StoryIdea, GeneratedStory } from '@/lib/services/openai';
  */
 export default function GenerateStoryPage() {
   const { t, locale } = useLanguage();
-  const { setTitle } = useStudio();
-  const { refreshCredits } = useCredits();
+  const { setTitle, openDailyTasks } = useStudio();
+  const { credits, permanentCredits, monthlyCredits, loading: creditsLoading, refreshCredits } = useCredits();
+  const { user } = useFirebaseAuth();
 
   // 步骤状态
   const [step, setStep] = useState<'input' | 'ideas'>('input');
+
+  // 登录弹窗状态
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
   // 第一步：输入关键词
   const [keywords, setKeywords] = useState('');
@@ -49,6 +56,12 @@ export default function GenerateStoryPage() {
 
   // 获取故事创意
   const handleGetIdeas = async () => {
+    // 检查是否登录
+    if (!user) {
+      setIsLoginModalOpen(true);
+      return;
+    }
+
     setIsLoadingIdeas(true);
     setError(null);
 
@@ -87,6 +100,12 @@ export default function GenerateStoryPage() {
   // 生成完整故事
   const handleGenerateStory = async () => {
     if (!selectedIdea) return;
+
+    // 检查是否登录
+    if (!user) {
+      setIsLoginModalOpen(true);
+      return;
+    }
 
     setIsGeneratingStory(true);
     setError(null);
@@ -168,14 +187,30 @@ export default function GenerateStoryPage() {
           {step === 'input' ? (
             <>
               {/* Keywords Input */}
-              <div className="flex-1 min-h-0">
-                <div className="h-full bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+              <div className="flex-1 min-h-0 flex flex-col">
+                <div className="flex-1 min-h-0 bg-white rounded-t-2xl shadow-sm border border-gray-200 border-b-0 overflow-hidden">
                   <textarea
                     value={keywords}
                     onChange={(e) => setKeywords(e.target.value)}
                     disabled={isLoadingIdeas}
                     placeholder={t('story.keywordsPlaceholder') || 'Enter keywords (optional)... e.g., little monk, dragon, forest'}
                     className="w-full h-full p-4 text-base text-gray-700 placeholder-gray-400 bg-white border-0 focus:outline-none resize-none disabled:opacity-50 disabled:cursor-not-allowed"
+                  />
+                </div>
+                {/* Credits Bar */}
+                <div className="flex-shrink-0 bg-white rounded-b-2xl shadow-sm border border-gray-200 border-t-0 overflow-hidden">
+                  <CreditsBar
+                    credits={credits}
+                    permanentCredits={permanentCredits}
+                    monthlyCredits={monthlyCredits}
+                    creditsLoading={creditsLoading}
+                    characterCount={keywords.length}
+                    maxCharacters={500}
+                    showCharacterCount={true}
+                    showClearButton={true}
+                    onClear={() => setKeywords('')}
+                    disabled={isLoadingIdeas}
+                    onDailyTasksClick={openDailyTasks}
                   />
                 </div>
               </div>
@@ -332,14 +367,32 @@ export default function GenerateStoryPage() {
               </div>
 
               {/* Keywords Input Card */}
-              <div className="flex-1 min-h-0 bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden mb-6">
-                <textarea
-                  value={keywords}
-                  onChange={(e) => setKeywords(e.target.value)}
-                  disabled={isLoadingIdeas}
-                  placeholder={t('story.keywordsPlaceholder') || 'Enter keywords (optional)... e.g., little monk, dragon, forest'}
-                  className="w-full h-full p-6 text-lg text-gray-700 placeholder-gray-400 bg-white border-0 focus:outline-none resize-none disabled:opacity-50 disabled:cursor-not-allowed"
-                />
+              <div className="flex-1 min-h-0 flex flex-col mb-6">
+                <div className="flex-1 min-h-0 bg-white rounded-t-2xl shadow-sm border border-gray-200 border-b-0 overflow-hidden">
+                  <textarea
+                    value={keywords}
+                    onChange={(e) => setKeywords(e.target.value)}
+                    disabled={isLoadingIdeas}
+                    placeholder={t('story.keywordsPlaceholder') || 'Enter keywords (optional)... e.g., little monk, dragon, forest'}
+                    className="w-full h-full p-6 text-lg text-gray-700 placeholder-gray-400 bg-white border-0 focus:outline-none resize-none disabled:opacity-50 disabled:cursor-not-allowed"
+                  />
+                </div>
+                {/* Credits Bar */}
+                <div className="flex-shrink-0 bg-white rounded-b-2xl shadow-sm border border-gray-200 border-t-0 overflow-hidden">
+                  <CreditsBar
+                    credits={credits}
+                    permanentCredits={permanentCredits}
+                    monthlyCredits={monthlyCredits}
+                    creditsLoading={creditsLoading}
+                    characterCount={keywords.length}
+                    maxCharacters={500}
+                    showCharacterCount={true}
+                    showClearButton={true}
+                    onClear={() => setKeywords('')}
+                    disabled={isLoadingIdeas}
+                    onDailyTasksClick={openDailyTasks}
+                  />
+                </div>
               </div>
 
               {/* Error Message */}
@@ -556,6 +609,12 @@ export default function GenerateStoryPage() {
         </div>,
         document.body
       )}
+
+      {/* Login Modal */}
+      <LoginModal
+        isOpen={isLoginModalOpen}
+        onClose={() => setIsLoginModalOpen(false)}
+      />
     </>
   );
 }

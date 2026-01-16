@@ -21,7 +21,7 @@ export interface StoryIdeasResult {
   success: boolean;
   ideas?: StoryIdea[];
   error?: string;
-  errorCode?: 'INSUFFICIENT_CREDITS' | 'GENERATION_FAILED' | 'AUTH_FAILED' | 'UNKNOWN_ERROR';
+  errorCode?: 'INSUFFICIENT_CREDITS' | 'GENERATION_FAILED' | 'AUTH_FAILED' | 'LOGIN_REQUIRED' | 'UNKNOWN_ERROR';
   errorData?: { required: number; current: number };
   creditsCost?: number;
 }
@@ -33,7 +33,7 @@ export interface StoryGenerateResult {
   success: boolean;
   story?: GeneratedStory;
   error?: string;
-  errorCode?: 'INSUFFICIENT_CREDITS' | 'GENERATION_FAILED' | 'AUTH_FAILED' | 'UNKNOWN_ERROR';
+  errorCode?: 'INSUFFICIENT_CREDITS' | 'GENERATION_FAILED' | 'AUTH_FAILED' | 'LOGIN_REQUIRED' | 'UNKNOWN_ERROR';
   errorData?: { required: number; current: number };
   creditsCost?: number;
 }
@@ -55,12 +55,22 @@ export async function getStoryIdeas(keywords?: string, locale?: string): Promise
 
     console.log('📖 [getStoryIdeas] 用户认证成功:', { userId, isAnonymous });
 
-    // 2. 计算所需积分
+    // 2. 检查是否为匿名用户（故事功能仅限登录用户）
+    if (isAnonymous) {
+      console.log('⚠️ [getStoryIdeas] 匿名用户无法使用此功能');
+      return {
+        success: false,
+        errorCode: 'LOGIN_REQUIRED',
+        error: 'Login required to generate story ideas',
+      };
+    }
+
+    // 3. 计算所需积分
     const requiredCredits = calculateProductCreditsCost(ProductType.STORY_IDEAS);
 
     console.log('📖 [getStoryIdeas] 所需积分:', requiredCredits);
 
-    // 3. 检查积分是否足够
+    // 4. 检查积分是否足够
     if (requiredCredits > 0) {
       const { hasEnough, current } = await checkCredits(userId, requiredCredits, isAnonymous);
 
@@ -76,12 +86,12 @@ export async function getStoryIdeas(keywords?: string, locale?: string): Promise
       console.log('✅ [getStoryIdeas] 积分充足:', current);
     }
 
-    // 4. 调用 OpenAI 生成故事创意
+    // 5. 调用 OpenAI 生成故事创意
     const ideas = await generateIdeasFromOpenAI(keywords, locale);
 
     console.log(`✅ [getStoryIdeas] 生成了 ${ideas.length} 个故事创意`);
 
-    // 5. 生成成功，扣除积分
+    // 6. 生成成功，扣除积分
     if (requiredCredits > 0) {
       await deductCredits(
         userId,
@@ -134,12 +144,22 @@ export async function generateStory(title: string, description: string): Promise
 
     console.log('📖 [generateStory] 用户认证成功:', { userId, isAnonymous });
 
-    // 2. 计算所需积分
+    // 2. 检查是否为匿名用户（故事功能仅限登录用户）
+    if (isAnonymous) {
+      console.log('⚠️ [generateStory] 匿名用户无法使用此功能');
+      return {
+        success: false,
+        errorCode: 'LOGIN_REQUIRED',
+        error: 'Login required to generate story',
+      };
+    }
+
+    // 3. 计算所需积分
     const requiredCredits = calculateProductCreditsCost(ProductType.STORY_GENERATE);
 
     console.log('📖 [generateStory] 所需积分:', requiredCredits);
 
-    // 3. 检查积分是否足够
+    // 4. 检查积分是否足够
     if (requiredCredits > 0) {
       const { hasEnough, current } = await checkCredits(userId, requiredCredits, isAnonymous);
 
@@ -155,12 +175,12 @@ export async function generateStory(title: string, description: string): Promise
       console.log('✅ [generateStory] 积分充足:', current);
     }
 
-    // 4. 调用 OpenAI 生成完整故事
+    // 5. 调用 OpenAI 生成完整故事
     const story = await generateStoryFromOpenAI(title, description);
 
     console.log('✅ [generateStory] 故事生成成功:', story.title);
 
-    // 5. 生成成功，扣除积分
+    // 6. 生成成功，扣除积分
     if (requiredCredits > 0) {
       await deductCredits(
         userId,

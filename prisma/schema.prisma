@@ -361,6 +361,7 @@ model stories {
   updated_at        DateTime? @updatedAt @db.Timestamptz(6)
 
   // 关联
+  paragraphs        story_paragraphs[]
   illustrations     story_illustrations[]
   tts_records       tts_records[]
 
@@ -408,4 +409,34 @@ model story_illustrations {
   @@index([position], map: "ix_story_illustrations_position")
   @@index([status], map: "ix_story_illustrations_status")
   @@index([type], map: "ix_story_illustrations_type")
+}
+
+/// 故事段落（一个故事多个段落）
+model story_paragraphs {
+  id              String    @id @default(cuid())
+  story_id        String
+
+  // 段落内容
+  position        Int       @default(0)            // 段落顺序（从0开始）
+  content         String    @db.Text               // 段落文本内容
+
+  // 音频（段落级别的 TTS）
+  audio_url       String?                          // 段落音频 URL
+  audio_duration  Float?                           // 音频时长（秒）
+  audio_voice     String?   @db.VarChar(255)       // 使用的语音名称
+  audio_status    String    @default("none") @db.VarChar(20) // none, pending, processing, completed, failed
+
+  // 关联插图（通过 position 关联，或直接关联）
+  illustration_id String?                          // 关联的插图 ID（可选）
+
+  // 时间
+  created_at      DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at      DateTime? @updatedAt @db.Timestamptz(6)
+
+  // 关联
+  story           stories   @relation(fields: [story_id], references: [id], onDelete: Cascade)
+
+  @@unique([story_id, position], map: "uq_story_paragraphs_story_position")
+  @@index([story_id], map: "ix_story_paragraphs_story_id")
+  @@index([position], map: "ix_story_paragraphs_position")
 }

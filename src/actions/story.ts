@@ -259,24 +259,48 @@ export async function saveStory(params: SaveStoryParams): Promise<SaveStoryResul
     // 3. 计算字数
     const wordCount = params.content.length;
 
-    // 4. 保存到数据库
+    // 4. 拆分段落（按双换行或单换行拆分，过滤空段落）
+    const paragraphs = params.content
+      .split(/\n\n+|\n/)
+      .map((p) => p.trim())
+      .filter((p) => p.length > 0);
+
+    console.log(`📝 [saveStory] 拆分为 ${paragraphs.length} 个段落`);
+
+    // 5. 保存到数据库（使用事务）
     const { prisma } = await import('@/lib/prisma');
 
-    const story = await prisma.stories.create({
-      data: {
-        user_id: userId,
-        title: params.title,
-        content: params.content,
-        keywords: params.keywords || null,
-        idea_title: params.ideaTitle || null,
-        idea_description: params.ideaDescription || null,
-        locale: params.locale || 'en-US',
-        word_count: wordCount,
-        status: 'draft',
-      },
+    const story = await prisma.$transaction(async (tx) => {
+      // 创建故事
+      const newStory = await tx.stories.create({
+        data: {
+          user_id: userId,
+          title: params.title,
+          content: params.content,
+          keywords: params.keywords || null,
+          idea_title: params.ideaTitle || null,
+          idea_description: params.ideaDescription || null,
+          locale: params.locale || 'en-US',
+          word_count: wordCount,
+          status: 'draft',
+        },
+      });
+
+      // 创建段落记录
+      if (paragraphs.length > 0) {
+        await tx.story_paragraphs.createMany({
+          data: paragraphs.map((content, index) => ({
+            story_id: newStory.id,
+            position: index,
+            content: content,
+          })),
+        });
+      }
+
+      return newStory;
     });
 
-    console.log('✅ [saveStory] 故事保存成功:', story.id);
+    console.log('✅ [saveStory] 故事保存成功:', story.id, `(${paragraphs.length} 段落)`);
 
     return {
       success: true,
@@ -327,6 +351,20 @@ export interface StoryIllustrationThumb {
   position: number;
 }
 
+/**
+ * 故事段落
+ */
+export interface StoryParagraph {
+  id: string;
+  position: number;
+  content: string;
+  illustrationId: string | null;
+  illustrationUrl: string | null;
+  audioUrl: string | null;
+  audioDuration: number | null;
+  audioStatus: string;
+}
+
 export interface UserStory {
   id: string;
   title: string;
@@ -340,6 +378,7 @@ export interface UserStory {
   audioCount: number;
   latestAudio: StoryAudio | null; // 最新的音频
   illustrations: StoryIllustrationThumb[]; // 插图缩略图
+  paragraphs: StoryParagraph[]; // 段落列表
 }
 
 /**
@@ -411,7 +450,30 @@ export async function getUserStories(): Promise<GetUserStoriesResult> {
             position: true,
           },
         },
+        // 获取段落
+        paragraphs: {
+          orderBy: { position: 'asc' },
+          select: {
+            id: true,
+            position: true,
+            content: true,
+            illustration_id: true,
+            audio_url: true,
+            audio_duration: true,
+            audio_status: true,
+          },
+        },
       },
+    });
+
+    // 获取插图 URL 映射（用于段落关联）
+    const illustrationMap = new Map<string, string>();
+    stories.forEach((story) => {
+      story.illustrations.forEach((ill) => {
+        if (ill.image_url) {
+          illustrationMap.set(ill.id, ill.image_url);
+        }
+      });
     });
 
     console.log(`✅ [getUserStories] 获取到 ${stories.length} 个故事`);
@@ -449,6 +511,16 @@ export async function getUserStories(): Promise<GetUserStoriesResult> {
               imageUrl: ill.image_url!,
               position: ill.position,
             })),
+          paragraphs: story.paragraphs.map((p) => ({
+            id: p.id,
+            position: p.position,
+            content: p.content,
+            illustrationId: p.illustration_id,
+            illustrationUrl: p.illustration_id ? illustrationMap.get(p.illustration_id) || null : null,
+            audioUrl: p.audio_url,
+            audioDuration: p.audio_duration,
+            audioStatus: p.audio_status,
+          })),
         };
       }),
     };

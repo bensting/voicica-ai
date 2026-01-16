@@ -180,10 +180,28 @@ export default function StoryAudioModal({
     poll();
   };
 
-  // 生成整个故事的语音
+  // 批量生成所有未生成音频的段落
   const handleGenerateAll = async () => {
     if (!selectedVoice) {
       setError(t('story.audio.selectVoiceFirst') || 'Please select a voice first');
+      return;
+    }
+
+    const paragraphs = story.paragraphs || [];
+
+    // 筛选出没有音频的段落（排除已有音频和正在处理的）
+    const paragraphsToGenerate = paragraphs.filter((p) => {
+      const audioState = paragraphAudio[p.id];
+      // 跳过：已有数据库音频、本次会话已生成、正在处理中
+      if (p.audioUrl && p.audioStatus === 'completed') return false;
+      if (audioState?.status === 'SUCCESS') return false;
+      if (audioState?.status === 'PROCESSING') return false;
+      return true;
+    });
+
+    if (paragraphsToGenerate.length === 0) {
+      // 没有需要生成的段落
+      onClose();
       return;
     }
 
@@ -191,24 +209,40 @@ export default function StoryAudioModal({
     setError(null);
 
     try {
-      const result = await createTtsTask({
-        text: story.content,
-        voice_name: selectedVoice.name,
-        language: selectedVoice.locale,
-        style: selectedStyle || undefined,
-        story_id: story.id,
-      });
+      // 为每个段落创建 TTS 任务
+      for (const paragraph of paragraphsToGenerate) {
+        const result = await createTtsTask({
+          text: paragraph.content,
+          voice_name: selectedVoice.name,
+          language: selectedVoice.locale,
+          style: selectedStyle || undefined,
+          story_id: story.id,
+        });
 
-      if (result.status === 'FAILURE' && result.errorCode) {
-        setError(result.error || 'Failed to generate audio');
-        setIsGenerating(false);
-        return;
+        if (result.status === 'FAILURE' && result.errorCode) {
+          // 遇到错误（如积分不足），停止继续生成
+          setError(result.error || 'Failed to generate audio');
+          setIsGenerating(false);
+          return;
+        }
+
+        // 任务提交成功，设置初始状态并开始轮询
+        if (result.task_id) {
+          setParagraphAudio((prev) => ({
+            ...prev,
+            [paragraph.id]: {
+              taskId: result.task_id!,
+              status: 'PROCESSING',
+            },
+          }));
+
+          // 开始轮询（不等待完成，继续下一个）
+          pollTaskStatus(result.task_id, paragraph.id, selectedVoice.name);
+        }
       }
 
-      // 成功
+      // 所有任务已提交
       setIsGenerating(false);
-      onSuccess();
-      onClose();
     } catch (err) {
       console.error('Failed to generate audio:', err);
       setError(err instanceof Error ? err.message : 'Failed to generate audio');

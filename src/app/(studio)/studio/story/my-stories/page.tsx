@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import dynamic from 'next/dynamic';
 import { BookOpen, Volume2, Image as ImageLucide, MoreVertical, Trash2, Clock, FileText, Play, Pause, Loader2, X, Pencil, AlertTriangle, Download, Sparkles, ImageIcon, LayoutGrid, Check } from 'lucide-react';
@@ -1098,7 +1097,6 @@ function StoryCard({
  * 显示用户生成的故事列表
  */
 export default function MyStoriesPage() {
-  const router = useRouter();
   const { t } = useLanguage();
   const { setTitle } = useStudio();
   const { user } = useFirebaseAuth();

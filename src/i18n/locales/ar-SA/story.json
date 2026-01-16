@@ -25,6 +25,11 @@
     "noStoriesDesc": "ستظهر قصصك المُنشأة هنا",
     "generateAudio": "صوت",
     "generateIllustration": "رسم توضيحي",
-    "characters": "حرف"
+    "characters": "حرف",
+    "audioProcessing": "جاري المعالجة...",
+    "confirmAudioTitle": "إنشاء صوت",
+    "title": "العنوان",
+    "contentPreview": "معاينة المحتوى",
+    "audioConfirmMessage": "سيتم توجيهك إلى صفحة TTS لاختيار صوت وإنشاء الصوت."
   }
 }

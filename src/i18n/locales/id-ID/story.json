@@ -25,6 +25,11 @@
     "noStoriesDesc": "Cerita yang dibuat akan muncul di sini",
     "generateAudio": "Audio",
     "generateIllustration": "Ilustrasi",
-    "characters": "karakter"
+    "characters": "karakter",
+    "audioProcessing": "Memproses...",
+    "confirmAudioTitle": "Buat Audio",
+    "title": "Judul",
+    "contentPreview": "Pratinjau Konten",
+    "audioConfirmMessage": "Anda akan diarahkan ke halaman TTS untuk memilih suara dan membuat audio."
   }
 }

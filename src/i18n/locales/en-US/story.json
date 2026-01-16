@@ -26,6 +26,10 @@
     "generateAudio": "Audio",
     "generateIllustration": "Illustration",
     "characters": "chars",
-    "audioProcessing": "Processing..."
+    "audioProcessing": "Processing...",
+    "confirmAudioTitle": "Generate Audio",
+    "title": "Title",
+    "contentPreview": "Content Preview",
+    "audioConfirmMessage": "You will be redirected to the TTS page to select a voice and generate audio."
   }
 }

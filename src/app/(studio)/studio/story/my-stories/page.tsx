@@ -2,13 +2,109 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { BookOpen, Volume2, Image, MoreVertical, Trash2, Clock, FileText, Play, Pause, Loader2 } from 'lucide-react';
+import { BookOpen, Volume2, Image, MoreVertical, Trash2, Clock, FileText, Play, Pause, Loader2, X } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useStudio } from '@/contexts/StudioContext';
 import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 import { getUserStories } from '@/actions/story';
 import type { UserStory } from '@/actions/story';
 import LoginModal from '@/components/features/auth/LoginModal';
+
+/**
+ * Audio Generation Confirm Modal
+ */
+function AudioConfirmModal({
+  story,
+  isOpen,
+  onClose,
+  onConfirm,
+  t,
+}: {
+  story: UserStory | null;
+  isOpen: boolean;
+  onClose: () => void;
+  onConfirm: () => void;
+  t: (key: string) => string;
+}) {
+  if (!isOpen || !story) return null;
+
+  // Truncate content for preview
+  const previewContent = story.content.length > 200
+    ? story.content.substring(0, 200) + '...'
+    : story.content;
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      {/* Backdrop */}
+      <div
+        className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+        onClick={onClose}
+      />
+
+      {/* Modal */}
+      <div className="relative bg-white rounded-2xl shadow-xl max-w-md w-full max-h-[80vh] overflow-hidden">
+        {/* Header */}
+        <div className="flex items-center justify-between p-4 border-b border-gray-100">
+          <h3 className="text-lg font-semibold text-gray-900">
+            {t('story.confirmAudioTitle') || 'Generate Audio'}
+          </h3>
+          <button
+            onClick={onClose}
+            className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors"
+          >
+            <X className="w-5 h-5 text-gray-400" />
+          </button>
+        </div>
+
+        {/* Content */}
+        <div className="p-4 space-y-4">
+          {/* Story Title */}
+          <div>
+            <p className="text-sm text-gray-500 mb-1">{t('story.title') || 'Title'}</p>
+            <p className="font-medium text-gray-900">{story.title}</p>
+          </div>
+
+          {/* Content Preview */}
+          <div>
+            <p className="text-sm text-gray-500 mb-1">{t('story.contentPreview') || 'Content Preview'}</p>
+            <p className="text-sm text-gray-600 bg-gray-50 rounded-lg p-3 max-h-32 overflow-y-auto">
+              {previewContent}
+            </p>
+          </div>
+
+          {/* Character Count */}
+          <div className="flex items-center gap-2 text-sm">
+            <FileText className="w-4 h-4 text-gray-400" />
+            <span className="text-gray-600">
+              {story.wordCount} {t('story.characters') || 'characters'}
+            </span>
+          </div>
+
+          {/* Info Message */}
+          <p className="text-xs text-gray-500">
+            {t('story.audioConfirmMessage') || 'You will be redirected to the TTS page to select a voice and generate audio.'}
+          </p>
+        </div>
+
+        {/* Actions */}
+        <div className="flex gap-3 p-4 border-t border-gray-100">
+          <button
+            onClick={onClose}
+            className="flex-1 px-4 py-2.5 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-xl transition-colors"
+          >
+            {t('common.cancel') || 'Cancel'}
+          </button>
+          <button
+            onClick={onConfirm}
+            className="flex-1 px-4 py-2.5 text-sm font-medium text-white bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 rounded-xl transition-all shadow-sm"
+          >
+            {t('common.confirm') || 'Confirm'}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 /**
  * Story Card Component
@@ -215,6 +311,7 @@ export default function MyStoriesPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const [audioConfirmStory, setAudioConfirmStory] = useState<UserStory | null>(null);
 
   // 设置页面标题
   useEffect(() => {
@@ -257,10 +354,19 @@ export default function MyStoriesPage() {
 
   // Action handlers
   const handleGenerateAudio = (story: UserStory) => {
+    // 打开确认弹窗
+    setAudioConfirmStory(story);
+  };
+
+  const handleConfirmGenerateAudio = () => {
+    if (!audioConfirmStory) return;
+
     // Save story content to localStorage for TTS page to pick up
-    localStorage.setItem('lastTTSInputText', story.content);
+    localStorage.setItem('lastTTSInputText', audioConfirmStory.content);
     // Save story ID to sessionStorage for TTS to link the audio
-    sessionStorage.setItem('ttsStoryId', story.id);
+    sessionStorage.setItem('ttsStoryId', audioConfirmStory.id);
+    // Close modal
+    setAudioConfirmStory(null);
     // Navigate to TTS page
     router.push('/studio/tts');
   };
@@ -361,6 +467,15 @@ export default function MyStoriesPage() {
           onClose={() => setIsLoginModalOpen(false)}
         />
       )}
+
+      {/* Audio Confirm Modal */}
+      <AudioConfirmModal
+        story={audioConfirmStory}
+        isOpen={!!audioConfirmStory}
+        onClose={() => setAudioConfirmStory(null)}
+        onConfirm={handleConfirmGenerateAudio}
+        t={t}
+      />
     </>
   );
 }

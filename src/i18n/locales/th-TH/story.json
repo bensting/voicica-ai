@@ -25,6 +25,11 @@
     "noStoriesDesc": "เรื่องที่สร้างจะแสดงที่นี่",
     "generateAudio": "สร้างเสียง",
     "generateIllustration": "สร้างภาพ",
-    "characters": "ตัวอักษร"
+    "characters": "ตัวอักษร",
+    "audioProcessing": "กำลังประมวลผล...",
+    "confirmAudioTitle": "สร้างเสียง",
+    "title": "ชื่อเรื่อง",
+    "contentPreview": "ตัวอย่างเนื้อหา",
+    "audioConfirmMessage": "คุณจะถูกนำไปยังหน้า TTS เพื่อเลือกเสียงและสร้างเสียง"
   }
 }

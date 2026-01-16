@@ -26,6 +26,10 @@
     "generateAudio": "生成语音",
     "generateIllustration": "生成插图",
     "characters": "字符",
-    "audioProcessing": "处理中..."
+    "audioProcessing": "处理中...",
+    "confirmAudioTitle": "生成语音",
+    "title": "标题",
+    "contentPreview": "内容预览",
+    "audioConfirmMessage": "点击确认后将跳转到语音生成页面，您可以选择语音并生成音频。"
   }
 }

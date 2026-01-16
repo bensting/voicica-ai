@@ -25,6 +25,11 @@
     "noStoriesDesc": "Suas histórias geradas aparecerão aqui",
     "generateAudio": "Áudio",
     "generateIllustration": "Ilustração",
-    "characters": "caracteres"
+    "characters": "caracteres",
+    "audioProcessing": "Processando...",
+    "confirmAudioTitle": "Gerar áudio",
+    "title": "Título",
+    "contentPreview": "Prévia do conteúdo",
+    "audioConfirmMessage": "Você será redirecionado para a página TTS para selecionar uma voz e gerar áudio."
   }
 }

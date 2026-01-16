@@ -25,6 +25,11 @@
     "noStoriesDesc": "Các câu chuyện bạn tạo sẽ hiển thị ở đây",
     "generateAudio": "Tạo âm thanh",
     "generateIllustration": "Tạo minh họa",
-    "characters": "ký tự"
+    "characters": "ký tự",
+    "audioProcessing": "Đang xử lý...",
+    "confirmAudioTitle": "Tạo âm thanh",
+    "title": "Tiêu đề",
+    "contentPreview": "Xem trước nội dung",
+    "audioConfirmMessage": "Bạn sẽ được chuyển đến trang TTS để chọn giọng nói và tạo âm thanh."
   }
 }

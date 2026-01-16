@@ -25,6 +25,11 @@
     "noStoriesDesc": "生成したストーリーがここに表示されます",
     "generateAudio": "音声生成",
     "generateIllustration": "イラスト生成",
-    "characters": "文字"
+    "characters": "文字",
+    "audioProcessing": "処理中...",
+    "confirmAudioTitle": "音声を生成",
+    "title": "タイトル",
+    "contentPreview": "内容プレビュー",
+    "audioConfirmMessage": "確認後、音声生成ページに移動し、音声を選択して生成できます。"
   }
 }

@@ -26,6 +26,10 @@
     "generateAudio": "生成語音",
     "generateIllustration": "生成插圖",
     "characters": "字元",
-    "audioProcessing": "處理中..."
+    "audioProcessing": "處理中...",
+    "confirmAudioTitle": "生成語音",
+    "title": "標題",
+    "contentPreview": "內容預覽",
+    "audioConfirmMessage": "點擊確認後將跳轉到語音生成頁面，您可以選擇語音並生成音訊。"
   }
 }

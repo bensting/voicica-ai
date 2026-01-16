@@ -25,6 +25,11 @@
     "noStoriesDesc": "သင်ဖန်တီးထားသောဇာတ်လမ်းများဤနေရာတွင်ပေါ်လာမည်",
     "generateAudio": "အသံ",
     "generateIllustration": "ပုံဆွဲ",
-    "characters": "စာလုံး"
+    "characters": "စာလုံး",
+    "audioProcessing": "လုပ်ဆောင်နေသည်...",
+    "confirmAudioTitle": "အသံဖန်တီးရန်",
+    "title": "ခေါင်းစဉ်",
+    "contentPreview": "အကြောင်းအရာအကြိုကြည့်ရှုခြင်း",
+    "audioConfirmMessage": "အသံရွေးချယ်ပြီးဖန်တီးရန် TTS စာမျက်နှာသို့သွားပါမည်။"
   }
 }

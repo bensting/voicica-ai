@@ -9,7 +9,7 @@ import { useStudio } from '@/contexts/StudioContext';
 import { useCredits } from '@/contexts/CreditsContext';
 import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 import { getStoryIdeas, generateStory, saveStory } from '@/actions/story';
-import type { StoryIdea, GeneratedStory } from '@/lib/services/openai';
+import type { StoryIdea } from '@/lib/services/openai';
 import { calculateProductCreditsCost } from '@/config/creditsCost';
 import { ProductType } from '@/config/productType';
 import CreditsBar from '@/components/ui/CreditsBar';

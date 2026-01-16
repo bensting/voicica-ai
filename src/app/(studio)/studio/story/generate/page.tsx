@@ -190,7 +190,7 @@ export default function GenerateStoryPage() {
     <>
       {/* Mobile Layout */}
       <div className="lg:hidden fixed inset-0 flex flex-col bg-gradient-to-b from-gray-50 to-white" style={{ top: 'calc(60px + var(--safe-area-inset-top, 0px))' }}>
-        <div className="flex-1 flex flex-col px-4 pt-4 gap-4 overflow-hidden pb-3">
+        <div className="flex-1 flex flex-col px-4 pt-4 gap-4 pb-3">
           {step === 'input' ? (
             <>
               {/* Keywords Input */}
@@ -205,7 +205,7 @@ export default function GenerateStoryPage() {
                   />
                 </div>
                 {/* Credits Bar */}
-                <div className="flex-shrink-0 bg-white rounded-b-2xl shadow-sm border border-gray-200 border-t-0 overflow-hidden">
+                <div className="flex-shrink-0 bg-white rounded-b-2xl shadow-sm border border-gray-200 border-t-0">
                   <CreditsBar
                     credits={credits}
                     permanentCredits={permanentCredits}
@@ -393,7 +393,7 @@ export default function GenerateStoryPage() {
                   />
                 </div>
                 {/* Credits Bar */}
-                <div className="flex-shrink-0 bg-white rounded-b-2xl shadow-sm border border-gray-200 border-t-0 overflow-hidden">
+                <div className="flex-shrink-0 bg-white rounded-b-2xl shadow-sm border border-gray-200 border-t-0">
                   <CreditsBar
                     credits={credits}
                     permanentCredits={permanentCredits}

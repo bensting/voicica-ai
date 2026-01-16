@@ -62,6 +62,8 @@ export default function CreditsBar({
   // "More" menu state
   const [showMoreMenu, setShowMoreMenu] = useState(false);
   const moreMenuRef = useRef<HTMLDivElement>(null);
+  const moreButtonRef = useRef<HTMLButtonElement>(null);
+  const [menuPosition, setMenuPosition] = useState({ top: 0, left: 0 });
 
   // Modal states
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
@@ -80,7 +82,10 @@ export default function CreditsBar({
   // Close more menu when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (moreMenuRef.current && !moreMenuRef.current.contains(event.target as Node)) {
+      const target = event.target as Node;
+      const isClickInsideButton = moreButtonRef.current?.contains(target);
+      const isClickInsideMenu = moreMenuRef.current?.contains(target);
+      if (!isClickInsideButton && !isClickInsideMenu) {
         setShowMoreMenu(false);
       }
     };
@@ -89,6 +94,28 @@ export default function CreditsBar({
     }
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [showMoreMenu]);
+
+  // Handle opening the menu and calculating position
+  const handleToggleMenu = () => {
+    if (!showMoreMenu && moreButtonRef.current) {
+      const rect = moreButtonRef.current.getBoundingClientRect();
+      const menuWidth = 240; // w-60 = 15rem = 240px
+      const viewportWidth = window.innerWidth;
+
+      // Calculate left position, ensuring menu stays within viewport
+      let left = rect.left;
+      if (left + menuWidth > viewportWidth - 16) {
+        // If menu would overflow right, align to right edge with padding
+        left = viewportWidth - menuWidth - 16;
+      }
+
+      setMenuPosition({
+        top: rect.top - 8, // 8px gap above the button
+        left: Math.max(16, left), // Ensure at least 16px from left edge
+      });
+    }
+    setShowMoreMenu(!showMoreMenu);
+  };
 
   return (
     <>
@@ -130,91 +157,15 @@ export default function CreditsBar({
 
           {/* More chip - show for all users */}
           <button
+            ref={moreButtonRef}
             type="button"
-            onClick={() => setShowMoreMenu(!showMoreMenu)}
+            onClick={handleToggleMenu}
             className="ml-1 px-2 py-0.5 bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white text-xs font-medium rounded-full transition-all shadow-sm flex items-center gap-0.5"
           >
             <Sparkles className="w-3 h-3" />
             <span>{t('tts.input.more') || 'More'}</span>
           </button>
 
-          {/* Floating menu dropdown */}
-          {showMoreMenu && (
-            <div className="absolute left-0 bottom-full mb-2 w-60 bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden z-50 animate-in fade-in slide-in-from-bottom-2 duration-200">
-              {/* Menu header */}
-              <div className="px-4 py-2.5 bg-gradient-to-r from-purple-500 to-blue-500">
-                <p className="text-xs font-medium text-white/90">{t('tts.input.moreMenu.title') || 'Get more credits'}</p>
-              </div>
-
-              {/* Menu items */}
-              <div className="p-2 space-y-1">
-                {/* Sign up option - only for non-logged-in users */}
-                {!user && (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setShowMoreMenu(false);
-                      setIsLoginModalOpen(true);
-                    }}
-                    className="w-full px-3 py-2.5 flex items-center gap-3 hover:bg-gradient-to-r hover:from-purple-50 hover:to-purple-100 rounded-xl transition-all group"
-                  >
-                    <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center shadow-sm group-hover:shadow-md group-hover:scale-105 transition-all">
-                      <UserPlus className="w-4 h-4 text-white" />
-                    </div>
-                    <div className="flex-1 text-left min-w-0">
-                      <p className="text-sm font-semibold text-gray-800">{t('tts.input.moreMenu.signUp') || 'Sign up free'}</p>
-                      <p className="text-xs text-gray-500 truncate">
-                        {t('tts.input.moreMenu.signUpDesc', { credits: signupBonus }) || `Get ${signupBonus} free credits`}
-                      </p>
-                    </div>
-                    <ChevronRight className="w-4 h-4 text-gray-300 group-hover:text-purple-500 group-hover:translate-x-0.5 transition-all flex-shrink-0" />
-                  </button>
-                )}
-
-                {/* Free Credits option - watch videos to earn credits */}
-                {onDailyTasksClick && (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setShowMoreMenu(false);
-                      onDailyTasksClick();
-                    }}
-                    className="w-full px-3 py-2.5 flex items-center gap-3 hover:bg-gradient-to-r hover:from-pink-50 hover:to-pink-100 rounded-xl transition-all group"
-                  >
-                    <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-pink-500 to-purple-500 flex items-center justify-center shadow-sm group-hover:shadow-md group-hover:scale-105 transition-all">
-                      <Play className="w-4 h-4 text-white" />
-                    </div>
-                    <div className="flex-1 text-left min-w-0">
-                      <p className="text-sm font-semibold text-gray-800">{t('tts.input.moreMenu.freeCredits') || 'Free Credits'}</p>
-                      <p className="text-xs text-gray-500 truncate">
-                        {t('tts.input.moreMenu.freeCreditsDesc') || 'Watch videos'}
-                      </p>
-                    </div>
-                    <ChevronRight className="w-4 h-4 text-gray-300 group-hover:text-pink-500 group-hover:translate-x-0.5 transition-all flex-shrink-0" />
-                  </button>
-                )}
-
-                {/* View pricing option - show for all users */}
-                <button
-                  type="button"
-                  onClick={() => {
-                    setShowMoreMenu(false);
-                    setIsUpgradeModalOpen(true);
-                  }}
-                  className="w-full px-3 py-2.5 flex items-center gap-3 hover:bg-gradient-to-r hover:from-blue-50 hover:to-blue-100 rounded-xl transition-all group"
-                >
-                  <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-sm group-hover:shadow-md group-hover:scale-105 transition-all">
-                    <CreditCard className="w-4 h-4 text-white" />
-                  </div>
-                  <div className="flex-1 text-left min-w-0">
-                    <p className="text-sm font-semibold text-gray-800">{t('tts.input.moreMenu.pricing') || 'View pricing'}</p>
-                    <p className="text-xs text-gray-500 truncate">{t('tts.input.moreMenu.pricingDesc') || 'Explore subscription plans'}</p>
-                  </div>
-                  <ChevronRight className="w-4 h-4 text-gray-300 group-hover:text-blue-500 group-hover:translate-x-0.5 transition-all flex-shrink-0" />
-                </button>
-              </div>
-            </div>
-          )}
         </div>
 
         {/* Right: Clear button and Character count */}
@@ -240,6 +191,93 @@ export default function CreditsBar({
           )}
         </div>
       </div>
+
+      {/* Floating menu dropdown - rendered via portal to body */}
+      {hasMounted && showMoreMenu && createPortal(
+        <div
+          ref={moreMenuRef}
+          className="fixed w-60 bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden z-[9999] animate-in fade-in slide-in-from-bottom-2 duration-200"
+          style={{
+            top: menuPosition.top,
+            left: menuPosition.left,
+            transform: 'translateY(-100%)',
+          }}
+        >
+          {/* Menu header */}
+          <div className="px-4 py-2.5 bg-gradient-to-r from-purple-500 to-blue-500">
+            <p className="text-xs font-medium text-white/90">{t('tts.input.moreMenu.title') || 'Get more credits'}</p>
+          </div>
+
+          {/* Menu items */}
+          <div className="p-2 space-y-1">
+            {/* Sign up option - only for non-logged-in users */}
+            {!user && (
+              <button
+                type="button"
+                onClick={() => {
+                  setShowMoreMenu(false);
+                  setIsLoginModalOpen(true);
+                }}
+                className="w-full px-3 py-2.5 flex items-center gap-3 hover:bg-gradient-to-r hover:from-purple-50 hover:to-purple-100 rounded-xl transition-all group"
+              >
+                <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center shadow-sm group-hover:shadow-md group-hover:scale-105 transition-all">
+                  <UserPlus className="w-4 h-4 text-white" />
+                </div>
+                <div className="flex-1 text-left min-w-0">
+                  <p className="text-sm font-semibold text-gray-800">{t('tts.input.moreMenu.signUp') || 'Sign up free'}</p>
+                  <p className="text-xs text-gray-500 truncate">
+                    {t('tts.input.moreMenu.signUpDesc', { credits: signupBonus }) || `Get ${signupBonus} free credits`}
+                  </p>
+                </div>
+                <ChevronRight className="w-4 h-4 text-gray-300 group-hover:text-purple-500 group-hover:translate-x-0.5 transition-all flex-shrink-0" />
+              </button>
+            )}
+
+            {/* Free Credits option - watch videos to earn credits */}
+            {onDailyTasksClick && (
+              <button
+                type="button"
+                onClick={() => {
+                  setShowMoreMenu(false);
+                  onDailyTasksClick();
+                }}
+                className="w-full px-3 py-2.5 flex items-center gap-3 hover:bg-gradient-to-r hover:from-pink-50 hover:to-pink-100 rounded-xl transition-all group"
+              >
+                <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-pink-500 to-purple-500 flex items-center justify-center shadow-sm group-hover:shadow-md group-hover:scale-105 transition-all">
+                  <Play className="w-4 h-4 text-white" />
+                </div>
+                <div className="flex-1 text-left min-w-0">
+                  <p className="text-sm font-semibold text-gray-800">{t('tts.input.moreMenu.freeCredits') || 'Free Credits'}</p>
+                  <p className="text-xs text-gray-500 truncate">
+                    {t('tts.input.moreMenu.freeCreditsDesc') || 'Watch videos'}
+                  </p>
+                </div>
+                <ChevronRight className="w-4 h-4 text-gray-300 group-hover:text-pink-500 group-hover:translate-x-0.5 transition-all flex-shrink-0" />
+              </button>
+            )}
+
+            {/* View pricing option - show for all users */}
+            <button
+              type="button"
+              onClick={() => {
+                setShowMoreMenu(false);
+                setIsUpgradeModalOpen(true);
+              }}
+              className="w-full px-3 py-2.5 flex items-center gap-3 hover:bg-gradient-to-r hover:from-blue-50 hover:to-blue-100 rounded-xl transition-all group"
+            >
+              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-sm group-hover:shadow-md group-hover:scale-105 transition-all">
+                <CreditCard className="w-4 h-4 text-white" />
+              </div>
+              <div className="flex-1 text-left min-w-0">
+                <p className="text-sm font-semibold text-gray-800">{t('tts.input.moreMenu.pricing') || 'View pricing'}</p>
+                <p className="text-xs text-gray-500 truncate">{t('tts.input.moreMenu.pricingDesc') || 'Explore subscription plans'}</p>
+              </div>
+              <ChevronRight className="w-4 h-4 text-gray-300 group-hover:text-blue-500 group-hover:translate-x-0.5 transition-all flex-shrink-0" />
+            </button>
+          </div>
+        </div>,
+        document.body
+      )}
 
       {/* Login Modal - rendered via portal to body */}
       {hasMounted && isLoginModalOpen && createPortal(

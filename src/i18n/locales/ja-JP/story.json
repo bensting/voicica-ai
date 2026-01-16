@@ -30,6 +30,9 @@
     "confirmAudioTitle": "音声を生成",
     "title": "タイトル",
     "contentPreview": "内容プレビュー",
-    "audioConfirmMessage": "確認後、音声生成ページに移動し、音声を選択して生成できます。"
+    "audioConfirmMessage": "確認後、音声生成ページに移動し、音声を選択して生成できます。",
+    "deleteConfirmTitle": "ストーリーを削除",
+    "deleteConfirmMessage": "このストーリーを削除してもよろしいですか？",
+    "deleteWarning": "この操作は取り消せません。"
   }
 }

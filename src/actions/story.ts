@@ -438,3 +438,90 @@ export async function getUserStories(): Promise<GetUserStoriesResult> {
     };
   }
 }
+
+/**
+ * 删除故事结果
+ */
+export interface DeleteStoryResult {
+  success: boolean;
+  error?: string;
+  errorCode?: 'AUTH_FAILED' | 'LOGIN_REQUIRED' | 'NOT_FOUND' | 'DELETE_FAILED';
+}
+
+/**
+ * 删除故事
+ *
+ * @param storyId 故事 ID
+ */
+export async function deleteStory(storyId: string): Promise<DeleteStoryResult> {
+  console.log('📖 [deleteStory] 删除故事:', storyId);
+
+  try {
+    // 1. 获取用户信息
+    const unifiedUser = await getUserOrAnonymous();
+    const userId = unifiedUser.user_id;
+    const isAnonymous = unifiedUser.is_anonymous;
+
+    console.log('📖 [deleteStory] 用户认证成功:', { userId, isAnonymous });
+
+    // 2. 检查是否为匿名用户
+    if (isAnonymous) {
+      console.log('⚠️ [deleteStory] 匿名用户无法删除故事');
+      return {
+        success: false,
+        errorCode: 'LOGIN_REQUIRED',
+        error: 'Login required to delete story',
+      };
+    }
+
+    // 3. 检查故事是否存在且属于当前用户
+    const { prisma } = await import('@/lib/prisma');
+
+    const story = await prisma.stories.findUnique({
+      where: { id: storyId },
+    });
+
+    if (!story) {
+      return {
+        success: false,
+        errorCode: 'NOT_FOUND',
+        error: 'Story not found',
+      };
+    }
+
+    if (story.user_id !== userId) {
+      return {
+        success: false,
+        errorCode: 'NOT_FOUND',
+        error: 'Story not found',
+      };
+    }
+
+    // 4. 删除故事（关联的 tts_records 和 illustrations 会通过 onDelete: SetNull/Cascade 处理）
+    await prisma.stories.delete({
+      where: { id: storyId },
+    });
+
+    console.log('✅ [deleteStory] 故事删除成功:', storyId);
+
+    return {
+      success: true,
+    };
+  } catch (error) {
+    console.error('❌ [deleteStory] 删除故事失败:', error);
+
+    if (error instanceof Error && error.message === '未提供认证信息') {
+      return {
+        success: false,
+        errorCode: 'AUTH_FAILED',
+        error: 'Authentication required',
+      };
+    }
+
+    return {
+      success: false,
+      errorCode: 'DELETE_FAILED',
+      error: error instanceof Error ? error.message : 'Failed to delete story',
+    };
+  }
+}

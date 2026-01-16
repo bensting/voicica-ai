@@ -30,6 +30,9 @@
     "confirmAudioTitle": "生成語音",
     "title": "標題",
     "contentPreview": "內容預覽",
-    "audioConfirmMessage": "點擊確認後將跳轉到語音生成頁面，您可以選擇語音並生成音訊。"
+    "audioConfirmMessage": "點擊確認後將跳轉到語音生成頁面，您可以選擇語音並生成音訊。",
+    "deleteConfirmTitle": "刪除故事",
+    "deleteConfirmMessage": "確定要刪除這個故事嗎？",
+    "deleteWarning": "此操作無法撤銷。"
   }
 }

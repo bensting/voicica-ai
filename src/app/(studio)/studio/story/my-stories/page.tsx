@@ -2,11 +2,11 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { BookOpen, Volume2, Image, MoreVertical, Trash2, Clock, FileText, Play, Pause, Loader2, X } from 'lucide-react';
+import { BookOpen, Volume2, Image, MoreVertical, Trash2, Clock, FileText, Play, Pause, Loader2, X, Pencil, AlertTriangle } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useStudio } from '@/contexts/StudioContext';
 import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
-import { getUserStories } from '@/actions/story';
+import { getUserStories, deleteStory } from '@/actions/story';
 import type { UserStory } from '@/actions/story';
 import LoginModal from '@/components/features/auth/LoginModal';
 
@@ -107,17 +107,103 @@ function AudioConfirmModal({
 }
 
 /**
+ * Delete Confirm Modal
+ */
+function DeleteConfirmModal({
+  story,
+  isOpen,
+  onClose,
+  onConfirm,
+  isDeleting,
+  t,
+}: {
+  story: UserStory | null;
+  isOpen: boolean;
+  onClose: () => void;
+  onConfirm: () => void;
+  isDeleting: boolean;
+  t: (key: string) => string;
+}) {
+  if (!isOpen || !story) return null;
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      {/* Backdrop */}
+      <div
+        className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+        onClick={onClose}
+      />
+
+      {/* Modal */}
+      <div className="relative bg-white rounded-2xl shadow-xl max-w-sm w-full overflow-hidden">
+        {/* Icon */}
+        <div className="pt-6 flex justify-center">
+          <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
+            <AlertTriangle className="w-6 h-6 text-red-600" />
+          </div>
+        </div>
+
+        {/* Content */}
+        <div className="p-6 text-center">
+          <h3 className="text-lg font-semibold text-gray-900 mb-2">
+            {t('story.deleteConfirmTitle') || 'Delete Story'}
+          </h3>
+          <p className="text-sm text-gray-600 mb-1">
+            {t('story.deleteConfirmMessage') || 'Are you sure you want to delete this story?'}
+          </p>
+          <p className="text-sm font-medium text-gray-800 truncate">
+            &quot;{story.title}&quot;
+          </p>
+          <p className="text-xs text-gray-500 mt-2">
+            {t('story.deleteWarning') || 'This action cannot be undone.'}
+          </p>
+        </div>
+
+        {/* Actions */}
+        <div className="flex gap-3 p-4 border-t border-gray-100">
+          <button
+            onClick={onClose}
+            disabled={isDeleting}
+            className="flex-1 px-4 py-2.5 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-xl transition-colors disabled:opacity-50"
+          >
+            {t('common.cancel') || 'Cancel'}
+          </button>
+          <button
+            onClick={onConfirm}
+            disabled={isDeleting}
+            className="flex-1 px-4 py-2.5 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-xl transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+          >
+            {isDeleting ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" />
+                {t('common.deleting') || 'Deleting...'}
+              </>
+            ) : (
+              t('common.delete') || 'Delete'
+            )}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/**
  * Story Card Component
  */
 function StoryCard({
   story,
   onGenerateAudio,
   onGenerateIllustration,
+  onEdit,
+  onDelete,
   t,
 }: {
   story: UserStory;
   onGenerateAudio: (story: UserStory) => void;
   onGenerateIllustration: (story: UserStory) => void;
+  onEdit: (story: UserStory) => void;
+  onDelete: (story: UserStory) => void;
   t: (key: string) => string;
 }) {
   const [showMenu, setShowMenu] = useState(false);
@@ -193,7 +279,17 @@ function StoryCard({
                 <button
                   onClick={() => {
                     setShowMenu(false);
-                    // TODO: Implement delete
+                    onEdit(story);
+                  }}
+                  className="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2"
+                >
+                  <Pencil className="w-4 h-4" />
+                  {t('common.edit') || 'Edit'}
+                </button>
+                <button
+                  onClick={() => {
+                    setShowMenu(false);
+                    onDelete(story);
                   }}
                   className="w-full px-3 py-2 text-left text-sm text-red-600 hover:bg-red-50 flex items-center gap-2"
                 >
@@ -312,6 +408,8 @@ export default function MyStoriesPage() {
   const [error, setError] = useState<string | null>(null);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [audioConfirmStory, setAudioConfirmStory] = useState<UserStory | null>(null);
+  const [deleteConfirmStory, setDeleteConfirmStory] = useState<UserStory | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   // 设置页面标题
   useEffect(() => {
@@ -376,6 +474,39 @@ export default function MyStoriesPage() {
     console.log('Generate illustration for:', story.title);
   };
 
+  const handleEdit = (story: UserStory) => {
+    // TODO: Navigate to edit page or open edit modal
+    console.log('Edit story:', story.title);
+    // For now, we could navigate to generate page with pre-filled content
+    // router.push(`/studio/story/edit/${story.id}`);
+  };
+
+  const handleDelete = (story: UserStory) => {
+    setDeleteConfirmStory(story);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!deleteConfirmStory) return;
+
+    setIsDeleting(true);
+    try {
+      const result = await deleteStory(deleteConfirmStory.id);
+
+      if (result.success) {
+        // Remove from local state
+        setStories((prev) => prev.filter((s) => s.id !== deleteConfirmStory.id));
+        setDeleteConfirmStory(null);
+      } else {
+        console.error('Failed to delete story:', result.error);
+        // Could show error toast here
+      }
+    } catch (err) {
+      console.error('Error deleting story:', err);
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
   // Empty state component
   const EmptyState = ({ mobile = false }: { mobile?: boolean }) => (
     <div className="text-center">
@@ -407,6 +538,8 @@ export default function MyStoriesPage() {
           story={story}
           onGenerateAudio={handleGenerateAudio}
           onGenerateIllustration={handleGenerateIllustration}
+          onEdit={handleEdit}
+          onDelete={handleDelete}
           t={t}
         />
       ))}
@@ -474,6 +607,16 @@ export default function MyStoriesPage() {
         isOpen={!!audioConfirmStory}
         onClose={() => setAudioConfirmStory(null)}
         onConfirm={handleConfirmGenerateAudio}
+        t={t}
+      />
+
+      {/* Delete Confirm Modal */}
+      <DeleteConfirmModal
+        story={deleteConfirmStory}
+        isOpen={!!deleteConfirmStory}
+        onClose={() => setDeleteConfirmStory(null)}
+        onConfirm={handleConfirmDelete}
+        isDeleting={isDeleting}
         t={t}
       />
     </>

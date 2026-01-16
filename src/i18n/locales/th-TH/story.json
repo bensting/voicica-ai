@@ -30,6 +30,9 @@
     "confirmAudioTitle": "สร้างเสียง",
     "title": "ชื่อเรื่อง",
     "contentPreview": "ตัวอย่างเนื้อหา",
-    "audioConfirmMessage": "คุณจะถูกนำไปยังหน้า TTS เพื่อเลือกเสียงและสร้างเสียง"
+    "audioConfirmMessage": "คุณจะถูกนำไปยังหน้า TTS เพื่อเลือกเสียงและสร้างเสียง",
+    "deleteConfirmTitle": "ลบเรื่อง",
+    "deleteConfirmMessage": "คุณแน่ใจหรือไม่ว่าต้องการลบเรื่องนี้?",
+    "deleteWarning": "การดำเนินการนี้ไม่สามารถยกเลิกได้"
   }
 }

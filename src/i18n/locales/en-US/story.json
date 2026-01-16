@@ -30,6 +30,9 @@
     "confirmAudioTitle": "Generate Audio",
     "title": "Title",
     "contentPreview": "Content Preview",
-    "audioConfirmMessage": "You will be redirected to the TTS page to select a voice and generate audio."
+    "audioConfirmMessage": "You will be redirected to the TTS page to select a voice and generate audio.",
+    "deleteConfirmTitle": "Delete Story",
+    "deleteConfirmMessage": "Are you sure you want to delete this story?",
+    "deleteWarning": "This action cannot be undone."
   }
 }

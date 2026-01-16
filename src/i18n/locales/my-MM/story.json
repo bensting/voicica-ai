@@ -30,6 +30,9 @@
     "confirmAudioTitle": "အသံဖန်တီးရန်",
     "title": "ခေါင်းစဉ်",
     "contentPreview": "အကြောင်းအရာအကြိုကြည့်ရှုခြင်း",
-    "audioConfirmMessage": "အသံရွေးချယ်ပြီးဖန်တီးရန် TTS စာမျက်နှာသို့သွားပါမည်။"
+    "audioConfirmMessage": "အသံရွေးချယ်ပြီးဖန်တီးရန် TTS စာမျက်နှာသို့သွားပါမည်။",
+    "deleteConfirmTitle": "ဇာတ်လမ်းဖျက်ရန်",
+    "deleteConfirmMessage": "ဤဇာတ်လမ်းကိုဖျက်လိုသည်မှာသေချာပါသလား?",
+    "deleteWarning": "ဤလုပ်ဆောင်ချက်ကိုပြန်ပြင်၍မရပါ။"
   }
 }

@@ -30,6 +30,9 @@
     "confirmAudioTitle": "Buat Audio",
     "title": "Judul",
     "contentPreview": "Pratinjau Konten",
-    "audioConfirmMessage": "Anda akan diarahkan ke halaman TTS untuk memilih suara dan membuat audio."
+    "audioConfirmMessage": "Anda akan diarahkan ke halaman TTS untuk memilih suara dan membuat audio.",
+    "deleteConfirmTitle": "Hapus Cerita",
+    "deleteConfirmMessage": "Apakah Anda yakin ingin menghapus cerita ini?",
+    "deleteWarning": "Tindakan ini tidak dapat dibatalkan."
   }
 }

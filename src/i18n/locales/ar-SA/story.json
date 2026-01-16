@@ -30,6 +30,9 @@
     "confirmAudioTitle": "إنشاء صوت",
     "title": "العنوان",
     "contentPreview": "معاينة المحتوى",
-    "audioConfirmMessage": "سيتم توجيهك إلى صفحة TTS لاختيار صوت وإنشاء الصوت."
+    "audioConfirmMessage": "سيتم توجيهك إلى صفحة TTS لاختيار صوت وإنشاء الصوت.",
+    "deleteConfirmTitle": "حذف القصة",
+    "deleteConfirmMessage": "هل أنت متأكد أنك تريد حذف هذه القصة؟",
+    "deleteWarning": "لا يمكن التراجع عن هذا الإجراء."
   }
 }

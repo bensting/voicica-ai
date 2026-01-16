@@ -30,6 +30,9 @@
     "confirmAudioTitle": "Generar audio",
     "title": "Título",
     "contentPreview": "Vista previa del contenido",
-    "audioConfirmMessage": "Serás redirigido a la página de TTS para seleccionar una voz y generar audio."
+    "audioConfirmMessage": "Serás redirigido a la página de TTS para seleccionar una voz y generar audio.",
+    "deleteConfirmTitle": "Eliminar historia",
+    "deleteConfirmMessage": "¿Estás seguro de que quieres eliminar esta historia?",
+    "deleteWarning": "Esta acción no se puede deshacer."
   }
 }

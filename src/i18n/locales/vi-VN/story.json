@@ -30,6 +30,9 @@
     "confirmAudioTitle": "Tạo âm thanh",
     "title": "Tiêu đề",
     "contentPreview": "Xem trước nội dung",
-    "audioConfirmMessage": "Bạn sẽ được chuyển đến trang TTS để chọn giọng nói và tạo âm thanh."
+    "audioConfirmMessage": "Bạn sẽ được chuyển đến trang TTS để chọn giọng nói và tạo âm thanh.",
+    "deleteConfirmTitle": "Xóa truyện",
+    "deleteConfirmMessage": "Bạn có chắc chắn muốn xóa truyện này không?",
+    "deleteWarning": "Hành động này không thể hoàn tác."
   }
 }

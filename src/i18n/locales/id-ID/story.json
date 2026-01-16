@@ -22,6 +22,9 @@
     "myStoriesTitle": "Cerita Saya",
     "myStoriesSubtitle": "Lihat dan kelola cerita yang telah dibuat",
     "noStories": "Belum ada cerita",
-    "noStoriesDesc": "Cerita yang dibuat akan muncul di sini"
+    "noStoriesDesc": "Cerita yang dibuat akan muncul di sini",
+    "generateAudio": "Audio",
+    "generateIllustration": "Ilustrasi",
+    "characters": "karakter"
   }
 }

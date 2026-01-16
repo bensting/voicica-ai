@@ -22,6 +22,9 @@
     "myStoriesTitle": "我的故事",
     "myStoriesSubtitle": "查看和管理你生成的故事",
     "noStories": "還沒有故事",
-    "noStoriesDesc": "你生成的故事將顯示在這裡"
+    "noStoriesDesc": "你生成的故事將顯示在這裡",
+    "generateAudio": "生成語音",
+    "generateIllustration": "生成插圖",
+    "characters": "字元"
   }
 }

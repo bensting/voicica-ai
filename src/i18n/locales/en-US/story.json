@@ -22,6 +22,9 @@
     "myStoriesTitle": "My Stories",
     "myStoriesSubtitle": "View and manage your generated stories",
     "noStories": "No stories yet",
-    "noStoriesDesc": "Your generated stories will appear here"
+    "noStoriesDesc": "Your generated stories will appear here",
+    "generateAudio": "Audio",
+    "generateIllustration": "Illustration",
+    "characters": "chars"
   }
 }

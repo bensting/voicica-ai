@@ -22,6 +22,9 @@
     "myStoriesTitle": "マイストーリー",
     "myStoriesSubtitle": "生成したストーリーを表示・管理",
     "noStories": "ストーリーがまだありません",
-    "noStoriesDesc": "生成したストーリーがここに表示されます"
+    "noStoriesDesc": "生成したストーリーがここに表示されます",
+    "generateAudio": "音声生成",
+    "generateIllustration": "イラスト生成",
+    "characters": "文字"
   }
 }

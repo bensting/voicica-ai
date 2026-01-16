@@ -22,6 +22,9 @@
     "myStoriesTitle": "เรื่องของฉัน",
     "myStoriesSubtitle": "ดูและจัดการเรื่องที่สร้างไว้",
     "noStories": "ยังไม่มีเรื่อง",
-    "noStoriesDesc": "เรื่องที่สร้างจะแสดงที่นี่"
+    "noStoriesDesc": "เรื่องที่สร้างจะแสดงที่นี่",
+    "generateAudio": "สร้างเสียง",
+    "generateIllustration": "สร้างภาพ",
+    "characters": "ตัวอักษร"
   }
 }

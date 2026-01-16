@@ -22,6 +22,9 @@
     "myStoriesTitle": "मेरी कहानियां",
     "myStoriesSubtitle": "अपनी बनाई कहानियां देखें और प्रबंधित करें",
     "noStories": "अभी तक कोई कहानी नहीं",
-    "noStoriesDesc": "आपकी बनाई कहानियां यहां दिखाई देंगी"
+    "noStoriesDesc": "आपकी बनाई कहानियां यहां दिखाई देंगी",
+    "generateAudio": "ऑडियो",
+    "generateIllustration": "चित्र",
+    "characters": "अक्षर"
   }
 }

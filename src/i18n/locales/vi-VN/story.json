@@ -22,6 +22,9 @@
     "myStoriesTitle": "Truyện của tôi",
     "myStoriesSubtitle": "Xem và quản lý các câu chuyện đã tạo",
     "noStories": "Chưa có truyện nào",
-    "noStoriesDesc": "Các câu chuyện bạn tạo sẽ hiển thị ở đây"
+    "noStoriesDesc": "Các câu chuyện bạn tạo sẽ hiển thị ở đây",
+    "generateAudio": "Tạo âm thanh",
+    "generateIllustration": "Tạo minh họa",
+    "characters": "ký tự"
   }
 }

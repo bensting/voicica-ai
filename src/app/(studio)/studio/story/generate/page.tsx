@@ -329,25 +329,27 @@ export default function GenerateStoryPage() {
                 </div>
               )}
 
-              {/* Credits Bar + Generate Story Button */}
-              <div className="flex-shrink-0 flex flex-col">
-                <div className="bg-white rounded-t-2xl shadow-sm border border-gray-200 border-b-0">
-                  <CreditsBar
-                    credits={credits}
-                    permanentCredits={permanentCredits}
-                    monthlyCredits={monthlyCredits}
-                    creditsLoading={creditsLoading}
-                    showCharacterCount={false}
-                    showClearButton={false}
-                    disabled={isGeneratingStory}
-                    onDailyTasksClick={openDailyTasks}
-                  />
-                </div>
+              {/* Credits Bar */}
+              <div className="flex-shrink-0 bg-white rounded-2xl shadow-sm border border-gray-200">
+                <CreditsBar
+                  credits={credits}
+                  permanentCredits={permanentCredits}
+                  monthlyCredits={monthlyCredits}
+                  creditsLoading={creditsLoading}
+                  showCharacterCount={false}
+                  showClearButton={false}
+                  disabled={isGeneratingStory}
+                  onDailyTasksClick={openDailyTasks}
+                />
+              </div>
+
+              {/* Generate Story Button */}
+              <div className="flex-shrink-0">
                 <button
                   onClick={handleGenerateStory}
                   disabled={!selectedIdea || isGeneratingStory}
                   className={`
-                    w-full py-4 rounded-b-2xl rounded-t-none font-semibold text-lg transition-all
+                    w-full py-4 rounded-2xl font-semibold text-lg transition-all
                     flex items-center justify-center gap-2
                     ${selectedIdea && !isGeneratingStory
                       ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg hover:shadow-xl active:scale-[0.98]'
@@ -524,25 +526,27 @@ export default function GenerateStoryPage() {
                 </div>
               )}
 
-              {/* Credits Bar + Generate Story Button */}
-              <div className="flex-shrink-0 flex flex-col">
-                <div className="bg-white rounded-t-2xl shadow-sm border border-gray-200 border-b-0">
-                  <CreditsBar
-                    credits={credits}
-                    permanentCredits={permanentCredits}
-                    monthlyCredits={monthlyCredits}
-                    creditsLoading={creditsLoading}
-                    showCharacterCount={false}
-                    showClearButton={false}
-                    disabled={isGeneratingStory}
-                    onDailyTasksClick={openDailyTasks}
-                  />
-                </div>
+              {/* Credits Bar */}
+              <div className="flex-shrink-0 bg-white rounded-2xl shadow-sm border border-gray-200 mb-4">
+                <CreditsBar
+                  credits={credits}
+                  permanentCredits={permanentCredits}
+                  monthlyCredits={monthlyCredits}
+                  creditsLoading={creditsLoading}
+                  showCharacterCount={false}
+                  showClearButton={false}
+                  disabled={isGeneratingStory}
+                  onDailyTasksClick={openDailyTasks}
+                />
+              </div>
+
+              {/* Generate Story Button */}
+              <div className="flex-shrink-0">
                 <button
                   onClick={handleGenerateStory}
                   disabled={!selectedIdea || isGeneratingStory}
                   className={`
-                    w-full py-4 rounded-b-2xl rounded-t-none font-semibold text-lg transition-all
+                    w-full py-4 rounded-2xl font-semibold text-lg transition-all
                     flex items-center justify-center gap-2
                     ${selectedIdea && !isGeneratingStory
                       ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg hover:shadow-xl hover:scale-[1.01] active:scale-[0.99]'

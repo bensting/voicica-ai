@@ -34,6 +34,15 @@
     "deleteConfirmTitle": "ลบเรื่อง",
     "deleteConfirmMessage": "คุณแน่ใจหรือไม่ว่าต้องการลบเรื่องนี้?",
     "deleteWarning": "การดำเนินการนี้ไม่สามารถยกเลิกได้",
+    "audio": {
+      "title": "สร้างเสียง",
+      "selectVoice": "เลือกเสียง",
+      "selectVoiceFirst": "กรุณาเลือกเสียงก่อน",
+      "generated": "สร้างแล้ว",
+      "generateThis": "สร้างนี้",
+      "generateAll": "สร้างทั้งหมด",
+      "generateAllAudio": "สร้างเสียงทั้งหมด"
+    },
     "illustration": {
       "title": "สร้างภาพประกอบ",
       "selectType": "เลือกประเภทการสร้าง",
@@ -60,7 +69,8 @@
       "generateFirst": "สร้างภาพประกอบ",
       "cover": "ปก",
       "regenerate": "สร้างใหม่",
-      "downloadAll": "ดาวน์โหลดทั้งหมด"
+      "downloadAll": "ดาวน์โหลดทั้งหมด",
+      "generateAllIllustrations": "สร้างภาพทั้งหมด"
     }
   }
 }

@@ -34,6 +34,15 @@
     "deleteConfirmTitle": "Xóa truyện",
     "deleteConfirmMessage": "Bạn có chắc chắn muốn xóa truyện này không?",
     "deleteWarning": "Hành động này không thể hoàn tác.",
+    "audio": {
+      "title": "Tạo âm thanh",
+      "selectVoice": "Chọn giọng nói",
+      "selectVoiceFirst": "Vui lòng chọn giọng nói trước",
+      "generated": "Đã tạo",
+      "generateThis": "Tạo này",
+      "generateAll": "Tạo tất cả",
+      "generateAllAudio": "Tạo tất cả âm thanh"
+    },
     "illustration": {
       "title": "Tạo minh họa",
       "selectType": "Chọn loại tạo",
@@ -60,7 +69,8 @@
       "generateFirst": "Tạo minh họa",
       "cover": "Bìa",
       "regenerate": "Tạo lại",
-      "downloadAll": "Tải tất cả"
+      "downloadAll": "Tải tất cả",
+      "generateAllIllustrations": "Tạo tất cả minh họa"
     }
   }
 }

@@ -34,6 +34,15 @@
     "deleteConfirmTitle": "Hapus Cerita",
     "deleteConfirmMessage": "Apakah Anda yakin ingin menghapus cerita ini?",
     "deleteWarning": "Tindakan ini tidak dapat dibatalkan.",
+    "audio": {
+      "title": "Buat Audio",
+      "selectVoice": "Pilih Suara",
+      "selectVoiceFirst": "Silakan pilih suara terlebih dahulu",
+      "generated": "Dibuat",
+      "generateThis": "Buat ini",
+      "generateAll": "Buat Semua",
+      "generateAllAudio": "Buat Semua Audio"
+    },
     "illustration": {
       "title": "Buat Ilustrasi",
       "selectType": "Pilih jenis pembuatan",
@@ -60,7 +69,8 @@
       "generateFirst": "Buat Ilustrasi",
       "cover": "Sampul",
       "regenerate": "Buat Ulang",
-      "downloadAll": "Unduh Semua"
+      "downloadAll": "Unduh Semua",
+      "generateAllIllustrations": "Buat Semua Ilustrasi"
     }
   }
 }

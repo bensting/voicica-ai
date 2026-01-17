@@ -34,6 +34,15 @@
     "deleteConfirmTitle": "حذف القصة",
     "deleteConfirmMessage": "هل أنت متأكد أنك تريد حذف هذه القصة؟",
     "deleteWarning": "لا يمكن التراجع عن هذا الإجراء.",
+    "audio": {
+      "title": "إنشاء صوت",
+      "selectVoice": "اختر الصوت",
+      "selectVoiceFirst": "الرجاء اختيار صوت أولاً",
+      "generated": "تم الإنشاء",
+      "generateThis": "إنشاء هذا",
+      "generateAll": "إنشاء الكل",
+      "generateAllAudio": "إنشاء كل الصوت"
+    },
     "illustration": {
       "title": "إنشاء الرسوم التوضيحية",
       "selectType": "اختر نوع الإنشاء",
@@ -60,7 +69,8 @@
       "generateFirst": "إنشاء رسوم توضيحية",
       "cover": "الغلاف",
       "regenerate": "إعادة الإنشاء",
-      "downloadAll": "تنزيل الكل"
+      "downloadAll": "تنزيل الكل",
+      "generateAllIllustrations": "إنشاء كل الرسوم التوضيحية"
     }
   }
 }

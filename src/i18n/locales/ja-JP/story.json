@@ -43,7 +43,8 @@
       "selectVoiceFirst": "まず音声を選択してください",
       "generated": "生成済み",
       "generateThis": "この段落を生成",
-      "generateAll": "すべて生成"
+      "generateAll": "すべて生成",
+      "generateAllAudio": "すべての音声を生成"
     },
     "illustration": {
       "title": "イラストを生成",
@@ -71,7 +72,8 @@
       "generateFirst": "イラストを生成",
       "cover": "表紙",
       "regenerate": "再生成",
-      "downloadAll": "すべてダウンロード"
+      "downloadAll": "すべてダウンロード",
+      "generateAllIllustrations": "すべてのイラストを生成"
     }
   }
 }

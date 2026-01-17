@@ -48,6 +48,7 @@
       "generated": "Generated",
       "generateThis": "Generate this",
       "generateAll": "Generate All",
+      "generateAllAudio": "Generate All Audio",
       "paragraphs": "paragraphs",
       "downloadAll": "Download All",
       "downloading": "Downloading..."
@@ -78,7 +79,8 @@
       "generateFirst": "Generate Illustrations",
       "cover": "Cover",
       "regenerate": "Regenerate",
-      "downloadAll": "Download All"
+      "downloadAll": "Download All",
+      "generateAllIllustrations": "Generate All Illustrations"
     }
   }
 }

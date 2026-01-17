@@ -34,6 +34,15 @@
     "deleteConfirmTitle": "ဇာတ်လမ်းဖျက်ရန်",
     "deleteConfirmMessage": "ဤဇာတ်လမ်းကိုဖျက်လိုသည်မှာသေချာပါသလား?",
     "deleteWarning": "ဤလုပ်ဆောင်ချက်ကိုပြန်ပြင်၍မရပါ။",
+    "audio": {
+      "title": "အသံဖန်တီးရန်",
+      "selectVoice": "အသံရွေးချယ်ပါ",
+      "selectVoiceFirst": "ကျေးဇူးပြု၍ အသံအရင်ရွေးချယ်ပါ",
+      "generated": "ဖန်တီးပြီး",
+      "generateThis": "ဤသည်ကိုဖန်တီးပါ",
+      "generateAll": "အားလုံးဖန်တီးပါ",
+      "generateAllAudio": "အသံအားလုံးဖန်တီးပါ"
+    },
     "illustration": {
       "title": "ပုံများဖန်တီးရန်",
       "selectType": "ဖန်တီးမှုအမျိုးအစားရွေးချယ်ပါ",
@@ -60,7 +69,8 @@
       "generateFirst": "ပုံများဖန်တီးရန်",
       "cover": "မျက်နှာဖုံး",
       "regenerate": "ပြန်လည်ဖန်တီးရန်",
-      "downloadAll": "အားလုံးဒေါင်းလုဒ်လုပ်ရန်"
+      "downloadAll": "အားလုံးဒေါင်းလုဒ်လုပ်ရန်",
+      "generateAllIllustrations": "ပုံအားလုံးဖန်တီးပါ"
     }
   }
 }

@@ -43,7 +43,8 @@
       "selectVoiceFirst": "請先選擇語音",
       "generated": "已生成",
       "generateThis": "生成此段",
-      "generateAll": "全部生成"
+      "generateAll": "全部生成",
+      "generateAllAudio": "生成全部音訊"
     },
     "illustration": {
       "title": "生成插圖",
@@ -71,7 +72,8 @@
       "generateFirst": "生成插圖",
       "cover": "封面",
       "regenerate": "重新生成",
-      "downloadAll": "下載全部"
+      "downloadAll": "下載全部",
+      "generateAllIllustrations": "生成全部插圖"
     }
   }
 }

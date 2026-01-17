@@ -48,6 +48,7 @@
       "generated": "已生成",
       "generateThis": "生成此段",
       "generateAll": "全部生成",
+      "generateAllAudio": "生成全部音频",
       "paragraphs": "段语音",
       "downloadAll": "下载全部",
       "downloading": "下载中..."
@@ -78,7 +79,8 @@
       "generateFirst": "生成插图",
       "cover": "封面",
       "regenerate": "重新生成",
-      "downloadAll": "下载全部"
+      "downloadAll": "下载全部",
+      "generateAllIllustrations": "生成全部插图"
     }
   }
 }

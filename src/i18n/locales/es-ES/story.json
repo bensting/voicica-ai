@@ -43,7 +43,8 @@
       "selectVoiceFirst": "Por favor, selecciona una voz primero",
       "generated": "Generado",
       "generateThis": "Generar este",
-      "generateAll": "Generar todo"
+      "generateAll": "Generar todo",
+      "generateAllAudio": "Generar todo el audio"
     },
     "illustration": {
       "title": "Generar ilustraciones",
@@ -71,7 +72,8 @@
       "generateFirst": "Generar ilustraciones",
       "cover": "Portada",
       "regenerate": "Regenerar",
-      "downloadAll": "Descargar todo"
+      "downloadAll": "Descargar todo",
+      "generateAllIllustrations": "Generar todas las ilustraciones"
     }
   }
 }

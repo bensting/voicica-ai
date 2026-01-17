@@ -34,6 +34,15 @@
     "deleteConfirmTitle": "कहानी हटाएं",
     "deleteConfirmMessage": "क्या आप वाकई इस कहानी को हटाना चाहते हैं?",
     "deleteWarning": "यह क्रिया पूर्ववत नहीं की जा सकती।",
+    "audio": {
+      "title": "ऑडियो बनाएं",
+      "selectVoice": "आवाज़ चुनें",
+      "selectVoiceFirst": "कृपया पहले आवाज़ चुनें",
+      "generated": "बन गया",
+      "generateThis": "इसे बनाएं",
+      "generateAll": "सभी बनाएं",
+      "generateAllAudio": "सभी ऑडियो बनाएं"
+    },
     "illustration": {
       "title": "चित्र बनाएं",
       "selectType": "प्रकार चुनें",
@@ -60,7 +69,8 @@
       "generateFirst": "चित्र बनाएं",
       "cover": "कवर",
       "regenerate": "फिर से बनाएं",
-      "downloadAll": "सभी डाउनलोड करें"
+      "downloadAll": "सभी डाउनलोड करें",
+      "generateAllIllustrations": "सभी चित्र बनाएं"
     }
   }
 }

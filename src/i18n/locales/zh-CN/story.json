@@ -51,6 +51,7 @@
       "generateAllAudio": "生成全部音频",
       "paragraphs": "段语音",
       "downloadAll": "下载全部",
+      "downloadAllAudio": "下载音频",
       "downloading": "下载中..."
     },
     "illustration": {
@@ -80,6 +81,8 @@
       "cover": "封面",
       "regenerate": "重新生成",
       "downloadAll": "下载全部",
+      "downloadAllIllustrations": "下载插图",
+      "downloading": "下载中...",
       "generateAllIllustrations": "生成全部插图"
     }
   }

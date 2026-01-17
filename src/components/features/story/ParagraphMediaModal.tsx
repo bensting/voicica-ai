@@ -77,8 +77,10 @@ export default function ParagraphMediaModal({
   // 当前播放的音频
   const [playingParagraphId, setPlayingParagraphId] = useState<string | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
-  // 下载全部状态
-  const [isDownloadingAll, setIsDownloadingAll] = useState(false);
+  // 下载全部音频状态
+  const [isDownloadingAllAudio, setIsDownloadingAllAudio] = useState(false);
+  // 下载全部插图状态
+  const [isDownloadingAllIllustrations, setIsDownloadingAllIllustrations] = useState(false);
   // 正在生成插图的段落
   const [generatingIllustrationId, setGeneratingIllustrationId] = useState<string | null>(null);
   // 批量生成所有插图状态
@@ -449,7 +451,7 @@ export default function ParagraphMediaModal({
 
     if (audioItems.length === 0) return;
 
-    setIsDownloadingAll(true);
+    setIsDownloadingAllAudio(true);
     try {
       const zip = new JSZip();
 
@@ -464,7 +466,42 @@ export default function ParagraphMediaModal({
     } catch (err) {
       console.error('Failed to download all audio:', err);
     } finally {
-      setIsDownloadingAll(false);
+      setIsDownloadingAllAudio(false);
+    }
+  };
+
+  // 下载全部插图
+  const handleDownloadAllIllustrations = async () => {
+    const allParagraphs = story.paragraphs || [];
+
+    const illustrationItems: { url: string; index: number }[] = [];
+    allParagraphs.forEach((p, index) => {
+      const localState = paragraphIllustration[p.id];
+      if (localState?.status === 'completed' && localState.imageUrl) {
+        illustrationItems.push({ url: localState.imageUrl, index });
+      } else if (p.illustrationUrl && p.illustrationStatus === 'completed') {
+        illustrationItems.push({ url: p.illustrationUrl, index });
+      }
+    });
+
+    if (illustrationItems.length === 0) return;
+
+    setIsDownloadingAllIllustrations(true);
+    try {
+      const zip = new JSZip();
+
+      for (const item of illustrationItems) {
+        const response = await fetch(item.url);
+        const blob = await response.blob();
+        zip.file(`${item.index + 1}.png`, blob);
+      }
+
+      const content = await zip.generateAsync({ type: 'blob' });
+      saveAs(content, `${story.title}-illustrations.zip`);
+    } catch (err) {
+      console.error('Failed to download all illustrations:', err);
+    } finally {
+      setIsDownloadingAllIllustrations(false);
     }
   };
 
@@ -568,6 +605,15 @@ export default function ParagraphMediaModal({
     return (
       (audioState?.status === 'SUCCESS' && audioState.audioUrl) ||
       (p.audioUrl && p.audioStatus === 'completed')
+    );
+  }).length;
+
+  // 计算有插图的段落数量
+  const illustrationCount = paragraphs.filter((p) => {
+    const localState = paragraphIllustration[p.id];
+    return (
+      (localState?.status === 'completed' && localState.imageUrl) ||
+      (p.illustrationUrl && p.illustrationStatus === 'completed')
     );
   }).length;
 
@@ -847,26 +893,51 @@ export default function ParagraphMediaModal({
 
           {/* Footer */}
           <div className="p-4 border-t border-gray-100 shrink-0 space-y-3">
-            {audioCount > 0 && (
-              <button
-                onClick={handleDownloadAllAudio}
-                disabled={isDownloadingAll}
-                className="w-full px-4 py-2.5 text-sm font-medium text-purple-600 bg-purple-50 hover:bg-purple-100 rounded-xl transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
-              >
-                {isDownloadingAll ? (
-                  <>
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                    {t('story.audio.downloading') || 'Downloading...'}
-                  </>
-                ) : (
-                  <>
-                    <Download className="w-4 h-4" />
-                    {t('story.audio.downloadAll') || 'Download All Audio'} ({audioCount})
-                  </>
+            {/* 下载按钮行 */}
+            {(audioCount > 0 || illustrationCount > 0) && (
+              <div className="flex gap-3">
+                {audioCount > 0 && (
+                  <button
+                    onClick={handleDownloadAllAudio}
+                    disabled={isDownloadingAllAudio}
+                    className="flex-1 px-4 py-2.5 text-sm font-medium text-purple-600 bg-purple-50 hover:bg-purple-100 rounded-xl transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+                  >
+                    {isDownloadingAllAudio ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        {t('story.audio.downloading') || 'Downloading...'}
+                      </>
+                    ) : (
+                      <>
+                        <Download className="w-4 h-4" />
+                        {t('story.audio.downloadAllAudio') || 'Download Audio'} ({audioCount})
+                      </>
+                    )}
+                  </button>
                 )}
-              </button>
+                {illustrationCount > 0 && (
+                  <button
+                    onClick={handleDownloadAllIllustrations}
+                    disabled={isDownloadingAllIllustrations}
+                    className="flex-1 px-4 py-2.5 text-sm font-medium text-green-600 bg-green-50 hover:bg-green-100 rounded-xl transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+                  >
+                    {isDownloadingAllIllustrations ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        {t('story.illustration.downloading') || 'Downloading...'}
+                      </>
+                    ) : (
+                      <>
+                        <Download className="w-4 h-4" />
+                        {t('story.illustration.downloadAllIllustrations') || 'Download Illustrations'} ({illustrationCount})
+                      </>
+                    )}
+                  </button>
+                )}
+              </div>
             )}
 
+            {/* 生成按钮行 */}
             <div className="flex gap-3">
               <button
                 onClick={handleGenerateAllAudio}

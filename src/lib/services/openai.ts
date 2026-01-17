@@ -371,7 +371,16 @@ Respond in JSON format:
 
   try {
     const parsed = JSON.parse(responseContent);
-    return parsed.prompt || '';
+    const resultPrompt = parsed.prompt;
+
+    // 确保返回的是字符串
+    if (typeof resultPrompt === 'string' && resultPrompt.trim()) {
+      return resultPrompt;
+    }
+
+    // 如果 prompt 不是有效字符串，生成一个基本的提示词
+    console.warn('⚠️ [generateParagraphIllustrationPrompt] Invalid prompt from OpenAI, using fallback');
+    return `Children's book illustration of: ${paragraphContent.substring(0, 200)}. Style: whimsical, colorful, warm lighting, professional quality children's book art.`;
   } catch {
     throw new Error('Failed to parse illustration prompt from OpenAI response');
   }

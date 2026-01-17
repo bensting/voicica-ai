@@ -10,7 +10,13 @@ import { getUserOrAnonymous } from '@/lib/auth-firebase';
 import { calculateProductCreditsCost } from '@/config/creditsCost';
 import { ProductType } from '@/config/productType';
 import { checkCredits, deductCredits } from '@/lib/credits';
-import { extractStoryScenes, generateCoverPrompt, generateParagraphIllustrationPrompt } from '@/lib/services/openai';
+import {
+  extractStoryScenes,
+  generateCoverPrompt,
+  generateParagraphIllustrationPrompt,
+  extractStoryCharacters,
+  StoryCharacter,
+} from '@/lib/services/openai';
 import { generateImage } from '@/lib/services/runware';
 import { prisma } from '@/lib/prisma';
 
@@ -437,7 +443,7 @@ export async function generateParagraphIllustration(
       };
     }
 
-    // 2. 获取段落及其故事信息
+    // 2. 获取段落及其故事信息（包含角色描述）
     const paragraph = await prisma.story_paragraphs.findUnique({
       where: { id: paragraphId },
       include: {
@@ -446,6 +452,8 @@ export async function generateParagraphIllustration(
             id: true,
             user_id: true,
             title: true,
+            content: true,
+            character_descriptions: true,
           },
         },
       },
@@ -463,6 +471,41 @@ export async function generateParagraphIllustration(
     const totalParagraphs = await prisma.story_paragraphs.count({
       where: { story_id: paragraph.story_id },
     });
+
+    // 2.5 检查并提取角色描述（如果还没有）
+    let characterDescriptions: StoryCharacter[] = [];
+    if (paragraph.story.character_descriptions) {
+      try {
+        characterDescriptions = JSON.parse(paragraph.story.character_descriptions) as StoryCharacter[];
+        console.log('🎨 [generateParagraphIllustration] Using existing character descriptions:', characterDescriptions.length);
+      } catch {
+        console.warn('⚠️ [generateParagraphIllustration] Failed to parse character descriptions');
+      }
+    }
+
+    // 如果没有角色描述，先提取并保存
+    if (characterDescriptions.length === 0) {
+      console.log('🎨 [generateParagraphIllustration] Extracting character descriptions...');
+      try {
+        characterDescriptions = await extractStoryCharacters(
+          paragraph.story.title,
+          paragraph.story.content
+        );
+        console.log('🎨 [generateParagraphIllustration] Extracted characters:', characterDescriptions.map(c => c.name));
+
+        // 保存到数据库
+        if (characterDescriptions.length > 0) {
+          await prisma.stories.update({
+            where: { id: paragraph.story.id },
+            data: { character_descriptions: JSON.stringify(characterDescriptions) },
+          });
+          console.log('🎨 [generateParagraphIllustration] Saved character descriptions to database');
+        }
+      } catch (extractError) {
+        console.warn('⚠️ [generateParagraphIllustration] Failed to extract characters, proceeding without:', extractError);
+        // 继续执行，只是没有角色描述
+      }
+    }
 
     // 3. 计算所需积分
     const creditPerImage = calculateProductCreditsCost(ProductType.STORY_ILLUSTRATION);
@@ -486,13 +529,14 @@ export async function generateParagraphIllustration(
       data: { illustration_status: 'processing' },
     });
 
-    // 6. 生成插图提示词
-    console.log('🎨 [generateParagraphIllustration] Generating prompt...');
+    // 6. 生成插图提示词（传入角色描述以保持一致性）
+    console.log('🎨 [generateParagraphIllustration] Generating prompt with character descriptions...');
     const illustrationPrompt = await generateParagraphIllustrationPrompt(
       paragraph.story.title,
       paragraph.content,
       paragraph.position,
-      totalParagraphs
+      totalParagraphs,
+      characterDescriptions.length > 0 ? characterDescriptions : undefined
     );
 
     // 7. 生成图片

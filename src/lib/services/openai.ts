@@ -305,45 +305,57 @@ Respond in JSON format:
 }
 
 /**
- * 为单个段落生成插图提示词
- *
- * @param storyTitle 故事标题
- * @param paragraphContent 段落内容
- * @param paragraphIndex 段落索引（用于上下文）
- * @param totalParagraphs 总段落数
- * @returns 图片生成的英文提示词
+ * 故事角色描述
  */
-export async function generateParagraphIllustrationPrompt(
-  storyTitle: string,
-  paragraphContent: string,
-  paragraphIndex: number,
-  totalParagraphs: number
-): Promise<string> {
-  const positionHint =
-    paragraphIndex === 0
-      ? 'opening scene'
-      : paragraphIndex === totalParagraphs - 1
-        ? 'ending/conclusion scene'
-        : `middle of the story (paragraph ${paragraphIndex + 1} of ${totalParagraphs})`;
+export interface StoryCharacter {
+  /** 角色名称（原语言） */
+  name: string;
+  /** 角色类型 */
+  type: 'human' | 'animal' | 'creature' | 'object';
+  /** 详细外貌描述（英文，用于图片生成） */
+  appearance: string;
+}
 
-  const prompt = `Create an image generation prompt for a children's book illustration based on this paragraph.
+/**
+ * 从故事中提取角色描述
+ * 用于保持插图中角色外貌的一致性
+ *
+ * @param title 故事标题
+ * @param content 故事内容
+ * @returns 角色描述列表
+ */
+export async function extractStoryCharacters(
+  title: string,
+  content: string
+): Promise<StoryCharacter[]> {
+  const prompt = `Analyze this children's story and extract ALL characters that appear.
 
-Story Title: "${storyTitle}"
-Position: ${positionHint}
+Story Title: "${title}"
 
-Paragraph Content:
-${paragraphContent}
+Story Content:
+${content}
 
-Generate a detailed English prompt that:
-1. Captures the key visual elements of this paragraph
-2. Maintains consistency with children's book illustration style
-3. Includes specific details about characters, setting, and action
-4. Uses child-friendly, warm, and inviting imagery
-5. Art style: "children's book illustration, whimsical, colorful, warm lighting, professional quality"
+For EACH character (including main and supporting characters), provide:
+1. "name": The character's name or description in the ORIGINAL language of the story
+2. "type": One of "human", "animal", "creature", or "object"
+3. "appearance": A DETAILED English description of their physical appearance for consistent illustration generation. Include:
+   - Age (if human)
+   - Physical features (height, body type, face shape, eye color, hair style/color)
+   - Clothing/accessories they typically wear
+   - Any distinctive features or items
+   - For animals: species, size, fur/feather color, distinctive markings
+
+Be very specific and detailed in the appearance description to ensure visual consistency across multiple illustrations.
 
 Respond in JSON format:
 {
-  "prompt": "Your detailed image generation prompt here..."
+  "characters": [
+    {
+      "name": "角色名字",
+      "type": "human",
+      "appearance": "A 6-year-old boy with a shaved head, round cheerful face, big bright eyes, wearing an orange Buddhist monk robe (kasaya), simple wooden sandals, and carrying a small wooden prayer beads around his wrist..."
+    }
+  ]
 }`;
 
   const response = await openai.chat.completions.create({
@@ -352,7 +364,106 @@ Respond in JSON format:
       {
         role: 'system',
         content:
-          "You are an expert at creating children's book illustrations. You write detailed, vivid image generation prompts that capture the essence of each scene while maintaining a child-friendly, whimsical art style. Always respond with valid JSON.",
+          "You are an expert at analyzing children's stories and creating detailed, consistent character descriptions for illustration purposes. Your descriptions should be specific enough that different artists could draw the same character consistently. Always respond with valid JSON.",
+      },
+      {
+        role: 'user',
+        content: prompt,
+      },
+    ],
+    temperature: 0.5, // Lower temperature for more consistent descriptions
+    max_tokens: 2000,
+    response_format: { type: 'json_object' },
+  });
+
+  const responseContent = response.choices[0]?.message?.content;
+  if (!responseContent) {
+    throw new Error('No response from OpenAI');
+  }
+
+  try {
+    const parsed = JSON.parse(responseContent);
+    const characters = parsed.characters || [];
+    return characters.map((char: StoryCharacter) => ({
+      name: char.name || '',
+      type: char.type || 'human',
+      appearance: char.appearance || '',
+    }));
+  } catch {
+    throw new Error('Failed to parse characters from OpenAI response');
+  }
+}
+
+/**
+ * 为单个段落生成插图提示词
+ *
+ * @param storyTitle 故事标题
+ * @param paragraphContent 段落内容
+ * @param paragraphIndex 段落索引（用于上下文）
+ * @param totalParagraphs 总段落数
+ * @param characterDescriptions 角色描述（可选，用于保持一致性）
+ * @returns 图片生成的英文提示词
+ */
+export async function generateParagraphIllustrationPrompt(
+  storyTitle: string,
+  paragraphContent: string,
+  paragraphIndex: number,
+  totalParagraphs: number,
+  characterDescriptions?: StoryCharacter[]
+): Promise<string> {
+  const positionHint =
+    paragraphIndex === 0
+      ? 'opening scene'
+      : paragraphIndex === totalParagraphs - 1
+        ? 'ending/conclusion scene'
+        : `middle of the story (paragraph ${paragraphIndex + 1} of ${totalParagraphs})`;
+
+  // 构建角色描述部分
+  let characterSection = '';
+  if (characterDescriptions && characterDescriptions.length > 0) {
+    const characterList = characterDescriptions
+      .map((char) => `- ${char.name} (${char.type}): ${char.appearance}`)
+      .join('\n');
+    characterSection = `
+IMPORTANT - Character Descriptions (use these EXACTLY for visual consistency):
+${characterList}
+
+When generating the prompt:
+- First identify which characters from the list above appear in this paragraph
+- ONLY include characters that are actually mentioned or implied in this paragraph
+- Use the EXACT appearance descriptions provided for those characters
+- If the paragraph describes a scene without any characters, focus only on the environment/setting
+`;
+  }
+
+  const prompt = `Create an image generation prompt for a children's book illustration based on this paragraph.
+
+Story Title: "${storyTitle}"
+Position: ${positionHint}
+${characterSection}
+Paragraph Content:
+${paragraphContent}
+
+Generate a detailed English prompt that:
+1. Captures the key visual elements of this paragraph
+2. Maintains consistency with children's book illustration style
+3. Uses the EXACT character appearances provided above (if characters appear in this scene)
+4. Uses child-friendly, warm, and inviting imagery
+5. Art style: "children's book illustration, whimsical, colorful, warm lighting, professional quality"
+
+Respond in JSON format:
+{
+  "characters_in_scene": ["character names that appear in this paragraph"],
+  "prompt": "Your detailed image generation prompt here, using exact character descriptions..."
+}`;
+
+  const response = await openai.chat.completions.create({
+    model: 'gpt-4o-mini',
+    messages: [
+      {
+        role: 'system',
+        content:
+          "You are an expert at creating children's book illustrations. You write detailed, vivid image generation prompts that capture the essence of each scene while maintaining character consistency across illustrations. When character descriptions are provided, you MUST use them exactly to ensure visual consistency. Always respond with valid JSON.",
       },
       {
         role: 'user',
@@ -360,7 +471,7 @@ Respond in JSON format:
       },
     ],
     temperature: 0.7,
-    max_tokens: 500,
+    max_tokens: 800,
     response_format: { type: 'json_object' },
   });
 

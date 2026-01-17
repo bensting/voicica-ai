@@ -347,6 +347,9 @@ model stories {
   // 统计
   word_count        Int       @default(0)        // 字数统计
 
+  // 角色描述（用于保持插图角色一致性）
+  character_descriptions String? @db.Text        // JSON 格式的角色描述
+
   // 状态
   status            String    @default("draft") @db.VarChar(20) // draft, published
 

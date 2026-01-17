@@ -11,6 +11,7 @@ import {
   AlertTriangle,
   ChevronDown,
   ChevronUp,
+  Download,
 } from 'lucide-react';
 import { createTtsTask, getTtsTaskStatus, updateParagraphAudio } from '@/actions/tts';
 import VoiceSelectButton from '@/components/features/studio/tts/components/VoiceSelectButton';
@@ -330,6 +331,24 @@ export default function StoryAudioModal({
     }
   };
 
+  // 下载音频
+  const handleDownloadAudio = async (audioUrl: string, index: number) => {
+    try {
+      const response = await fetch(audioUrl);
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${story.title}-${index + 1}.mp3`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+    } catch (err) {
+      console.error('Failed to download audio:', err);
+    }
+  };
+
   const paragraphs = story.paragraphs || [];
 
   return (
@@ -434,22 +453,31 @@ export default function StoryAudioModal({
                         <div className="flex items-center gap-2 mt-2">
                           {/* 优先检查本次会话生成的音频 */}
                           {audioState?.status === 'SUCCESS' && audioState.audioUrl ? (
-                            <button
-                              onClick={() => handlePlayAudio(paragraph.id, audioState.audioUrl!)}
-                              className="inline-flex items-center gap-1.5 text-xs text-white bg-purple-500 hover:bg-purple-600 px-3 py-1.5 rounded-full transition-colors"
-                            >
-                              {isPlaying ? (
-                                <>
-                                  <Pause className="w-3 h-3" />
-                                  {t('common.pause') || 'Pause'}
-                                </>
-                              ) : (
-                                <>
-                                  <Play className="w-3 h-3" />
-                                  {t('common.play') || 'Play'}
-                                </>
-                              )}
-                            </button>
+                            <>
+                              <button
+                                onClick={() => handlePlayAudio(paragraph.id, audioState.audioUrl!)}
+                                className="inline-flex items-center gap-1.5 text-xs text-white bg-purple-500 hover:bg-purple-600 px-3 py-1.5 rounded-full transition-colors"
+                              >
+                                {isPlaying ? (
+                                  <>
+                                    <Pause className="w-3 h-3" />
+                                    {t('common.pause') || 'Pause'}
+                                  </>
+                                ) : (
+                                  <>
+                                    <Play className="w-3 h-3" />
+                                    {t('common.play') || 'Play'}
+                                  </>
+                                )}
+                              </button>
+                              <button
+                                onClick={() => handleDownloadAudio(audioState.audioUrl!, index)}
+                                className="inline-flex items-center justify-center w-7 h-7 text-gray-500 hover:text-purple-600 hover:bg-purple-50 rounded-full transition-colors"
+                                title={t('common.download') || 'Download'}
+                              >
+                                <Download className="w-3.5 h-3.5" />
+                              </button>
+                            </>
                           ) : audioState?.status === 'PROCESSING' ? (
                             <span className="inline-flex items-center gap-1 text-xs text-purple-600 bg-purple-50 px-2 py-1 rounded-full">
                               <Loader2 className="w-3 h-3 animate-spin" />
@@ -465,23 +493,32 @@ export default function StoryAudioModal({
                               {t('common.retry') || 'Retry'}
                             </button>
                           ) : paragraph.audioUrl && paragraph.audioStatus === 'completed' ? (
-                            /* 已有的段落音频（来自数据库） - 显示播放按钮 */
-                            <button
-                              onClick={() => handlePlayAudio(paragraph.id, paragraph.audioUrl!)}
-                              className="inline-flex items-center gap-1.5 text-xs text-white bg-purple-500 hover:bg-purple-600 px-3 py-1.5 rounded-full transition-colors"
-                            >
-                              {isPlaying ? (
-                                <>
-                                  <Pause className="w-3 h-3" />
-                                  {t('common.pause') || 'Pause'}
-                                </>
-                              ) : (
-                                <>
-                                  <Play className="w-3 h-3" />
-                                  {t('common.play') || 'Play'}
-                                </>
-                              )}
-                            </button>
+                            /* 已有的段落音频（来自数据库） - 显示播放和下载按钮 */
+                            <>
+                              <button
+                                onClick={() => handlePlayAudio(paragraph.id, paragraph.audioUrl!)}
+                                className="inline-flex items-center gap-1.5 text-xs text-white bg-purple-500 hover:bg-purple-600 px-3 py-1.5 rounded-full transition-colors"
+                              >
+                                {isPlaying ? (
+                                  <>
+                                    <Pause className="w-3 h-3" />
+                                    {t('common.pause') || 'Pause'}
+                                  </>
+                                ) : (
+                                  <>
+                                    <Play className="w-3 h-3" />
+                                    {t('common.play') || 'Play'}
+                                  </>
+                                )}
+                              </button>
+                              <button
+                                onClick={() => handleDownloadAudio(paragraph.audioUrl!, index)}
+                                className="inline-flex items-center justify-center w-7 h-7 text-gray-500 hover:text-purple-600 hover:bg-purple-50 rounded-full transition-colors"
+                                title={t('common.download') || 'Download'}
+                              >
+                                <Download className="w-3.5 h-3.5" />
+                              </button>
+                            </>
                           ) : (
                             <button
                               onClick={() => handleGenerateParagraph(paragraph)}

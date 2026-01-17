@@ -415,6 +415,24 @@ export default function ParagraphMediaModal({
     }
   };
 
+  // 下载插图
+  const handleDownloadIllustration = async (imageUrl: string, index: number) => {
+    try {
+      const response = await fetch(imageUrl);
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${story.title}-${index + 1}.png`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+    } catch (err) {
+      console.error('Failed to download illustration:', err);
+    }
+  };
+
   // 下载全部音频
   const handleDownloadAllAudio = async () => {
     const allParagraphs = story.paragraphs || [];
@@ -656,7 +674,7 @@ export default function ParagraphMediaModal({
                             <>
                               <button
                                 onClick={() => handlePlayAudio(paragraph.id, audioState.audioUrl!)}
-                                className="inline-flex items-center gap-1.5 text-xs text-white bg-purple-500 hover:bg-purple-600 px-3 py-1.5 rounded-full transition-colors"
+                                className="inline-flex items-center gap-1.5 text-xs text-white bg-purple-500 hover:bg-purple-600 px-3 py-1.5 rounded-full transition-colors whitespace-nowrap"
                               >
                                 {isPlaying ? (
                                   <>
@@ -696,7 +714,7 @@ export default function ParagraphMediaModal({
                             <>
                               <button
                                 onClick={() => handlePlayAudio(paragraph.id, paragraph.audioUrl!)}
-                                className="inline-flex items-center gap-1.5 text-xs text-white bg-purple-500 hover:bg-purple-600 px-3 py-1.5 rounded-full transition-colors"
+                                className="inline-flex items-center gap-1.5 text-xs text-white bg-purple-500 hover:bg-purple-600 px-3 py-1.5 rounded-full transition-colors whitespace-nowrap"
                               >
                                 {isPlaying ? (
                                   <>
@@ -750,6 +768,13 @@ export default function ParagraphMediaModal({
                               >
                                 <ImageIcon className="w-3 h-3" />
                                 {t('common.view') || 'View'}
+                              </button>
+                              <button
+                                onClick={() => handleDownloadIllustration(illustrationUrl, index)}
+                                className="inline-flex items-center justify-center w-7 h-7 text-gray-500 hover:text-green-600 hover:bg-green-50 rounded-full transition-colors"
+                                title={t('common.download') || 'Download'}
+                              >
+                                <Download className="w-3.5 h-3.5" />
                               </button>
                               <button
                                 onClick={() => handleGenerateParagraphIllustration(paragraph)}

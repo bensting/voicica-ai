@@ -51,6 +51,7 @@
       "generateAllAudio": "Generate All Audio",
       "paragraphs": "paragraphs",
       "downloadAll": "Download All",
+      "downloadAllAudio": "Download Audio",
       "downloading": "Downloading..."
     },
     "illustration": {
@@ -80,6 +81,8 @@
       "cover": "Cover",
       "regenerate": "Regenerate",
       "downloadAll": "Download All",
+      "downloadAllIllustrations": "Download Illustrations",
+      "downloading": "Downloading...",
       "generateAllIllustrations": "Generate All Illustrations"
     }
   }

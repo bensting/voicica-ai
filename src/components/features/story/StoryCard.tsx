@@ -17,8 +17,7 @@ import type { UserStory } from '@/actions/story';
 
 interface StoryCardProps {
   story: UserStory;
-  onGenerateAudio: (story: UserStory) => void;
-  onGenerateIllustration: (story: UserStory) => void;
+  onOpenMedia: (story: UserStory) => void;
   onEdit: (story: UserStory) => void;
   onDelete: (story: UserStory) => void;
   t: (key: string) => string;
@@ -26,8 +25,7 @@ interface StoryCardProps {
 
 export default function StoryCard({
   story,
-  onGenerateAudio,
-  onGenerateIllustration,
+  onOpenMedia,
   onEdit,
   onDelete,
   t,
@@ -84,6 +82,12 @@ export default function StoryCard({
 
   // Check if audio is ready to play (基于段落音频)
   const hasAudio = !!firstParagraphAudio;
+
+  // 获取段落插图信息
+  const paragraphsWithIllustration = (story.paragraphs || []).filter(
+    (p) => p.illustrationUrl && p.illustrationStatus === 'completed'
+  );
+  const paragraphIllustrationCount = paragraphsWithIllustration.length;
 
   // Handle audio playback (使用第一个段落音频)
   const handlePlayAudio = () => {
@@ -181,46 +185,39 @@ export default function StoryCard({
             {paragraphAudioCount}
           </span>
         )}
-        {story.illustrationCount > 0 && (
+        {paragraphIllustrationCount > 0 && (
           <span className="flex items-center gap-1">
             <ImageLucide className="w-3.5 h-3.5" />
-            {story.illustrationCount}
+            {paragraphIllustrationCount}
           </span>
         )}
       </div>
 
-      {/* Illustration Thumbnails */}
-      {story.illustrations && story.illustrations.length > 0 && (
+      {/* Paragraph Illustration Thumbnails */}
+      {paragraphsWithIllustration.length > 0 && (
         <div className="px-4 pb-3">
           <div
             className="flex gap-2 overflow-x-auto scrollbar-hide cursor-pointer"
-            onClick={() => onGenerateIllustration(story)}
+            onClick={() => onOpenMedia(story)}
           >
-            {story.illustrations.map((ill) => (
+            {paragraphsWithIllustration.slice(0, 5).map((p, index) => (
               <div
-                key={ill.id}
+                key={p.id}
                 className="relative flex-shrink-0 w-14 h-14 rounded-lg overflow-hidden bg-gray-100"
               >
                 <Image
-                  src={ill.imageUrl}
-                  alt={ill.type === 'cover' ? 'Cover' : `Scene ${ill.position}`}
+                  src={p.illustrationUrl!}
+                  alt={`Paragraph ${index + 1}`}
                   fill
                   unoptimized
                   className="object-cover"
                 />
-                {ill.type === 'cover' && (
-                  <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent py-0.5">
-                    <span className="text-[10px] text-white block text-center">
-                      {t('story.illustration.cover') || 'Cover'}
-                    </span>
-                  </div>
-                )}
               </div>
             ))}
-            {story.illustrationCount > story.illustrations.length && (
+            {paragraphIllustrationCount > 5 && (
               <div className="flex-shrink-0 w-14 h-14 rounded-lg bg-gray-100 flex items-center justify-center">
                 <span className="text-xs text-gray-500">
-                  +{story.illustrationCount - story.illustrations.length}
+                  +{paragraphIllustrationCount - 5}
                 </span>
               </div>
             )}
@@ -257,20 +254,14 @@ export default function StoryCard({
       )}
 
       {/* Card Actions */}
-      <div className="px-4 pb-4 flex gap-2">
+      <div className="px-4 pb-4">
         <button
-          onClick={() => onGenerateAudio(story)}
-          className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white text-sm font-medium rounded-xl transition-all shadow-sm"
+          onClick={() => onOpenMedia(story)}
+          className="w-full flex items-center justify-center gap-1.5 px-3 py-2.5 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white text-sm font-medium rounded-xl transition-all shadow-sm"
         >
           <Volume2 className="w-4 h-4" />
-          {t('story.generateAudio') || 'Audio'}
-        </button>
-        <button
-          onClick={() => onGenerateIllustration(story)}
-          className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white text-sm font-medium rounded-xl transition-all shadow-sm"
-        >
           <ImageLucide className="w-4 h-4" />
-          {t('story.generateIllustration') || 'Illustration'}
+          {t('story.media.button') || 'Audio & Illustrations'}
         </button>
       </div>
     </div>

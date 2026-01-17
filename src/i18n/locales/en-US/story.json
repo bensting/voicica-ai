@@ -37,6 +37,10 @@
     "paragraphs": "paragraphs",
     "hasIllustration": "Illustrated",
     "hasAudio": "Audio",
+    "media": {
+      "title": "Audio & Illustrations",
+      "button": "Media"
+    },
     "audio": {
       "title": "Generate Audio",
       "selectVoice": "Select Voice",

@@ -21,7 +21,8 @@
     "play": "播放",
     "pause": "暫停",
     "processing": "處理中...",
-    "generating": "生成中..."
+    "generating": "生成中...",
+    "view": "查看"
   },
   "app": {
     "updateAvailable": "發現新版本",

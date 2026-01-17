@@ -15,7 +15,14 @@
     "refresh": "Segarkan",
     "save": "Simpan",
     "saving": "Menyimpan...",
-    "insufficientCredits": "Kredit tidak cukup. Silakan isi ulang atau tingkatkan paket Anda"
+    "insufficientCredits": "Kredit tidak cukup. Silakan isi ulang atau tingkatkan paket Anda",
+    "expand": "Perluas",
+    "collapse": "Ciutkan",
+    "play": "Putar",
+    "pause": "Jeda",
+    "processing": "Memproses...",
+    "generating": "Menghasilkan...",
+    "view": "Lihat"
   },
   "app": {
     "updateAvailable": "Pembaruan Tersedia",

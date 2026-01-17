@@ -303,3 +303,76 @@ Respond in JSON format:
     throw new Error('Failed to parse cover prompt from OpenAI response');
   }
 }
+
+/**
+ * 为单个段落生成插图提示词
+ *
+ * @param storyTitle 故事标题
+ * @param paragraphContent 段落内容
+ * @param paragraphIndex 段落索引（用于上下文）
+ * @param totalParagraphs 总段落数
+ * @returns 图片生成的英文提示词
+ */
+export async function generateParagraphIllustrationPrompt(
+  storyTitle: string,
+  paragraphContent: string,
+  paragraphIndex: number,
+  totalParagraphs: number
+): Promise<string> {
+  const positionHint =
+    paragraphIndex === 0
+      ? 'opening scene'
+      : paragraphIndex === totalParagraphs - 1
+        ? 'ending/conclusion scene'
+        : `middle of the story (paragraph ${paragraphIndex + 1} of ${totalParagraphs})`;
+
+  const prompt = `Create an image generation prompt for a children's book illustration based on this paragraph.
+
+Story Title: "${storyTitle}"
+Position: ${positionHint}
+
+Paragraph Content:
+${paragraphContent}
+
+Generate a detailed English prompt that:
+1. Captures the key visual elements of this paragraph
+2. Maintains consistency with children's book illustration style
+3. Includes specific details about characters, setting, and action
+4. Uses child-friendly, warm, and inviting imagery
+5. Art style: "children's book illustration, whimsical, colorful, warm lighting, professional quality"
+
+Respond in JSON format:
+{
+  "prompt": "Your detailed image generation prompt here..."
+}`;
+
+  const response = await openai.chat.completions.create({
+    model: 'gpt-4o-mini',
+    messages: [
+      {
+        role: 'system',
+        content:
+          "You are an expert at creating children's book illustrations. You write detailed, vivid image generation prompts that capture the essence of each scene while maintaining a child-friendly, whimsical art style. Always respond with valid JSON.",
+      },
+      {
+        role: 'user',
+        content: prompt,
+      },
+    ],
+    temperature: 0.7,
+    max_tokens: 500,
+    response_format: { type: 'json_object' },
+  });
+
+  const responseContent = response.choices[0]?.message?.content;
+  if (!responseContent) {
+    throw new Error('No response from OpenAI');
+  }
+
+  try {
+    const parsed = JSON.parse(responseContent);
+    return parsed.prompt || '';
+  } catch {
+    throw new Error('Failed to parse illustration prompt from OpenAI response');
+  }
+}

@@ -426,8 +426,10 @@ model story_paragraphs {
   audio_voice     String?   @db.VarChar(255)       // 使用的语音名称
   audio_status    String    @default("none") @db.VarChar(20) // none, pending, processing, completed, failed
 
-  // 关联插图（通过 position 关联，或直接关联）
-  illustration_id String?                          // 关联的插图 ID（可选）
+  // 插图（段落级别）
+  illustration_url    String?                      // 段落插图 URL
+  illustration_prompt String?   @db.Text           // 生成插图的提示词
+  illustration_status String   @default("none") @db.VarChar(20) // none, pending, processing, completed, failed
 
   // 时间
   created_at      DateTime  @default(now()) @db.Timestamptz(6)

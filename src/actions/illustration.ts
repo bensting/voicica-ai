@@ -10,7 +10,7 @@ import { getUserOrAnonymous } from '@/lib/auth-firebase';
 import { calculateProductCreditsCost } from '@/config/creditsCost';
 import { ProductType } from '@/config/productType';
 import { checkCredits, deductCredits } from '@/lib/credits';
-import { extractStoryScenes, generateCoverPrompt } from '@/lib/services/openai';
+import { extractStoryScenes, generateCoverPrompt, generateParagraphIllustrationPrompt } from '@/lib/services/openai';
 import { generateImage } from '@/lib/services/runware';
 import { prisma } from '@/lib/prisma';
 
@@ -218,19 +218,6 @@ export async function generateIllustrations(
           },
         });
 
-        // 如果是场景插图，更新对应段落的 illustration_id
-        if (illustration.paragraph !== null) {
-          await prisma.story_paragraphs.updateMany({
-            where: {
-              story_id: storyId,
-              position: illustration.paragraph,
-            },
-            data: {
-              illustration_id: illustration.id,
-            },
-          });
-        }
-
         return { id: illustration.id, success: true };
       } catch (error) {
         console.error(`❌ [generateIllustrations] Failed to generate image for ${illustration.id}:`, error);
@@ -408,6 +395,256 @@ export async function deleteIllustration(illustrationId: string): Promise<Delete
       success: false,
       errorCode: 'DELETE_FAILED',
       error: error instanceof Error ? error.message : 'Failed to delete illustration',
+    };
+  }
+}
+
+/**
+ * 段落插图生成结果
+ */
+export interface GenerateParagraphIllustrationResult {
+  success: boolean;
+  imageUrl?: string;
+  prompt?: string;
+  error?: string;
+  errorCode?: 'AUTH_FAILED' | 'LOGIN_REQUIRED' | 'NOT_FOUND' | 'INSUFFICIENT_CREDITS' | 'GENERATION_FAILED';
+  errorData?: { required: number; current: number };
+  creditsCost?: number;
+}
+
+/**
+ * 为单个段落生成插图
+ *
+ * @param paragraphId 段落 ID
+ * @returns 生成结果
+ */
+export async function generateParagraphIllustration(
+  paragraphId: string
+): Promise<GenerateParagraphIllustrationResult> {
+  console.log('🎨 [generateParagraphIllustration] Starting for paragraph:', paragraphId);
+
+  try {
+    // 1. 验证用户
+    const unifiedUser = await getUserOrAnonymous();
+    const userId = unifiedUser.user_id;
+    const isAnonymous = unifiedUser.is_anonymous;
+
+    if (isAnonymous) {
+      return {
+        success: false,
+        errorCode: 'LOGIN_REQUIRED',
+        error: 'Login required to generate illustrations',
+      };
+    }
+
+    // 2. 获取段落及其故事信息
+    const paragraph = await prisma.story_paragraphs.findUnique({
+      where: { id: paragraphId },
+      include: {
+        story: {
+          select: {
+            id: true,
+            user_id: true,
+            title: true,
+          },
+        },
+      },
+    });
+
+    if (!paragraph || paragraph.story.user_id !== userId) {
+      return {
+        success: false,
+        errorCode: 'NOT_FOUND',
+        error: 'Paragraph not found',
+      };
+    }
+
+    // 获取该故事的总段落数
+    const totalParagraphs = await prisma.story_paragraphs.count({
+      where: { story_id: paragraph.story_id },
+    });
+
+    // 3. 计算所需积分
+    const creditPerImage = calculateProductCreditsCost(ProductType.STORY_ILLUSTRATION);
+
+    console.log('🎨 [generateParagraphIllustration] Credits required:', creditPerImage);
+
+    // 4. 检查积分
+    const { hasEnough, current } = await checkCredits(userId, creditPerImage, isAnonymous);
+
+    if (!hasEnough) {
+      return {
+        success: false,
+        errorCode: 'INSUFFICIENT_CREDITS',
+        errorData: { required: creditPerImage, current },
+      };
+    }
+
+    // 5. 设置段落状态为 processing
+    await prisma.story_paragraphs.update({
+      where: { id: paragraphId },
+      data: { illustration_status: 'processing' },
+    });
+
+    // 6. 生成插图提示词
+    console.log('🎨 [generateParagraphIllustration] Generating prompt...');
+    const illustrationPrompt = await generateParagraphIllustrationPrompt(
+      paragraph.story.title,
+      paragraph.content,
+      paragraph.position,
+      totalParagraphs
+    );
+
+    // 7. 生成图片
+    console.log('🎨 [generateParagraphIllustration] Generating image...');
+    const results = await generateImage({
+      prompt: illustrationPrompt,
+      width: 1024,
+      height: 768,
+      numberResults: 1,
+    });
+
+    const result = results[0];
+
+    // 8. 更新段落记录
+    await prisma.story_paragraphs.update({
+      where: { id: paragraphId },
+      data: {
+        illustration_url: result.imageURL,
+        illustration_prompt: illustrationPrompt,
+        illustration_status: 'completed',
+      },
+    });
+
+    // 9. 扣除积分
+    await deductCredits(
+      userId,
+      creditPerImage,
+      ProductType.STORY_ILLUSTRATION,
+      isAnonymous,
+      `Paragraph illustration: ${paragraph.story.title.substring(0, 30)}`
+    );
+
+    console.log('✅ [generateParagraphIllustration] Complete:', paragraphId);
+
+    return {
+      success: true,
+      imageUrl: result.imageURL,
+      prompt: illustrationPrompt,
+      creditsCost: creditPerImage,
+    };
+  } catch (error) {
+    console.error('❌ [generateParagraphIllustration] Error:', error);
+
+    // 尝试将段落状态改为失败
+    try {
+      await prisma.story_paragraphs.update({
+        where: { id: paragraphId },
+        data: { illustration_status: 'failed' },
+      });
+    } catch {
+      // 忽略更新失败
+    }
+
+    if (error instanceof Error && error.message === '未提供认证信息') {
+      return {
+        success: false,
+        errorCode: 'AUTH_FAILED',
+        error: 'Authentication required',
+      };
+    }
+
+    return {
+      success: false,
+      errorCode: 'GENERATION_FAILED',
+      error: error instanceof Error ? error.message : 'Failed to generate illustration',
+    };
+  }
+}
+
+/**
+ * 重新生成段落插图（替换现有插图）
+ *
+ * @param paragraphId 段落 ID
+ * @returns 生成结果
+ */
+export async function regenerateParagraphIllustration(
+  paragraphId: string
+): Promise<GenerateParagraphIllustrationResult> {
+  console.log('🎨 [regenerateParagraphIllustration] Regenerating for paragraph:', paragraphId);
+
+  // 直接调用生成函数，它会替换现有的插图
+  return generateParagraphIllustration(paragraphId);
+}
+
+/**
+ * 清除段落插图
+ *
+ * @param paragraphId 段落 ID
+ */
+export interface ClearParagraphIllustrationResult {
+  success: boolean;
+  error?: string;
+  errorCode?: 'AUTH_FAILED' | 'LOGIN_REQUIRED' | 'NOT_FOUND' | 'CLEAR_FAILED';
+}
+
+export async function clearParagraphIllustration(
+  paragraphId: string
+): Promise<ClearParagraphIllustrationResult> {
+  console.log('🎨 [clearParagraphIllustration] Clearing for paragraph:', paragraphId);
+
+  try {
+    // 1. 验证用户
+    const unifiedUser = await getUserOrAnonymous();
+    const userId = unifiedUser.user_id;
+    const isAnonymous = unifiedUser.is_anonymous;
+
+    if (isAnonymous) {
+      return {
+        success: false,
+        errorCode: 'LOGIN_REQUIRED',
+        error: 'Login required',
+      };
+    }
+
+    // 2. 获取段落及其故事信息
+    const paragraph = await prisma.story_paragraphs.findUnique({
+      where: { id: paragraphId },
+      include: {
+        story: {
+          select: { user_id: true },
+        },
+      },
+    });
+
+    if (!paragraph || paragraph.story.user_id !== userId) {
+      return {
+        success: false,
+        errorCode: 'NOT_FOUND',
+        error: 'Paragraph not found',
+      };
+    }
+
+    // 3. 清除插图数据
+    await prisma.story_paragraphs.update({
+      where: { id: paragraphId },
+      data: {
+        illustration_url: null,
+        illustration_prompt: null,
+        illustration_status: 'none',
+      },
+    });
+
+    console.log('✅ [clearParagraphIllustration] Cleared:', paragraphId);
+
+    return { success: true };
+  } catch (error) {
+    console.error('❌ [clearParagraphIllustration] Error:', error);
+
+    return {
+      success: false,
+      errorCode: 'CLEAR_FAILED',
+      error: error instanceof Error ? error.message : 'Failed to clear illustration',
     };
   }
 }

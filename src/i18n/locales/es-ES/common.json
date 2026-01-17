@@ -15,7 +15,14 @@
     "refresh": "Actualizar",
     "save": "Guardar",
     "saving": "Guardando...",
-    "insufficientCredits": "Créditos insuficientes. Por favor recarga o mejora tu plan"
+    "insufficientCredits": "Créditos insuficientes. Por favor recarga o mejora tu plan",
+    "expand": "Expandir",
+    "collapse": "Contraer",
+    "play": "Reproducir",
+    "pause": "Pausar",
+    "processing": "Procesando...",
+    "generating": "Generando...",
+    "view": "Ver"
   },
   "app": {
     "updateAvailable": "Actualización disponible",

@@ -21,7 +21,8 @@
     "play": "Play",
     "pause": "Pause",
     "processing": "Processing...",
-    "generating": "Generating..."
+    "generating": "Generating...",
+    "view": "View"
   },
   "app": {
     "updateAvailable": "Update Available",

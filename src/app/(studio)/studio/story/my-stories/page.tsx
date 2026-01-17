@@ -10,10 +10,8 @@ import type { UserStory } from '@/actions/story';
 import LoginModal from '@/components/features/auth/LoginModal';
 import {
   StoryCard,
-  StoryAudioModal,
   DeleteConfirmModal,
-  IllustrationModal,
-  IllustrationGalleryModal,
+  ParagraphMediaModal,
 } from '@/components/features/story';
 
 /**
@@ -30,11 +28,9 @@ export default function MyStoriesPage() {
   const [stories, setStories] = useState<UserStory[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
-  const [audioConfirmStory, setAudioConfirmStory] = useState<UserStory | null>(null);
+  const [mediaStory, setMediaStory] = useState<UserStory | null>(null);
   const [deleteConfirmStory, setDeleteConfirmStory] = useState<UserStory | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [illustrationStory, setIllustrationStory] = useState<UserStory | null>(null);
-  const [galleryStory, setGalleryStory] = useState<UserStory | null>(null);
 
   // 设置页面标题
   useEffect(() => {
@@ -75,29 +71,19 @@ export default function MyStoriesPage() {
   }, [user]);
 
   // Action handlers
-  const handleGenerateAudio = (story: UserStory) => {
-    setAudioConfirmStory(story);
+  const handleOpenMedia = (story: UserStory) => {
+    setMediaStory(story);
   };
 
-  const handleGenerateIllustration = (story: UserStory) => {
-    if (story.illustrationCount > 0) {
-      setGalleryStory(story);
-    } else {
-      setIllustrationStory(story);
-    }
-  };
-
-  const handleIllustrationSuccess = () => {
-    if (illustrationStory) {
-      setGalleryStory(illustrationStory);
-      setIllustrationStory(null);
-    }
-  };
-
-  const handleOpenIllustrationModal = () => {
-    if (galleryStory) {
-      setIllustrationStory(galleryStory);
-      setGalleryStory(null);
+  const handleMediaSuccess = async () => {
+    // 刷新故事数据
+    try {
+      const result = await getUserStories();
+      if (result.success) {
+        setStories(result.stories || []);
+      }
+    } catch (err) {
+      console.error('Failed to refresh stories:', err);
     }
   };
 
@@ -158,8 +144,7 @@ export default function MyStoriesPage() {
         <StoryCard
           key={story.id}
           story={story}
-          onGenerateAudio={handleGenerateAudio}
-          onGenerateIllustration={handleGenerateIllustration}
+          onOpenMedia={handleOpenMedia}
           onEdit={handleEdit}
           onDelete={handleDelete}
           t={t}
@@ -223,14 +208,12 @@ export default function MyStoriesPage() {
         />
       )}
 
-      {/* Story Audio Generation Modal */}
-      <StoryAudioModal
-        story={audioConfirmStory}
-        isOpen={!!audioConfirmStory}
-        onClose={() => setAudioConfirmStory(null)}
-        onSuccess={() => {
-          setAudioConfirmStory(null);
-        }}
+      {/* Paragraph Media Modal (Audio & Illustrations) */}
+      <ParagraphMediaModal
+        story={mediaStory}
+        isOpen={!!mediaStory}
+        onClose={() => setMediaStory(null)}
+        onSuccess={handleMediaSuccess}
         t={t}
       />
 
@@ -241,24 +224,6 @@ export default function MyStoriesPage() {
         onClose={() => setDeleteConfirmStory(null)}
         onConfirm={handleConfirmDelete}
         isDeleting={isDeleting}
-        t={t}
-      />
-
-      {/* Illustration Generation Modal */}
-      <IllustrationModal
-        story={illustrationStory}
-        isOpen={!!illustrationStory}
-        onClose={() => setIllustrationStory(null)}
-        onSuccess={handleIllustrationSuccess}
-        t={t}
-      />
-
-      {/* Illustration Gallery Modal */}
-      <IllustrationGalleryModal
-        story={galleryStory}
-        isOpen={!!galleryStory}
-        onClose={() => setGalleryStory(null)}
-        onGenerate={handleOpenIllustrationModal}
         t={t}
       />
     </>

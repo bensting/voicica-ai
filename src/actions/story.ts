@@ -358,11 +358,14 @@ export interface StoryParagraph {
   id: string;
   position: number;
   content: string;
-  illustrationId: string | null;
-  illustrationUrl: string | null;
+  // 音频
   audioUrl: string | null;
   audioDuration: number | null;
   audioStatus: string;
+  // 插图
+  illustrationUrl: string | null;
+  illustrationPrompt: string | null;
+  illustrationStatus: string;
 }
 
 export interface UserStory {
@@ -457,23 +460,17 @@ export async function getUserStories(): Promise<GetUserStoriesResult> {
             id: true,
             position: true,
             content: true,
-            illustration_id: true,
+            // 音频
             audio_url: true,
             audio_duration: true,
             audio_status: true,
+            // 插图
+            illustration_url: true,
+            illustration_prompt: true,
+            illustration_status: true,
           },
         },
       },
-    });
-
-    // 获取插图 URL 映射（用于段落关联）
-    const illustrationMap = new Map<string, string>();
-    stories.forEach((story) => {
-      story.illustrations.forEach((ill) => {
-        if (ill.image_url) {
-          illustrationMap.set(ill.id, ill.image_url);
-        }
-      });
     });
 
     console.log(`✅ [getUserStories] 获取到 ${stories.length} 个故事`);
@@ -515,11 +512,14 @@ export async function getUserStories(): Promise<GetUserStoriesResult> {
             id: p.id,
             position: p.position,
             content: p.content,
-            illustrationId: p.illustration_id,
-            illustrationUrl: p.illustration_id ? illustrationMap.get(p.illustration_id) || null : null,
+            // 音频
             audioUrl: p.audio_url,
             audioDuration: p.audio_duration,
             audioStatus: p.audio_status,
+            // 插图
+            illustrationUrl: p.illustration_url,
+            illustrationPrompt: p.illustration_prompt,
+            illustrationStatus: p.illustration_status,
           })),
         };
       }),

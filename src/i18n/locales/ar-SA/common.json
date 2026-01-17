@@ -15,7 +15,14 @@
     "refresh": "تحديث",
     "save": "حفظ",
     "saving": "جارٍ الحفظ...",
-    "insufficientCredits": "رصيد غير كافٍ. يرجى الشحن أو ترقية خطتك"
+    "insufficientCredits": "رصيد غير كافٍ. يرجى الشحن أو ترقية خطتك",
+    "expand": "توسيع",
+    "collapse": "طي",
+    "play": "تشغيل",
+    "pause": "إيقاف مؤقت",
+    "processing": "جارٍ المعالجة...",
+    "generating": "جارٍ الإنشاء...",
+    "view": "عرض"
   },
   "app": {
     "updateAvailable": "يتوفر تحديث",

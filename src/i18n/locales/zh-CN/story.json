@@ -37,6 +37,10 @@
     "paragraphs": "段落",
     "hasIllustration": "有插图",
     "hasAudio": "有语音",
+    "media": {
+      "title": "语音与插图",
+      "button": "媒体"
+    },
     "audio": {
       "title": "生成语音",
       "selectVoice": "选择语音",

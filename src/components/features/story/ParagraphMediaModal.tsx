@@ -764,7 +764,7 @@ export default function ParagraphMediaModal({
                             <>
                               <button
                                 onClick={() => setPreviewImageUrl(illustrationUrl)}
-                                className="inline-flex items-center gap-1.5 text-xs text-white bg-green-500 hover:bg-green-600 px-3 py-1.5 rounded-full transition-colors"
+                                className="inline-flex items-center gap-1.5 text-xs text-white bg-green-500 hover:bg-green-600 px-3 py-1.5 rounded-full transition-colors whitespace-nowrap"
                               >
                                 <ImageIcon className="w-3 h-3" />
                                 {t('common.view') || 'View'}

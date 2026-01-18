@@ -12,8 +12,8 @@ const SettingsIcon = () => (
 
 // 默认头像
 const DefaultAvatar = () => (
-  <div className="w-24 h-24 rounded-full bg-gradient-to-br from-purple-400 to-pink-400 flex items-center justify-center border-4 border-purple-500/30">
-    <svg className="w-14 h-14 text-white/80" viewBox="0 0 24 24" fill="currentColor">
+  <div className="w-20 h-20 rounded-full bg-gradient-to-br from-purple-400 to-pink-400 flex items-center justify-center border-2 border-purple-500/30">
+    <svg className="w-10 h-10 text-white/80" viewBox="0 0 24 24" fill="currentColor">
       <circle cx="12" cy="8" r="4" />
       <path d="M20 21a8 8 0 10-16 0" />
     </svg>
@@ -36,14 +36,17 @@ export default function ProfileHeader({
   isLoggedIn = false,
 }: ProfileHeaderProps) {
   return (
-    <div className="relative pt-8 pb-4">
+    <div
+      className="relative pb-2"
+      style={{ paddingTop: 'calc(16px + var(--safe-area-inset-top, 0px))' }}
+    >
       {/* 背景渐变 */}
       <div className="absolute inset-0 bg-gradient-to-b from-purple-900/40 via-pink-900/20 to-transparent" />
 
       {/* 设置按钮 */}
       <Link
         href="/native/settings"
-        className="absolute top-4 right-4 z-10 p-2 rounded-full bg-gray-800/50 hover:bg-gray-700/50 transition-colors"
+        className="absolute right-4 z-10 p-2 rounded-full bg-gray-800/50 hover:bg-gray-700/50 transition-colors"
         style={{ top: 'calc(16px + var(--safe-area-inset-top, 0px))' }}
       >
         <SettingsIcon />

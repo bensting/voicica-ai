@@ -21,7 +21,7 @@ export default function UserStatsBar({
   credits = 0,
 }: UserStatsBarProps) {
   return (
-    <div className="mx-4 flex items-center justify-center gap-8 py-3">
+    <div className="mx-4 flex items-center justify-center gap-8 py-2">
       {/* 套餐类型 */}
       <div className="text-gray-300 text-sm font-medium">
         {planName}

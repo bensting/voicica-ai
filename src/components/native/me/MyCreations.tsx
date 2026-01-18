@@ -38,18 +38,18 @@ const emptyStateMessages: Record<TabType, { title: string; subtitle: string; cre
 // 空状态插画
 const EmptyIllustration = () => (
   <svg
-    className="w-32 h-32 text-gray-600"
+    className="w-16 h-16 text-gray-600"
     viewBox="0 0 120 120"
     fill="none"
     stroke="currentColor"
-    strokeWidth="1.5"
+    strokeWidth="2"
   >
     {/* 文件夹 */}
     <rect x="25" y="40" width="50" height="45" rx="4" />
     <path d="M25 50 L25 45 Q25 40 30 40 L45 40 L50 35 L70 35 Q75 35 75 40 L75 50" />
     {/* 加号 */}
-    <line x1="50" y1="55" x2="50" y2="75" strokeWidth="2" />
-    <line x1="40" y1="65" x2="60" y2="65" strokeWidth="2" />
+    <line x1="50" y1="55" x2="50" y2="75" strokeWidth="3" />
+    <line x1="40" y1="65" x2="60" y2="65" strokeWidth="3" />
     {/* 人物 */}
     <circle cx="90" cy="55" r="8" />
     <path d="M82 75 Q82 65 90 65 Q98 65 98 75" />
@@ -75,12 +75,12 @@ export default function MyCreations({ creations }: MyCreationsProps) {
   const emptyState = emptyStateMessages[activeTab];
 
   return (
-    <div className="px-4 pt-6 pb-24">
+    <div className="px-4 pt-4 pb-24">
       {/* 标题 */}
-      <h2 className="text-xl font-bold text-white mb-4">My Creations</h2>
+      <h2 className="text-xl font-bold text-white mb-3">My Creations</h2>
 
       {/* Tabs */}
-      <div className="flex gap-4 mb-6 border-b border-gray-800">
+      <div className="flex gap-4 mb-4 border-b border-gray-800">
         {tabs.map((tab) => (
           <button
             key={tab.id}
@@ -102,9 +102,9 @@ export default function MyCreations({ creations }: MyCreationsProps) {
       {/* 内容区域 */}
       {isEmpty ? (
         // 空状态
-        <div className="flex flex-col items-center justify-center py-12">
+        <div className="flex flex-col items-center justify-center">
           <EmptyIllustration />
-          <p className="mt-4 text-gray-400 text-center">
+          <p className="mt-3 text-gray-400 text-center">
             {emptyState.title}
           </p>
           <p className="text-gray-500 text-sm text-center">
@@ -112,7 +112,7 @@ export default function MyCreations({ creations }: MyCreationsProps) {
           </p>
           <Link
             href={emptyState.createLink}
-            className="mt-6 px-8 py-3 bg-white/10 border border-white/20 rounded-full text-white font-medium hover:bg-white/20 transition-colors"
+            className="mt-4 px-8 py-3 bg-white/10 border border-white/20 rounded-full text-white font-medium hover:bg-white/20 transition-colors"
           >
             Go create
           </Link>

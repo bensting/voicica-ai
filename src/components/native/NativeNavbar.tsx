@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 import LoginModal from './LoginModal';
@@ -26,10 +27,12 @@ export default function NativeNavbar() {
         <div className="flex items-center justify-between px-4 h-14">
           {/* Logo */}
           <Link href="/native" className="flex items-center">
-            <img
-              src="/images/voice-labs-logo-light.svg"
+            <Image
+              src="/logo/voice-labs-logo-dark.svg"
               alt="VoicicaAI"
-              className="h-8"
+              width={120}
+              height={24}
+              priority
             />
           </Link>
 
@@ -37,7 +40,7 @@ export default function NativeNavbar() {
           {!isLoggedIn && (
             <button
               onClick={() => setIsLoginModalOpen(true)}
-              className="px-4 py-2 text-sm font-medium text-white rounded-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 transition-all"
+              className="px-3 py-1.5 text-xs font-medium text-white rounded-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 transition-all"
             >
               Login & Rewards
             </button>

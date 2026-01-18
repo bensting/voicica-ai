@@ -35,7 +35,7 @@ const UserIcon = ({ active }: { active: boolean }) => (
 
 // 加号图标
 const PlusIcon = () => (
-  <svg className="w-7 h-7 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+  <svg className="w-6 h-6 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
     <path d="M12 5v14M5 12h14" />
   </svg>
 );
@@ -85,10 +85,10 @@ export default function BottomNav() {
           <div className="flex items-center justify-center flex-1">
             <button
               onClick={() => setIsCreateOpen(!isCreateOpen)}
-              className={`w-14 h-14 rounded-full flex items-center justify-center transition-all ${
+              className={`w-12 h-12 rounded-full flex items-center justify-center transition-all ${
                 isCreateOpen
                   ? 'bg-gray-700'
-                  : 'bg-gradient-to-br from-purple-500 to-pink-500 shadow-lg shadow-purple-500/30'
+                  : 'bg-gradient-to-r from-cyan-400 via-purple-500 to-pink-500 shadow-lg shadow-purple-500/30'
               }`}
             >
               {isCreateOpen ? <CloseIcon /> : <PlusIcon />}

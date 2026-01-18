@@ -83,6 +83,8 @@ export default function VideoTaskPage() {
   const [task, setTask] = useState<VideoTask | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [showDownloadModal, setShowDownloadModal] = useState(false);
+  const [downloadOption, setDownloadOption] = useState<'watermark' | 'no-watermark'>('watermark');
 
   // 获取任务状态
   const fetchTaskStatus = useCallback(async () => {
@@ -130,16 +132,44 @@ export default function VideoTaskPage() {
     router.back();
   };
 
-  const handleDownload = async () => {
-    if (task?.video_url) {
-      // 创建一个隐藏的 a 标签来下载
+  const [downloading, setDownloading] = useState(false);
+
+  const handleDownloadClick = () => {
+    setShowDownloadModal(true);
+  };
+
+  const handleConfirmDownload = async () => {
+    if (!task?.video_url || downloading) return;
+
+    if (downloadOption === 'no-watermark') {
+      // TODO: 检查用户是否有会员权限
+      // 暂时直接下载
+    }
+
+    try {
+      setDownloading(true);
+
+      // 通过 fetch 下载视频为 Blob
+      const response = await fetch(task.video_url);
+      const blob = await response.blob();
+
+      // 创建 Blob URL 并触发下载
+      const blobUrl = URL.createObjectURL(blob);
       const link = document.createElement('a');
-      link.href = task.video_url;
-      link.download = `video_${taskId}.mp4`;
-      link.target = '_blank';
+      link.href = blobUrl;
+      link.download = `voicica_${taskId}.mp4`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
+
+      // 释放 Blob URL
+      URL.revokeObjectURL(blobUrl);
+      setShowDownloadModal(false);
+    } catch (err) {
+      console.error('Download failed:', err);
+      alert('Download failed, please try again');
+    } finally {
+      setDownloading(false);
     }
   };
 
@@ -244,9 +274,9 @@ export default function VideoTaskPage() {
 
         {isSuccess && task.video_url && (
           <div className="relative w-full h-full">
-            {/* AI generation 标签 */}
-            <div className="absolute top-4 right-4 z-10 px-3 py-1.5 bg-gray-800/80 rounded-lg">
-              <span className="text-white text-sm">AI generation</span>
+            {/* 水印 */}
+            <div className="absolute top-4 right-4 z-10 pointer-events-none">
+              <span className="text-white/60 text-sm font-medium tracking-wide">Voicica AI</span>
             </div>
 
             <video
@@ -313,8 +343,11 @@ export default function VideoTaskPage() {
         {/* 下载按钮 */}
         {isSuccess && (
           <button
-            onClick={handleDownload}
-            className="w-full py-4 rounded-2xl font-medium text-white bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center gap-2"
+            onClick={handleDownloadClick}
+            className="w-full py-2.5 rounded-lg font-medium text-white text-sm flex items-center justify-center gap-2"
+            style={{
+              background: 'linear-gradient(90deg, #8B5CF6 0%, #A855F7 25%, #D946EF 50%, #EC4899 75%, #F97316 100%)',
+            }}
           >
             <DownloadIcon />
             <span>Download</span>
@@ -338,6 +371,83 @@ export default function VideoTaskPage() {
           </div>
         )}
       </div>
+
+      {/* 下载选项弹窗 */}
+      {showDownloadModal && (
+        <div className="fixed inset-0 z-50 flex items-end justify-center">
+          {/* 遮罩 */}
+          <div
+            className="absolute inset-0 bg-black/60"
+            onClick={() => setShowDownloadModal(false)}
+          />
+
+          {/* 弹窗内容 */}
+          <div
+            className="relative w-full bg-[#1a1a2e] rounded-t-2xl p-4 pb-8"
+            style={{ paddingBottom: 'calc(32px + var(--safe-area-inset-bottom, 0px))' }}
+          >
+            {/* 拖动指示条 */}
+            <div className="flex justify-center mb-4">
+              <div className="w-10 h-1 bg-gray-600 rounded-full" />
+            </div>
+
+            {/* 选项 */}
+            <div className="space-y-3 mb-6">
+              {/* With Watermark */}
+              <button
+                onClick={() => setDownloadOption('watermark')}
+                className="w-full flex items-center justify-between p-4 rounded-xl bg-gray-800/50"
+              >
+                <span className="text-white">With Watermark</span>
+                <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
+                  downloadOption === 'watermark' ? 'border-blue-500' : 'border-gray-500'
+                }`}>
+                  {downloadOption === 'watermark' && (
+                    <div className="w-2.5 h-2.5 rounded-full bg-blue-500" />
+                  )}
+                </div>
+              </button>
+
+              {/* Without Watermark */}
+              <button
+                onClick={() => setDownloadOption('no-watermark')}
+                className="w-full flex items-center justify-between p-4 rounded-xl bg-gray-800/50"
+              >
+                <span className="text-white">Without Watermark<span className="ml-1">👑</span></span>
+                <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
+                  downloadOption === 'no-watermark' ? 'border-blue-500' : 'border-gray-500'
+                }`}>
+                  {downloadOption === 'no-watermark' && (
+                    <div className="w-2.5 h-2.5 rounded-full bg-blue-500" />
+                  )}
+                </div>
+              </button>
+            </div>
+
+            {/* 下载按钮 */}
+            <button
+              onClick={handleConfirmDownload}
+              disabled={downloading}
+              className="w-full py-2.5 rounded-lg font-medium text-white text-sm flex items-center justify-center gap-2 disabled:opacity-70"
+              style={{
+                background: 'linear-gradient(90deg, #8B5CF6 0%, #A855F7 25%, #D946EF 50%, #EC4899 75%, #F97316 100%)',
+              }}
+            >
+              {downloading ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  <span>Downloading...</span>
+                </>
+              ) : (
+                <>
+                  <DownloadIcon />
+                  <span>Download</span>
+                </>
+              )}
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

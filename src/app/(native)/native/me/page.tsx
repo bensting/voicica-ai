@@ -32,25 +32,30 @@ export default function MePage() {
   }, [loading, isLoggedIn, hasShownLoginModal]);
 
   return (
-    <div className="min-h-screen">
-      {/* 头部区域 */}
-      <ProfileHeader
-        userName={userName}
-        avatarUrl={avatarUrl}
-        isLoggedIn={isLoggedIn}
-      />
+    <div className="h-screen flex flex-col bg-[#0a0a1a]">
+      {/* 固定顶部区域 */}
+      <div className="flex-shrink-0">
+        {/* 头部区域 */}
+        <ProfileHeader
+          userName={userName}
+          avatarUrl={avatarUrl}
+          isLoggedIn={isLoggedIn}
+        />
 
-      {/* 用户信息栏 */}
-      <UserStatsBar
-        planName="Free version"
-        credits={credits}
-      />
+        {/* 用户信息栏 */}
+        <UserStatsBar
+          planName="Free version"
+          credits={credits}
+        />
 
-      {/* 订阅推广卡片 */}
-      <SubscribeCard />
+        {/* 订阅推广卡片 */}
+        <SubscribeCard />
+      </div>
 
-      {/* 我的作品 */}
-      <MyCreations />
+      {/* 可滚动的作品区域 */}
+      <div className="flex-1 overflow-hidden">
+        <MyCreations />
+      </div>
 
       {/* 登录弹窗 - 未登录时自动弹出 */}
       <LoginModal

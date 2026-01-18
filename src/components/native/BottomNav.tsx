@@ -2,8 +2,9 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import CreateSheet from './CreateSheet';
+import LoginModal from './LoginModal';
 
 // 首页图标
 const HomeIcon = ({ active }: { active: boolean }) => (
@@ -53,10 +54,24 @@ const CloseIcon = () => (
  */
 export default function BottomNav() {
   const pathname = usePathname();
+  const router = useRouter();
   const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+
+  // TODO: 从 AuthContext 获取登录状态
+  const isLoggedIn = false;
 
   const isExploreActive = pathname === '/native' || pathname.startsWith('/native/explore');
   const isMeActive = pathname.startsWith('/native/me');
+
+  // 点击 Me 按钮
+  const handleMeClick = () => {
+    if (isLoggedIn) {
+      router.push('/native/me');
+    } else {
+      setIsLoginModalOpen(true);
+    }
+  };
 
   return (
     <>
@@ -96,8 +111,8 @@ export default function BottomNav() {
           </div>
 
           {/* Me */}
-          <Link
-            href="/native/me"
+          <button
+            onClick={handleMeClick}
             className="flex flex-col items-center justify-center flex-1 h-full"
           >
             <UserIcon active={isMeActive} />
@@ -108,12 +123,18 @@ export default function BottomNav() {
             >
               Me
             </span>
-          </Link>
+          </button>
         </div>
       </nav>
 
       {/* 创建菜单 Sheet */}
       <CreateSheet isOpen={isCreateOpen} onClose={() => setIsCreateOpen(false)} />
+
+      {/* 登录弹窗 */}
+      <LoginModal
+        isOpen={isLoginModalOpen}
+        onClose={() => setIsLoginModalOpen(false)}
+      />
     </>
   );
 }

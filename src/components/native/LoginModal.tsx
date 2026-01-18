@@ -67,79 +67,89 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-[#0a0a1a] animate-fade-in">
-      {/* 背景渐变 */}
-      <div className="absolute inset-0 bg-gradient-to-b from-purple-900/50 via-pink-900/30 to-transparent" />
+    <div className="fixed inset-0 z-50 bg-[#0a0a1a] animate-fade-in overflow-auto">
+      {/* 背景图片 */}
+      <div
+        className="absolute inset-x-0 top-0 h-[60%] bg-cover bg-center bg-no-repeat"
+        style={{ backgroundImage: 'url(/images/native/login-bg.webp)' }}
+      />
 
       {/* 关闭按钮 */}
       <button
         onClick={onClose}
-        className="absolute top-4 left-4 z-20 p-2 rounded-lg bg-gray-800/80 text-gray-300 hover:text-white hover:bg-gray-700/80 transition-colors"
+        className="absolute left-4 z-20 p-2 rounded-lg bg-gray-800/80 text-gray-300 hover:text-white hover:bg-gray-700/80 transition-colors"
         style={{ top: 'calc(16px + var(--safe-area-inset-top, 0px))' }}
       >
         <CloseIcon />
       </button>
 
       {/* 内容 */}
-      <div className="relative z-10 flex flex-col items-center justify-center min-h-screen px-6 py-20">
-        {/* Welcome 文字 */}
-        <p className="text-gray-300 text-lg mb-2">Welcome to</p>
-
-        {/* Logo */}
-        <h1 className="text-4xl font-bold mb-8">
-          <span className="text-white">Voicica</span>
-          <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
-            AI
-          </span>
-        </h1>
-
-        {/* 装饰图片区域 - 使用渐变占位 */}
-        <div className="w-full max-w-sm h-48 mb-8 rounded-2xl bg-gradient-to-br from-blue-900/50 to-purple-900/50 flex items-center justify-center">
-          <div className="text-6xl opacity-50">🎙️</div>
+      <div className="relative z-10 flex flex-col items-center min-h-screen px-6">
+        {/* 顶部区域 - Logo */}
+        <div
+          className="flex flex-col items-center"
+          style={{ paddingTop: 'calc(36px + var(--safe-area-inset-top, 0px))' }}
+        >
+          <p className="text-gray-300 text-lg mb-2">Welcome to</p>
+          <h1 className="text-4xl font-bold">
+            <span className="text-white">Voicica</span>
+            <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+              AI
+            </span>
+          </h1>
         </div>
 
-        {/* 提示文字 */}
-        <p className="text-white text-lg font-medium mb-6">
-          Log in to receive credits
-        </p>
+        {/* 中间留白区域 - 展示背景图 */}
+        <div className="flex-1 min-h-[200px]" />
 
-        {/* 登录按钮 */}
-        <div className="w-full max-w-sm space-y-3">
-          {/* Google 登录 */}
-          <button
-            onClick={handleGoogleLogin}
-            className="w-full flex items-center justify-center gap-3 py-4 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 text-white font-medium hover:from-purple-600 hover:to-pink-600 transition-all"
+        {/* 底部登录区域 */}
+        <div className="w-full max-w-sm pb-8">
+          {/* 提示文字 */}
+          <p className="text-white text-lg font-medium mb-6 text-center">
+            Log in to receive credits
+          </p>
+
+          {/* 登录按钮 */}
+          <div className="space-y-3">
+            {/* Google 登录 */}
+            <button
+              onClick={handleGoogleLogin}
+              className="w-full flex items-center justify-center gap-3 py-4 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 text-white font-medium hover:from-purple-600 hover:to-pink-600 transition-all"
+            >
+              <GoogleIcon />
+              Log in with Google
+            </button>
+
+            {/* Email 登录 */}
+            <button
+              onClick={handleEmailLogin}
+              className="w-full flex items-center justify-center gap-3 py-4 rounded-full border border-gray-600 text-white font-medium hover:bg-gray-800/50 transition-colors"
+            >
+              Log in with Email
+            </button>
+
+            {/* Sign up */}
+            <button className="w-full py-3 text-white font-medium hover:text-purple-400 transition-colors">
+              Sign up
+            </button>
+          </div>
+
+          {/* 法律声明 */}
+          <p
+            className="mt-6 text-center text-sm text-gray-500"
+            style={{ paddingBottom: 'var(--safe-area-inset-bottom, 0px)' }}
           >
-            <GoogleIcon />
-            Log in with Google
-          </button>
-
-          {/* Email 登录 */}
-          <button
-            onClick={handleEmailLogin}
-            className="w-full flex items-center justify-center gap-3 py-4 rounded-full border border-gray-600 text-white font-medium hover:bg-gray-800/50 transition-colors"
-          >
-            Log in with Email
-          </button>
-
-          {/* Sign up */}
-          <button className="w-full py-3 text-white font-medium hover:text-purple-400 transition-colors">
-            Sign up
-          </button>
+            Log in or register to indicate that you agree to our{' '}
+            <Link href="/privacy" className="text-purple-400 hover:underline">
+              Privacy Policy
+            </Link>{' '}
+            and{' '}
+            <Link href="/terms" className="text-purple-400 hover:underline">
+              Terms of Use
+            </Link>
+            .
+          </p>
         </div>
-
-        {/* 法律声明 */}
-        <p className="mt-8 text-center text-sm text-gray-500 px-4">
-          Log in or register to indicate that you agree to our{' '}
-          <Link href="/privacy" className="text-purple-400 hover:underline">
-            Privacy Policy
-          </Link>{' '}
-          and{' '}
-          <Link href="/terms" className="text-purple-400 hover:underline">
-            Terms of Use
-          </Link>
-          .
-        </p>
       </div>
     </div>
   );

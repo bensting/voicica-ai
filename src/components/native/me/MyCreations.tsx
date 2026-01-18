@@ -80,7 +80,7 @@ export default function MyCreations({ creations }: MyCreationsProps) {
       <h2 className="text-xl font-bold text-white mb-4">My Creations</h2>
 
       {/* Tabs */}
-      <div className="flex gap-6 mb-6 border-b border-gray-800">
+      <div className="flex gap-4 mb-6 border-b border-gray-800">
         {tabs.map((tab) => (
           <button
             key={tab.id}

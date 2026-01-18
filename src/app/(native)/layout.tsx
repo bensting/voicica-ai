@@ -1,7 +1,11 @@
 'use client';
 
+import { usePathname } from 'next/navigation';
 import NativeNavbar from '@/components/native/NativeNavbar';
 import BottomNav from '@/components/native/BottomNav';
+
+// 不显示顶部导航的路径
+const hideNavbarPaths = ['/native/me'];
 
 /**
  * Native App 专用布局
@@ -13,10 +17,13 @@ export default function NativeLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const pathname = usePathname();
+  const showNavbar = !hideNavbarPaths.some((path) => pathname.startsWith(path));
+
   return (
     <div className="min-h-screen bg-[#0a0a1a]">
-      {/* 顶部导航 */}
-      <NativeNavbar />
+      {/* 顶部导航 - 部分页面不显示 */}
+      {showNavbar && <NativeNavbar />}
 
       {/* 主内容区域 */}
       <main>{children}</main>

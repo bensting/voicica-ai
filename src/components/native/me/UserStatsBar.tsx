@@ -1,9 +1,9 @@
 'use client';
 
-// 星星/积分图标
+// 四角星积分图标
 const CreditIcon = () => (
-  <svg className="w-5 h-5 text-yellow-400" viewBox="0 0 24 24" fill="currentColor">
-    <path d="M12 2l2.4 7.4H22l-6 4.6 2.3 7-6.3-4.6L5.7 21l2.3-7-6-4.6h7.6L12 2z" />
+  <svg className="w-5 h-5 text-white" viewBox="0 0 24 24" fill="currentColor">
+    <path d="M12 1L14.5 9.5L23 12L14.5 14.5L12 23L9.5 14.5L1 12L9.5 9.5L12 1Z" />
   </svg>
 );
 

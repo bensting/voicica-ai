@@ -94,8 +94,9 @@ export default function ParameterSettingsSheet({
   const credits = calculateCredits(model, params.quality);
 
   const handleCreate = () => {
-    onCreateVideo();
     onClose();
+    // Delay slightly to allow sheet animation before starting API call
+    setTimeout(() => onCreateVideo(), 100);
   };
 
   return (

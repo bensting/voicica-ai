@@ -2,18 +2,12 @@
  * Video 任务队列处理函数 (Upstash QStash)
  *
  * 由 QStash 调用，处理异步视频生成任务
- * 使用 Google Veo 3.1 服务
+ * 使用 Runware API 进行视频生成
  */
 import { NextRequest, NextResponse } from 'next/server';
 import { verifySignatureAppRouter } from '@upstash/qstash/nextjs';
 import prisma from '@/lib/prisma';
-import {
-  submitVideoGeneration,
-  waitForCompletion,
-  toVeoResolution,
-  toVeoDuration,
-  type VeoModel,
-} from '@/lib/services/google-veo';
+import { generateVideoAndWait } from '@/lib/services/runware-video';
 import { uploadVideo } from '@/lib/services/r2-storage';
 import { ProductType } from '@/config/productType';
 import type { VideoQueuePayload } from '@/lib/queue/video-queue';
@@ -101,32 +95,18 @@ async function handleVideoTask(req: NextRequest) {
       data: { progress: 20 },
     });
 
-    // 5. 提交视频生成任务到 Veo
-    console.log(`🎬 [VideoQueue] 提交 Veo 任务: model=${model}, resolution=${resolution}, duration=${duration}s`);
+    // 5. 提交视频生成任务到 Runware
+    console.log(`🎬 [VideoQueue] 提交 Runware 任务: model=${model}, resolution=${resolution}, duration=${duration}s`);
 
-    const veoResult = await submitVideoGeneration({
-      prompt,
-      negativePrompt,
-      resolution: toVeoResolution(resolution),
-      duration: toVeoDuration(duration),
-      aspectRatio,
-      seed,
-      model: model as VeoModel,
-      generateAudio: true, // Veo 3 支持音频生成
-    });
-
-    // 6. 更新进度到 30%，保存操作 ID
-    await prisma.video_records.update({
-      where: { task_id: taskId },
-      data: { progress: 30 },
-    });
-
-    // 7. 等待视频生成完成（轮询）
-    const completedResult = await waitForCompletion(
-      veoResult.operationName,
-      model as VeoModel,
-      540000, // 最长等待 9 分钟
-      15000, // 每 15 秒轮询一次
+    const runwareResult = await generateVideoAndWait(
+      {
+        prompt,
+        negativePrompt,
+        model, // Runware model ID (e.g., "google:3@2")
+        duration,
+        aspectRatio: aspectRatio as '16:9' | '9:16',
+        seed,
+      },
       async (progress) => {
         // 更新进度（30% - 90%）
         await prisma.video_records.update({
@@ -136,13 +116,23 @@ async function handleVideoTask(req: NextRequest) {
       }
     );
 
-    // 8. 上传视频到 R2
-    console.log(`📤 [VideoQueue] 上传视频到 R2...`);
+    if (!runwareResult.videoURL) {
+      throw new Error('Video generation completed but no video URL returned');
+    }
+
+    // 6. 下载视频并上传到 R2
+    console.log(`📤 [VideoQueue] 下载视频并上传到 R2...`);
+    const videoResponse = await fetch(runwareResult.videoURL);
+    if (!videoResponse.ok) {
+      throw new Error(`Failed to download video: ${videoResponse.status}`);
+    }
+    const videoBuffer = Buffer.from(await videoResponse.arrayBuffer());
+
     const fileName = `${taskId}.mp4`;
     const videoUrl = await uploadVideo(
-      completedResult.videoData,
+      videoBuffer,
       fileName,
-      completedResult.mimeType || 'video/mp4',
+      'video/mp4',
       `videos/${userId}`
     );
 

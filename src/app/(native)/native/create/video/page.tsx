@@ -1,11 +1,13 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import CreateSheet from '@/components/native/CreateSheet';
 import PromptSection from '@/components/native/create/PromptSection';
 import ImageGuidance from '@/components/native/create/ImageGuidance';
 import ParameterSettingsSheet from '@/components/native/create/ParameterSettingsSheet';
 import { VideoModel, defaultVideoModel, getModelDefaults, calculateCredits } from '@/config/native/videoModels';
+import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 
 // 返回图标
 const BackIcon = () => (
@@ -52,16 +54,32 @@ interface VideoParams {
   visibility: 'public' | 'private';
 }
 
+// Loading 图标
+const LoadingIcon = () => (
+  <svg className="w-5 h-5 animate-spin" viewBox="0 0 24 24" fill="none">
+    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+    <path
+      className="opacity-75"
+      fill="currentColor"
+      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+    />
+  </svg>
+);
+
 /**
  * AI Video 创建页面
  */
 export default function CreateVideoPage() {
+  const router = useRouter();
+  const { token, user } = useFirebaseAuth();
   const [isCreateSheetOpen, setIsCreateSheetOpen] = useState(false);
   const [isParamsSheetOpen, setIsParamsSheetOpen] = useState(false);
   const [mode, setMode] = useState<ModeType>('generate');
   const [prompt, setPrompt] = useState('');
   const [selectedModel, setSelectedModel] = useState<VideoModel>(defaultVideoModel);
   const [imageGuidanceTab, setImageGuidanceTab] = useState<'character' | 'keyframe'>('keyframe');
+  const [isCreating, setIsCreating] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [params, setParams] = useState<VideoParams>(() => {
     const defaults = getModelDefaults(defaultVideoModel);
     return {
@@ -87,9 +105,52 @@ export default function CreateVideoPage() {
     setSelectedModel(model);
   };
 
-  const handleCreateVideo = () => {
-    // TODO: 调用 API 创建视频
-    console.log('Creating video with:', { prompt, model: selectedModel, params });
+  const handleCreateVideo = async () => {
+    if (!prompt.trim() || isCreating) return;
+
+    setIsCreating(true);
+    setError(null);
+
+    try {
+      const response = await fetch('/api/v1/native/video/create', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify({
+          prompt: prompt.trim(),
+          modelId: selectedModel.id,
+          quality: params.quality,
+          duration: params.duration,
+          aspectRatio: params.aspectRatio,
+          visibility: params.visibility,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          setError('Please login to create videos');
+          return;
+        }
+        if (response.status === 402) {
+          setError(`Insufficient credits. Need ${data.required}, have ${data.available}`);
+          return;
+        }
+        throw new Error(data.error || 'Failed to create video');
+      }
+
+      // 成功，跳转到任务详情页
+      console.log('Video task created:', data.taskId);
+      router.push(`/native/video/task/${data.taskId}`);
+    } catch (err) {
+      console.error('Create video error:', err);
+      setError(err instanceof Error ? err.message : 'Failed to create video');
+    } finally {
+      setIsCreating(false);
+    }
   };
 
   const credits = calculateCredits(selectedModel, params.quality);
@@ -204,16 +265,31 @@ export default function CreateVideoPage() {
         className="fixed bottom-0 left-0 right-0 p-4 bg-[#0a0a1a]"
         style={{ paddingBottom: 'calc(16px + var(--safe-area-inset-bottom, 0px))' }}
       >
+        {/* Error Message */}
+        {error && (
+          <div className="mb-3 p-3 bg-red-500/20 border border-red-500/40 rounded-xl text-red-400 text-sm text-center">
+            {error}
+          </div>
+        )}
         <button
           onClick={handleCreateVideo}
-          disabled={!prompt.trim()}
+          disabled={!prompt.trim() || isCreating}
           className="w-full py-4 rounded-2xl font-medium text-white bg-gradient-to-r from-purple-500 to-pink-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
         >
-          <span>Create Video</span>
-          <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M12 1L14.5 9.5L23 12L14.5 14.5L12 23L9.5 14.5L1 12L9.5 9.5L12 1Z" />
-          </svg>
-          <span>{credits}</span>
+          {isCreating ? (
+            <>
+              <LoadingIcon />
+              <span>Creating...</span>
+            </>
+          ) : (
+            <>
+              <span>Create Video</span>
+              <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 1L14.5 9.5L23 12L14.5 14.5L12 23L9.5 14.5L1 12L9.5 9.5L12 1Z" />
+              </svg>
+              <span>{credits}</span>
+            </>
+          )}
         </button>
       </div>
 

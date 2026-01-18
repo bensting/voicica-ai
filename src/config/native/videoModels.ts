@@ -30,6 +30,8 @@ export interface VideoModel {
   name: string;
   description: string;
   icon: 'google' | 'openai' | 'topix' | 'vidu' | 'pixverse' | 'wan' | 'kling';
+  /** 后端 API 使用的模型 ID */
+  apiModelId: string;
   enabled: {
     development: boolean;
     production: boolean;
@@ -65,6 +67,7 @@ export const videoModelsConfig: VideoModel[] = [
     name: 'Google Veo 3.1',
     description: 'The most capable model',
     icon: 'google',
+    apiModelId: 'google:3@2', // Runware model ID
     enabled: { development: true, production: true },
     qualityOptions: [
       { value: '512p', label: '512p', credits: 100 },
@@ -84,6 +87,7 @@ export const videoModelsConfig: VideoModel[] = [
     name: 'Sora 2',
     description: 'Physics-aware video with rich audio',
     icon: 'openai',
+    apiModelId: 'sora-2',
     enabled: { development: true, production: false },
     qualityOptions: [
       { value: '480p', label: '480p', credits: 80 },
@@ -105,6 +109,7 @@ export const videoModelsConfig: VideoModel[] = [
     name: 'Topix 1.0',
     description: 'Fast cinematic motion & physics',
     icon: 'topix',
+    apiModelId: 'topix-1.0',
     enabled: { development: true, production: false },
     qualityOptions: [
       { value: '360p', label: '360p', credits: 50 },
@@ -126,6 +131,7 @@ export const videoModelsConfig: VideoModel[] = [
     name: 'Vidu 2.0',
     description: 'Real motion transformation',
     icon: 'vidu',
+    apiModelId: 'vidu-2.0',
     enabled: { development: true, production: false },
     qualityOptions: [
       { value: '512p', label: '512p', credits: 60 },
@@ -146,6 +152,7 @@ export const videoModelsConfig: VideoModel[] = [
     name: 'Pixverse V5',
     description: 'Lightning-fast videos with crisp detail',
     icon: 'pixverse',
+    apiModelId: 'pixverse-v5',
     enabled: { development: true, production: false },
     qualityOptions: [
       { value: '540p', label: '540p', credits: 40 },
@@ -166,6 +173,7 @@ export const videoModelsConfig: VideoModel[] = [
     name: 'Wan 2.5',
     description: 'Affordable high-quality video with audio',
     icon: 'wan',
+    apiModelId: 'wan-2.5',
     enabled: { development: true, production: false },
     qualityOptions: [
       { value: '480p', label: '480p', credits: 30 },
@@ -186,6 +194,7 @@ export const videoModelsConfig: VideoModel[] = [
     name: 'Kling V2.5 Turbo',
     description: 'HDR video with smart world physics',
     icon: 'kling',
+    apiModelId: 'kling-v2.5-turbo',
     enabled: { development: true, production: false },
     qualityOptions: [
       { value: '540p', label: '540p', credits: 45 },

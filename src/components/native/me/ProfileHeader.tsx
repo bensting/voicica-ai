@@ -41,7 +41,7 @@ export default function ProfileHeader({
       style={{ paddingTop: 'calc(16px + var(--safe-area-inset-top, 0px))' }}
     >
       {/* 背景渐变 */}
-      <div className="absolute inset-0 bg-gradient-to-b from-purple-900/40 via-pink-900/20 to-transparent" />
+      <div className="absolute inset-0 bg-gradient-to-b from-purple-900/40 via-pink-900/20 to-transparent pointer-events-none" />
 
       {/* 设置按钮 */}
       <Link

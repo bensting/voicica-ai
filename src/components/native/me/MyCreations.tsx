@@ -82,13 +82,24 @@ function VideoCard({ video, onClick }: { video: VideoItem; onClick: () => void }
   const isSuccess = video.status === 'SUCCESS';
   const isFailed = video.status === 'FAILURE';
 
+  // 根据视频的 aspectRatio 决定卡片比例
+  const isVertical = video.aspectRatio === '9:16';
+  const aspectClass = isVertical ? 'aspect-[9/16]' : 'aspect-video';
+
   return (
     <button
       onClick={onClick}
-      className="relative aspect-[9/16] bg-gray-800 rounded-xl overflow-hidden group"
+      className={`relative ${aspectClass} bg-gray-800 rounded-xl overflow-hidden group`}
     >
-      {/* 视频缩略图或占位 */}
-      {isSuccess && video.videoUrl ? (
+      {/* 缩略图或占位 */}
+      {isSuccess && video.thumbnailUrl ? (
+        <img
+          src={video.thumbnailUrl}
+          alt={video.prompt}
+          className="w-full h-full object-cover"
+        />
+      ) : isSuccess && video.videoUrl ? (
+        // 如果没有缩略图但有视频，使用视频第一帧作为封面
         <video
           src={video.videoUrl}
           className="w-full h-full object-cover"
@@ -100,18 +111,18 @@ function VideoCard({ video, onClick }: { video: VideoItem; onClick: () => void }
         <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-800 to-gray-900">
           {isProcessing && (
             <div className="flex flex-col items-center gap-2">
-              <div className="w-10 h-10 border-3 border-purple-500 border-t-transparent rounded-full animate-spin" />
-              <span className="text-white text-sm font-medium">{video.progress}%</span>
+              <div className="w-8 h-8 border-2 border-purple-500 border-t-transparent rounded-full animate-spin" />
+              <span className="text-white text-xs font-medium">{video.progress}%</span>
             </div>
           )}
           {isFailed && (
-            <div className="flex flex-col items-center gap-2 p-2">
-              <svg className="w-8 h-8 text-red-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <div className="flex flex-col items-center gap-1 p-2">
+              <svg className="w-6 h-6 text-red-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <circle cx="12" cy="12" r="10" />
                 <line x1="15" y1="9" x2="9" y2="15" />
                 <line x1="9" y1="9" x2="15" y2="15" />
               </svg>
-              <span className="text-red-400 text-xs text-center">Failed</span>
+              <span className="text-red-400 text-xs">Failed</span>
             </div>
           )}
         </div>
@@ -119,15 +130,15 @@ function VideoCard({ video, onClick }: { video: VideoItem; onClick: () => void }
 
       {/* 状态标签 */}
       {isProcessing && (
-        <div className="absolute top-2 left-2 px-2 py-1 bg-purple-500/80 rounded-full">
-          <span className="text-white text-xs font-medium">Processing</span>
+        <div className="absolute top-1.5 left-1.5 px-1.5 py-0.5 bg-purple-500/80 rounded-full">
+          <span className="text-white text-[10px] font-medium">Processing</span>
         </div>
       )}
 
       {/* 时长标签 */}
       {isSuccess && (
-        <div className="absolute bottom-2 right-2 px-2 py-1 bg-black/60 rounded">
-          <span className="text-white text-xs">{video.duration}s</span>
+        <div className="absolute bottom-1.5 right-1.5 px-1.5 py-0.5 bg-black/60 rounded">
+          <span className="text-white text-[10px]">{video.duration}s</span>
         </div>
       )}
 
@@ -135,8 +146,8 @@ function VideoCard({ video, onClick }: { video: VideoItem; onClick: () => void }
       <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors" />
 
       {/* Prompt 预览 */}
-      <div className="absolute bottom-0 left-0 right-0 p-2 bg-gradient-to-t from-black/80 to-transparent">
-        <p className="text-white text-xs line-clamp-2">{video.prompt}</p>
+      <div className="absolute bottom-0 left-0 right-0 p-1.5 bg-gradient-to-t from-black/80 to-transparent">
+        <p className="text-white text-[10px] line-clamp-2">{video.prompt}</p>
       </div>
     </button>
   );
@@ -248,14 +259,18 @@ export default function MyCreations() {
             </Link>
           </div>
         ) : (
-          // 视频列表
-          <div className="grid grid-cols-2 gap-3">
+          // 视频列表 - 16:9 视频单列显示，9:16 视频双列显示
+          <div className="flex flex-col gap-3">
             {videos.map((video) => (
-              <VideoCard
+              <div
                 key={video.taskId}
-                video={video}
-                onClick={() => handleVideoClick(video)}
-              />
+                className={video.aspectRatio === '9:16' ? 'w-1/2' : 'w-full'}
+              >
+                <VideoCard
+                  video={video}
+                  onClick={() => handleVideoClick(video)}
+                />
+              </div>
             ))}
           </div>
         )

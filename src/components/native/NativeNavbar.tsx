@@ -25,14 +25,12 @@ export default function NativeNavbar() {
       >
         <div className="flex items-center justify-between px-4 h-14">
           {/* Logo */}
-          <Link href="/native" className="flex items-center gap-1">
-            <span className="text-xl font-bold text-white">
-              Voicica
-              <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
-                AI
-              </span>
-            </span>
-            <span className="text-[10px] text-gray-400 align-super">®</span>
+          <Link href="/native" className="flex items-center">
+            <img
+              src="/images/voice-labs-logo-light.svg"
+              alt="VoicicaAI"
+              className="h-8"
+            />
           </Link>
 
           {/* Login & Rewards 按钮 */}

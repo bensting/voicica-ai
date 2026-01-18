@@ -63,7 +63,8 @@ const ChevronIcon = () => (
  */
 export default function SettingsPage() {
   const router = useRouter();
-  const { signOut } = useFirebaseAuth();
+  const { user, signOut } = useFirebaseAuth();
+  const isLoggedIn = !!user;
 
   const handleBack = () => {
     router.back();
@@ -163,18 +164,20 @@ export default function SettingsPage() {
           </button>
         </div>
 
-        {/* 卡片3: 退出登录 */}
-        <div className="bg-gray-800/50 rounded-2xl overflow-hidden">
-          <button
-            onClick={handleLogout}
-            className="w-full flex items-center justify-between px-4 py-4 hover:bg-gray-700/50 transition-colors"
-          >
-            <div className="flex items-center gap-3">
-              <LogoutIcon />
-              <span className="text-red-400">Log out</span>
-            </div>
-          </button>
-        </div>
+        {/* 卡片3: 退出登录 - 仅登录后显示 */}
+        {isLoggedIn && (
+          <div className="bg-gray-800/50 rounded-2xl overflow-hidden">
+            <button
+              onClick={handleLogout}
+              className="w-full flex items-center justify-between px-4 py-4 hover:bg-gray-700/50 transition-colors"
+            >
+              <div className="flex items-center gap-3">
+                <LogoutIcon />
+                <span className="text-red-400">Log out</span>
+              </div>
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

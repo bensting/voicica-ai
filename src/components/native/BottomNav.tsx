@@ -2,10 +2,8 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
-import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
+import { usePathname } from 'next/navigation';
 import CreateSheet from './CreateSheet';
-import LoginModal from './LoginModal';
 
 // 首页图标
 const HomeIcon = ({ active }: { active: boolean }) => (
@@ -55,24 +53,10 @@ const CloseIcon = () => (
  */
 export default function BottomNav() {
   const pathname = usePathname();
-  const router = useRouter();
-  const { user } = useFirebaseAuth();
   const [isCreateOpen, setIsCreateOpen] = useState(false);
-  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
-
-  const isLoggedIn = !!user;
 
   const isExploreActive = pathname === '/native' || pathname.startsWith('/native/explore');
   const isMeActive = pathname.startsWith('/native/me');
-
-  // 点击 Me 按钮
-  const handleMeClick = () => {
-    if (isLoggedIn) {
-      router.push('/native/me');
-    } else {
-      setIsLoginModalOpen(true);
-    }
-  };
 
   return (
     <>
@@ -112,8 +96,8 @@ export default function BottomNav() {
           </div>
 
           {/* Me */}
-          <button
-            onClick={handleMeClick}
+          <Link
+            href="/native/me"
             className="flex flex-col items-center justify-center flex-1 h-full"
           >
             <UserIcon active={isMeActive} />
@@ -124,22 +108,12 @@ export default function BottomNav() {
             >
               Me
             </span>
-          </button>
+          </Link>
         </div>
       </nav>
 
       {/* 创建菜单 Sheet */}
       <CreateSheet isOpen={isCreateOpen} onClose={() => setIsCreateOpen(false)} />
-
-      {/* 登录弹窗 */}
-      <LoginModal
-        isOpen={isLoginModalOpen}
-        onClose={() => setIsLoginModalOpen(false)}
-        onLoginSuccess={() => {
-          setIsLoginModalOpen(false);
-          router.push('/native/me');
-        }}
-      />
     </>
   );
 }

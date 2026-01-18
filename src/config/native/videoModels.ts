@@ -24,12 +24,19 @@ export interface AspectRatioOption {
   icon: 'landscape' | 'portrait' | 'square' | 'classic';
 }
 
+// 图片引导配置
+export interface ImageGuidanceConfig {
+  enabled: boolean;
+  /** 'single' = 单图, 'startEnd' = 首尾帧 */
+  mode: 'single' | 'startEnd';
+}
+
 // 模型配置
 export interface VideoModel {
   id: string;
   name: string;
   description: string;
-  icon: 'google' | 'openai' | 'topix' | 'vidu' | 'pixverse' | 'wan' | 'kling';
+  icon: 'google' | 'openai' | 'vidu' | 'pixverse' | 'wan' | 'kling';
   /** 后端 API 使用的模型 ID */
   apiModelId: string;
   enabled: {
@@ -43,6 +50,8 @@ export interface VideoModel {
   defaultQuality: string;
   defaultDuration: string;
   defaultAspectRatio: string;
+  // 图片引导配置
+  imageGuidance?: ImageGuidanceConfig;
 }
 
 const isDevelopment = process.env.NODE_ENV === 'development';
@@ -81,6 +90,7 @@ export const videoModelsConfig: VideoModel[] = [
     defaultQuality: '768p',
     defaultDuration: '8s',
     defaultAspectRatio: '16:9',
+    imageGuidance: { enabled: true, mode: 'single' },
   },
   {
     id: 'sora-2',
@@ -103,28 +113,7 @@ export const videoModelsConfig: VideoModel[] = [
     defaultQuality: '720p',
     defaultDuration: '10s',
     defaultAspectRatio: '16:9',
-  },
-  {
-    id: 'topix-1.0',
-    name: 'Topix 1.0',
-    description: 'Fast cinematic motion & physics',
-    icon: 'topix',
-    apiModelId: 'topix-1.0',
-    enabled: { development: true, production: false },
-    qualityOptions: [
-      { value: '360p', label: '360p', credits: 50 },
-      { value: '540p', label: '540p', credits: 75 },
-      { value: '720p', label: '720p', credits: 100 },
-      { value: '1080p', label: '1080p', credits: 150, isPro: true },
-    ],
-    durationOptions: [
-      { value: '5s', label: '5s' },
-      { value: '8s', label: '8s' },
-    ],
-    aspectRatioOptions: extendedAspectRatios,
-    defaultQuality: '720p',
-    defaultDuration: '5s',
-    defaultAspectRatio: '16:9',
+    imageGuidance: { enabled: true, mode: 'single' },
   },
   {
     id: 'vidu-2.0',
@@ -146,6 +135,7 @@ export const videoModelsConfig: VideoModel[] = [
     defaultQuality: '720p',
     defaultDuration: '4s',
     defaultAspectRatio: '16:9',
+    imageGuidance: { enabled: true, mode: 'startEnd' },
   },
   {
     id: 'pixverse-v5',
@@ -167,6 +157,7 @@ export const videoModelsConfig: VideoModel[] = [
     defaultQuality: '720p',
     defaultDuration: '5s',
     defaultAspectRatio: '16:9',
+    imageGuidance: { enabled: true, mode: 'startEnd' },
   },
   {
     id: 'wan-2.5',
@@ -188,6 +179,7 @@ export const videoModelsConfig: VideoModel[] = [
     defaultQuality: '720p',
     defaultDuration: '5s',
     defaultAspectRatio: '16:9',
+    imageGuidance: { enabled: true, mode: 'single' },
   },
   {
     id: 'kling-v2.5-turbo',
@@ -209,6 +201,7 @@ export const videoModelsConfig: VideoModel[] = [
     defaultQuality: '720p',
     defaultDuration: '5s',
     defaultAspectRatio: '16:9',
+    imageGuidance: { enabled: true, mode: 'single' },
   },
 ];
 

@@ -5,10 +5,10 @@ import NativeNavbar from '@/components/native/NativeNavbar';
 import BottomNav from '@/components/native/BottomNav';
 
 // 不显示顶部导航的路径
-const hideNavbarPaths = ['/native/me', '/native/settings', '/native/create'];
+const hideNavbarPaths = ['/native/me', '/native/settings', '/native/create', '/native/video'];
 
 // 不显示底部导航的路径
-const hideBottomNavPaths = ['/native/settings', '/native/create'];
+const hideBottomNavPaths = ['/native/settings', '/native/create', '/native/video'];
 
 /**
  * Native App 专用布局

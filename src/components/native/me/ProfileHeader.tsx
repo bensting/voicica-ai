@@ -1,6 +1,6 @@
 'use client';
 
-import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 // 设置图标
 const SettingsIcon = () => (
@@ -35,6 +35,12 @@ export default function ProfileHeader({
   avatarUrl,
   isLoggedIn = false,
 }: ProfileHeaderProps) {
+  const router = useRouter();
+
+  const handleSettingsClick = () => {
+    router.push('/native/settings');
+  };
+
   return (
     <div
       className="relative pb-2"
@@ -44,13 +50,13 @@ export default function ProfileHeader({
       <div className="absolute inset-0 bg-gradient-to-b from-purple-900/40 via-pink-900/20 to-transparent pointer-events-none" />
 
       {/* 设置按钮 */}
-      <Link
-        href="/native/settings"
-        className="absolute right-4 z-10 p-2 rounded-full bg-gray-800/50 hover:bg-gray-700/50 transition-colors"
+      <button
+        onClick={handleSettingsClick}
+        className="absolute right-4 z-50 p-2 rounded-full bg-gray-800/50 hover:bg-gray-700/50 transition-colors cursor-pointer"
         style={{ top: 'calc(16px + var(--safe-area-inset-top, 0px))' }}
       >
         <SettingsIcon />
-      </Link>
+      </button>
 
       {/* 头像和用户名 */}
       <div className="relative z-10 flex flex-col items-center">

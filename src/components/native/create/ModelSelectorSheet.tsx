@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
-import { VideoModel, videoModels } from '@/config/videoModels';
+import { VideoModel, videoModels } from '@/config/native/videoModels';
 
 interface ModelSelectorSheetProps {
   isOpen: boolean;

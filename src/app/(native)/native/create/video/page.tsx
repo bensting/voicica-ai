@@ -1,11 +1,11 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import CreateSheet from '@/components/native/CreateSheet';
 import PromptSection from '@/components/native/create/PromptSection';
 import ImageGuidance from '@/components/native/create/ImageGuidance';
 import ParameterSettingsSheet from '@/components/native/create/ParameterSettingsSheet';
-import { VideoModel, defaultVideoModel } from '@/config/videoModels';
+import { VideoModel, defaultVideoModel, getModelDefaults, calculateCredits } from '@/config/native/videoModels';
 
 // 返回图标
 const BackIcon = () => (
@@ -21,12 +21,34 @@ const ChevronDownIcon = () => (
   </svg>
 );
 
+// 时钟图标
+const ClockIcon = () => (
+  <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <circle cx="12" cy="12" r="10" />
+    <path d="M12 6v6l4 2" />
+  </svg>
+);
+
+// 屏幕图标
+const ScreenIcon = () => (
+  <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <rect x="2" y="4" width="20" height="16" rx="2" />
+  </svg>
+);
+
+// 展开图标
+const ChevronUpIcon = () => (
+  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <path d="M18 15l-6-6-6 6" />
+  </svg>
+);
+
 type ModeType = 'generate' | 'edit' | 'extend';
 
 interface VideoParams {
-  quality: '512p' | '768p' | '1080p';
-  duration: '8s';
-  aspectRatio: '16:9' | '9:16';
+  quality: string;
+  duration: string;
+  aspectRatio: string;
   visibility: 'public' | 'private';
 }
 
@@ -40,21 +62,37 @@ export default function CreateVideoPage() {
   const [prompt, setPrompt] = useState('');
   const [selectedModel, setSelectedModel] = useState<VideoModel>(defaultVideoModel);
   const [imageGuidanceTab, setImageGuidanceTab] = useState<'character' | 'keyframe'>('keyframe');
-  const [params, setParams] = useState<VideoParams>({
-    quality: '768p',
-    duration: '8s',
-    aspectRatio: '16:9',
-    visibility: 'public',
+  const [params, setParams] = useState<VideoParams>(() => {
+    const defaults = getModelDefaults(defaultVideoModel);
+    return {
+      ...defaults,
+      visibility: 'public',
+    };
   });
+
+  // 当模型变化时，重置参数为新模型的默认值
+  useEffect(() => {
+    const defaults = getModelDefaults(selectedModel);
+    setParams((prev) => ({
+      ...defaults,
+      visibility: prev.visibility, // 保留 visibility 设置
+    }));
+  }, [selectedModel]);
 
   const handleBack = () => {
     window.history.back();
   };
 
+  const handleModelChange = (model: VideoModel) => {
+    setSelectedModel(model);
+  };
+
   const handleCreateVideo = () => {
     // TODO: 调用 API 创建视频
-    console.log('Creating video with:', { prompt, selectedModel, params });
+    console.log('Creating video with:', { prompt, model: selectedModel, params });
   };
+
+  const credits = calculateCredits(selectedModel, params.quality);
 
   return (
     <div className="min-h-screen bg-[#0a0a1a] flex flex-col">
@@ -112,7 +150,7 @@ export default function CreateVideoPage() {
           prompt={prompt}
           onPromptChange={setPrompt}
           selectedModel={selectedModel}
-          onModelChange={(model: VideoModel) => setSelectedModel(model)}
+          onModelChange={handleModelChange}
           maxLength={2000}
         />
 
@@ -147,23 +185,16 @@ export default function CreateVideoPage() {
               </span>
               <span className="text-gray-600">|</span>
               <span className="flex items-center gap-1">
-                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <circle cx="12" cy="12" r="10" />
-                  <path d="M12 6v6l4 2" />
-                </svg>
+                <ClockIcon />
                 {params.duration}
               </span>
               <span className="text-gray-600">|</span>
               <span className="flex items-center gap-1">
-                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <rect x="2" y="4" width="20" height="16" rx="2" />
-                </svg>
+                <ScreenIcon />
                 {params.aspectRatio}
               </span>
             </div>
-            <svg className="w-5 h-5 text-gray-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M6 9l6 6 6-6" />
-            </svg>
+            <ChevronUpIcon />
           </button>
         </div>
       </div>
@@ -176,9 +207,13 @@ export default function CreateVideoPage() {
         <button
           onClick={handleCreateVideo}
           disabled={!prompt.trim()}
-          className="w-full py-4 rounded-2xl font-medium text-white bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          className="w-full py-4 rounded-2xl font-medium text-white bg-gradient-to-r from-purple-500 to-pink-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
         >
-          Create Video
+          <span>Create Video</span>
+          <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 1L14.5 9.5L23 12L14.5 14.5L12 23L9.5 14.5L1 12L9.5 9.5L12 1Z" />
+          </svg>
+          <span>{credits}</span>
         </button>
       </div>
 
@@ -192,8 +227,10 @@ export default function CreateVideoPage() {
       <ParameterSettingsSheet
         isOpen={isParamsSheetOpen}
         onClose={() => setIsParamsSheetOpen(false)}
+        model={selectedModel}
         params={params}
         onParamsChange={setParams}
+        onCreateVideo={handleCreateVideo}
       />
     </div>
   );

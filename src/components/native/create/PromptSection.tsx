@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { VideoModel, videoModels } from '@/config/videoModels';
+import { VideoModel } from '@/config/native/videoModels';
 import ModelSelectorSheet from './ModelSelectorSheet';
 
 interface PromptSectionProps {

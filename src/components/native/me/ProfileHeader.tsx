@@ -58,7 +58,7 @@ export default function ProfileHeader({
           <img
             src={avatarUrl}
             alt={userName}
-            className="w-24 h-24 rounded-full border-4 border-purple-500/30 object-cover"
+            className="w-20 h-20 rounded-full border-2 border-purple-500/30 object-cover"
           />
         ) : (
           <DefaultAvatar />

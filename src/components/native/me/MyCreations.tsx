@@ -1,9 +1,27 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 
 type TabType = 'videos' | 'music' | 'cover' | 'images';
+
+interface VideoItem {
+  taskId: string;
+  status: 'PENDING' | 'PROCESSING' | 'SUCCESS' | 'FAILURE';
+  progress: number;
+  prompt: string;
+  model: string;
+  resolution: string;
+  duration: number;
+  aspectRatio: string;
+  videoUrl?: string;
+  thumbnailUrl?: string;
+  errorMessage?: string;
+  createdAt: string;
+  completedAt?: string;
+}
 
 const tabs: { id: TabType; label: string }[] = [
   { id: 'videos', label: 'Videos' },
@@ -58,21 +76,131 @@ const EmptyIllustration = () => (
   </svg>
 );
 
-interface MyCreationsProps {
-  // 后续可以传入实际的作品数据
-  creations?: Record<TabType, unknown[]>;
+// 视频卡片组件
+function VideoCard({ video, onClick }: { video: VideoItem; onClick: () => void }) {
+  const isProcessing = video.status === 'PENDING' || video.status === 'PROCESSING';
+  const isSuccess = video.status === 'SUCCESS';
+  const isFailed = video.status === 'FAILURE';
+
+  return (
+    <button
+      onClick={onClick}
+      className="relative aspect-[9/16] bg-gray-800 rounded-xl overflow-hidden group"
+    >
+      {/* 视频缩略图或占位 */}
+      {isSuccess && video.videoUrl ? (
+        <video
+          src={video.videoUrl}
+          className="w-full h-full object-cover"
+          muted
+          playsInline
+          preload="metadata"
+        />
+      ) : (
+        <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-800 to-gray-900">
+          {isProcessing && (
+            <div className="flex flex-col items-center gap-2">
+              <div className="w-10 h-10 border-3 border-purple-500 border-t-transparent rounded-full animate-spin" />
+              <span className="text-white text-sm font-medium">{video.progress}%</span>
+            </div>
+          )}
+          {isFailed && (
+            <div className="flex flex-col items-center gap-2 p-2">
+              <svg className="w-8 h-8 text-red-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <circle cx="12" cy="12" r="10" />
+                <line x1="15" y1="9" x2="9" y2="15" />
+                <line x1="9" y1="9" x2="15" y2="15" />
+              </svg>
+              <span className="text-red-400 text-xs text-center">Failed</span>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* 状态标签 */}
+      {isProcessing && (
+        <div className="absolute top-2 left-2 px-2 py-1 bg-purple-500/80 rounded-full">
+          <span className="text-white text-xs font-medium">Processing</span>
+        </div>
+      )}
+
+      {/* 时长标签 */}
+      {isSuccess && (
+        <div className="absolute bottom-2 right-2 px-2 py-1 bg-black/60 rounded">
+          <span className="text-white text-xs">{video.duration}s</span>
+        </div>
+      )}
+
+      {/* Hover 遮罩 */}
+      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors" />
+
+      {/* Prompt 预览 */}
+      <div className="absolute bottom-0 left-0 right-0 p-2 bg-gradient-to-t from-black/80 to-transparent">
+        <p className="text-white text-xs line-clamp-2">{video.prompt}</p>
+      </div>
+    </button>
+  );
 }
 
 /**
  * My Creations 区域
  * 显示用户创建的内容，支持 Tab 切换
  */
-export default function MyCreations({ creations }: MyCreationsProps) {
+export default function MyCreations() {
+  const router = useRouter();
+  const { token, user } = useFirebaseAuth();
   const [activeTab, setActiveTab] = useState<TabType>('videos');
+  const [videos, setVideos] = useState<VideoItem[]>([]);
+  const [loading, setLoading] = useState(false);
 
-  const currentCreations = creations?.[activeTab] || [];
-  const isEmpty = currentCreations.length === 0;
+  // 获取视频列表
+  const fetchVideos = useCallback(async () => {
+    if (!token) return;
+
+    try {
+      setLoading(true);
+      const response = await fetch('/api/v1/native/video/list', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setVideos(data.videos || []);
+      }
+    } catch (error) {
+      console.error('Failed to fetch videos:', error);
+    } finally {
+      setLoading(false);
+    }
+  }, [token]);
+
+  // 初始加载
+  useEffect(() => {
+    if (activeTab === 'videos' && token) {
+      fetchVideos();
+    }
+  }, [activeTab, token, fetchVideos]);
+
+  // 如果有正在处理的视频，定时刷新
+  useEffect(() => {
+    const hasProcessing = videos.some(
+      (v) => v.status === 'PENDING' || v.status === 'PROCESSING'
+    );
+
+    if (hasProcessing && activeTab === 'videos') {
+      const interval = setInterval(fetchVideos, 5000); // 每 5 秒刷新
+      return () => clearInterval(interval);
+    }
+  }, [videos, activeTab, fetchVideos]);
+
+  const handleVideoClick = (video: VideoItem) => {
+    router.push(`/native/video/task/${video.taskId}`);
+  };
+
   const emptyState = emptyStateMessages[activeTab];
+  const isEmpty = activeTab === 'videos' ? videos.length === 0 : true;
 
   return (
     <div className="px-4 pt-4 pb-24">
@@ -100,16 +228,43 @@ export default function MyCreations({ creations }: MyCreationsProps) {
       </div>
 
       {/* 内容区域 */}
-      {isEmpty ? (
-        // 空状态
+      {activeTab === 'videos' ? (
+        loading && videos.length === 0 ? (
+          // 加载中
+          <div className="flex justify-center py-8">
+            <div className="w-8 h-8 border-3 border-purple-500 border-t-transparent rounded-full animate-spin" />
+          </div>
+        ) : isEmpty ? (
+          // 空状态
+          <div className="flex flex-col items-center justify-center">
+            <EmptyIllustration />
+            <p className="mt-3 text-gray-400 text-center">{emptyState.title}</p>
+            <p className="text-gray-500 text-sm text-center">{emptyState.subtitle}</p>
+            <Link
+              href={emptyState.createLink}
+              className="mt-4 px-8 py-3 bg-white/10 border border-white/20 rounded-full text-white font-medium hover:bg-white/20 transition-colors"
+            >
+              Go create
+            </Link>
+          </div>
+        ) : (
+          // 视频列表
+          <div className="grid grid-cols-2 gap-3">
+            {videos.map((video) => (
+              <VideoCard
+                key={video.taskId}
+                video={video}
+                onClick={() => handleVideoClick(video)}
+              />
+            ))}
+          </div>
+        )
+      ) : isEmpty ? (
+        // 其他 tab 的空状态
         <div className="flex flex-col items-center justify-center">
           <EmptyIllustration />
-          <p className="mt-3 text-gray-400 text-center">
-            {emptyState.title}
-          </p>
-          <p className="text-gray-500 text-sm text-center">
-            {emptyState.subtitle}
-          </p>
+          <p className="mt-3 text-gray-400 text-center">{emptyState.title}</p>
+          <p className="text-gray-500 text-sm text-center">{emptyState.subtitle}</p>
           <Link
             href={emptyState.createLink}
             className="mt-4 px-8 py-3 bg-white/10 border border-white/20 rounded-full text-white font-medium hover:bg-white/20 transition-colors"
@@ -117,12 +272,7 @@ export default function MyCreations({ creations }: MyCreationsProps) {
             Go create
           </Link>
         </div>
-      ) : (
-        // 作品列表（后续实现）
-        <div className="grid grid-cols-2 gap-3">
-          {/* 作品卡片 */}
-        </div>
-      )}
+      ) : null}
     </div>
   );
 }

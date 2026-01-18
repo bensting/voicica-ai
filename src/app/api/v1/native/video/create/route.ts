@@ -21,6 +21,10 @@ interface CreateVideoRequest {
   visibility: 'public' | 'private';
   negativePrompt?: string;
   seed?: number;
+  /** 起始帧图片 (base64) */
+  startFrame?: string;
+  /** 结束帧图片 (base64) - 仅部分模型支持 */
+  endFrame?: string;
 }
 
 /**
@@ -46,7 +50,7 @@ export async function POST(req: NextRequest) {
 
     // 2. 解析请求参数
     const body: CreateVideoRequest = await req.json();
-    const { prompt, modelId, quality, duration, aspectRatio, visibility, negativePrompt, seed } =
+    const { prompt, modelId, quality, duration, aspectRatio, visibility, negativePrompt, seed, startFrame, endFrame } =
       body;
 
     // 3. 验证参数
@@ -158,6 +162,8 @@ export async function POST(req: NextRequest) {
       seed,
       creditsCost,
       isAnonymous: is_anonymous,
+      startFrame,
+      endFrame,
     });
 
     console.log(

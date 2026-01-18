@@ -1,12 +1,14 @@
 'use client';
 
 import { useState } from 'react';
-
-type TabType = 'character' | 'keyframe';
+import { ImageGuidanceConfig } from '@/config/native/videoModels';
 
 interface ImageGuidanceProps {
-  activeTab: TabType;
-  onTabChange: (tab: TabType) => void;
+  config?: ImageGuidanceConfig;
+  startFrame: string | null;
+  endFrame: string | null;
+  onStartFrameChange: (image: string | null) => void;
+  onEndFrameChange: (image: string | null) => void;
 }
 
 // 信息图标
@@ -33,136 +35,170 @@ const CloseIcon = () => (
 
 /**
  * Image Guidance 组件
- * 支持 Character Reference 和 Key Frame 两种模式
+ * 根据模型配置显示不同的图片上传 UI
+ * - single: 单图模式（显示一个上传框）
+ * - startEnd: 首尾帧模式（显示 Start Frame + End Frame）
  */
-export default function ImageGuidance({ activeTab, onTabChange }: ImageGuidanceProps) {
-  const [startFrameImage, setStartFrameImage] = useState<string | null>(null);
-  const [characterImage, setCharacterImage] = useState<string | null>(null);
+export default function ImageGuidance({
+  config,
+  startFrame,
+  endFrame,
+  onStartFrameChange,
+  onEndFrameChange,
+}: ImageGuidanceProps) {
+  const [showTooltip, setShowTooltip] = useState(false);
 
-  const handleImageUpload = (type: 'start' | 'character') => {
-    // 创建文件输入
+  // 如果未启用图片引导，不显示
+  if (!config?.enabled) {
+    return null;
+  }
+
+  const handleImageUpload = (type: 'start' | 'end') => {
     const input = document.createElement('input');
     input.type = 'file';
-    input.accept = 'image/*';
+    input.accept = 'image/jpeg,image/jpg,image/png';
     input.onchange = (e) => {
       const file = (e.target as HTMLInputElement).files?.[0];
-      if (file) {
+      if (!file) return;
+
+      // Validate file type
+      const validTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+      if (!validTypes.includes(file.type)) {
+        alert('Please upload a JPG, JPEG, or PNG image.');
+        return;
+      }
+
+      // Validate file size (10 MB max)
+      const maxSize = 10 * 1024 * 1024;
+      if (file.size > maxSize) {
+        alert('Image size must be less than 10 MB.');
+        return;
+      }
+
+      // Validate image dimensions
+      const img = new Image();
+      img.onload = () => {
+        if (img.width < 300 || img.height < 300) {
+          alert('Image width and height must be at least 300px.');
+          return;
+        }
+
+        // Read as base64
         const reader = new FileReader();
         reader.onload = (e) => {
           const result = e.target?.result as string;
           if (type === 'start') {
-            setStartFrameImage(result);
+            onStartFrameChange(result);
           } else {
-            setCharacterImage(result);
+            onEndFrameChange(result);
           }
         };
         reader.readAsDataURL(file);
-      }
+      };
+      img.onerror = () => {
+        alert('Failed to load image. Please try another file.');
+      };
+      img.src = URL.createObjectURL(file);
     };
     input.click();
   };
 
-  const handleRemoveImage = (type: 'start' | 'character') => {
+  const handleRemoveImage = (type: 'start' | 'end') => {
     if (type === 'start') {
-      setStartFrameImage(null);
+      onStartFrameChange(null);
     } else {
-      setCharacterImage(null);
+      onEndFrameChange(null);
     }
   };
+
+  const isStartEndMode = config.mode === 'startEnd';
 
   return (
     <div className="mt-6">
       {/* Header */}
       <div className="flex items-center gap-2 mb-3">
         <h3 className="text-white font-semibold">Image Guidance (optional)</h3>
-        <button className="text-yellow-500">
-          <InfoIcon />
-        </button>
-      </div>
-
-      {/* Tabs */}
-      <div className="flex bg-gray-800/60 rounded-xl p-1 mb-4">
-        <button
-          onClick={() => onTabChange('character')}
-          className={`flex-1 py-2.5 text-sm font-medium rounded-lg transition-colors ${
-            activeTab === 'character'
-              ? 'bg-gray-700 text-white'
-              : 'text-gray-400 hover:text-gray-300'
-          }`}
-        >
-          Character Reference
-        </button>
-        <button
-          onClick={() => onTabChange('keyframe')}
-          className={`flex-1 py-2.5 text-sm font-medium rounded-lg transition-colors ${
-            activeTab === 'keyframe'
-              ? 'bg-gray-700 text-white'
-              : 'text-gray-400 hover:text-gray-300'
-          }`}
-        >
-          Key Frame
-        </button>
+        <div className="relative">
+          <button
+            className="text-gray-500 hover:text-gray-400"
+            onClick={() => setShowTooltip(!showTooltip)}
+            onBlur={() => setTimeout(() => setShowTooltip(false), 150)}
+          >
+            <InfoIcon />
+          </button>
+          {/* Tooltip */}
+          {showTooltip && (
+            <div className="absolute left-0 top-6 z-50 w-56 p-3 bg-gray-800 rounded-lg shadow-lg border border-gray-700">
+              <p className="text-xs text-gray-300 leading-relaxed">
+                Supports JPG/JPEG/PNG, up to 10 MB. Minimum width/height is 300px.
+              </p>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Upload Area */}
-      {activeTab === 'keyframe' ? (
-        <div className="flex gap-3">
-          {/* Start Frame */}
-          {startFrameImage ? (
-            <div className="relative w-32 h-32 rounded-2xl overflow-hidden">
-              <img
-                src={startFrameImage}
-                alt="Start frame"
-                className="w-full h-full object-cover"
-              />
-              <button
-                onClick={() => handleRemoveImage('start')}
-                className="absolute top-2 right-2 w-6 h-6 bg-black/60 rounded-full flex items-center justify-center text-white"
-              >
-                <CloseIcon />
-              </button>
-              <span className="absolute bottom-2 left-2 text-xs text-white bg-black/60 px-2 py-1 rounded">
-                Start frame
-              </span>
-            </div>
-          ) : (
+      <div className="flex gap-3">
+        {/* Start Frame / Single Image */}
+        {startFrame ? (
+          <div className="relative w-28 h-28 rounded-xl overflow-hidden">
+            <img
+              src={startFrame}
+              alt="Start frame"
+              className="w-full h-full object-cover"
+            />
             <button
-              onClick={() => handleImageUpload('start')}
-              className="w-32 h-32 border-2 border-dashed border-gray-600 rounded-2xl flex flex-col items-center justify-center gap-2 text-gray-500 hover:border-gray-500 hover:text-gray-400 transition-colors"
+              onClick={() => handleRemoveImage('start')}
+              className="absolute top-1.5 right-1.5 w-5 h-5 bg-black/60 rounded-full flex items-center justify-center text-white"
             >
-              <PlusIcon />
-              <span className="text-sm">Start frame</span>
+              <CloseIcon />
             </button>
-          )}
-        </div>
-      ) : (
-        <div className="flex gap-3">
-          {/* Character Reference */}
-          {characterImage ? (
-            <div className="relative w-32 h-32 rounded-2xl overflow-hidden">
-              <img
-                src={characterImage}
-                alt="Character reference"
-                className="w-full h-full object-cover"
-              />
+            <span className="absolute bottom-1.5 left-1.5 text-[10px] text-white bg-black/60 px-1.5 py-0.5 rounded">
+              {isStartEndMode ? 'Start frame' : 'Reference'}
+            </span>
+          </div>
+        ) : (
+          <button
+            onClick={() => handleImageUpload('start')}
+            className="w-28 h-28 border-2 border-dashed border-gray-600 rounded-xl flex flex-col items-center justify-center gap-1.5 text-gray-500 hover:border-gray-500 hover:text-gray-400 transition-colors"
+          >
+            <PlusIcon />
+            <span className="text-xs">{isStartEndMode ? 'Start frame' : 'Upload'}</span>
+          </button>
+        )}
+
+        {/* End Frame (仅首尾帧模式) */}
+        {isStartEndMode && (
+          <>
+            {endFrame ? (
+              <div className="relative w-28 h-28 rounded-xl overflow-hidden">
+                <img
+                  src={endFrame}
+                  alt="End frame"
+                  className="w-full h-full object-cover"
+                />
+                <button
+                  onClick={() => handleRemoveImage('end')}
+                  className="absolute top-1.5 right-1.5 w-5 h-5 bg-black/60 rounded-full flex items-center justify-center text-white"
+                >
+                  <CloseIcon />
+                </button>
+                <span className="absolute bottom-1.5 left-1.5 text-[10px] text-white bg-black/60 px-1.5 py-0.5 rounded">
+                  End frame
+                </span>
+              </div>
+            ) : (
               <button
-                onClick={() => handleRemoveImage('character')}
-                className="absolute top-2 right-2 w-6 h-6 bg-black/60 rounded-full flex items-center justify-center text-white"
+                onClick={() => handleImageUpload('end')}
+                className="w-28 h-28 border-2 border-dashed border-gray-600 rounded-xl flex flex-col items-center justify-center gap-1.5 text-gray-500 hover:border-gray-500 hover:text-gray-400 transition-colors"
               >
-                <CloseIcon />
+                <PlusIcon />
+                <span className="text-xs">End frame</span>
               </button>
-            </div>
-          ) : (
-            <button
-              onClick={() => handleImageUpload('character')}
-              className="w-32 h-32 border-2 border-dashed border-gray-600 rounded-2xl flex flex-col items-center justify-center gap-2 text-gray-500 hover:border-gray-500 hover:text-gray-400 transition-colors"
-            >
-              <PlusIcon />
-              <span className="text-sm">Upload</span>
-            </button>
-          )}
-        </div>
-      )}
+            )}
+          </>
+        )}
+      </div>
     </div>
   );
 }

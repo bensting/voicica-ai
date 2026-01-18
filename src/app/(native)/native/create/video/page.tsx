@@ -77,7 +77,8 @@ export default function CreateVideoPage() {
   const [mode, setMode] = useState<ModeType>('generate');
   const [prompt, setPrompt] = useState('');
   const [selectedModel, setSelectedModel] = useState<VideoModel>(defaultVideoModel);
-  const [imageGuidanceTab, setImageGuidanceTab] = useState<'character' | 'keyframe'>('keyframe');
+  const [startFrame, setStartFrame] = useState<string | null>(null);
+  const [endFrame, setEndFrame] = useState<string | null>(null);
   const [isCreating, setIsCreating] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [params, setParams] = useState<VideoParams>(() => {
@@ -88,13 +89,16 @@ export default function CreateVideoPage() {
     };
   });
 
-  // 当模型变化时，重置参数为新模型的默认值
+  // 当模型变化时，重置参数为新模型的默认值，并清空图片
   useEffect(() => {
     const defaults = getModelDefaults(selectedModel);
     setParams((prev) => ({
       ...defaults,
       visibility: prev.visibility, // 保留 visibility 设置
     }));
+    // 切换模型时清空已上传的图片
+    setStartFrame(null);
+    setEndFrame(null);
   }, [selectedModel]);
 
   const handleBack = () => {
@@ -125,6 +129,8 @@ export default function CreateVideoPage() {
           duration: params.duration,
           aspectRatio: params.aspectRatio,
           visibility: params.visibility,
+          startFrame: startFrame || undefined,
+          endFrame: endFrame || undefined,
         }),
       });
 
@@ -217,8 +223,11 @@ export default function CreateVideoPage() {
 
         {/* Image Guidance */}
         <ImageGuidance
-          activeTab={imageGuidanceTab}
-          onTabChange={setImageGuidanceTab}
+          config={selectedModel.imageGuidance}
+          startFrame={startFrame}
+          endFrame={endFrame}
+          onStartFrameChange={setStartFrame}
+          onEndFrameChange={setEndFrame}
         />
 
         {/* Parameters */}

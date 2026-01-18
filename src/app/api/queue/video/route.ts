@@ -31,6 +31,8 @@ async function handleVideoTask(req: NextRequest) {
     seed,
     creditsCost,
     isAnonymous,
+    startFrame,
+    endFrame,
   } = payload;
 
   console.log(`🚀 [VideoQueue] 开始处理视频任务: ${taskId}`);
@@ -96,7 +98,7 @@ async function handleVideoTask(req: NextRequest) {
     });
 
     // 5. 提交视频生成任务到 Runware
-    console.log(`🎬 [VideoQueue] 提交 Runware 任务: model=${model}, resolution=${resolution}, duration=${duration}s`);
+    console.log(`🎬 [VideoQueue] 提交 Runware 任务: model=${model}, resolution=${resolution}, duration=${duration}s, hasImage=${!!startFrame}`);
 
     const runwareResult = await generateVideoAndWait(
       {
@@ -106,6 +108,9 @@ async function handleVideoTask(req: NextRequest) {
         duration,
         aspectRatio: aspectRatio as '16:9' | '9:16',
         seed,
+        // 传递起始帧图片（如果有）
+        inputImage: startFrame,
+        // TODO: endFrame 支持需要根据具体模型 API 实现
       },
       async (progress) => {
         // 更新进度（30% - 90%）

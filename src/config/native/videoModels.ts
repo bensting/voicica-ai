@@ -14,8 +14,10 @@ export interface QualityOption {
 export interface DurationOption {
   value: string;      // 如 '5s', '8s'
   label: string;
-  multiplier?: number; // 积分倍数（可选，用于时长影响积分）
 }
+
+// 积分矩阵类型：creditsMatrix[quality][duration] = credits
+export type CreditsMatrix = Record<string, Record<string, number>>;
 
 // 宽高比选项
 export interface AspectRatioOption {
@@ -47,6 +49,8 @@ export interface VideoModel {
   qualityOptions: QualityOption[];
   durationOptions: DurationOption[];
   aspectRatioOptions: AspectRatioOption[];
+  /** 积分矩阵：creditsMatrix[quality][duration] = credits */
+  creditsMatrix: CreditsMatrix;
   defaultQuality: string;
   defaultDuration: string;
   defaultAspectRatio: string;
@@ -87,6 +91,11 @@ export const videoModelsConfig: VideoModel[] = [
       { value: '8s', label: '8s' },
     ],
     aspectRatioOptions: standardAspectRatios,
+    creditsMatrix: {
+      '512p': { '8s': 100 },
+      '768p': { '8s': 125 },
+      '1080p': { '8s': 200 },
+    },
     defaultQuality: '768p',
     defaultDuration: '8s',
     defaultAspectRatio: '16:9',
@@ -110,6 +119,11 @@ export const videoModelsConfig: VideoModel[] = [
       { value: '20s', label: '20s' },
     ],
     aspectRatioOptions: extendedAspectRatios,
+    creditsMatrix: {
+      '480p': { '5s': 40, '10s': 80, '20s': 160 },
+      '720p': { '5s': 60, '10s': 120, '20s': 240 },
+      '1080p': { '5s': 90, '10s': 180, '20s': 360 },
+    },
     defaultQuality: '720p',
     defaultDuration: '10s',
     defaultAspectRatio: '16:9',
@@ -132,6 +146,11 @@ export const videoModelsConfig: VideoModel[] = [
       { value: '8s', label: '8s' },
     ],
     aspectRatioOptions: standardAspectRatios,
+    creditsMatrix: {
+      '512p': { '4s': 30, '8s': 60 },
+      '720p': { '4s': 45, '8s': 90 },
+      '1080p': { '4s': 70, '8s': 140 },
+    },
     defaultQuality: '720p',
     defaultDuration: '4s',
     defaultAspectRatio: '16:9',
@@ -143,10 +162,11 @@ export const videoModelsConfig: VideoModel[] = [
     description: 'Lightning-fast videos with crisp detail',
     icon: 'pixverse',
     apiModelId: 'pixverse-v5',
-    enabled: { development: true, production: false },
+    enabled: { development: true, production: true },
     qualityOptions: [
-      { value: '540p', label: '540p', credits: 40 },
-      { value: '720p', label: '720p', credits: 60 },
+      { value: '360p', label: '360p', credits: 25 },
+      { value: '540p', label: '540p', credits: 50 },
+      { value: '720p', label: '720p', credits: 75 },
       { value: '1080p', label: '1080p', credits: 100, isPro: true },
     ],
     durationOptions: [
@@ -154,6 +174,12 @@ export const videoModelsConfig: VideoModel[] = [
       { value: '8s', label: '8s' },
     ],
     aspectRatioOptions: extendedAspectRatios,
+    creditsMatrix: {
+      '360p': { '5s': 25, '8s': 50 },
+      '540p': { '5s': 50, '8s': 100 },
+      '720p': { '5s': 75, '8s': 150 },
+      '1080p': { '5s': 100, '8s': 200 },
+    },
     defaultQuality: '720p',
     defaultDuration: '5s',
     defaultAspectRatio: '16:9',
@@ -176,6 +202,11 @@ export const videoModelsConfig: VideoModel[] = [
       { value: '10s', label: '10s' },
     ],
     aspectRatioOptions: standardAspectRatios,
+    creditsMatrix: {
+      '480p': { '5s': 15, '10s': 30 },
+      '720p': { '5s': 25, '10s': 50 },
+      '1080p': { '5s': 40, '10s': 80 },
+    },
     defaultQuality: '720p',
     defaultDuration: '5s',
     defaultAspectRatio: '16:9',
@@ -198,6 +229,11 @@ export const videoModelsConfig: VideoModel[] = [
       { value: '10s', label: '10s' },
     ],
     aspectRatioOptions: extendedAspectRatios,
+    creditsMatrix: {
+      '540p': { '5s': 22, '10s': 45 },
+      '720p': { '5s': 35, '10s': 70 },
+      '1080p': { '5s': 60, '10s': 120 },
+    },
     defaultQuality: '720p',
     defaultDuration: '5s',
     defaultAspectRatio: '16:9',
@@ -212,10 +248,9 @@ export const videoModels = videoModelsConfig.filter(
 
 export const defaultVideoModel = videoModels[0];
 
-// 根据模型和当前选项计算积分
-export function calculateCredits(model: VideoModel, quality: string): number {
-  const qualityOption = model.qualityOptions.find((q) => q.value === quality);
-  return qualityOption?.credits || 0;
+// 根据模型、画质和时长计算积分
+export function calculateCredits(model: VideoModel, quality: string, duration: string): number {
+  return model.creditsMatrix[quality]?.[duration] || 0;
 }
 
 // 获取模型的默认参数

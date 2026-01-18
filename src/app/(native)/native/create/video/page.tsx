@@ -159,7 +159,7 @@ export default function CreateVideoPage() {
     }
   };
 
-  const credits = calculateCredits(selectedModel, params.quality);
+  const credits = calculateCredits(selectedModel, params.quality, params.duration);
 
   return (
     <div className="min-h-screen bg-[#0a0a1a] flex flex-col">

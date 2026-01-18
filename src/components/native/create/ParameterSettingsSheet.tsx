@@ -91,7 +91,7 @@ export default function ParameterSettingsSheet({
     onParamsChange({ ...params, [key]: value });
   };
 
-  const credits = calculateCredits(model, params.quality);
+  const credits = calculateCredits(model, params.quality, params.duration);
 
   const handleCreate = () => {
     onClose();

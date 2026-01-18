@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 import LoginModal from './LoginModal';
 
@@ -10,6 +11,7 @@ import LoginModal from './LoginModal';
  * 包含 Logo 和 Login & Rewards 按钮
  */
 export default function NativeNavbar() {
+  const router = useRouter();
   const { user } = useFirebaseAuth();
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
@@ -49,6 +51,10 @@ export default function NativeNavbar() {
       <LoginModal
         isOpen={isLoginModalOpen}
         onClose={() => setIsLoginModalOpen(false)}
+        onLoginSuccess={() => {
+          setIsLoginModalOpen(false);
+          router.push('/native/me');
+        }}
       />
     </>
   );

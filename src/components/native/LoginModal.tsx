@@ -12,6 +12,7 @@ type ViewType = 'main' | 'email-login' | 'register' | 'forgot-password';
 interface LoginModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onLoginSuccess?: () => void;
 }
 
 // 关闭图标
@@ -47,7 +48,7 @@ const GoogleIcon = () => (
  * 登录弹窗
  * 支持多视图：主页、Email登录、注册、忘记密码
  */
-export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
+export default function LoginModal({ isOpen, onClose, onLoginSuccess }: LoginModalProps) {
   const { signInWithGoogle } = useFirebaseAuth();
   const [view, setView] = useState<ViewType>('main');
   const [isLoading, setIsLoading] = useState(false);
@@ -77,7 +78,11 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
     setIsLoading(true);
     try {
       await signInWithGoogle();
-      onClose();
+      if (onLoginSuccess) {
+        onLoginSuccess();
+      } else {
+        onClose();
+      }
     } catch (error) {
       console.error('Google login failed:', error);
     } finally {
@@ -94,7 +99,11 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
   };
 
   const handleLoginSuccess = () => {
-    onClose();
+    if (onLoginSuccess) {
+      onLoginSuccess();
+    } else {
+      onClose();
+    }
   };
 
   const handleRegisterSuccess = () => {

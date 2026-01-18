@@ -135,6 +135,10 @@ export default function BottomNav() {
       <LoginModal
         isOpen={isLoginModalOpen}
         onClose={() => setIsLoginModalOpen(false)}
+        onLoginSuccess={() => {
+          setIsLoginModalOpen(false);
+          router.push('/native/me');
+        }}
       />
     </>
   );

@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 import LoginModal from './LoginModal';
 
 /**
@@ -9,10 +10,10 @@ import LoginModal from './LoginModal';
  * 包含 Logo 和 Login & Rewards 按钮
  */
 export default function NativeNavbar() {
+  const { user } = useFirebaseAuth();
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
-  // TODO: 从 AuthContext 获取登录状态
-  const isLoggedIn = false;
+  const isLoggedIn = !!user;
 
   return (
     <>

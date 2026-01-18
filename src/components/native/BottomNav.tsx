@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
+import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 import CreateSheet from './CreateSheet';
 import LoginModal from './LoginModal';
 
@@ -55,11 +56,11 @@ const CloseIcon = () => (
 export default function BottomNav() {
   const pathname = usePathname();
   const router = useRouter();
+  const { user } = useFirebaseAuth();
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
-  // TODO: 从 AuthContext 获取登录状态
-  const isLoggedIn = false;
+  const isLoggedIn = !!user;
 
   const isExploreActive = pathname === '/native' || pathname.startsWith('/native/explore');
   const isMeActive = pathname.startsWith('/native/me');

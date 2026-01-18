@@ -1,7 +1,13 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
+import EmailLoginForm from './auth/EmailLoginForm';
+import RegisterForm from './auth/RegisterForm';
+import ForgotPasswordForm from './auth/ForgotPasswordForm';
+
+type ViewType = 'main' | 'email-login' | 'register' | 'forgot-password';
 
 interface LoginModalProps {
   isOpen: boolean;
@@ -39,9 +45,20 @@ const GoogleIcon = () => (
 
 /**
  * 登录弹窗
- * 全屏模态框，支持 Google 和 Email 登录
+ * 支持多视图：主页、Email登录、注册、忘记密码
  */
 export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
+  const { signInWithGoogle } = useFirebaseAuth();
+  const [view, setView] = useState<ViewType>('main');
+  const [isLoading, setIsLoading] = useState(false);
+
+  // 重置视图当弹窗关闭时
+  useEffect(() => {
+    if (!isOpen) {
+      setView('main');
+    }
+  }, [isOpen]);
+
   // 禁止背景滚动
   useEffect(() => {
     if (isOpen) {
@@ -56,16 +73,70 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
 
   if (!isOpen) return null;
 
-  const handleGoogleLogin = () => {
-    // TODO: 实现 Google 登录
-    console.log('Google login clicked');
+  const handleGoogleLogin = async () => {
+    setIsLoading(true);
+    try {
+      await signInWithGoogle();
+      onClose();
+    } catch (error) {
+      console.error('Google login failed:', error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleEmailLogin = () => {
-    // TODO: 跳转到 Email 登录页面
-    console.log('Email login clicked');
+    setView('email-login');
   };
 
+  const handleSignUp = () => {
+    setView('register');
+  };
+
+  const handleLoginSuccess = () => {
+    onClose();
+  };
+
+  const handleRegisterSuccess = () => {
+    // 注册成功后返回主页，让用户登录
+    setView('main');
+  };
+
+  // Email 登录视图
+  if (view === 'email-login') {
+    return (
+      <div className="fixed inset-0 z-50 animate-fade-in">
+        <EmailLoginForm
+          onBack={() => setView('main')}
+          onForgotPassword={() => setView('forgot-password')}
+          onSuccess={handleLoginSuccess}
+        />
+      </div>
+    );
+  }
+
+  // 注册视图
+  if (view === 'register') {
+    return (
+      <div className="fixed inset-0 z-50 animate-fade-in">
+        <RegisterForm
+          onBack={() => setView('main')}
+          onSuccess={handleRegisterSuccess}
+        />
+      </div>
+    );
+  }
+
+  // 忘记密码视图
+  if (view === 'forgot-password') {
+    return (
+      <div className="fixed inset-0 z-50 animate-fade-in">
+        <ForgotPasswordForm onBack={() => setView('email-login')} />
+      </div>
+    );
+  }
+
+  // 主视图
   return (
     <div className="fixed inset-0 z-50 bg-[#0a0a1a] animate-fade-in overflow-auto">
       {/* 背景图片 */}
@@ -88,7 +159,7 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
         {/* 顶部区域 - Logo */}
         <div
           className="flex flex-col items-center"
-          style={{ paddingTop: 'calc(36px + var(--safe-area-inset-top, 0px))' }}
+          style={{ paddingTop: 'calc(28px + var(--safe-area-inset-top, 0px))' }}
         >
           <p className="text-gray-300 text-lg mb-2">Welcome to</p>
           <h1 className="text-4xl font-bold">
@@ -114,10 +185,11 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
             {/* Google 登录 */}
             <button
               onClick={handleGoogleLogin}
-              className="w-full flex items-center justify-center gap-3 py-4 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 text-white font-medium hover:from-purple-600 hover:to-pink-600 transition-all"
+              disabled={isLoading}
+              className="w-full flex items-center justify-center gap-3 py-4 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 text-white font-medium hover:from-purple-600 hover:to-pink-600 disabled:opacity-50 transition-all"
             >
               <GoogleIcon />
-              Log in with Google
+              {isLoading ? 'Logging in...' : 'Log in with Google'}
             </button>
 
             {/* Email 登录 */}
@@ -129,7 +201,10 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
             </button>
 
             {/* Sign up */}
-            <button className="w-full py-3 text-white font-medium hover:text-purple-400 transition-colors">
+            <button
+              onClick={handleSignUp}
+              className="w-full py-3 text-white font-medium hover:text-purple-400 transition-colors"
+            >
               Sign up
             </button>
           </div>

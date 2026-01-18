@@ -5,7 +5,10 @@ import NativeNavbar from '@/components/native/NativeNavbar';
 import BottomNav from '@/components/native/BottomNav';
 
 // 不显示顶部导航的路径
-const hideNavbarPaths = ['/native/me'];
+const hideNavbarPaths = ['/native/me', '/native/settings'];
+
+// 不显示底部导航的路径
+const hideBottomNavPaths = ['/native/settings'];
 
 /**
  * Native App 专用布局
@@ -19,6 +22,7 @@ export default function NativeLayout({
 }) {
   const pathname = usePathname();
   const showNavbar = !hideNavbarPaths.some((path) => pathname.startsWith(path));
+  const showBottomNav = !hideBottomNavPaths.some((path) => pathname.startsWith(path));
 
   return (
     <div className="min-h-screen bg-[#0a0a1a]">
@@ -28,8 +32,8 @@ export default function NativeLayout({
       {/* 主内容区域 */}
       <main>{children}</main>
 
-      {/* 底部导航 */}
-      <BottomNav />
+      {/* 底部导航 - 部分页面不显示 */}
+      {showBottomNav && <BottomNav />}
     </div>
   );
 }

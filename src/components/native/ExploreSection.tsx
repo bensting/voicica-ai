@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import Link from 'next/link';
 
 // Tab 类型
 type TabType = 'videos' | 'swap' | 'effects' | 'images';
@@ -12,38 +13,17 @@ const tabs: { id: TabType; label: string }[] = [
   { id: 'images', label: 'Images' },
 ];
 
-// 静态展示数据 - 占位图使用渐变色块
-const exploreItems: Record<
-  TabType,
-  { id: string; user: string; views: number; gradient: string }[]
-> = {
-  videos: [
-    { id: 'v1', user: 'ro****@gmail.c...', views: 71820, gradient: 'from-amber-600 to-orange-700' },
-    { id: 'v2', user: 'to****@gmail.c...', views: 69120, gradient: 'from-pink-500 to-rose-600' },
-    { id: 'v3', user: 'an****@gmail.c...', views: 54230, gradient: 'from-blue-500 to-cyan-600' },
-    { id: 'v4', user: 'mi****@gmail.c...', views: 48900, gradient: 'from-purple-500 to-pink-600' },
-    { id: 'v5', user: 'ja****@gmail.c...', views: 42150, gradient: 'from-green-500 to-teal-600' },
-    { id: 'v6', user: 'sa****@gmail.c...', views: 38700, gradient: 'from-indigo-500 to-purple-600' },
-  ],
-  swap: [
-    { id: 's1', user: 'ke****@gmail.c...', views: 62100, gradient: 'from-violet-500 to-purple-600' },
-    { id: 's2', user: 'li****@gmail.c...', views: 55800, gradient: 'from-rose-500 to-pink-600' },
-    { id: 's3', user: 'da****@gmail.c...', views: 49200, gradient: 'from-cyan-500 to-blue-600' },
-    { id: 's4', user: 'em****@gmail.c...', views: 43500, gradient: 'from-amber-500 to-orange-600' },
-  ],
-  effects: [
-    { id: 'e1', user: 'ch****@gmail.c...', views: 58400, gradient: 'from-fuchsia-500 to-pink-600' },
-    { id: 'e2', user: 'br****@gmail.c...', views: 51200, gradient: 'from-sky-500 to-blue-600' },
-    { id: 'e3', user: 'ol****@gmail.c...', views: 47800, gradient: 'from-lime-500 to-green-600' },
-    { id: 'e4', user: 'so****@gmail.c...', views: 41300, gradient: 'from-orange-500 to-red-600' },
-  ],
-  images: [
-    { id: 'i1', user: 'al****@gmail.c...', views: 67500, gradient: 'from-emerald-500 to-teal-600' },
-    { id: 'i2', user: 'no****@gmail.c...', views: 59800, gradient: 'from-red-500 to-rose-600' },
-    { id: 'i3', user: 'is****@gmail.c...', views: 52100, gradient: 'from-blue-500 to-indigo-600' },
-    { id: 'i4', user: 'wi****@gmail.c...', views: 46700, gradient: 'from-yellow-500 to-amber-600' },
-  ],
-};
+interface ExploreVideo {
+  id: number;
+  taskId: string;
+  prompt: string;
+  aspectRatio: string;
+  videoUrl: string;
+  thumbnailUrl: string | null;
+  viewCount: number;
+  user: string;
+  createdAt: string;
+}
 
 // 播放图标
 const PlayIcon = () => (
@@ -62,10 +42,22 @@ const EyeIcon = () => (
 // 格式化数字
 function formatViews(num: number): string {
   if (num >= 1000) {
-    return (num / 1000).toFixed(0) + 'k';
+    return (num / 1000).toFixed(1) + 'k';
   }
   return num.toString();
 }
+
+// 随机渐变色（用于占位或无缩略图时）
+const gradients = [
+  'from-amber-600 to-orange-700',
+  'from-pink-500 to-rose-600',
+  'from-blue-500 to-cyan-600',
+  'from-purple-500 to-pink-600',
+  'from-green-500 to-teal-600',
+  'from-indigo-500 to-purple-600',
+  'from-violet-500 to-purple-600',
+  'from-fuchsia-500 to-pink-600',
+];
 
 /**
  * Explore 区域
@@ -73,8 +65,38 @@ function formatViews(num: number): string {
  */
 export default function ExploreSection() {
   const [activeTab, setActiveTab] = useState<TabType>('videos');
+  const [videos, setVideos] = useState<ExploreVideo[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const items = exploreItems[activeTab];
+  // 获取视频数据
+  useEffect(() => {
+    if (activeTab === 'videos') {
+      fetchVideos();
+    }
+  }, [activeTab]);
+
+  const fetchVideos = async () => {
+    setIsLoading(true);
+    try {
+      const res = await fetch('/api/v1/native/explore/videos?limit=6');
+      const data = await res.json();
+      if (data.success) {
+        setVideos(data.videos);
+      }
+    } catch (error) {
+      console.error('Failed to fetch videos:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // 根据宽高比获取 aspect class
+  const getAspectClass = (aspectRatio: string, index: number) => {
+    if (aspectRatio === '9:16') return 'aspect-[9/16]';
+    if (aspectRatio === '1:1') return 'aspect-square';
+    // 默认使用交错布局
+    return index % 3 === 0 ? 'aspect-[3/4]' : 'aspect-square';
+  };
 
   return (
     <div className="px-4 pb-24">
@@ -101,40 +123,69 @@ export default function ExploreSection() {
         ))}
       </div>
 
-      {/* 瀑布流网格 */}
-      <div className="grid grid-cols-2 gap-3">
-        {items.map((item, index) => (
-          <div
-            key={item.id}
-            className={`relative rounded-2xl overflow-hidden ${
-              index % 3 === 0 ? 'aspect-[3/4]' : 'aspect-square'
-            }`}
-          >
-            {/* 占位背景 */}
-            <div
-              className={`absolute inset-0 bg-gradient-to-br ${item.gradient}`}
-            />
+      {/* 内容区域 */}
+      {activeTab === 'videos' ? (
+        <div className="grid grid-cols-2 gap-3">
+          {isLoading ? (
+            // 加载骨架屏
+            Array.from({ length: 6 }).map((_, i) => (
+              <div
+                key={i}
+                className={`relative rounded-2xl overflow-hidden bg-gray-800 animate-pulse ${
+                  i % 3 === 0 ? 'aspect-[3/4]' : 'aspect-square'
+                }`}
+              />
+            ))
+          ) : videos.length > 0 ? (
+            videos.map((video, index) => (
+              <Link
+                key={video.id}
+                href={`/native/video/play/${video.taskId}`}
+                className={`relative rounded-2xl overflow-hidden cursor-pointer active:scale-[0.98] transition-transform ${getAspectClass(video.aspectRatio, index)}`}
+              >
+                {/* 缩略图或占位背景 */}
+                {video.thumbnailUrl ? (
+                  <img
+                    src={video.thumbnailUrl}
+                    alt={video.prompt}
+                    className="absolute inset-0 w-full h-full object-cover"
+                  />
+                ) : (
+                  <div
+                    className={`absolute inset-0 bg-gradient-to-br ${gradients[index % gradients.length]}`}
+                  />
+                )}
 
-            {/* 播放按钮 */}
-            {(activeTab === 'videos' || activeTab === 'effects') && (
-              <div className="absolute top-3 right-3">
-                <PlayIcon />
-              </div>
-            )}
+                {/* 播放按钮 */}
+                <div className="absolute top-3 right-3">
+                  <PlayIcon />
+                </div>
 
-            {/* 底部信息 */}
-            <div className="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black/60 to-transparent">
-              <div className="flex items-center justify-between text-xs text-white/80">
-                <span className="truncate max-w-[60%]">{item.user}</span>
-                <span className="flex items-center gap-1">
-                  <EyeIcon />
-                  {formatViews(item.views)}
-                </span>
-              </div>
+                {/* 底部信息 */}
+                <div className="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black/60 to-transparent">
+                  <div className="flex items-center justify-between text-xs text-white/80">
+                    <span className="truncate max-w-[60%]">{video.user}</span>
+                    <span className="flex items-center gap-1">
+                      <EyeIcon />
+                      {formatViews(video.viewCount)}
+                    </span>
+                  </div>
+                </div>
+              </Link>
+            ))
+          ) : (
+            // 空状态
+            <div className="col-span-2 text-center py-12 text-gray-500">
+              No videos yet
             </div>
-          </div>
-        ))}
-      </div>
+          )}
+        </div>
+      ) : (
+        // 其他 Tab 的占位内容
+        <div className="text-center py-12 text-gray-500">
+          Coming soon...
+        </div>
+      )}
     </div>
   );
 }

@@ -88,7 +88,7 @@ const features = [
   },
   {
     id: 'tts',
-    name: 'AI TTS',
+    name: 'Text to Voice',
     icon: <TTSIcon />,
     href: '/native/create/voice',
   },
@@ -112,16 +112,16 @@ const features = [
  */
 export default function FeatureGrid() {
   return (
-    <div className="px-4 py-5">
-      <div className="grid grid-cols-5 gap-2">
+    <div className="py-5">
+      <div className="flex gap-2 px-4 overflow-x-auto scrollbar-hide">
         {features.map((feature) => (
           <Link
             key={feature.id}
             href={feature.href}
-            className="flex flex-col items-center justify-center aspect-square bg-gray-800/60 rounded-xl hover:bg-gray-700/60 transition-colors"
+            className="flex flex-col items-center justify-center w-[72px] h-[72px] flex-shrink-0 bg-gray-800/60 rounded-xl hover:bg-gray-700/60 transition-colors"
           >
             <div className="text-gray-300 mb-1.5">{feature.icon}</div>
-            <span className="text-[10px] text-gray-300 font-medium">
+            <span className="text-[10px] text-gray-300 font-medium whitespace-nowrap">
               {feature.name}
             </span>
           </Link>

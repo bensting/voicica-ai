@@ -16,7 +16,6 @@ import CreditsIcon from '@/components/native/common/CreditsIcon';
 import {
   subscriptionPlans,
   creditPacks,
-  membershipBenefits,
   formatCredits,
   getBillingPeriodText,
   type SubscriptionPlanConfig,
@@ -202,10 +201,10 @@ export default function NativeSubscribePage() {
       {/* Background gradient */}
       <div className="absolute inset-0 bg-gradient-to-b from-purple-900/30 via-transparent to-transparent pointer-events-none" />
 
-      {/* Header */}
+      {/* Fixed Header */}
       <header
-        className="relative z-10 px-4 pt-4"
-        style={{ paddingTop: 'calc(var(--safe-area-inset-top, 0px) + 16px)' }}
+        className="fixed top-0 left-0 right-0 z-30 px-4 bg-[#0a0a1a]/90 backdrop-blur-sm"
+        style={{ paddingTop: 'calc(var(--safe-area-inset-top, 0px) + 8px)', paddingBottom: '8px' }}
       >
         <button
           onClick={() => router.back()}
@@ -216,7 +215,10 @@ export default function NativeSubscribePage() {
       </header>
 
       {/* Credits display */}
-      <div className="relative z-10 text-center py-4">
+      <div
+        className="relative z-10 text-center py-4"
+        style={{ marginTop: 'calc(var(--safe-area-inset-top, 0px) + 56px)' }}
+      >
         <div className="flex items-center justify-center gap-2 text-purple-400 mb-1">
           <CreditsIcon className="w-6 h-6" />
           <span className="text-4xl font-bold text-white">{credits}</span>
@@ -313,12 +315,18 @@ export default function NativeSubscribePage() {
                 <span className="text-white font-semibold">Membership Benefits</span>
               </div>
               <div className="space-y-3">
-                {membershipBenefits.map((benefit, index) => (
+                {[
+                  `${formatCredits(selectedPlan?.credits || 0)} credits refresh monthly`,
+                  'Fast Generation Channel',
+                  'Simultaneous Generations',
+                  'Higher Quality',
+                  'Watermark-free Downloads',
+                ].map((text, index) => (
                   <div key={index} className="flex items-center gap-3">
                     <span className="text-green-400 flex-shrink-0">
                       <CheckIcon />
                     </span>
-                    <span className="text-gray-300 text-sm">{benefit.text}</span>
+                    <span className="text-gray-300 text-sm">{text}</span>
                   </div>
                 ))}
               </div>

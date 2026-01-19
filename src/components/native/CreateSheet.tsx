@@ -64,6 +64,13 @@ const ArrowIcon = () => (
   </svg>
 );
 
+const CloseIcon = () => (
+  <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <line x1="18" y1="6" x2="6" y2="18" />
+    <line x1="6" y1="6" x2="18" y2="18" />
+  </svg>
+);
+
 // 图标映射
 const iconMap: Record<CreateMenuIcon, React.FC> = {
   video: VideoIcon,
@@ -131,6 +138,16 @@ export default function CreateSheet({ isOpen, onClose }: CreateSheetProps) {
               </Link>
             );
           })}
+        </div>
+
+        {/* Close Button */}
+        <div className="flex justify-center pb-3">
+          <button
+            onClick={onClose}
+            className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 hover:text-white hover:bg-gray-700 transition-colors"
+          >
+            <CloseIcon />
+          </button>
         </div>
       </div>
     </>

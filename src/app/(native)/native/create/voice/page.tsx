@@ -11,6 +11,7 @@ import GradientButton from '@/components/native/common/GradientButton';
 import CreditsIcon from '@/components/native/common/CreditsIcon';
 import NativeVoiceSelectorSheet from '@/components/native/create/voice/VoiceSelectorSheet';
 import LoginModal from '@/components/native/LoginModal';
+import CreateSheet from '@/components/native/CreateSheet';
 
 // localStorage keys
 const STORAGE_KEY_TEXT = 'tts_draft_text';
@@ -20,6 +21,13 @@ const STORAGE_KEY_VOICE = 'tts_draft_voice';
 const BackIcon = () => (
   <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
     <path d="M19 12H5M12 19l-7-7 7-7" />
+  </svg>
+);
+
+// 下拉箭头图标
+const ChevronDownIcon = () => (
+  <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <path d="M6 9l6 6 6-6" />
   </svg>
 );
 
@@ -58,6 +66,7 @@ export default function NativeTTSPage() {
 
   const [isVoiceSelectorOpen, setIsVoiceSelectorOpen] = useState(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const [isCreateSheetOpen, setIsCreateSheetOpen] = useState(false);
   const [text, setText] = useState('');
   const [selectedVoice, setSelectedVoice] = useState<Voice | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
@@ -183,8 +192,14 @@ export default function NativeTTSPage() {
         <button onClick={() => router.back()} className="p-2 -ml-2 text-white">
           <BackIcon />
         </button>
-        <h1 className="text-white font-semibold">AI TTS</h1>
-        <div className="w-10" /> {/* Placeholder for alignment */}
+        <button
+          onClick={() => setIsCreateSheetOpen(true)}
+          className="flex items-center gap-1 text-white font-semibold"
+        >
+          <span>AI TTS</span>
+          <ChevronDownIcon />
+        </button>
+        <div className="w-10" />
       </div>
 
       {/* Content */}
@@ -304,6 +319,12 @@ export default function NativeTTSPage() {
         isOpen={isLoginModalOpen}
         onClose={() => setIsLoginModalOpen(false)}
         onLoginSuccess={() => setIsLoginModalOpen(false)}
+      />
+
+      {/* Create Sheet */}
+      <CreateSheet
+        isOpen={isCreateSheetOpen}
+        onClose={() => setIsCreateSheetOpen(false)}
       />
     </div>
   );

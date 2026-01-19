@@ -403,7 +403,7 @@ export default function TTSTaskPage() {
       >
         {/* Text Preview */}
         <div className="bg-gray-800/60 rounded-xl p-4 mb-4">
-          <p className="text-gray-300 text-sm line-clamp-3">{task.text}</p>
+          <p className="text-gray-300 text-sm line-clamp-2">{task.text}</p>
           <div className="flex items-center gap-2 mt-2 text-xs text-gray-500">
             <span>{task.character_count} characters</span>
             {task.credits_cost > 0 && (

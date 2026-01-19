@@ -143,8 +143,16 @@ export default function ExploreSection() {
                 href={`/native/video/play/${video.taskId}`}
                 className={`relative rounded-2xl overflow-hidden cursor-pointer active:scale-[0.98] transition-transform ${getAspectClass(video.aspectRatio, index)}`}
               >
-                {/* 缩略图或占位背景 */}
-                {video.thumbnailUrl ? (
+                {/* 视频预览 */}
+                {video.videoUrl ? (
+                  <video
+                    src={video.videoUrl}
+                    muted
+                    playsInline
+                    preload="metadata"
+                    className="absolute inset-0 w-full h-full object-cover"
+                  />
+                ) : video.thumbnailUrl ? (
                   <img
                     src={video.thumbnailUrl}
                     alt={video.prompt}

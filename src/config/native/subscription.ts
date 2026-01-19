@@ -37,12 +37,6 @@ export interface CreditPackConfig {
   appleProductId?: string;
 }
 
-// Membership benefit type
-export interface MembershipBenefit {
-  text: string;
-  icon?: 'check' | 'star' | 'bolt';
-}
-
 /**
  * Subscription Plans Configuration
  * Recurring subscription plans
@@ -51,36 +45,36 @@ export const subscriptionPlans: SubscriptionPlanConfig[] = [
   {
     id: 'starter_monthly',
     name: 'Starter Plan',
-    credits: 100000,
+    credits: 1000,
     price: 4.99,
     currency: 'USD',
     billingPeriod: 'month',
-    stripeProductId: 'prod_starter_100k',
+    stripeProductId: 'prod_starter_1k',
     googlePlayProductId: 'starter_monthly',
-    features: ['100,000 credits per month'],
+    features: ['1,000 credits per month'],
   },
   {
     id: 'creator_monthly',
     name: 'Creator Plan',
-    credits: 300000,
-    price: 9.99,
+    credits: 3000,
+    price: 12.99,
     currency: 'USD',
     billingPeriod: 'month',
-    stripeProductId: 'prod_creator_300k',
+    stripeProductId: 'prod_creator_3k',
     googlePlayProductId: 'creator_monthly',
-    features: ['300,000 credits per month'],
+    features: ['3,000 credits per month'],
   },
   {
     id: 'pro_monthly',
     name: 'Pro Plan',
-    credits: 500000,
-    price: 14.99,
+    credits: 5000,
+    price: 19.99,
     currency: 'USD',
     billingPeriod: 'month',
-    stripeProductId: 'prod_pro_500k',
+    stripeProductId: 'prod_pro_5k',
     googlePlayProductId: 'pro_monthly',
     isPopular: true,
-    features: ['500,000 credits per month'],
+    features: ['5,000 credits per month'],
   },
 ];
 
@@ -113,19 +107,6 @@ export const creditPacks: CreditPackConfig[] = [
     stripeProductId: 'prod_credit_6000',
     googlePlayProductId: 'credit_pack_6000',
   },
-];
-
-/**
- * Membership Benefits
- * Benefits displayed in the subscription tab
- */
-export const membershipBenefits: MembershipBenefit[] = [
-  { text: '1000 credits refresh weekly', icon: 'check' },
-  { text: '20% Bonus on Credit Packs', icon: 'check' },
-  { text: 'Fast Generation Channel', icon: 'check' },
-  { text: 'Simultaneous Generations', icon: 'check' },
-  { text: 'Higher Quality', icon: 'check' },
-  { text: 'Watermark-free Downloads', icon: 'check' },
 ];
 
 /**

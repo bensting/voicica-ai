@@ -163,8 +163,12 @@ export async function generateVideo(params: GenerateVideoParams): Promise<Genera
     }
 
     // 如果有输入图片（image-to-video）
+    // frameImages 格式: [{ inputImage: "base64/uuid/url", frame: 0 }]
     if (inputImage) {
-      requestParams.frameImages = [inputImage];
+      console.log('🖼️ [Runware Video] Input image provided, length:', inputImage.length);
+      requestParams.frameImages = [
+        { inputImage: inputImage, frame: 0 }
+      ];
     }
 
     const result = await client.videoInference(requestParams as Parameters<typeof client.videoInference>[0]);

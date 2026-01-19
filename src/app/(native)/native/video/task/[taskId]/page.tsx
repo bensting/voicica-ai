@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
+import GradientButton from '@/components/native/common/GradientButton';
 
 // 返回图标
 const BackIcon = () => (
@@ -342,26 +343,17 @@ export default function VideoTaskPage() {
 
         {/* 下载按钮 */}
         {isSuccess && (
-          <button
-            onClick={handleDownloadClick}
-            className="w-full py-2.5 rounded-lg font-medium text-white text-sm flex items-center justify-center gap-2"
-            style={{
-              background: 'linear-gradient(90deg, #8B5CF6 0%, #A855F7 25%, #D946EF 50%, #EC4899 75%, #F97316 100%)',
-            }}
-          >
+          <GradientButton onClick={handleDownloadClick}>
             <DownloadIcon />
             <span>Download</span>
-          </button>
+          </GradientButton>
         )}
 
         {/* 失败时的重试按钮 */}
         {isFailed && (
-          <button
-            onClick={() => router.push('/native/create/video')}
-            className="w-full py-4 rounded-2xl font-medium text-white bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center gap-2"
-          >
+          <GradientButton onClick={() => router.push('/native/create/video')}>
             <span>Try Again</span>
-          </button>
+          </GradientButton>
         )}
 
         {/* 处理中的提示 */}
@@ -425,14 +417,7 @@ export default function VideoTaskPage() {
             </div>
 
             {/* 下载按钮 */}
-            <button
-              onClick={handleConfirmDownload}
-              disabled={downloading}
-              className="w-full py-2.5 rounded-lg font-medium text-white text-sm flex items-center justify-center gap-2 disabled:opacity-70"
-              style={{
-                background: 'linear-gradient(90deg, #8B5CF6 0%, #A855F7 25%, #D946EF 50%, #EC4899 75%, #F97316 100%)',
-              }}
-            >
+            <GradientButton onClick={handleConfirmDownload} disabled={downloading}>
               {downloading ? (
                 <>
                   <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
@@ -444,7 +429,7 @@ export default function VideoTaskPage() {
                   <span>Download</span>
                 </>
               )}
-            </button>
+            </GradientButton>
           </div>
         </div>
       )}

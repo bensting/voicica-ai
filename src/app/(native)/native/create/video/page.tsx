@@ -73,7 +73,7 @@ const LoadingIcon = () => (
  */
 export default function CreateVideoPage() {
   const router = useRouter();
-  const { token, user } = useFirebaseAuth();
+  const { token } = useFirebaseAuth();
   const [isCreateSheetOpen, setIsCreateSheetOpen] = useState(false);
   const [isParamsSheetOpen, setIsParamsSheetOpen] = useState(false);
   const [mode, setMode] = useState<ModeType>('generate');

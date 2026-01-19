@@ -209,6 +209,7 @@ export default function NativeTTSHistorySheet({
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
                         {generation.voiceAvatar ? (
+                          // eslint-disable-next-line @next/next/no-img-element
                           <img
                             src={generation.voiceAvatar}
                             alt={generation.voiceDisplayName || ''}

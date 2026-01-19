@@ -244,6 +244,7 @@ export default function NativeTTSPage() {
           className="flex items-center gap-3 p-3 bg-gray-800/60 rounded-xl mb-3 disabled:opacity-50"
         >
           {selectedVoice?.avatar_url ? (
+            // eslint-disable-next-line @next/next/no-img-element
             <img
               src={selectedVoice.avatar_url}
               alt={selectedVoice.display_name}

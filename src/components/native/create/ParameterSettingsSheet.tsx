@@ -49,12 +49,6 @@ const ClassicIcon = () => (
   </svg>
 );
 
-// 星星图标
-const StarIcon = () => (
-  <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
-    <path d="M12 1L14.5 9.5L23 12L14.5 14.5L12 23L9.5 14.5L1 12L9.5 9.5L12 1Z" />
-  </svg>
-);
 
 // 图标映射
 const aspectRatioIcons: Record<string, React.FC> = {

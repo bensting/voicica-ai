@@ -33,7 +33,7 @@ interface ProfileHeaderProps {
 export default function ProfileHeader({
   userName = 'Guest',
   avatarUrl,
-  isLoggedIn = false,
+  isLoggedIn: _isLoggedIn = false,
 }: ProfileHeaderProps) {
   const router = useRouter();
 

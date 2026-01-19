@@ -2,7 +2,6 @@
 
 import { useEffect, useState, useRef } from 'react';
 import type { Voice } from '@/types/voice';
-import { getVoiceSampleUrl } from '@/types/voice';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 import { useVoices } from '@/components/features/studio/voices/hooks/useVoices';
@@ -106,7 +105,6 @@ export default function NativeVoiceSelectorSheet({
     setSearchQuery,
     selectedLanguage,
     setSelectedLanguage,
-    isLanguageInitialized,
     selectedGender,
     setSelectedGender,
     playingVoiceId,
@@ -327,6 +325,7 @@ export default function NativeVoiceSelectorSheet({
                     {/* Avatar */}
                     <div className="relative flex-shrink-0">
                       {voice.avatar_url ? (
+                        // eslint-disable-next-line @next/next/no-img-element
                         <img
                           src={voice.avatar_url}
                           alt={voice.display_name}

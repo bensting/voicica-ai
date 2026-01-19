@@ -32,7 +32,7 @@ async function handleVideoTask(req: NextRequest) {
     creditsCost,
     isAnonymous,
     startFrame,
-    endFrame,
+    endFrame: _endFrame,
   } = payload;
 
   console.log(`🚀 [VideoQueue] 开始处理视频任务: ${taskId}`);

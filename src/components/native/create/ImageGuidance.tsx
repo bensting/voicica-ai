@@ -142,6 +142,7 @@ export default function ImageGuidance({
         {/* Start Frame / Single Image */}
         {startFrame ? (
           <div className="relative w-28 h-28 rounded-xl overflow-hidden">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={startFrame}
               alt="Start frame"
@@ -172,6 +173,7 @@ export default function ImageGuidance({
           <>
             {endFrame ? (
               <div className="relative w-28 h-28 rounded-xl overflow-hidden">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={endFrame}
                   alt="End frame"

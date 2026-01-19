@@ -96,6 +96,7 @@ function VideoCard({ video, onClick }: { video: VideoItem; onClick: () => void }
       <div className="relative aspect-square bg-gray-800 rounded-lg overflow-hidden group w-full">
         {/* 缩略图或占位 */}
         {isSuccess && video.thumbnailUrl ? (
+          // eslint-disable-next-line @next/next/no-img-element
           <img
             src={video.thumbnailUrl}
             alt={video.prompt}

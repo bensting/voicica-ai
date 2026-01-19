@@ -45,7 +45,7 @@ export default function StoryAudioModal({
   story,
   isOpen,
   onClose,
-  onSuccess,
+  onSuccess: _onSuccess,
   t,
 }: StoryAudioModalProps) {
   const [selectedVoice, setSelectedVoice] = useState<Voice | null>(null);

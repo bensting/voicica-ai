@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 import { getTtsRecordByTaskId } from '@/actions/tts';
 import type { TtsRecord } from '@/actions/tts';
 import GradientButton from '@/components/native/common/GradientButton';
@@ -76,7 +75,6 @@ function formatDuration(seconds: number): string {
 export default function TTSTaskPage() {
   const params = useParams();
   const router = useRouter();
-  const { token } = useFirebaseAuth();
   const taskId = params.taskId as string;
 
   const [task, setTask] = useState<TtsRecord | null>(null);
@@ -143,11 +141,12 @@ export default function TTSTaskPage() {
       setCurrentTime(0);
     };
 
-    audio.onerror = () => {
-      console.error('Audio playback error');
-    };
-
     return () => {
+      // 先移除事件监听，避免清理时触发错误
+      audio.onloadedmetadata = null;
+      audio.ontimeupdate = null;
+      audio.onended = null;
+      audio.onerror = null;
       audio.pause();
       audio.src = '';
     };
@@ -293,6 +292,7 @@ export default function TTSTaskPage() {
             {/* Voice Avatar or Icon */}
             <div className="mb-8">
               {task.voice?.avatar_url ? (
+                // eslint-disable-next-line @next/next/no-img-element
                 <img
                   src={task.voice.avatar_url}
                   alt={task.voice.display_name || ''}
@@ -368,7 +368,7 @@ export default function TTSTaskPage() {
                 <div className="w-12 h-12 rounded-full bg-gray-800 flex items-center justify-center">
                   <RefreshIcon />
                 </div>
-                <span className="text-xs">New</span>
+                <span className="text-xs">Regenerate</span>
               </button>
             </div>
           </div>

@@ -108,7 +108,7 @@ export default function PublicVideoPlayPage() {
           text: video.prompt,
           url: window.location.href,
         });
-      } catch (err) {
+      } catch {
         // User cancelled or share failed
       }
     } else {

@@ -200,6 +200,7 @@ export default function ExploreSection() {
               >
                 {/* 视频预览 - 懒加载 */}
                 {video.thumbnailUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
                   <img
                     src={video.thumbnailUrl}
                     alt={video.prompt}

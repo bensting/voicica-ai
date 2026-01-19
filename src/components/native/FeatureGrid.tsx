@@ -5,7 +5,7 @@ import Link from 'next/link';
 // 图标组件
 const VideoIcon = () => (
   <svg
-    className="w-7 h-7"
+    className="w-6 h-6"
     viewBox="0 0 24 24"
     fill="none"
     stroke="currentColor"
@@ -18,7 +18,7 @@ const VideoIcon = () => (
 
 const MusicIcon = () => (
   <svg
-    className="w-7 h-7"
+    className="w-6 h-6"
     viewBox="0 0 24 24"
     fill="none"
     stroke="currentColor"
@@ -32,7 +32,7 @@ const MusicIcon = () => (
 
 const EffectIcon = () => (
   <svg
-    className="w-7 h-7"
+    className="w-6 h-6"
     viewBox="0 0 24 24"
     fill="none"
     stroke="currentColor"
@@ -46,7 +46,7 @@ const EffectIcon = () => (
 
 const ImageIcon = () => (
   <svg
-    className="w-7 h-7"
+    className="w-6 h-6"
     viewBox="0 0 24 24"
     fill="none"
     stroke="currentColor"
@@ -55,6 +55,21 @@ const ImageIcon = () => (
     <rect x="3" y="3" width="18" height="18" rx="2" />
     <circle cx="8.5" cy="8.5" r="1.5" />
     <path d="M21 15l-5-5L5 21" />
+  </svg>
+);
+
+const TTSIcon = () => (
+  <svg
+    className="w-6 h-6"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.5"
+  >
+    <path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z" />
+    <path d="M19 10v2a7 7 0 01-14 0v-2" />
+    <line x1="12" y1="19" x2="12" y2="23" />
+    <line x1="8" y1="23" x2="16" y2="23" />
   </svg>
 );
 
@@ -72,6 +87,12 @@ const features = [
     href: '/native/create/music',
   },
   {
+    id: 'tts',
+    name: 'AI TTS',
+    icon: <TTSIcon />,
+    href: '/native/create/voice',
+  },
+  {
     id: 'effect',
     name: 'AI Effect',
     icon: <EffectIcon />,
@@ -86,21 +107,21 @@ const features = [
 ];
 
 /**
- * 四宫格功能入口
- * AI Video / AI Music / AI Effect / AI Image
+ * 功能入口网格
+ * AI Video / AI Music / AI TTS / AI Effect / AI Image
  */
 export default function FeatureGrid() {
   return (
     <div className="px-4 py-5">
-      <div className="grid grid-cols-4 gap-3">
+      <div className="grid grid-cols-5 gap-2">
         {features.map((feature) => (
           <Link
             key={feature.id}
             href={feature.href}
-            className="flex flex-col items-center justify-center py-4 bg-gray-800/60 rounded-2xl hover:bg-gray-700/60 transition-colors"
+            className="flex flex-col items-center justify-center aspect-square bg-gray-800/60 rounded-xl hover:bg-gray-700/60 transition-colors"
           >
-            <div className="text-gray-300 mb-2">{feature.icon}</div>
-            <span className="text-xs text-gray-300 font-medium">
+            <div className="text-gray-300 mb-1.5">{feature.icon}</div>
+            <span className="text-[10px] text-gray-300 font-medium">
               {feature.name}
             </span>
           </Link>

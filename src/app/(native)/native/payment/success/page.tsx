@@ -3,7 +3,6 @@
 import { useEffect, useState, Suspense, useCallback } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { verifyStripePayment } from '@/actions/payment';
-import { verifyNativeCreditPackPayment } from '@/actions/native-payment';
 import type { StripeVerifyResponse } from '@/types/subscription';
 import { useCredits } from '@/contexts/CreditsContext';
 
@@ -45,42 +44,13 @@ function PaymentSuccessContent() {
   const [error, setError] = useState<string>('');
   const [countdown, setCountdown] = useState(5);
 
-  // 验证 Stripe 支付
+  // 验证 Stripe 支付（仅用于订阅）
   const doVerifyPayment = useCallback(async (params: URLSearchParams) => {
     const requestId = params.get('request_id');
     if (!requestId) {
       throw new Error('Missing Stripe Request ID');
     }
 
-    const paymentType = params.get('type');
-
-    // Handle credit pack verification differently
-    if (paymentType === 'credit_pack') {
-      const response = await verifyNativeCreditPackPayment({
-        request_id: requestId,
-      });
-
-      const details: PaymentDetails = {
-        orderId: requestId,
-        message: response.message,
-      };
-
-      setPaymentDetails(details);
-
-      if (response.success && response.payment_status === 'paid') {
-        setStatus('success');
-        refreshCredits();
-      } else if (response.payment_status === 'unpaid') {
-        setStatus('pending');
-        setError(response.message);
-      } else {
-        setStatus('failed');
-        setError(response.message || `Payment status: ${response.payment_status}`);
-      }
-      return;
-    }
-
-    // Default subscription verification
     const response: StripeVerifyResponse = await verifyStripePayment({
       request_id: requestId,
     });
@@ -95,7 +65,6 @@ function PaymentSuccessContent() {
 
     if (response.success && response.payment_status === 'paid') {
       setStatus('success');
-      // 刷新积分
       refreshCredits();
     } else if (response.payment_status === 'unpaid') {
       setStatus('pending');

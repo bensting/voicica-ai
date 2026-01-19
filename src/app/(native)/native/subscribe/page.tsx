@@ -8,7 +8,7 @@ import { useCredits } from '@/contexts/CreditsContext';
 import { getMyActiveSubscription } from '@/actions/subscription';
 import { createStripeCheckout } from '@/actions/payment';
 import { verifyGooglePlayPurchase } from '@/actions/google-play';
-import { createNativeCreditPackCheckout, verifyGooglePlayCreditPackPurchase } from '@/actions/native-payment';
+import { verifyGooglePlayCreditPackPurchase } from '@/actions/native-payment';
 import { useGooglePlayBilling } from '@/hooks/useGooglePlayBilling';
 import type { UserSubscription } from '@/types/subscription';
 import LoginModal from '@/components/native/LoginModal';

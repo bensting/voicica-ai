@@ -7,6 +7,7 @@ import PromptSection from '@/components/native/create/PromptSection';
 import ImageGuidance from '@/components/native/create/ImageGuidance';
 import ParameterSettingsSheet from '@/components/native/create/ParameterSettingsSheet';
 import GradientButton from '@/components/native/common/GradientButton';
+import CreditsIcon from '@/components/native/common/CreditsIcon';
 import { VideoModel, defaultVideoModel, getModelDefaults, calculateCredits } from '@/config/native/videoModels';
 import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 
@@ -291,7 +292,11 @@ export default function CreateVideoPage() {
               <span>Creating...</span>
             </>
           ) : (
-            <span>Create Video + {credits}</span>
+            <>
+              <span>Create Video</span>
+              <CreditsIcon className="w-3.5 h-3.5" />
+              <span>{credits}</span>
+            </>
           )}
         </GradientButton>
       </div>

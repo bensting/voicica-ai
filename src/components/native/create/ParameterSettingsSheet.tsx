@@ -3,6 +3,7 @@
 import { useEffect } from 'react';
 import { VideoModel, calculateCredits } from '@/config/native/videoModels';
 import GradientButton from '@/components/native/common/GradientButton';
+import CreditsIcon from '@/components/native/common/CreditsIcon';
 
 interface VideoParams {
   quality: string;
@@ -225,7 +226,9 @@ export default function ParameterSettingsSheet({
           style={{ paddingBottom: 'calc(20px + var(--safe-area-inset-bottom, 0px))' }}
         >
           <GradientButton onClick={handleCreate}>
-            <span>Create Video + {credits}</span>
+            <span>Create Video</span>
+            <CreditsIcon className="w-3.5 h-3.5" />
+            <span>{credits}</span>
           </GradientButton>
         </div>
       </div>

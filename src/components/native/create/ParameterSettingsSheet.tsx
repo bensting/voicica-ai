@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react';
 import { VideoModel, calculateCredits } from '@/config/native/videoModels';
+import GradientButton from '@/components/native/common/GradientButton';
 
 interface VideoParams {
   quality: string;
@@ -108,28 +109,28 @@ export default function ParameterSettingsSheet({
       />
 
       {/* Sheet 内容 */}
-      <div className="fixed left-0 right-0 bottom-0 z-50 bg-gray-900 rounded-t-3xl animate-slide-up max-h-[85vh] overflow-hidden flex flex-col">
+      <div className="fixed left-0 right-0 bottom-0 z-50 bg-gray-900 rounded-t-3xl animate-slide-up">
         {/* 拖动条 */}
-        <div className="flex justify-center pt-3 pb-2 flex-shrink-0">
+        <div className="flex justify-center pt-3 pb-2">
           <div className="w-10 h-1 bg-gray-600 rounded-full" />
         </div>
 
         {/* 标题 */}
-        <h2 className="text-white text-lg font-semibold text-center mb-4 flex-shrink-0">
+        <h2 className="text-white text-base font-semibold text-center mb-3">
           Parameter Settings
         </h2>
 
-        {/* 可滚动内容 */}
-        <div className="flex-1 overflow-auto px-6">
+        {/* 内容区域 - 不滚动 */}
+        <div className="px-5">
           {/* Quality */}
-          <div className="mb-6">
-            <h3 className="text-white font-medium mb-3">Quality</h3>
-            <div className="flex flex-wrap gap-3">
+          <div className="mb-4">
+            <h3 className="text-white text-sm font-medium mb-2">Quality</h3>
+            <div className="flex flex-wrap gap-2">
               {model.qualityOptions.map((option) => (
                 <button
                   key={option.value}
                   onClick={() => updateParam('quality', option.value)}
-                  className={`relative px-6 py-3 rounded-xl text-sm font-medium transition-colors ${
+                  className={`relative px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                     params.quality === option.value
                       ? 'bg-gray-700 text-white border border-gray-600'
                       : 'bg-gray-800/60 text-gray-400 hover:text-gray-300'
@@ -137,7 +138,7 @@ export default function ParameterSettingsSheet({
                 >
                   {option.label}
                   {option.isPro && (
-                    <span className="absolute -top-2 -right-1 px-1.5 py-0.5 bg-yellow-500 text-black text-xs rounded font-medium">
+                    <span className="absolute -top-1.5 -right-1 px-1 py-0.5 bg-yellow-500 text-black text-[10px] rounded font-medium">
                       Pro
                     </span>
                   )}
@@ -147,14 +148,14 @@ export default function ParameterSettingsSheet({
           </div>
 
           {/* Duration */}
-          <div className="mb-6">
-            <h3 className="text-white font-medium mb-3">Duration</h3>
-            <div className="flex flex-wrap gap-3">
+          <div className="mb-4">
+            <h3 className="text-white text-sm font-medium mb-2">Duration</h3>
+            <div className="flex flex-wrap gap-2">
               {model.durationOptions.map((option) => (
                 <button
                   key={option.value}
                   onClick={() => updateParam('duration', option.value)}
-                  className={`px-6 py-3 rounded-xl text-sm font-medium transition-colors ${
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                     params.duration === option.value
                       ? 'bg-gray-700 text-white border border-gray-600'
                       : 'bg-gray-800/60 text-gray-400 hover:text-gray-300'
@@ -167,16 +168,16 @@ export default function ParameterSettingsSheet({
           </div>
 
           {/* Aspect Ratio */}
-          <div className="mb-6">
-            <h3 className="text-white font-medium mb-3">Aspect Ratio</h3>
-            <div className="flex flex-wrap gap-3">
+          <div className="mb-4">
+            <h3 className="text-white text-sm font-medium mb-2">Aspect Ratio</h3>
+            <div className="flex flex-wrap gap-2">
               {model.aspectRatioOptions.map((option) => {
                 const IconComponent = aspectRatioIcons[option.icon];
                 return (
                   <button
                     key={option.value}
                     onClick={() => updateParam('aspectRatio', option.value)}
-                    className={`flex items-center gap-2 px-5 py-3 rounded-xl text-sm font-medium transition-colors ${
+                    className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                       params.aspectRatio === option.value
                         ? 'bg-gray-700 text-white border border-gray-600'
                         : 'bg-gray-800/60 text-gray-400 hover:text-gray-300'
@@ -191,12 +192,12 @@ export default function ParameterSettingsSheet({
           </div>
 
           {/* Visibility */}
-          <div className="mb-6">
-            <h3 className="text-white font-medium mb-3">Visibility</h3>
-            <div className="flex gap-3">
+          <div className="mb-4">
+            <h3 className="text-white text-sm font-medium mb-2">Visibility</h3>
+            <div className="flex gap-2">
               <button
                 onClick={() => updateParam('visibility', 'public')}
-                className={`flex-1 py-3 rounded-xl text-sm font-medium transition-colors ${
+                className={`flex-1 py-2 rounded-lg text-sm font-medium transition-colors ${
                   params.visibility === 'public'
                     ? 'bg-gray-700 text-white border border-gray-600'
                     : 'bg-gray-800/60 text-gray-400 hover:text-gray-300'
@@ -206,7 +207,7 @@ export default function ParameterSettingsSheet({
               </button>
               <button
                 onClick={() => updateParam('visibility', 'private')}
-                className={`flex-1 py-3 rounded-xl text-sm font-medium transition-colors ${
+                className={`flex-1 py-2 rounded-lg text-sm font-medium transition-colors ${
                   params.visibility === 'private'
                     ? 'bg-gray-700 text-white border border-gray-600'
                     : 'bg-gray-800/60 text-gray-400 hover:text-gray-300'
@@ -220,17 +221,12 @@ export default function ParameterSettingsSheet({
 
         {/* Create Video Button */}
         <div
-          className="flex-shrink-0 px-6 pt-4 pb-6"
-          style={{ paddingBottom: 'calc(24px + var(--safe-area-inset-bottom, 0px))' }}
+          className="px-5 pt-3 pb-5"
+          style={{ paddingBottom: 'calc(20px + var(--safe-area-inset-bottom, 0px))' }}
         >
-          <button
-            onClick={handleCreate}
-            className="w-full py-4 rounded-2xl font-medium text-white bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center gap-2"
-          >
-            <span>Create Video</span>
-            <StarIcon />
-            <span>{credits}</span>
-          </button>
+          <GradientButton onClick={handleCreate}>
+            <span>Create Video + {credits}</span>
+          </GradientButton>
         </div>
       </div>
     </>

@@ -6,6 +6,7 @@ import CreateSheet from '@/components/native/CreateSheet';
 import PromptSection from '@/components/native/create/PromptSection';
 import ImageGuidance from '@/components/native/create/ImageGuidance';
 import ParameterSettingsSheet from '@/components/native/create/ParameterSettingsSheet';
+import GradientButton from '@/components/native/common/GradientButton';
 import { VideoModel, defaultVideoModel, getModelDefaults, calculateCredits } from '@/config/native/videoModels';
 import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 
@@ -210,8 +211,8 @@ export default function CreateVideoPage() {
         </div>
       </header>
 
-      {/* 内容区域 */}
-      <div className="flex-1 overflow-auto px-4 pb-32">
+      {/* 内容区域 - 不滚动 */}
+      <div className="flex-1 px-4">
         {/* Prompt 区域 */}
         <PromptSection
           prompt={prompt}
@@ -271,19 +272,18 @@ export default function CreateVideoPage() {
 
       {/* 底部按钮 */}
       <div
-        className="fixed bottom-0 left-0 right-0 p-4 bg-[#0a0a1a]"
+        className="px-4 pt-4 pb-4 bg-[#0a0a1a]"
         style={{ paddingBottom: 'calc(16px + var(--safe-area-inset-bottom, 0px))' }}
       >
         {/* Error Message */}
         {error && (
-          <div className="mb-3 p-3 bg-red-500/20 border border-red-500/40 rounded-xl text-red-400 text-sm text-center">
+          <div className="mb-3 p-2 bg-red-500/20 border border-red-500/40 rounded-lg text-red-400 text-sm text-center">
             {error}
           </div>
         )}
-        <button
+        <GradientButton
           onClick={handleCreateVideo}
           disabled={!prompt.trim() || isCreating}
-          className="w-full py-4 rounded-2xl font-medium text-white bg-gradient-to-r from-purple-500 to-pink-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
         >
           {isCreating ? (
             <>
@@ -291,15 +291,9 @@ export default function CreateVideoPage() {
               <span>Creating...</span>
             </>
           ) : (
-            <>
-              <span>Create Video</span>
-              <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 1L14.5 9.5L23 12L14.5 14.5L12 23L9.5 14.5L1 12L9.5 9.5L12 1Z" />
-              </svg>
-              <span>{credits}</span>
-            </>
+            <span>Create Video + {credits}</span>
           )}
-        </button>
+        </GradientButton>
       </div>
 
       {/* CreateSheet - 切换工具 */}

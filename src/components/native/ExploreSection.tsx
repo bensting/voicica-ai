@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 
 // Tab 类型
@@ -58,6 +58,61 @@ const gradients = [
   'from-violet-500 to-purple-600',
   'from-fuchsia-500 to-pink-600',
 ];
+
+/**
+ * 懒加载视频预览组件
+ * 只有进入视口才加载视频
+ */
+function LazyVideoPreview({
+  src,
+  fallbackGradient
+}: {
+  src: string;
+  fallbackGradient: string;
+}) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [isInView, setIsInView] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsInView(true);
+          observer.disconnect();
+        }
+      },
+      { rootMargin: '100px' } // 提前100px开始加载
+    );
+
+    if (containerRef.current) {
+      observer.observe(containerRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, []);
+
+  return (
+    <div ref={containerRef} className="absolute inset-0">
+      {/* 占位背景 */}
+      <div className={`absolute inset-0 bg-gradient-to-br ${fallbackGradient}`} />
+
+      {/* 视频预览 - 懒加载 */}
+      {isInView && (
+        <video
+          src={src}
+          muted
+          playsInline
+          preload="metadata"
+          onLoadedData={() => setIsLoaded(true)}
+          className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-300 ${
+            isLoaded ? 'opacity-100' : 'opacity-0'
+          }`}
+        />
+      )}
+    </div>
+  );
+}
 
 /**
  * Explore 区域
@@ -143,20 +198,18 @@ export default function ExploreSection() {
                 href={`/native/video/play/${video.taskId}`}
                 className={`relative rounded-2xl overflow-hidden cursor-pointer active:scale-[0.98] transition-transform ${getAspectClass(video.aspectRatio, index)}`}
               >
-                {/* 视频预览 */}
-                {video.videoUrl ? (
-                  <video
-                    src={video.videoUrl}
-                    muted
-                    playsInline
-                    preload="metadata"
-                    className="absolute inset-0 w-full h-full object-cover"
-                  />
-                ) : video.thumbnailUrl ? (
+                {/* 视频预览 - 懒加载 */}
+                {video.thumbnailUrl ? (
                   <img
                     src={video.thumbnailUrl}
                     alt={video.prompt}
                     className="absolute inset-0 w-full h-full object-cover"
+                    loading="lazy"
+                  />
+                ) : video.videoUrl ? (
+                  <LazyVideoPreview
+                    src={video.videoUrl}
+                    fallbackGradient={gradients[index % gradients.length]}
                   />
                 ) : (
                   <div

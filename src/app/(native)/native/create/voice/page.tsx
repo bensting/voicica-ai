@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 import { useCredits } from '@/contexts/CreditsContext';
@@ -11,6 +11,10 @@ import GradientButton from '@/components/native/common/GradientButton';
 import CreditsIcon from '@/components/native/common/CreditsIcon';
 import NativeVoiceSelectorSheet from '@/components/native/create/voice/VoiceSelectorSheet';
 import LoginModal from '@/components/native/LoginModal';
+
+// localStorage keys
+const STORAGE_KEY_TEXT = 'tts_draft_text';
+const STORAGE_KEY_VOICE = 'tts_draft_voice';
 
 // 返回图标
 const BackIcon = () => (
@@ -58,6 +62,35 @@ export default function NativeTTSPage() {
   const [selectedVoice, setSelectedVoice] = useState<Voice | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // 从 localStorage 加载保存的文本和语音
+  useEffect(() => {
+    const savedText = localStorage.getItem(STORAGE_KEY_TEXT);
+    const savedVoice = localStorage.getItem(STORAGE_KEY_VOICE);
+
+    if (savedText) {
+      setText(savedText);
+    }
+    if (savedVoice) {
+      try {
+        setSelectedVoice(JSON.parse(savedVoice));
+      } catch {
+        // 忽略解析错误
+      }
+    }
+  }, []);
+
+  // 保存文本到 localStorage
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEY_TEXT, text);
+  }, [text]);
+
+  // 保存语音到 localStorage
+  useEffect(() => {
+    if (selectedVoice) {
+      localStorage.setItem(STORAGE_KEY_VOICE, JSON.stringify(selectedVoice));
+    }
+  }, [selectedVoice]);
 
   // 字符限制：匿名用户 500，登录用户 2000
   const maxCharacters = user ? 2000 : 500;
@@ -171,14 +204,13 @@ export default function NativeTTSPage() {
               <span className="text-gray-500 text-xs">
                 {text.length}/{maxCharacters}
               </span>
-              {text.length > 0 && (
-                <button
-                  onClick={handleClearText}
-                  className="text-gray-500 hover:text-gray-300"
-                >
-                  <ClearIcon />
-                </button>
-              )}
+              <button
+                onClick={handleClearText}
+                disabled={text.length === 0}
+                className="text-gray-500 hover:text-gray-300 disabled:opacity-30 disabled:cursor-not-allowed"
+              >
+                <ClearIcon />
+              </button>
             </div>
           </div>
           <textarea

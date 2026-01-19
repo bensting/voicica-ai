@@ -203,7 +203,7 @@ export default function NativeSubscribePage() {
 
       {/* Fixed Header */}
       <header
-        className="fixed top-0 left-0 right-0 z-30 px-4 bg-[#0a0a1a]/90 backdrop-blur-sm"
+        className="fixed top-0 left-0 right-0 z-30 px-4"
         style={{ paddingTop: 'calc(var(--safe-area-inset-top, 0px) + 8px)', paddingBottom: '8px' }}
       >
         <button

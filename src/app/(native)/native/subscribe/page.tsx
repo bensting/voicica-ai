@@ -13,6 +13,7 @@ import { useGooglePlayBilling } from '@/hooks/useGooglePlayBilling';
 import type { UserSubscription } from '@/types/subscription';
 import LoginModal from '@/components/native/LoginModal';
 import CreditsIcon from '@/components/native/common/CreditsIcon';
+import GradientButton from '@/components/native/common/GradientButton';
 import {
   subscriptionPlans,
   creditPacks,
@@ -391,50 +392,41 @@ export default function NativeSubscribePage() {
         style={{ paddingBottom: 'calc(var(--safe-area-inset-bottom, 0px) + 16px)' }}
       >
         {activeTab === 'subscription' && selectedPlan && (
-          <>
-            <button
-              onClick={() => handleSubscribe(selectedPlan)}
-              disabled={isProcessing}
-              className="w-full py-4 rounded-2xl font-semibold text-white bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 disabled:opacity-50 transition-all"
-            >
-              {isProcessing ? (
-                <span className="flex items-center justify-center gap-2">
-                  <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24" fill="none">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                  </svg>
-                  Processing...
-                </span>
-              ) : (
-                <>
-                  Subscribe Now - ${selectedPlan.price.toFixed(2)}/{getBillingPeriodText(selectedPlan.billingPeriod)}
-                </>
-              )}
-            </button>
-            <p className="text-gray-500 text-xs text-center mt-3">
-              Subscriptions auto-renew unless cancelled. Cancel anytime in settings.
-            </p>
-          </>
-        )}
-
-        {activeTab === 'credits' && selectedCreditPack && (
-          <button
-            onClick={handleBuyCreditPack}
-            disabled={isProcessing || !selectedCreditPack}
-            className="w-full py-4 rounded-2xl font-semibold text-black bg-gradient-to-r from-yellow-400 to-orange-400 hover:from-yellow-500 hover:to-orange-500 disabled:opacity-50 transition-all"
+          <GradientButton
+            onClick={() => handleSubscribe(selectedPlan)}
+            disabled={isProcessing}
           >
             {isProcessing ? (
-              <span className="flex items-center justify-center gap-2">
+              <>
                 <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24" fill="none">
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                 </svg>
                 Processing...
-              </span>
+              </>
+            ) : (
+              <>Subscribe Now - ${selectedPlan.price.toFixed(2)}/{getBillingPeriodText(selectedPlan.billingPeriod)}</>
+            )}
+          </GradientButton>
+        )}
+
+        {activeTab === 'credits' && selectedCreditPack && (
+          <GradientButton
+            onClick={handleBuyCreditPack}
+            disabled={isProcessing}
+          >
+            {isProcessing ? (
+              <>
+                <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24" fill="none">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                </svg>
+                Processing...
+              </>
             ) : (
               <>Buy Now - ${selectedCreditPack.price.toFixed(2)}</>
             )}
-          </button>
+          </GradientButton>
         )}
       </div>
 

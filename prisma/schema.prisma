@@ -459,6 +459,81 @@ model music_records {
   @@index([is_public], map: "ix_music_records_is_public")
 }
 
+/// RVC 声音模型（用于 AI Cover 功能）
+model rvc_voice_models {
+  id              Int       @id @default(autoincrement())
+  name            String    @db.VarChar(100)           // 显示名称
+  slug            String    @unique @db.VarChar(100)   // URL 友好的唯一标识
+  category        String    @db.VarChar(50)            // my-clone, cartoon, music, rapper, celebrity, anime
+  avatar_url      String?                              // 头像 URL
+  sample_url      String?                              // 试听音频 URL
+  model_url       String                               // RVC 模型下载 URL
+  index_url       String?                              // RVC index 文件 URL（可选）
+  uses_count      Int       @default(0)                // 使用次数
+  is_builtin      Boolean   @default(false)            // 是否内置模型 (Obama, Trump, Sandy, Rogan)
+  builtin_name    String?   @db.VarChar(50)            // 内置模型名称
+  is_active       Boolean   @default(true)             // 是否启用
+  sort_order      Int       @default(0)                // 排序
+  created_at      DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at      DateTime? @updatedAt @db.Timestamptz(6)
+
+  @@index([category], map: "ix_rvc_voice_models_category")
+  @@index([is_active], map: "ix_rvc_voice_models_is_active")
+  @@index([is_builtin], map: "ix_rvc_voice_models_is_builtin")
+  @@index([sort_order], map: "ix_rvc_voice_models_sort_order")
+}
+
+/// AI Cover 生成记录
+model cover_records {
+  id                Int       @id @default(autoincrement())
+  user_id           String    @db.VarChar(255)
+  task_id           String    @unique @db.VarChar(255)
+
+  // 输入
+  original_audio_url String                            // 原始音频 URL
+  voice_model_id    Int                                // 使用的声音模型 ID
+  voice_model_name  String    @db.VarChar(100)         // 声音模型名称（冗余存储）
+
+  // 参数
+  pitch_change      Int       @default(0)              // 音高调整（半音）
+  f0_method         String    @default("rmvpe") @db.VarChar(20) // 音高检测方法
+  index_rate        Float     @default(0.5)            // AI 口音强度
+  protect           Float     @default(0.33)           // 保护原始呼吸声
+
+  // 处理状态
+  status            String    @db.VarChar(20)          // PENDING, SEPARATING, CONVERTING, MERGING, SUCCESS, FAILURE
+  progress          Int       @default(0)              // 0-100
+
+  // Replicate 任务 ID
+  spleeter_task_id  String?   @db.VarChar(255)         // Spleeter 人声分离任务 ID
+  rvc_task_id       String?   @db.VarChar(255)         // RVC 音色转换任务 ID
+
+  // 中间结果
+  vocals_url        String?                            // 分离出的人声 URL
+  accompaniment_url String?                            // 分离出的伴奏 URL
+  converted_vocals_url String?                         // 转换后的人声 URL
+
+  // 最终结果
+  output_url        String?                            // 最终合成的音频 URL
+  duration          Float?                             // 音频时长（秒）
+
+  // 费用
+  credits_cost      Int                                // 消耗积分
+  is_public         Boolean   @default(false)          // 是否公开
+
+  error_message     String?
+  share_id          String?   @unique @db.VarChar(12)
+  completed_at      DateTime? @db.Timestamptz(6)
+  created_at        DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at        DateTime? @updatedAt @db.Timestamptz(6)
+
+  @@index([user_id], map: "ix_cover_records_user_id")
+  @@index([status], map: "ix_cover_records_status")
+  @@index([user_id, status], map: "ix_cover_records_user_status")
+  @@index([user_id, created_at], map: "ix_cover_records_user_created")
+  @@index([voice_model_id], map: "ix_cover_records_voice_model_id")
+}
+
 /// 故事段落（一个故事多个段落）
 model story_paragraphs {
   id              String    @id @default(cuid())

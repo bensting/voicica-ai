@@ -20,6 +20,7 @@ const MENU_GROUPS = [
     items: [
       { href: '/admin/tts-records', label: 'TTS 记录', icon: '🎙️' },
       { href: '/admin/voices', label: '语音管理', icon: '🔊' },
+      { href: '/admin/rvc-models', label: 'RVC 模型', icon: '🎤' },
     ],
   },
   {

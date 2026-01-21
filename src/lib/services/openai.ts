@@ -499,6 +499,61 @@ Create style tags that would help an AI music generator understand the desired m
 }
 
 /**
+ * 生成音乐生成提示词
+ *
+ * @param prompt 用户的简短描述或想法
+ * @returns 生成的完整音乐提示词
+ */
+export async function generateMusicPrompt(prompt: string): Promise<string> {
+  const systemPrompt = `You are a music prompt expert for AI music generation systems. Create detailed, effective prompts based on user ideas.
+
+Guidelines:
+- Create a comprehensive music generation prompt that includes:
+  - Genre/style (pop, rock, jazz, electronic, R&B, hip-hop, etc.)
+  - Mood/atmosphere (upbeat, melancholic, energetic, romantic, etc.)
+  - Tempo (fast, slow, moderate, etc.)
+  - Instrumentation suggestions (guitar, piano, synth, drums, etc.)
+  - Vocal characteristics if applicable (male/female voice, soft, powerful, etc.)
+  - Any thematic elements (about love, summer, rain, travel, etc.)
+- Keep the prompt clear and descriptive, max 200 words
+- Detect the language of the user's input and write the prompt in the SAME language
+- Make it specific enough for AI to generate a coherent song
+
+Always respond with valid JSON in this format:
+{
+  "prompt": "The complete music generation prompt..."
+}`;
+
+  const userPrompt = `Based on this idea, create a detailed music generation prompt:
+${prompt}
+
+Expand this into a comprehensive prompt that an AI music generator can use to create a great song.`;
+
+  const response = await openai.chat.completions.create({
+    model: 'gpt-4o-mini',
+    messages: [
+      { role: 'system', content: systemPrompt },
+      { role: 'user', content: userPrompt },
+    ],
+    temperature: 0.8,
+    max_tokens: 500,
+    response_format: { type: 'json_object' },
+  });
+
+  const content = response.choices[0]?.message?.content;
+  if (!content) {
+    throw new Error('No response from OpenAI');
+  }
+
+  try {
+    const parsed = JSON.parse(content);
+    return parsed.prompt || '';
+  } catch {
+    throw new Error('Failed to parse prompt from OpenAI response');
+  }
+}
+
+/**
  * 为单个段落生成插图提示词
  *
  * @param storyTitle 故事标题

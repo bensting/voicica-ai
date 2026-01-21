@@ -395,6 +395,57 @@ Respond in JSON format:
 }
 
 /**
+ * 生成歌词
+ *
+ * @param prompt 用户描述（主题、情绪、故事等）
+ * @returns 生成的歌词
+ */
+export async function generateLyrics(prompt: string): Promise<string> {
+  const systemPrompt = `You are a talented songwriter and lyricist. Write creative, emotionally resonant song lyrics based on user descriptions.
+
+Guidelines:
+- Use proper song structure with sections like [Intro], [Verse 1], [Chorus], [Verse 2], [Bridge], [Outro]
+- Create vivid imagery and emotional depth
+- Use rhymes naturally but don't force them
+- Keep lyrics singable with good rhythm and flow
+- Match the mood and theme requested by the user
+- Detect the language of the user's prompt and write lyrics in the SAME language
+
+Always respond with valid JSON in this format:
+{
+  "lyrics": "The complete song lyrics with section markers..."
+}`;
+
+  const userPrompt = `Write song lyrics based on this description:
+${prompt}
+
+Create a complete song with verses, chorus, and optional bridge. Make it emotionally engaging and musically singable.`;
+
+  const response = await openai.chat.completions.create({
+    model: 'gpt-4o-mini',
+    messages: [
+      { role: 'system', content: systemPrompt },
+      { role: 'user', content: userPrompt },
+    ],
+    temperature: 0.85,
+    max_tokens: 2000,
+    response_format: { type: 'json_object' },
+  });
+
+  const content = response.choices[0]?.message?.content;
+  if (!content) {
+    throw new Error('No response from OpenAI');
+  }
+
+  try {
+    const parsed = JSON.parse(content);
+    return parsed.lyrics || '';
+  } catch {
+    throw new Error('Failed to parse lyrics from OpenAI response');
+  }
+}
+
+/**
  * 为单个段落生成插图提示词
  *
  * @param storyTitle 故事标题

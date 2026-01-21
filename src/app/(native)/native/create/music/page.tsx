@@ -15,10 +15,11 @@ import {
   getMusicModelById,
   type MusicModel,
 } from '@/config/native/musicModels';
-import { createMusicTask } from '@/actions/music';
+import { createMusicTask, getMusicTaskStatus } from '@/actions/music';
 
-// localStorage key
+// localStorage keys
 const STORAGE_KEY = 'music_draft';
+const LYRICS_PROMPT_KEY = 'music_lyrics_prompt';
 
 // Tab 类型
 type MusicTab = 'simple' | 'custom' | 'cover' | 'dedicate';
@@ -122,6 +123,14 @@ export default function NativeMusicPage() {
   const [isCreateSheetOpen, setIsCreateSheetOpen] = useState(false);
   const [isModelSelectorOpen, setIsModelSelectorOpen] = useState(false);
   const [isParameterSheetOpen, setIsParameterSheetOpen] = useState(false);
+  const [isLyricsAssistantOpen, setIsLyricsAssistantOpen] = useState(false);
+  const [lyricsPrompt, setLyricsPrompt] = useState('');
+  const [isGeneratingLyrics, setIsGeneratingLyrics] = useState(false);
+  const [isGeneratingModalOpen, setIsGeneratingModalOpen] = useState(false);
+  const [generatingStatus, setGeneratingStatus] = useState<'generating' | 'success' | 'error'>('generating');
+  const [generatingError, setGeneratingError] = useState<string | null>(null);
+  const [currentTaskId, setCurrentTaskId] = useState<string | null>(null);
+  const [generatingProgress, setGeneratingProgress] = useState(0);
 
   const [activeTab, setActiveTab] = useState<MusicTab>('simple');
   const [prompt, setPrompt] = useState('');
@@ -169,6 +178,19 @@ export default function NativeMusicPage() {
     }));
   }, [prompt, model, activeTab, isInstrumental, isPublic, lyrics, style, title]);
 
+  // 加载 lyrics prompt
+  useEffect(() => {
+    const savedPrompt = localStorage.getItem(LYRICS_PROMPT_KEY);
+    if (savedPrompt) {
+      setLyricsPrompt(savedPrompt);
+    }
+  }, []);
+
+  // 保存 lyrics prompt
+  useEffect(() => {
+    localStorage.setItem(LYRICS_PROMPT_KEY, lyricsPrompt);
+  }, [lyricsPrompt]);
+
   // 处理文本变化
   const handlePromptChange = (text: string) => {
     if (text.length <= maxCharacters) {
@@ -195,6 +217,38 @@ export default function NativeMusicPage() {
   const handleClearLyrics = () => {
     setLyrics('');
     setError(null);
+  };
+
+  // 生成歌词
+  const handleGenerateLyrics = async () => {
+    if (!lyricsPrompt.trim()) return;
+
+    setIsGeneratingLyrics(true);
+    try {
+      // 调用 AI 生成歌词 API
+      const response = await fetch('/api/ai/generate-lyrics', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt: lyricsPrompt.trim() }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        throw new Error(data.error || 'Failed to generate lyrics');
+      }
+
+      if (data.lyrics) {
+        setLyrics(data.lyrics);
+        setIsLyricsAssistantOpen(false);
+        setLyricsPrompt('');
+      }
+    } catch (err) {
+      console.error('Generate lyrics failed:', err);
+      setError(err instanceof Error ? err.message : 'Failed to generate lyrics');
+    } finally {
+      setIsGeneratingLyrics(false);
+    }
   };
 
   // 获取当前选中的模型
@@ -230,50 +284,129 @@ export default function NativeMusicPage() {
 
   // 处理生成
   const handleGenerate = async () => {
-    if (!canGenerate) return;
+    console.log('🎵 [handleGenerate] 开始生成', { canGenerate, user: !!user });
+
+    if (!canGenerate) {
+      console.log('🎵 [handleGenerate] canGenerate is false, returning');
+      return;
+    }
 
     if (!user) {
+      console.log('🎵 [handleGenerate] 用户未登录，显示登录弹窗');
       setIsLoginModalOpen(true);
       return;
     }
 
+    // 打开生成中弹窗
+    console.log('🎵 [handleGenerate] 打开生成中弹窗');
+    setIsGeneratingModalOpen(true);
+    setGeneratingStatus('generating');
+    setGeneratingError(null);
     setIsGenerating(true);
     setError(null);
 
     try {
       // 根据不同 tab 构建请求
       const isCustomMode = activeTab === 'custom';
+      console.log('🎵 [handleGenerate] 调用 createMusicTask', { isCustomMode });
+
       const result = await createMusicTask({
         prompt: isCustomMode ? lyrics.trim() : prompt.trim(),
         model,
         isPublic,
         instrumental: isInstrumental,
+        customMode: isCustomMode,
         style: isCustomMode ? style.trim() || undefined : undefined,
         title: isCustomMode ? title.trim() || undefined : undefined,
       });
 
+      console.log('🎵 [handleGenerate] createMusicTask 返回', result);
+
       if (result.status === 'FAILURE') {
-        setError(result.error || 'Failed to create music task');
+        console.log('🎵 [handleGenerate] 任务失败，显示错误');
+        setGeneratingStatus('error');
+        setGeneratingError(result.error || 'Failed to create music task');
         setIsGenerating(false);
         return;
       }
 
-      // 任务创建成功，跳转到历史页面或显示成功提示
+      // 任务创建成功，保存 task_id 用于轮询
+      console.log('🎵 [handleGenerate] 任务提交成功，开始轮询状态');
+      setCurrentTaskId(result.task_id);
+      setGeneratingProgress(result.progress || 10);
+
       // 清空草稿
       setPrompt('');
       setLyrics('');
       setStyle('');
       setTitle('');
       localStorage.removeItem(STORAGE_KEY);
-
-      // 跳转到音乐历史页面
-      router.push('/native/me?tab=music');
     } catch (err) {
-      console.error('Music generation failed:', err);
-      setError(err instanceof Error ? err.message : 'Failed to generate music');
+      console.error('🎵 [handleGenerate] 捕获错误:', err);
+      setGeneratingStatus('error');
+      setGeneratingError(err instanceof Error ? err.message : 'Failed to generate music');
+    } finally {
       setIsGenerating(false);
+      console.log('🎵 [handleGenerate] 完成');
     }
   };
+
+  // 关闭生成弹窗并重置状态
+  const handleCloseGeneratingModal = () => {
+    setIsGeneratingModalOpen(false);
+    setGeneratingStatus('generating');
+    setGeneratingError(null);
+    setCurrentTaskId(null);
+    setGeneratingProgress(0);
+  };
+
+  // 查看历史
+  const handleViewHistory = () => {
+    console.log('🎵 [handleViewHistory] 跳转到历史页面');
+    setIsGeneratingModalOpen(false);
+    router.push('/native/me?tab=music');
+  };
+
+  // Debug: 监控弹窗状态变化
+  useEffect(() => {
+    console.log('🎵 [Modal State] isGeneratingModalOpen:', isGeneratingModalOpen, 'status:', generatingStatus);
+  }, [isGeneratingModalOpen, generatingStatus]);
+
+  // 轮询任务状态
+  useEffect(() => {
+    if (!currentTaskId || generatingStatus !== 'generating') {
+      return;
+    }
+
+    console.log('🎵 [Polling] 开始轮询任务状态:', currentTaskId);
+
+    const pollInterval = setInterval(async () => {
+      try {
+        const status = await getMusicTaskStatus(currentTaskId);
+        console.log('🎵 [Polling] 任务状态:', status);
+
+        setGeneratingProgress(status.progress);
+
+        if (status.status === 'SUCCESS') {
+          console.log('🎵 [Polling] 任务完成!');
+          setGeneratingStatus('success');
+          setCurrentTaskId(null);
+        } else if (status.status === 'FAILURE') {
+          console.log('🎵 [Polling] 任务失败:', status.error);
+          setGeneratingStatus('error');
+          setGeneratingError(status.error || 'Generation failed');
+          setCurrentTaskId(null);
+        }
+      } catch (err) {
+        console.error('🎵 [Polling] 查询状态失败:', err);
+      }
+    }, 5000); // 每 5 秒查询一次
+
+    return () => {
+      console.log('🎵 [Polling] 停止轮询');
+      clearInterval(pollInterval);
+    };
+  }, [currentTaskId, generatingStatus]);
 
   const tabs: { id: MusicTab; label: string }[] = [
     { id: 'simple', label: 'Simple' },
@@ -427,7 +560,10 @@ export default function NativeMusicPage() {
                   disabled={isGenerating}
                 />
                 <div className="flex items-center justify-between px-4 py-2 border-t border-gray-700/50">
-                  <button className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-700/50 rounded-full text-gray-300 text-xs">
+                  <button
+                    onClick={() => setIsLyricsAssistantOpen(true)}
+                    className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-700/50 rounded-full text-gray-300 text-xs hover:bg-gray-600/50 transition-colors"
+                  >
                     <AssistantIcon />
                     <span>Generate Lyrics</span>
                   </button>
@@ -737,6 +873,188 @@ export default function NativeMusicPage() {
             <div className="px-4 pb-4">
               <GradientButton onClick={() => setIsParameterSheetOpen(false)}>
                 <span>Done</span>
+              </GradientButton>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Generating Full Page */}
+      {isGeneratingModalOpen && (
+        <div
+          className="fixed inset-0 z-50 bg-[#0a0a1a] flex flex-col"
+          style={{ paddingTop: 'var(--safe-area-inset-top, 0px)' }}
+        >
+          {/* Header */}
+          <div className="flex items-center justify-between px-4 h-14">
+            <button
+              onClick={handleCloseGeneratingModal}
+              className="p-2 -ml-2 text-white"
+            >
+              <BackIcon />
+            </button>
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-1 text-white">
+                <CreditsIcon className="w-4 h-4" />
+                <span className="text-sm font-medium">{credits}</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Content */}
+          <div className="flex-1 flex flex-col items-center justify-center px-8">
+            {generatingStatus === 'generating' && (
+              <>
+                {/* Animated Music Icon */}
+                <div className="relative w-20 h-20 mb-8">
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="w-16 h-16 rounded-2xl bg-gray-800 flex items-center justify-center">
+                      <svg className="w-8 h-8 text-gray-400 animate-bounce" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z" />
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+                <h3 className="text-white font-semibold text-lg mb-2">Generating music...</h3>
+                {generatingProgress > 0 && (
+                  <p className="text-blue-400 text-sm mb-2">{generatingProgress}%</p>
+                )}
+                <p className="text-gray-400 text-sm mb-8">
+                  Estimated queue time: <span className="text-blue-400">3 minutes</span>
+                </p>
+                <button className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-full text-sm font-medium hover:opacity-90 transition-opacity">
+                  <CrownIcon />
+                  <span>Use fast channel</span>
+                </button>
+              </>
+            )}
+
+            {generatingStatus === 'success' && (
+              <>
+                {/* Success Icon */}
+                <div className="w-20 h-20 mb-8 rounded-full bg-green-500/20 flex items-center justify-center">
+                  <svg className="w-10 h-10 text-green-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <polyline points="20,6 9,17 4,12" />
+                  </svg>
+                </div>
+                <h3 className="text-white font-semibold text-lg mb-2">Music Created!</h3>
+                <p className="text-gray-400 text-sm mb-8">
+                  Your music has been generated successfully.
+                </p>
+                <div className="flex gap-3 w-full max-w-xs">
+                  <button
+                    onClick={handleCloseGeneratingModal}
+                    className="flex-1 py-3 bg-gray-700/50 text-white rounded-xl text-sm font-medium hover:bg-gray-600/50 transition-colors"
+                  >
+                    Create Another
+                  </button>
+                  <button
+                    onClick={handleViewHistory}
+                    className="flex-1 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl text-sm font-medium hover:opacity-90 transition-opacity"
+                  >
+                    View
+                  </button>
+                </div>
+              </>
+            )}
+
+            {generatingStatus === 'error' && (
+              <>
+                {/* Error Icon */}
+                <div className="w-20 h-20 mb-8 rounded-full bg-red-500/20 flex items-center justify-center">
+                  <svg className="w-10 h-10 text-red-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <circle cx="12" cy="12" r="10" />
+                    <path d="M15 9l-6 6M9 9l6 6" />
+                  </svg>
+                </div>
+                <h3 className="text-white font-semibold text-lg mb-2">Generation Failed</h3>
+                <p className="text-red-400 text-sm mb-8 text-center px-4">
+                  {generatingError || 'Something went wrong. Please try again.'}
+                </p>
+                <div className="flex gap-3 w-full max-w-xs">
+                  <button
+                    onClick={handleCloseGeneratingModal}
+                    className="flex-1 py-3 bg-gray-700/50 text-white rounded-xl text-sm font-medium hover:bg-gray-600/50 transition-colors"
+                  >
+                    Close
+                  </button>
+                  <button
+                    onClick={() => {
+                      handleCloseGeneratingModal();
+                      void handleGenerate();
+                    }}
+                    className="flex-1 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl text-sm font-medium hover:opacity-90 transition-opacity"
+                  >
+                    Try Again
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Lyrics Assistant Sheet */}
+      {isLyricsAssistantOpen && (
+        <div className="fixed inset-0 z-50">
+          {/* Backdrop */}
+          <div
+            className="absolute inset-0 bg-black/60"
+            onClick={() => !isGeneratingLyrics && setIsLyricsAssistantOpen(false)}
+          />
+          {/* Sheet */}
+          <div
+            className="absolute bottom-0 left-0 right-0 bg-[#1a1a2e] rounded-t-3xl"
+            style={{ paddingBottom: 'var(--safe-area-inset-bottom, 0px)' }}
+          >
+            {/* Handle */}
+            <div className="flex justify-center pt-3 pb-2">
+              <div className="w-10 h-1 bg-gray-600 rounded-full" />
+            </div>
+            {/* Header */}
+            <div className="flex items-center justify-between px-4 pb-4">
+              <h3 className="text-white font-semibold text-lg">AI Lyrics Assistant</h3>
+              <button
+                onClick={() => !isGeneratingLyrics && setIsLyricsAssistantOpen(false)}
+                className="p-1 text-gray-400 hover:text-white"
+                disabled={isGeneratingLyrics}
+              >
+                <CloseIcon />
+              </button>
+            </div>
+            {/* Content */}
+            <div className="px-4 pb-4">
+              <p className="text-gray-400 text-sm mb-4">
+                Describe the theme, mood, or story you want for your lyrics. The AI will generate creative lyrics for you.
+              </p>
+              <textarea
+                value={lyricsPrompt}
+                onChange={(e) => setLyricsPrompt(e.target.value)}
+                placeholder="e.g., A love song about missing someone in autumn, melancholic but hopeful..."
+                className="w-full h-32 bg-gray-800/60 text-white placeholder-gray-500 p-4 rounded-2xl resize-none focus:outline-none focus:ring-2 focus:ring-purple-500/50 text-sm"
+                disabled={isGeneratingLyrics}
+              />
+              <div className="flex justify-end mt-2">
+                <span className="text-gray-500 text-xs">{lyricsPrompt.length}/500</span>
+              </div>
+            </div>
+            {/* Bottom Button */}
+            <div className="px-4 pb-4">
+              <GradientButton
+                onClick={() => void handleGenerateLyrics()}
+                disabled={!lyricsPrompt.trim() || isGeneratingLyrics}
+              >
+                {isGeneratingLyrics ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    <span>Generating...</span>
+                  </>
+                ) : (
+                  <>
+                    <AssistantIcon />
+                    <span>Generate Lyrics</span>
+                  </>
+                )}
               </GradientButton>
             </div>
           </div>

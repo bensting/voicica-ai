@@ -44,6 +44,8 @@ export interface MusicGenerationRequest {
   title?: string;
   /** 是否纯音乐 */
   instrumental?: boolean;
+  /** 是否自定义模式（歌词模式） */
+  customMode?: boolean;
 }
 
 export interface MusicTaskStatus {
@@ -154,7 +156,8 @@ export async function createMusicTask(request: MusicGenerationRequest): Promise<
 
     // 5. 调用 KIE API
     const kieModel = MODEL_MAP[request.model] || 'V4_5';
-    const isCustomMode = !!(request.style || request.title);
+    // 自定义模式：明确传入 customMode=true，或者有 style/title，或者 prompt 超过 500 字符
+    const isCustomMode = request.customMode || !!(request.style || request.title) || request.prompt.length > 500;
 
     const kiePayload: Record<string, unknown> = {
       prompt: request.prompt,

@@ -2,8 +2,9 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
+import { getMusicRecords, type MusicRecord } from '@/actions/music';
 
 type TabType = 'videos' | 'music' | 'cover' | 'images';
 
@@ -76,12 +77,86 @@ const EmptyIllustration = () => (
   </svg>
 );
 
-// 格式化日期
+// 格式化日期 (短格式)
 function formatDate(dateString: string): string {
   const date = new Date(dateString);
   const month = date.getMonth() + 1;
   const day = date.getDate();
   return `${month}/${day}`;
+}
+
+// 格式化日期 (长格式，用于分组标题)
+function formatDateLong(dateString: string): string {
+  const date = new Date(dateString);
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}/${month}/${day}`;
+}
+
+// 音乐卡片组件
+function MusicCard({ music, onClick }: { music: MusicRecord; onClick: () => void }) {
+  const isProcessing = music.status === 'PENDING' || music.status === 'PROCESSING';
+  const isSuccess = music.status === 'SUCCESS';
+  const isFailed = music.status === 'FAILURE';
+
+  // 显示的标题
+  const displayTitle = music.title || 'AI Music';
+  // 显示的副标题 (prompt 的前 30 个字符)
+  const displaySubtitle = music.prompt?.substring(0, 30) || '';
+
+  return (
+    <button onClick={onClick} className="flex items-center gap-3 w-full py-3">
+      {/* 封面图 */}
+      <div className="relative w-16 h-16 flex-shrink-0 bg-gray-800 rounded-lg overflow-hidden">
+        {isSuccess && music.cover_url ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={music.cover_url}
+            alt={displayTitle}
+            className="w-full h-full object-cover"
+          />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-purple-900 to-pink-900">
+            {isProcessing && (
+              <div className="flex flex-col items-center gap-1">
+                <div className="w-5 h-5 border-2 border-purple-500 border-t-transparent rounded-full animate-spin" />
+                <span className="text-white text-[9px] font-medium">{music.progress}%</span>
+              </div>
+            )}
+            {isFailed && (
+              <svg className="w-5 h-5 text-red-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <circle cx="12" cy="12" r="10" />
+                <line x1="15" y1="9" x2="9" y2="15" />
+                <line x1="9" y1="9" x2="15" y2="15" />
+              </svg>
+            )}
+            {!isProcessing && !isFailed && (
+              <svg className="w-6 h-6 text-gray-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                <path d="M9 18V5l12-2v13" />
+                <circle cx="6" cy="18" r="3" />
+                <circle cx="18" cy="16" r="3" />
+              </svg>
+            )}
+          </div>
+        )}
+        {/* 状态标签 */}
+        {isProcessing && (
+          <div className="absolute top-0.5 left-0.5 px-1 py-0.5 bg-purple-500/80 rounded">
+            <span className="text-white text-[8px] font-medium">Processing</span>
+          </div>
+        )}
+      </div>
+
+      {/* 文字内容 */}
+      <div className="flex-1 text-left min-w-0">
+        <h4 className="text-white font-medium text-base truncate">{displayTitle}</h4>
+        {displaySubtitle && (
+          <p className="text-gray-500 text-sm truncate">{displaySubtitle}</p>
+        )}
+      </div>
+    </button>
+  );
 }
 
 // 视频卡片组件 - 统一使用正方形显示
@@ -163,9 +238,18 @@ function VideoCard({ video, onClick }: { video: VideoItem; onClick: () => void }
  */
 export default function MyCreations() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { token } = useFirebaseAuth();
-  const [activeTab, setActiveTab] = useState<TabType>('videos');
+
+  // 从 URL 参数获取初始 tab
+  const tabFromUrl = searchParams.get('tab') as TabType | null;
+  const initialTab = tabFromUrl && ['videos', 'music', 'cover', 'images'].includes(tabFromUrl)
+    ? tabFromUrl
+    : 'videos';
+
+  const [activeTab, setActiveTab] = useState<TabType>(initialTab);
   const [videos, setVideos] = useState<VideoItem[]>([]);
+  const [musicRecords, setMusicRecords] = useState<MusicRecord[]>([]);
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
 
@@ -205,12 +289,41 @@ export default function MyCreations() {
     }
   }, [token]);
 
+  // 获取音乐列表
+  const fetchMusic = useCallback(async (isRefresh = false) => {
+    try {
+      if (isRefresh) {
+        setRefreshing(true);
+      } else {
+        setLoading(true);
+      }
+
+      const records = await getMusicRecords(50);
+      setMusicRecords(records);
+    } catch (error) {
+      console.error('Failed to fetch music records:', error);
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    }
+  }, []);
+
+  // 同步 URL 参数到 activeTab
+  useEffect(() => {
+    const tabParam = searchParams.get('tab') as TabType | null;
+    if (tabParam && ['videos', 'music', 'cover', 'images'].includes(tabParam)) {
+      setActiveTab(tabParam);
+    }
+  }, [searchParams]);
+
   // 初始加载
   useEffect(() => {
     if (activeTab === 'videos' && token) {
       fetchVideos();
+    } else if (activeTab === 'music') {
+      fetchMusic();
     }
-  }, [activeTab, token, fetchVideos]);
+  }, [activeTab, token, fetchVideos, fetchMusic]);
 
   // 如果有正在处理的视频，定时刷新
   useEffect(() => {
@@ -223,6 +336,18 @@ export default function MyCreations() {
       return () => clearInterval(interval);
     }
   }, [videos, activeTab, fetchVideos]);
+
+  // 如果有正在处理的音乐，定时刷新
+  useEffect(() => {
+    const hasProcessing = musicRecords.some(
+      (m) => m.status === 'PENDING' || m.status === 'PROCESSING'
+    );
+
+    if (hasProcessing && activeTab === 'music') {
+      const interval = setInterval(() => fetchMusic(), 5000);
+      return () => clearInterval(interval);
+    }
+  }, [musicRecords, activeTab, fetchMusic]);
 
   // 下拉刷新触摸事件
   const handleTouchStart = (e: React.TouchEvent) => {
@@ -242,7 +367,11 @@ export default function MyCreations() {
 
   const handleTouchEnd = async () => {
     if (pullDistance >= PULL_THRESHOLD && !refreshing) {
-      await fetchVideos(true);
+      if (activeTab === 'videos') {
+        await fetchVideos(true);
+      } else if (activeTab === 'music') {
+        await fetchMusic(true);
+      }
     }
     setPullDistance(0);
     setIsPulling(false);
@@ -252,8 +381,27 @@ export default function MyCreations() {
     router.push(`/native/video/task/${video.taskId}`);
   };
 
+  const handleMusicClick = (music: MusicRecord) => {
+    // TODO: 跳转到音乐详情页
+    console.log('Music clicked:', music.task_id);
+  };
+
   const emptyState = emptyStateMessages[activeTab];
-  const isEmpty = activeTab === 'videos' ? videos.length === 0 : true;
+  const isEmpty = activeTab === 'videos'
+    ? videos.length === 0
+    : activeTab === 'music'
+      ? musicRecords.length === 0
+      : true;
+
+  // 按日期分组音乐记录
+  const groupedMusicRecords = musicRecords.reduce((groups, music) => {
+    const date = formatDateLong(music.created_at.toString());
+    if (!groups[date]) {
+      groups[date] = [];
+    }
+    groups[date].push(music);
+    return groups;
+  }, {} as Record<string, MusicRecord[]>);
 
   return (
     <div className="h-full flex flex-col">
@@ -334,6 +482,44 @@ export default function MyCreations() {
                   video={video}
                   onClick={() => handleVideoClick(video)}
                 />
+              ))}
+            </div>
+          )
+        ) : activeTab === 'music' ? (
+          loading && musicRecords.length === 0 ? (
+            // 加载中
+            <div className="flex justify-center py-8">
+              <div className="w-8 h-8 border-3 border-purple-500 border-t-transparent rounded-full animate-spin" />
+            </div>
+          ) : isEmpty ? (
+            // 空状态
+            <div className="flex flex-col items-center justify-center py-8">
+              <EmptyIllustration />
+              <p className="mt-3 text-gray-400 text-center">{emptyState.title}</p>
+              <p className="text-gray-500 text-sm text-center">{emptyState.subtitle}</p>
+              <Link
+                href={emptyState.createLink}
+                className="mt-4 px-8 py-3 bg-white/10 border border-white/20 rounded-full text-white font-medium hover:bg-white/20 transition-colors"
+              >
+                Go create
+              </Link>
+            </div>
+          ) : (
+            // 音乐列表 - 按日期分组
+            <div className="space-y-4">
+              {Object.entries(groupedMusicRecords).map(([date, records]) => (
+                <div key={date}>
+                  <h3 className="text-gray-500 text-sm mb-2">{date}</h3>
+                  <div className="space-y-1">
+                    {records.map((music) => (
+                      <MusicCard
+                        key={music.task_id}
+                        music={music}
+                        onClick={() => handleMusicClick(music)}
+                      />
+                    ))}
+                  </div>
+                </div>
               ))}
             </div>
           )

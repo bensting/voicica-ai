@@ -258,7 +258,118 @@ export async function createMusicTask(request: MusicGenerationRequest): Promise<
 }
 
 /**
+ * 查询 KIE API 任务状态（直接调用，不依赖回调）
+ * 使用 GET /generate/record-info 端点查询任务详情
+ * 文档: https://docs.kie.ai/suno-api/get-music-details
+ */
+async function queryKieTaskStatus(externalTaskId: string): Promise<{
+  status: 'PENDING' | 'PROCESSING' | 'SUCCESS' | 'FAILURE';
+  progress: number;
+  data?: {
+    audio_url?: string;
+    stream_audio_url?: string;
+    image_url?: string;
+    title?: string;
+    tags?: string;
+    prompt?: string;
+    duration?: number;
+  }[];
+  error?: string;
+}> {
+  try {
+    // 使用 GET /generate/record-info 端点查询任务状态
+    const response = await fetch(`${KIE_API_BASE}/generate/record-info?taskId=${externalTaskId}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${KIE_API_KEY}`,
+      },
+    });
+
+    const result = await response.json();
+    console.log('🎵 [queryKieTaskStatus] KIE API 响应:', JSON.stringify(result, null, 2));
+
+    if (result.code !== 200) {
+      // 如果是任务还在队列中，返回处理中状态
+      if (result.code === 400 || result.msg?.includes('queue') || result.msg?.includes('pending')) {
+        return {
+          status: 'PROCESSING',
+          progress: 30,
+        };
+      }
+      return {
+        status: 'PROCESSING',
+        progress: 30,
+        error: result.msg,
+      };
+    }
+
+    const data = result.data;
+
+    // KIE API 返回的状态: PENDING, TEXT_SUCCESS, FIRST_SUCCESS, SUCCESS
+    // 映射到我们的状态
+    const kieStatus = data?.status;
+    const sunoData = data?.response?.sunoData;
+
+    if (kieStatus === 'SUCCESS' && sunoData && Array.isArray(sunoData) && sunoData.length > 0) {
+      // 转换 sunoData 格式
+      const tracks = sunoData.map((track: {
+        audioUrl?: string;
+        streamAudioUrl?: string;
+        imageUrl?: string;
+        title?: string;
+        tags?: string;
+        prompt?: string;
+        duration?: number;
+      }) => ({
+        audio_url: track.audioUrl,
+        stream_audio_url: track.streamAudioUrl,
+        image_url: track.imageUrl,
+        title: track.title,
+        tags: track.tags,
+        prompt: track.prompt,
+        duration: track.duration,
+      }));
+
+      return {
+        status: 'SUCCESS',
+        progress: 100,
+        data: tracks,
+      };
+    }
+
+    // FIRST_SUCCESS 表示第一首歌完成
+    if (kieStatus === 'FIRST_SUCCESS') {
+      return {
+        status: 'PROCESSING',
+        progress: 70,
+      };
+    }
+
+    // TEXT_SUCCESS 表示歌词生成完成
+    if (kieStatus === 'TEXT_SUCCESS') {
+      return {
+        status: 'PROCESSING',
+        progress: 40,
+      };
+    }
+
+    // PENDING 或其他状态
+    return {
+      status: 'PROCESSING',
+      progress: 30,
+    };
+  } catch (error) {
+    console.error('🎵 [queryKieTaskStatus] 查询失败:', error);
+    return {
+      status: 'PROCESSING',
+      progress: 30,
+    };
+  }
+}
+
+/**
  * 查询音乐任务状态
+ * 在开发环境下，会直接查询 KIE API 获取最新状态
  */
 export async function getMusicTaskStatus(taskId: string): Promise<MusicTaskStatus> {
   const record = await prisma.music_records.findUnique({
@@ -269,6 +380,75 @@ export async function getMusicTaskStatus(taskId: string): Promise<MusicTaskStatu
     throw new Error(`任务不存在: ${taskId}`);
   }
 
+  // 如果任务还在处理中，且有外部任务 ID，直接查询 KIE API
+  const isDev = process.env.NODE_ENV === 'development';
+  if (isDev && record.external_task_id && (record.status === 'PENDING' || record.status === 'PROCESSING')) {
+    console.log('🎵 [getMusicTaskStatus] 开发环境，直接查询 KIE API:', record.external_task_id);
+
+    const kieStatus = await queryKieTaskStatus(record.external_task_id);
+
+    // 如果 KIE 返回成功，更新本地数据库
+    if (kieStatus.status === 'SUCCESS' && kieStatus.data && kieStatus.data.length > 0) {
+      const firstTrack = kieStatus.data[0];
+      const secondTrack = kieStatus.data.length > 1 ? kieStatus.data[1] : null;
+
+      await prisma.music_records.update({
+        where: { task_id: taskId },
+        data: {
+          status: 'SUCCESS',
+          progress: 100,
+          audio_url: firstTrack.audio_url,
+          stream_url: firstTrack.stream_audio_url || null,
+          cover_url: firstTrack.image_url || null,
+          duration: firstTrack.duration || null,
+          title: firstTrack.title || record.title,
+          tags: firstTrack.tags || null,
+          lyrics: firstTrack.prompt || record.lyrics,
+          audio_url_2: secondTrack?.audio_url || null,
+          stream_url_2: secondTrack?.stream_audio_url || null,
+          cover_url_2: secondTrack?.image_url || null,
+          duration_2: secondTrack?.duration || null,
+          completed_at: new Date(),
+        },
+      });
+
+      return {
+        task_id: taskId,
+        status: 'SUCCESS',
+        progress: 100,
+        result: {
+          audio_url: firstTrack.audio_url || '',
+          audio_url_2: secondTrack?.audio_url || undefined,
+          cover_url: firstTrack.image_url || undefined,
+          cover_url_2: secondTrack?.image_url || undefined,
+          duration: firstTrack.duration || undefined,
+          duration_2: secondTrack?.duration || undefined,
+          title: firstTrack.title || undefined,
+          tags: firstTrack.tags || undefined,
+          lyrics: firstTrack.prompt || undefined,
+        },
+        error: null,
+      };
+    }
+
+    // 更新进度
+    if (kieStatus.progress !== record.progress) {
+      await prisma.music_records.update({
+        where: { task_id: taskId },
+        data: { progress: kieStatus.progress },
+      });
+    }
+
+    return {
+      task_id: taskId,
+      status: kieStatus.status === 'FAILURE' ? 'FAILURE' : 'PROCESSING',
+      progress: kieStatus.progress,
+      result: null,
+      error: kieStatus.error || null,
+    };
+  }
+
+  // 生产环境或任务已完成，直接从数据库读取
   switch (record.status) {
     case 'PENDING':
       return {

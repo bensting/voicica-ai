@@ -3,8 +3,11 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { Download, Pencil } from 'lucide-react';
 import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
-import { getMusicRecords, type MusicRecord } from '@/actions/music';
+import { getMusicRecords, getMusicTaskStatus, deleteMusicRecord, type MusicRecord } from '@/actions/music';
+import GradientButton from '@/components/ui/GradientButton';
+import DeleteConfirmDialog from '@/components/native/ui/DeleteConfirmDialog';
 
 type TabType = 'videos' | 'music' | 'cover' | 'images';
 
@@ -92,6 +95,283 @@ function formatDateLong(dateString: string): string {
   const month = String(date.getMonth() + 1).padStart(2, '0');
   const day = String(date.getDate()).padStart(2, '0');
   return `${year}/${month}/${day}`;
+}
+
+// 格式化时间 (秒 -> mm:ss)
+function formatTime(seconds: number): string {
+  const mins = Math.floor(seconds / 60);
+  const secs = Math.floor(seconds % 60);
+  return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+}
+
+// 获取模型显示名称
+function getModelDisplayName(model: string): string {
+  const modelMap: Record<string, string> = {
+    'music-5.0': 'v5.0',
+    'music-4.5-plus': 'v4.5+',
+    'music-4.5': 'v4.5',
+  };
+  return modelMap[model] || model;
+}
+
+// 音乐详情弹窗组件
+function MusicDetailModal({
+  music,
+  onClose,
+  onRecreate,
+  onDelete,
+}: {
+  music: MusicRecord;
+  onClose: () => void;
+  onRecreate: (music: MusicRecord) => void;
+  onDelete: (music: MusicRecord) => void;
+}) {
+  const audioRef = useRef<HTMLAudioElement>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(music.duration || 0);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const displayTitle = music.title || 'AI Music';
+  const displayLyrics = music.lyrics || music.prompt || '';
+
+  // 播放/暂停
+  const togglePlay = () => {
+    if (!audioRef.current) return;
+    if (isPlaying) {
+      audioRef.current.pause();
+    } else {
+      audioRef.current.play();
+    }
+    setIsPlaying(!isPlaying);
+  };
+
+  // 更新播放进度
+  const handleTimeUpdate = () => {
+    if (audioRef.current) {
+      setCurrentTime(audioRef.current.currentTime);
+    }
+  };
+
+  // 加载元数据
+  const handleLoadedMetadata = () => {
+    if (audioRef.current) {
+      setDuration(audioRef.current.duration);
+    }
+  };
+
+  // 播放结束
+  const handleEnded = () => {
+    setIsPlaying(false);
+    setCurrentTime(0);
+  };
+
+  // 进度条点击
+  const handleProgressClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!audioRef.current || !duration) return;
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const percent = x / rect.width;
+    audioRef.current.currentTime = percent * duration;
+    setCurrentTime(percent * duration);
+  };
+
+  // 下载音频
+  const handleDownload = async () => {
+    if (!music.audio_url) return;
+    try {
+      const response = await fetch(music.audio_url);
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${displayTitle}.mp3`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Download failed:', error);
+    }
+  };
+
+  // 删除确认
+  const handleDelete = async () => {
+    if (isDeleting) return;
+    if (window.confirm('Are you sure you want to delete this music?')) {
+      setIsDeleting(true);
+      try {
+        await onDelete(music);
+        onClose();
+      } catch (error) {
+        console.error('Delete failed:', error);
+        setIsDeleting(false);
+      }
+    }
+  };
+
+  const progress = duration > 0 ? (currentTime / duration) * 100 : 0;
+
+  return (
+    <div className="fixed inset-0 z-[9999] bg-[#0a0a1a] flex flex-col">
+      {/* 隐藏的音频元素 */}
+      {music.audio_url && (
+        <audio
+          ref={audioRef}
+          src={music.audio_url}
+          onTimeUpdate={handleTimeUpdate}
+          onLoadedMetadata={handleLoadedMetadata}
+          onEnded={handleEnded}
+        />
+      )}
+
+      {/* 顶部导航 */}
+      <div className="flex items-center justify-between p-4">
+        <button
+          onClick={onClose}
+          className="w-10 h-10 flex items-center justify-center bg-gray-800/50 rounded-full"
+        >
+          <svg className="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <path d="M15 18l-6-6 6-6" />
+          </svg>
+        </button>
+        <div className="flex items-center gap-2">
+          <button className="w-10 h-10 flex items-center justify-center">
+            <svg className="w-5 h-5 text-white" viewBox="0 0 24 24" fill="currentColor">
+              <circle cx="12" cy="6" r="2" />
+              <circle cx="12" cy="12" r="2" />
+              <circle cx="12" cy="18" r="2" />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      {/* 可滚动内容区域 */}
+      <div className="flex-1 overflow-y-auto px-6 pb-4">
+        {/* 封面图 */}
+        <div className="flex justify-center mb-4">
+          <div className="relative w-48 h-48 rounded-xl overflow-hidden shadow-2xl">
+            {music.cover_url ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={music.cover_url}
+                alt={displayTitle}
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-purple-900 to-pink-900">
+                <svg className="w-16 h-16 text-white/30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                  <path d="M9 18V5l12-2v13" />
+                  <circle cx="6" cy="18" r="3" />
+                  <circle cx="18" cy="16" r="3" />
+                </svg>
+              </div>
+            )}
+            {/* AI 标签 */}
+            <div className="absolute top-2 right-2 px-2 py-0.5 bg-purple-500 rounded text-white text-xs font-medium">
+              AI
+            </div>
+          </div>
+        </div>
+
+        {/* 标题 */}
+        <h1 className="text-2xl font-bold text-white text-center mb-4">{displayTitle}</h1>
+
+        {/* 歌词 */}
+        {displayLyrics && (
+          <div className="text-gray-300 text-sm leading-relaxed whitespace-pre-wrap mb-6 max-h-48 overflow-y-auto">
+            {displayLyrics}
+          </div>
+        )}
+      </div>
+
+      {/* 底部播放器和操作按钮 - 固定在底部 */}
+      <div className="flex-shrink-0 px-6 pb-8 bg-[#0a0a1a]">
+        {/* 进度条 */}
+        <div
+          className="w-full h-1 bg-gray-700 rounded-full cursor-pointer mb-2"
+          onClick={handleProgressClick}
+        >
+          <div
+            className="h-full bg-gradient-to-r from-cyan-400 to-purple-500 rounded-full relative"
+            style={{ width: `${progress}%` }}
+          >
+            <div className="absolute right-0 top-1/2 -translate-y-1/2 w-3 h-3 bg-cyan-400 rounded-full" />
+          </div>
+        </div>
+
+        {/* 时间显示 */}
+        <div className="flex justify-between text-gray-500 text-xs mb-4">
+          <span>{formatTime(currentTime)}</span>
+          <span>{formatTime(duration)}</span>
+        </div>
+
+        {/* 播放按钮 */}
+        <div className="flex justify-center mb-4">
+          <button
+            onClick={togglePlay}
+            disabled={!music.audio_url}
+            className="w-16 h-16 flex items-center justify-center bg-gray-700 rounded-full hover:bg-gray-600 transition-colors disabled:opacity-50"
+          >
+            {isPlaying ? (
+              <svg className="w-7 h-7 text-white" viewBox="0 0 24 24" fill="currentColor">
+                <rect x="6" y="4" width="4" height="16" rx="1" />
+                <rect x="14" y="4" width="4" height="16" rx="1" />
+              </svg>
+            ) : (
+              <svg className="w-7 h-7 text-white ml-1" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M8 5v14l11-7z" />
+              </svg>
+            )}
+          </button>
+        </div>
+
+        {/* Prompt 和删除按钮 */}
+        <div className="flex items-center justify-between mb-3">
+          <p className="text-gray-500 text-sm flex-1 truncate">
+            {music.prompt || 'No prompt provided yet.'}
+          </p>
+          <button
+            onClick={handleDelete}
+            disabled={isDeleting}
+            className="ml-2 p-2 text-gray-500 hover:text-red-500 transition-colors disabled:opacity-50"
+          >
+            <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2" />
+            </svg>
+          </button>
+        </div>
+
+        {/* 模型版本标签 */}
+        <div className="mb-4">
+          <span className="inline-block px-3 py-1 bg-gray-800 rounded-full text-gray-400 text-xs">
+            {getModelDisplayName(music.model)}
+          </span>
+        </div>
+
+        {/* 操作按钮 */}
+        <div className="flex gap-3">
+          <button
+            onClick={() => onRecreate(music)}
+            className="flex-[1] flex items-center justify-center gap-2 py-3 bg-gray-800/80 border border-gray-700 rounded-xl text-white font-bold hover:bg-gray-700 transition-all"
+          >
+            <Pencil size={18} />
+            Recreate
+          </button>
+          <GradientButton
+            icon={Download}
+            iconPosition="left"
+            size="md"
+            onClick={handleDownload}
+            disabled={!music.audio_url}
+            className="flex-[2] !py-3"
+          >
+            Download
+          </GradientButton>
+        </div>
+      </div>
+    </div>
+  );
 }
 
 // 音乐卡片组件
@@ -252,6 +532,7 @@ export default function MyCreations() {
   const [musicRecords, setMusicRecords] = useState<MusicRecord[]>([]);
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+  const [selectedMusic, setSelectedMusic] = useState<MusicRecord | null>(null);
 
   // 下拉刷新相关
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -337,16 +618,65 @@ export default function MyCreations() {
     }
   }, [videos, activeTab, fetchVideos]);
 
-  // 如果有正在处理的音乐，定时刷新
+  // 如果有正在处理的音乐，定时刷新（开发环境直接查询 KIE API）
   useEffect(() => {
-    const hasProcessing = musicRecords.some(
+    const processingRecords = musicRecords.filter(
       (m) => m.status === 'PENDING' || m.status === 'PROCESSING'
     );
 
-    if (hasProcessing && activeTab === 'music') {
-      const interval = setInterval(() => fetchMusic(), 5000);
-      return () => clearInterval(interval);
-    }
+    if (processingRecords.length === 0 || activeTab !== 'music') return;
+
+    const interval = setInterval(async () => {
+      // 开发环境下，为每个处理中的任务调用 getMusicTaskStatus
+      // 这会触发 KIE API 直接查询并更新数据库
+      const isDev = process.env.NODE_ENV === 'development';
+
+      if (isDev) {
+        console.log('🎵 [MyCreations] 开发环境，查询处理中的音乐状态...');
+
+        // 并行查询所有处理中的任务状态
+        const statusResults = await Promise.all(
+          processingRecords.map(async (record) => {
+            try {
+              const status = await getMusicTaskStatus(record.task_id);
+              return { task_id: record.task_id, status };
+            } catch (error) {
+              console.error(`查询任务状态失败: ${record.task_id}`, error);
+              return null;
+            }
+          })
+        );
+
+        // 更新本地状态
+        setMusicRecords((prev) =>
+          prev.map((record) => {
+            const result = statusResults.find((r) => r?.task_id === record.task_id);
+            if (result && result.status) {
+              return {
+                ...record,
+                status: result.status.status,
+                progress: result.status.progress,
+                audio_url: result.status.result?.audio_url || record.audio_url,
+                audio_url_2: result.status.result?.audio_url_2 || record.audio_url_2,
+                cover_url: result.status.result?.cover_url || record.cover_url,
+                cover_url_2: result.status.result?.cover_url_2 || record.cover_url_2,
+                duration: result.status.result?.duration || record.duration,
+                duration_2: result.status.result?.duration_2 || record.duration_2,
+                title: result.status.result?.title || record.title,
+                tags: result.status.result?.tags || record.tags,
+                lyrics: result.status.result?.lyrics || record.lyrics,
+              };
+            }
+            return record;
+          })
+        );
+      } else {
+        // 生产环境使用原有的重新获取列表方式
+        await fetchMusic();
+      }
+    }, 5000);
+
+    return () => clearInterval(interval);
   }, [musicRecords, activeTab, fetchMusic]);
 
   // 下拉刷新触摸事件
@@ -382,19 +712,39 @@ export default function MyCreations() {
   };
 
   const handleMusicClick = (music: MusicRecord) => {
-    // TODO: 跳转到音乐详情页
-    console.log('Music clicked:', music.task_id);
+    // 只有完成的音乐才能打开详情
+    if (music.status === 'SUCCESS') {
+      setSelectedMusic(music);
+    }
   };
+
+  const handleMusicRecreate = (music: MusicRecord) => {
+    // 跳转到创建页面，带上 prompt 参数
+    const params = new URLSearchParams();
+    if (music.prompt) params.set('prompt', music.prompt);
+    if (music.style) params.set('style', music.style);
+    if (music.model) params.set('model', music.model);
+    router.push(`/native/create/music?${params.toString()}`);
+    setSelectedMusic(null);
+  };
+
+  const handleMusicDelete = async (music: MusicRecord) => {
+    await deleteMusicRecord(music.id);
+    setMusicRecords((prev) => prev.filter((m) => m.id !== music.id));
+  };
+
+  // 过滤掉失败的记录
+  const filteredMusicRecords = musicRecords.filter((m) => m.status !== 'FAILURE');
 
   const emptyState = emptyStateMessages[activeTab];
   const isEmpty = activeTab === 'videos'
     ? videos.length === 0
     : activeTab === 'music'
-      ? musicRecords.length === 0
+      ? filteredMusicRecords.length === 0
       : true;
 
-  // 按日期分组音乐记录
-  const groupedMusicRecords = musicRecords.reduce((groups, music) => {
+  // 按日期分组
+  const groupedMusicRecords = filteredMusicRecords.reduce((groups, music) => {
     const date = formatDateLong(music.created_at.toString());
     if (!groups[date]) {
       groups[date] = [];
@@ -538,6 +888,16 @@ export default function MyCreations() {
           </div>
         ) : null}
       </div>
+
+      {/* 音乐详情弹窗 */}
+      {selectedMusic && (
+        <MusicDetailModal
+          music={selectedMusic}
+          onClose={() => setSelectedMusic(null)}
+          onRecreate={handleMusicRecreate}
+          onDelete={handleMusicDelete}
+        />
+      )}
     </div>
   );
 }

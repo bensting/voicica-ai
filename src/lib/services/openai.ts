@@ -446,6 +446,59 @@ Create a complete song with verses, chorus, and optional bridge. Make it emotion
 }
 
 /**
+ * 生成音乐风格标签
+ *
+ * @param prompt 用户描述（歌词内容、情绪、主题等）
+ * @returns 生成的风格标签字符串
+ */
+export async function generateMusicStyle(prompt: string): Promise<string> {
+  const systemPrompt = `You are a music style expert. Generate appropriate music style tags based on user descriptions.
+
+Guidelines:
+- Create a comma-separated list of style tags
+- Include genre (pop, rock, jazz, electronic, R&B, hip-hop, country, folk, classical, etc.)
+- Include mood (upbeat, melancholic, energetic, calm, romantic, dark, hopeful, etc.)
+- Include tempo/feel (fast, slow, groovy, smooth, intense, relaxed, etc.)
+- Include instruments if relevant (acoustic guitar, piano, synth, strings, etc.)
+- Keep it concise, max 100 characters total
+- Use lowercase for all tags
+- Detect the language of the user's prompt but always output style tags in English
+
+Always respond with valid JSON in this format:
+{
+  "style": "genre, mood, tempo, instrument tags..."
+}`;
+
+  const userPrompt = `Based on this description, generate appropriate music style tags:
+${prompt}
+
+Create style tags that would help an AI music generator understand the desired musical style.`;
+
+  const response = await openai.chat.completions.create({
+    model: 'gpt-4o-mini',
+    messages: [
+      { role: 'system', content: systemPrompt },
+      { role: 'user', content: userPrompt },
+    ],
+    temperature: 0.7,
+    max_tokens: 200,
+    response_format: { type: 'json_object' },
+  });
+
+  const content = response.choices[0]?.message?.content;
+  if (!content) {
+    throw new Error('No response from OpenAI');
+  }
+
+  try {
+    const parsed = JSON.parse(content);
+    return parsed.style || '';
+  } catch {
+    throw new Error('Failed to parse style from OpenAI response');
+  }
+}
+
+/**
  * 为单个段落生成插图提示词
  *
  * @param storyTitle 故事标题

@@ -2,7 +2,7 @@
  * 创建菜单配置 (Native App)
  */
 
-export type CreateMenuIcon = 'video' | 'music' | 'voice' | 'effect' | 'swap' | 'image';
+export type CreateMenuIcon = 'video' | 'music' | 'cover' | 'voice' | 'effect' | 'swap' | 'image';
 
 export interface CreateMenuItem {
   id: string;
@@ -39,6 +39,14 @@ export const createMenuItems: CreateMenuItem[] = [
     title: 'AI Music',
     description: 'Compose music from text descriptions',
     href: '/native/create/music',
+    enabled: { development: true, production: false },
+  },
+  {
+    id: 'cover',
+    icon: 'cover',
+    title: 'AI Cover',
+    description: 'Create AI song covers with voice cloning',
+    href: '/native/create/cover',
     enabled: { development: true, production: false },
   },
   {

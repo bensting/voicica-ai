@@ -25,6 +25,17 @@ const MusicIcon = () => (
   </svg>
 );
 
+const CoverIcon = () => (
+  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+    <path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z" />
+    <path d="M19 10v2a7 7 0 01-14 0v-2" />
+    <path d="M8 21h8" />
+    <path d="M12 17v4" />
+    <path d="M3 9l2-2m0 0l2 2m-2-2v6" />
+    <path d="M21 9l-2-2m0 0l-2 2m2-2v6" />
+  </svg>
+);
+
 const VoiceIcon = () => (
   <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
     <path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z" />
@@ -75,6 +86,7 @@ const CloseIcon = () => (
 const iconMap: Record<CreateMenuIcon, React.FC> = {
   video: VideoIcon,
   music: MusicIcon,
+  cover: CoverIcon,
   voice: VoiceIcon,
   effect: EffectIcon,
   swap: SwapIcon,

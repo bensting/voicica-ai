@@ -126,6 +126,9 @@ export default function NativeMusicPage() {
   const [isLyricsAssistantOpen, setIsLyricsAssistantOpen] = useState(false);
   const [lyricsPrompt, setLyricsPrompt] = useState('');
   const [isGeneratingLyrics, setIsGeneratingLyrics] = useState(false);
+  const [isStyleAssistantOpen, setIsStyleAssistantOpen] = useState(false);
+  const [stylePrompt, setStylePrompt] = useState('');
+  const [isGeneratingStyle, setIsGeneratingStyle] = useState(false);
   const [isGeneratingModalOpen, setIsGeneratingModalOpen] = useState(false);
   const [generatingStatus, setGeneratingStatus] = useState<'generating' | 'success' | 'error'>('generating');
   const [generatingError, setGeneratingError] = useState<string | null>(null);
@@ -144,6 +147,7 @@ export default function NativeMusicPage() {
   const [lyrics, setLyrics] = useState('');
   const [style, setStyle] = useState('');
   const [title, setTitle] = useState('');
+  const [vocalGender, setVocalGender] = useState<'m' | 'f' | ''>('');
 
   // 字符限制
   const maxCharacters = 3000;
@@ -164,6 +168,7 @@ export default function NativeMusicPage() {
         if (parsed.lyrics) setLyrics(parsed.lyrics);
         if (parsed.style) setStyle(parsed.style);
         if (parsed.title) setTitle(parsed.title);
+        if (parsed.vocalGender) setVocalGender(parsed.vocalGender);
       } catch {
         // 忽略解析错误
       }
@@ -174,9 +179,9 @@ export default function NativeMusicPage() {
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify({
       prompt, model, activeTab, isInstrumental, isPublic,
-      lyrics, style, title,
+      lyrics, style, title, vocalGender,
     }));
-  }, [prompt, model, activeTab, isInstrumental, isPublic, lyrics, style, title]);
+  }, [prompt, model, activeTab, isInstrumental, isPublic, lyrics, style, title, vocalGender]);
 
   // 加载 lyrics prompt
   useEffect(() => {
@@ -251,6 +256,37 @@ export default function NativeMusicPage() {
     }
   };
 
+  // 生成风格
+  const handleGenerateStyle = async () => {
+    if (!stylePrompt.trim()) return;
+
+    setIsGeneratingStyle(true);
+    try {
+      const response = await fetch('/api/ai/generate-style', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt: stylePrompt.trim() }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        throw new Error(data.error || 'Failed to generate style');
+      }
+
+      if (data.style) {
+        setStyle(data.style);
+        setIsStyleAssistantOpen(false);
+        setStylePrompt('');
+      }
+    } catch (err) {
+      console.error('Generate style failed:', err);
+      setError(err instanceof Error ? err.message : 'Failed to generate style');
+    } finally {
+      setIsGeneratingStyle(false);
+    }
+  };
+
   // 获取当前选中的模型
   const selectedModel = getMusicModelById(model);
 
@@ -318,6 +354,7 @@ export default function NativeMusicPage() {
         customMode: isCustomMode,
         style: isCustomMode ? style.trim() || undefined : undefined,
         title: isCustomMode ? title.trim() || undefined : undefined,
+        vocalGender: isCustomMode && vocalGender ? vocalGender : undefined,
       });
 
       console.log('🎵 [handleGenerate] createMusicTask 返回', result);
@@ -340,6 +377,7 @@ export default function NativeMusicPage() {
       setLyrics('');
       setStyle('');
       setTitle('');
+      setVocalGender('');
       localStorage.removeItem(STORAGE_KEY);
     } catch (err) {
       console.error('🎵 [handleGenerate] 捕获错误:', err);
@@ -589,14 +627,28 @@ export default function NativeMusicPage() {
                   <span className="text-gray-500 text-xs">(optional)</span>
                 </div>
               </div>
-              <input
-                type="text"
-                value={style}
-                onChange={(e) => setStyle(e.target.value)}
-                placeholder="pop, rock, jazz, electronic..."
-                className="w-full bg-gray-800/60 text-white placeholder-gray-500 p-4 rounded-2xl focus:outline-none focus:ring-2 focus:ring-purple-500/50 text-sm"
-                disabled={isGenerating}
-              />
+              <div className="bg-gray-800/60 rounded-2xl overflow-hidden">
+                <input
+                  type="text"
+                  value={style}
+                  onChange={(e) => setStyle(e.target.value.slice(0, 200))}
+                  placeholder="pop, rock, jazz, electronic..."
+                  className="w-full bg-transparent text-white placeholder-gray-500 p-4 focus:outline-none text-sm"
+                  disabled={isGenerating}
+                />
+                {/* Bottom Bar */}
+                <div className="flex items-center justify-between px-4 pb-3">
+                  <button
+                    onClick={() => setIsStyleAssistantOpen(true)}
+                    className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-700/50 rounded-full text-gray-300 text-xs hover:bg-gray-600/50 transition-colors"
+                    disabled={isGenerating}
+                  >
+                    <AssistantIcon />
+                    <span>Generate Style</span>
+                  </button>
+                  <span className="text-gray-500 text-xs">{style.length}/200</span>
+                </div>
+              </div>
             </div>
 
             {/* Title (optional) */}
@@ -616,6 +668,53 @@ export default function NativeMusicPage() {
                 disabled={isGenerating}
               />
             </div>
+
+            {/* Vocal Gender - 仅对有人声的音乐有效 */}
+            {!isInstrumental && (
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-white font-medium">Voice</span>
+                </div>
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setVocalGender('')}
+                    disabled={isGenerating}
+                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                      vocalGender === ''
+                        ? 'bg-gray-600 text-white'
+                        : 'bg-gray-800/60 text-gray-400 hover:bg-gray-700/60'
+                    } disabled:opacity-50`}
+                  >
+                    Auto
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setVocalGender('m')}
+                    disabled={isGenerating}
+                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                      vocalGender === 'm'
+                        ? 'bg-purple-600 text-white'
+                        : 'bg-gray-800/60 text-gray-400 hover:bg-gray-700/60'
+                    } disabled:opacity-50`}
+                  >
+                    Male
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setVocalGender('f')}
+                    disabled={isGenerating}
+                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                      vocalGender === 'f'
+                        ? 'bg-pink-500 text-white'
+                        : 'bg-gray-800/60 text-gray-400 hover:bg-gray-700/60'
+                    } disabled:opacity-50`}
+                  >
+                    Female
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         )}
 
@@ -1053,6 +1152,63 @@ export default function NativeMusicPage() {
                   <>
                     <AssistantIcon />
                     <span>Generate Lyrics</span>
+                  </>
+                )}
+              </GradientButton>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Style Assistant Modal */}
+      {isStyleAssistantOpen && (
+        <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/60">
+          <div
+            className="w-full max-w-lg bg-[#1a1a2e] rounded-t-3xl"
+            style={{ animation: 'slideUp 0.3s ease-out' }}
+          >
+            {/* Header */}
+            <div className="flex items-center justify-between px-4 py-3 border-b border-gray-800">
+              <h3 className="text-white font-semibold">Style Assistant</h3>
+              <button
+                onClick={() => setIsStyleAssistantOpen(false)}
+                className="p-1 text-gray-400 hover:text-white"
+                disabled={isGeneratingStyle}
+              >
+                <CloseIcon />
+              </button>
+            </div>
+            {/* Content */}
+            <div className="px-4 pb-4 pt-4">
+              <p className="text-gray-400 text-sm mb-4">
+                Describe your song&apos;s mood, theme, or reference artists. AI will generate style tags for you.
+              </p>
+              <textarea
+                value={stylePrompt}
+                onChange={(e) => setStylePrompt(e.target.value.slice(0, 500))}
+                placeholder="e.g., An energetic dance track like Dua Lipa, with synth and strong beats..."
+                className="w-full h-24 bg-gray-800/60 text-white placeholder-gray-500 p-4 rounded-2xl resize-none focus:outline-none focus:ring-2 focus:ring-purple-500/50 text-sm"
+                disabled={isGeneratingStyle}
+              />
+              <div className="flex justify-end mt-2">
+                <span className="text-gray-500 text-xs">{stylePrompt.length}/500</span>
+              </div>
+            </div>
+            {/* Bottom Button */}
+            <div className="px-4 pb-4">
+              <GradientButton
+                onClick={() => void handleGenerateStyle()}
+                disabled={!stylePrompt.trim() || isGeneratingStyle}
+              >
+                {isGeneratingStyle ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    <span>Generating...</span>
+                  </>
+                ) : (
+                  <>
+                    <AssistantIcon />
+                    <span>Generate Style</span>
                   </>
                 )}
               </GradientButton>

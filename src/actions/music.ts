@@ -46,6 +46,8 @@ export interface MusicGenerationRequest {
   instrumental?: boolean;
   /** 是否自定义模式（歌词模式） */
   customMode?: boolean;
+  /** 声音性别: 'm' 男声, 'f' 女声 (仅 customMode 有效) */
+  vocalGender?: 'm' | 'f';
 }
 
 export interface MusicTaskStatus {
@@ -171,6 +173,10 @@ export async function createMusicTask(request: MusicGenerationRequest): Promise<
     if (isCustomMode) {
       kiePayload.style = request.style || '';
       kiePayload.title = request.title || 'Untitled';
+      // vocalGender 仅在 customMode 下有效
+      if (request.vocalGender) {
+        kiePayload.vocalGender = request.vocalGender;
+      }
     }
 
     console.log('🎵 [createMusicTask] 调用 KIE API:', JSON.stringify(kiePayload, null, 2));

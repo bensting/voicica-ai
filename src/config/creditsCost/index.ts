@@ -8,16 +8,19 @@ import {
   creditsCostConfig as devConfig,
   voiceCostConfig as devVoiceCost,
   videoCostConfig as devVideoCost,
+  dialogueCostConfig as devDialogueCost,
 } from './creditsCost.development';
 import {
   creditsCostConfig as prodConfig,
   voiceCostConfig as prodVoiceCost,
   videoCostConfig as prodVideoCost,
+  dialogueCostConfig as prodDialogueCost,
 } from './creditsCost.production';
 import type {
   CreditsCostConfig,
   VoiceCostConfig,
   VideoCostConfig,
+  DialogueCostConfig,
   VideoResolution,
   VideoDuration,
 } from './types';
@@ -28,12 +31,14 @@ const isProduction = process.env.NODE_ENV === 'production';
 export const creditsCostConfig: CreditsCostConfig = isProduction ? prodConfig : devConfig;
 export const voiceCostConfig: VoiceCostConfig = isProduction ? prodVoiceCost : devVoiceCost;
 export const videoCostConfig: VideoCostConfig = isProduction ? prodVideoCost : devVideoCost;
+export const dialogueCostConfig: DialogueCostConfig = isProduction ? prodDialogueCost : devDialogueCost;
 
 // 导出类型
 export type {
   CreditsCostConfig,
   VoiceCostConfig,
   VideoCostConfig,
+  DialogueCostConfig,
   VideoResolution,
   VideoDuration,
   VideoCostItem,
@@ -208,4 +213,33 @@ export function getAllVideoCostItems() {
  */
 export function isVideoModelSupported(model: string): boolean {
   return videoCostConfig.models.includes(model);
+}
+
+// ==================== 对话成本相关函数 ====================
+
+/**
+ * 获取对话成本配置
+ */
+export function getDialogueCostConfig(): DialogueCostConfig {
+  return dialogueCostConfig;
+}
+
+/**
+ * 计算对话生成需要消耗的积分
+ *
+ * 计费规则：每 unit_chars 个字符消耗 credits_per_unit 积分，不足也按一个单位计算
+ *
+ * @param charCount 总字符数
+ * @returns 需要消耗的积分数
+ *
+ * @example
+ * // 生产环境配置：unit_chars=100, credits_per_unit=3
+ * calculateDialogueCost(150)  // 返回 6 (2个单位 * 3积分)
+ * calculateDialogueCost(50)   // 返回 3 (1个单位 * 3积分)
+ */
+export function calculateDialogueCost(charCount: number): number {
+  if (charCount <= 0) return 0;
+  const { unit_chars, credits_per_unit } = dialogueCostConfig;
+  const units = Math.ceil(charCount / unit_chars);
+  return units * credits_per_unit;
 }

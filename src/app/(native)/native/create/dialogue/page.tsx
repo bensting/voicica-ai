@@ -8,6 +8,7 @@ import GradientButton from '@/components/native/common/GradientButton';
 import CreditsIcon from '@/components/native/common/CreditsIcon';
 import LoginModal from '@/components/native/LoginModal';
 import CreateSheet from '@/components/native/CreateSheet';
+import { calculateDialogueCost } from '@/config/creditsCost';
 
 // localStorage key
 const STORAGE_KEY = 'dialogue_draft';
@@ -156,7 +157,7 @@ export default function NativeDialoguePage() {
   };
 
   // 预估积分消耗
-  const estimatedCredits = Math.ceil(totalCharacters / 10) * 2;
+  const estimatedCredits = calculateDialogueCost(totalCharacters);
 
   // 是否可以生成
   const canGenerate = dialogues.some(d => d.text.trim().length > 0) && !isGenerating;

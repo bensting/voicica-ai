@@ -5,7 +5,7 @@
  */
 
 import { ProductType } from '../productType';
-import type { CreditsCostConfig, VoiceCostConfig, VideoCostConfig } from './types';
+import type { CreditsCostConfig, VoiceCostConfig, VideoCostConfig, DialogueCostConfig } from './types';
 
 export const creditsCostConfig: CreditsCostConfig = {
   [ProductType.TEXT_TO_SPEECH]: 0, // TTS 按字符数计费，由 calculateVoiceCost 计算
@@ -54,4 +54,14 @@ export const videoCostConfig: VideoCostConfig = {
     { resolution: '1080p', duration: 10, credits: 300 },
     { resolution: '1080p', duration: 15, credits: 450 },
   ],
+};
+
+/**
+ * 对话成本配置 - 生产环境
+ *
+ * 计费规则：10个字符消耗1积分
+ */
+export const dialogueCostConfig: DialogueCostConfig = {
+  unit_chars: 100,
+  credits_per_unit: 3,
 };

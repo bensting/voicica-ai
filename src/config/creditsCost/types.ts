@@ -70,3 +70,16 @@ export interface VideoCostConfig {
   /** 成本配置列表 */
   costs: VideoCostItem[];
 }
+
+/**
+ * 对话成本配置
+ *
+ * 计费规则：每 unit_chars 个字符消耗 credits_per_unit 积分
+ * 例如：unit_chars=10, credits_per_unit=1 时，10个字符消耗1积分
+ */
+export interface DialogueCostConfig {
+  /** 计费单位（字符数） */
+  unit_chars: number;
+  /** 每单位消耗积分 */
+  credits_per_unit: number;
+}

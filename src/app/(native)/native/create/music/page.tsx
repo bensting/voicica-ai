@@ -7,6 +7,8 @@ import { useCredits } from '@/contexts/CreditsContext';
 import { useSubscription } from '@/contexts/SubscriptionContext';
 import GradientButton from '@/components/native/common/GradientButton';
 import CreditsIcon from '@/components/native/common/CreditsIcon';
+import AssistantInput from '@/components/native/common/AssistantInput';
+import AssistantModal from '@/components/native/common/AssistantModal';
 import LoginModal from '@/components/native/LoginModal';
 import CreateSheet from '@/components/native/CreateSheet';
 import {
@@ -88,15 +90,6 @@ const ShieldIcon = () => (
   </svg>
 );
 
-const AssistantIcon = () => (
-  <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
-    <circle cx="12" cy="12" r="10" fill="#6366f1" />
-    <circle cx="8" cy="10" r="1.5" fill="white" />
-    <circle cx="16" cy="10" r="1.5" fill="white" />
-    <path d="M8 14c0 2.2 1.8 4 4 4s4-1.8 4-4H8z" fill="white" />
-  </svg>
-);
-
 const UploadIcon = () => (
   <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
     <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12" />
@@ -129,6 +122,9 @@ export default function NativeMusicPage() {
   const [isStyleAssistantOpen, setIsStyleAssistantOpen] = useState(false);
   const [stylePrompt, setStylePrompt] = useState('');
   const [isGeneratingStyle, setIsGeneratingStyle] = useState(false);
+  const [isPromptAssistantOpen, setIsPromptAssistantOpen] = useState(false);
+  const [promptAssistantInput, setPromptAssistantInput] = useState('');
+  const [isGeneratingPrompt, setIsGeneratingPrompt] = useState(false);
   const [isGeneratingModalOpen, setIsGeneratingModalOpen] = useState(false);
   const [generatingStatus, setGeneratingStatus] = useState<'generating' | 'success' | 'error'>('generating');
   const [generatingError, setGeneratingError] = useState<string | null>(null);
@@ -284,6 +280,37 @@ export default function NativeMusicPage() {
       setError(err instanceof Error ? err.message : 'Failed to generate style');
     } finally {
       setIsGeneratingStyle(false);
+    }
+  };
+
+  // 生成提示词 (Simple mode)
+  const handleGeneratePrompt = async () => {
+    if (!promptAssistantInput.trim()) return;
+
+    setIsGeneratingPrompt(true);
+    try {
+      const response = await fetch('/api/ai/generate-prompt', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt: promptAssistantInput.trim() }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        throw new Error(data.error || 'Failed to generate prompt');
+      }
+
+      if (data.prompt) {
+        setPrompt(data.prompt);
+        setIsPromptAssistantOpen(false);
+        setPromptAssistantInput('');
+      }
+    } catch (err) {
+      console.error('Generate prompt failed:', err);
+      setError(err instanceof Error ? err.message : 'Failed to generate prompt');
+    } finally {
+      setIsGeneratingPrompt(false);
     }
   };
 
@@ -529,31 +556,30 @@ export default function NativeMusicPage() {
             </div>
 
             {/* Prompt Input */}
-            <div className="flex-1 flex flex-col bg-gray-800/60 rounded-2xl overflow-hidden">
-              <textarea
-                value={prompt}
-                onChange={(e) => handlePromptChange(e.target.value)}
-                placeholder="A chinese song about summer rain,jazz,mellow,warm,sung by a male voice"
-                className="flex-1 w-full min-h-[120px] bg-transparent text-white placeholder-gray-500 p-4 resize-none focus:outline-none text-sm leading-relaxed"
-                disabled={isGenerating}
-              />
-              <div className="flex items-center justify-between px-4 py-2 border-t border-gray-700/50">
-                <button className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-700/50 rounded-full text-gray-300 text-xs">
-                  <AssistantIcon />
-                  <span>Assistant</span>
+            <AssistantInput
+              label=""
+              placeholder="A chinese song about summer rain, jazz, mellow, warm, sung by a male voice"
+              value={prompt}
+              onChange={handlePromptChange}
+              maxLength={maxCharacters}
+              multiline
+              rows={5}
+              assistantButtonText="Generate Prompt"
+              onAssistantClick={() => setIsPromptAssistantOpen(true)}
+              disabled={isGenerating}
+              className="flex-1 flex flex-col"
+              containerClassName="flex-1 flex flex-col"
+              inputClassName="flex-1 min-h-[120px] leading-relaxed"
+              rightActions={
+                <button
+                  onClick={handleClearPrompt}
+                  disabled={prompt.length === 0}
+                  className="text-gray-500 hover:text-gray-300 disabled:opacity-30 disabled:cursor-not-allowed"
+                >
+                  <TrashIcon />
                 </button>
-                <div className="flex items-center gap-3">
-                  <span className="text-gray-500 text-xs">{prompt.length}/{maxCharacters}</span>
-                  <button
-                    onClick={handleClearPrompt}
-                    disabled={prompt.length === 0}
-                    className="text-gray-500 hover:text-gray-300 disabled:opacity-30 disabled:cursor-not-allowed"
-                  >
-                    <TrashIcon />
-                  </button>
-                </div>
-              </div>
-            </div>
+              }
+            />
           </div>
         )}
 
@@ -584,72 +610,53 @@ export default function NativeMusicPage() {
               </button>
             </div>
 
-            {/* Lyrics Section - flex-1 to take remaining space */}
-            <div className="flex-1 flex flex-col min-h-[200px]">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-white font-medium">Lyrics</span>
-              </div>
-              <div className="flex-1 flex flex-col bg-gray-800/60 rounded-2xl overflow-hidden">
-                <textarea
-                  value={lyrics}
-                  onChange={(e) => handleLyricsChange(e.target.value)}
-                  placeholder="Enter your lyrics here...&#10;&#10;[Verse 1]&#10;Write your first verse&#10;&#10;[Chorus]&#10;Write your chorus"
-                  className="flex-1 w-full min-h-[120px] bg-transparent text-white placeholder-gray-500 p-4 resize-none focus:outline-none text-sm leading-relaxed"
-                  disabled={isGenerating}
-                />
-                <div className="flex items-center justify-between px-4 py-2 border-t border-gray-700/50">
-                  <button
-                    onClick={() => setIsLyricsAssistantOpen(true)}
-                    className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-700/50 rounded-full text-gray-300 text-xs hover:bg-gray-600/50 transition-colors"
-                  >
-                    <AssistantIcon />
-                    <span>Generate Lyrics</span>
-                  </button>
-                  <div className="flex items-center gap-3">
-                    <span className="text-gray-500 text-xs">{lyrics.length}/{maxLyricsCharacters}</span>
-                    <button
-                      onClick={handleClearLyrics}
-                      disabled={lyrics.length === 0}
-                      className="text-gray-500 hover:text-gray-300 disabled:opacity-30 disabled:cursor-not-allowed"
-                    >
-                      <TrashIcon />
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
+            {/* Lyrics Section */}
+            <AssistantInput
+              label="Lyrics"
+              placeholder={"Enter your lyrics here...\n\n[Verse 1]\nWrite your first verse\n\n[Chorus]\nWrite your chorus"}
+              value={lyrics}
+              onChange={handleLyricsChange}
+              maxLength={maxLyricsCharacters}
+              multiline
+              rows={6}
+              assistantButtonText="Generate Lyrics"
+              onAssistantClick={() => setIsLyricsAssistantOpen(true)}
+              disabled={isGenerating}
+              className="flex-1 flex flex-col min-h-[200px]"
+              containerClassName="flex-1 flex flex-col"
+              inputClassName="flex-1 min-h-[120px] leading-relaxed"
+              rightActions={
+                <button
+                  onClick={handleClearLyrics}
+                  disabled={lyrics.length === 0}
+                  className="text-gray-500 hover:text-gray-300 disabled:opacity-30 disabled:cursor-not-allowed"
+                >
+                  <TrashIcon />
+                </button>
+              }
+            />
 
             {/* Style (optional) */}
-            <div>
-              <div className="flex items-center justify-between mb-2">
-                <div className="flex items-center gap-2">
-                  <span className="text-white font-medium">Style</span>
-                  <span className="text-gray-500 text-xs">(optional)</span>
-                </div>
-              </div>
-              <div className="bg-gray-800/60 rounded-2xl overflow-hidden">
-                <input
-                  type="text"
-                  value={style}
-                  onChange={(e) => setStyle(e.target.value.slice(0, 200))}
-                  placeholder="pop, rock, jazz, electronic..."
-                  className="w-full bg-transparent text-white placeholder-gray-500 p-4 focus:outline-none text-sm"
-                  disabled={isGenerating}
-                />
-                {/* Bottom Bar */}
-                <div className="flex items-center justify-between px-4 pb-3">
-                  <button
-                    onClick={() => setIsStyleAssistantOpen(true)}
-                    className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-700/50 rounded-full text-gray-300 text-xs hover:bg-gray-600/50 transition-colors"
-                    disabled={isGenerating}
-                  >
-                    <AssistantIcon />
-                    <span>Generate Style</span>
-                  </button>
-                  <span className="text-gray-500 text-xs">{style.length}/200</span>
-                </div>
-              </div>
-            </div>
+            <AssistantInput
+              label="Style"
+              optional
+              placeholder="pop, rock, jazz, electronic..."
+              value={style}
+              onChange={setStyle}
+              maxLength={500}
+              assistantButtonText="Generate Style"
+              onAssistantClick={() => setIsStyleAssistantOpen(true)}
+              disabled={isGenerating}
+              rightActions={
+                <button
+                  onClick={() => setStyle('')}
+                  disabled={style.length === 0}
+                  className="text-gray-500 hover:text-gray-300 disabled:opacity-30 disabled:cursor-not-allowed"
+                >
+                  <TrashIcon />
+                </button>
+              }
+            />
 
             {/* Title (optional) */}
             <div>
@@ -1094,128 +1101,50 @@ export default function NativeMusicPage() {
       )}
 
       {/* Lyrics Assistant Sheet */}
-      {isLyricsAssistantOpen && (
-        <div className="fixed inset-0 z-50">
-          {/* Backdrop */}
-          <div
-            className="absolute inset-0 bg-black/60"
-            onClick={() => !isGeneratingLyrics && setIsLyricsAssistantOpen(false)}
-          />
-          {/* Sheet */}
-          <div
-            className="absolute bottom-0 left-0 right-0 bg-[#1a1a2e] rounded-t-3xl"
-            style={{ paddingBottom: 'var(--safe-area-inset-bottom, 0px)' }}
-          >
-            {/* Handle */}
-            <div className="flex justify-center pt-3 pb-2">
-              <div className="w-10 h-1 bg-gray-600 rounded-full" />
-            </div>
-            {/* Header */}
-            <div className="flex items-center justify-between px-4 pb-4">
-              <h3 className="text-white font-semibold text-lg">AI Lyrics Assistant</h3>
-              <button
-                onClick={() => !isGeneratingLyrics && setIsLyricsAssistantOpen(false)}
-                className="p-1 text-gray-400 hover:text-white"
-                disabled={isGeneratingLyrics}
-              >
-                <CloseIcon />
-              </button>
-            </div>
-            {/* Content */}
-            <div className="px-4 pb-4">
-              <p className="text-gray-400 text-sm mb-4">
-                Describe the theme, mood, or story you want for your lyrics. The AI will generate creative lyrics for you.
-              </p>
-              <textarea
-                value={lyricsPrompt}
-                onChange={(e) => setLyricsPrompt(e.target.value)}
-                placeholder="e.g., A love song about missing someone in autumn, melancholic but hopeful..."
-                className="w-full h-32 bg-gray-800/60 text-white placeholder-gray-500 p-4 rounded-2xl resize-none focus:outline-none focus:ring-2 focus:ring-purple-500/50 text-sm"
-                disabled={isGeneratingLyrics}
-              />
-              <div className="flex justify-end mt-2">
-                <span className="text-gray-500 text-xs">{lyricsPrompt.length}/500</span>
-              </div>
-            </div>
-            {/* Bottom Button */}
-            <div className="px-4 pb-4">
-              <GradientButton
-                onClick={() => void handleGenerateLyrics()}
-                disabled={!lyricsPrompt.trim() || isGeneratingLyrics}
-              >
-                {isGeneratingLyrics ? (
-                  <>
-                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                    <span>Generating...</span>
-                  </>
-                ) : (
-                  <>
-                    <AssistantIcon />
-                    <span>Generate Lyrics</span>
-                  </>
-                )}
-              </GradientButton>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Lyrics Assistant Modal */}
+      <AssistantModal
+        isOpen={isLyricsAssistantOpen}
+        onClose={() => setIsLyricsAssistantOpen(false)}
+        title="AI Lyrics Assistant"
+        description="Describe the theme, mood, or story you want for your lyrics. The AI will generate creative lyrics for you."
+        placeholder="e.g., A love song about missing someone in autumn, melancholic but hopeful..."
+        value={lyricsPrompt}
+        onChange={setLyricsPrompt}
+        maxLength={500}
+        isGenerating={isGeneratingLyrics}
+        onGenerate={() => void handleGenerateLyrics()}
+        generateButtonText="Generate Lyrics"
+      />
 
       {/* Style Assistant Modal */}
-      {isStyleAssistantOpen && (
-        <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/60">
-          <div
-            className="w-full max-w-lg bg-[#1a1a2e] rounded-t-3xl"
-            style={{ animation: 'slideUp 0.3s ease-out' }}
-          >
-            {/* Header */}
-            <div className="flex items-center justify-between px-4 py-3 border-b border-gray-800">
-              <h3 className="text-white font-semibold">Style Assistant</h3>
-              <button
-                onClick={() => setIsStyleAssistantOpen(false)}
-                className="p-1 text-gray-400 hover:text-white"
-                disabled={isGeneratingStyle}
-              >
-                <CloseIcon />
-              </button>
-            </div>
-            {/* Content */}
-            <div className="px-4 pb-4 pt-4">
-              <p className="text-gray-400 text-sm mb-4">
-                Describe your song&apos;s mood, theme, or reference artists. AI will generate style tags for you.
-              </p>
-              <textarea
-                value={stylePrompt}
-                onChange={(e) => setStylePrompt(e.target.value.slice(0, 500))}
-                placeholder="e.g., An energetic dance track like Dua Lipa, with synth and strong beats..."
-                className="w-full h-24 bg-gray-800/60 text-white placeholder-gray-500 p-4 rounded-2xl resize-none focus:outline-none focus:ring-2 focus:ring-purple-500/50 text-sm"
-                disabled={isGeneratingStyle}
-              />
-              <div className="flex justify-end mt-2">
-                <span className="text-gray-500 text-xs">{stylePrompt.length}/500</span>
-              </div>
-            </div>
-            {/* Bottom Button */}
-            <div className="px-4 pb-4">
-              <GradientButton
-                onClick={() => void handleGenerateStyle()}
-                disabled={!stylePrompt.trim() || isGeneratingStyle}
-              >
-                {isGeneratingStyle ? (
-                  <>
-                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                    <span>Generating...</span>
-                  </>
-                ) : (
-                  <>
-                    <AssistantIcon />
-                    <span>Generate Style</span>
-                  </>
-                )}
-              </GradientButton>
-            </div>
-          </div>
-        </div>
-      )}
+      <AssistantModal
+        isOpen={isStyleAssistantOpen}
+        onClose={() => setIsStyleAssistantOpen(false)}
+        title="Style Assistant"
+        description="Describe your song's mood, theme, or reference artists. AI will generate style tags for you."
+        placeholder="e.g., An energetic dance track like Dua Lipa, with synth and strong beats..."
+        value={stylePrompt}
+        onChange={setStylePrompt}
+        maxLength={500}
+        isGenerating={isGeneratingStyle}
+        onGenerate={() => void handleGenerateStyle()}
+        generateButtonText="Generate Style"
+      />
+
+      {/* Prompt Assistant Modal (Simple mode) */}
+      <AssistantModal
+        isOpen={isPromptAssistantOpen}
+        onClose={() => setIsPromptAssistantOpen(false)}
+        title="Prompt Assistant"
+        description="Describe your song idea briefly. AI will expand it into a detailed music generation prompt."
+        placeholder="e.g., A happy summer song, a sad love ballad, an energetic workout track..."
+        value={promptAssistantInput}
+        onChange={setPromptAssistantInput}
+        maxLength={500}
+        isGenerating={isGeneratingPrompt}
+        onGenerate={() => void handleGeneratePrompt()}
+        generateButtonText="Generate Prompt"
+      />
     </div>
   );
 }

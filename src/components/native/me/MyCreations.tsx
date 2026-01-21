@@ -130,7 +130,7 @@ function MusicDetailModal({
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(music.duration || 0);
-  const [isDeleting, setIsDeleting] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
   const displayTitle = music.title || 'AI Music';
   const displayLyrics = music.lyrics || music.prompt || '';
@@ -195,19 +195,11 @@ function MusicDetailModal({
     }
   };
 
-  // 删除确认
-  const handleDelete = async () => {
-    if (isDeleting) return;
-    if (window.confirm('Are you sure you want to delete this music?')) {
-      setIsDeleting(true);
-      try {
-        await onDelete(music);
-        onClose();
-      } catch (error) {
-        console.error('Delete failed:', error);
-        setIsDeleting(false);
-      }
-    }
+  // 执行删除
+  const handleConfirmDelete = async () => {
+    await onDelete(music);
+    setShowDeleteDialog(false);
+    onClose();
   };
 
   const progress = duration > 0 ? (currentTime / duration) * 100 : 0;
@@ -332,9 +324,8 @@ function MusicDetailModal({
             {music.prompt || 'No prompt provided yet.'}
           </p>
           <button
-            onClick={handleDelete}
-            disabled={isDeleting}
-            className="ml-2 p-2 text-gray-500 hover:text-red-500 transition-colors disabled:opacity-50"
+            onClick={() => setShowDeleteDialog(true)}
+            className="ml-2 p-2 text-gray-500 hover:text-red-500 transition-colors"
           >
             <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2" />
@@ -353,9 +344,9 @@ function MusicDetailModal({
         <div className="flex gap-3">
           <button
             onClick={() => onRecreate(music)}
-            className="flex-[1] flex items-center justify-center gap-2 py-3 bg-gray-800/80 border border-gray-700 rounded-xl text-white font-bold hover:bg-gray-700 transition-all"
+            className="flex-[1] flex items-center justify-center gap-1.5 py-3 bg-gray-800/80 border border-gray-700 rounded-xl text-white text-sm font-medium hover:bg-gray-700 transition-all"
           >
-            <Pencil size={18} />
+            <Pencil size={14} />
             Recreate
           </button>
           <GradientButton
@@ -370,6 +361,14 @@ function MusicDetailModal({
           </GradientButton>
         </div>
       </div>
+
+      {/* 删除确认弹窗 */}
+      <DeleteConfirmDialog
+        isOpen={showDeleteDialog}
+        title="Confirm delete song?"
+        onConfirm={handleConfirmDelete}
+        onCancel={() => setShowDeleteDialog(false)}
+      />
     </div>
   );
 }

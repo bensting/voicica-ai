@@ -36,6 +36,18 @@ const ChevronDownIcon = () => (
   </svg>
 );
 
+const ChevronUpIcon = () => (
+  <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <path d="M6 15l6-6 6 6" />
+  </svg>
+);
+
+const SlidersIcon = () => (
+  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+    <path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6" />
+  </svg>
+);
+
 const TrashIcon = () => (
   <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
     <path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6" />
@@ -84,6 +96,19 @@ const AssistantIcon = () => (
   </svg>
 );
 
+const UploadIcon = () => (
+  <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+    <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12" />
+  </svg>
+);
+
+const MicIcon = () => (
+  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+    <path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z" />
+    <path d="M19 10v2a7 7 0 01-14 0v-2M12 19v4M8 23h8" />
+  </svg>
+);
+
 /**
  * Native AI Music 页面
  */
@@ -106,8 +131,14 @@ export default function NativeMusicPage() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // Custom tab specific states
+  const [lyrics, setLyrics] = useState('');
+  const [style, setStyle] = useState('');
+  const [title, setTitle] = useState('');
+
   // 字符限制
   const maxCharacters = 3000;
+  const maxLyricsCharacters = 5000;
 
   // 从 localStorage 加载
   useEffect(() => {
@@ -120,6 +151,10 @@ export default function NativeMusicPage() {
         if (parsed.activeTab) setActiveTab(parsed.activeTab);
         if (typeof parsed.isInstrumental === 'boolean') setIsInstrumental(parsed.isInstrumental);
         if (typeof parsed.isPublic === 'boolean') setIsPublic(parsed.isPublic);
+        // Custom tab fields
+        if (parsed.lyrics) setLyrics(parsed.lyrics);
+        if (parsed.style) setStyle(parsed.style);
+        if (parsed.title) setTitle(parsed.title);
       } catch {
         // 忽略解析错误
       }
@@ -128,13 +163,24 @@ export default function NativeMusicPage() {
 
   // 保存到 localStorage
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify({ prompt, model, activeTab, isInstrumental, isPublic }));
-  }, [prompt, model, activeTab, isInstrumental, isPublic]);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({
+      prompt, model, activeTab, isInstrumental, isPublic,
+      lyrics, style, title,
+    }));
+  }, [prompt, model, activeTab, isInstrumental, isPublic, lyrics, style, title]);
 
   // 处理文本变化
   const handlePromptChange = (text: string) => {
     if (text.length <= maxCharacters) {
       setPrompt(text);
+      setError(null);
+    }
+  };
+
+  // 处理歌词变化 (Custom tab)
+  const handleLyricsChange = (text: string) => {
+    if (text.length <= maxLyricsCharacters) {
+      setLyrics(text);
       setError(null);
     }
   };
@@ -145,11 +191,18 @@ export default function NativeMusicPage() {
     setError(null);
   };
 
+  // 清空歌词
+  const handleClearLyrics = () => {
+    setLyrics('');
+    setError(null);
+  };
+
   // 获取当前选中的模型
   const selectedModel = getMusicModelById(model);
 
-  // 预估积分消耗（根据选中的模型）
-  const estimatedCredits = prompt.trim().length > 0 ? (selectedModel?.credits ?? 30) : 0;
+  // 预估积分消耗（根据选中的模型和当前输入）
+  const hasInput = activeTab === 'custom' ? lyrics.trim().length > 0 : prompt.trim().length > 0;
+  const estimatedCredits = hasInput ? (selectedModel?.credits ?? 30) : 0;
 
   // 处理模型选择
   const handleModelSelect = (m: MusicModel) => {
@@ -163,8 +216,17 @@ export default function NativeMusicPage() {
     setIsModelSelectorOpen(false);
   };
 
-  // 是否可以生成
-  const canGenerate = prompt.trim().length > 0 && !isGenerating;
+  // 是否可以生成 (根据当前 tab 判断)
+  const canGenerate = (() => {
+    if (isGenerating) return false;
+    if (activeTab === 'simple') {
+      return prompt.trim().length > 0;
+    } else if (activeTab === 'custom') {
+      return lyrics.trim().length > 0;
+    }
+    // Cover and Dedicate tabs - 暂时禁用
+    return false;
+  })();
 
   // 处理生成
   const handleGenerate = async () => {
@@ -179,11 +241,15 @@ export default function NativeMusicPage() {
     setError(null);
 
     try {
+      // 根据不同 tab 构建请求
+      const isCustomMode = activeTab === 'custom';
       const result = await createMusicTask({
-        prompt: prompt.trim(),
+        prompt: isCustomMode ? lyrics.trim() : prompt.trim(),
         model,
         isPublic,
         instrumental: isInstrumental,
+        style: isCustomMode ? style.trim() || undefined : undefined,
+        title: isCustomMode ? title.trim() || undefined : undefined,
       });
 
       if (result.status === 'FAILURE') {
@@ -195,6 +261,9 @@ export default function NativeMusicPage() {
       // 任务创建成功，跳转到历史页面或显示成功提示
       // 清空草稿
       setPrompt('');
+      setLyrics('');
+      setStyle('');
+      setTitle('');
       localStorage.removeItem(STORAGE_KEY);
 
       // 跳转到音乐历史页面
@@ -253,9 +322,9 @@ export default function NativeMusicPage() {
         </div>
       </div>
 
-      {/* Scrollable Content */}
+      {/* Content Area */}
       <div
-        className="flex-1 overflow-y-auto px-4"
+        className="flex-1 flex flex-col px-4"
         style={{
           paddingTop: 'calc(var(--safe-area-inset-top, 0px) + 120px)',
           paddingBottom: 'calc(80px + var(--safe-area-inset-bottom, 0px))',
@@ -268,78 +337,200 @@ export default function NativeMusicPage() {
           </div>
         )}
 
-        {/* Prompt Section */}
-        <div className="mb-4">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-white font-medium">Prompt</span>
-            <button
-              onClick={() => setIsModelSelectorOpen(!isModelSelectorOpen)}
-              className="flex items-center gap-1.5 text-gray-400 text-sm"
-            >
-              <MusicIcon />
-              <span>{selectedModel?.name || model}</span>
-              {selectedModel?.isPremium && (
-                <span className="text-yellow-400">
-                  <CrownIcon />
-                </span>
-              )}
-              <ChevronDownIcon />
-            </button>
-          </div>
-
-
-          {/* Prompt Input */}
-          <div className="bg-gray-800/60 rounded-2xl overflow-hidden">
-            <textarea
-              value={prompt}
-              onChange={(e) => handlePromptChange(e.target.value)}
-              placeholder="A chinese song about summer rain,jazz,mellow,warm,sung by a male voice"
-              className="w-full h-48 bg-transparent text-white placeholder-gray-500 p-4 resize-none focus:outline-none text-sm leading-relaxed"
-              disabled={isGenerating}
-            />
-            <div className="flex items-center justify-between px-4 py-2 border-t border-gray-700/50">
-              <button className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-700/50 rounded-full text-gray-300 text-xs">
-                <AssistantIcon />
-                <span>Assistant</span>
+        {/* Tab Content - Simple Tab */}
+        {activeTab === 'simple' && (
+          <div className="flex-1 flex flex-col mb-4">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-white font-medium">Prompt</span>
+              <button
+                onClick={() => setIsModelSelectorOpen(!isModelSelectorOpen)}
+                className="flex items-center gap-1.5 text-gray-400 text-sm"
+              >
+                <MusicIcon />
+                <span>{selectedModel?.name || model}</span>
+                {selectedModel?.isPremium && (
+                  <span className="text-yellow-400">
+                    <CrownIcon />
+                  </span>
+                )}
+                <ChevronDownIcon />
               </button>
-              <div className="flex items-center gap-3">
-                <span className="text-gray-500 text-xs">{prompt.length}/{maxCharacters}</span>
-                <button
-                  onClick={handleClearPrompt}
-                  disabled={prompt.length === 0}
-                  className="text-gray-500 hover:text-gray-300 disabled:opacity-30 disabled:cursor-not-allowed"
-                >
-                  <TrashIcon />
+            </div>
+
+            {/* Prompt Input */}
+            <div className="flex-1 flex flex-col bg-gray-800/60 rounded-2xl overflow-hidden">
+              <textarea
+                value={prompt}
+                onChange={(e) => handlePromptChange(e.target.value)}
+                placeholder="A chinese song about summer rain,jazz,mellow,warm,sung by a male voice"
+                className="flex-1 w-full min-h-[120px] bg-transparent text-white placeholder-gray-500 p-4 resize-none focus:outline-none text-sm leading-relaxed"
+                disabled={isGenerating}
+              />
+              <div className="flex items-center justify-between px-4 py-2 border-t border-gray-700/50">
+                <button className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-700/50 rounded-full text-gray-300 text-xs">
+                  <AssistantIcon />
+                  <span>Assistant</span>
                 </button>
+                <div className="flex items-center gap-3">
+                  <span className="text-gray-500 text-xs">{prompt.length}/{maxCharacters}</span>
+                  <button
+                    onClick={handleClearPrompt}
+                    disabled={prompt.length === 0}
+                    className="text-gray-500 hover:text-gray-300 disabled:opacity-30 disabled:cursor-not-allowed"
+                  >
+                    <TrashIcon />
+                  </button>
+                </div>
               </div>
             </div>
           </div>
-        </div>
+        )}
 
-        {/* Parameters Section */}
-        <div className="mb-4">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-white font-medium">Parameters</span>
-            <button className="flex items-center gap-1 text-gray-400 text-xs">
-              <span>Credits Rule</span>
-              <InfoIcon />
+        {/* Tab Content - Custom Tab */}
+        {activeTab === 'custom' && (
+          <div className="flex-1 flex flex-col space-y-4 overflow-y-auto">
+            {/* Reference Audio */}
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-white font-medium">Reference Audio</span>
+                <button
+                  onClick={() => setIsModelSelectorOpen(!isModelSelectorOpen)}
+                  className="flex items-center gap-1.5 text-gray-400 text-sm"
+                >
+                  <MusicIcon />
+                  <span>{selectedModel?.name || model}</span>
+                  {selectedModel?.isPremium && (
+                    <span className="text-yellow-400">
+                      <CrownIcon />
+                    </span>
+                  )}
+                  <ChevronDownIcon />
+                </button>
+              </div>
+              <button className="w-full flex items-center justify-center gap-2 p-4 bg-gray-800/60 rounded-2xl border-2 border-dashed border-gray-600 text-gray-400 hover:border-purple-500 hover:text-purple-400 transition-colors">
+                <UploadIcon />
+                <span className="text-sm">Upload or record audio</span>
+              </button>
+            </div>
+
+            {/* Lyrics Section - flex-1 to take remaining space */}
+            <div className="flex-1 flex flex-col min-h-[200px]">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-white font-medium">Lyrics</span>
+              </div>
+              <div className="flex-1 flex flex-col bg-gray-800/60 rounded-2xl overflow-hidden">
+                <textarea
+                  value={lyrics}
+                  onChange={(e) => handleLyricsChange(e.target.value)}
+                  placeholder="Enter your lyrics here...&#10;&#10;[Verse 1]&#10;Write your first verse&#10;&#10;[Chorus]&#10;Write your chorus"
+                  className="flex-1 w-full min-h-[120px] bg-transparent text-white placeholder-gray-500 p-4 resize-none focus:outline-none text-sm leading-relaxed"
+                  disabled={isGenerating}
+                />
+                <div className="flex items-center justify-between px-4 py-2 border-t border-gray-700/50">
+                  <button className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-700/50 rounded-full text-gray-300 text-xs">
+                    <AssistantIcon />
+                    <span>Generate Lyrics</span>
+                  </button>
+                  <div className="flex items-center gap-3">
+                    <span className="text-gray-500 text-xs">{lyrics.length}/{maxLyricsCharacters}</span>
+                    <button
+                      onClick={handleClearLyrics}
+                      disabled={lyrics.length === 0}
+                      className="text-gray-500 hover:text-gray-300 disabled:opacity-30 disabled:cursor-not-allowed"
+                    >
+                      <TrashIcon />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Style (optional) */}
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-2">
+                  <span className="text-white font-medium">Style</span>
+                  <span className="text-gray-500 text-xs">(optional)</span>
+                </div>
+              </div>
+              <input
+                type="text"
+                value={style}
+                onChange={(e) => setStyle(e.target.value)}
+                placeholder="pop, rock, jazz, electronic..."
+                className="w-full bg-gray-800/60 text-white placeholder-gray-500 p-4 rounded-2xl focus:outline-none focus:ring-2 focus:ring-purple-500/50 text-sm"
+                disabled={isGenerating}
+              />
+            </div>
+
+            {/* Title (optional) */}
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-2">
+                  <span className="text-white font-medium">Title</span>
+                  <span className="text-gray-500 text-xs">(optional)</span>
+                </div>
+              </div>
+              <input
+                type="text"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                placeholder="Give your song a title"
+                className="w-full bg-gray-800/60 text-white placeholder-gray-500 p-4 rounded-2xl focus:outline-none focus:ring-2 focus:ring-purple-500/50 text-sm"
+                disabled={isGenerating}
+              />
+            </div>
+          </div>
+        )}
+
+        {/* Tab Content - Cover Tab (Coming Soon) */}
+        {activeTab === 'cover' && (
+          <div className="flex-1 flex flex-col items-center justify-center text-center">
+            <div className="w-16 h-16 bg-gray-800/60 rounded-full flex items-center justify-center mb-4">
+              <MicIcon />
+            </div>
+            <h3 className="text-white font-semibold text-lg mb-2">Cover Mode</h3>
+            <p className="text-gray-400 text-sm">Coming soon! Create AI covers with your voice.</p>
+          </div>
+        )}
+
+        {/* Tab Content - Dedicate Tab (Coming Soon) */}
+        {activeTab === 'dedicate' && (
+          <div className="flex-1 flex flex-col items-center justify-center text-center">
+            <div className="w-16 h-16 bg-gray-800/60 rounded-full flex items-center justify-center mb-4">
+              <MusicIcon />
+            </div>
+            <h3 className="text-white font-semibold text-lg mb-2">Dedicate Mode</h3>
+            <p className="text-gray-400 text-sm">Coming soon! Create personalized dedications.</p>
+          </div>
+        )}
+
+        {/* Parameters Section - only show for simple and custom tabs */}
+        {(activeTab === 'simple' || activeTab === 'custom') && (
+          <div className="mb-4">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-white font-medium">Parameters</span>
+              <button className="flex items-center gap-1 text-gray-400 text-xs">
+                <span>Credits Rule</span>
+                <InfoIcon />
+              </button>
+            </div>
+
+            {/* Parameters Trigger */}
+            <button
+              onClick={() => setIsParameterSheetOpen(true)}
+              className="w-full flex items-center justify-between p-3 bg-gray-800/60 rounded-xl"
+            >
+              <div className="flex items-center gap-2">
+                <SlidersIcon />
+                <span className="text-white text-sm">
+                  {isInstrumental ? 'Instrumental' : 'Vocal'} · {isPublic ? 'Public' : 'Private'}
+                </span>
+              </div>
+              <ChevronUpIcon />
             </button>
           </div>
-
-          {/* Parameters Trigger */}
-          <button
-            onClick={() => setIsParameterSheetOpen(true)}
-            className="w-full flex items-center justify-between p-3 bg-gray-800/60 rounded-xl"
-          >
-            <div className="flex items-center gap-2">
-              <ShieldIcon />
-              <span className="text-white text-sm">
-                {isInstrumental ? 'Instrumental' : 'Vocal'} · {isPublic ? 'Public' : 'Private'}
-              </span>
-            </div>
-            <ChevronDownIcon />
-          </button>
-        </div>
+        )}
 
         {/* Credits Info */}
         <div className="flex items-center gap-1.5 text-gray-400 text-xs px-1">

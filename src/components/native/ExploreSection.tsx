@@ -86,7 +86,7 @@ export default function ExploreSection() {
   const handleVoiceSelect = (voice: Voice) => {
     // 保存选中的声音到 localStorage，TTS 页面会读取
     localStorage.setItem('tts_draft_voice', JSON.stringify(voice));
-    setIsVoiceSelectorOpen(false);
+    // 先跳转页面，选择器会随着页面切换自动关闭
     router.push('/native/create/voice');
   };
 

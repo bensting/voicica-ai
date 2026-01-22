@@ -18,7 +18,7 @@ import { useGenerationHistory } from '@/components/features/studio/generation-hi
 import RecentGenerationsList from '@/components/features/studio/tts/components/RecentGenerationsList';
 import ConfirmDialog from '@/components/ui/ConfirmDialog';
 import AudioSettingsPanel from '@/components/features/studio/tts/AudioSettingsPanel';
-import { useAnonymousTTSLimit } from '@/hooks/useAnonymousTTSLimit';
+// import { useAnonymousTTSLimit } from '@/hooks/useAnonymousTTSLimit'; // 已禁用匿名使用
 import LoginModal from '@/components/features/auth/LoginModal';
 
 // 动态导入弹窗组件 - 减少首屏加载时间
@@ -65,11 +65,11 @@ export default function StudioTTSPage() {
   const [userClosedGeneratingModal, setUserClosedGeneratingModal] = useState(false); // 追踪用户是否手动关闭
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false); // 登录弹窗
 
-  // 匿名用户 TTS 每日限制
-  const {
-    canGenerate: canAnonymousGenerate,
-    incrementUsage: incrementAnonymousUsage,
-  } = useAnonymousTTSLimit();
+  // 匿名用户 TTS 每日限制（已禁用，必须登录才能使用）
+  // const {
+  //   canGenerate: canAnonymousGenerate,
+  //   incrementUsage: incrementAnonymousUsage,
+  // } = useAnonymousTTSLimit();
 
   // 检测是否为移动端（在 useState 初始化，避免 useEffect）
   const [isMobile] = useState(() => {
@@ -114,12 +114,6 @@ export default function StudioTTSPage() {
     onTaskSubmitted: () => {
       console.log('🔄 [TTSPage] 任务成功提交，300ms 后刷新记录和积分');
 
-      // 匿名用户：增加使用次数
-      if (!user) {
-        incrementAnonymousUsage();
-        console.log('📊 [TTSPage] 匿名用户使用次数已增加');
-      }
-
       setTimeout(() => {
         console.log('⏰ [TTSPage] 300ms 超时触发，开始刷新');
         console.log('📋 [TTSPage] 调用 fetchRecords');
@@ -139,24 +133,18 @@ export default function StudioTTSPage() {
     },
   });
 
-  // 包装 handleGenerate，检查匿名用户限制
+  // 包装 handleGenerate，必须登录才能生成
   const handleGenerate = useCallback(() => {
-    // 已登录用户直接生成
-    if (user) {
-      originalHandleGenerate();
-      return;
-    }
-
-    // 匿名用户检查每日限制
-    if (!canAnonymousGenerate()) {
-      console.log('🚫 [TTSPage] 匿名用户达到每日限制，显示登录弹窗');
+    // 未登录用户显示登录弹窗
+    if (!user) {
+      console.log('🚫 [TTSPage] 用户未登录，显示登录弹窗');
       setIsLoginModalOpen(true);
       return;
     }
 
-    // 未达到限制，允许生成
+    // 已登录用户直接生成
     originalHandleGenerate();
-  }, [user, canAnonymousGenerate, originalHandleGenerate]);
+  }, [user, originalHandleGenerate]);
 
   // Generation history hook (显示最近6条，只查询成功和进行中的记录，不显示失败的)
   const {

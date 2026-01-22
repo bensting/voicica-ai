@@ -45,7 +45,7 @@ export const createMenuItems: CreateMenuItem[] = [
     shortName: 'AI Music',
     description: 'Compose music from text descriptions',
     href: '/native/create/music',
-    enabled: { development: true, production: false },
+    enabled: { development: true, production: true },
   },
   {
     id: 'cover',
@@ -55,7 +55,7 @@ export const createMenuItems: CreateMenuItem[] = [
     shortName: 'AI Cover',
     description: 'Create AI song covers with voice cloning',
     href: '/native/create/cover',
-    enabled: { development: true, production: false },
+    enabled: { development: true, production: true },
   },
 
   // ========== Voice 类别 ==========
@@ -67,7 +67,7 @@ export const createMenuItems: CreateMenuItem[] = [
     shortName: 'Text to Voice',
     description: 'Convert text to natural speech',
     href: '/native/create/voice',
-    enabled: { development: true, production: false },
+    enabled: { development: true, production: true },
   },
   {
     id: 'dialogue',
@@ -77,7 +77,7 @@ export const createMenuItems: CreateMenuItem[] = [
     shortName: 'Text to Dialogue',
     description: 'Create multi-character dialogues',
     href: '/native/create/dialogue',
-    enabled: { development: true, production: false },
+    enabled: { development: true, production: true },
   },
 ];
 

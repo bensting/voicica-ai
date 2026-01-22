@@ -462,6 +462,7 @@ export default function RvcModelsPage() {
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-3">
                         {model.avatar_url ? (
+                          // eslint-disable-next-line @next/next/no-img-element
                           <img
                             src={model.avatar_url}
                             alt={model.name}
@@ -795,12 +796,14 @@ export default function RvcModelsPage() {
                 <label className="block text-sm font-medium text-gray-700 mb-2">当前头像</label>
                 <div className="flex items-center gap-4">
                   {editAvatarFile ? (
+                    // eslint-disable-next-line @next/next/no-img-element
                     <img
                       src={URL.createObjectURL(editAvatarFile)}
                       alt="新头像预览"
                       className="w-20 h-20 rounded-full object-cover border-2 border-purple-500"
                     />
                   ) : editingModel.avatar_url ? (
+                    // eslint-disable-next-line @next/next/no-img-element
                     <img
                       src={editingModel.avatar_url}
                       alt={editingModel.name}

@@ -789,7 +789,10 @@ export default function NativeMusicPage() {
             {/* Reference Audio */}
             <div>
               <div className="flex items-center justify-between mb-2">
-                <span className="text-white font-medium">Reference Audio <span className="text-gray-500 font-normal">(Optional)</span></span>
+                <div className="flex items-center gap-2">
+                  <span className="text-white font-medium">Reference Audio</span>
+                  <span className="text-gray-500 text-xs">(optional)</span>
+                </div>
                 <button
                   onClick={() => setIsModelSelectorOpen(!isModelSelectorOpen)}
                   className="flex items-center gap-1.5 text-gray-400 text-sm"

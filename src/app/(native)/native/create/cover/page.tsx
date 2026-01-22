@@ -6,6 +6,7 @@ import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 import { useCredits } from '@/contexts/CreditsContext';
 import GradientButton from '@/components/native/common/GradientButton';
 import CreditsIcon from '@/components/native/common/CreditsIcon';
+import CreditsInfoBar from '@/components/native/common/CreditsInfoBar';
 import LoginModal from '@/components/native/LoginModal';
 import CreateSheet from '@/components/native/CreateSheet';
 import {
@@ -95,6 +96,18 @@ const CoverIcon = () => (
   </svg>
 );
 
+const PrivacyShieldIcon = () => (
+  <svg className="w-4 h-4 text-gray-400" viewBox="0 0 24 24" fill="currentColor">
+    <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 6c1.1 0 2 .9 2 2 0 .74-.4 1.38-1 1.72V14h-2v-3.28c-.6-.34-1-.98-1-1.72 0-1.1.9-2 2-2z" />
+  </svg>
+);
+
+const PitchIcon = () => (
+  <svg className="w-4 h-4 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <path d="M12 3v18M5 8l7-5 7 5M5 16l7 5 7-5" />
+  </svg>
+);
+
 /**
  * Native AI Cover 页面
  */
@@ -125,6 +138,9 @@ export default function NativeCoverPage() {
   const [coverTaskId, setCoverTaskId] = useState<string | null>(null);
   const [coverStatus, setCoverStatus] = useState<string | null>(null);
   const [isPublic, setIsPublic] = useState(true);
+
+  // Parameter sheet state
+  const [isParameterSheetOpen, setIsParameterSheetOpen] = useState(false);
 
   // History sheet states
   const [isHistorySheetOpen, setIsHistorySheetOpen] = useState(false);
@@ -658,33 +674,34 @@ export default function NativeCoverPage() {
             </div>
           </div>
 
-          {/* Pitch Adjustment */}
+          {/* Parameters Trigger */}
           <div>
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-white font-medium">Pitch Adjustment</span>
-              <span className="text-gray-400 text-sm">{coverPitchChange > 0 ? '+' : ''}{coverPitchChange} semitones</span>
+            <div className="mb-2">
+              <span className="text-white font-medium">Parameters</span>
             </div>
-            <input
-              type="range"
-              min="-12"
-              max="12"
-              value={coverPitchChange}
-              onChange={(e) => setCoverPitchChange(parseInt(e.target.value))}
-              className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-purple-500"
-            />
-            <div className="flex justify-between text-xs text-gray-500 mt-1">
-              <span>-12</span>
-              <span>0</span>
-              <span>+12</span>
-            </div>
+            <button
+              onClick={() => setIsParameterSheetOpen(true)}
+              className="w-full flex items-center justify-between p-3 bg-gray-800/60 rounded-xl"
+            >
+              <div className="flex items-center gap-2">
+                <PitchIcon />
+                <span className="text-white text-sm">
+                  Pitch · {coverPitchChange > 0 ? '+' : ''}{coverPitchChange}
+                </span>
+              </div>
+              <svg className="w-4 h-4 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M18 15l-6-6-6 6" />
+              </svg>
+            </button>
           </div>
         </div>
 
-        {/* Credits Info */}
-        <div className="flex items-center gap-1.5 text-gray-400 text-xs px-1 mt-4">
-          <CreditsIcon className="w-3.5 h-3.5" />
-          <span>Credits: {credits}</span>
-        </div>
+        {/* Credits Info Bar */}
+        <CreditsInfoBar
+          credits={credits}
+          creditRules={[{ name: 'Cover generation', credits: 50 }]}
+          className="px-1 mt-4"
+        />
       </div>
 
       {/* Fixed Bottom Button */}
@@ -727,6 +744,72 @@ export default function NativeCoverPage() {
         isOpen={isCreateSheetOpen}
         onClose={() => setIsCreateSheetOpen(false)}
       />
+
+      {/* Parameters Bottom Sheet */}
+      {isParameterSheetOpen && (
+        <div className="fixed inset-0 z-50">
+          {/* Backdrop */}
+          <div
+            className="absolute inset-0 bg-black/60"
+            onClick={() => setIsParameterSheetOpen(false)}
+          />
+          {/* Sheet */}
+          <div className="absolute bottom-0 left-0 right-0 bg-[#1a1a2e] rounded-t-3xl p-6 animate-slide-up">
+            <div className="w-12 h-1 bg-gray-600 rounded-full mx-auto mb-6" />
+
+            <h3 className="text-white font-semibold text-lg mb-6">Parameters</h3>
+
+            {/* Pitch Adjustment */}
+            <div className="mb-6">
+              <div className="flex items-center justify-between mb-3">
+                <span className="text-white font-medium">Pitch Adjustment</span>
+                <span className="text-gray-400 text-sm">{coverPitchChange > 0 ? '+' : ''}{coverPitchChange} semitones</span>
+              </div>
+              <input
+                type="range"
+                min="-12"
+                max="12"
+                value={coverPitchChange}
+                onChange={(e) => setCoverPitchChange(parseInt(e.target.value))}
+                className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-purple-500"
+              />
+              <div className="flex justify-between text-xs text-gray-500 mt-1">
+                <span>-12</span>
+                <span>0</span>
+                <span>+12</span>
+              </div>
+            </div>
+
+            {/* Visibility Toggle */}
+            <div className="flex items-center justify-between py-3">
+              <div className="flex items-center gap-2">
+                <PrivacyShieldIcon />
+                <span className="text-white">Public</span>
+              </div>
+              <button
+                onClick={() => setIsPublic(!isPublic)}
+                className={`w-12 h-6 rounded-full transition-colors ${
+                  isPublic ? 'bg-purple-500' : 'bg-gray-600'
+                }`}
+              >
+                <div
+                  className={`w-5 h-5 bg-white rounded-full transition-transform ${
+                    isPublic ? 'translate-x-6' : 'translate-x-0.5'
+                  }`}
+                />
+              </button>
+            </div>
+
+            {/* Done Button */}
+            <button
+              onClick={() => setIsParameterSheetOpen(false)}
+              className="w-full mt-6 py-3 bg-purple-500 text-white font-medium rounded-xl"
+            >
+              Done
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Generating Full Page */}
       {isGeneratingModalOpen && (

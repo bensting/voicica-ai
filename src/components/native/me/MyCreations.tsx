@@ -4,9 +4,10 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
-import { getMusicRecords, getMusicTaskStatus, deleteMusicRecord, type MusicRecord } from '@/actions/music';
+import { getMusicRecords, deleteMusicRecord, type MusicRecord } from '@/actions/music';
 import { getTtsRecords, deleteTtsRecord, type TtsRecord } from '@/actions/tts';
 import { getCoverRecords, deleteCoverRecord, type CoverRecord } from '@/actions/cover';
+import { useMusicTaskPolling } from '@/hooks/useMusicTaskPolling';
 
 // 提取的组件
 import MusicDetailModal from './MusicDetailModal';
@@ -220,66 +221,34 @@ export default function MyCreations() {
     }
   }, [activeTab, fetchMusic, fetchVoices, fetchCovers]);
 
-  // 如果有正在处理的音乐，定时刷新（开发环境直接查询 KIE API）
-  useEffect(() => {
-    const processingRecords = musicRecords.filter(
-      (m) => m.status === 'PENDING' || m.status === 'PROCESSING'
-    );
-
-    if (processingRecords.length === 0 || activeTab !== 'music') return;
-
-    const interval = setInterval(async () => {
-      // 开发环境下，为每个处理中的任务调用 getMusicTaskStatus
-      // 这会触发 KIE API 直接查询并更新数据库
-      const isDev = process.env.NODE_ENV === 'development';
-
-      if (isDev) {
-        console.log('🎵 [MyCreations] 开发环境，查询处理中的音乐状态...');
-
-        // 并行查询所有处理中的任务状态
-        const statusResults = await Promise.all(
-          processingRecords.map(async (record) => {
-            try {
-              const status = await getMusicTaskStatus(record.task_id);
-              return { task_id: record.task_id, status };
-            } catch (error) {
-              console.error(`查询任务状态失败: ${record.task_id}`, error);
-              return null;
-            }
-          })
-        );
-
-        // 更新本地状态
-        setMusicRecords((prev) =>
-          prev.map((record) => {
-            const result = statusResults.find((r) => r?.task_id === record.task_id);
-            if (result && result.status) {
-              return {
-                ...record,
-                status: result.status.status,
-                progress: result.status.progress,
-                audio_url: result.status.result?.audio_url || record.audio_url,
-                audio_url_2: result.status.result?.audio_url_2 || record.audio_url_2,
-                cover_url: result.status.result?.cover_url || record.cover_url,
-                cover_url_2: result.status.result?.cover_url_2 || record.cover_url_2,
-                duration: result.status.result?.duration || record.duration,
-                duration_2: result.status.result?.duration_2 || record.duration_2,
-                title: result.status.result?.title || record.title,
-                tags: result.status.result?.tags || record.tags,
-                lyrics: result.status.result?.lyrics || record.lyrics,
-              };
-            }
-            return record;
-          })
-        );
-      } else {
-        // 生产环境使用原有的重新获取列表方式
-        await fetchMusic();
-      }
-    }, 5000);
-
-    return () => clearInterval(interval);
-  }, [musicRecords, activeTab, fetchMusic]);
+  // 使用 hook 轮询处理中的音乐任务状态
+  useMusicTaskPolling({
+    records: musicRecords,
+    enabled: activeTab === 'music',
+    onStatusUpdate: useCallback((taskId, status) => {
+      setMusicRecords((prev) =>
+        prev.map((record) => {
+          if (record.task_id === taskId) {
+            return {
+              ...record,
+              status: status.status,
+              progress: status.progress,
+              audio_url: status.result?.audio_url || record.audio_url,
+              audio_url_2: status.result?.audio_url_2 || record.audio_url_2,
+              cover_url: status.result?.cover_url || record.cover_url,
+              cover_url_2: status.result?.cover_url_2 || record.cover_url_2,
+              duration: status.result?.duration || record.duration,
+              duration_2: status.result?.duration_2 || record.duration_2,
+              title: status.result?.title || record.title,
+              tags: status.result?.tags || record.tags,
+              lyrics: status.result?.lyrics || record.lyrics,
+            };
+          }
+          return record;
+        })
+      );
+    }, []),
+  });
 
   // 下拉刷新触摸事件
   const handleTouchStart = (e: React.TouchEvent) => {

@@ -26,13 +26,13 @@ export default function FeaturedProductsSection() {
           image="/images/products/tts-preview.webp"
         />
 
-        {/* AI Story Maker */}
-        <ProductCard
+        {/* AI Story Maker - 暂时隐藏 */}
+        {/* <ProductCard
           title={t('studio.storyMakerTitle')}
           description={t('studio.storyMakerDescription')}
           href="/studio/story/generate"
           image="/images/products/story-maker.webp"
-        />
+        /> */}
 
         {/* Placeholder card for future features */}
         <div className="hidden lg:flex bg-gray-50 rounded-2xl border-2 border-dashed border-gray-300 items-center justify-center text-center min-h-[140px] px-6">

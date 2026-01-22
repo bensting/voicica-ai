@@ -9,7 +9,7 @@ import { getMusicRecords, getMusicTaskStatus, deleteMusicRecord, type MusicRecor
 import GradientButton from '@/components/ui/GradientButton';
 import DeleteConfirmDialog from '@/components/native/ui/DeleteConfirmDialog';
 
-type TabType = 'videos' | 'music' | 'cover' | 'images';
+type TabType = 'music' | 'cover' | 'voices';
 
 interface VideoItem {
   taskId: string;
@@ -28,18 +28,12 @@ interface VideoItem {
 }
 
 const tabs: { id: TabType; label: string }[] = [
-  { id: 'videos', label: 'Videos' },
   { id: 'music', label: 'Music' },
   { id: 'cover', label: 'Cover' },
-  { id: 'images', label: 'Images' },
+  { id: 'voices', label: 'Voices' },
 ];
 
 const emptyStateMessages: Record<TabType, { title: string; subtitle: string; createLink: string }> = {
-  videos: {
-    title: 'No content yet.',
-    subtitle: 'Create your first AI video work.',
-    createLink: '/native/create/video',
-  },
   music: {
     title: 'No content yet.',
     subtitle: 'Create your first AI music.',
@@ -47,13 +41,13 @@ const emptyStateMessages: Record<TabType, { title: string; subtitle: string; cre
   },
   cover: {
     title: 'No content yet.',
-    subtitle: 'Create your first cover.',
-    createLink: '/native/create/effect',
+    subtitle: 'Create your first AI cover.',
+    createLink: '/native/create/cover',
   },
-  images: {
+  voices: {
     title: 'No content yet.',
-    subtitle: 'Create your first AI image.',
-    createLink: '/native/create/image',
+    subtitle: 'Create your first voice.',
+    createLink: '/native/create/voice',
   },
 };
 
@@ -522,9 +516,9 @@ export default function MyCreations() {
 
   // 从 URL 参数获取初始 tab
   const tabFromUrl = searchParams.get('tab') as TabType | null;
-  const initialTab = tabFromUrl && ['videos', 'music', 'cover', 'images'].includes(tabFromUrl)
+  const initialTab = tabFromUrl && ['music', 'cover', 'voices'].includes(tabFromUrl)
     ? tabFromUrl
-    : 'videos';
+    : 'music';
 
   const [activeTab, setActiveTab] = useState<TabType>(initialTab);
   const [videos, setVideos] = useState<VideoItem[]>([]);

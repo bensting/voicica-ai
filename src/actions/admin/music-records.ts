@@ -241,14 +241,16 @@ export async function deleteMusicRecords(ids: number[]) {
   }
 }
 
+// KIE API 配置
+const KIE_API_BASE = 'https://api.kie.ai/api/v1';
+const KIE_API_KEY = process.env.KIE_API_KEY || '';
+
 /**
  * 刷新 Music 记录状态（调用 KIE API 查询最新状态）
+ * Admin 专用版本，无超时限制
  */
 export async function refreshMusicRecordStatus(id: number) {
   await verifyAdminWithoutDb();
-
-  // 动态导入，避免循环依赖
-  const { getMusicTaskStatus } = await import('@/actions/music');
 
   try {
     const record = await prisma.music_records.findUnique({
@@ -267,18 +269,92 @@ export async function refreshMusicRecordStatus(id: number) {
       return { success: false, message: '没有外部任务 ID，无法查询' };
     }
 
-    // 调用现有的 getMusicTaskStatus 方法查询 KIE API
-    // 注意：这个方法内部会自动更新数据库
-    const status = await getMusicTaskStatus(record.task_id);
+    console.log(`🎵 [Admin] 刷新任务状态: ${record.external_task_id}`);
+
+    // 直接调用 KIE API 查询状态
+    const response = await fetch(`${KIE_API_BASE}/generate/record-info?taskId=${record.external_task_id}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${KIE_API_KEY}`,
+      },
+    });
+
+    const result = await response.json();
+    console.log('🎵 [Admin] KIE API 响应:', JSON.stringify(result, null, 2));
+
+    if (result.code !== 200) {
+      return {
+        success: true,
+        message: `API 返回: ${result.msg || '任务仍在处理中'}`,
+        status: 'PROCESSING',
+        progress: record.progress,
+      };
+    }
+
+    const data = result.data;
+    const kieStatus = data?.status;
+    const sunoData = data?.response?.sunoData;
+
+    // 如果任务已完成
+    if (kieStatus === 'SUCCESS' && sunoData && Array.isArray(sunoData) && sunoData.length > 0) {
+      const firstTrack = sunoData[0];
+      const secondTrack = sunoData.length > 1 ? sunoData[1] : null;
+
+      // 更新数据库
+      await prisma.music_records.update({
+        where: { id },
+        data: {
+          status: 'SUCCESS',
+          progress: 100,
+          audio_url: firstTrack.audioUrl || null,
+          stream_url: firstTrack.streamAudioUrl || null,
+          cover_url: firstTrack.imageUrl || null,
+          duration: firstTrack.duration || null,
+          title: firstTrack.title || record.title,
+          tags: firstTrack.tags || null,
+          lyrics: firstTrack.prompt || record.lyrics,
+          audio_url_2: secondTrack?.audioUrl || null,
+          stream_url_2: secondTrack?.streamAudioUrl || null,
+          cover_url_2: secondTrack?.imageUrl || null,
+          duration_2: secondTrack?.duration || null,
+          completed_at: new Date(),
+          updated_at: new Date(),
+        },
+      });
+
+      return {
+        success: true,
+        message: '任务已完成',
+        status: 'SUCCESS',
+        progress: 100,
+      };
+    }
+
+    // 更新进度
+    let newProgress = record.progress;
+    if (kieStatus === 'FIRST_SUCCESS') {
+      newProgress = 70;
+    } else if (kieStatus === 'TEXT_SUCCESS') {
+      newProgress = 40;
+    } else if (kieStatus === 'PENDING') {
+      newProgress = 30;
+    }
+
+    if (newProgress !== record.progress) {
+      await prisma.music_records.update({
+        where: { id },
+        data: { progress: newProgress, updated_at: new Date() },
+      });
+    }
 
     return {
       success: true,
-      message: `状态已更新: ${status.status}`,
-      status: status.status,
-      progress: status.progress,
+      message: `KIE 状态: ${kieStatus}, 进度: ${newProgress}%`,
+      status: 'PROCESSING',
+      progress: newProgress,
     };
   } catch (error) {
-    console.error('刷新 Music 记录状态失败:', error);
+    console.error('🎵 [Admin] 刷新 Music 记录状态失败:', error);
     return {
       success: false,
       message: error instanceof Error ? error.message : '刷新失败',

@@ -105,10 +105,9 @@ export default function MusicRecordsPage() {
     setRefreshingId(id);
     try {
       const result = await refreshMusicRecordStatus(id);
+      alert(result.message);
       if (result.success) {
         loadData();
-      } else {
-        alert(result.message);
       }
     } catch (error) {
       console.error('刷新状态失败:', error);

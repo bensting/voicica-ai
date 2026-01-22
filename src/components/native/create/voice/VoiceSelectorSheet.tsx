@@ -182,13 +182,13 @@ export default function NativeVoiceSelectorSheet({
         onClick={onClose}
       />
 
-      {/* Sheet */}
+      {/* Full Screen Sheet */}
       <div
-        className="fixed inset-x-0 bottom-0 z-50 bg-gray-900 rounded-t-3xl animate-slide-up flex flex-col"
-        style={{ height: '85vh' }}
+        className="fixed inset-0 z-50 bg-gray-900 flex flex-col"
+        style={{ paddingTop: 'var(--safe-area-inset-top, 0px)' }}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-4 py-3 border-b border-gray-800">
+        <div className="flex items-center justify-between px-4 py-3 border-b border-gray-800 flex-shrink-0">
           <h2 className="text-white font-semibold text-lg">Select Voice</h2>
           <button onClick={onClose} className="p-2 -mr-2 text-gray-400 hover:text-white">
             <CloseIcon />
@@ -196,9 +196,8 @@ export default function NativeVoiceSelectorSheet({
         </div>
 
         {/* Search */}
-        <div className="px-4 py-3">
+        <div className="px-4 py-3 flex-shrink-0">
           <div className="relative">
-            <SearchIcon />
             <input
               type="text"
               value={searchQuery}
@@ -298,7 +297,11 @@ export default function NativeVoiceSelectorSheet({
         </div>
 
         {/* Voice List */}
-        <div className="flex-1 overflow-y-auto px-4" onScroll={handleScroll}>
+        <div
+          className="flex-1 overflow-y-auto px-4"
+          style={{ paddingBottom: 'var(--safe-area-inset-bottom, 0px)' }}
+          onScroll={handleScroll}
+        >
           {loading ? (
             <div className="flex items-center justify-center py-12">
               <div className="w-8 h-8 border-3 border-purple-500 border-t-transparent rounded-full animate-spin" />

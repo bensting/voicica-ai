@@ -57,6 +57,7 @@ export default function MusicPlayerModal({
   showFullActions = false,
   showRecreateOnly = false,
   onRecreate,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   onDelete,
 }: MusicPlayerModalProps) {
   const audioRef = useRef<HTMLAudioElement>(null);

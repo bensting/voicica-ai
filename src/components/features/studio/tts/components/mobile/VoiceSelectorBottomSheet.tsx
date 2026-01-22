@@ -18,6 +18,8 @@ interface VoiceSelectorBottomSheetProps {
   onClose: () => void;
   selectedVoice: Voice | null;
   onSelect: (voice: Voice, style: string | null) => void;
+  /** Height of the bottom sheet, e.g. '70%' or '100%'. Defaults to fullscreen (100%) */
+  height?: string;
 }
 
 /**
@@ -32,6 +34,7 @@ export default function VoiceSelectorBottomSheet({
   isOpen,
   onClose,
   onSelect,
+  height,
 }: VoiceSelectorBottomSheetProps) {
   const { locale, t } = useLanguage();
   const { user, loading: authLoading } = useFirebaseAuth();
@@ -123,10 +126,28 @@ export default function VoiceSelectorBottomSheet({
 
   if (!isOpen) return null;
 
+  // If height is specified, render as a bottom sheet with backdrop
+  const isBottomSheet = !!height;
+
   return (
     <>
-      {/* Mobile Fullscreen Voice Selector */}
-      <div className="fixed inset-0 z-50 bg-white flex flex-col animate-slide-up">
+      {/* Backdrop for bottom sheet mode */}
+      {isBottomSheet && (
+        <div
+          className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm"
+          onClick={onClose}
+        />
+      )}
+
+      {/* Mobile Voice Selector - Fullscreen or Bottom Sheet */}
+      <div
+        className={`fixed z-50 bg-white flex flex-col animate-slide-up ${
+          isBottomSheet
+            ? 'inset-x-0 bottom-0 rounded-t-2xl'
+            : 'inset-0'
+        }`}
+        style={isBottomSheet ? { height } : undefined}
+      >
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b-2 border-purple-100 flex-shrink-0 bg-gradient-to-r from-white to-purple-50/30">
           <h2 className="text-xl font-bold text-gray-900 tracking-tight">

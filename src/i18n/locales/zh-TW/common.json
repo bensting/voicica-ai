@@ -3,13 +3,26 @@
     "brand": "Voicica AI",
     "cancel": "取消",
     "close": "關閉",
+    "confirm": "確認",
+    "edit": "編輯",
     "retry": "重試",
     "loading": "載入中...",
     "download": "下載",
     "share": "分享",
     "delete": "刪除",
+    "deleting": "刪除中...",
     "later": "稍後",
-    "refresh": "重新整理"
+    "refresh": "重新整理",
+    "save": "儲存",
+    "saving": "儲存中...",
+    "insufficientCredits": "積分不足，請充值或升級方案",
+    "expand": "展開",
+    "collapse": "收起",
+    "play": "播放",
+    "pause": "暫停",
+    "processing": "處理中...",
+    "generating": "生成中...",
+    "view": "查看"
   },
   "app": {
     "updateAvailable": "發現新版本",
@@ -55,6 +68,16 @@
     "en": "English",
     "zhCN": "简体中文",
     "zhTW": "繁體中文"
+  },
+  "story": {
+    "generateTitle": "生成故事",
+    "myStoriesTitle": "我的故事",
+    "myStoriesSubtitle": "查看和管理您生成的故事",
+    "noStories": "還沒有故事",
+    "noStoriesDesc": "你生成的故事將顯示在這裡",
+    "generateAudio": "生成語音",
+    "generateIllustration": "生成插圖",
+    "characters": "字元"
   },
   "footer": {
     "tagline": "擁抱 AI，擁抱簡單",

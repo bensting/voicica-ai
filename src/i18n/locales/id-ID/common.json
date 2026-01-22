@@ -3,13 +3,26 @@
     "brand": "Voicica AI",
     "cancel": "Batal",
     "close": "Tutup",
+    "confirm": "Konfirmasi",
+    "edit": "Edit",
     "retry": "Coba Lagi",
     "loading": "Memuat...",
     "download": "Unduh",
     "share": "Bagikan",
     "delete": "Hapus",
+    "deleting": "Menghapus...",
     "later": "Nanti",
-    "refresh": "Segarkan"
+    "refresh": "Segarkan",
+    "save": "Simpan",
+    "saving": "Menyimpan...",
+    "insufficientCredits": "Kredit tidak cukup. Silakan isi ulang atau tingkatkan paket Anda",
+    "expand": "Perluas",
+    "collapse": "Ciutkan",
+    "play": "Putar",
+    "pause": "Jeda",
+    "processing": "Memproses...",
+    "generating": "Menghasilkan...",
+    "view": "Lihat"
   },
   "app": {
     "updateAvailable": "Pembaruan Tersedia",
@@ -55,6 +68,16 @@
     "en": "English",
     "zhCN": "简体中文",
     "zhTW": "繁體中文"
+  },
+  "story": {
+    "generateTitle": "Buat Cerita",
+    "myStoriesTitle": "Cerita Saya",
+    "myStoriesSubtitle": "Lihat dan kelola cerita yang dibuat",
+    "noStories": "Belum ada cerita",
+    "noStoriesDesc": "Cerita yang dibuat akan muncul di sini",
+    "generateAudio": "Audio",
+    "generateIllustration": "Ilustrasi",
+    "characters": "karakter"
   },
   "footer": {
     "tagline": "Rangkul AI, Rangkul Kesederhanaan",

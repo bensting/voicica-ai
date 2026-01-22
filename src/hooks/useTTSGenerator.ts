@@ -100,6 +100,9 @@ export function useTTSGenerator(
       setError(null);
       setAudioUrl(null);
 
+      // 检查是否有关联的故事 ID（从故事页面跳转过来）
+      const storyId = typeof window !== 'undefined' ? sessionStorage.getItem('ttsStoryId') : null;
+
       // 调用 Server Action 提交任务（使用 AudioSettings Context 中的音频参数）
       const result = await createTtsTask({
         text,
@@ -109,7 +112,13 @@ export function useTTSGenerator(
         speed: audioSettings.speed,
         pitch: audioSettings.pitch,
         volume: audioSettings.volume,
+        story_id: storyId || undefined, // 关联故事（可选）
       });
+
+      // 生成后清除 storyId，避免后续生成误关联
+      if (storyId) {
+        sessionStorage.removeItem('ttsStoryId');
+      }
 
       // 检查是否返回错误（业务逻辑错误，如积分不足）
       if (result.status === 'FAILURE' && result.errorCode) {

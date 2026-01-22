@@ -26,6 +26,10 @@ export interface VideoQueuePayload {
   creditsCost: number;
   /** 是否匿名用户 */
   isAnonymous: boolean;
+  /** 起始帧图片 (base64 data URL) */
+  startFrame?: string;
+  /** 结束帧图片 (base64 data URL) - 仅部分模型支持 */
+  endFrame?: string;
 }
 
 // 初始化 QStash 客户端

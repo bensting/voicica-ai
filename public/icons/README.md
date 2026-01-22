@@ -1,47 +1,44 @@
 # PWA Icons
 
-This directory should contain PWA icons in the following sizes:
-- icon-72x72.png
-- icon-96x96.png
-- icon-128x128.png
-- icon-144x144.png
-- icon-152x152.png
-- icon-192x192.png
-- icon-384x384.png
-- icon-512x512.png
+此文件夹包含 PWA (Progressive Web App) 图标，用于用户"添加到主屏幕"时显示。
 
-## Generate Icons
+## 图标文件
 
-You can generate these icons from the `/public/icon.svg` file using:
+| 文件 | 尺寸 | 用途 |
+|------|------|------|
+| icon-48.webp | 48x48 | 小图标 |
+| icon-72.webp | 72x72 | Android 低密度 |
+| icon-96.webp | 96x96 | Android 中密度 |
+| icon-128.webp | 128x128 | Chrome Web Store |
+| icon-192.webp | 192x192 | Android 主屏幕 |
+| icon-256.webp | 256x256 | 中等尺寸 |
+| icon-512.webp | 512x512 | 启动画面/高清 |
 
-### Option 1: Online Tools
-- https://realfavicongenerator.net/
-- https://www.pwabuilder.com/imageGenerator
+## 生成方式
 
-### Option 2: Using Sharp (Node.js)
-```bash
-npm install -g sharp-cli
-sharp -i ../icon.svg -o icon-72x72.png resize 72 72
-sharp -i ../icon.svg -o icon-96x96.png resize 96 96
-sharp -i ../icon.svg -o icon-128x128.png resize 128 128
-sharp -i ../icon.svg -o icon-144x144.png resize 144 144
-sharp -i ../icon.svg -o icon-152x152.png resize 152 152
-sharp -i ../icon.svg -o icon-192x192.png resize 192 192
-sharp -i ../icon.svg -o icon-384x384.png resize 384 384
-sharp -i ../icon.svg -o icon-512x512.png resize 512 512
-```
+这些图标由 `@capacitor/assets` 自动生成。
 
-### Option 3: ImageMagick
-```bash
-convert ../icon.svg -resize 72x72 icon-72x72.png
-convert ../icon.svg -resize 96x96 icon-96x96.png
-convert ../icon.svg -resize 128x128 icon-128x128.png
-convert ../icon.svg -resize 144x144 icon-144x144.png
-convert ../icon.svg -resize 152x152 icon-152x152.png
-convert ../icon.svg -resize 192x192 icon-192x192.png
-convert ../icon.svg -resize 384x384 icon-384x384.png
-convert ../icon.svg -resize 512x512 icon-512x512.png
-```
+### 更新图标步骤
 
-## Icons Generated
-All required PWA icons have been generated and are properly configured in `manifest.json`.
+1. 准备源文件放到 `resources/` 文件夹：
+   - `icon-only.png` (1024x1024) - iOS 和 Android 旧版图标
+   - `icon-foreground.png` (1024x1024) - Android 自适应图标前景
+   - `icon-background.png` (1024x1024) - Android 自适应图标背景
+   - `splash.png` (2732x2732) - 启动画面
+   - `splash-dark.png` (2732x2732) - 深色模式启动画面
+
+2. 运行生成命令：
+   ```bash
+   npm run cap:assets
+   ```
+
+3. 脚本会自动：
+   - 生成所有尺寸的图标
+   - 移动 PWA 图标到 `public/icons/`
+   - 修复 `manifest.json` 中的路径
+
+## 相关文件
+
+- `public/manifest.json` - PWA 配置，引用这些图标
+- `resources/` - 图标源文件
+- `scripts/fix-pwa-icons.js` - 后处理脚本

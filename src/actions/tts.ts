@@ -30,6 +30,8 @@ export interface TtsRequest {
   speed?: number;
   pitch?: number;
   volume?: number;
+  story_id?: string; // 关联的故事 ID（可选）
+  paragraph_id?: string; // 关联的段落 ID（可选）
 }
 
 export interface TtsTaskStatus {
@@ -82,6 +84,7 @@ export interface TtsRecord {
   created_at: Date;
   completed_at: Date | null;
   share_id: string | null;
+  story_id: string | null; // 关联的故事 ID
   voice?: TtsRecordVoice | null;
 }
 
@@ -223,6 +226,7 @@ export async function createTtsTask(request: TtsRequest): Promise<TtsTaskStatus>
         progress: 0,
         format: 'mp3',
         share_id: shareId,
+        story_id: request.story_id || null, // 关联故事（可选）
       },
     });
 
@@ -368,6 +372,7 @@ export async function getTtsRecords(limit: number = 50): Promise<TtsRecord[]> {
     created_at: r.created_at,
     completed_at: r.completed_at,
     share_id: r.share_id,
+    story_id: r.story_id,
   }));
 }
 
@@ -459,6 +464,7 @@ export async function queryTtsRecords(params: {
       created_at: r.created_at,
       completed_at: r.completed_at,
       share_id: r.share_id,
+      story_id: r.story_id,
       voice: voice ? {
         id: voice.id,
         name: voice.name,
@@ -529,6 +535,7 @@ export async function getTtsRecordById(recordId: number): Promise<TtsRecord> {
     created_at: record.created_at,
     completed_at: record.completed_at,
     share_id: record.share_id,
+    story_id: record.story_id,
     voice: voice ? {
       id: voice.id,
       name: voice.name,
@@ -635,6 +642,11 @@ export async function getTtsRecordByTaskId(taskId: string): Promise<TtsRecord> {
     throw new Error('无权访问此记录');
   }
 
+  // 获取语音信息
+  const voice = await prisma.voices.findUnique({
+    where: { name: record.voice_name },
+  });
+
   return {
     id: record.id,
     user_id: record.user_id,
@@ -657,6 +669,16 @@ export async function getTtsRecordByTaskId(taskId: string): Promise<TtsRecord> {
     created_at: record.created_at,
     completed_at: record.completed_at,
     share_id: record.share_id,
+    story_id: record.story_id,
+    voice: voice ? {
+      id: voice.id,
+      name: voice.name,
+      display_name: voice.display_name,
+      provider: voice.provider,
+      locale: voice.locale,
+      country: voice.country,
+      avatar_url: voice.avatar_url,
+    } : null,
   };
 }
 
@@ -722,6 +744,7 @@ export async function checkAndHandleStuckTask(
         created_at: record.created_at,
         completed_at: record.completed_at,
         share_id: record.share_id,
+        story_id: record.story_id,
       },
     };
   }
@@ -804,6 +827,7 @@ export async function checkAndHandleStuckTask(
         created_at: updatedRecord.created_at,
         completed_at: updatedRecord.completed_at,
         share_id: updatedRecord.share_id,
+        story_id: updatedRecord.story_id,
       },
     };
   }
@@ -837,8 +861,59 @@ export async function checkAndHandleStuckTask(
       created_at: record.created_at,
       completed_at: record.completed_at,
       share_id: record.share_id,
+      story_id: record.story_id,
     },
   };
+}
+
+/**
+ * 更新故事段落的音频信息
+ *
+ * 在段落 TTS 生成成功后调用，将音频信息同步到 story_paragraphs 表
+ */
+export async function updateParagraphAudio(params: {
+  paragraphId: string;
+  audioUrl: string;
+  audioDuration: number;
+  voiceName: string;
+}): Promise<{ success: boolean; error?: string }> {
+  console.log('🎤 [updateParagraphAudio] 更新段落音频:', params.paragraphId);
+
+  try {
+    const unifiedUser = await getUserOrAnonymous();
+    const userId = unifiedUser.user_id;
+
+    // 验证段落归属
+    const paragraph = await prisma.story_paragraphs.findUnique({
+      where: { id: params.paragraphId },
+      include: { story: { select: { user_id: true } } },
+    });
+
+    if (!paragraph || paragraph.story.user_id !== userId) {
+      return { success: false, error: 'Paragraph not found' };
+    }
+
+    // 更新段落音频信息
+    await prisma.story_paragraphs.update({
+      where: { id: params.paragraphId },
+      data: {
+        audio_url: params.audioUrl,
+        audio_duration: params.audioDuration,
+        audio_voice: params.voiceName,
+        audio_status: 'completed',
+      },
+    });
+
+    console.log('✅ [updateParagraphAudio] 段落音频已更新:', params.paragraphId);
+
+    return { success: true };
+  } catch (error) {
+    console.error('❌ [updateParagraphAudio] 更新失败:', error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Failed to update paragraph audio',
+    };
+  }
 }
 
 /**

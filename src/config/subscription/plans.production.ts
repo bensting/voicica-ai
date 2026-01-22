@@ -1,12 +1,10 @@
 /**
  * 生产环境订阅计划配置
  *
- * 简化定价：
- * - 入门计划: $4.99/周 → 100,000 字符
- * - 创作者版: $9.99/月 → 300,000 字符
- * - 专业版: $14.99/月 → 500,000 字符
- *
- * 1 字符 = 1 积分
+ * 定价（与 Native 端一致）：
+ * - 入门计划: $4.99/月 → 1,000 积分
+ * - 创作者版: $12.99/月 → 3,000 积分
+ * - 专业版: $19.99/月 → 5,000 积分
  */
 
 import type { SubscriptionPlansConfig } from './types';
@@ -30,18 +28,18 @@ export const subscriptionPlans: SubscriptionPlansConfig = {
       cycle_days: 30,
       credit_tiers: [
         {
-          credits: 100000,
+          credits: 1000,
           price: { USD: 4.99 },
-          product_id: 'prod_starter_100k',
+          product_id: 'prod_starter_1k',
           default: true,
           features: [
             {
-              en: '100,000 characters per month',
-              'zh-CN': '每月 100,000 字符',
-              'zh-TW': '每月 100,000 字元',
-              'th-TH': '100,000 ตัวอักษรต่อเดือน',
-              'my-MM': 'တစ်လလျှင် စာလုံး ၁၀၀,၀၀၀',
-              'id-ID': '100.000 karakter per bulan',
+              en: '1,000 credits per month',
+              'zh-CN': '每月 1,000 积分',
+              'zh-TW': '每月 1,000 積分',
+              'th-TH': '1,000 เครดิตต่อเดือน',
+              'my-MM': 'တစ်လလျှင် အကြွေး ၁,၀၀၀',
+              'id-ID': '1.000 kredit per bulan',
             },
           ],
         },
@@ -68,18 +66,18 @@ export const subscriptionPlans: SubscriptionPlansConfig = {
       cycle_days: 30,
       credit_tiers: [
         {
-          credits: 300000,
-          price: { USD: 9.99 },
-          product_id: 'prod_creator_300k',
+          credits: 3000,
+          price: { USD: 12.99 },
+          product_id: 'prod_creator_3k',
           default: true,
           features: [
             {
-              en: '300,000 characters per month',
-              'zh-CN': '每月 300,000 字符',
-              'zh-TW': '每月 300,000 字元',
-              'th-TH': '300,000 ตัวอักษรต่อเดือน',
-              'my-MM': 'တစ်လလျှင် စာလုံး ၃၀၀,၀၀၀',
-              'id-ID': '300.000 karakter per bulan',
+              en: '3,000 credits per month',
+              'zh-CN': '每月 3,000 积分',
+              'zh-TW': '每月 3,000 積分',
+              'th-TH': '3,000 เครดิตต่อเดือน',
+              'my-MM': 'တစ်လလျှင် အကြွေး ၃,၀၀၀',
+              'id-ID': '3.000 kredit per bulan',
             },
           ],
         },
@@ -106,18 +104,18 @@ export const subscriptionPlans: SubscriptionPlansConfig = {
       cycle_days: 30,
       credit_tiers: [
         {
-          credits: 500000,
-          price: { USD: 14.99 },
-          product_id: 'prod_pro_500k',
+          credits: 5000,
+          price: { USD: 19.99 },
+          product_id: 'prod_pro_5k',
           default: true,
           features: [
             {
-              en: '500,000 characters per month',
-              'zh-CN': '每月 500,000 字符',
-              'zh-TW': '每月 500,000 字元',
-              'th-TH': '500,000 ตัวอักษรต่อเดือน',
-              'my-MM': 'တစ်လလျှင် စာလုံး ၅၀၀,၀၀၀',
-              'id-ID': '500.000 karakter per bulan',
+              en: '5,000 credits per month',
+              'zh-CN': '每月 5,000 积分',
+              'zh-TW': '每月 5,000 積分',
+              'th-TH': '5,000 เครดิตต่อเดือน',
+              'my-MM': 'တစ်လလျှင် အကြွေး ၅,၀၀၀',
+              'id-ID': '5.000 kredit per bulan',
             },
           ],
         },

@@ -1,0 +1,106 @@
+'use client';
+
+import Link from 'next/link';
+import { getMenuItemsByCategory, CreateMenuIcon } from '@/config/native/createMenuConfig';
+
+// 图标组件 (w-6 h-6 for FeatureGrid)
+const MusicIcon = () => (
+  <svg
+    className="w-6 h-6"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.5"
+  >
+    <path d="M9 18V5l12-2v13" />
+    <circle cx="6" cy="18" r="3" />
+    <circle cx="18" cy="16" r="3" />
+  </svg>
+);
+
+const CoverIcon = () => (
+  <svg
+    className="w-6 h-6"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.5"
+  >
+    <path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z" />
+    <path d="M19 10v2a7 7 0 01-14 0v-2" />
+    <path d="M8 21h8" />
+    <path d="M12 17v4" />
+    <path d="M3 9l2-2m0 0l2 2m-2-2v6" />
+    <path d="M21 9l-2-2m0 0l-2 2m2-2v6" />
+  </svg>
+);
+
+const VoiceIcon = () => (
+  <svg
+    className="w-6 h-6"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.5"
+  >
+    <path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z" />
+    <path d="M19 10v2a7 7 0 01-14 0v-2" />
+    <line x1="12" y1="19" x2="12" y2="23" />
+    <line x1="8" y1="23" x2="16" y2="23" />
+  </svg>
+);
+
+const DialogueIcon = () => (
+  <svg
+    className="w-6 h-6"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.5"
+  >
+    <path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z" />
+    <path d="M8 10h.01M12 10h.01M16 10h.01" strokeWidth="2" strokeLinecap="round" />
+  </svg>
+);
+
+// 图标映射
+const iconMap: Record<CreateMenuIcon, React.FC> = {
+  music: MusicIcon,
+  cover: CoverIcon,
+  voice: VoiceIcon,
+  dialogue: DialogueIcon,
+};
+
+/**
+ * 功能入口网格
+ * 单行横向滚动显示
+ */
+export default function FeatureGrid() {
+  const musicItems = getMenuItemsByCategory('music');
+  const voiceItems = getMenuItemsByCategory('voice');
+  const allItems = [...musicItems, ...voiceItems];
+
+  return (
+    <div className="py-5">
+      <div className="flex gap-2 px-4 overflow-x-auto scrollbar-hide">
+        {allItems.map((feature) => {
+          const IconComponent = iconMap[feature.icon];
+          return (
+            <Link
+              key={feature.id}
+              href={feature.href}
+              className="flex flex-col items-center justify-center w-[72px] h-[72px] flex-shrink-0 bg-gray-800/60 rounded-xl hover:bg-gray-700/60 transition-colors"
+            >
+              <div className="text-gray-300 mb-1.5">
+                <IconComponent />
+              </div>
+              <span className="text-[10px] text-gray-300 font-medium whitespace-nowrap">
+                {feature.shortName}
+              </span>
+            </Link>
+          );
+        })}
+      </div>
+    </div>
+  );
+}

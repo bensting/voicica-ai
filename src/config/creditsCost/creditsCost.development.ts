@@ -5,7 +5,7 @@
  */
 
 import { ProductType } from '../productType';
-import type { CreditsCostConfig, VoiceCostConfig, VideoCostConfig } from './types';
+import type { CreditsCostConfig, VoiceCostConfig, VideoCostConfig, DialogueCostConfig } from './types';
 
 export const creditsCostConfig: CreditsCostConfig = {
   [ProductType.TEXT_TO_SPEECH]: 0, // TTS 按字符数计费，由 calculateVoiceCost 计算
@@ -13,15 +13,19 @@ export const creditsCostConfig: CreditsCostConfig = {
   [ProductType.VOICE_CLONING]: 0, // 语音克隆待定
   [ProductType.YOUTUBE_DOWNLOADER]: 0, // YouTube 解析消耗 1 积分
   [ProductType.TIKTOK_DOWNLOADER]: 1, // TikTok 解析消耗 1 积分
+  [ProductType.STORY_IDEAS]: 10, // 故事创意生成消耗 1 积分（开发环境）
+  [ProductType.STORY_GENERATE]: 20, // 故事内容生成消耗 1 积分（开发环境）
+  [ProductType.STORY_ILLUSTRATION]: 1, // 故事插图生成消耗 1 积分/张（开发环境）
 };
 
 /**
  * 语音成本配置 - 开发环境
  *
  * 计费规则：每 unit_chars 个字符消耗对应积分，不足也按一个单位计算
+ * 100个字符 = 1积分
  */
 export const voiceCostConfig: VoiceCostConfig = {
-  unit_chars: 1,
+  unit_chars: 100,
   standard: 1,
   professional: 1,
   celebrity: 2,
@@ -46,4 +50,14 @@ export const videoCostConfig: VideoCostConfig = {
     { resolution: '1080p', duration: 10, credits: 1 },
     { resolution: '1080p', duration: 15, credits: 1 },
   ],
+};
+
+/**
+ * 对话成本配置 - 开发环境
+ *
+ * 计费规则：100个字符消耗3积分（与生产环境相同）
+ */
+export const dialogueCostConfig: DialogueCostConfig = {
+  unit_chars: 100,
+  credits_per_unit: 3,
 };

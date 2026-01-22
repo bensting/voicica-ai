@@ -3,13 +3,26 @@
     "brand": "Voicica AI",
     "cancel": "Cancel",
     "close": "Close",
+    "confirm": "Confirm",
+    "edit": "Edit",
     "retry": "Retry",
     "loading": "Loading...",
     "download": "Download",
     "share": "Share",
     "delete": "Delete",
+    "deleting": "Deleting...",
     "later": "Later",
-    "refresh": "Refresh"
+    "refresh": "Refresh",
+    "save": "Save",
+    "saving": "Saving...",
+    "insufficientCredits": "Insufficient credits. Please top up or upgrade your plan.",
+    "expand": "Expand",
+    "collapse": "Collapse",
+    "play": "Play",
+    "pause": "Pause",
+    "processing": "Processing...",
+    "generating": "Generating...",
+    "view": "View"
   },
   "app": {
     "updateAvailable": "Update Available",
@@ -55,6 +68,16 @@
     "en": "English",
     "zhCN": "简体中文",
     "zhTW": "繁體中文"
+  },
+  "story": {
+    "generateTitle": "Generate Story",
+    "myStoriesTitle": "My Stories",
+    "myStoriesSubtitle": "View and manage your generated stories",
+    "noStories": "No stories yet",
+    "noStoriesDesc": "Your generated stories will appear here",
+    "generateAudio": "Audio",
+    "generateIllustration": "Illustration",
+    "characters": "chars"
   },
   "footer": {
     "tagline": "Embrace AI, Embrace Simplicity",

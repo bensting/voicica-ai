@@ -16,10 +16,17 @@ export interface TtsSamplesConfig {
  * 用户积分配置
  */
 export interface CreditsConfig {
-  /** 匿名用户初始积分 */
+  /** 匿名用户初始积分 (Web端) */
   anonymous_user: number;
-  /** 注册用户初始积分 */
+  /** 注册用户初始积分 (Web端) */
   registered_user: number;
+  /** Native App 积分配置 */
+  native: {
+    /** 匿名用户初始积分 */
+    anonymous_user: number;
+    /** 注册用户初始积分 */
+    registered_user: number;
+  };
 }
 
 /**

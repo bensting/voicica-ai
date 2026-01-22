@@ -585,6 +585,9 @@ export interface PublicMusicRecord {
   audio_url: string | null;
   duration: number | null;
   tags: string | null;
+  lyrics: string | null;
+  prompt: string | null;
+  model: string;
   created_at: Date;
 }
 
@@ -608,6 +611,9 @@ export async function getPublicMusicRecords(limit: number = 20): Promise<PublicM
       audio_url: true,
       duration: true,
       tags: true,
+      lyrics: true,
+      prompt: true,
+      model: true,
       created_at: true,
     },
   });

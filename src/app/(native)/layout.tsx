@@ -1,8 +1,10 @@
 'use client';
 
-import { usePathname } from 'next/navigation';
+import { useEffect } from 'react';
+import { usePathname, useRouter } from 'next/navigation';
 import NativeNavbar from '@/components/native/NativeNavbar';
 import BottomNav from '@/components/native/BottomNav';
+import { initNotifications, registerNotificationClickListener } from '@/lib/notifications';
 
 // 不显示顶部导航的路径
 const hideNavbarPaths = ['/native/me', '/native/settings', '/native/create', '/native/video', '/native/voice/task', '/native/subscribe', '/native/payment'];
@@ -21,6 +23,20 @@ export default function NativeLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
+  const router = useRouter();
+
+  // 初始化本地推送通知
+  useEffect(() => {
+    initNotifications();
+
+    // 注册通知点击监听
+    const cleanup = registerNotificationClickListener((path) => {
+      console.log('[NativeLayout] Notification clicked, navigating to:', path);
+      router.push(path);
+    });
+
+    return cleanup;
+  }, [router]);
   const showNavbar = !hideNavbarPaths.some((path) => pathname.startsWith(path));
   const showBottomNav = !hideBottomNavPaths.some((path) => pathname.startsWith(path));
 

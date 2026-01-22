@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 import { useCredits } from '@/contexts/CreditsContext';
+import { useAudioSettings } from '@/contexts/AudioSettingsContext';
+import { AUDIO_SETTINGS_RANGE } from '@/types/audioSettings';
 import { createTtsTask } from '@/actions/tts';
 import type { Voice } from '@/types/voice';
 import { calculateVoiceCost, type VoiceType } from '@/config/creditsCost';
@@ -58,6 +60,45 @@ const MicIcon = () => (
   </svg>
 );
 
+// 设置图标
+const SettingsIcon = () => (
+  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+    <circle cx="12" cy="12" r="3" />
+    <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z" />
+  </svg>
+);
+
+// 速度图标
+const SpeedIcon = () => (
+  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+    <circle cx="12" cy="12" r="10" />
+    <polyline points="12 6 12 12 16 14" />
+  </svg>
+);
+
+// 音量图标
+const VolumeIcon = () => (
+  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+    <path d="M19.07 4.93a10 10 0 010 14.14M15.54 8.46a5 5 0 010 7.07" />
+  </svg>
+);
+
+// 音调图标
+const PitchIcon = () => (
+  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+    <path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6" />
+  </svg>
+);
+
+// 关闭图标
+const CloseIcon = () => (
+  <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <line x1="18" y1="6" x2="6" y2="18" />
+    <line x1="6" y1="6" x2="18" y2="18" />
+  </svg>
+);
+
 /**
  * Native TTS 页面
  */
@@ -65,8 +106,12 @@ export default function NativeTTSPage() {
   const router = useRouter();
   const { user } = useFirebaseAuth();
   const { credits } = useCredits();
+  const { settings, updateSettings } = useAudioSettings();
 
   const [isVoiceSelectorOpen, setIsVoiceSelectorOpen] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [activeSettingsTab, setActiveSettingsTab] = useState<'speed' | 'volume' | 'pitch'>('speed');
+  const [tempSettings, setTempSettings] = useState(settings);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isCreateSheetOpen, setIsCreateSheetOpen] = useState(false);
   const [text, setText] = useState('');
@@ -107,6 +152,13 @@ export default function NativeTTSPage() {
       localStorage.setItem(STORAGE_KEY_VOICE, JSON.stringify(selectedVoice));
     }
   }, [selectedVoice]);
+
+  // 同步 settings 到 tempSettings
+  useEffect(() => {
+    if (isSettingsOpen) {
+      setTempSettings(settings);
+    }
+  }, [settings, isSettingsOpen]);
 
   // 字符限制：匿名用户 500，登录用户 2000
   const maxCharacters = user ? 2000 : 500;
@@ -171,6 +223,9 @@ export default function NativeTTSPage() {
         text: text.trim(),
         voice_name: selectedVoice.name,
         language: selectedVoice.locale,
+        speed: settings.speed,
+        volume: settings.volume,
+        pitch: settings.pitch,
       });
 
       if (result.status === 'FAILURE') {
@@ -187,6 +242,21 @@ export default function NativeTTSPage() {
       setError(err instanceof Error ? err.message : 'Failed to create task');
       setIsGenerating(false);
     }
+  };
+
+  // 获取音调标签
+  const getPitchLabel = (value: number) => {
+    if (value <= 10) return 'Deep';
+    if (value <= 35) return 'Dull';
+    if (value <= 65) return 'Consistent';
+    if (value <= 90) return 'Bright';
+    return 'Crisp';
+  };
+
+  // 保存音频设置
+  const handleSaveSettings = () => {
+    updateSettings(tempSettings);
+    setIsSettingsOpen(false);
   };
 
   // 生成文本
@@ -309,6 +379,24 @@ export default function NativeTTSPage() {
           <ChevronIcon />
         </button>
 
+        {/* Settings Button */}
+        <button
+          onClick={() => setIsSettingsOpen(true)}
+          disabled={isGenerating}
+          className="flex items-center gap-3 p-3 bg-gray-800/60 rounded-xl disabled:opacity-50 flex-shrink-0 mt-3"
+        >
+          <div className="w-10 h-10 rounded-full bg-gray-700 flex items-center justify-center text-gray-300">
+            <SettingsIcon />
+          </div>
+          <div className="flex-1 text-left">
+            <div className="text-white text-sm font-medium">Audio Settings</div>
+            <div className="text-gray-400 text-xs">
+              Speed {settings.speed}x · Volume {settings.volume}% · Pitch {settings.pitch}
+            </div>
+          </div>
+          <ChevronIcon />
+        </button>
+
       </div>
 
       {/* Fixed Bottom Section */}
@@ -385,6 +473,171 @@ export default function NativeTTSPage() {
         onGenerate={() => void handleGenerateText()}
         generateButtonText="Generate Text"
       />
+
+      {/* Audio Settings Modal */}
+      {isSettingsOpen && (
+        <div className="fixed inset-0 z-50 flex items-end bg-black/50" onClick={() => setIsSettingsOpen(false)}>
+          <div
+            className="w-full bg-[#1a1a2e] rounded-t-3xl shadow-xl"
+            style={{ paddingBottom: 'var(--safe-area-inset-bottom, 0px)' }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header with tabs */}
+            <div className="flex items-center justify-between border-b border-gray-700/50 px-4 pt-4">
+              <div className="flex space-x-2">
+                {[
+                  { id: 'speed' as const, icon: <SpeedIcon />, label: 'Speed' },
+                  { id: 'volume' as const, icon: <VolumeIcon />, label: 'Volume' },
+                  { id: 'pitch' as const, icon: <PitchIcon />, label: 'Pitch' },
+                ].map((tab) => (
+                  <button
+                    key={tab.id}
+                    onClick={() => setActiveSettingsTab(tab.id)}
+                    className={`flex flex-col items-center p-3 rounded-lg transition-colors ${
+                      activeSettingsTab === tab.id
+                        ? 'bg-purple-600 text-white'
+                        : 'bg-gray-800 text-gray-400'
+                    }`}
+                  >
+                    {tab.icon}
+                  </button>
+                ))}
+              </div>
+              <button
+                onClick={() => setIsSettingsOpen(false)}
+                className="p-2 text-gray-400 hover:text-gray-200 transition-colors"
+              >
+                <CloseIcon />
+              </button>
+            </div>
+
+            {/* Content */}
+            <div className="p-6">
+              {/* Speed Tab */}
+              {activeSettingsTab === 'speed' && (
+                <div className="space-y-6">
+                  <div>
+                    <h3 className="text-xl font-semibold text-white">Speed</h3>
+                    <p className="text-sm text-gray-400 mt-1">
+                      Adjust how fast the voice speaks
+                    </p>
+                  </div>
+
+                  <div className="text-center">
+                    <div className="inline-block bg-purple-600/20 text-purple-400 text-2xl font-bold px-6 py-3 rounded-xl">
+                      {tempSettings.speed}x
+                    </div>
+                  </div>
+
+                  <div>
+                    <input
+                      type="range"
+                      min={AUDIO_SETTINGS_RANGE.speed.min}
+                      max={AUDIO_SETTINGS_RANGE.speed.max}
+                      step={AUDIO_SETTINGS_RANGE.speed.step}
+                      value={tempSettings.speed}
+                      onChange={(e) =>
+                        setTempSettings({ ...tempSettings, speed: parseFloat(e.target.value) })
+                      }
+                      className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-purple-600"
+                    />
+                    <div className="flex justify-between text-sm text-gray-500 mt-2">
+                      <span>{AUDIO_SETTINGS_RANGE.speed.min}x</span>
+                      <span>{AUDIO_SETTINGS_RANGE.speed.max}x</span>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Volume Tab */}
+              {activeSettingsTab === 'volume' && (
+                <div className="space-y-6">
+                  <div>
+                    <h3 className="text-xl font-semibold text-white">Volume</h3>
+                    <p className="text-sm text-gray-400 mt-1">
+                      Adjust the output volume level
+                    </p>
+                  </div>
+
+                  <div className="text-center">
+                    <div className="inline-block bg-purple-600/20 text-purple-400 text-2xl font-bold px-6 py-3 rounded-xl">
+                      {tempSettings.volume}%
+                    </div>
+                  </div>
+
+                  <div>
+                    <input
+                      type="range"
+                      min={AUDIO_SETTINGS_RANGE.volume.min}
+                      max={AUDIO_SETTINGS_RANGE.volume.max}
+                      step={AUDIO_SETTINGS_RANGE.volume.step}
+                      value={tempSettings.volume}
+                      onChange={(e) =>
+                        setTempSettings({ ...tempSettings, volume: parseInt(e.target.value) })
+                      }
+                      className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-purple-600"
+                    />
+                    <div className="flex justify-between text-sm text-gray-500 mt-2">
+                      <span>{AUDIO_SETTINGS_RANGE.volume.min}%</span>
+                      <span>{AUDIO_SETTINGS_RANGE.volume.max}%</span>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Pitch Tab */}
+              {activeSettingsTab === 'pitch' && (
+                <div className="space-y-6">
+                  <div>
+                    <h3 className="text-xl font-semibold text-white">Pitch</h3>
+                    <p className="text-sm text-gray-400 mt-1">
+                      Adjust the voice tone
+                    </p>
+                  </div>
+
+                  <div className="text-center">
+                    <div className="inline-block bg-purple-600/20 text-purple-400 text-2xl font-bold px-6 py-3 rounded-xl">
+                      {tempSettings.pitch}
+                    </div>
+                  </div>
+
+                  <div>
+                    <input
+                      type="range"
+                      min={AUDIO_SETTINGS_RANGE.pitch.min}
+                      max={AUDIO_SETTINGS_RANGE.pitch.max}
+                      step={AUDIO_SETTINGS_RANGE.pitch.step}
+                      value={tempSettings.pitch}
+                      onChange={(e) =>
+                        setTempSettings({ ...tempSettings, pitch: parseInt(e.target.value) })
+                      }
+                      className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-purple-600"
+                    />
+                    <div className="flex justify-between text-xs text-gray-500 mt-2">
+                      <span>Deep</span>
+                      <span>Dull</span>
+                      <span>Consistent</span>
+                      <span>Bright</span>
+                      <span>Crisp</span>
+                    </div>
+                    <div className="text-center mt-2 text-sm font-medium text-purple-400">
+                      {getPitchLabel(tempSettings.pitch)}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Save Button */}
+              <button
+                onClick={handleSaveSettings}
+                className="w-full mt-6 bg-purple-600 text-white py-4 rounded-xl font-medium hover:bg-purple-700 transition-colors"
+              >
+                Save
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

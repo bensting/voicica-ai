@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { getPublicMusicRecords, type PublicMusicRecord } from '@/actions/music';
 import MusicPlayerModal from './MusicPlayerModal';
+import NativeVoiceSelectorSheet from './create/voice/VoiceSelectorSheet';
+import type { Voice } from '@/types/voice';
 
 // Tab 类型
 type TabType = 'music' | 'voices';
@@ -78,6 +80,15 @@ export default function ExploreSection() {
   const [musicList, setMusicList] = useState<PublicMusicRecord[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [selectedMusic, setSelectedMusic] = useState<PublicMusicRecord | null>(null);
+  const [isVoiceSelectorOpen, setIsVoiceSelectorOpen] = useState(false);
+
+  // 处理声音选择，跳转到 TTS 页面
+  const handleVoiceSelect = (voice: Voice) => {
+    // 保存选中的声音到 localStorage，TTS 页面会读取
+    localStorage.setItem('tts_draft_voice', JSON.stringify(voice));
+    // 先跳转页面，选择器会随着页面切换自动关闭
+    router.push('/native/create/voice');
+  };
 
   // 处理 Recreate
   const handleRecreate = (music: PublicMusicRecord) => {
@@ -115,7 +126,13 @@ export default function ExploreSection() {
         {tabs.map((tab) => (
           <button
             key={tab.id}
-            onClick={() => setActiveTab(tab.id)}
+            onClick={() => {
+              if (tab.id === 'voices') {
+                setIsVoiceSelectorOpen(true);
+              } else {
+                setActiveTab(tab.id);
+              }
+            }}
             className={`pb-3 text-sm font-medium transition-colors relative ${
               activeTab === tab.id
                 ? 'text-white'
@@ -194,6 +211,14 @@ export default function ExploreSection() {
           onRecreate={() => handleRecreate(selectedMusic)}
         />
       )}
+
+      {/* 声音选择器 */}
+      <NativeVoiceSelectorSheet
+        isOpen={isVoiceSelectorOpen}
+        onClose={() => setIsVoiceSelectorOpen(false)}
+        selectedVoice={null}
+        onSelect={handleVoiceSelect}
+      />
     </div>
   );
 }

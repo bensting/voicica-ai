@@ -229,7 +229,7 @@ export default function NativeVoiceSelectorSheet({
 
             {/* Dropdown */}
             {isLanguageDropdownOpen && (
-              <div className="absolute top-full left-0 right-0 mt-1 bg-gray-800 rounded-xl shadow-xl z-10 max-h-64 overflow-y-auto">
+              <div className="absolute top-full left-0 right-0 mt-1 bg-gray-800 rounded-xl shadow-xl z-10 max-h-96 overflow-y-auto">
                 {/* Popular Languages */}
                 <div className="p-2">
                   <div className="text-xs text-gray-500 px-2 py-1">Popular</div>

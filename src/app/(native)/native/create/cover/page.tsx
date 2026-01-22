@@ -456,12 +456,12 @@ export default function NativeCoverPage() {
           <div>
             <span className="text-white font-medium">Original Song</span>
             {/* Tab: Upload Audio | Select from history */}
-            <div className="flex bg-gray-800/60 rounded-xl p-1 mt-2">
+            <div className="flex bg-[#1a1a2e] rounded-full p-1 mt-2">
               <button
                 onClick={() => setCoverAudioSource('upload')}
-                className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-colors ${
+                className={`flex-1 py-2.5 px-4 rounded-full text-sm font-medium transition-colors ${
                   coverAudioSource === 'upload'
-                    ? 'bg-gray-700 text-white'
+                    ? 'bg-white text-gray-900'
                     : 'text-gray-400'
                 }`}
               >
@@ -475,9 +475,9 @@ export default function NativeCoverPage() {
                     handleOpenHistorySheet();
                   }
                 }}
-                className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-colors ${
+                className={`flex-1 py-2.5 px-4 rounded-full text-sm font-medium transition-colors ${
                   coverAudioSource === 'history'
-                    ? 'bg-gray-700 text-white'
+                    ? 'bg-white text-gray-900'
                     : 'text-gray-400'
                 }`}
               >
@@ -531,24 +531,28 @@ export default function NativeCoverPage() {
               // 历史模式下显示点击选择区域
               <button
                 onClick={handleOpenHistorySheet}
-                className="w-full border-2 border-dashed border-gray-600 rounded-2xl p-6 mt-3 flex flex-col items-center justify-center hover:border-purple-500 transition-colors"
+                className="w-full border-2 border-dashed border-gray-600 rounded-2xl p-4 mt-3 flex items-center gap-4 hover:border-purple-500 transition-colors"
               >
-                <UploadIcon />
-                <p className="text-gray-400 text-sm mt-2 text-center">
+                <div className="text-gray-500">
+                  <UploadIcon />
+                </div>
+                <p className="text-gray-400 text-sm text-left">
                   Click to select an original song to create an AI cover.
                 </p>
               </button>
             ) : (
               // 上传模式下显示文件选择
-              <label className="w-full border-2 border-dashed border-gray-600 rounded-2xl p-6 mt-3 flex flex-col items-center justify-center hover:border-purple-500 transition-colors cursor-pointer">
+              <label className="w-full border-2 border-dashed border-gray-600 rounded-2xl p-4 mt-3 flex items-center gap-4 hover:border-purple-500 transition-colors cursor-pointer">
                 <input
                   type="file"
                   accept="audio/*"
                   onChange={handleCoverAudioUpload}
                   className="hidden"
                 />
-                <UploadIcon />
-                <p className="text-gray-400 text-sm mt-2 text-center">
+                <div className="text-gray-500">
+                  <UploadIcon />
+                </div>
+                <p className="text-gray-400 text-sm text-left">
                   Click to select an original song to create an AI cover.
                 </p>
               </label>
@@ -695,20 +699,20 @@ export default function NativeCoverPage() {
             </button>
           </div>
         </div>
+      </div>
 
+      {/* Fixed Bottom Section */}
+      <div
+        className="fixed bottom-0 left-0 right-0 z-30 px-4 pt-3 pb-3 bg-[#0a0a1a]"
+        style={{ paddingBottom: 'calc(var(--safe-area-inset-bottom, 0px) + 12px)' }}
+      >
         {/* Credits Info Bar */}
         <CreditsInfoBar
           credits={credits}
           creditRules={[{ name: 'Cover generation', credits: 50 }]}
-          className="px-1 mt-4"
+          className="mb-3"
         />
-      </div>
 
-      {/* Fixed Bottom Button */}
-      <div
-        className="fixed bottom-0 left-0 right-0 z-30 px-4 py-3 bg-[#0a0a1a]"
-        style={{ paddingBottom: 'calc(var(--safe-area-inset-bottom, 0px) + 12px)' }}
-      >
         <GradientButton
           onClick={() => void handleGenerate()}
           disabled={!canGenerate || isCoverGenerating}

@@ -62,6 +62,7 @@ export default function ProfileHeader({
       {/* 头像和用户名 */}
       <div className="relative z-10 flex flex-col items-center">
         {avatarUrl ? (
+          // eslint-disable-next-line @next/next/no-img-element
           <img
             src={avatarUrl}
             alt={userName}

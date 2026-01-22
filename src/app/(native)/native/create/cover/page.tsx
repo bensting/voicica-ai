@@ -588,6 +588,7 @@ export default function NativeCoverPage() {
             {selectedVoice && (
               <div className="flex items-center gap-3 p-3 bg-gray-800/60 rounded-2xl mt-2">
                 {selectedVoice.avatar_url ? (
+                  // eslint-disable-next-line @next/next/no-img-element
                   <img
                     src={selectedVoice.avatar_url}
                     alt={selectedVoice.name}
@@ -664,6 +665,7 @@ export default function NativeCoverPage() {
                   className="flex flex-col items-center"
                 >
                   {voice.avatar_url ? (
+                    // eslint-disable-next-line @next/next/no-img-element
                     <img
                       src={voice.avatar_url}
                       alt={voice.name}
@@ -977,6 +979,7 @@ export default function NativeCoverPage() {
                         >
                           {/* Cover Image */}
                           {record.cover_url ? (
+                            // eslint-disable-next-line @next/next/no-img-element
                             <img
                               src={record.cover_url}
                               alt={record.title || 'AI Music'}

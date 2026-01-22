@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
+import { uploadAudio, uploadImage } from '@/lib/services/r2-storage';
 
 /**
  * KIE API 音乐生成回调处理
@@ -30,6 +31,81 @@ interface KieCallbackPayload {
     callbackType: 'text' | 'first' | 'complete';
     task_id: string;
     data: KieCallbackData[];
+  };
+}
+
+/**
+ * 从 URL 下载文件并上传到 R2
+ */
+async function downloadAndUploadToR2(
+  url: string,
+  taskId: string,
+  type: 'audio' | 'cover',
+  trackIndex: number = 1
+): Promise<string | null> {
+  try {
+    console.log(`📥 [R2 Upload] 下载文件: ${url}`);
+
+    const response = await fetch(url);
+    if (!response.ok) {
+      console.error(`📥 [R2 Upload] 下载失败: ${response.status}`);
+      return null;
+    }
+
+    const buffer = Buffer.from(await response.arrayBuffer());
+    const suffix = trackIndex > 1 ? `_v${trackIndex}` : '';
+
+    if (type === 'audio') {
+      const fileName = `${taskId}${suffix}.mp3`;
+      const r2Url = await uploadAudio(buffer, fileName, 'audio/mpeg', 'music_audio');
+      console.log(`✅ [R2 Upload] 音频上传成功: ${r2Url}`);
+      return r2Url;
+    } else {
+      const fileName = `${taskId}${suffix}.jpg`;
+      const r2Url = await uploadImage(buffer, fileName, 'image/jpeg', 'music_covers');
+      console.log(`✅ [R2 Upload] 封面上传成功: ${r2Url}`);
+      return r2Url;
+    }
+  } catch (error) {
+    console.error(`❌ [R2 Upload] 上传失败:`, error);
+    return null;
+  }
+}
+
+/**
+ * 处理音轨数据，下载并上传到 R2
+ */
+async function processTrackData(
+  track: KieCallbackData,
+  taskId: string,
+  trackIndex: number
+): Promise<{
+  audio_url: string | null;
+  cover_url: string | null;
+  stream_url: string | null;
+  duration: number | null;
+  title: string | null;
+  tags: string | null;
+  lyrics: string | null;
+}> {
+  // 下载音频到 R2
+  const r2AudioUrl = track.audio_url
+    ? await downloadAndUploadToR2(track.audio_url, taskId, 'audio', trackIndex)
+    : null;
+
+  // 下载封面到 R2
+  const r2CoverUrl = track.image_url
+    ? await downloadAndUploadToR2(track.image_url, taskId, 'cover', trackIndex)
+    : null;
+
+  return {
+    audio_url: r2AudioUrl || track.audio_url, // 如果 R2 上传失败，保留原始 URL
+    cover_url: r2CoverUrl || track.image_url || null,
+    stream_url: track.stream_audio_url || null,
+    duration: track.duration || null,
+    title: track.title || null,
+    tags: track.tags || null,
+    lyrics: track.prompt || null,
   };
 }
 
@@ -84,20 +160,12 @@ export async function POST(request: NextRequest) {
         break;
 
       case 'first':
-        // 第一首歌曲完成，更新进度和第一首歌曲数据
+        // 第一首歌曲完成，更新进度（不下载，等 complete 时一起下载）
         if (tracks && tracks.length > 0) {
-          const firstTrack = tracks[0];
           await prisma.music_records.update({
             where: { id: record.id },
             data: {
               progress: 70,
-              audio_url: firstTrack.audio_url,
-              stream_url: firstTrack.stream_audio_url || null,
-              cover_url: firstTrack.image_url || null,
-              duration: firstTrack.duration || null,
-              title: firstTrack.title || record.title,
-              tags: firstTrack.tags || null,
-              lyrics: firstTrack.prompt || record.lyrics,
             },
           });
           console.log(`🎵 [KIE Callback] 第一首歌曲完成: ${record.task_id}`);
@@ -105,33 +173,42 @@ export async function POST(request: NextRequest) {
         break;
 
       case 'complete':
-        // 所有歌曲完成
+        // 所有歌曲完成，下载文件到 R2
         if (tracks && tracks.length > 0) {
-          const firstTrack = tracks[0];
-          const secondTrack = tracks.length > 1 ? tracks[1] : null;
+          console.log(`🎵 [KIE Callback] 开始处理 ${tracks.length} 首歌曲，下载到 R2...`);
+
+          // 处理第一首歌
+          const firstTrackData = await processTrackData(tracks[0], record.task_id, 1);
+
+          // 处理第二首歌（如果有）
+          let secondTrackData: Awaited<ReturnType<typeof processTrackData>> | null = null;
+          if (tracks.length > 1) {
+            secondTrackData = await processTrackData(tracks[1], record.task_id, 2);
+          }
 
           await prisma.music_records.update({
             where: { id: record.id },
             data: {
               status: 'SUCCESS',
               progress: 100,
-              audio_url: firstTrack.audio_url,
-              stream_url: firstTrack.stream_audio_url || null,
-              cover_url: firstTrack.image_url || null,
-              duration: firstTrack.duration || null,
-              // 第二首歌曲（如果有）
-              audio_url_2: secondTrack?.audio_url || null,
-              stream_url_2: secondTrack?.stream_audio_url || null,
-              cover_url_2: secondTrack?.image_url || null,
-              duration_2: secondTrack?.duration || null,
+              // 第一首歌
+              audio_url: firstTrackData.audio_url,
+              stream_url: firstTrackData.stream_url,
+              cover_url: firstTrackData.cover_url,
+              duration: firstTrackData.duration,
+              // 第二首歌（如果有）
+              audio_url_2: secondTrackData?.audio_url || null,
+              stream_url_2: secondTrackData?.stream_url || null,
+              cover_url_2: secondTrackData?.cover_url || null,
+              duration_2: secondTrackData?.duration || null,
               // 元数据
-              title: firstTrack.title || record.title,
-              tags: firstTrack.tags || null,
-              lyrics: firstTrack.prompt || record.lyrics,
+              title: firstTrackData.title || record.title,
+              tags: firstTrackData.tags || null,
+              lyrics: firstTrackData.lyrics || record.lyrics,
               completed_at: new Date(),
             },
           });
-          console.log(`🎵 [KIE Callback] 所有歌曲生成完成: ${record.task_id}, 共 ${tracks.length} 首`);
+          console.log(`🎵 [KIE Callback] 所有歌曲处理完成: ${record.task_id}, 共 ${tracks.length} 首`);
         }
         break;
 

@@ -11,10 +11,49 @@ import { nanoid } from 'nanoid';
 import { InsufficientCreditsError, errorToResponse } from '@/lib/errors';
 import { checkCredits } from '@/lib/credits';
 import { getMusicModelById } from '@/config/native/musicModels';
+import { uploadAudio, uploadImage } from '@/lib/services/r2-storage';
 
 // KIE API 配置
 const KIE_API_BASE = 'https://api.kie.ai/api/v1';
 const KIE_API_KEY = process.env.KIE_API_KEY || '';
+
+/**
+ * 从 URL 下载文件并上传到 R2
+ */
+async function downloadAndUploadToR2(
+  url: string,
+  taskId: string,
+  type: 'audio' | 'cover',
+  trackIndex: number = 1
+): Promise<string | null> {
+  try {
+    console.log(`📥 [R2 Upload] 下载文件: ${url}`);
+
+    const response = await fetch(url);
+    if (!response.ok) {
+      console.error(`📥 [R2 Upload] 下载失败: ${response.status}`);
+      return null;
+    }
+
+    const buffer = Buffer.from(await response.arrayBuffer());
+    const suffix = trackIndex > 1 ? `_v${trackIndex}` : '';
+
+    if (type === 'audio') {
+      const fileName = `${taskId}${suffix}.mp3`;
+      const r2Url = await uploadAudio(buffer, fileName, 'audio/mpeg', 'music_audio');
+      console.log(`✅ [R2 Upload] 音频上传成功: ${r2Url}`);
+      return r2Url;
+    } else {
+      const fileName = `${taskId}${suffix}.jpg`;
+      const r2Url = await uploadImage(buffer, fileName, 'image/jpeg', 'music_covers');
+      console.log(`✅ [R2 Upload] 封面上传成功: ${r2Url}`);
+      return r2Url;
+    }
+  } catch (error) {
+    console.error(`❌ [R2 Upload] 上传失败:`, error);
+    return null;
+  }
+}
 
 // 模型映射：内部模型 ID -> KIE API 模型枚举
 const MODEL_MAP: Record<string, string> = {
@@ -393,40 +432,70 @@ export async function getMusicTaskStatus(taskId: string): Promise<MusicTaskStatu
 
     const kieStatus = await queryKieTaskStatus(record.external_task_id);
 
-    // 如果 KIE 返回成功，更新本地数据库
+    // 如果 KIE 返回成功，下载到 R2 并更新本地数据库
     if (kieStatus.status === 'SUCCESS' && kieStatus.data && kieStatus.data.length > 0) {
       const firstTrack = kieStatus.data[0];
       const secondTrack = kieStatus.data.length > 1 ? kieStatus.data[1] : null;
+
+      console.log('🎵 [getMusicTaskStatus] 开始下载文件到 R2...');
+
+      // 下载第一首歌的音频和封面到 R2
+      const r2AudioUrl1 = firstTrack.audio_url
+        ? await downloadAndUploadToR2(firstTrack.audio_url, taskId, 'audio', 1)
+        : null;
+      const r2CoverUrl1 = firstTrack.image_url
+        ? await downloadAndUploadToR2(firstTrack.image_url, taskId, 'cover', 1)
+        : null;
+
+      // 下载第二首歌的音频和封面到 R2（如果有）
+      let r2AudioUrl2: string | null = null;
+      let r2CoverUrl2: string | null = null;
+      if (secondTrack) {
+        r2AudioUrl2 = secondTrack.audio_url
+          ? await downloadAndUploadToR2(secondTrack.audio_url, taskId, 'audio', 2)
+          : null;
+        r2CoverUrl2 = secondTrack.image_url
+          ? await downloadAndUploadToR2(secondTrack.image_url, taskId, 'cover', 2)
+          : null;
+      }
+
+      // 使用 R2 URL（如果上传成功），否则保留原始 URL
+      const finalAudioUrl1 = r2AudioUrl1 || firstTrack.audio_url;
+      const finalCoverUrl1 = r2CoverUrl1 || firstTrack.image_url;
+      const finalAudioUrl2 = r2AudioUrl2 || secondTrack?.audio_url;
+      const finalCoverUrl2 = r2CoverUrl2 || secondTrack?.image_url;
 
       await prisma.music_records.update({
         where: { task_id: taskId },
         data: {
           status: 'SUCCESS',
           progress: 100,
-          audio_url: firstTrack.audio_url,
+          audio_url: finalAudioUrl1,
           stream_url: firstTrack.stream_audio_url || null,
-          cover_url: firstTrack.image_url || null,
+          cover_url: finalCoverUrl1 || null,
           duration: firstTrack.duration || null,
           title: firstTrack.title || record.title,
           tags: firstTrack.tags || null,
           lyrics: firstTrack.prompt || record.lyrics,
-          audio_url_2: secondTrack?.audio_url || null,
+          audio_url_2: finalAudioUrl2 || null,
           stream_url_2: secondTrack?.stream_audio_url || null,
-          cover_url_2: secondTrack?.image_url || null,
+          cover_url_2: finalCoverUrl2 || null,
           duration_2: secondTrack?.duration || null,
           completed_at: new Date(),
         },
       });
+
+      console.log('🎵 [getMusicTaskStatus] 文件下载到 R2 完成');
 
       return {
         task_id: taskId,
         status: 'SUCCESS',
         progress: 100,
         result: {
-          audio_url: firstTrack.audio_url || '',
-          audio_url_2: secondTrack?.audio_url || undefined,
-          cover_url: firstTrack.image_url || undefined,
-          cover_url_2: secondTrack?.image_url || undefined,
+          audio_url: finalAudioUrl1 || '',
+          audio_url_2: finalAudioUrl2 || undefined,
+          cover_url: finalCoverUrl1 || undefined,
+          cover_url_2: finalCoverUrl2 || undefined,
           duration: firstTrack.duration || undefined,
           duration_2: secondTrack?.duration || undefined,
           title: firstTrack.title || undefined,

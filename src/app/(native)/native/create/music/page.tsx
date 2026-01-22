@@ -29,6 +29,7 @@ import {
   getCoverTaskStatus,
   type RvcVoiceModel,
 } from '@/actions/cover';
+import { sendLocalNotification } from '@/lib/notifications';
 
 // localStorage keys
 const STORAGE_KEY = 'music_draft';
@@ -274,11 +275,15 @@ export default function NativeMusicPage() {
           setGeneratingStatus('success');
           setIsCoverGenerating(false);
           setCoverTaskId(null);
+          // 发送本地推送通知
+          sendLocalNotification('cover', 'success');
         } else if (status.status === 'FAILURE') {
           setGeneratingStatus('error');
           setGeneratingError(status.error || 'Cover generation failed');
           setIsCoverGenerating(false);
           setCoverTaskId(null);
+          // 发送本地推送通知
+          sendLocalNotification('cover', 'failure');
         }
       } catch (err) {
         console.error('🎤 [Cover Polling] 查询状态失败:', err);
@@ -748,11 +753,15 @@ export default function NativeMusicPage() {
           console.log('🎵 [Polling] 任务完成!');
           setGeneratingStatus('success');
           setCurrentTaskId(null);
+          // 发送本地推送通知
+          sendLocalNotification('music', 'success');
         } else if (status.status === 'FAILURE') {
           console.log('🎵 [Polling] 任务失败:', status.error);
           setGeneratingStatus('error');
           setGeneratingError(status.error || 'Generation failed');
           setCurrentTaskId(null);
+          // 发送本地推送通知
+          sendLocalNotification('music', 'failure');
         }
       } catch (err) {
         console.error('🎵 [Polling] 查询状态失败:', err);

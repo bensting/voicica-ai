@@ -20,6 +20,7 @@ import {
   getCoverTaskStatus,
   type RvcVoiceModel,
 } from '@/actions/cover';
+import { sendLocalNotification } from '@/lib/notifications';
 
 // 图标组件
 const BackIcon = () => (
@@ -163,11 +164,15 @@ export default function NativeCoverPage() {
           setGeneratingStatus('success');
           setIsCoverGenerating(false);
           setCoverTaskId(null);
+          // 发送本地推送通知
+          sendLocalNotification('cover', 'success');
         } else if (status.status === 'FAILURE') {
           setGeneratingStatus('error');
           setGeneratingError(status.error || 'Cover generation failed');
           setIsCoverGenerating(false);
           setCoverTaskId(null);
+          // 发送本地推送通知
+          sendLocalNotification('cover', 'failure');
         }
       } catch (err) {
         console.error('🎤 [Cover Polling] 查询状态失败:', err);

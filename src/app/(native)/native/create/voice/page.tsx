@@ -34,11 +34,10 @@ const ChevronDownIcon = () => (
   </svg>
 );
 
-// 清除图标
-const ClearIcon = () => (
-  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-    <circle cx="12" cy="12" r="10" />
-    <path d="M15 9l-6 6M9 9l6 6" />
+// 垃圾桶图标
+const TrashIcon = () => (
+  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+    <path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6" />
   </svg>
 );
 
@@ -235,7 +234,7 @@ export default function NativeTTSPage() {
           onClick={() => setIsCreateSheetOpen(true)}
           className="flex items-center gap-1 text-white font-semibold"
         >
-          <span>AI TTS</span>
+          <span>Text to Voice</span>
           <ChevronDownIcon />
         </button>
         <div className="w-10" />
@@ -271,7 +270,7 @@ export default function NativeTTSPage() {
               disabled={text.length === 0}
               className="text-gray-500 hover:text-gray-300 disabled:opacity-30 disabled:cursor-not-allowed"
             >
-              <ClearIcon />
+              <TrashIcon />
             </button>
           }
         />

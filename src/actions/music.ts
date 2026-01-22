@@ -137,9 +137,10 @@ export interface MusicRecord {
 
 /**
  * 构建回调 URL
+ * 注意：必须使用 www.voicica.ai，因为 voicica.ai 会 301 重定向，POST 请求不会跟随重定向
  */
 function getCallbackUrl(): string {
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://voicica.ai';
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://www.voicica.ai';
   return `${baseUrl}/api/webhooks/kie-music`;
 }
 
@@ -414,7 +415,7 @@ async function queryKieTaskStatus(externalTaskId: string): Promise<{
 
 /**
  * 查询音乐任务状态
- * 在开发环境下，会直接查询 KIE API 获取最新状态
+ * 任务创建后 30 分钟内会直接查询 KIE API 获取最新状态（不完全依赖回调）
  */
 export async function getMusicTaskStatus(taskId: string): Promise<MusicTaskStatus> {
   const record = await prisma.music_records.findUnique({
@@ -426,9 +427,13 @@ export async function getMusicTaskStatus(taskId: string): Promise<MusicTaskStatu
   }
 
   // 如果任务还在处理中，且有外部任务 ID，直接查询 KIE API
-  const isDev = process.env.NODE_ENV === 'development';
-  if (isDev && record.external_task_id && (record.status === 'PENDING' || record.status === 'PROCESSING')) {
-    console.log('🎵 [getMusicTaskStatus] 开发环境，直接查询 KIE API:', record.external_task_id);
+  // 生产环境和开发环境都直接查询，不完全依赖回调（回调可能失败）
+  // 超时判断：只在任务创建后 30 分钟内查询，避免无限轮询
+  const taskAgeMinutes = (Date.now() - new Date(record.created_at).getTime()) / 1000 / 60;
+  const isWithinTimeout = taskAgeMinutes < 30;
+
+  if (record.external_task_id && (record.status === 'PENDING' || record.status === 'PROCESSING') && isWithinTimeout) {
+    console.log(`🎵 [getMusicTaskStatus] 直接查询 KIE API: ${record.external_task_id}, 任务已创建 ${taskAgeMinutes.toFixed(1)} 分钟`);
 
     const kieStatus = await queryKieTaskStatus(record.external_task_id);
 

@@ -953,19 +953,20 @@ export default function NativeMusicPage() {
           </div>
         )}
 
+      </div>
+
+      {/* Fixed Bottom Section */}
+      <div
+        className="fixed bottom-0 left-0 right-0 z-30 px-4 pt-3 pb-3 bg-[#0a0a1a]"
+        style={{ paddingBottom: 'calc(var(--safe-area-inset-bottom, 0px) + 12px)' }}
+      >
         {/* Credits Info Bar */}
         <CreditsInfoBar
           credits={credits}
           creditRules={[{ name: 'Music generation', credits: 30 }]}
-          className="px-1"
+          className="mb-3"
         />
-      </div>
 
-      {/* Fixed Bottom Button */}
-      <div
-        className="fixed bottom-0 left-0 right-0 z-30 px-4 py-3 bg-[#0a0a1a]"
-        style={{ paddingBottom: 'calc(var(--safe-area-inset-bottom, 0px) + 12px)' }}
-      >
         <GradientButton
           onClick={() => void handleGenerate()}
           disabled={!canGenerate || isGenerating}

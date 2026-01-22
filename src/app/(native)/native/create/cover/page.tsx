@@ -137,7 +137,7 @@ export default function NativeCoverPage() {
   const [isCoverGenerating, setIsCoverGenerating] = useState(false);
   const [coverTaskId, setCoverTaskId] = useState<string | null>(null);
   const [coverStatus, setCoverStatus] = useState<string | null>(null);
-  const [isPublic, setIsPublic] = useState(true);
+  const [isPublic, setIsPublic] = useState(false);
 
   // Parameter sheet state
   const [isParameterSheetOpen, setIsParameterSheetOpen] = useState(false);
@@ -559,6 +559,27 @@ export default function NativeCoverPage() {
             )}
           </div>
 
+          {/* Parameters Trigger */}
+          <div>
+            <div className="mb-2">
+              <span className="text-white font-medium">Parameters</span>
+            </div>
+            <button
+              onClick={() => setIsParameterSheetOpen(true)}
+              className="w-full flex items-center justify-between p-3 bg-gray-800/60 rounded-xl"
+            >
+              <div className="flex items-center gap-2">
+                <PitchIcon />
+                <span className="text-white text-sm">
+                  Pitch · {coverPitchChange > 0 ? '+' : ''}{coverPitchChange}
+                </span>
+              </div>
+              <svg className="w-4 h-4 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M18 15l-6-6-6 6" />
+              </svg>
+            </button>
+          </div>
+
           {/* Select Voice Section */}
           <div>
             <span className="text-white font-medium">Select Voice</span>
@@ -676,27 +697,6 @@ export default function NativeCoverPage() {
                 </div>
               )}
             </div>
-          </div>
-
-          {/* Parameters Trigger */}
-          <div>
-            <div className="mb-2">
-              <span className="text-white font-medium">Parameters</span>
-            </div>
-            <button
-              onClick={() => setIsParameterSheetOpen(true)}
-              className="w-full flex items-center justify-between p-3 bg-gray-800/60 rounded-xl"
-            >
-              <div className="flex items-center gap-2">
-                <PitchIcon />
-                <span className="text-white text-sm">
-                  Pitch · {coverPitchChange > 0 ? '+' : ''}{coverPitchChange}
-                </span>
-              </div>
-              <svg className="w-4 h-4 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M18 15l-6-6-6 6" />
-              </svg>
-            </button>
           </div>
         </div>
       </div>

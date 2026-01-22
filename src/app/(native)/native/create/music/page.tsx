@@ -19,18 +19,7 @@ import {
   getMusicModelById,
   type MusicModel,
 } from '@/config/native/musicModels';
-import {
-  voiceCategories,
-  formatUsesCount,
-  type CoverVoice,
-} from '@/config/native/coverVoices';
 import { createMusicTask, getMusicTaskStatus, getMusicRecords, type MusicRecord } from '@/actions/music';
-import {
-  getRvcVoiceModels,
-  createCoverTask,
-  getCoverTaskStatus,
-  type RvcVoiceModel,
-} from '@/actions/cover';
 import { sendLocalNotification } from '@/lib/notifications';
 
 // localStorage keys
@@ -50,12 +39,6 @@ const BackIcon = () => (
 const ChevronDownIcon = () => (
   <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
     <path d="M6 9l6 6 6-6" />
-  </svg>
-);
-
-const ChevronUpIcon = () => (
-  <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-    <path d="M6 15l6-6 6 6" />
   </svg>
 );
 
@@ -92,40 +75,9 @@ const InfoIcon = () => (
   </svg>
 );
 
-const ShieldIcon = () => (
-  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-  </svg>
-);
-
 const UploadIcon = () => (
   <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
     <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12" />
-  </svg>
-);
-
-const MicIcon = () => (
-  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-    <path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z" />
-    <path d="M19 10v2a7 7 0 01-14 0v-2M12 19v4M8 23h8" />
-  </svg>
-);
-
-const HeartIcon = () => (
-  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-    <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" />
-  </svg>
-);
-
-const PlayIcon = () => (
-  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
-    <path d="M8 5v14l11-7z" />
-  </svg>
-);
-
-const PlusIcon = () => (
-  <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-    <path d="M12 5v14M5 12h14" />
   </svg>
 );
 
@@ -184,24 +136,10 @@ export default function NativeMusicPage() {
   const [title, setTitle] = useState('');
   const [vocalGender, setVocalGender] = useState<'m' | 'f' | ''>('');
 
-  // Cover tab specific states
-  const [coverAudioSource, setCoverAudioSource] = useState<'upload' | 'history'>('upload');
-  const [selectedVoice, setSelectedVoice] = useState<CoverVoice | null>(null);
-  const [voiceCategory, setVoiceCategory] = useState('all');
-  const [coverVoices, setCoverVoices] = useState<RvcVoiceModel[]>([]);
-  const [isLoadingVoices, setIsLoadingVoices] = useState(false);
-  const [coverAudioFile, setCoverAudioFile] = useState<File | null>(null);
-  const [coverAudioUrl, setCoverAudioUrl] = useState<string | null>(null);
-  const [coverPitchChange, setCoverPitchChange] = useState(0);
-  const [isCoverGenerating, setIsCoverGenerating] = useState(false);
-  const [coverTaskId, setCoverTaskId] = useState<string | null>(null);
-  const [coverStatus, setCoverStatus] = useState<string | null>(null);
-
   // History sheet states
   const [isHistorySheetOpen, setIsHistorySheetOpen] = useState(false);
   const [musicHistory, setMusicHistory] = useState<MusicRecord[]>([]);
   const [isLoadingHistory, setIsLoadingHistory] = useState(false);
-  const [selectedHistoryMusic, setSelectedHistoryMusic] = useState<MusicRecord | null>(null);
 
   // 字符限制
   const maxCharacters = 3000;
@@ -237,41 +175,6 @@ export default function NativeMusicPage() {
     }));
   }, [prompt, model, activeTab, isInstrumental, isPublic, lyrics, style, title, vocalGender]);
 
-
-  // 轮询 Cover 任务状态
-  useEffect(() => {
-    if (!coverTaskId || coverStatus === 'SUCCESS' || coverStatus === 'FAILURE') {
-      return;
-    }
-
-    const pollInterval = setInterval(async () => {
-      try {
-        const status = await getCoverTaskStatus(coverTaskId);
-        console.log('🎤 [Cover Polling] 状态:', status);
-        setCoverStatus(status.status);
-        setGeneratingProgress(status.progress);
-
-        if (status.status === 'SUCCESS') {
-          setGeneratingStatus('success');
-          setIsCoverGenerating(false);
-          setCoverTaskId(null);
-          // 发送本地推送通知
-          sendLocalNotification('cover', 'success');
-        } else if (status.status === 'FAILURE') {
-          setGeneratingStatus('error');
-          setGeneratingError(status.error || 'Cover generation failed');
-          setIsCoverGenerating(false);
-          setCoverTaskId(null);
-          // 发送本地推送通知
-          sendLocalNotification('cover', 'failure');
-        }
-      } catch (err) {
-        console.error('🎤 [Cover Polling] 查询状态失败:', err);
-      }
-    }, 5000);
-
-    return () => clearInterval(pollInterval);
-  }, [coverTaskId, coverStatus]);
 
   // 加载 lyrics prompt
   useEffect(() => {
@@ -433,48 +336,6 @@ export default function NativeMusicPage() {
     setIsModelSelectorOpen(false);
   };
 
-  // 处理 Cover 音频文件上传
-  const handleCoverAudioUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-
-    // 验证文件类型
-    if (!file.type.startsWith('audio/')) {
-      setError('Please select an audio file');
-      return;
-    }
-
-    // 验证文件大小 (最大 50MB)
-    if (file.size > 50 * 1024 * 1024) {
-      setError('File size must be less than 50MB');
-      return;
-    }
-
-    setCoverAudioFile(file);
-    // 创建本地预览 URL
-    const url = URL.createObjectURL(file);
-    setCoverAudioUrl(url);
-    setError(null);
-  };
-
-  // 清除 Cover 音频
-  const handleClearCoverAudio = () => {
-    if (coverAudioUrl) {
-      URL.revokeObjectURL(coverAudioUrl);
-    }
-    setCoverAudioFile(null);
-    setCoverAudioUrl(null);
-    setSelectedHistoryMusic(null);
-  };
-
-  // 格式化时长 (秒 -> MM:SS)
-  const formatDuration = (seconds: number | null): string => {
-    if (!seconds) return '--:--';
-    const mins = Math.floor(seconds / 60);
-    const secs = Math.floor(seconds % 60);
-    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-  };
-
   // 格式化日期 (YYYY-MM-DD)
   const formatDate = (date: Date): string => {
     return new Date(date).toISOString().split('T')[0];
@@ -508,21 +369,6 @@ export default function NativeMusicPage() {
     } finally {
       setIsLoadingHistory(false);
     }
-  };
-
-  // 打开历史选择器
-  const handleOpenHistorySheet = () => {
-    console.log('🎵 [handleOpenHistorySheet] 打开历史选择器');
-    setIsHistorySheetOpen(true);
-    loadMusicHistory();
-  };
-
-  // 选择历史音乐
-  const handleSelectHistoryMusic = (record: MusicRecord) => {
-    setSelectedHistoryMusic(record);
-    setCoverAudioFile(null);
-    setCoverAudioUrl(record.audio_url);
-    setIsHistorySheetOpen(false);
   };
 
   // 是否可以生成 (根据当前 tab 判断)

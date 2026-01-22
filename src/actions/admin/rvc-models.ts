@@ -32,7 +32,7 @@ interface ActionResult {
 }
 
 // 内置模型名称（RVC-v2 API 支持的）
-const BUILTIN_MODEL_NAMES = ['Obama', 'Trump', 'Sandy', 'Rogan'];
+const _BUILTIN_MODEL_NAMES = ['Obama', 'Trump', 'Sandy', 'Rogan'];
 
 /**
  * 获取所有 RVC 声音模型列表

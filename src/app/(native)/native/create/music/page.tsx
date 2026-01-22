@@ -107,6 +107,7 @@ export default function NativeMusicPage() {
   const [generatingStatus, setGeneratingStatus] = useState<'generating' | 'success' | 'error'>('generating');
   const [generatingError, setGeneratingError] = useState<string | null>(null);
   const [currentTaskId, setCurrentTaskId] = useState<string | null>(null);
+  const [taskCreatedAt, setTaskCreatedAt] = useState<Date | null>(null);
   const [generatingProgress, setGeneratingProgress] = useState(0);
 
   const [activeTab, setActiveTab] = useState<MusicTab>('custom');
@@ -383,6 +384,7 @@ export default function NativeMusicPage() {
       // 任务创建成功，保存 task_id 用于轮询
       console.log('🎵 [handleGenerate] 任务提交成功，开始轮询状态');
       setCurrentTaskId(result.task_id);
+      setTaskCreatedAt(new Date());
       setGeneratingProgress(result.progress || 10);
 
       // 清空草稿
@@ -408,6 +410,7 @@ export default function NativeMusicPage() {
     setGeneratingStatus('generating');
     setGeneratingError(null);
     setCurrentTaskId(null);
+    setTaskCreatedAt(null);
     setGeneratingProgress(0);
   };
 
@@ -423,7 +426,7 @@ export default function NativeMusicPage() {
     console.log('🎵 [Modal State] isGeneratingModalOpen:', isGeneratingModalOpen, 'status:', generatingStatus);
   }, [isGeneratingModalOpen, generatingStatus]);
 
-  // 轮询任务状态
+  // 轮询任务状态（超时 30 分钟后停止）
   useEffect(() => {
     if (!currentTaskId || generatingStatus !== 'generating') {
       return;
@@ -432,6 +435,19 @@ export default function NativeMusicPage() {
     console.log('🎵 [Polling] 开始轮询任务状态:', currentTaskId);
 
     const pollInterval = setInterval(async () => {
+      // 超时检查：任务创建超过 30 分钟后停止轮询
+      if (taskCreatedAt) {
+        const taskAgeMinutes = (Date.now() - taskCreatedAt.getTime()) / 1000 / 60;
+        if (taskAgeMinutes >= 30) {
+          console.log('🎵 [Polling] 任务超时，停止轮询');
+          setGeneratingStatus('error');
+          setGeneratingError('Generation timed out. Please check your history later.');
+          setCurrentTaskId(null);
+          setTaskCreatedAt(null);
+          return;
+        }
+      }
+
       try {
         const status = await getMusicTaskStatus(currentTaskId);
         console.log('🎵 [Polling] 任务状态:', status);
@@ -442,6 +458,7 @@ export default function NativeMusicPage() {
           console.log('🎵 [Polling] 任务完成!');
           setGeneratingStatus('success');
           setCurrentTaskId(null);
+          setTaskCreatedAt(null);
           // 发送本地推送通知
           sendLocalNotification('music', 'success');
         } else if (status.status === 'FAILURE') {
@@ -449,6 +466,7 @@ export default function NativeMusicPage() {
           setGeneratingStatus('error');
           setGeneratingError(status.error || 'Generation failed');
           setCurrentTaskId(null);
+          setTaskCreatedAt(null);
           // 发送本地推送通知
           sendLocalNotification('music', 'failure');
         }
@@ -461,7 +479,7 @@ export default function NativeMusicPage() {
       console.log('🎵 [Polling] 停止轮询');
       clearInterval(pollInterval);
     };
-  }, [currentTaskId, generatingStatus]);
+  }, [currentTaskId, generatingStatus, taskCreatedAt]);
 
   const tabs: { id: MusicTab; label: string }[] = [
     { id: 'custom', label: 'Lyrics to Music' },

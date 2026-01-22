@@ -10,7 +10,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { nanoid } from 'nanoid';
 import { InsufficientCreditsError, errorToResponse } from '@/lib/errors';
 import { checkCredits } from '@/lib/credits';
-import { getMusicModelById, musicModelsConfig } from '@/config/native/musicModels';
+import { getMusicModelById } from '@/config/native/musicModels';
 
 // KIE API 配置
 const KIE_API_BASE = 'https://api.kie.ai/api/v1';

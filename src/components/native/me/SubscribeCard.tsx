@@ -1,13 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-
-// 星星图标
-const StarIcon = () => (
-  <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
-    <path d="M12 2l2.4 7.4H22l-6 4.6 2.3 7-6.3-4.6L5.7 21l2.3-7-6-4.6h7.6L12 2z" />
-  </svg>
-);
+import CrownIcon from '@/components/native/common/CrownIcon';
 
 /**
  * 订阅推广卡片
@@ -37,7 +31,7 @@ export default function SubscribeCard() {
             href="/native/subscribe"
             className="inline-flex items-center gap-2 px-5 py-2 bg-white/90 rounded-full text-purple-700 font-medium text-sm hover:bg-white transition-colors"
           >
-            <StarIcon />
+            <CrownIcon className="w-4 h-4" />
             Subscribe
           </Link>
         </div>

@@ -57,9 +57,9 @@ const ChevronUpIcon = () => (
   </svg>
 );
 
-const SlidersIcon = () => (
-  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-    <path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6" />
+const PrivacyShieldIcon = () => (
+  <svg className="w-4 h-4 text-gray-400" viewBox="0 0 24 24" fill="currentColor">
+    <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 6c1.1 0 2 .9 2 2 0 .74-.4 1.38-1 1.72V14h-2v-3.28c-.6-.34-1-.98-1-1.72 0-1.1.9-2 2-2z" />
   </svg>
 );
 
@@ -1302,12 +1302,14 @@ export default function NativeMusicPage() {
               className="w-full flex items-center justify-between p-3 bg-gray-800/60 rounded-xl"
             >
               <div className="flex items-center gap-2">
-                <SlidersIcon />
+                <PrivacyShieldIcon />
                 <span className="text-white text-sm">
-                  {isInstrumental ? 'Instrumental' : 'Vocal'} · {isPublic ? 'Public' : 'Private'}
+                  Visibility · {isPublic ? 'Public' : 'Private'}
                 </span>
               </div>
-              <ChevronUpIcon />
+              <svg className="w-4 h-4 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M18 15l-6-6-6 6" />
+              </svg>
             </button>
           </div>
         )}

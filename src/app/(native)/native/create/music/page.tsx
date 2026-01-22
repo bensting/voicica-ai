@@ -19,7 +19,7 @@ import {
   getMusicModelById,
   type MusicModel,
 } from '@/config/native/musicModels';
-import { createMusicTask, getMusicTaskStatus, getMusicRecords, type MusicRecord } from '@/actions/music';
+import { createMusicTask, getMusicTaskStatus } from '@/actions/music';
 import { sendLocalNotification } from '@/lib/notifications';
 
 // localStorage keys
@@ -81,19 +81,6 @@ const UploadIcon = () => (
   </svg>
 );
 
-const ClockIcon = () => (
-  <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-    <circle cx="12" cy="12" r="10" />
-    <path d="M12 6v6l4 2" />
-  </svg>
-);
-
-const MusicNoteIcon = () => (
-  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
-    <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z" />
-  </svg>
-);
-
 /**
  * Native AI Music 页面
  */
@@ -135,11 +122,6 @@ export default function NativeMusicPage() {
   const [style, setStyle] = useState('');
   const [title, setTitle] = useState('');
   const [vocalGender, setVocalGender] = useState<'m' | 'f' | ''>('');
-
-  // History sheet states
-  const [isHistorySheetOpen, setIsHistorySheetOpen] = useState(false);
-  const [musicHistory, setMusicHistory] = useState<MusicRecord[]>([]);
-  const [isLoadingHistory, setIsLoadingHistory] = useState(false);
 
   // 字符限制
   const maxCharacters = 3000;
@@ -334,41 +316,6 @@ export default function NativeMusicPage() {
     }
     setModel(m.id);
     setIsModelSelectorOpen(false);
-  };
-
-  // 格式化日期 (YYYY-MM-DD)
-  const formatDate = (date: Date): string => {
-    return new Date(date).toISOString().split('T')[0];
-  };
-
-  // 按日期分组音乐记录
-  const groupMusicByDate = (records: MusicRecord[]): Record<string, MusicRecord[]> => {
-    const groups: Record<string, MusicRecord[]> = {};
-    records.forEach((record) => {
-      const dateKey = formatDate(record.created_at);
-      if (!groups[dateKey]) {
-        groups[dateKey] = [];
-      }
-      groups[dateKey].push(record);
-    });
-    return groups;
-  };
-
-  // 加载音乐历史
-  const loadMusicHistory = async () => {
-    setIsLoadingHistory(true);
-    try {
-      const records = await getMusicRecords(50);
-      // 只显示已完成且有音频的记录
-      const completedRecords = records.filter(
-        (r) => r.status === 'SUCCESS' && r.audio_url
-      );
-      setMusicHistory(completedRecords);
-    } catch (error) {
-      console.error('Failed to load music history:', error);
-    } finally {
-      setIsLoadingHistory(false);
-    }
   };
 
   // 是否可以生成 (根据当前 tab 判断)
@@ -1160,86 +1107,6 @@ export default function NativeMusicPage() {
         generateButtonText="Generate Prompt"
       />
 
-      {/* Music History Sheet */}
-      {isHistorySheetOpen && (
-        <div className="fixed inset-0 z-50">
-          {/* Backdrop */}
-          <div
-            className="absolute inset-0 bg-black/60"
-            onClick={() => setIsHistorySheetOpen(false)}
-          />
-          {/* Sheet */}
-          <div
-            className="absolute bottom-0 left-0 right-0 bg-[#1a1a2e] rounded-t-3xl max-h-[70vh] flex flex-col"
-            style={{ paddingBottom: 'var(--safe-area-inset-bottom, 0px)' }}
-          >
-            {/* Handle */}
-            <div className="flex justify-center pt-3 pb-2 flex-shrink-0">
-              <div className="w-10 h-1 bg-gray-600 rounded-full" />
-            </div>
-
-            {/* Content */}
-            <div className="flex-1 overflow-y-auto px-4 pb-6">
-              {isLoadingHistory ? (
-                <div className="flex items-center justify-center py-12">
-                  <div className="w-6 h-6 border-2 border-purple-500 border-t-transparent rounded-full animate-spin" />
-                </div>
-              ) : musicHistory.length === 0 ? (
-                <div className="text-center py-12">
-                  <p className="text-gray-400">No music history yet</p>
-                </div>
-              ) : (
-                Object.entries(groupMusicByDate(musicHistory)).map(([date, records]) => (
-                  <div key={date}>
-                    {/* Date Header */}
-                    <div className="flex items-center gap-2 text-gray-400 text-sm py-3">
-                      <ClockIcon />
-                      <span>{date}</span>
-                    </div>
-
-                    {/* Records */}
-                    <div className="space-y-1">
-                      {records.map((record) => (
-                        <button
-                          key={record.id}
-                          onClick={() => handleSelectHistoryMusic(record)}
-                          className="w-full flex items-center gap-3 p-3 hover:bg-gray-800/60 rounded-xl transition-colors"
-                        >
-                          {/* Cover Image */}
-                          {record.cover_url ? (
-                            <img
-                              src={record.cover_url}
-                              alt={record.title || 'AI Music'}
-                              className="w-14 h-14 rounded-xl object-cover"
-                            />
-                          ) : (
-                            <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
-                              <MusicNoteIcon />
-                            </div>
-                          )}
-
-                          {/* Info */}
-                          <div className="flex-1 text-left min-w-0">
-                            <p className="text-white font-medium truncate">
-                              {record.title || 'AI Music'}
-                            </p>
-                            {record.style && (
-                              <p className="text-gray-400 text-sm truncate">{record.style}</p>
-                            )}
-                          </div>
-                        </button>
-                      ))}
-                    </div>
-
-                    {/* Divider */}
-                    <div className="border-t border-gray-800 my-2" />
-                  </div>
-                ))
-              )}
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

@@ -6,6 +6,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { Download, Pencil } from 'lucide-react';
 import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 import { getMusicRecords, getMusicTaskStatus, deleteMusicRecord, type MusicRecord } from '@/actions/music';
+import { getTtsRecords, type TtsRecord } from '@/actions/tts';
 import GradientButton from '@/components/ui/GradientButton';
 import DeleteConfirmDialog from '@/components/native/ui/DeleteConfirmDialog';
 
@@ -506,6 +507,77 @@ function VideoCard({ video, onClick }: { video: VideoItem; onClick: () => void }
   );
 }
 
+// 语音卡片组件
+function VoiceCard({ voice, onClick }: { voice: TtsRecord; onClick: () => void }) {
+  const isProcessing = voice.status === 'PENDING' || voice.status === 'PROCESSING';
+  const isSuccess = voice.status === 'SUCCESS';
+  const isFailed = voice.status === 'FAILURE';
+
+  // 显示的标题 - 使用文本的前 30 个字符
+  const displayTitle = voice.text?.substring(0, 30) || 'Voice Audio';
+  // 显示的副标题 - 使用 voice_name
+  const displaySubtitle = voice.voice_name || '';
+
+  return (
+    <button onClick={onClick} className="flex items-center gap-3 w-full py-3">
+      {/* 图标 */}
+      <div className="relative w-16 h-16 flex-shrink-0 bg-gray-800 rounded-lg overflow-hidden flex items-center justify-center">
+        {isProcessing && (
+          <div className="flex flex-col items-center gap-1">
+            <div className="w-5 h-5 border-2 border-purple-500 border-t-transparent rounded-full animate-spin" />
+            <span className="text-white text-[9px] font-medium">{voice.progress}%</span>
+          </div>
+        )}
+        {isFailed && (
+          <svg className="w-5 h-5 text-red-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <circle cx="12" cy="12" r="10" />
+            <line x1="15" y1="9" x2="9" y2="15" />
+            <line x1="9" y1="9" x2="15" y2="15" />
+          </svg>
+        )}
+        {isSuccess && (
+          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-cyan-900 to-purple-900">
+            <svg className="w-6 h-6 text-white/60" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+              <path d="M12 2a3 3 0 00-3 3v7a3 3 0 006 0V5a3 3 0 00-3-3z" />
+              <path d="M19 10v2a7 7 0 01-14 0v-2" />
+              <line x1="12" y1="19" x2="12" y2="22" />
+            </svg>
+          </div>
+        )}
+        {!isProcessing && !isFailed && !isSuccess && (
+          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-cyan-900 to-purple-900">
+            <svg className="w-6 h-6 text-gray-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+              <path d="M12 2a3 3 0 00-3 3v7a3 3 0 006 0V5a3 3 0 00-3-3z" />
+              <path d="M19 10v2a7 7 0 01-14 0v-2" />
+              <line x1="12" y1="19" x2="12" y2="22" />
+            </svg>
+          </div>
+        )}
+        {/* 状态标签 */}
+        {isProcessing && (
+          <div className="absolute top-0.5 left-0.5 px-1 py-0.5 bg-purple-500/80 rounded">
+            <span className="text-white text-[8px] font-medium">Processing</span>
+          </div>
+        )}
+        {/* 时长标签 */}
+        {isSuccess && voice.duration && (
+          <div className="absolute bottom-0.5 right-0.5 px-1 py-0.5 bg-black/60 rounded">
+            <span className="text-white text-[9px]">{formatTime(voice.duration)}</span>
+          </div>
+        )}
+      </div>
+
+      {/* 文字内容 */}
+      <div className="flex-1 text-left min-w-0">
+        <h4 className="text-white font-medium text-base truncate">{displayTitle}</h4>
+        {displaySubtitle && (
+          <p className="text-gray-500 text-sm truncate">{displaySubtitle}</p>
+        )}
+      </div>
+    </button>
+  );
+}
+
 /**
  * My Creations 区域
  * 显示用户创建的内容，支持 Tab 切换和下拉刷新
@@ -525,6 +597,7 @@ export default function MyCreations() {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [videos, setVideos] = useState<VideoItem[]>([]);
   const [musicRecords, setMusicRecords] = useState<MusicRecord[]>([]);
+  const [voiceRecords, setVoiceRecords] = useState<TtsRecord[]>([]);
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [selectedMusic, setSelectedMusic] = useState<MusicRecord | null>(null);
@@ -585,6 +658,25 @@ export default function MyCreations() {
     }
   }, []);
 
+  // 获取语音列表
+  const fetchVoices = useCallback(async (isRefresh = false) => {
+    try {
+      if (isRefresh) {
+        setRefreshing(true);
+      } else {
+        setLoading(true);
+      }
+
+      const records = await getTtsRecords(50);
+      setVoiceRecords(records);
+    } catch (error) {
+      console.error('Failed to fetch voice records:', error);
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    }
+  }, []);
+
   // 同步 URL 参数到 activeTab
   useEffect(() => {
     const tabParam = searchParams.get('tab') as TabType | null;
@@ -597,8 +689,10 @@ export default function MyCreations() {
   useEffect(() => {
     if (activeTab === 'music') {
       fetchMusic();
+    } else if (activeTab === 'voices') {
+      fetchVoices();
     }
-  }, [activeTab, fetchMusic]);
+  }, [activeTab, fetchMusic, fetchVoices]);
 
   // 如果有正在处理的音乐，定时刷新（开发环境直接查询 KIE API）
   useEffect(() => {
@@ -681,6 +775,8 @@ export default function MyCreations() {
     if (pullDistance >= PULL_THRESHOLD && !refreshing) {
       if (activeTab === 'music') {
         await fetchMusic(true);
+      } else if (activeTab === 'voices') {
+        await fetchVoices(true);
       }
     }
     setPullDistance(0);
@@ -716,10 +812,13 @@ export default function MyCreations() {
 
   // 过滤掉失败的记录
   const filteredMusicRecords = musicRecords.filter((m) => m.status !== 'FAILURE');
+  const filteredVoiceRecords = voiceRecords.filter((v) => v.status !== 'FAILURE');
 
   const emptyState = emptyStateMessages[activeTab];
   const isEmpty = activeTab === 'music'
     ? filteredMusicRecords.length === 0
+    : activeTab === 'voices'
+    ? filteredVoiceRecords.length === 0
     : true;
 
   // 按日期分组
@@ -731,6 +830,15 @@ export default function MyCreations() {
     groups[date].push(music);
     return groups;
   }, {} as Record<string, MusicRecord[]>);
+
+  const groupedVoiceRecords = filteredVoiceRecords.reduce((groups, voice) => {
+    const date = formatDateLong(voice.created_at.toString());
+    if (!groups[date]) {
+      groups[date] = [];
+    }
+    groups[date].push(voice);
+    return groups;
+  }, {} as Record<string, TtsRecord[]>);
 
   return (
     <div className="h-full flex flex-col">
@@ -814,6 +922,50 @@ export default function MyCreations() {
                         key={music.task_id}
                         music={music}
                         onClick={() => handleMusicClick(music)}
+                      />
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )
+        ) : activeTab === 'voices' ? (
+          loading && voiceRecords.length === 0 ? (
+            // 加载中
+            <div className="flex justify-center py-8">
+              <div className="w-8 h-8 border-3 border-purple-500 border-t-transparent rounded-full animate-spin" />
+            </div>
+          ) : isEmpty ? (
+            // 空状态
+            <div className="flex flex-col items-center justify-center py-8">
+              <EmptyIllustration />
+              <p className="mt-3 text-gray-400 text-center">{emptyState.title}</p>
+              <p className="text-gray-500 text-sm text-center">{emptyState.subtitle}</p>
+              <Link
+                href={emptyState.createLink}
+                className="mt-4 px-8 py-3 bg-white/10 border border-white/20 rounded-full text-white font-medium hover:bg-white/20 transition-colors"
+              >
+                Go create
+              </Link>
+            </div>
+          ) : (
+            // 语音列表 - 按日期分组
+            <div className="space-y-4">
+              {Object.entries(groupedVoiceRecords).map(([date, records]) => (
+                <div key={date}>
+                  <h3 className="text-gray-500 text-sm mb-2">{date}</h3>
+                  <div className="space-y-1">
+                    {records.map((voice) => (
+                      <VoiceCard
+                        key={voice.task_id}
+                        voice={voice}
+                        onClick={() => {
+                          // 播放音频
+                          if (voice.status === 'SUCCESS' && voice.audio_url) {
+                            const audio = new Audio(voice.audio_url);
+                            audio.play();
+                          }
+                        }}
                       />
                     ))}
                   </div>

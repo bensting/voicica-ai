@@ -35,7 +35,7 @@
     "cap:build": "next build && next export && npx cap sync",
     "cap:run:ios": "npx cap run ios",
     "cap:run:android": "npx cap run android",
-    "cap:assets": "npx @capacitor/assets generate --iconBackgroundColor #9333ea --splashBackgroundColor #9333ea",
+    "cap:assets": "npx @capacitor/assets generate --iconBackgroundColor #9333ea --splashBackgroundColor #9333ea && node scripts/fix-pwa-icons.js",
     "cap:icons": "node scripts/generate-app-icons.js"
   },
   "dependencies": {

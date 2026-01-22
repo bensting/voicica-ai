@@ -7,6 +7,7 @@ import { Download, Pencil } from 'lucide-react';
 import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 import { getMusicRecords, getMusicTaskStatus, deleteMusicRecord, type MusicRecord } from '@/actions/music';
 import { getTtsRecords, type TtsRecord } from '@/actions/tts';
+import { getCoverRecords, deleteCoverRecord, type CoverRecord } from '@/actions/cover';
 import GradientButton from '@/components/ui/GradientButton';
 import DeleteConfirmDialog from '@/components/native/ui/DeleteConfirmDialog';
 
@@ -368,6 +369,241 @@ function MusicDetailModal({
   );
 }
 
+// Cover 详情弹窗组件
+function CoverDetailModal({
+  cover,
+  onClose,
+  onRecreate,
+  onDelete,
+}: {
+  cover: CoverRecord;
+  onClose: () => void;
+  onRecreate: (cover: CoverRecord) => void;
+  onDelete: (cover: CoverRecord) => void;
+}) {
+  const audioRef = useRef<HTMLAudioElement>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(cover.duration || 0);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+
+  const displayTitle = cover.voice_model_name || 'AI Cover';
+
+  // 播放/暂停
+  const togglePlay = () => {
+    if (!audioRef.current) return;
+    if (isPlaying) {
+      audioRef.current.pause();
+    } else {
+      audioRef.current.play();
+    }
+    setIsPlaying(!isPlaying);
+  };
+
+  // 更新播放进度
+  const handleTimeUpdate = () => {
+    if (audioRef.current) {
+      setCurrentTime(audioRef.current.currentTime);
+    }
+  };
+
+  // 加载元数据
+  const handleLoadedMetadata = () => {
+    if (audioRef.current) {
+      setDuration(audioRef.current.duration);
+    }
+  };
+
+  // 播放结束
+  const handleEnded = () => {
+    setIsPlaying(false);
+    setCurrentTime(0);
+  };
+
+  // 进度条点击
+  const handleProgressClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!audioRef.current || !duration) return;
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const percent = x / rect.width;
+    audioRef.current.currentTime = percent * duration;
+    setCurrentTime(percent * duration);
+  };
+
+  // 下载音频
+  const handleDownload = async () => {
+    if (!cover.output_url) return;
+    try {
+      const response = await fetch(cover.output_url);
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${displayTitle}.mp3`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Download failed:', error);
+    }
+  };
+
+  // 执行删除
+  const handleConfirmDelete = async () => {
+    await onDelete(cover);
+    setShowDeleteDialog(false);
+    onClose();
+  };
+
+  const progress = duration > 0 ? (currentTime / duration) * 100 : 0;
+
+  return (
+    <div className="fixed inset-0 z-[9999] bg-[#0a0a1a] flex flex-col">
+      {/* 隐藏的音频元素 */}
+      {cover.output_url && (
+        <audio
+          ref={audioRef}
+          src={cover.output_url}
+          onTimeUpdate={handleTimeUpdate}
+          onLoadedMetadata={handleLoadedMetadata}
+          onEnded={handleEnded}
+        />
+      )}
+
+      {/* 顶部导航 */}
+      <div className="flex items-center justify-between p-4">
+        <button
+          onClick={onClose}
+          className="w-10 h-10 flex items-center justify-center bg-gray-800/50 rounded-full"
+        >
+          <svg className="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <path d="M15 18l-6-6 6-6" />
+          </svg>
+        </button>
+        <div className="flex items-center gap-2">
+          <button className="w-10 h-10 flex items-center justify-center">
+            <svg className="w-5 h-5 text-white" viewBox="0 0 24 24" fill="currentColor">
+              <circle cx="12" cy="6" r="2" />
+              <circle cx="12" cy="12" r="2" />
+              <circle cx="12" cy="18" r="2" />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      {/* 可滚动内容区域 */}
+      <div className="flex-1 overflow-y-auto px-6 pb-4">
+        {/* 封面图 */}
+        <div className="flex justify-center mb-4">
+          <div className="relative w-48 h-48 rounded-xl overflow-hidden shadow-2xl">
+            <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-orange-900 to-pink-900">
+              <svg className="w-16 h-16 text-white/30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                <path d="M9 18V5l12-2v13" />
+                <circle cx="6" cy="18" r="3" />
+                <circle cx="18" cy="16" r="3" />
+              </svg>
+            </div>
+            {/* AI Cover 标签 */}
+            <div className="absolute top-2 right-2 px-2 py-0.5 bg-orange-500 rounded text-white text-xs font-medium">
+              Cover
+            </div>
+          </div>
+        </div>
+
+        {/* 标题 */}
+        <h1 className="text-2xl font-bold text-white text-center mb-4">{displayTitle}</h1>
+      </div>
+
+      {/* 底部播放器和操作按钮 - 固定在底部 */}
+      <div className="flex-shrink-0 px-6 pb-8 bg-[#0a0a1a]">
+        {/* 进度条 */}
+        <div
+          className="w-full h-1 bg-gray-700 rounded-full cursor-pointer mb-2"
+          onClick={handleProgressClick}
+        >
+          <div
+            className="h-full bg-gradient-to-r from-orange-400 to-pink-500 rounded-full relative"
+            style={{ width: `${progress}%` }}
+          >
+            <div className="absolute right-0 top-1/2 -translate-y-1/2 w-3 h-3 bg-orange-400 rounded-full" />
+          </div>
+        </div>
+
+        {/* 时间显示 */}
+        <div className="flex justify-between text-gray-500 text-xs mb-4">
+          <span>{formatTime(currentTime)}</span>
+          <span>{formatTime(duration)}</span>
+        </div>
+
+        {/* 播放按钮 */}
+        <div className="flex justify-center mb-4">
+          <button
+            onClick={togglePlay}
+            disabled={!cover.output_url}
+            className="w-16 h-16 flex items-center justify-center bg-gray-700 rounded-full hover:bg-gray-600 transition-colors disabled:opacity-50"
+          >
+            {isPlaying ? (
+              <svg className="w-7 h-7 text-white" viewBox="0 0 24 24" fill="currentColor">
+                <rect x="6" y="4" width="4" height="16" rx="1" />
+                <rect x="14" y="4" width="4" height="16" rx="1" />
+              </svg>
+            ) : (
+              <svg className="w-7 h-7 text-white ml-1" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M8 5v14l11-7z" />
+              </svg>
+            )}
+          </button>
+        </div>
+
+        {/* 声音模型和删除按钮 */}
+        <div className="flex items-center justify-between mb-3">
+          <p className="text-gray-500 text-sm flex-1 truncate">
+            Voice: {cover.voice_model_name}
+          </p>
+          <button
+            onClick={() => setShowDeleteDialog(true)}
+            className="ml-2 p-2 text-gray-500 hover:text-red-500 transition-colors"
+          >
+            <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2" />
+            </svg>
+          </button>
+        </div>
+
+        {/* 操作按钮 */}
+        <div className="flex gap-3">
+          <button
+            onClick={() => onRecreate(cover)}
+            className="flex-[1] flex items-center justify-center gap-1.5 py-3 bg-gray-800/80 border border-gray-700 rounded-xl text-white text-sm font-medium hover:bg-gray-700 transition-all"
+          >
+            <Pencil size={14} />
+            Recreate
+          </button>
+          <GradientButton
+            icon={Download}
+            iconPosition="left"
+            size="md"
+            onClick={handleDownload}
+            disabled={!cover.output_url}
+            className="flex-[2] !py-3"
+          >
+            Download
+          </GradientButton>
+        </div>
+      </div>
+
+      {/* 删除确认弹窗 */}
+      <DeleteConfirmDialog
+        isOpen={showDeleteDialog}
+        title="Confirm delete cover?"
+        onConfirm={handleConfirmDelete}
+        onCancel={() => setShowDeleteDialog(false)}
+      />
+    </div>
+  );
+}
+
 // 音乐卡片组件
 function MusicCard({ music, onClick }: { music: MusicRecord; onClick: () => void }) {
   const isProcessing = music.status === 'PENDING' || music.status === 'PROCESSING';
@@ -578,6 +814,73 @@ function VoiceCard({ voice, onClick }: { voice: TtsRecord; onClick: () => void }
   );
 }
 
+// Cover 卡片组件
+function CoverCard({ cover, onClick }: { cover: CoverRecord; onClick: () => void }) {
+  const isProcessing = cover.status === 'PENDING' || cover.status === 'PROCESSING';
+  const isSuccess = cover.status === 'SUCCESS';
+  const isFailed = cover.status === 'FAILURE';
+
+  // 显示的标题 - 使用声音模型名称
+  const displayTitle = cover.voice_model_name || 'AI Cover';
+
+  return (
+    <button onClick={onClick} className="flex items-center gap-3 w-full py-3">
+      {/* 图标 */}
+      <div className="relative w-16 h-16 flex-shrink-0 bg-gray-800 rounded-lg overflow-hidden flex items-center justify-center">
+        {isProcessing && (
+          <div className="flex flex-col items-center gap-1">
+            <div className="w-5 h-5 border-2 border-purple-500 border-t-transparent rounded-full animate-spin" />
+            <span className="text-white text-[9px] font-medium">{cover.progress}%</span>
+          </div>
+        )}
+        {isFailed && (
+          <svg className="w-5 h-5 text-red-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <circle cx="12" cy="12" r="10" />
+            <line x1="15" y1="9" x2="9" y2="15" />
+            <line x1="9" y1="9" x2="15" y2="15" />
+          </svg>
+        )}
+        {isSuccess && (
+          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-orange-900 to-pink-900">
+            <svg className="w-6 h-6 text-white/60" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+              <path d="M9 18V5l12-2v13" />
+              <circle cx="6" cy="18" r="3" />
+              <circle cx="18" cy="16" r="3" />
+            </svg>
+          </div>
+        )}
+        {!isProcessing && !isFailed && !isSuccess && (
+          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-orange-900 to-pink-900">
+            <svg className="w-6 h-6 text-gray-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+              <path d="M9 18V5l12-2v13" />
+              <circle cx="6" cy="18" r="3" />
+              <circle cx="18" cy="16" r="3" />
+            </svg>
+          </div>
+        )}
+        {/* 状态标签 */}
+        {isProcessing && (
+          <div className="absolute top-0.5 left-0.5 px-1 py-0.5 bg-purple-500/80 rounded">
+            <span className="text-white text-[8px] font-medium">Processing</span>
+          </div>
+        )}
+        {/* 时长标签 */}
+        {isSuccess && cover.duration && (
+          <div className="absolute bottom-0.5 right-0.5 px-1 py-0.5 bg-black/60 rounded">
+            <span className="text-white text-[9px]">{formatTime(cover.duration)}</span>
+          </div>
+        )}
+      </div>
+
+      {/* 文字内容 */}
+      <div className="flex-1 text-left min-w-0">
+        <h4 className="text-white font-medium text-base truncate">{displayTitle}</h4>
+        <p className="text-gray-500 text-sm truncate">AI Cover</p>
+      </div>
+    </button>
+  );
+}
+
 /**
  * My Creations 区域
  * 显示用户创建的内容，支持 Tab 切换和下拉刷新
@@ -598,9 +901,11 @@ export default function MyCreations() {
   const [videos, setVideos] = useState<VideoItem[]>([]);
   const [musicRecords, setMusicRecords] = useState<MusicRecord[]>([]);
   const [voiceRecords, setVoiceRecords] = useState<TtsRecord[]>([]);
+  const [coverRecords, setCoverRecords] = useState<CoverRecord[]>([]);
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [selectedMusic, setSelectedMusic] = useState<MusicRecord | null>(null);
+  const [selectedCover, setSelectedCover] = useState<CoverRecord | null>(null);
 
   // 下拉刷新相关
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -677,6 +982,25 @@ export default function MyCreations() {
     }
   }, []);
 
+  // 获取 Cover 列表
+  const fetchCovers = useCallback(async (isRefresh = false) => {
+    try {
+      if (isRefresh) {
+        setRefreshing(true);
+      } else {
+        setLoading(true);
+      }
+
+      const records = await getCoverRecords(50);
+      setCoverRecords(records);
+    } catch (error) {
+      console.error('Failed to fetch cover records:', error);
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    }
+  }, []);
+
   // 同步 URL 参数到 activeTab
   useEffect(() => {
     const tabParam = searchParams.get('tab') as TabType | null;
@@ -691,8 +1015,10 @@ export default function MyCreations() {
       fetchMusic();
     } else if (activeTab === 'voices') {
       fetchVoices();
+    } else if (activeTab === 'cover') {
+      fetchCovers();
     }
-  }, [activeTab, fetchMusic, fetchVoices]);
+  }, [activeTab, fetchMusic, fetchVoices, fetchCovers]);
 
   // 如果有正在处理的音乐，定时刷新（开发环境直接查询 KIE API）
   useEffect(() => {
@@ -777,6 +1103,8 @@ export default function MyCreations() {
         await fetchMusic(true);
       } else if (activeTab === 'voices') {
         await fetchVoices(true);
+      } else if (activeTab === 'cover') {
+        await fetchCovers(true);
       }
     }
     setPullDistance(0);
@@ -810,15 +1138,36 @@ export default function MyCreations() {
     setMusicRecords((prev) => prev.filter((m) => m.id !== music.id));
   };
 
+  const handleCoverClick = (cover: CoverRecord) => {
+    // 只有完成的 cover 才能打开详情
+    if (cover.status === 'SUCCESS') {
+      setSelectedCover(cover);
+    }
+  };
+
+  const handleCoverRecreate = () => {
+    // 跳转到创建页面
+    router.push('/native/create/cover');
+    setSelectedCover(null);
+  };
+
+  const handleCoverDelete = async (cover: CoverRecord) => {
+    await deleteCoverRecord(cover.id);
+    setCoverRecords((prev) => prev.filter((c) => c.id !== cover.id));
+  };
+
   // 过滤掉失败的记录
   const filteredMusicRecords = musicRecords.filter((m) => m.status !== 'FAILURE');
   const filteredVoiceRecords = voiceRecords.filter((v) => v.status !== 'FAILURE');
+  const filteredCoverRecords = coverRecords.filter((c) => c.status !== 'FAILURE');
 
   const emptyState = emptyStateMessages[activeTab];
   const isEmpty = activeTab === 'music'
     ? filteredMusicRecords.length === 0
     : activeTab === 'voices'
     ? filteredVoiceRecords.length === 0
+    : activeTab === 'cover'
+    ? filteredCoverRecords.length === 0
     : true;
 
   // 按日期分组
@@ -839,6 +1188,15 @@ export default function MyCreations() {
     groups[date].push(voice);
     return groups;
   }, {} as Record<string, TtsRecord[]>);
+
+  const groupedCoverRecords = filteredCoverRecords.reduce((groups, cover) => {
+    const date = formatDateLong(cover.created_at.toString());
+    if (!groups[date]) {
+      groups[date] = [];
+    }
+    groups[date].push(cover);
+    return groups;
+  }, {} as Record<string, CoverRecord[]>);
 
   return (
     <div className="h-full flex flex-col">
@@ -960,12 +1318,47 @@ export default function MyCreations() {
                         key={voice.task_id}
                         voice={voice}
                         onClick={() => {
-                          // 播放音频
-                          if (voice.status === 'SUCCESS' && voice.audio_url) {
-                            const audio = new Audio(voice.audio_url);
-                            audio.play();
-                          }
+                          // 跳转到语音详情页
+                          router.push(`/native/voice/task/${voice.task_id}`);
                         }}
+                      />
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )
+        ) : activeTab === 'cover' ? (
+          loading && coverRecords.length === 0 ? (
+            // 加载中
+            <div className="flex justify-center py-8">
+              <div className="w-8 h-8 border-3 border-purple-500 border-t-transparent rounded-full animate-spin" />
+            </div>
+          ) : isEmpty ? (
+            // 空状态
+            <div className="flex flex-col items-center justify-center py-8">
+              <EmptyIllustration />
+              <p className="mt-3 text-gray-400 text-center">{emptyState.title}</p>
+              <p className="text-gray-500 text-sm text-center">{emptyState.subtitle}</p>
+              <Link
+                href={emptyState.createLink}
+                className="mt-4 px-8 py-3 bg-white/10 border border-white/20 rounded-full text-white font-medium hover:bg-white/20 transition-colors"
+              >
+                Go create
+              </Link>
+            </div>
+          ) : (
+            // Cover 列表 - 按日期分组
+            <div className="space-y-4">
+              {Object.entries(groupedCoverRecords).map(([date, records]) => (
+                <div key={date}>
+                  <h3 className="text-gray-500 text-sm mb-2">{date}</h3>
+                  <div className="space-y-1">
+                    {records.map((cover) => (
+                      <CoverCard
+                        key={cover.task_id}
+                        cover={cover}
+                        onClick={() => handleCoverClick(cover)}
                       />
                     ))}
                   </div>
@@ -996,6 +1389,16 @@ export default function MyCreations() {
           onClose={() => setSelectedMusic(null)}
           onRecreate={handleMusicRecreate}
           onDelete={handleMusicDelete}
+        />
+      )}
+
+      {/* Cover 详情弹窗 */}
+      {selectedCover && (
+        <CoverDetailModal
+          cover={selectedCover}
+          onClose={() => setSelectedCover(null)}
+          onRecreate={handleCoverRecreate}
+          onDelete={handleCoverDelete}
         />
       )}
     </div>

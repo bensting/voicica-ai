@@ -53,9 +53,10 @@ const COVER_CREDITS_COST = 50;
 
 /**
  * 构建 Webhook 回调 URL
+ * 注意：必须使用 www.voicica.ai，因为 voicica.ai 会 301 重定向，POST 请求不会跟随重定向
  */
 function getWebhookUrl(): string {
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://voicica.ai';
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://www.voicica.ai';
   return `${baseUrl}/api/webhooks/replicate-cover`;
 }
 

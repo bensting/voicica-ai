@@ -374,3 +374,128 @@ export async function generateApkUploadUrl(
     key,
   };
 }
+
+/**
+ * 生成 RVC 模型 ZIP 文件上传的预签名 URL
+ * RVC-v2 API 要求模型文件以 ZIP 格式上传（包含 .pth 和可选的 .index 文件）
+ */
+export async function generateRvcModelZipUploadUrl(
+  fileName: string,
+  folder: string = 'rvc_models',
+  expiresIn: number = 3600 // 默认 1 小时有效期
+): Promise<{ uploadUrl: string; publicUrl: string; key: string }> {
+  const bucketName = process.env.CLOUDFLARE_R2_BUCKET_NAME;
+  const publicUrl = process.env.CLOUDFLARE_R2_PUBLIC_URL;
+
+  if (!bucketName) {
+    throw new Error('CLOUDFLARE_R2_BUCKET_NAME 未配置');
+  }
+
+  const client = getS3Client();
+  const key = `${folder}/${fileName}`;
+
+  console.log(`🔑 生成 RVC ZIP 预签名 URL: ${key}`);
+
+  const command = new PutObjectCommand({
+    Bucket: bucketName,
+    Key: key,
+    ContentType: 'application/zip',
+  });
+
+  const uploadUrl = await getSignedUrl(client, command, { expiresIn });
+
+  // 生成公开访问 URL
+  let filePublicUrl: string;
+  if (publicUrl) {
+    filePublicUrl = `${publicUrl.replace(/\/$/, '')}/${key}`;
+  } else {
+    const accountId = process.env.CLOUDFLARE_R2_ACCOUNT_ID;
+    filePublicUrl = `https://${bucketName}.${accountId}.r2.dev/${key}`;
+  }
+
+  console.log(`✅ RVC ZIP 预签名 URL 生成成功: ${key}`);
+
+  return {
+    uploadUrl,
+    publicUrl: filePublicUrl,
+    key,
+  };
+}
+
+/**
+ * 生成 RVC 模型文件上传的预签名 URL
+ * 用于上传 .pth 和 .index 文件
+ * @deprecated 请使用 generateRvcModelZipUploadUrl，RVC-v2 要求 ZIP 格式
+ */
+export async function generateRvcModelUploadUrl(
+  fileName: string,
+  fileType: 'pth' | 'index',
+  folder: string = 'rvc_models',
+  expiresIn: number = 3600 // 默认 1 小时有效期
+): Promise<{ uploadUrl: string; publicUrl: string; key: string }> {
+  const bucketName = process.env.CLOUDFLARE_R2_BUCKET_NAME;
+  const publicUrl = process.env.CLOUDFLARE_R2_PUBLIC_URL;
+
+  if (!bucketName) {
+    throw new Error('CLOUDFLARE_R2_BUCKET_NAME 未配置');
+  }
+
+  const client = getS3Client();
+  const key = `${folder}/${fileName}`;
+
+  console.log(`🔑 生成 RVC ${fileType} 预签名 URL: ${key}`);
+
+  // 设置合适的 Content-Type
+  const contentType = fileType === 'pth' ? 'application/octet-stream' : 'application/octet-stream';
+
+  const command = new PutObjectCommand({
+    Bucket: bucketName,
+    Key: key,
+    ContentType: contentType,
+  });
+
+  const uploadUrl = await getSignedUrl(client, command, { expiresIn });
+
+  // 生成公开访问 URL
+  let filePublicUrl: string;
+  if (publicUrl) {
+    filePublicUrl = `${publicUrl.replace(/\/$/, '')}/${key}`;
+  } else {
+    const accountId = process.env.CLOUDFLARE_R2_ACCOUNT_ID;
+    filePublicUrl = `https://${bucketName}.${accountId}.r2.dev/${key}`;
+  }
+
+  console.log(`✅ RVC ${fileType} 预签名 URL 生成成功: ${key}`);
+
+  return {
+    uploadUrl,
+    publicUrl: filePublicUrl,
+    key,
+  };
+}
+
+/**
+ * 删除 R2 中的 RVC 模型文件
+ */
+export async function deleteRvcModelFile(filePath: string): Promise<boolean> {
+  const bucketName = process.env.CLOUDFLARE_R2_BUCKET_NAME;
+
+  if (!bucketName) {
+    throw new Error('CLOUDFLARE_R2_BUCKET_NAME 未配置');
+  }
+
+  try {
+    const client = getS3Client();
+    await client.send(
+      new DeleteObjectCommand({
+        Bucket: bucketName,
+        Key: filePath,
+      })
+    );
+    console.log(`✅ R2 RVC 模型文件删除成功: ${filePath}`);
+    return true;
+  } catch (error) {
+    console.error(`❌ R2 RVC 模型文件删除失败: ${filePath}`, error);
+    return false;
+  }
+}

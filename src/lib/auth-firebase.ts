@@ -45,8 +45,13 @@ async function verifyFirebaseToken(headersList: Awaited<ReturnType<typeof header
 
     console.log('✅ [Firebase Auth] Token 验证成功:', decodedToken.uid);
 
+    // 检测是否来自 Native App
+    const clientType = headersList.get('x-client-type');
+    const invokePath = headersList.get('x-invoke-path') || '';
+    const isNative = clientType === 'native' || invokePath.includes('/native/');
+
     // 自动注册或更新用户
-    await createOrUpdateFirebaseUser(decodedToken);
+    await createOrUpdateFirebaseUser(decodedToken, isNative);
 
     return {
       uid: decodedToken.uid,
@@ -81,14 +86,18 @@ function normalizeAuthProvider(signInProvider?: string): string | null {
 
 /**
  * 创建或更新 Firebase 用户到数据库
+ * @param isNative 是否来自 Native App（用于区分积分配置）
  */
-async function createOrUpdateFirebaseUser(decodedToken: {
-  uid: string;
-  email?: string;
-  name?: string;
-  picture?: string;
-  firebase?: { sign_in_provider?: string };
-}): Promise<void> {
+async function createOrUpdateFirebaseUser(
+  decodedToken: {
+    uid: string;
+    email?: string;
+    name?: string;
+    picture?: string;
+    firebase?: { sign_in_provider?: string };
+  },
+  isNative: boolean = false
+): Promise<void> {
   const existingUser = await prisma.users.findUnique({
     where: { user_id: decodedToken.uid },
   });
@@ -114,8 +123,10 @@ async function createOrUpdateFirebaseUser(decodedToken: {
     });
     console.log(`🔄 [Firebase Auth] 用户信息已更新: ${decodedToken.uid}`);
   } else {
-    // 创建新用户
-    const initialCredits = appConfig.credits.registered_user;
+    // 创建新用户 - 根据来源使用不同的积分配置
+    const initialCredits = isNative
+      ? appConfig.credits.native.registered_user
+      : appConfig.credits.registered_user;
 
     await prisma.users.create({
       data: {
@@ -129,18 +140,20 @@ async function createOrUpdateFirebaseUser(decodedToken: {
       },
     });
 
-    // 记录初始积分到积分历史表
-    await prisma.credit_history.create({
-      data: {
-        user_id: decodedToken.uid,
-        task_id: `signup_${uuidv4()}`,
-        amount: initialCredits,
-        description: '新用户注册赠送积分',
-        product_type: ProductType.TEXT_TO_SPEECH,
-      },
-    });
+    // 只有赠送积分时才记录历史
+    if (initialCredits > 0) {
+      await prisma.credit_history.create({
+        data: {
+          user_id: decodedToken.uid,
+          task_id: `signup_${uuidv4()}`,
+          amount: initialCredits,
+          description: isNative ? 'Native 新用户注册赠送积分' : '新用户注册赠送积分',
+          product_type: ProductType.TEXT_TO_SPEECH,
+        },
+      });
+    }
 
-    console.log(`✅ [Firebase Auth] 新用户已创建: ${decodedToken.uid}, 认证方式: ${authProvider}, 赠送积分: ${initialCredits}`);
+    console.log(`✅ [Firebase Auth] 新用户已创建: ${decodedToken.uid}, 认证方式: ${authProvider}, 赠送积分: ${initialCredits}, isNative: ${isNative}`);
   }
 }
 
@@ -174,11 +187,13 @@ export async function getOptionalUser(): Promise<AuthUser | null> {
  * 创建或获取匿名用户
  *
  * 基于设备指纹创建或返回现有匿名用户
+ * @param isNative 是否来自 Native App（用于区分积分配置）
  */
 async function createOrGetAnonymousUser(
   deviceFingerprint: string,
   ipAddress?: string,
-  userAgent?: string
+  userAgent?: string,
+  isNative: boolean = false
 ): Promise<{ user_id: string; credits: number }> {
   // 生成匿名用户 ID
   const hash = crypto.createHash('sha256').update(deviceFingerprint).digest('hex').substring(0, 16);
@@ -207,7 +222,11 @@ async function createOrGetAnonymousUser(
   // 创建新匿名用户
   const expiresAt = new Date();
   expiresAt.setDate(expiresAt.getDate() + appConfig.anonymous_user.expiry_days);
-  const initialCredits = appConfig.credits.anonymous_user;
+
+  // 根据来源使用不同的初始积分配置
+  const initialCredits = isNative
+    ? appConfig.credits.native.anonymous_user
+    : appConfig.credits.anonymous_user;
 
   anonUser = await prisma.anonymous_users.create({
     data: {
@@ -223,18 +242,20 @@ async function createOrGetAnonymousUser(
     },
   });
 
-  // 记录初始积分到积分历史表
-  await prisma.credit_history.create({
-    data: {
-      user_id: anonymousUserId,
-      task_id: `anon_signup_${uuidv4()}`,
-      amount: initialCredits,
-      description: '匿名用户初始赠送积分',
-      product_type: ProductType.TEXT_TO_SPEECH,
-    },
-  });
+  // 只有赠送积分时才记录历史
+  if (initialCredits > 0) {
+    await prisma.credit_history.create({
+      data: {
+        user_id: anonymousUserId,
+        task_id: `anon_signup_${uuidv4()}`,
+        amount: initialCredits,
+        description: isNative ? 'Native 匿名用户初始积分' : '匿名用户初始赠送积分',
+        product_type: ProductType.TEXT_TO_SPEECH,
+      },
+    });
+  }
 
-  console.log(`✅ 新匿名用户创建: ${anonymousUserId}, 初始积分: ${initialCredits}`);
+  console.log(`✅ 新匿名用户创建: ${anonymousUserId}, 初始积分: ${initialCredits}, isNative: ${isNative}`);
   return { user_id: anonUser.user_id, credits: anonUser.credits };
 }
 
@@ -276,7 +297,16 @@ export async function getUserOrAnonymous(): Promise<UnifiedUser> {
     const ipAddress = headersList.get('x-forwarded-for')?.split(',')[0] || undefined;
     const userAgent = headersList.get('user-agent') || undefined;
 
-    const anonUser = await createOrGetAnonymousUser(fingerprint, ipAddress, userAgent);
+    // 检测是否来自 Native App
+    // 方式1: 检查 x-client-type header
+    // 方式2: 检查 URL 路径（x-invoke-path 包含 /native/）
+    const clientType = headersList.get('x-client-type');
+    const invokePath = headersList.get('x-invoke-path') || '';
+    const isNative = clientType === 'native' || invokePath.includes('/native/');
+
+    console.log('🔍 [getUserOrAnonymous] isNative:', isNative, 'clientType:', clientType, 'invokePath:', invokePath);
+
+    const anonUser = await createOrGetAnonymousUser(fingerprint, ipAddress, userAgent, isNative);
 
     console.log('⚠️ [getUserOrAnonymous] 已降级到匿名用户:', anonUser.user_id);
 

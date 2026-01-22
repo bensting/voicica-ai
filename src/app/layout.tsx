@@ -9,6 +9,7 @@ import { LanguageProvider } from "@/contexts/LanguageContext";
 import { FirebaseAuthProvider } from "@/contexts/FirebaseAuthContext";
 import { UserProvider } from "@/contexts/UserContext";
 import { CreditsProvider } from "@/contexts/CreditsContext";
+import { SubscriptionProvider } from "@/contexts/SubscriptionContext";
 import { AudioSettingsProvider } from "@/contexts/AudioSettingsContext";
 import PWAUpdatePrompt from "@/components/layout/PWAUpdatePrompt";
 import AppUpdatePrompt from "@/components/native/AppUpdatePrompt";
@@ -198,7 +199,8 @@ export default async function RootLayout({
             <LanguageLoadingWrapper>
               <UserProvider>
                 <CreditsProvider>
-                  <AudioSettingsProvider>
+                  <SubscriptionProvider>
+                    <AudioSettingsProvider>
                     <DeviceFingerprintProvider>
                       <AdMobProvider>
                         <CapacitorProvider />
@@ -210,7 +212,8 @@ export default async function RootLayout({
                         <AccountLinkingModal />
                       </AdMobProvider>
                     </DeviceFingerprintProvider>
-                  </AudioSettingsProvider>
+                    </AudioSettingsProvider>
+                  </SubscriptionProvider>
                 </CreditsProvider>
               </UserProvider>
             </LanguageLoadingWrapper>

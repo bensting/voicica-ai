@@ -22,6 +22,7 @@ export const studioMenuCategories: StudioMenuCategories = {
   main: studioMenuItems.filter(item => !item.category && (item.enabled !== false)),
   ai_video: studioMenuItems.filter(item => item.category === 'ai_video' && (item.enabled !== false)),
   voiceover: studioMenuItems.filter(item => item.category === 'voiceover' && (item.enabled !== false)),
+  story: studioMenuItems.filter(item => item.category === 'story' && (item.enabled !== false)),
   music: studioMenuItems.filter(item => item.category === 'music' && (item.enabled !== false)),
   tools: studioMenuItems.filter(item => item.category === 'tools' && (item.enabled !== false)),
   account: studioMenuItems.filter(item => item.category === 'account' && (item.enabled !== false)),

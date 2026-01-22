@@ -3,13 +3,26 @@
     "brand": "Voicica AI",
     "cancel": "ยกเลิก",
     "close": "ปิด",
+    "confirm": "ยืนยัน",
+    "edit": "แก้ไข",
     "retry": "ลองใหม่",
     "loading": "กำลังโหลด...",
     "download": "ดาวน์โหลด",
     "share": "แชร์",
     "delete": "ลบ",
+    "deleting": "กำลังลบ...",
     "later": "ภายหลัง",
-    "refresh": "รีเฟรช"
+    "refresh": "รีเฟรช",
+    "save": "บันทึก",
+    "saving": "กำลังบันทึก...",
+    "insufficientCredits": "เครดิตไม่เพียงพอ กรุณาเติมเงินหรืออัปเกรดแพ็คเกจ",
+    "expand": "ขยาย",
+    "collapse": "ย่อ",
+    "play": "เล่น",
+    "pause": "หยุดชั่วคราว",
+    "processing": "กำลังประมวลผล...",
+    "generating": "กำลังสร้าง...",
+    "view": "ดู"
   },
   "app": {
     "updateAvailable": "มีเวอร์ชันใหม่",
@@ -56,6 +69,16 @@
     "zhCN": "简体中文",
     "zhTW": "繁體中文",
     "th": "ไทย"
+  },
+  "story": {
+    "generateTitle": "สร้างเรื่องราว",
+    "myStoriesTitle": "เรื่องราวของฉัน",
+    "myStoriesSubtitle": "ดูและจัดการเรื่องราวที่สร้างขึ้น",
+    "noStories": "ยังไม่มีเรื่องราว",
+    "noStoriesDesc": "เรื่องราวที่สร้างจะปรากฏที่นี่",
+    "generateAudio": "สร้างเสียง",
+    "generateIllustration": "สร้างภาพ",
+    "characters": "ตัวอักษร"
   },
   "footer": {
     "tagline": "โอบรับ AI โอบรับความเรียบง่าย",

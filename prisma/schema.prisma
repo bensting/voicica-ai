@@ -90,11 +90,16 @@ model tts_records {
   updated_at      DateTime? @updatedAt @db.Timestamptz(6)
   share_id        String?   @unique(map: "ix_tts_records_share_id") @db.VarChar(12)
 
+  // 关联故事（可选）
+  story_id        String?
+  story           stories?  @relation(fields: [story_id], references: [id], onDelete: SetNull)
+
   @@index([status], map: "ix_tts_records_status")
   @@index([user_id, created_at], map: "ix_tts_records_user_created")
   @@index([user_id], map: "ix_tts_records_user_id")
   @@index([user_id, status], map: "ix_tts_records_user_status")
   @@index([user_id, status, created_at], map: "ix_tts_records_user_status_created")
+  @@index([story_id], map: "ix_tts_records_story_id")
 }
 
 model user_subscriptions {
@@ -248,6 +253,7 @@ model video_records {
   seed            Int?      // Random seed for reproducibility
   is_public       Boolean   @default(false) // Public visibility
   credits_cost    Int       // Credits deducted
+  api_cost        Float?    // Actual API cost from provider (e.g., Runware)
   status          String    @db.VarChar(20) // PENDING, PROCESSING, SUCCESS, FAILURE
   progress        Int       @default(0) // 0-100 progress indicator
   video_url       String?   // R2 URL after success
@@ -257,6 +263,7 @@ model video_records {
   error_message   String?
   completed_at    DateTime? @db.Timestamptz(6)
   share_id        String?   @unique(map: "ix_video_records_share_id") @db.VarChar(12)
+  view_count      Int       @default(0) // Public view count
   id              Int       @id(map: "pk_video_records") @default(autoincrement())
   created_at      DateTime  @default(now()) @db.Timestamptz(6)
   updated_at      DateTime? @updatedAt @db.Timestamptz(6)
@@ -322,4 +329,239 @@ model ad_reward_transactions {
   @@index([user_id], map: "ix_ad_reward_transactions_user_id")
   @@index([timestamp], map: "ix_ad_reward_transactions_timestamp")
   @@index([processed], map: "ix_ad_reward_transactions_processed")
+}
+
+/// AI 生成的故事
+model stories {
+  id                String    @id @default(cuid())
+  user_id           String    @db.VarChar(128)
+
+  // 故事内容
+  title             String    @db.VarChar(500)
+  content           String    @db.Text
+
+  // 生成元数据
+  keywords          String?   @db.VarChar(500)   // 生成时使用的关键词
+  idea_title        String?   @db.VarChar(500)   // 选择的创意标题
+  idea_description  String?   @db.Text           // 选择的创意描述
+  locale            String    @default("en-US") @db.VarChar(20) // 生成语言
+
+  // 统计
+  word_count        Int       @default(0)        // 字数统计
+
+  // 角色描述（用于保持插图角色一致性）
+  character_descriptions String? @db.Text        // JSON 格式的角色描述
+
+  // 状态
+  status            String    @default("draft") @db.VarChar(20) // draft, published
+
+  // 视频（一个故事一个视频）
+  video_url         String?                      // 视频 URL
+  video_status      String    @default("none") @db.VarChar(20) // none, pending, processing, completed, failed
+  video_duration    Int?                         // 视频时长（秒）
+  video_thumbnail   String?                      // 视频封面
+
+  // 时间
+  created_at        DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at        DateTime? @updatedAt @db.Timestamptz(6)
+
+  // 关联
+  paragraphs        story_paragraphs[]
+  illustrations     story_illustrations[]
+  tts_records       tts_records[]
+
+  @@index([user_id], map: "ix_stories_user_id")
+  @@index([status], map: "ix_stories_status")
+  @@index([user_id, status], map: "ix_stories_user_status")
+  @@index([user_id, created_at], map: "ix_stories_user_created")
+  @@index([created_at], map: "ix_stories_created_at")
+}
+
+/// 故事插图（一个故事多个插图）
+model story_illustrations {
+  id          String    @id @default(cuid())
+  story_id    String
+
+  // 类型
+  type        String    @default("scene") @db.VarChar(20) // cover, scene
+
+  // 图片信息
+  image_url   String?                          // 图片 URL（生成完成后填充）
+  prompt      String?   @db.Text               // AI 生成提示词（英文，用于图片生成）
+  scene_description String? @db.Text           // 场景描述（原文语言，用于展示）
+  position    Int       @default(0)            // 在故事中的顺序
+  paragraph   Int?                             // 对应第几段（可选）
+
+  // 生成信息
+  task_id     String?   @db.VarChar(255)       // Runware task ID
+  width       Int       @default(1024)         // 图片宽度
+  height      Int       @default(1024)         // 图片高度
+  model       String?   @db.VarChar(100)       // 使用的模型
+  credits_cost Int      @default(0)            // 消耗积分
+
+  // 状态
+  status      String    @default("pending") @db.VarChar(20) // pending, processing, completed, failed
+  error_message String?                        // 错误信息
+
+  // 时间
+  created_at  DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at  DateTime? @updatedAt @db.Timestamptz(6)
+
+  // 关联
+  story       stories   @relation(fields: [story_id], references: [id], onDelete: Cascade)
+
+  @@index([story_id], map: "ix_story_illustrations_story_id")
+  @@index([position], map: "ix_story_illustrations_position")
+  @@index([status], map: "ix_story_illustrations_status")
+  @@index([type], map: "ix_story_illustrations_type")
+}
+
+/// AI 音乐生成记录
+model music_records {
+  user_id           String    @db.VarChar(255)
+  task_id           String    @unique(map: "ix_music_records_task_id") @db.VarChar(255)
+  external_task_id  String?   @db.VarChar(255)  // KIE API 返回的 taskId
+  model             String    @db.VarChar(50)   // music-5.0, music-4.5-plus, music-4.5
+  prompt            String    @db.Text          // 用户输入的提示词
+  style             String?   @db.VarChar(500)  // 音乐风格
+  title             String?   @db.VarChar(200)  // 歌曲标题
+  lyrics            String?   @db.Text          // 生成的歌词
+  is_instrumental   Boolean   @default(false)   // 是否纯音乐
+  is_custom_mode    Boolean   @default(false)   // 是否使用自定义模式
+  is_public         Boolean   @default(false)   // 是否公开
+  credits_cost      Int                         // 消耗积分
+  status            String    @db.VarChar(20)   // PENDING, PROCESSING, SUCCESS, FAILURE
+  progress          Int       @default(0)       // 0-100 进度
+
+  // 生成结果（可能有多个音频）
+  audio_url         String?                     // 主音频 URL
+  audio_url_2       String?                     // 第二个音频 URL（Suno 一次生成两个）
+  stream_url        String?                     // 流媒体 URL
+  stream_url_2      String?                     // 第二个流媒体 URL
+  cover_url         String?                     // 封面图 URL
+  cover_url_2       String?                     // 第二个封面图 URL
+  duration          Float?                      // 音频时长（秒）
+  duration_2        Float?                      // 第二个音频时长
+  tags              String?   @db.VarChar(500)  // 音乐标签
+
+  error_message     String?
+  completed_at      DateTime? @db.Timestamptz(6)
+  share_id          String?   @unique(map: "ix_music_records_share_id") @db.VarChar(12)
+  id                Int       @id(map: "pk_music_records") @default(autoincrement())
+  created_at        DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at        DateTime? @updatedAt @db.Timestamptz(6)
+
+  @@index([status], map: "ix_music_records_status")
+  @@index([user_id], map: "ix_music_records_user_id")
+  @@index([user_id, created_at], map: "ix_music_records_user_created")
+  @@index([user_id, status], map: "ix_music_records_user_status")
+  @@index([external_task_id], map: "ix_music_records_external_task_id")
+  @@index([is_public], map: "ix_music_records_is_public")
+}
+
+/// RVC 声音模型（用于 AI Cover 功能）
+model rvc_voice_models {
+  id              Int       @id @default(autoincrement())
+  name            String    @db.VarChar(100)           // 显示名称
+  slug            String    @unique @db.VarChar(100)   // URL 友好的唯一标识
+  category        String    @db.VarChar(50)            // my-clone, cartoon, music, rapper, celebrity, anime
+  avatar_url      String?                              // 头像 URL
+  sample_url      String?                              // 试听音频 URL
+  model_url       String                               // RVC 模型下载 URL
+  index_url       String?                              // RVC index 文件 URL（可选）
+  uses_count      Int       @default(0)                // 使用次数
+  is_builtin      Boolean   @default(false)            // 是否内置模型 (Obama, Trump, Sandy, Rogan)
+  builtin_name    String?   @db.VarChar(50)            // 内置模型名称
+  is_active       Boolean   @default(true)             // 是否启用
+  sort_order      Int       @default(0)                // 排序
+  created_at      DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at      DateTime? @updatedAt @db.Timestamptz(6)
+
+  @@index([category], map: "ix_rvc_voice_models_category")
+  @@index([is_active], map: "ix_rvc_voice_models_is_active")
+  @@index([is_builtin], map: "ix_rvc_voice_models_is_builtin")
+  @@index([sort_order], map: "ix_rvc_voice_models_sort_order")
+}
+
+/// AI Cover 生成记录
+model cover_records {
+  id                Int       @id @default(autoincrement())
+  user_id           String    @db.VarChar(255)
+  task_id           String    @unique @db.VarChar(255)
+
+  // 输入
+  original_audio_url String                            // 原始音频 URL
+  voice_model_id    Int                                // 使用的声音模型 ID
+  voice_model_name  String    @db.VarChar(100)         // 声音模型名称（冗余存储）
+
+  // 参数
+  pitch_change      Int       @default(0)              // 音高调整（半音）
+  f0_method         String    @default("rmvpe") @db.VarChar(20) // 音高检测方法
+  index_rate        Float     @default(0.5)            // AI 口音强度
+  protect           Float     @default(0.33)           // 保护原始呼吸声
+
+  // 处理状态
+  status            String    @db.VarChar(20)          // PENDING, SEPARATING, CONVERTING, MERGING, SUCCESS, FAILURE
+  progress          Int       @default(0)              // 0-100
+
+  // Replicate 任务 ID
+  spleeter_task_id  String?   @db.VarChar(255)         // Spleeter 人声分离任务 ID
+  rvc_task_id       String?   @db.VarChar(255)         // RVC 音色转换任务 ID
+
+  // 中间结果
+  vocals_url        String?                            // 分离出的人声 URL
+  accompaniment_url String?                            // 分离出的伴奏 URL
+  converted_vocals_url String?                         // 转换后的人声 URL
+
+  // 最终结果
+  output_url        String?                            // 最终合成的音频 URL
+  duration          Float?                             // 音频时长（秒）
+
+  // 费用
+  credits_cost      Int                                // 消耗积分
+  is_public         Boolean   @default(false)          // 是否公开
+
+  error_message     String?
+  share_id          String?   @unique @db.VarChar(12)
+  completed_at      DateTime? @db.Timestamptz(6)
+  created_at        DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at        DateTime? @updatedAt @db.Timestamptz(6)
+
+  @@index([user_id], map: "ix_cover_records_user_id")
+  @@index([status], map: "ix_cover_records_status")
+  @@index([user_id, status], map: "ix_cover_records_user_status")
+  @@index([user_id, created_at], map: "ix_cover_records_user_created")
+  @@index([voice_model_id], map: "ix_cover_records_voice_model_id")
+}
+
+/// 故事段落（一个故事多个段落）
+model story_paragraphs {
+  id              String    @id @default(cuid())
+  story_id        String
+
+  // 段落内容
+  position        Int       @default(0)            // 段落顺序（从0开始）
+  content         String    @db.Text               // 段落文本内容
+
+  // 音频（段落级别的 TTS）
+  audio_url       String?                          // 段落音频 URL
+  audio_duration  Float?                           // 音频时长（秒）
+  audio_voice     String?   @db.VarChar(255)       // 使用的语音名称
+  audio_status    String    @default("none") @db.VarChar(20) // none, pending, processing, completed, failed
+
+  // 插图（段落级别）
+  illustration_url    String?                      // 段落插图 URL
+  illustration_prompt String?   @db.Text           // 生成插图的提示词
+  illustration_status String   @default("none") @db.VarChar(20) // none, pending, processing, completed, failed
+
+  // 时间
+  created_at      DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at      DateTime? @updatedAt @db.Timestamptz(6)
+
+  // 关联
+  story           stories   @relation(fields: [story_id], references: [id], onDelete: Cascade)
+
+  @@unique([story_id, position], map: "uq_story_paragraphs_story_position")
+  @@index([story_id], map: "ix_story_paragraphs_story_id")
+  @@index([position], map: "ix_story_paragraphs_position")
 }

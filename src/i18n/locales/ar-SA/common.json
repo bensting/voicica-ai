@@ -3,13 +3,26 @@
     "brand": "Voicica AI",
     "cancel": "إلغاء",
     "close": "إغلاق",
+    "confirm": "تأكيد",
+    "edit": "تعديل",
     "retry": "إعادة المحاولة",
     "loading": "جارٍ التحميل...",
     "download": "تحميل",
     "share": "مشاركة",
     "delete": "حذف",
+    "deleting": "جارٍ الحذف...",
     "later": "لاحقاً",
-    "refresh": "تحديث"
+    "refresh": "تحديث",
+    "save": "حفظ",
+    "saving": "جارٍ الحفظ...",
+    "insufficientCredits": "رصيد غير كافٍ. يرجى الشحن أو ترقية خطتك",
+    "expand": "توسيع",
+    "collapse": "طي",
+    "play": "تشغيل",
+    "pause": "إيقاف مؤقت",
+    "processing": "جارٍ المعالجة...",
+    "generating": "جارٍ الإنشاء...",
+    "view": "عرض"
   },
   "app": {
     "updateAvailable": "يتوفر تحديث",
@@ -55,6 +68,16 @@
     "en": "English",
     "zhCN": "简体中文",
     "zhTW": "繁體中文"
+  },
+  "story": {
+    "generateTitle": "إنشاء قصة",
+    "myStoriesTitle": "قصصي",
+    "myStoriesSubtitle": "عرض وإدارة القصص المُنشأة",
+    "noStories": "لا توجد قصص بعد",
+    "noStoriesDesc": "ستظهر القصص المُنشأة هنا",
+    "generateAudio": "صوت",
+    "generateIllustration": "رسم توضيحي",
+    "characters": "حرف"
   },
   "footer": {
     "tagline": "احتضن الذكاء الاصطناعي، احتضن البساطة",

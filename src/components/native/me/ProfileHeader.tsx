@@ -33,7 +33,8 @@ interface ProfileHeaderProps {
 export default function ProfileHeader({
   userName = 'Guest',
   avatarUrl,
-  isLoggedIn: _isLoggedIn = false,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  isLoggedIn = false,
 }: ProfileHeaderProps) {
   const router = useRouter();
 

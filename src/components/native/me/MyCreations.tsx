@@ -432,7 +432,8 @@ function MusicCard({ music, onClick }: { music: MusicRecord; onClick: () => void
   );
 }
 
-// 视频卡片组件 - 统一使用正方形显示
+// 视频卡片组件 - 统一使用正方形显示 (预留，暂未使用)
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function VideoCard({ video, onClick }: { video: VideoItem; onClick: () => void }) {
   const isProcessing = video.status === 'PENDING' || video.status === 'PROCESSING';
   const isSuccess = video.status === 'SUCCESS';
@@ -521,6 +522,7 @@ export default function MyCreations() {
     : 'music';
 
   const [activeTab, setActiveTab] = useState<TabType>(initialTab);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [videos, setVideos] = useState<VideoItem[]>([]);
   const [musicRecords, setMusicRecords] = useState<MusicRecord[]>([]);
   const [loading, setLoading] = useState(false);
@@ -534,7 +536,8 @@ export default function MyCreations() {
   const startY = useRef(0);
   const PULL_THRESHOLD = 60;
 
-  // 获取视频列表
+  // 获取视频列表 (预留，暂未使用)
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const fetchVideos = useCallback(async (isRefresh = false) => {
     if (!token) return;
 
@@ -684,6 +687,7 @@ export default function MyCreations() {
     setIsPulling(false);
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleVideoClick = (video: VideoItem) => {
     router.push(`/native/video/task/${video.taskId}`);
   };

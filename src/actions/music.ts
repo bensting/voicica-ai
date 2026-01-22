@@ -573,3 +573,44 @@ export async function deleteMusicRecord(recordId: number): Promise<void> {
 
   console.log(`🎵 音乐记录已删除: ${recordId}`);
 }
+
+/**
+ * 公开音乐记录类型（用于 Explore 展示）
+ */
+export interface PublicMusicRecord {
+  id: number;
+  task_id: string;
+  title: string | null;
+  cover_url: string | null;
+  audio_url: string | null;
+  duration: number | null;
+  tags: string | null;
+  created_at: Date;
+}
+
+/**
+ * 获取公开的音乐记录（用于 Explore 页面）
+ */
+export async function getPublicMusicRecords(limit: number = 20): Promise<PublicMusicRecord[]> {
+  const records = await prisma.music_records.findMany({
+    where: {
+      is_public: true,
+      status: 'SUCCESS',
+      audio_url: { not: null },
+    },
+    orderBy: { created_at: 'desc' },
+    take: limit,
+    select: {
+      id: true,
+      task_id: true,
+      title: true,
+      cover_url: true,
+      audio_url: true,
+      duration: true,
+      tags: true,
+      created_at: true,
+    },
+  });
+
+  return records;
+}

@@ -592,24 +592,10 @@ export default function MyCreations() {
 
   // 初始加载
   useEffect(() => {
-    if (activeTab === 'videos' && token) {
-      fetchVideos();
-    } else if (activeTab === 'music') {
+    if (activeTab === 'music') {
       fetchMusic();
     }
-  }, [activeTab, token, fetchVideos, fetchMusic]);
-
-  // 如果有正在处理的视频，定时刷新
-  useEffect(() => {
-    const hasProcessing = videos.some(
-      (v) => v.status === 'PENDING' || v.status === 'PROCESSING'
-    );
-
-    if (hasProcessing && activeTab === 'videos') {
-      const interval = setInterval(() => fetchVideos(), 5000);
-      return () => clearInterval(interval);
-    }
-  }, [videos, activeTab, fetchVideos]);
+  }, [activeTab, fetchMusic]);
 
   // 如果有正在处理的音乐，定时刷新（开发环境直接查询 KIE API）
   useEffect(() => {
@@ -690,9 +676,7 @@ export default function MyCreations() {
 
   const handleTouchEnd = async () => {
     if (pullDistance >= PULL_THRESHOLD && !refreshing) {
-      if (activeTab === 'videos') {
-        await fetchVideos(true);
-      } else if (activeTab === 'music') {
+      if (activeTab === 'music') {
         await fetchMusic(true);
       }
     }
@@ -730,11 +714,9 @@ export default function MyCreations() {
   const filteredMusicRecords = musicRecords.filter((m) => m.status !== 'FAILURE');
 
   const emptyState = emptyStateMessages[activeTab];
-  const isEmpty = activeTab === 'videos'
-    ? videos.length === 0
-    : activeTab === 'music'
-      ? filteredMusicRecords.length === 0
-      : true;
+  const isEmpty = activeTab === 'music'
+    ? filteredMusicRecords.length === 0
+    : true;
 
   // 按日期分组
   const groupedMusicRecords = filteredMusicRecords.reduce((groups, music) => {
@@ -797,38 +779,7 @@ export default function MyCreations() {
         )}
 
         {/* 内容区域 */}
-        {activeTab === 'videos' ? (
-          loading && videos.length === 0 ? (
-            // 加载中
-            <div className="flex justify-center py-8">
-              <div className="w-8 h-8 border-3 border-purple-500 border-t-transparent rounded-full animate-spin" />
-            </div>
-          ) : isEmpty ? (
-            // 空状态
-            <div className="flex flex-col items-center justify-center py-8">
-              <EmptyIllustration />
-              <p className="mt-3 text-gray-400 text-center">{emptyState.title}</p>
-              <p className="text-gray-500 text-sm text-center">{emptyState.subtitle}</p>
-              <Link
-                href={emptyState.createLink}
-                className="mt-4 px-8 py-3 bg-white/10 border border-white/20 rounded-full text-white font-medium hover:bg-white/20 transition-colors"
-              >
-                Go create
-              </Link>
-            </div>
-          ) : (
-            // 视频列表 - 3列正方形网格
-            <div className="grid grid-cols-3 gap-2">
-              {videos.map((video) => (
-                <VideoCard
-                  key={video.taskId}
-                  video={video}
-                  onClick={() => handleVideoClick(video)}
-                />
-              ))}
-            </div>
-          )
-        ) : activeTab === 'music' ? (
+        {activeTab === 'music' ? (
           loading && musicRecords.length === 0 ? (
             // 加载中
             <div className="flex justify-center py-8">

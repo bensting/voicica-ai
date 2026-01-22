@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Download, Pencil } from 'lucide-react';
 import type { MusicRecord } from '@/actions/music';
 import GradientButton from '@/components/ui/GradientButton';
@@ -23,11 +23,31 @@ export default function MusicDetailModal({
   const audioRef = useRef<HTMLAudioElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
-  const [duration, setDuration] = useState(music.duration || 0);
+  const [duration, setDuration] = useState(0);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+
+  // 双版本切换
+  const [currentTrack, setCurrentTrack] = useState<1 | 2>(1);
+  const hasSecondTrack = !!music.audio_url_2;
+
+  // 当前播放的音频和封面 URL
+  const currentAudioUrl = currentTrack === 1 ? music.audio_url : music.audio_url_2;
+  const currentCoverUrl = currentTrack === 1 ? music.cover_url : (music.cover_url_2 || music.cover_url);
+  const currentDuration = currentTrack === 1 ? music.duration : (music.duration_2 || music.duration);
 
   const displayTitle = music.title || 'AI Music';
   const displayLyrics = music.lyrics || music.prompt || '';
+
+  // 切换版本时重置播放状态
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+    }
+    setIsPlaying(false);
+    setCurrentTime(0);
+    setDuration(currentDuration || 0);
+  }, [currentTrack, currentDuration]);
 
   const togglePlay = () => {
     if (!audioRef.current) return;
@@ -66,14 +86,14 @@ export default function MusicDetailModal({
   };
 
   const handleDownload = async () => {
-    if (!music.audio_url) return;
+    if (!currentAudioUrl) return;
     try {
-      const response = await fetch(music.audio_url);
+      const response = await fetch(currentAudioUrl);
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `${displayTitle}.mp3`;
+      a.download = `${displayTitle}${hasSecondTrack ? ` (Version ${currentTrack})` : ''}.mp3`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -89,14 +109,20 @@ export default function MusicDetailModal({
     onClose();
   };
 
+  const switchTrack = (track: 1 | 2) => {
+    if (track !== currentTrack) {
+      setCurrentTrack(track);
+    }
+  };
+
   const progress = duration > 0 ? (currentTime / duration) * 100 : 0;
 
   return (
     <div className="fixed inset-0 z-[9999] bg-[#0a0a1a] flex flex-col">
-      {music.audio_url && (
+      {currentAudioUrl && (
         <audio
           ref={audioRef}
-          src={music.audio_url}
+          src={currentAudioUrl}
           onTimeUpdate={handleTimeUpdate}
           onLoadedMetadata={handleLoadedMetadata}
           onEnded={handleEnded}
@@ -129,10 +155,10 @@ export default function MusicDetailModal({
         {/* 封面图 */}
         <div className="flex justify-center mb-4">
           <div className="relative w-48 h-48 rounded-xl overflow-hidden shadow-2xl">
-            {music.cover_url ? (
+            {currentCoverUrl ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img
-                src={music.cover_url}
+                src={currentCoverUrl}
                 alt={displayTitle}
                 className="w-full h-full object-cover"
               />
@@ -152,6 +178,34 @@ export default function MusicDetailModal({
         </div>
 
         <h1 className="text-2xl font-bold text-white text-center mb-4">{displayTitle}</h1>
+
+        {/* 版本切换器 - 只在有两个版本时显示 */}
+        {hasSecondTrack && (
+          <div className="flex justify-center mb-4">
+            <div className="inline-flex bg-gray-800/60 rounded-lg p-1">
+              <button
+                onClick={() => switchTrack(1)}
+                className={`px-4 py-1.5 text-sm font-medium rounded-md transition-colors ${
+                  currentTrack === 1
+                    ? 'bg-purple-500 text-white'
+                    : 'text-gray-400 hover:text-white'
+                }`}
+              >
+                Version 1
+              </button>
+              <button
+                onClick={() => switchTrack(2)}
+                className={`px-4 py-1.5 text-sm font-medium rounded-md transition-colors ${
+                  currentTrack === 2
+                    ? 'bg-purple-500 text-white'
+                    : 'text-gray-400 hover:text-white'
+                }`}
+              >
+                Version 2
+              </button>
+            </div>
+          </div>
+        )}
 
         {displayLyrics && (
           <div className="text-gray-300 text-sm leading-relaxed whitespace-pre-wrap mb-6 max-h-48 overflow-y-auto">
@@ -182,7 +236,7 @@ export default function MusicDetailModal({
         <div className="flex justify-center mb-4">
           <button
             onClick={togglePlay}
-            disabled={!music.audio_url}
+            disabled={!currentAudioUrl}
             className="w-16 h-16 flex items-center justify-center bg-gray-700 rounded-full hover:bg-gray-600 transition-colors disabled:opacity-50"
           >
             {isPlaying ? (
@@ -231,7 +285,7 @@ export default function MusicDetailModal({
             iconPosition="left"
             size="md"
             onClick={handleDownload}
-            disabled={!music.audio_url}
+            disabled={!currentAudioUrl}
             className="flex-[2] !py-3"
           >
             Download

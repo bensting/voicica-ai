@@ -11,10 +11,39 @@ import { v4 as uuidv4 } from 'uuid';
 import { nanoid } from 'nanoid';
 import { InsufficientCreditsError, errorToResponse } from '@/lib/errors';
 import { checkCredits } from '@/lib/credits';
+import { uploadAudio } from '@/lib/services/r2-storage';
 
 // Replicate API 配置
 const REPLICATE_API_BASE = 'https://api.replicate.com/v1';
 const REPLICATE_API_TOKEN = process.env.REPLICATE_API_TOKEN || '';
+
+/**
+ * 从 Replicate URL 下载并上传到 R2
+ */
+async function downloadAndUploadToR2(
+  url: string,
+  taskId: string
+): Promise<string | null> {
+  try {
+    console.log(`📥 [R2 Upload] 下载 Cover 文件: ${url.substring(0, 80)}...`);
+
+    const response = await fetch(url);
+    if (!response.ok) {
+      console.error(`📥 [R2 Upload] 下载失败: ${response.status}`);
+      return null;
+    }
+
+    const buffer = Buffer.from(await response.arrayBuffer());
+    const fileName = `${taskId}.mp3`;
+    const r2Url = await uploadAudio(buffer, fileName, 'audio/mpeg', 'cover_audio');
+
+    console.log(`✅ [R2 Upload] Cover 上传成功: ${r2Url}`);
+    return r2Url;
+  } catch (error) {
+    console.error(`❌ [R2 Upload] Cover 上传失败:`, error);
+    return null;
+  }
+}
 
 // 模型版本 - zsxkib/realistic-voice-cloning
 const VOICE_CLONING_VERSION = '0a9c7c558af4c0f20667c1bd1260ce32a2879944a0b9e44e1398660c077b1550';
@@ -385,25 +414,33 @@ export async function processCoverTask(taskId: string): Promise<CoverTaskStatus>
         console.log('🎤 [processCoverTask] 任务状态:', predictionStatus.status);
 
         if (predictionStatus.status === 'succeeded') {
-          // 成功，获取输出 URL
-          const outputUrl = predictionStatus.output as string;
+          // 成功，获取输出 URL 并下载到 R2
+          const replicateOutputUrl = predictionStatus.output as string;
+
+          console.log('🎤 [processCoverTask] 任务成功，开始下载到 R2...');
+
+          // 下载到 R2
+          const r2Url = await downloadAndUploadToR2(replicateOutputUrl, taskId);
+          const finalUrl = r2Url || replicateOutputUrl; // 如果 R2 上传失败，保留原始 URL
 
           await prisma.cover_records.update({
             where: { task_id: taskId },
             data: {
               status: 'SUCCESS',
               progress: 100,
-              output_url: outputUrl,
+              output_url: finalUrl,
               completed_at: new Date(),
             },
           });
+
+          console.log(`🎤 [processCoverTask] Cover 完成: ${taskId}`);
 
           return {
             task_id: taskId,
             status: 'SUCCESS',
             progress: 100,
             result: {
-              output_url: outputUrl,
+              output_url: finalUrl,
             },
             error: null,
           };

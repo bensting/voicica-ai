@@ -53,9 +53,9 @@ export const appConfig: AppConfig = {
    * 每日任务配置
    */
   daily_tasks: {
-    checkin_credits: 100,
-    ad_reward_tiers: [200, 300, 400, 500, 800, 1000],
-    popup_interval_minutes: 1, // 开发环境 1 分钟，方便测试
+    checkin_credits: 1,
+    ad_reward_tiers: [1, 1, 2, 2, 3, 3],
+    popup_interval_minutes: 5, // 开发环境 1 分钟，方便测试
     enabled: true,
   },
 

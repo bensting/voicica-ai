@@ -10,13 +10,6 @@ interface CreateSheetProps {
 }
 
 // 图标组件
-const VideoIcon = () => (
-  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-    <rect x="2" y="4" width="20" height="16" rx="2" />
-    <path d="M10 9l5 3-5 3V9z" fill="currentColor" stroke="none" />
-  </svg>
-);
-
 const MusicIcon = () => (
   <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
     <path d="M9 18V5l12-2v13" />
@@ -45,27 +38,10 @@ const VoiceIcon = () => (
   </svg>
 );
 
-const EffectIcon = () => (
+const DialogueIcon = () => (
   <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-    <path d="M12 3l1.5 4.5L18 9l-4.5 1.5L12 15l-1.5-4.5L6 9l4.5-1.5L12 3z" />
-    <path d="M5 19l1 3 1-3 3-1-3-1-1-3-1 3-3 1 3 1z" />
-  </svg>
-);
-
-const SwapIcon = () => (
-  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-    <circle cx="9" cy="7" r="4" />
-    <path d="M3 21v-2a4 4 0 014-4h4" />
-    <circle cx="17" cy="17" r="3" />
-    <path d="M14 14l6 6" />
-  </svg>
-);
-
-const ImageIcon = () => (
-  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-    <rect x="3" y="3" width="18" height="18" rx="2" />
-    <circle cx="8.5" cy="8.5" r="1.5" />
-    <path d="M21 15l-5-5L5 21" />
+    <path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z" />
+    <path d="M8 10h.01M12 10h.01M16 10h.01" strokeWidth="2" strokeLinecap="round" />
   </svg>
 );
 
@@ -84,13 +60,10 @@ const CloseIcon = () => (
 
 // 图标映射
 const iconMap: Record<CreateMenuIcon, React.FC> = {
-  video: VideoIcon,
   music: MusicIcon,
   cover: CoverIcon,
   voice: VoiceIcon,
-  effect: EffectIcon,
-  swap: SwapIcon,
-  image: ImageIcon,
+  dialogue: DialogueIcon,
 };
 
 /**

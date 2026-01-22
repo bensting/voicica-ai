@@ -7,6 +7,7 @@ import { useCredits } from '@/contexts/CreditsContext';
 import { useSubscription } from '@/contexts/SubscriptionContext';
 import GradientButton from '@/components/native/common/GradientButton';
 import CreditsIcon from '@/components/native/common/CreditsIcon';
+import CreditsInfoBar from '@/components/native/common/CreditsInfoBar';
 import AssistantInput from '@/components/native/common/AssistantInput';
 import AssistantModal from '@/components/native/common/AssistantModal';
 import LoginModal from '@/components/native/LoginModal';
@@ -36,7 +37,7 @@ const STORAGE_KEY = 'music_draft';
 const LYRICS_PROMPT_KEY = 'music_lyrics_prompt';
 
 // Tab 类型
-type MusicTab = 'simple' | 'custom' | 'cover' | 'dedicate';
+type MusicTab = 'simple' | 'custom';
 
 // 图标组件
 const BackIcon = () => (
@@ -174,7 +175,7 @@ export default function NativeMusicPage() {
   const [currentTaskId, setCurrentTaskId] = useState<string | null>(null);
   const [generatingProgress, setGeneratingProgress] = useState(0);
 
-  const [activeTab, setActiveTab] = useState<MusicTab>('simple');
+  const [activeTab, setActiveTab] = useState<MusicTab>('custom');
   const [prompt, setPrompt] = useState('');
   const [model, setModel] = useState(defaultMusicModelId);
   const [isPublic, setIsPublic] = useState(true);
@@ -241,22 +242,6 @@ export default function NativeMusicPage() {
     }));
   }, [prompt, model, activeTab, isInstrumental, isPublic, lyrics, style, title, vocalGender]);
 
-  // 加载 Cover 声音模型
-  useEffect(() => {
-    if (activeTab === 'cover') {
-      setIsLoadingVoices(true);
-      getRvcVoiceModels(voiceCategory === 'all' ? undefined : voiceCategory)
-        .then((voices) => {
-          setCoverVoices(voices);
-        })
-        .catch((err) => {
-          console.error('Failed to load cover voices:', err);
-        })
-        .finally(() => {
-          setIsLoadingVoices(false);
-        });
-    }
-  }, [activeTab, voiceCategory]);
 
   // 轮询 Cover 任务状态
   useEffect(() => {
@@ -434,15 +419,10 @@ export default function NativeMusicPage() {
   // 预估积分消耗（根据选中的模型和当前输入）
   const hasInput = (() => {
     if (activeTab === 'custom') return lyrics.trim().length > 0;
-    if (activeTab === 'cover') {
-      const hasAudio = coverAudioFile !== null || selectedHistoryMusic !== null;
-      return hasAudio && selectedVoice !== null;
-    }
     return prompt.trim().length > 0;
   })();
   const estimatedCredits = (() => {
     if (!hasInput) return 0;
-    if (activeTab === 'cover') return 50; // Cover 功能固定 50 积分
     return selectedModel?.credits ?? 30;
   })();
 
@@ -552,22 +532,14 @@ export default function NativeMusicPage() {
 
   // 是否可以生成 (根据当前 tab 判断)
   const canGenerate = (() => {
-    if (isGenerating || isCoverGenerating) return false;
+    if (isGenerating) return false;
     if (activeTab === 'simple') {
       return prompt.trim().length > 0;
     } else if (activeTab === 'custom') {
       return lyrics.trim().length > 0;
-    } else if (activeTab === 'cover') {
-      // 支持上传文件或从历史选择
-      const hasAudio = coverAudioFile !== null || selectedHistoryMusic !== null;
-      return hasAudio && selectedVoice !== null;
     }
-    // Dedicate tab - 暂时禁用
     return false;
   })();
-
-  // Cover 功能积分
-  const COVER_CREDITS = 50;
 
   // 处理生成
   const handleGenerate = async () => {
@@ -590,77 +562,6 @@ export default function NativeMusicPage() {
     setGeneratingStatus('generating');
     setGeneratingError(null);
     setError(null);
-
-    // Cover tab 处理
-    if (activeTab === 'cover') {
-      setIsCoverGenerating(true);
-      try {
-        if ((!coverAudioFile && !selectedHistoryMusic) || !selectedVoice) {
-          throw new Error('Please select an audio file and a voice');
-        }
-
-        let audioUrl: string;
-
-        // 如果从历史选择，直接使用现有 URL
-        if (selectedHistoryMusic && selectedHistoryMusic.audio_url) {
-          audioUrl = selectedHistoryMusic.audio_url;
-          console.log('🎤 [handleGenerate] 使用历史音乐:', audioUrl);
-        } else if (coverAudioFile) {
-          // 上传音频文件到 R2
-          console.log('🎤 [handleGenerate] 上传音频文件');
-          const formData = new FormData();
-          formData.append('file', coverAudioFile);
-          formData.append('type', 'cover-input');
-
-          const uploadResponse = await fetch('/api/upload', {
-            method: 'POST',
-            body: formData,
-          });
-
-          if (!uploadResponse.ok) {
-            throw new Error('Failed to upload audio file');
-          }
-
-          const uploadResult = await uploadResponse.json();
-          audioUrl = uploadResult.url;
-          console.log('🎤 [handleGenerate] 音频上传成功:', audioUrl);
-        } else {
-          throw new Error('No audio source available');
-        }
-
-        // 创建 Cover 任务
-        const result = await createCoverTask({
-          originalAudioUrl: audioUrl,
-          voiceModelId: selectedVoice.id,
-          pitchChange: coverPitchChange,
-          isPublic,
-        });
-
-        console.log('🎤 [handleGenerate] createCoverTask 返回', result);
-
-        if (result.status === 'FAILURE') {
-          setGeneratingStatus('error');
-          setGeneratingError(result.error || 'Failed to create cover task');
-          setIsCoverGenerating(false);
-          return;
-        }
-
-        // 任务创建成功，开始轮询
-        setCoverTaskId(result.task_id);
-        setCoverStatus(result.status);
-        setGeneratingProgress(result.progress || 10);
-
-        // 清空
-        handleClearCoverAudio();
-        setSelectedVoice(null);
-      } catch (err) {
-        console.error('🎤 [handleGenerate] Cover 错误:', err);
-        setGeneratingStatus('error');
-        setGeneratingError(err instanceof Error ? err.message : 'Failed to create cover');
-        setIsCoverGenerating(false);
-      }
-      return;
-    }
 
     // Simple/Custom tab 处理
     setIsGenerating(true);
@@ -775,10 +676,8 @@ export default function NativeMusicPage() {
   }, [currentTaskId, generatingStatus]);
 
   const tabs: { id: MusicTab; label: string }[] = [
-    { id: 'simple', label: 'Simple' },
     { id: 'custom', label: 'Custom' },
-    { id: 'cover', label: 'Cover' },
-    { id: 'dedicate', label: 'Dedicate' },
+    { id: 'simple', label: 'Simple' },
   ];
 
   return (
@@ -890,7 +789,7 @@ export default function NativeMusicPage() {
             {/* Reference Audio */}
             <div>
               <div className="flex items-center justify-between mb-2">
-                <span className="text-white font-medium">Reference Audio</span>
+                <span className="text-white font-medium">Reference Audio <span className="text-gray-500 font-normal">(Optional)</span></span>
                 <button
                   onClick={() => setIsModelSelectorOpen(!isModelSelectorOpen)}
                   className="flex items-center gap-1.5 text-gray-400 text-sm"
@@ -1026,274 +925,11 @@ export default function NativeMusicPage() {
           </div>
         )}
 
-        {/* Tab Content - Cover Tab */}
-        {activeTab === 'cover' && (
-          <div className="flex-1 flex flex-col space-y-4 overflow-y-auto">
-            {/* Original Song Section */}
-            <div>
-              <span className="text-white font-medium">Original Song</span>
-              {/* Tab: Upload Audio | Select from history */}
-              <div className="flex bg-gray-800/60 rounded-xl p-1 mt-2">
-                <button
-                  onClick={() => setCoverAudioSource('upload')}
-                  className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-colors ${
-                    coverAudioSource === 'upload'
-                      ? 'bg-gray-700 text-white'
-                      : 'text-gray-400'
-                  }`}
-                >
-                  Upload Audio
-                </button>
-                <button
-                  onClick={() => {
-                    setCoverAudioSource('history');
-                    // 如果还没有选择历史音乐，直接打开选择器
-                    if (!selectedHistoryMusic) {
-                      handleOpenHistorySheet();
-                    }
-                  }}
-                  className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-colors ${
-                    coverAudioSource === 'history'
-                      ? 'bg-gray-700 text-white'
-                      : 'text-gray-400'
-                  }`}
-                >
-                  Select from history
-                </button>
-              </div>
-
-              {/* Upload Area or Selected Audio */}
-              {coverAudioFile ? (
-                // 显示上传的文件
-                <div className="flex items-center gap-3 p-4 bg-gray-800/60 rounded-2xl mt-3">
-                  <div className="w-12 h-12 rounded-xl bg-purple-500/20 flex items-center justify-center text-purple-400">
-                    <MusicNoteIcon />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-white text-sm font-medium truncate">{coverAudioFile.name}</p>
-                    <p className="text-gray-400 text-xs">{(coverAudioFile.size / 1024 / 1024).toFixed(2)} MB</p>
-                  </div>
-                  <button
-                    onClick={handleClearCoverAudio}
-                    className="p-2 text-gray-400 hover:text-red-400 transition-colors"
-                  >
-                    <TrashIcon />
-                  </button>
-                </div>
-              ) : selectedHistoryMusic ? (
-                // 显示从历史选择的音乐
-                <div className="flex items-center gap-3 p-4 bg-gray-800/60 rounded-2xl mt-3">
-                  <div className="w-12 h-12 rounded-xl bg-purple-500/20 flex items-center justify-center text-purple-400">
-                    <MusicNoteIcon />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-white text-sm font-medium truncate">
-                      {selectedHistoryMusic.title || 'AI Music'}
-                    </p>
-                    <p className="text-gray-400 text-xs">
-                      {formatDuration(selectedHistoryMusic.duration)}
-                    </p>
-                  </div>
-                  <button
-                    onClick={handleClearCoverAudio}
-                    className="p-2 text-gray-400 hover:text-red-400 transition-colors"
-                  >
-                    <TrashIcon />
-                  </button>
-                  <button className="p-2 text-gray-400 hover:text-white transition-colors">
-                    <PlayIcon />
-                  </button>
-                </div>
-              ) : coverAudioSource === 'history' ? (
-                // 历史模式下显示点击选择区域
-                <button
-                  onClick={handleOpenHistorySheet}
-                  className="w-full border-2 border-dashed border-gray-600 rounded-2xl p-6 mt-3 flex flex-col items-center justify-center hover:border-purple-500 transition-colors"
-                >
-                  <UploadIcon />
-                  <p className="text-gray-400 text-sm mt-2 text-center">
-                    Click to select an original song to create an AI cover.
-                  </p>
-                </button>
-              ) : (
-                // 上传模式下显示文件选择
-                <label className="w-full border-2 border-dashed border-gray-600 rounded-2xl p-6 mt-3 flex flex-col items-center justify-center hover:border-purple-500 transition-colors cursor-pointer">
-                  <input
-                    type="file"
-                    accept="audio/*"
-                    onChange={handleCoverAudioUpload}
-                    className="hidden"
-                  />
-                  <UploadIcon />
-                  <p className="text-gray-400 text-sm mt-2 text-center">
-                    Click to select an original song to create an AI cover.
-                  </p>
-                </label>
-              )}
-            </div>
-
-            {/* Select Voice Section */}
-            <div>
-              <span className="text-white font-medium">Select Voice</span>
-
-              {/* Selected Voice Card (if selected) */}
-              {selectedVoice && (
-                <div className="flex items-center gap-3 p-3 bg-gray-800/60 rounded-2xl mt-2">
-                  {selectedVoice.avatar_url ? (
-                    <img
-                      src={selectedVoice.avatar_url}
-                      alt={selectedVoice.name}
-                      className="w-14 h-14 rounded-full object-cover"
-                    />
-                  ) : (
-                    <div className="w-14 h-14 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white font-bold text-lg">
-                      {selectedVoice.name.charAt(0)}
-                    </div>
-                  )}
-                  <div className="flex-1">
-                    <p className="text-white font-medium">{selectedVoice.name}</p>
-                    <p className="text-gray-400 text-sm">{formatUsesCount(selectedVoice.uses_count)} Uses</p>
-                  </div>
-                  <button className="p-2 text-gray-400 hover:text-red-400 transition-colors">
-                    <HeartIcon />
-                  </button>
-                  {selectedVoice.sample_url && (
-                    <button className="p-2 text-gray-400 hover:text-white transition-colors">
-                      <PlayIcon />
-                    </button>
-                  )}
-                </div>
-              )}
-
-              {/* Category Tabs */}
-              <div className="flex gap-2 overflow-x-auto mt-3 pb-1 -mx-1 px-1 scrollbar-hide">
-                {voiceCategories.map((cat) => (
-                  <button
-                    key={cat.id}
-                    onClick={() => setVoiceCategory(cat.id)}
-                    className={`px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${
-                      voiceCategory === cat.id
-                        ? 'bg-purple-500 text-white'
-                        : 'bg-gray-800/60 text-gray-400 hover:text-white'
-                    }`}
-                  >
-                    {cat.label}
-                  </button>
-                ))}
-              </div>
-
-              {/* Voice Grid */}
-              <div className="grid grid-cols-5 gap-3 mt-3">
-                {/* Clone Voice Button */}
-                <button className="flex flex-col items-center">
-                  <div className="w-14 h-14 rounded-full bg-gray-700 flex items-center justify-center text-gray-400 hover:text-purple-400 hover:bg-gray-600 transition-colors">
-                    <PlusIcon />
-                  </div>
-                  <span className="text-xs text-gray-400 mt-1.5 text-center">Clone Voice</span>
-                </button>
-
-                {/* Loading State */}
-                {isLoadingVoices && (
-                  <div className="col-span-4 flex items-center justify-center py-8">
-                    <div className="w-6 h-6 border-2 border-purple-500 border-t-transparent rounded-full animate-spin" />
-                  </div>
-                )}
-
-                {/* Voice Items */}
-                {!isLoadingVoices && coverVoices.map((voice) => (
-                  <button
-                    key={voice.id}
-                    onClick={() => setSelectedVoice({
-                      id: voice.id,
-                      name: voice.name,
-                      slug: voice.slug,
-                      avatar_url: voice.avatar_url,
-                      sample_url: voice.sample_url,
-                      category: voice.category,
-                      uses_count: voice.uses_count,
-                      is_builtin: voice.is_builtin,
-                    })}
-                    className="flex flex-col items-center"
-                  >
-                    {voice.avatar_url ? (
-                      <img
-                        src={voice.avatar_url}
-                        alt={voice.name}
-                        className={`w-14 h-14 rounded-full object-cover transition-all ${
-                          selectedVoice?.id === voice.id
-                            ? 'ring-2 ring-purple-400 ring-offset-2 ring-offset-[#0a0a1a]'
-                            : 'hover:ring-2 hover:ring-purple-400/50'
-                        }`}
-                      />
-                    ) : (
-                      <div
-                        className={`w-14 h-14 rounded-full flex items-center justify-center text-white font-bold text-lg transition-all ${
-                          selectedVoice?.id === voice.id
-                            ? 'bg-gradient-to-br from-purple-500 to-pink-500 ring-2 ring-purple-400 ring-offset-2 ring-offset-[#0a0a1a]'
-                            : 'bg-gradient-to-br from-gray-600 to-gray-700 hover:from-purple-600 hover:to-pink-600'
-                        }`}
-                      >
-                        {voice.name.charAt(0)}
-                      </div>
-                    )}
-                    <span className="text-xs text-white mt-1.5 text-center truncate w-full">
-                      {voice.name}
-                    </span>
-                  </button>
-                ))}
-
-                {/* Empty State */}
-                {!isLoadingVoices && coverVoices.length === 0 && (
-                  <div className="col-span-4 text-center py-8">
-                    <p className="text-gray-400 text-sm">No voices available in this category</p>
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* Pitch Adjustment */}
-            <div>
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-white font-medium">Pitch Adjustment</span>
-                <span className="text-gray-400 text-sm">{coverPitchChange > 0 ? '+' : ''}{coverPitchChange} semitones</span>
-              </div>
-              <input
-                type="range"
-                min="-12"
-                max="12"
-                value={coverPitchChange}
-                onChange={(e) => setCoverPitchChange(parseInt(e.target.value))}
-                className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-purple-500"
-              />
-              <div className="flex justify-between text-xs text-gray-500 mt-1">
-                <span>-12</span>
-                <span>0</span>
-                <span>+12</span>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Tab Content - Dedicate Tab (Coming Soon) */}
-        {activeTab === 'dedicate' && (
-          <div className="flex-1 flex flex-col items-center justify-center text-center">
-            <div className="w-16 h-16 bg-gray-800/60 rounded-full flex items-center justify-center mb-4">
-              <MusicIcon />
-            </div>
-            <h3 className="text-white font-semibold text-lg mb-2">Dedicate Mode</h3>
-            <p className="text-gray-400 text-sm">Coming soon! Create personalized dedications.</p>
-          </div>
-        )}
-
         {/* Parameters Section - only show for simple and custom tabs */}
         {(activeTab === 'simple' || activeTab === 'custom') && (
           <div className="mb-4">
-            <div className="flex items-center justify-between mb-2">
+            <div className="mb-2">
               <span className="text-white font-medium">Parameters</span>
-              <button className="flex items-center gap-1 text-gray-400 text-xs">
-                <span>Credits Rule</span>
-                <InfoIcon />
-              </button>
             </div>
 
             {/* Parameters Trigger */}
@@ -1314,11 +950,12 @@ export default function NativeMusicPage() {
           </div>
         )}
 
-        {/* Credits Info */}
-        <div className="flex items-center gap-1.5 text-gray-400 text-xs px-1">
-          <CreditsIcon className="w-3.5 h-3.5" />
-          <span>Credits: {credits}</span>
-        </div>
+        {/* Credits Info Bar */}
+        <CreditsInfoBar
+          credits={credits}
+          creditRules={[{ name: 'Music generation', credits: 30 }]}
+          className="px-1"
+        />
       </div>
 
       {/* Fixed Bottom Button */}

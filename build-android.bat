@@ -24,7 +24,7 @@ if "%choice%"=="1" (
     set BUILD_OUTPUT=android\app\build\outputs\apk\standalone\release\app-standalone-release.apk
     set FINAL_NAME=voicica-test-%APP_VERSION%-b%BUILD_NUMBER%.apk
     set OUTPUT_NAME=测试 APK
-    set SERVER_URL=https://ai-voice-labs.com/studio
+    set SERVER_URL=https://ai-voice-labs.com/native
     set ENV_NAME=测试环境
 ) else if "%choice%"=="2" (
     set FLAVOR=standalone
@@ -32,7 +32,7 @@ if "%choice%"=="1" (
     set BUILD_OUTPUT=android\app\build\outputs\apk\standalone\release\app-standalone-release.apk
     set FINAL_NAME=voicica-release-%APP_VERSION%-b%BUILD_NUMBER%.apk
     set OUTPUT_NAME=生产 APK
-    set SERVER_URL=https://www.voicica.ai/studio
+    set SERVER_URL=https://www.voicica.ai/native
     set ENV_NAME=生产环境
 ) else if "%choice%"=="3" (
     set FLAVOR=playStore
@@ -40,7 +40,7 @@ if "%choice%"=="1" (
     set BUILD_OUTPUT=android\app\build\outputs\bundle\playStoreRelease\app-playStore-release.aab
     set FINAL_NAME=voicica-release-%APP_VERSION%-b%BUILD_NUMBER%.aab
     set OUTPUT_NAME=生产 AAB
-    set SERVER_URL=https://www.voicica.ai/studio
+    set SERVER_URL=https://www.voicica.ai/native
     set ENV_NAME=生产环境
 ) else (
     echo 无效选项，退出

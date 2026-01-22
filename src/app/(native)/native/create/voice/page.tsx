@@ -9,6 +9,9 @@ import type { Voice } from '@/types/voice';
 import { calculateVoiceCost, type VoiceType } from '@/config/creditsCost';
 import GradientButton from '@/components/native/common/GradientButton';
 import CreditsIcon from '@/components/native/common/CreditsIcon';
+import CreditsInfoBar from '@/components/native/common/CreditsInfoBar';
+import AssistantInput from '@/components/native/common/AssistantInput';
+import AssistantModal from '@/components/native/common/AssistantModal';
 import NativeVoiceSelectorSheet from '@/components/native/create/voice/VoiceSelectorSheet';
 import LoginModal from '@/components/native/LoginModal';
 import CreateSheet from '@/components/native/CreateSheet';
@@ -71,6 +74,11 @@ export default function NativeTTSPage() {
   const [selectedVoice, setSelectedVoice] = useState<Voice | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Text assistant modal states
+  const [isTextAssistantOpen, setIsTextAssistantOpen] = useState(false);
+  const [textPrompt, setTextPrompt] = useState('');
+  const [isGeneratingText, setIsGeneratingText] = useState(false);
 
   // 从 localStorage 加载保存的文本和语音
   useEffect(() => {
@@ -182,6 +190,37 @@ export default function NativeTTSPage() {
     }
   };
 
+  // 生成文本
+  const handleGenerateText = async () => {
+    if (!textPrompt.trim()) return;
+
+    setIsGeneratingText(true);
+    try {
+      const response = await fetch('/api/ai/generate-text', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt: textPrompt.trim() }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        throw new Error(data.error || 'Failed to generate text');
+      }
+
+      if (data.text) {
+        setText(data.text);
+        setIsTextAssistantOpen(false);
+        setTextPrompt('');
+      }
+    } catch (err) {
+      console.error('Generate text failed:', err);
+      setError(err instanceof Error ? err.message : 'Failed to generate text');
+    } finally {
+      setIsGeneratingText(false);
+    }
+  };
+
   return (
     <div
       className="min-h-screen bg-[#0a0a1a] flex flex-col"
@@ -212,30 +251,30 @@ export default function NativeTTSPage() {
         )}
 
         {/* Text Input */}
-        <div className="flex-1 flex flex-col bg-gray-800/60 rounded-2xl p-4 mb-3 min-h-0">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-gray-400 text-xs">Enter your text</span>
-            <div className="flex items-center gap-2">
-              <span className="text-gray-500 text-xs">
-                {text.length}/{maxCharacters}
-              </span>
-              <button
-                onClick={handleClearText}
-                disabled={text.length === 0}
-                className="text-gray-500 hover:text-gray-300 disabled:opacity-30 disabled:cursor-not-allowed"
-              >
-                <ClearIcon />
-              </button>
-            </div>
-          </div>
-          <textarea
-            value={text}
-            onChange={(e) => handleTextChange(e.target.value)}
-            placeholder="Type or paste your text here..."
-            className="flex-1 w-full bg-transparent text-white placeholder-gray-600 resize-none focus:outline-none text-sm leading-relaxed"
-            disabled={isGenerating}
-          />
-        </div>
+        <AssistantInput
+          label="Enter your text"
+          placeholder="Type or paste your text here..."
+          value={text}
+          onChange={handleTextChange}
+          maxLength={maxCharacters}
+          multiline
+          rows={8}
+          assistantButtonText="Generate Text"
+          onAssistantClick={() => setIsTextAssistantOpen(true)}
+          disabled={isGenerating}
+          className="flex-1 flex flex-col mb-3 min-h-0"
+          containerClassName="flex-1 flex flex-col"
+          inputClassName="flex-1 min-h-[150px] leading-relaxed"
+          rightActions={
+            <button
+              onClick={handleClearText}
+              disabled={text.length === 0}
+              className="text-gray-500 hover:text-gray-300 disabled:opacity-30 disabled:cursor-not-allowed"
+            >
+              <ClearIcon />
+            </button>
+          }
+        />
 
         {/* Voice Selector Button */}
         <button
@@ -268,11 +307,19 @@ export default function NativeTTSPage() {
           <ChevronIcon />
         </button>
 
-        {/* Credits Info */}
-        <div className="flex items-center gap-1.5 text-gray-400 text-xs px-1 mb-3">
-          <CreditsIcon className="w-3.5 h-3.5" />
-          <span>Credits: {credits}</span>
-        </div>
+      </div>
+
+      {/* Fixed Bottom Section */}
+      <div
+        className="fixed bottom-0 left-0 right-0 z-30 px-4 pt-3 pb-3 bg-[#0a0a1a]"
+        style={{ paddingBottom: 'calc(var(--safe-area-inset-bottom, 0px) + 12px)' }}
+      >
+        {/* Credits Info Bar */}
+        <CreditsInfoBar
+          credits={credits}
+          creditRules={[{ name: 'Voice generation', credits: 10 }]}
+          className="mb-3"
+        />
 
         {/* Generate Button */}
         <GradientButton
@@ -298,12 +345,6 @@ export default function NativeTTSPage() {
         </GradientButton>
       </div>
 
-      {/* Bottom safe area */}
-      <div
-        className="flex-shrink-0"
-        style={{ height: 'var(--safe-area-inset-bottom, 0px)' }}
-      />
-
       {/* Voice Selector Sheet */}
       <NativeVoiceSelectorSheet
         isOpen={isVoiceSelectorOpen}
@@ -326,6 +367,21 @@ export default function NativeTTSPage() {
       <CreateSheet
         isOpen={isCreateSheetOpen}
         onClose={() => setIsCreateSheetOpen(false)}
+      />
+
+      {/* Text Assistant Modal */}
+      <AssistantModal
+        isOpen={isTextAssistantOpen}
+        onClose={() => setIsTextAssistantOpen(false)}
+        title="Text Assistant"
+        description="Describe what you want to say and AI will generate the text for you."
+        placeholder="e.g., A welcome message for a podcast, a product introduction, a story narration..."
+        value={textPrompt}
+        onChange={setTextPrompt}
+        maxLength={500}
+        isGenerating={isGeneratingText}
+        onGenerate={() => void handleGenerateText()}
+        generateButtonText="Generate Text"
       />
     </div>
   );

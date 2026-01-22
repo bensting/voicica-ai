@@ -6,6 +6,7 @@ import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 import { useCredits } from '@/contexts/CreditsContext';
 import GradientButton from '@/components/native/common/GradientButton';
 import CreditsIcon from '@/components/native/common/CreditsIcon';
+import CreditsInfoBar from '@/components/native/common/CreditsInfoBar';
 import LoginModal from '@/components/native/LoginModal';
 import CreateSheet from '@/components/native/CreateSheet';
 import { calculateDialogueCost } from '@/config/creditsCost';
@@ -340,11 +341,18 @@ export default function NativeDialoguePage() {
         </button>
       </div>
 
-      {/* Fixed Bottom Button */}
+      {/* Fixed Bottom Section */}
       <div
-        className="fixed bottom-0 left-0 right-0 z-30 px-4 py-3 bg-[#0a0a1a]"
+        className="fixed bottom-0 left-0 right-0 z-30 px-4 pt-3 pb-3 bg-[#0a0a1a]"
         style={{ paddingBottom: 'calc(var(--safe-area-inset-bottom, 0px) + 12px)' }}
       >
+        {/* Credits Info Bar */}
+        <CreditsInfoBar
+          credits={credits}
+          creditRules={[{ name: 'Dialogue generation', credits: 15 }]}
+          className="mb-3"
+        />
+
         <GradientButton
           onClick={() => void handleGenerate()}
           disabled={!canGenerate || isGenerating}

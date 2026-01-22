@@ -222,14 +222,10 @@ export default function NativeDialoguePage() {
         )}
 
         {/* Total Characters */}
-        <div className="flex items-center justify-between mb-3">
+        <div className="mb-3">
           <span className="text-gray-400 text-xs">
             Total: {totalCharacters} / {maxTotalCharacters} characters
           </span>
-          <div className="flex items-center gap-1.5 text-gray-400 text-xs">
-            <CreditsIcon className="w-3.5 h-3.5" />
-            <span>{credits}</span>
-          </div>
         </div>
 
         {/* Dialogue Segments */}

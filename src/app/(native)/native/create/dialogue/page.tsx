@@ -349,7 +349,7 @@ export default function NativeDialoguePage() {
         {/* Credits Info Bar */}
         <CreditsInfoBar
           credits={credits}
-          creditRules={[{ name: 'Dialogue generation', credits: 15 }]}
+          creditRules={[{ name: 'Dialogue generation', description: '100 chars = 3 credits' }]}
           className="mb-3"
         />
 

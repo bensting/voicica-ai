@@ -241,10 +241,13 @@ export default function NativeTTSPage() {
       </div>
 
       {/* Content */}
-      <div className="flex-1 flex flex-col px-4 pb-4 overflow-hidden">
+      <div
+        className="flex-1 flex flex-col px-4 min-h-0"
+        style={{ paddingBottom: 'calc(100px + var(--safe-area-inset-bottom, 0px))' }}
+      >
         {/* Error Message */}
         {error && (
-          <div className="mb-3 p-3 bg-red-500/20 border border-red-500/30 rounded-xl">
+          <div className="mb-3 p-3 bg-red-500/20 border border-red-500/30 rounded-xl flex-shrink-0">
             <p className="text-red-400 text-sm">{error}</p>
           </div>
         )}
@@ -262,8 +265,8 @@ export default function NativeTTSPage() {
           onAssistantClick={() => setIsTextAssistantOpen(true)}
           disabled={isGenerating}
           className="flex-1 flex flex-col mb-3 min-h-0"
-          containerClassName="flex-1 flex flex-col"
-          inputClassName="flex-1 min-h-[150px] leading-relaxed"
+          containerClassName="flex-1 flex flex-col min-h-0"
+          inputClassName="flex-1 min-h-[120px] leading-relaxed"
           rightActions={
             <button
               onClick={handleClearText}
@@ -279,7 +282,7 @@ export default function NativeTTSPage() {
         <button
           onClick={() => setIsVoiceSelectorOpen(true)}
           disabled={isGenerating}
-          className="flex items-center gap-3 p-3 bg-gray-800/60 rounded-xl mb-3 disabled:opacity-50"
+          className="flex items-center gap-3 p-3 bg-gray-800/60 rounded-xl disabled:opacity-50 flex-shrink-0"
         >
           {selectedVoice?.avatar_url ? (
             // eslint-disable-next-line @next/next/no-img-element
@@ -316,7 +319,7 @@ export default function NativeTTSPage() {
         {/* Credits Info Bar */}
         <CreditsInfoBar
           credits={credits}
-          creditRules={[{ name: 'Voice generation', credits: 10 }]}
+          creditRules={[{ name: 'Voice generation', description: '100 chars = 1 credit' }]}
           className="mb-3"
         />
 

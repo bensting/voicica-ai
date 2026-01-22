@@ -10,6 +10,7 @@ import CreditsIcon from '@/components/native/common/CreditsIcon';
 import CreditsInfoBar from '@/components/native/common/CreditsInfoBar';
 import AssistantInput from '@/components/native/common/AssistantInput';
 import AssistantModal from '@/components/native/common/AssistantModal';
+import CrownIcon from '@/components/native/common/CrownIcon';
 import LoginModal from '@/components/native/LoginModal';
 import CreateSheet from '@/components/native/CreateSheet';
 import {
@@ -75,12 +76,6 @@ const MusicIcon = () => (
     <path d="M9 18V5l12-2v13" />
     <circle cx="6" cy="18" r="3" />
     <circle cx="18" cy="16" r="3" />
-  </svg>
-);
-
-const CrownIcon = () => (
-  <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
-    <path d="M2.5 19h19v2h-19v-2zm19.57-9.36c-.21-.8-1.04-1.28-1.84-1.06l-4.63 1.22-3.15-5.14c-.45-.74-1.44-.96-2.19-.51-.27.16-.49.4-.62.68L6.5 9.8l-4.63-1.22c-.8-.22-1.63.26-1.84 1.06-.1.34-.04.72.14 1.03l4.85 8.13c.16.27.44.44.75.52.13.03.26.05.39.05h11.68c.13 0 .26-.02.39-.05.31-.08.59-.25.75-.52l4.85-8.13c.18-.31.24-.69.14-1.03z" />
   </svg>
 );
 
@@ -676,8 +671,8 @@ export default function NativeMusicPage() {
   }, [currentTaskId, generatingStatus]);
 
   const tabs: { id: MusicTab; label: string }[] = [
-    { id: 'custom', label: 'Custom' },
-    { id: 'simple', label: 'Simple' },
+    { id: 'custom', label: 'Lyrics to Music' },
+    { id: 'simple', label: 'Prompt to Music' },
   ];
 
   return (
@@ -703,14 +698,14 @@ export default function NativeMusicPage() {
         </div>
 
         {/* Tabs */}
-        <div className="flex px-4 gap-2">
+        <div className="flex mx-4 p-1 bg-gray-800/60 rounded-xl">
           {tabs.map((tab) => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-colors ${
+              className={`flex-1 py-2.5 px-3 rounded-lg text-sm font-medium transition-colors ${
                 activeTab === tab.id
-                  ? 'bg-gray-700 text-white'
+                  ? 'bg-white text-black'
                   : 'bg-transparent text-gray-400'
               }`}
             >
@@ -746,11 +741,7 @@ export default function NativeMusicPage() {
               >
                 <MusicIcon />
                 <span>{selectedModel?.name || model}</span>
-                {selectedModel?.isPremium && (
-                  <span className="text-yellow-400">
-                    <CrownIcon />
-                  </span>
-                )}
+                {selectedModel?.isPremium && <CrownIcon className="w-4 h-4 text-yellow-400" />}
                 <ChevronDownIcon />
               </button>
             </div>
@@ -799,11 +790,7 @@ export default function NativeMusicPage() {
                 >
                   <MusicIcon />
                   <span>{selectedModel?.name || model}</span>
-                  {selectedModel?.isPremium && (
-                    <span className="text-yellow-400">
-                      <CrownIcon />
-                    </span>
-                  )}
+                  {selectedModel?.isPremium && <CrownIcon className="w-4 h-4 text-yellow-400" />}
                   <ChevronDownIcon />
                 </button>
               </div>
@@ -847,6 +834,8 @@ export default function NativeMusicPage() {
               value={style}
               onChange={setStyle}
               maxLength={500}
+              multiline
+              rows={2}
               assistantButtonText="Generate Style"
               onAssistantClick={() => setIsStyleAssistantOpen(true)}
               disabled={isGenerating}
@@ -1044,13 +1033,11 @@ export default function NativeMusicPage() {
                 >
                   <div className="flex items-center justify-between mb-1">
                     <div className="flex items-center gap-2">
-                      <MusicIcon />
+                      <span className="text-gray-400">
+                        <MusicIcon />
+                      </span>
                       <span className="text-white font-medium">{m.name}</span>
-                      {m.isPremium && (
-                        <span className="text-yellow-400">
-                          <CrownIcon />
-                        </span>
-                      )}
+                      {m.isPremium && <CrownIcon className="w-4 h-4 text-yellow-400" />}
                     </div>
                     <div className="flex items-center gap-2">
                       <div className="flex items-center gap-1 bg-purple-500/20 px-2 py-0.5 rounded-full">
@@ -1210,7 +1197,7 @@ export default function NativeMusicPage() {
                   Estimated queue time: <span className="text-blue-400">3 minutes</span>
                 </p>
                 <button className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-full text-sm font-medium hover:opacity-90 transition-opacity">
-                  <CrownIcon />
+                  <CrownIcon className="w-4 h-4" />
                   <span>Use fast channel</span>
                 </button>
               </>

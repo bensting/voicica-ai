@@ -325,9 +325,9 @@ export default function StudioAiMusicPage() {
         <div className="w-full max-w-[1600px] mx-auto px-6 py-4 flex-1 flex flex-col min-h-0">
           <div className="grid grid-cols-12 gap-6 flex-1 min-h-0">
             {/* Left Column: Controls */}
-            <div className="col-span-7 flex flex-col gap-4 overflow-y-auto pr-2">
-              {/* Model Selector Card */}
-              <div className="bg-white rounded-2xl p-4 border border-gray-200 shadow-sm">
+            <div className="col-span-7 flex flex-col gap-4 min-h-0">
+              {/* Model Selector Card - Fixed Top */}
+              <div className="flex-shrink-0 bg-white rounded-2xl p-4 border border-gray-200 shadow-sm">
                 <div className="text-sm text-gray-600 mb-3">{t('studio.menu.aiMusic')} Model</div>
                 <button
                   onClick={() => setIsModelSelectorOpen(!isModelSelectorOpen)}
@@ -349,8 +349,9 @@ export default function StudioAiMusicPage() {
                 </button>
               </div>
 
-              {/* Settings Card */}
-              <div className="bg-white rounded-2xl p-4 border border-gray-200 shadow-sm">
+              {/* Settings Card - Scrollable Middle */}
+              <div className="flex-1 min-h-0 overflow-y-auto">
+                <div className="bg-white rounded-2xl p-4 border border-gray-200 shadow-sm">
                 {/* Tabs */}
                 <div className="flex bg-gray-100 rounded-xl p-1 mb-4">
                   {tabs.map((tab) => (
@@ -572,10 +573,11 @@ export default function StudioAiMusicPage() {
                     {estimatedCredits} {t('common.credits')}
                   </span>
                 </div>
+                </div>
               </div>
 
-              {/* Prompt Input Card (for mobile-like view) */}
-              <div className="bg-white rounded-2xl p-4 border border-gray-200 shadow-sm">
+              {/* Generate Button Card - Fixed Bottom */}
+              <div className="flex-shrink-0 bg-white rounded-2xl p-4 border border-gray-200 shadow-sm">
                 {/* Error Message */}
                 {error && (
                   <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-xl">
@@ -589,6 +591,7 @@ export default function StudioAiMusicPage() {
                   disabled={!canGenerate}
                   fullWidth
                   size="lg"
+                  variant="pink-rose"
                 >
                   {isGenerating ? (
                     <div className="flex items-center gap-2">
@@ -599,9 +602,6 @@ export default function StudioAiMusicPage() {
                     <div className="flex items-center gap-2">
                       <Sparkles className="w-5 h-5" />
                       <span>Generate</span>
-                      {estimatedCredits > 0 && (
-                        <span className="ml-1 opacity-80">{estimatedCredits} {t('common.credits')}</span>
-                      )}
                     </div>
                   )}
                 </GradientButton>
@@ -900,6 +900,7 @@ export default function StudioAiMusicPage() {
             disabled={!canGenerate}
             fullWidth
             size="lg"
+            variant="pink-rose"
           >
             {isGenerating ? (
               <div className="flex items-center gap-2">
@@ -910,7 +911,6 @@ export default function StudioAiMusicPage() {
               <div className="flex items-center gap-2">
                 <Sparkles className="w-5 h-5" />
                 <span>Generate</span>
-                {estimatedCredits > 0 && <span className="opacity-80">{estimatedCredits}</span>}
               </div>
             )}
           </GradientButton>

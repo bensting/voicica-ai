@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
+import nativeVersion from '@/../native-version.json';
 
 // 支持的语言列表
 const languages = [
@@ -234,6 +235,13 @@ export default function SettingsPage() {
             </button>
           </div>
         )}
+
+        {/* 版本号 */}
+        <div className="pt-8 pb-4 text-center">
+          <p className="text-gray-500 text-sm">
+            Version {nativeVersion.version} ({nativeVersion.buildNumber})
+          </p>
+        </div>
       </div>
 
       {/* 语言选择 Sheet */}

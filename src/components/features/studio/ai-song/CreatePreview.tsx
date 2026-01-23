@@ -200,6 +200,18 @@ export default function CreatePreview({
           />
         </div>
 
+        {/* 歌词显示 */}
+        {lyrics && (
+          <div className="bg-white rounded-xl border border-gray-200 p-4 space-y-2">
+            <h4 className="font-medium text-gray-900 text-sm">歌词</h4>
+            <div className="max-h-48 overflow-y-auto">
+              <pre className="text-sm text-gray-600 whitespace-pre-wrap font-sans leading-relaxed">
+                {lyrics}
+              </pre>
+            </div>
+          </div>
+        )}
+
         <button
           type="button"
           onClick={onRegenerate}

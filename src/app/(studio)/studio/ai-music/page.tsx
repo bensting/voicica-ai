@@ -566,13 +566,6 @@ export default function StudioAiMusicPage() {
                   </div>
                 </div>
 
-                {/* Credits Cost */}
-                <div className="mt-4 pt-4 border-t border-gray-100 flex items-center justify-between">
-                  <span className="text-sm text-gray-600">Credits Cost</span>
-                  <span className="text-purple-600 font-semibold">
-                    {estimatedCredits} {t('common.credits')}
-                  </span>
-                </div>
                 </div>
               </div>
 

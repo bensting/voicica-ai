@@ -10,7 +10,6 @@ ios/
 # Native app resources (root level only)
 /resources/
 /icons/
-native-version.json
 capacitor.config.ts
 
 # Keystore (sensitive)

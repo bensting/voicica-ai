@@ -209,7 +209,7 @@ async function main() {
 
   // 2. 读取版本信息
   info('读取版本信息...');
-  const versionPath = path.join(__dirname, '../native-version.json');
+  const versionPath = path.join(__dirname, '../src/native-version.json');
 
   if (!fs.existsSync(versionPath)) {
     error('未找到 native-version.json');

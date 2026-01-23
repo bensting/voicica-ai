@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState, useRef, useCallback } from 'react';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useStudio } from '@/contexts/StudioContext';
@@ -330,10 +331,11 @@ export default function MusicHistoryPage() {
                       {/* Cover Image */}
                       <div className="w-16 h-16 md:w-20 md:h-20 rounded-lg overflow-hidden flex-shrink-0 relative">
                         {record.cover_url ? (
-                          <img
+                          <Image
                             src={record.cover_url}
                             alt={record.title || 'Cover'}
-                            className="w-full h-full object-cover"
+                            fill
+                            className="object-cover"
                           />
                         ) : (
                           <div className="w-full h-full bg-gradient-to-br from-pink-100 to-fuchsia-100 flex items-center justify-center">

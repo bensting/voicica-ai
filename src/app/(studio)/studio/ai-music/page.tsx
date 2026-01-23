@@ -26,7 +26,6 @@ import {
   Crown,
   Check,
   X,
-  Film,
   Loader2,
   Play,
   Image as ImageIcon,
@@ -50,14 +49,13 @@ export default function StudioAiMusicPage() {
   const { t } = useLanguage();
   const { user } = useFirebaseAuth();
   const { setTitle } = useStudio();
-  const { credits, refreshCredits } = useCredits();
+  const { refreshCredits } = useCredits();
   const { isSubscribed } = useSubscription();
 
   // UI States
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isUpgradeModalOpen, setIsUpgradeModalOpen] = useState(false);
   const [isModelSelectorOpen, setIsModelSelectorOpen] = useState(false);
-  const [isParameterSheetOpen, setIsParameterSheetOpen] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -136,7 +134,6 @@ export default function StudioAiMusicPage() {
 
   // Check if can generate
   const hasInput = activeTab === 'custom' ? lyrics.trim().length > 0 : prompt.trim().length > 0;
-  const estimatedCredits = hasInput ? (selectedModel?.credits ?? 30) : 0;
   const canGenerate = hasInput && !isGenerating;
 
   // Handle model selection

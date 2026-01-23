@@ -84,7 +84,7 @@ export default function AiSongPage() {
   const [generatedCoverUrl2, setGeneratedCoverUrl2] = useState<string | null>(null);
   const [generatedTitle, setGeneratedTitle] = useState<string | null>(null);
   const [generatedLyrics, setGeneratedLyrics] = useState<string | null>(null);
-  const [currentTaskId, setCurrentTaskId] = useState<string | null>(null);
+  const [, setCurrentTaskId] = useState<string | null>(null);
   const pollingRef = useRef<NodeJS.Timeout | null>(null);
 
   // 获取实际的主题文本（用于 API 调用）

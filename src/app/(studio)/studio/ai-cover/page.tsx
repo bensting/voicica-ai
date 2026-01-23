@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import { useLanguage } from '@/contexts/LanguageContext';
 import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 import { useStudio } from '@/contexts/StudioContext';
 import { useCredits } from '@/contexts/CreditsContext';
@@ -36,7 +35,6 @@ import {
   SlidersHorizontal,
   Eye,
   EyeOff,
-  Image as ImageIcon,
 } from 'lucide-react';
 
 // localStorage key
@@ -55,10 +53,9 @@ const COVER_CREDITS = 50;
  */
 export default function StudioAiCoverPage() {
   const router = useRouter();
-  const { t } = useLanguage();
   const { user } = useFirebaseAuth();
   const { setTitle } = useStudio();
-  const { credits, refreshCredits } = useCredits();
+  const { refreshCredits } = useCredits();
 
   // UI States
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
@@ -185,14 +182,14 @@ export default function StudioAiCoverPage() {
   };
 
   // Clear audio
-  const handleClearCoverAudio = () => {
+  const handleClearCoverAudio = useCallback(() => {
     if (coverAudioUrl) {
       URL.revokeObjectURL(coverAudioUrl);
     }
     setCoverAudioFile(null);
     setCoverAudioUrl(null);
     setSelectedHistoryMusic(null);
-  };
+  }, [coverAudioUrl]);
 
   // Format duration (seconds -> MM:SS)
   const formatDuration = (seconds: number | null): string => {
@@ -327,7 +324,7 @@ export default function StudioAiCoverPage() {
       setGeneratingError(err instanceof Error ? err.message : 'Failed to create cover');
       setIsGenerating(false);
     }
-  }, [canGenerate, user, coverAudioFile, selectedHistoryMusic, selectedVoice, coverPitchChange, isPublic]);
+  }, [canGenerate, user, coverAudioFile, selectedHistoryMusic, selectedVoice, coverPitchChange, isPublic, handleClearCoverAudio]);
 
   // Reset status
   const handleResetStatus = () => {

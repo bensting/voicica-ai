@@ -205,11 +205,11 @@ export function useDailyTasks(): UseDailyTasksReturn {
         console.log('[useDailyTasks] 广告未完成，原因:', adResult.reason);
         // 根据原因返回不同的错误消息
         if (adResult.reason === 'unavailable') {
-          return { success: false, message: '暂无可用广告，请稍后再试' };
+          return { success: false, message: '暂无可用广告，请稍后再试', reason: 'unavailable' };
         } else if (adResult.reason === 'skipped') {
-          return { success: false, message: '请观看完整广告以完成签到' };
+          return { success: false, message: '请观看完整广告以完成签到', reason: 'skipped' };
         } else {
-          return { success: false, message: adResult.message || '广告加载失败，请稍后再试' };
+          return { success: false, message: adResult.message || '广告加载失败，请稍后再试', reason: 'error' };
         }
       }
       console.log('[useDailyTasks] 广告观看成功，开始签到...');
@@ -239,7 +239,7 @@ export function useDailyTasks(): UseDailyTasksReturn {
       }
       checkinInProgressRef.current = false;
     }
-  }, [refresh, isNative, showRewardedAd]);
+  }, [refresh, showRewardedAd]);
 
   // 用于跟踪奖励是否已领取
   const rewardClaimedRef = useRef(false);

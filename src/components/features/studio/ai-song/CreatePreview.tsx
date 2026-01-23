@@ -1,6 +1,7 @@
 'use client';
 
 import { useRef, useState } from 'react';
+import Image from 'next/image';
 import { Sparkles, Play, Pause, Download, RefreshCw, Wand2, Coins } from 'lucide-react';
 
 interface CreatePreviewProps {
@@ -202,12 +203,13 @@ export default function CreatePreview({
         <div className="w-full bg-gradient-to-r from-pink-50 to-fuchsia-50 rounded-xl p-6">
           <div className="flex items-center gap-4">
             {/* 封面图 */}
-            <div className="w-20 h-20 flex-shrink-0 rounded-xl overflow-hidden bg-gradient-to-br from-pink-400 to-fuchsia-500">
+            <div className="w-20 h-20 flex-shrink-0 rounded-xl overflow-hidden bg-gradient-to-br from-pink-400 to-fuchsia-500 relative">
               {currentCoverUrl ? (
-                <img
+                <Image
                   src={currentCoverUrl}
                   alt="Cover"
-                  className="w-full h-full object-cover"
+                  fill
+                  className="object-cover"
                 />
               ) : (
                 <div className="w-full h-full flex items-center justify-center">

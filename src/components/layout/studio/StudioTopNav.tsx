@@ -2,6 +2,7 @@
 
 import { Menu, X, Crown, Gift } from 'lucide-react';
 import Image from 'next/image';
+import { usePathname } from 'next/navigation';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 import LanguageSwitcher from '@/components/layout/Navbar/LanguageSwitcher';
@@ -41,6 +42,10 @@ export default function StudioTopNav({
 }: StudioTopNavProps) {
   const { t } = useLanguage();
   const { user } = useFirebaseAuth();
+  const pathname = usePathname();
+
+  // Check if on AI Music related pages for pink theme
+  const isPinkTheme = pathname?.startsWith('/studio/ai-music') || pathname?.startsWith('/studio/ai-cover') || pathname?.startsWith('/studio/ai-song') || pathname?.startsWith('/studio/music-history');
 
   const toggleMenu = () => {
     onMenuToggle?.(!isMenuOpen);
@@ -75,14 +80,14 @@ export default function StudioTopNav({
               priority
               className="h-7 w-auto lg:hidden"
             />
-            {/* 桌面端 - 深色 logo (浅色背景) */}
+            {/* 桌面端 - 深色 logo (浅色背景), pink filter for Music AI pages */}
             <Image
               src="/logo/voice-labs-logo-light.svg"
               alt="Voicica.AI"
               width={200}
               height={28}
               priority
-              className="h-7 w-auto hidden lg:block"
+              className={`h-7 w-auto hidden lg:block transition-all duration-300 ${isPinkTheme ? '[filter:brightness(0)_saturate(100%)_invert(56%)_sepia(52%)_saturate(4594%)_hue-rotate(314deg)_brightness(98%)_contrast(91%)]' : ''}`}
             />
           </Link>
         </div>

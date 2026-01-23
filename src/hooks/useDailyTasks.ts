@@ -193,7 +193,7 @@ export function useDailyTasks(): UseDailyTasksReturn {
 
       // 签到前需要先观看激励视频广告（Web 端使用 AppLixir，原生端使用 AdMob/Appodeal）
       console.log('[useDailyTasks] 开始显示签到激励视频广告...');
-      const adWatched = await showRewardedAd();
+      const adResult = await showRewardedAd();
 
       // 检查是否已取消
       if (cancelledRef.current) {
@@ -201,9 +201,16 @@ export function useDailyTasks(): UseDailyTasksReturn {
         return { success: false, message: '已取消' };
       }
 
-      if (!adWatched) {
-        console.log('[useDailyTasks] 用户未完成广告观看，取消签到');
-        return { success: false, message: '请观看完整广告以完成签到' };
+      if (!adResult.success) {
+        console.log('[useDailyTasks] 广告未完成，原因:', adResult.reason);
+        // 根据原因返回不同的错误消息
+        if (adResult.reason === 'unavailable') {
+          return { success: false, message: '暂无可用广告，请稍后再试' };
+        } else if (adResult.reason === 'skipped') {
+          return { success: false, message: '请观看完整广告以完成签到' };
+        } else {
+          return { success: false, message: adResult.message || '广告加载失败，请稍后再试' };
+        }
       }
       console.log('[useDailyTasks] 广告观看成功，开始签到...');
 
@@ -283,7 +290,7 @@ export function useDailyTasks(): UseDailyTasksReturn {
 
       // 显示激励广告
       console.log('[DailyTasks] 开始显示激励广告...');
-      const adWatched = await showRewardedAd();
+      const adResult = await showRewardedAd();
 
       // 移除监听器
       if (listenerRemove) {
@@ -296,9 +303,16 @@ export function useDailyTasks(): UseDailyTasksReturn {
         return { success: false, message: '已取消' };
       }
 
-      if (!adWatched) {
-        console.log('[DailyTasks] 用户未完成广告观看');
-        return { success: false, message: '请观看完整广告以获得奖励' };
+      if (!adResult.success) {
+        console.log('[DailyTasks] 广告未完成，原因:', adResult.reason);
+        // 根据原因返回不同的错误消息
+        if (adResult.reason === 'unavailable') {
+          return { success: false, message: '暂无可用广告，请稍后再试' };
+        } else if (adResult.reason === 'skipped') {
+          return { success: false, message: '请观看完整广告以获得奖励' };
+        } else {
+          return { success: false, message: adResult.message || '广告加载失败，请稍后再试' };
+        }
       }
 
       // 如果奖励已经在广告播放过程中领取了，返回那个结果

@@ -1,6 +1,7 @@
 'use client';
 
 import { Sparkles } from 'lucide-react';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface LyricsEditorProps {
   lyrics: string;
@@ -20,12 +21,14 @@ export default function LyricsEditor({
   onRegenerate,
   isGenerating,
 }: LyricsEditorProps) {
+  const { t } = useLanguage();
+
   if (isGenerating) {
     return (
       <div className="flex items-center justify-center py-20">
         <div className="flex flex-col items-center gap-4">
           <Sparkles className="w-12 h-12 text-pink-500 animate-pulse" />
-          <p className="text-gray-600">正在生成歌词...</p>
+          <p className="text-gray-600">{t('studio.aiSong.lyricsEditor.generating')}</p>
         </div>
       </div>
     );
@@ -38,14 +41,14 @@ export default function LyricsEditor({
         <textarea
           value={lyrics}
           onChange={(e) => onLyricsChange(e.target.value)}
-          placeholder="歌词将在这里显示..."
+          placeholder={t('studio.aiSong.lyricsEditor.placeholder')}
           className="w-full h-64 p-4 border-2 border-gray-200 rounded-xl focus:border-pink-500 focus:outline-none resize-none font-mono text-sm leading-relaxed"
         />
 
         {/* Character Count */}
         {lyrics.length > 0 && (
           <div className="absolute bottom-3 right-3 text-xs text-gray-400 bg-white px-2 py-1 rounded">
-            {lyrics.length} 字符
+            {lyrics.length} {t('studio.aiSong.lyricsEditor.characters')}
           </div>
         )}
       </div>
@@ -64,7 +67,7 @@ export default function LyricsEditor({
             d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
           />
         </svg>
-        重新生成歌词
+        {t('studio.aiSong.lyricsEditor.regenerate')}
       </button>
 
       {/* Tips */}
@@ -78,8 +81,8 @@ export default function LyricsEditor({
         </svg>
         <div className="flex-1">
           <p className="text-sm text-pink-700">
-            <span className="font-medium">提示：</span>
-            你可以直接编辑歌词，或点击&ldquo;重新生成&rdquo;让 AI 创作新的版本
+            <span className="font-medium">{t('studio.aiSong.lyricsEditor.tipTitle')}</span>
+            {t('studio.aiSong.lyricsEditor.tipContent')}
           </p>
         </div>
       </div>

@@ -395,12 +395,20 @@ Respond in JSON format:
 }
 
 /**
+ * 生成歌词和歌名
+ */
+export interface GeneratedLyricsResult {
+  lyrics: string;
+  title: string;
+}
+
+/**
  * 生成歌词
  *
  * @param prompt 用户描述（主题、情绪、故事等）
- * @returns 生成的歌词
+ * @returns 生成的歌词和歌名
  */
-export async function generateLyrics(prompt: string): Promise<string> {
+export async function generateLyrics(prompt: string): Promise<GeneratedLyricsResult> {
   const systemPrompt = `You are a talented songwriter and lyricist. Write creative, emotionally resonant song lyrics based on user descriptions.
 
 Guidelines:
@@ -409,17 +417,19 @@ Guidelines:
 - Use rhymes naturally but don't force them
 - Keep lyrics singable with good rhythm and flow
 - Match the mood and theme requested by the user
-- Detect the language of the user's prompt and write lyrics in the SAME language
+- Detect the language of the user's prompt and write lyrics AND title in the SAME language
+- Create a catchy, memorable song title that captures the essence of the lyrics
 
 Always respond with valid JSON in this format:
 {
+  "title": "A catchy song title in the same language as the lyrics",
   "lyrics": "The complete song lyrics with section markers..."
 }`;
 
   const userPrompt = `Write song lyrics based on this description:
 ${prompt}
 
-Create a complete song with verses, chorus, and optional bridge. Make it emotionally engaging and musically singable.`;
+Create a complete song with verses, chorus, and optional bridge. Make it emotionally engaging and musically singable. Also provide a creative and fitting song title.`;
 
   const response = await openai.chat.completions.create({
     model: 'gpt-4o-mini',
@@ -439,7 +449,10 @@ Create a complete song with verses, chorus, and optional bridge. Make it emotion
 
   try {
     const parsed = JSON.parse(content);
-    return parsed.lyrics || '';
+    return {
+      lyrics: parsed.lyrics || '',
+      title: parsed.title || '',
+    };
   } catch {
     throw new Error('Failed to parse lyrics from OpenAI response');
   }

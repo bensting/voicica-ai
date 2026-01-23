@@ -34,13 +34,14 @@ export async function POST(req: NextRequest) {
 
     console.log(`🎵 [Lyrics] 生成歌词: ${prompt.substring(0, 50)}...`);
 
-    const lyrics = await generateLyrics(prompt);
+    const result = await generateLyrics(prompt);
 
-    console.log(`✅ [Lyrics] 歌词生成成功, 长度: ${lyrics.length} 字符`);
+    console.log(`✅ [Lyrics] 歌词生成成功, 标题: ${result.title}, 歌词长度: ${result.lyrics.length} 字符`);
 
     return NextResponse.json({
       success: true,
-      lyrics,
+      lyrics: result.lyrics,
+      title: result.title,
     });
   } catch (error) {
     console.error('❌ [Lyrics] 生成歌词失败:', error);

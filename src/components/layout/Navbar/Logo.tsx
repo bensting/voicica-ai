@@ -7,8 +7,8 @@ interface LogoProps {
 }
 
 export default function Logo({ dark = true }: LogoProps) {
-  // 紫色滤镜：将透明logo转换为紫色
-  const purpleFilter = 'brightness(0) saturate(100%) invert(26%) sepia(89%) saturate(1583%) hue-rotate(246deg) brightness(91%) contrast(101%)';
+  // 少女粉滤镜：将透明logo转换为粉色
+  const pinkFilter = 'brightness(0) saturate(100%) invert(56%) sepia(52%) saturate(4594%) hue-rotate(314deg) brightness(98%) contrast(91%)';
 
   return (
     <Link href="/" className="flex items-center hover:opacity-80 transition-opacity">
@@ -21,7 +21,7 @@ export default function Logo({ dark = true }: LogoProps) {
         className="h-7 md:h-8 w-auto"
         style={{
           width: 'auto',
-          filter: dark ? purpleFilter : undefined,
+          filter: dark ? pinkFilter : undefined,
         }}
       />
     </Link>

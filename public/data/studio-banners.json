@@ -1,0 +1,31 @@
+{
+  "banners": [
+    {
+      "id": "ai-music",
+      "title": "AI Music Suno V5",
+      "subtitle": "Turn your lyrics into full songs instantly. No instruments needed.",
+      "buttonText": "Make Music Now",
+      "buttonLink": "/studio/ai-music",
+      "image": "/images/banners/ai_music_banner.png",
+      "gradient": "from-purple-600 to-blue-600"
+    },
+    {
+      "id": "tts",
+      "title": "Text to Speech",
+      "subtitle": "Convert text to natural-sounding speech with advanced AI voices.",
+      "buttonText": "Try Now",
+      "buttonLink": "/studio/tts",
+      "image": "/images/banners/dialogue_banner.png",
+      "gradient": "from-purple-500 via-purple-600 to-pink-500"
+    },
+    {
+      "id": "ai-cover",
+      "title": "AI Cover Songs",
+      "subtitle": "Create amazing cover songs with AI voices. Transform any song instantly.",
+      "buttonText": "Make Cover",
+      "buttonLink": "/studio/ai-cover",
+      "image": "",
+      "gradient": "from-indigo-500 via-purple-500 to-pink-500"
+    }
+  ]
+}

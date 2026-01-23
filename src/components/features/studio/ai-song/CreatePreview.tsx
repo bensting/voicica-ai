@@ -1,7 +1,7 @@
 'use client';
 
 import { useRef, useState } from 'react';
-import { Sparkles, Play, Pause, Download, RefreshCw, Wand2 } from 'lucide-react';
+import { Sparkles, Play, Pause, Download, RefreshCw, Wand2, Coins } from 'lucide-react';
 
 interface CreatePreviewProps {
   // 配置信息
@@ -21,6 +21,10 @@ interface CreatePreviewProps {
   // AI 生成风格
   onGenerateStyle?: () => void;
   isGeneratingStyle?: boolean;
+
+  // 积分相关
+  creditsRequired: number;
+  userCredits: number;
 
   // 生成状态
   isGenerating: boolean;
@@ -52,6 +56,8 @@ export default function CreatePreview({
   onVocalGenderChange,
   onGenerateStyle,
   isGeneratingStyle,
+  creditsRequired,
+  userCredits,
   isGenerating,
   generatedAudioUrl,
   generatedCoverUrl,
@@ -60,6 +66,7 @@ export default function CreatePreview({
   onRegenerate,
   onContinueToMV,
 }: CreatePreviewProps) {
+  const hasEnoughCredits = userCredits >= creditsRequired;
   const audioRef = useRef<HTMLAudioElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
@@ -371,14 +378,45 @@ export default function CreatePreview({
         </div>
       </div>
 
+      {/* 积分信息 */}
+      <div className="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
+        <div className="flex items-center gap-2 text-sm text-gray-600">
+          <Coins className="w-4 h-4 text-yellow-500" />
+          <span>我的积分: <span className="font-semibold text-gray-900">{userCredits}</span></span>
+        </div>
+        <div className="flex items-center gap-2 text-sm text-gray-600">
+          <span>消耗: <span className="font-semibold text-pink-600">{creditsRequired}</span> 积分</span>
+        </div>
+      </div>
+
+      {/* 积分不足提示 */}
+      {!hasEnoughCredits && (
+        <div className="p-3 bg-red-50 border border-red-200 rounded-xl">
+          <p className="text-sm text-red-600 text-center">
+            积分不足，请先充值或完成每日任务获取积分
+          </p>
+        </div>
+      )}
+
       {/* 生成按钮 */}
       <button
         type="button"
         onClick={onGenerate}
-        className="w-full py-4 bg-gradient-to-r from-pink-500 to-fuchsia-500 text-white rounded-xl hover:from-pink-600 hover:to-fuchsia-600 transition-all font-semibold text-lg flex items-center justify-center gap-2"
+        disabled={!hasEnoughCredits}
+        className={`
+          w-full py-4 rounded-xl font-semibold text-lg flex items-center justify-center gap-2 transition-all
+          ${hasEnoughCredits
+            ? 'bg-gradient-to-r from-pink-500 to-fuchsia-500 text-white hover:from-pink-600 hover:to-fuchsia-600'
+            : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+          }
+        `}
       >
         <Sparkles className="w-5 h-5" />
         开始生成歌曲
+        <span className="flex items-center gap-1 ml-1 px-2 py-0.5 bg-white/20 rounded-full text-sm">
+          <Coins className="w-3.5 h-3.5" />
+          {creditsRequired}
+        </span>
       </button>
     </div>
   );

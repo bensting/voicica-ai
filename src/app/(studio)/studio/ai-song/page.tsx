@@ -3,12 +3,14 @@
 import { useEffect, useState, useRef } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useStudio } from '@/contexts/StudioContext';
+import { useCredits } from '@/contexts/CreditsContext';
 import { ChevronLeft, ChevronRight, Edit3 } from 'lucide-react';
 import Stepper from '@/components/features/studio/ai-song/Stepper';
 import OptionCard from '@/components/features/studio/ai-song/OptionCard';
 import LyricsEditor from '@/components/features/studio/ai-song/LyricsEditor';
 import CreatePreview from '@/components/features/studio/ai-song/CreatePreview';
 import { createMusicTask, getMusicTaskStatus } from '@/actions/music';
+import { getMusicModelCredits } from '@/config/native/musicModels';
 
 // 步骤定义
 const STEPS = [
@@ -57,7 +59,11 @@ const VOCAL_OPTIONS = [
 export default function AiSongPage() {
   const { t } = useLanguage();
   const { setTitle } = useStudio();
+  const { credits } = useCredits();
   const [currentStep, setCurrentStep] = useState(0);
+
+  // 积分相关
+  const creditsRequired = getMusicModelCredits('music-4.5'); // 使用默认模型的积分
 
   // 用户选择
   const [selectedTheme, setSelectedTheme] = useState<string | null>(null);
@@ -530,6 +536,8 @@ export default function AiSongPage() {
               onVocalGenderChange={setVocalGender}
               onGenerateStyle={handleGenerateStyle}
               isGeneratingStyle={isGeneratingStyle}
+              creditsRequired={creditsRequired}
+              userCredits={credits}
               isGenerating={isGeneratingSong}
               generatedAudioUrl={generatedAudioUrl}
               generatedCoverUrl={generatedCoverUrl}

@@ -1,13 +1,14 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useStudio } from '@/contexts/StudioContext';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Edit3 } from 'lucide-react';
 import Stepper from '@/components/features/studio/ai-song/Stepper';
 import OptionCard from '@/components/features/studio/ai-song/OptionCard';
 import LyricsEditor from '@/components/features/studio/ai-song/LyricsEditor';
 import CreatePreview from '@/components/features/studio/ai-song/CreatePreview';
+import { createMusicTask, getMusicTaskStatus } from '@/actions/music';
 
 // 步骤定义
 const STEPS = [
@@ -26,6 +27,7 @@ const THEME_OPTIONS = [
   { id: 'loneliness', icon: '🌙', label: '孤独' },
   { id: 'dream', icon: '✨', label: '梦想' },
   { id: 'freedom', icon: '🕊️', label: '自由' },
+  { id: 'custom', icon: '✏️', label: '自己输入' },
 ];
 
 const MOOD_OPTIONS = [
@@ -35,6 +37,7 @@ const MOOD_OPTIONS = [
   { id: 'passionate', icon: '🔥', label: '激情' },
   { id: 'ethereal', icon: '☁️', label: '空灵' },
   { id: 'healing', icon: '🌈', label: '治愈' },
+  { id: 'custom', icon: '✏️', label: '自己输入' },
 ];
 
 const VOCAL_OPTIONS = [
@@ -58,13 +61,28 @@ export default function AiSongPage() {
 
   // 用户选择
   const [selectedTheme, setSelectedTheme] = useState<string | null>(null);
+  const [customTheme, setCustomTheme] = useState(''); // 自定义主题文本
   const [selectedMood, setSelectedMood] = useState<string | null>(null);
+  const [customMood, setCustomMood] = useState(''); // 自定义情绪文本
   const [selectedVocal, setSelectedVocal] = useState<string | null>(null);
   const [lyrics, setLyrics] = useState('');
   const [selectedDuration, setSelectedDuration] = useState<string>('2min'); // 默认2分钟
   const [isGeneratingLyrics, setIsGeneratingLyrics] = useState(false);
   const [isGeneratingSong, setIsGeneratingSong] = useState(false);
   const [generatedAudioUrl, setGeneratedAudioUrl] = useState<string | null>(null);
+  const [generatedCoverUrl, setGeneratedCoverUrl] = useState<string | null>(null);
+  const [generatedTitle, setGeneratedTitle] = useState<string | null>(null);
+  const [currentTaskId, setCurrentTaskId] = useState<string | null>(null);
+  const pollingRef = useRef<NodeJS.Timeout | null>(null);
+
+  // 获取实际的主题文本（用于 API 调用）
+  const getThemeText = () => {
+    if (selectedTheme === 'custom') {
+      return customTheme.trim();
+    }
+    const option = THEME_OPTIONS.find(opt => opt.id === selectedTheme);
+    return option?.label || '';
+  };
 
   useEffect(() => {
     setTitle(t('studio.menu.aiSong'));
@@ -74,8 +92,16 @@ export default function AiSongPage() {
   const canProceed = () => {
     switch (currentStep) {
       case 0:
+        // 如果选择了自定义主题，需要输入内容
+        if (selectedTheme === 'custom') {
+          return customTheme.trim().length > 0;
+        }
         return selectedTheme !== null;
       case 1:
+        // 如果选择了自定义情绪，需要输入内容
+        if (selectedMood === 'custom') {
+          return customMood.trim().length > 0;
+        }
         return selectedMood !== null;
       case 2:
         return selectedVocal !== null;
@@ -104,25 +130,162 @@ export default function AiSongPage() {
     }
   };
 
-  const handleGenerateLyrics = () => {
-    setIsGeneratingLyrics(true);
-    // 模拟 AI 生成歌词
-    setTimeout(() => {
-      setLyrics(
-        `在夜晚的星空下\n我独自一人漫步\n思念如同潮水般涌来\n淹没了我的心\n\n你是否也在想我\n在远方的某个角落\n我们的回忆如此清晰\n却触不可及`
-      );
-      setIsGeneratingLyrics(false);
-    }, 2000);
+  // 获取心情文本
+  const getMoodText = () => {
+    if (selectedMood === 'custom') {
+      return customMood.trim();
+    }
+    const option = MOOD_OPTIONS.find(opt => opt.id === selectedMood);
+    return option?.label || '';
   };
 
-  const handleGenerateSong = () => {
-    setIsGeneratingSong(true);
-    // 模拟生成歌曲
-    setTimeout(() => {
-      setGeneratedAudioUrl('https://example.com/song.mp3');
-      setIsGeneratingSong(false);
-    }, 3000);
+  // 获取声线文本
+  const getVocalText = () => {
+    const option = VOCAL_OPTIONS.find(opt => opt.id === selectedVocal);
+    return option?.label || '';
   };
+
+  // 获取声音性别
+  const getVocalGender = (): 'm' | 'f' => {
+    if (selectedVocal?.includes('female') || selectedVocal?.includes('girl')) {
+      return 'f';
+    }
+    return 'm';
+  };
+
+  const handleGenerateLyrics = async () => {
+    setIsGeneratingLyrics(true);
+
+    // 获取用户选择
+    const theme = getThemeText();
+    const mood = getMoodText();
+    const vocal = getVocalText();
+
+    // 构建详细的提示词
+    const prompt = `请为一首中文歌曲创作歌词。
+主题：${theme}
+情绪氛围：${mood}
+演唱声线：${vocal}
+
+要求：
+1. 歌词需要包含 [Verse 1]、[Chorus]、[Verse 2] 等结构标记
+2. 歌词要符合主题和情绪，适合演唱
+3. 语言优美，有意境
+4. 长度适中，大约 150-200 字`;
+
+    try {
+      const response = await fetch('/api/ai/generate-lyrics', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt }),
+      });
+
+      const data = await response.json();
+
+      if (data.success && data.lyrics) {
+        setLyrics(data.lyrics);
+      } else {
+        // 如果 API 失败，使用备用歌词
+        console.warn('歌词生成失败，使用备用歌词:', data.error);
+        setLyrics(
+          `[Verse 1]\n在夜晚的星空下\n我独自一人漫步\n思念如同潮水般涌来\n淹没了我的心\n\n[Chorus]\n${theme}的故事在心中回响\n${mood}的旋律轻轻唱\n\n[Verse 2]\n你是否也在想我\n在远方的某个角落\n我们的回忆如此清晰\n却触不可及\n\n[Chorus]\n${theme}的故事在心中回响\n${mood}的旋律轻轻唱`
+        );
+      }
+    } catch (error) {
+      console.error('歌词生成请求失败:', error);
+      // 使用备用歌词
+      setLyrics(
+        `[Verse 1]\n在夜晚的星空下\n我独自一人漫步\n思念如同潮水般涌来\n淹没了我的心\n\n[Chorus]\n${theme}的故事在心中回响\n${mood}的旋律轻轻唱\n\n[Verse 2]\n你是否也在想我\n在远方的某个角落\n我们的回忆如此清晰\n却触不可及\n\n[Chorus]\n${theme}的故事在心中回响\n${mood}的旋律轻轻唱`
+      );
+    } finally {
+      setIsGeneratingLyrics(false);
+    }
+  };
+
+  // 轮询任务状态
+  const pollTaskStatus = async (taskId: string) => {
+    try {
+      const status = await getMusicTaskStatus(taskId);
+      console.log('🎵 [pollTaskStatus]', status);
+
+      if (status.status === 'SUCCESS' && status.result) {
+        // 生成成功
+        setGeneratedAudioUrl(status.result.audio_url || null);
+        setGeneratedCoverUrl(status.result.cover_url || null);
+        setGeneratedTitle(status.result.title || null);
+        setIsGeneratingSong(false);
+        if (pollingRef.current) {
+          clearInterval(pollingRef.current);
+          pollingRef.current = null;
+        }
+      } else if (status.status === 'FAILURE') {
+        // 生成失败
+        console.error('🎵 生成失败:', status.error);
+        setIsGeneratingSong(false);
+        if (pollingRef.current) {
+          clearInterval(pollingRef.current);
+          pollingRef.current = null;
+        }
+        alert(status.error || '生成失败，请重试');
+      }
+      // PENDING/PROCESSING 状态继续轮询
+    } catch (error) {
+      console.error('🎵 轮询失败:', error);
+    }
+  };
+
+  const handleGenerateSong = async () => {
+    setIsGeneratingSong(true);
+    setGeneratedAudioUrl(null);
+    setGeneratedCoverUrl(null);
+    setGeneratedTitle(null);
+
+    try {
+      // 构建提示词
+      const theme = getThemeText();
+      const mood = getMoodText();
+      const vocal = getVocalText();
+
+      // 调用 API 创建任务
+      const result = await createMusicTask({
+        prompt: lyrics,
+        model: 'music-4.5', // 默认使用 4.5 模型
+        customMode: true, // 使用自定义模式（歌词模式）
+        style: `${mood}, ${vocal}`, // 风格
+        title: `${theme}之歌`,
+        instrumental: false,
+        vocalGender: getVocalGender(),
+        isPublic: false,
+      });
+
+      if (result.status === 'FAILURE') {
+        throw new Error(result.error || '创建任务失败');
+      }
+
+      setCurrentTaskId(result.task_id);
+
+      // 开始轮询
+      pollingRef.current = setInterval(() => {
+        pollTaskStatus(result.task_id);
+      }, 5000); // 每 5 秒轮询一次
+
+      // 首次立即查询
+      await pollTaskStatus(result.task_id);
+    } catch (error) {
+      console.error('🎵 创建任务失败:', error);
+      setIsGeneratingSong(false);
+      alert(error instanceof Error ? error.message : '创建任务失败，请重试');
+    }
+  };
+
+  // 清理轮询
+  useEffect(() => {
+    return () => {
+      if (pollingRef.current) {
+        clearInterval(pollingRef.current);
+      }
+    };
+  }, []);
 
   // 渲染步骤内容
   const renderStepContent = () => {
@@ -148,6 +311,27 @@ export default function AiSongPage() {
                 />
               ))}
             </div>
+
+            {/* 自定义主题输入框 */}
+            {selectedTheme === 'custom' && (
+              <div className="mt-4 space-y-2">
+                <label className="block text-sm font-medium text-gray-700">
+                  输入你的主题
+                </label>
+                <div className="relative">
+                  <Edit3 className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                  <input
+                    type="text"
+                    value={customTheme}
+                    onChange={(e) => setCustomTheme(e.target.value)}
+                    placeholder="例如：毕业季、初恋、旅行、夏天的回忆..."
+                    className="w-full pl-10 pr-4 py-3 border-2 border-pink-300 rounded-xl focus:outline-none focus:border-pink-500 focus:ring-2 focus:ring-pink-200 transition-all"
+                    maxLength={50}
+                  />
+                </div>
+                <p className="text-xs text-gray-500 text-right">{customTheme.length}/50</p>
+              </div>
+            )}
           </div>
         );
 
@@ -172,6 +356,27 @@ export default function AiSongPage() {
                 />
               ))}
             </div>
+
+            {/* 自定义情绪输入框 */}
+            {selectedMood === 'custom' && (
+              <div className="mt-4 space-y-2">
+                <label className="block text-sm font-medium text-gray-700">
+                  输入你想要的感觉
+                </label>
+                <div className="relative">
+                  <Edit3 className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                  <input
+                    type="text"
+                    value={customMood}
+                    onChange={(e) => setCustomMood(e.target.value)}
+                    placeholder="例如：怀旧、清新、神秘、欢快..."
+                    className="w-full pl-10 pr-4 py-3 border-2 border-pink-300 rounded-xl focus:outline-none focus:border-pink-500 focus:ring-2 focus:ring-pink-200 transition-all"
+                    maxLength={50}
+                  />
+                </div>
+                <p className="text-xs text-gray-500 text-right">{customMood.length}/50</p>
+              </div>
+            )}
           </div>
         );
 
@@ -200,6 +405,15 @@ export default function AiSongPage() {
         );
 
       case 3: // Lyrics
+        // 获取显示用的选择
+        const lyricsTheme = selectedTheme === 'custom'
+          ? { icon: '✏️', label: customTheme }
+          : THEME_OPTIONS.find(opt => opt.id === selectedTheme);
+        const lyricsMood = selectedMood === 'custom'
+          ? { icon: '✏️', label: customMood }
+          : MOOD_OPTIONS.find(opt => opt.id === selectedMood);
+        const lyricsVocal = VOCAL_OPTIONS.find(opt => opt.id === selectedVocal);
+
         return (
           <div className="space-y-6">
             <div className="text-center space-y-2">
@@ -209,6 +423,22 @@ export default function AiSongPage() {
               <p className="text-gray-600">
                 {isGeneratingLyrics ? '请稍候，这可能需要几秒钟' : '不满意？可以点击重新生成'}
               </p>
+            </div>
+
+            {/* 用户选择摘要 */}
+            <div className="bg-gradient-to-r from-pink-50 to-fuchsia-50 rounded-xl p-4">
+              <p className="text-sm text-gray-500 mb-2">根据你的选择生成歌词：</p>
+              <div className="flex flex-wrap gap-2">
+                <span className="inline-flex items-center gap-1 px-3 py-1.5 bg-white rounded-full text-sm font-medium text-gray-700 shadow-sm">
+                  {lyricsTheme?.icon} {lyricsTheme?.label}
+                </span>
+                <span className="inline-flex items-center gap-1 px-3 py-1.5 bg-white rounded-full text-sm font-medium text-gray-700 shadow-sm">
+                  {lyricsMood?.icon} {lyricsMood?.label}
+                </span>
+                <span className="inline-flex items-center gap-1 px-3 py-1.5 bg-white rounded-full text-sm font-medium text-gray-700 shadow-sm">
+                  {lyricsVocal?.icon} {lyricsVocal?.label}
+                </span>
+              </div>
             </div>
 
             <LyricsEditor
@@ -221,6 +451,16 @@ export default function AiSongPage() {
         );
 
       case 4: // Generate
+        // 获取显示用的主题
+        const displayTheme = selectedTheme === 'custom'
+          ? { id: 'custom', icon: '✏️', label: customTheme }
+          : THEME_OPTIONS.find(opt => opt.id === selectedTheme);
+
+        // 获取显示用的情绪
+        const displayMood = selectedMood === 'custom'
+          ? { id: 'custom', icon: '✏️', label: customMood }
+          : MOOD_OPTIONS.find(opt => opt.id === selectedMood);
+
         return (
           <div className="space-y-6">
             <div className="text-center space-y-2">
@@ -233,7 +473,7 @@ export default function AiSongPage() {
               </h2>
               <p className="text-gray-600">
                 {isGeneratingSong
-                  ? '请稍候，AI 正在根据你的选择创作音乐'
+                  ? '请稍候，AI 正在根据你的选择创作音乐（约1-3分钟）'
                   : generatedAudioUrl
                   ? '试听一下？不满意可以再生成一次'
                   : '检查你的选择，确认后开始生成'}
@@ -241,14 +481,16 @@ export default function AiSongPage() {
             </div>
 
             <CreatePreview
-              theme={THEME_OPTIONS.find(opt => opt.id === selectedTheme)}
-              mood={MOOD_OPTIONS.find(opt => opt.id === selectedMood)}
+              theme={displayTheme}
+              mood={displayMood}
               vocal={VOCAL_OPTIONS.find(opt => opt.id === selectedVocal)}
               duration={selectedDuration}
               lyrics={lyrics}
               onDurationChange={setSelectedDuration}
               isGenerating={isGeneratingSong}
               generatedAudioUrl={generatedAudioUrl}
+              generatedCoverUrl={generatedCoverUrl}
+              generatedTitle={generatedTitle}
               onGenerate={handleGenerateSong}
               onRegenerate={handleGenerateSong}
               onContinueToMV={() => console.log('Continue to MV')}

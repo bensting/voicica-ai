@@ -34,6 +34,16 @@ import { useAdMob } from '@/contexts/AdMobContext';
 
 export type RewardedAdStatus = 'idle' | 'loading' | 'ready' | 'showing' | 'rewarded' | 'error';
 
+/** 广告结果 */
+export interface RewardedAdResult {
+  /** 是否成功获得奖励 */
+  success: boolean;
+  /** 失败原因：rewarded=成功, skipped=用户跳过, unavailable=无广告, error=错误 */
+  reason: 'rewarded' | 'skipped' | 'unavailable' | 'error';
+  /** 错误信息（仅当 reason 为 error 或 unavailable 时） */
+  message?: string;
+}
+
 interface UseRewardedAdReturn {
   /** 当前状态 */
   status: RewardedAdStatus;
@@ -43,8 +53,8 @@ interface UseRewardedAdReturn {
   isReady: boolean;
   /** 错误信息 */
   error: string | null;
-  /** 显示激励广告，返回是否成功获得奖励 */
-  showRewardedAd: () => Promise<boolean>;
+  /** 显示激励广告，返回详细结果 */
+  showRewardedAd: () => Promise<RewardedAdResult>;
 }
 
 // AppLixir SDK 容器 ID
@@ -200,20 +210,20 @@ export function useRewardedAd(): UseRewardedAdReturn {
   }, [provider, isNative]);
 
   // ==================== 显示广告 ====================
-  const showRewardedAd = useCallback(async (): Promise<boolean> => {
+  const showRewardedAd = useCallback(async (): Promise<RewardedAdResult> => {
     setError(null);
 
     // 如果没有启用任何广告，模拟成功
     if (provider === 'none') {
       console.log('[RewardedAd] No provider enabled, simulating success');
-      return true;
+      return { success: true, reason: 'rewarded' };
     }
 
     // ---- AppLixir ----
     if (provider === 'applixir') {
       if (!window.initializeAndOpenPlayer) {
         setError('AppLixir not ready');
-        return false;
+        return { success: false, reason: 'error', message: 'AppLixir not ready' };
       }
 
       return new Promise((resolve) => {
@@ -227,18 +237,28 @@ export function useRewardedAd(): UseRewardedAdReturn {
 
             if (adStatus === 'ad-watched') {
               setStatus('rewarded');
-              resolve(true);
-            } else if (adStatus === 'ad-interrupted' || adStatus === 'ad-unavailable') {
+              resolve({ success: true, reason: 'rewarded' });
+            } else if (adStatus === 'ad-interrupted') {
               setStatus('idle');
-              resolve(false);
+              resolve({ success: false, reason: 'skipped' });
+            } else if (adStatus === 'ad-unavailable') {
+              setStatus('idle');
+              resolve({ success: false, reason: 'unavailable', message: 'No ads available at this time' });
             }
           },
           adErrorCallbackFn: (err) => {
             const errorData = err.getError()?.data || {};
             console.error('[RewardedAd] AppLixir error:', errorData);
-            setError(errorData.errorMessage || 'Ad error');
-            setStatus('error');
-            resolve(false);
+            const errorMsg = errorData.errorMessage || 'Ad error';
+            // 错误码 303 = 无可用广告
+            if (errorData.errorCode === 303 || errorMsg.includes('No Ads') || errorMsg.includes('No Video')) {
+              setStatus('idle');
+              resolve({ success: false, reason: 'unavailable', message: 'No ads available at this time' });
+            } else {
+              setError(errorMsg);
+              setStatus('error');
+              resolve({ success: false, reason: 'error', message: errorMsg });
+            }
           },
         });
       });
@@ -281,17 +301,17 @@ export function useRewardedAd(): UseRewardedAdReturn {
         // Context 的 rewarded 状态会在 Rewarded 事件触发时更新
         if (admobRewarded) {
           setStatus('rewarded');
-          return true;
+          return { success: true, reason: 'rewarded' };
         } else {
           // 由于闭包问题，我们暂时假设成功（如果广告正常显示完毕）
           setStatus('rewarded');
-          return true;
+          return { success: true, reason: 'rewarded' };
         }
       } catch (err) {
         console.error('[RewardedAd] AdMob show failed:', err);
         setError('Failed to show ad');
         setStatus('error');
-        return false;
+        return { success: false, reason: 'error', message: 'Failed to show ad' };
       }
     }
 
@@ -315,7 +335,7 @@ export function useRewardedAd(): UseRewardedAdReturn {
             console.warn('[RewardedAd] No Appodeal app key for platform:', platform);
             setError('Appodeal app key not configured');
             setStatus('error');
-            return false;
+            return { success: false, reason: 'error', message: 'Appodeal app key not configured' };
           }
 
           await appodeal.initialize({
@@ -358,23 +378,27 @@ export function useRewardedAd(): UseRewardedAdReturn {
         if (result.rewarded) {
           setStatus('rewarded');
           console.log('[RewardedAd] Appodeal reward earned:', result);
-          return true;
+          return { success: true, reason: 'rewarded' };
         } else {
           setStatus('idle');
           if (result.error) {
             console.warn('[RewardedAd] Appodeal:', result.error);
+            // 检查是否是无广告的错误
+            if (result.error.includes('No ad') || result.error.includes('not loaded')) {
+              return { success: false, reason: 'unavailable', message: 'No ads available at this time' };
+            }
           }
-          return false;
+          return { success: false, reason: 'skipped' };
         }
       } catch (err) {
         console.error('[RewardedAd] Appodeal show failed:', err);
         setError('Failed to show ad');
         setStatus('error');
-        return false;
+        return { success: false, reason: 'error', message: 'Failed to show ad' };
       }
     }
 
-    return false;
+    return { success: false, reason: 'error', message: 'No ad provider available' };
   }, [provider, AdMob, AppodealPlugin, admobIsReady, admobRewarded, resetAdMobRewarded, prepareAdMobAd]);
 
   // 计算是否准备好

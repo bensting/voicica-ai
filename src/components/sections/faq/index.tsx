@@ -15,14 +15,14 @@ export default function FAQ() {
   const faqData = getFAQData(locale);
 
   return (
-    <section id="faq" className="py-12 sm:py-16 px-4 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+    <section id="faq" className="py-12 sm:py-16 px-4 bg-gradient-to-b from-rose-50 via-white to-pink-50">
       <div className="max-w-5xl mx-auto">
         {/* Title */}
         <div className="text-center mb-12">
-          <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
+          <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">
             {faqData.title}
           </h2>
-          <p className="text-gray-400 text-lg">
+          <p className="text-gray-600 text-lg">
             {faqData.description}
           </p>
         </div>

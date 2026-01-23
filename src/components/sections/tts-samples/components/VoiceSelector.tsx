@@ -163,17 +163,17 @@ export default function VoiceSelector({
       {/* 选择按钮 */}
       <button
         onClick={onToggle}
-        className="w-full h-[66px] flex items-center justify-between px-4 bg-gray-900/90 border border-gray-700 rounded-xl hover:bg-gray-800 transition-colors"
+        className="w-full h-[66px] flex items-center justify-between px-4 bg-white border border-pink-200 rounded-xl hover:bg-pink-50 transition-colors"
         disabled={isLoading}
       >
         {selectedVoice ? (
           <div className="flex items-center gap-3 flex-1 min-w-0">
             {renderAvatar(selectedVoice)}
             <div className="text-left flex-1 min-w-0">
-              <div className="text-white font-semibold text-sm truncate">
+              <div className="text-gray-900 font-semibold text-sm truncate">
                 {getDisplayName(selectedVoice)}
               </div>
-              <div className="text-xs text-gray-400 truncate">{getVoiceDescription(selectedVoice)}</div>
+              <div className="text-xs text-gray-500 truncate">{getVoiceDescription(selectedVoice)}</div>
             </div>
           </div>
         ) : (
@@ -190,7 +190,7 @@ export default function VoiceSelector({
 
       {/* 下拉菜单 */}
       {isOpen && !isLoading && availableVoices.length > 0 && (
-        <div className="absolute left-0 right-0 mt-2 bg-gray-800 border border-gray-700 rounded-xl shadow-lg z-10 overflow-hidden">
+        <div className="absolute left-0 right-0 mt-2 bg-white border border-pink-200 rounded-xl shadow-lg z-10 overflow-hidden">
           {/* 语音列表 - 隐藏滚动条 */}
           <div
             className="max-h-80 overflow-y-auto scrollbar-hide"
@@ -207,8 +207,8 @@ export default function VoiceSelector({
             {availableVoices.map((voice) => (
               <div
                 key={voice.id || voice.name}
-                className={`flex items-center gap-3 px-4 py-3 hover:bg-gray-700 transition-colors cursor-pointer ${
-                  selectedVoice?.id === voice.id ? 'bg-gray-700' : ''
+                className={`flex items-center gap-3 px-4 py-3 hover:bg-pink-50 transition-colors cursor-pointer ${
+                  selectedVoice?.id === voice.id ? 'bg-pink-50' : ''
                 }`}
                 onClick={() => {
                   onSelect(voice);
@@ -217,21 +217,21 @@ export default function VoiceSelector({
               >
                 {renderAvatar(voice)}
                 <div className="flex-1 min-w-0">
-                  <div className="text-white font-semibold text-sm truncate">
+                  <div className="text-gray-900 font-semibold text-sm truncate">
                     {getDisplayName(voice)}
                   </div>
-                  <div className="text-xs text-gray-400 truncate">{getVoiceDescription(voice)}</div>
+                  <div className="text-xs text-gray-500 truncate">{getVoiceDescription(voice)}</div>
                 </div>
                 {/* 试听按钮 */}
                 {getVoiceSampleUrl(voice) && (
                   <button
-                    className="w-8 h-8 flex items-center justify-center bg-gray-600 hover:bg-purple-600 rounded-full transition-colors flex-shrink-0"
+                    className="w-8 h-8 flex items-center justify-center bg-pink-100 hover:bg-pink-500 hover:text-white rounded-full transition-colors flex-shrink-0"
                     onClick={(e) => handlePlaySample(voice, e)}
                   >
                     {playingVoiceId === voice.id ? (
-                      <Pause className="w-4 h-4 text-white" fill="currentColor" />
+                      <Pause className="w-4 h-4" fill="currentColor" />
                     ) : (
-                      <Play className="w-4 h-4 text-white" fill="currentColor" />
+                      <Play className="w-4 h-4" fill="currentColor" />
                     )}
                   </button>
                 )}
@@ -242,18 +242,18 @@ export default function VoiceSelector({
           {/* 解锁更多语音 CTA */}
           <div
             onClick={handleUnlockClick}
-            className="bg-gradient-to-r from-purple-600 to-purple-700 p-4 text-center cursor-pointer hover:from-purple-500 hover:to-purple-600 transition-all"
+            className="bg-gradient-to-r from-pink-400 to-rose-400 p-4 text-center cursor-pointer hover:from-pink-500 hover:to-rose-500 transition-all"
           >
             <div className="text-white font-bold text-sm mb-1">{t('ttsSamples.voiceSelector.unlockTitle')}</div>
-            <div className="text-purple-100 text-xs">{t('ttsSamples.voiceSelector.unlockSubtitle')}</div>
+            <div className="text-pink-100 text-xs">{t('ttsSamples.voiceSelector.unlockSubtitle')}</div>
           </div>
         </div>
       )}
 
       {/* 空状态 */}
       {isOpen && !isLoading && availableVoices.length === 0 && (
-        <div className="absolute left-0 right-0 mt-2 bg-gray-800 border border-gray-700 rounded-xl shadow-lg z-10 p-6 text-center">
-          <div className="text-gray-400 text-sm">{t('ttsSamples.voiceSelector.noVoices')}</div>
+        <div className="absolute left-0 right-0 mt-2 bg-white border border-pink-200 rounded-xl shadow-lg z-10 p-6 text-center">
+          <div className="text-gray-500 text-sm">{t('ttsSamples.voiceSelector.noVoices')}</div>
         </div>
       )}
     </div>

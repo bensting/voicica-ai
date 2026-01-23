@@ -85,29 +85,29 @@ export default function CTA({
   };
 
   return (
-    <section className="relative py-12 sm:py-16 px-4 bg-gradient-to-br from-purple-900 via-purple-800 to-indigo-900 overflow-hidden">
+    <section className="relative py-12 sm:py-16 px-4 bg-gradient-to-br from-pink-100 via-rose-50 to-pink-100 overflow-hidden">
       {/* Animated Background Effects */}
-      <div className="absolute inset-0 opacity-20">
-        <div className="absolute top-10 left-10 w-72 h-72 bg-purple-500 rounded-full mix-blend-multiply filter blur-3xl animate-blob" />
-        <div className="absolute top-20 right-10 w-72 h-72 bg-pink-500 rounded-full mix-blend-multiply filter blur-3xl animate-blob animation-delay-2000" />
-        <div className="absolute bottom-10 left-1/2 w-72 h-72 bg-indigo-500 rounded-full mix-blend-multiply filter blur-3xl animate-blob animation-delay-4000" />
+      <div className="absolute inset-0 opacity-30">
+        <div className="absolute top-10 left-10 w-72 h-72 bg-pink-300 rounded-full mix-blend-multiply filter blur-3xl animate-blob" />
+        <div className="absolute top-20 right-10 w-72 h-72 bg-rose-300 rounded-full mix-blend-multiply filter blur-3xl animate-blob animation-delay-2000" />
+        <div className="absolute bottom-10 left-1/2 w-72 h-72 bg-pink-200 rounded-full mix-blend-multiply filter blur-3xl animate-blob animation-delay-4000" />
       </div>
 
       <div className="relative z-10 max-w-6xl mx-auto text-center">
         {/* Brand Logo */}
         <div className="mb-6 flex items-center justify-center">
           <Image
-            src="/logo/voice-labs-logo-light.svg"
+            src="/logo/voice-labs-logo-dark.svg"
             alt="AI-Voice-Labs.com"
             width={250}
             height={40}
             priority
-            className="h-10 md:h-12 lg:h-14 w-auto"
+            className="h-10 md:h-12 lg:h-14 w-auto brightness-0"
           />
         </div>
 
         {/* Main Title */}
-        <h2 className="text-lg md:text-2xl lg:text-3xl font-bold text-white mb-10 leading-tight max-w-4xl mx-auto">
+        <h2 className="text-lg md:text-2xl lg:text-3xl font-bold text-gray-900 mb-10 leading-tight max-w-4xl mx-auto">
           {t(titleKey)}
         </h2>
 
@@ -118,6 +118,7 @@ export default function CTA({
               <GradientButton
                 key={index}
                 size="lg"
+                variant="pink-rose"
                 className="min-w-[240px]"
                 onClick={() => handleButtonClick(button)}
               >
@@ -130,7 +131,7 @@ export default function CTA({
                 className="group relative px-10 py-4 rounded-xl font-bold text-lg
                   transition-all duration-300 hover:scale-105
                   min-w-[240px] flex items-center justify-center gap-2
-                  bg-transparent border-2 border-pink-400 text-pink-200 hover:bg-pink-500/10"
+                  bg-white border-2 border-pink-300 text-pink-600 hover:bg-pink-50"
               >
                 <span>{t(button.labelKey)}</span>
                 <span className="transition-transform group-hover:translate-x-1">&rarr;</span>
@@ -145,9 +146,9 @@ export default function CTA({
             {ctaFeatures.map((feature, index) => (
               <div
                 key={index}
-                className="flex items-center gap-3 text-white/90 hover:text-white transition-colors"
+                className="flex items-center gap-3 text-gray-700 hover:text-gray-900 transition-colors"
               >
-                <div className="flex-shrink-0 w-10 h-10 rounded-full bg-white/10 flex items-center justify-center backdrop-blur-sm">
+                <div className="flex-shrink-0 w-10 h-10 rounded-full bg-pink-100 flex items-center justify-center text-pink-600">
                   {feature.icon}
                 </div>
                 <span className="text-sm md:text-base font-medium text-left">

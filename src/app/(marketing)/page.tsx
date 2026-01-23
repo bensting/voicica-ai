@@ -5,7 +5,6 @@ import { Music, Mic } from 'lucide-react';
 import TTSSamples from '@/components/sections/tts-samples';
 import FAQ from '@/components/sections/faq';
 import CTA from '@/components/sections/CTA';
-import { AdBanner } from '@/components/ads';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { GradientButton } from '@/components/ui';
 
@@ -152,9 +151,6 @@ export default function Home() {
           }
         `}</style>
       </section>
-
-      {/* 广告位 - Hero 底部（首屏曝光最高） */}
-      <AdBanner variant="section" />
 
       {/* TTS Samples Section */}
       <TTSSamples />

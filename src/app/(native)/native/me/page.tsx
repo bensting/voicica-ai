@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 import { useCredits } from '@/contexts/CreditsContext';
 import { useSubscription } from '@/contexts/SubscriptionContext';
@@ -9,6 +9,9 @@ import UserStatsBar from '@/components/native/me/UserStatsBar';
 import SubscribeCard from '@/components/native/me/SubscribeCard';
 import MyCreations from '@/components/native/me/MyCreations';
 import LoginModal from '@/components/native/LoginModal';
+
+// Session storage key for tracking login modal
+const LOGIN_MODAL_SHOWN_KEY = 'me_page_login_modal_shown';
 
 /**
  * Me 页面
@@ -19,7 +22,8 @@ export default function MePage() {
   const { credits } = useCredits();
   const { isSubscribed, activeSubscription } = useSubscription();
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
-  const [hasShownLoginModal, setHasShownLoginModal] = useState(false);
+  // 使用 ref 跟踪是否已经显示过登录框，防止重复弹出
+  const hasShownRef = useRef(false);
 
   const isLoggedIn = !!user;
   const userName = user?.displayName || user?.email?.split('@')[0] || 'Guest';
@@ -47,13 +51,26 @@ export default function MePage() {
   };
   const planName = getPlanDisplayName();
 
-  // 未登录时自动弹出登录框（只弹一次）
+  // 登录成功时清除 sessionStorage 标记
   useEffect(() => {
-    if (!loading && !isLoggedIn && !hasShownLoginModal) {
-      setIsLoginModalOpen(true);
-      setHasShownLoginModal(true);
+    if (isLoggedIn) {
+      sessionStorage.removeItem(LOGIN_MODAL_SHOWN_KEY);
+      hasShownRef.current = false;
     }
-  }, [loading, isLoggedIn, hasShownLoginModal]);
+  }, [isLoggedIn]);
+
+  // 未登录时自动弹出登录框（只弹一次，使用 sessionStorage 防止重复）
+  useEffect(() => {
+    if (!loading && !isLoggedIn) {
+      // 检查 sessionStorage 和 ref，确保只弹一次
+      const alreadyShown = sessionStorage.getItem(LOGIN_MODAL_SHOWN_KEY) === 'true' || hasShownRef.current;
+      if (!alreadyShown) {
+        setIsLoginModalOpen(true);
+        sessionStorage.setItem(LOGIN_MODAL_SHOWN_KEY, 'true');
+        hasShownRef.current = true;
+      }
+    }
+  }, [loading, isLoggedIn]);
 
   return (
     <div className="h-screen flex flex-col bg-[#0a0a1a]">

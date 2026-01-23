@@ -8,6 +8,7 @@ import { useStudio } from '@/contexts/StudioContext';
 import { useCredits } from '@/contexts/CreditsContext';
 import { useSubscription } from '@/contexts/SubscriptionContext';
 import LoginModal from '@/components/features/auth/LoginModal';
+import UpgradeModal from '@/components/features/pricing/UpgradeModal';
 import { GradientButton } from '@/components/ui';
 import {
   musicModelsConfig,
@@ -54,6 +55,7 @@ export default function StudioAiMusicPage() {
 
   // UI States
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const [isUpgradeModalOpen, setIsUpgradeModalOpen] = useState(false);
   const [isModelSelectorOpen, setIsModelSelectorOpen] = useState(false);
   const [isParameterSheetOpen, setIsParameterSheetOpen] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
@@ -141,7 +143,7 @@ export default function StudioAiMusicPage() {
   const handleModelSelect = (m: MusicModel) => {
     if (m.isPremium && !isSubscribed) {
       setIsModelSelectorOpen(false);
-      router.push('/studio/settings/my-subscription');
+      setIsUpgradeModalOpen(true);
       return;
     }
     setModel(m.id);
@@ -1032,6 +1034,12 @@ export default function StudioAiMusicPage() {
       <LoginModal
         isOpen={isLoginModalOpen}
         onClose={() => setIsLoginModalOpen(false)}
+      />
+
+      {/* Upgrade Modal */}
+      <UpgradeModal
+        isOpen={isUpgradeModalOpen}
+        onClose={() => setIsUpgradeModalOpen(false)}
       />
 
       {/* Lyrics Assistant Modal */}

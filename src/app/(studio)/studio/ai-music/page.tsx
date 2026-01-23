@@ -253,15 +253,6 @@ export default function StudioAiMusicPage() {
           <div className="grid grid-cols-12 gap-6 flex-1 min-h-0">
             {/* Left Column: Controls */}
             <div className="col-span-7 flex flex-col gap-4 overflow-y-auto pr-2">
-              {/* Credits Bar */}
-              <div className="bg-white rounded-2xl p-4 border border-gray-200 shadow-sm flex items-center gap-3">
-                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-400 to-purple-600 flex items-center justify-center">
-                  <Sparkles className="w-4 h-4 text-white" />
-                </div>
-                <span className="text-lg font-semibold text-gray-900">{credits}</span>
-                <span className="text-gray-500">{t('common.credits')}</span>
-              </div>
-
               {/* Model Selector Card */}
               <div className="bg-white rounded-2xl p-4 border border-gray-200 shadow-sm">
                 <div className="text-sm text-gray-600 mb-3">{t('studio.menu.aiMusic')} Model</div>
@@ -613,15 +604,6 @@ export default function StudioAiMusicPage() {
       {/* Mobile Layout */}
       <div className="lg:hidden flex flex-col bg-gradient-to-b from-white to-purple-50 min-h-[calc(100vh-60px)]">
         <div className="flex-1 px-4 py-4 space-y-4 pb-24">
-          {/* Credits Bar */}
-          <div className="bg-white rounded-2xl p-4 border border-gray-200 shadow-sm flex items-center gap-3">
-            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-400 to-purple-600 flex items-center justify-center">
-              <Sparkles className="w-4 h-4 text-white" />
-            </div>
-            <span className="text-lg font-semibold text-gray-900">{credits}</span>
-            <span className="text-gray-500">{t('common.credits')}</span>
-          </div>
-
           {/* Model Selector */}
           <div className="bg-white rounded-2xl p-4 border border-gray-200 shadow-sm">
             <button

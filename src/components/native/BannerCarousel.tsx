@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 
@@ -16,12 +16,17 @@ interface Banner {
 
 /**
  * Banner 轮播组件
- * 从静态 JSON 加载数据，支持自动轮播和手动切换
+ * 从静态 JSON 加载数据，支持自动轮播和手动滑动切换
  */
 export default function BannerCarousel() {
   const [banners, setBanners] = useState<Banner[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
+
+  // 触摸滑动相关
+  const touchStartX = useRef(0);
+  const touchEndX = useRef(0);
+  const isDragging = useRef(false);
 
   // 加载 Banner 数据
   useEffect(() => {
@@ -53,6 +58,47 @@ export default function BannerCarousel() {
     setCurrentIndex(index);
   }, []);
 
+  // 下一张
+  const goToNext = useCallback(() => {
+    setCurrentIndex((prev) => (prev + 1) % banners.length);
+  }, [banners.length]);
+
+  // 上一张
+  const goToPrev = useCallback(() => {
+    setCurrentIndex((prev) => (prev - 1 + banners.length) % banners.length);
+  }, [banners.length]);
+
+  // 触摸开始
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+    isDragging.current = true;
+  }, []);
+
+  // 触摸移动
+  const handleTouchMove = useCallback((e: React.TouchEvent) => {
+    if (!isDragging.current) return;
+    touchEndX.current = e.touches[0].clientX;
+  }, []);
+
+  // 触摸结束
+  const handleTouchEnd = useCallback(() => {
+    if (!isDragging.current) return;
+    isDragging.current = false;
+
+    const diff = touchStartX.current - touchEndX.current;
+    const threshold = 50; // 滑动阈值
+
+    if (Math.abs(diff) > threshold) {
+      if (diff > 0) {
+        // 向左滑动，下一张
+        goToNext();
+      } else {
+        // 向右滑动，上一张
+        goToPrev();
+      }
+    }
+  }, [goToNext, goToPrev]);
+
   if (isLoading) {
     return (
       <div className="mx-4 h-44 rounded-2xl bg-gray-800/50 animate-pulse" />
@@ -67,7 +113,12 @@ export default function BannerCarousel() {
 
   return (
     <div className="px-4">
-      <div className="relative overflow-hidden rounded-2xl h-44">
+      <div
+        className="relative overflow-hidden rounded-2xl h-44 touch-pan-y"
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+      >
         {/* Banner 内容 */}
         <div
           className={`absolute inset-0 bg-gradient-to-r ${currentBanner.gradient}`}

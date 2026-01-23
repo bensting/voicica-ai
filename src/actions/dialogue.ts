@@ -7,6 +7,7 @@
 import { getCurrentUser } from '@/lib/auth-firebase';
 import prisma from '@/lib/prisma';
 import { calculateDialogueCost } from '@/config/creditsCost';
+import { v4 as uuidv4 } from 'uuid';
 
 /**
  * Dialogue 请求参数
@@ -23,9 +24,9 @@ interface DialogueRequest {
  * 任务状态
  */
 interface DialogueTaskStatus {
-  taskId: string;
-  recordId?: string;
-  status: 'pending' | 'processing' | 'completed' | 'failed';
+  task_id: string;
+  status: 'PENDING' | 'PROCESSING' | 'SUCCESS' | 'FAILURE';
+  progress: number;
   audioUrl?: string;
   error?: string;
 }
@@ -39,6 +40,19 @@ function getKieApiToken(): string {
     throw new Error('未配置 KIE_API_KEY 环境变量');
   }
   return token;
+}
+
+/**
+ * 获取回调 URL
+ */
+function getCallbackUrl(): string {
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.VERCEL_URL;
+  if (!baseUrl) {
+    console.warn('未配置 NEXT_PUBLIC_APP_URL，回调功能可能不工作');
+    return '';
+  }
+  const url = baseUrl.startsWith('http') ? baseUrl : `https://${baseUrl}`;
+  return `${url}/api/webhooks/kie-dialogue`;
 }
 
 /**
@@ -81,26 +95,57 @@ export async function createDialogueTask(
   }
 
   const token = getKieApiToken();
+  const taskId = uuidv4();
+  const callbackUrl = getCallbackUrl();
+
+  // 创建数据库记录
+  await prisma.dialogue_records.create({
+    data: {
+      user_id: userId,
+      task_id: taskId,
+      dialogue_json: JSON.stringify(request.dialogue),
+      total_characters: totalCharacters,
+      credits_cost: creditsRequired,
+      status: 'PENDING',
+      progress: 0,
+    },
+  });
 
   // 调用 kie.ai API
+  const apiBody: Record<string, unknown> = {
+    model: 'elevenlabs/text-to-dialogue-v3',
+    input: {
+      dialogue: request.dialogue,
+      stability: request.stability ?? 0.5,
+    },
+  };
+
+  // 添加回调 URL（如果有）
+  if (callbackUrl) {
+    apiBody.callBackUrl = callbackUrl;
+  }
+
   const response = await fetch('https://api.kie.ai/api/v1/jobs/createTask', {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${token}`,
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({
-      model: 'elevenlabs/text-to-dialogue-v3',
-      input: {
-        dialogue: request.dialogue,
-        stability: request.stability ?? 0.5,
-      },
-    }),
+    body: JSON.stringify(apiBody),
   });
 
   if (!response.ok) {
     const errorText = await response.text();
     console.error('kie.ai API 错误:', response.status, errorText);
+
+    // 更新记录状态为失败
+    await prisma.dialogue_records.update({
+      where: { task_id: taskId },
+      data: {
+        status: 'FAILURE',
+        error_message: `API 请求失败: ${response.status}`,
+      },
+    });
 
     if (response.status === 401) {
       throw new Error('API 认证失败');
@@ -118,10 +163,27 @@ export async function createDialogueTask(
   const result = await response.json();
 
   if (result.code !== 200) {
+    await prisma.dialogue_records.update({
+      where: { task_id: taskId },
+      data: {
+        status: 'FAILURE',
+        error_message: result.msg || 'API 返回错误',
+      },
+    });
     throw new Error(result.msg || 'API 返回错误');
   }
 
-  const { taskId, recordId } = result.data;
+  const externalTaskId = result.data.taskId;
+
+  // 更新记录，保存外部任务 ID
+  await prisma.dialogue_records.update({
+    where: { task_id: taskId },
+    data: {
+      external_task_id: externalTaskId,
+      status: 'PROCESSING',
+      progress: 10,
+    },
+  });
 
   // 扣除积分
   await prisma.users.update({
@@ -143,9 +205,9 @@ export async function createDialogueTask(
   });
 
   return {
-    taskId,
-    recordId,
-    status: 'pending',
+    task_id: taskId,
+    status: 'PROCESSING',
+    progress: 10,
   };
 }
 
@@ -157,61 +219,212 @@ export async function getDialogueTaskStatus(
 ): Promise<DialogueTaskStatus> {
   await getCurrentUser();
 
-  const token = getKieApiToken();
+  // 先从数据库获取记录
+  const record = await prisma.dialogue_records.findUnique({
+    where: { task_id: taskId },
+  });
 
-  // 调用 kie.ai 获取任务状态 API - 使用 /jobs/recordInfo 端点
-  const response = await fetch(
-    `https://api.kie.ai/api/v1/jobs/recordInfo?taskId=${encodeURIComponent(taskId)}`,
-    {
-      method: 'GET',
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }
-  );
-
-  if (!response.ok) {
-    const errorText = await response.text();
-    console.error('获取任务状态失败:', response.status, errorText);
-    throw new Error(`获取任务状态失败: ${response.status}`);
+  if (!record) {
+    throw new Error('任务不存在');
   }
 
-  const result = await response.json();
-
-  if (result.code !== 200) {
-    throw new Error(result.msg || '获取任务状态失败');
+  // 如果已完成或失败，直接返回数据库状态
+  if (record.status === 'SUCCESS' || record.status === 'FAILURE') {
+    return {
+      task_id: taskId,
+      status: record.status as DialogueTaskStatus['status'],
+      progress: record.progress,
+      audioUrl: record.audio_url || undefined,
+      error: record.error_message || undefined,
+    };
   }
 
-  const taskData = result.data;
+  // 如果还在处理中，查询 kie.ai API 获取最新状态
+  if (record.external_task_id) {
+    const token = getKieApiToken();
 
-  // kie.ai 使用 state 字段：waiting, queuing, generating, success, fail
-  const taskState = (taskData.state || '').toLowerCase();
-
-  // 解析 resultJson 获取音频 URL
-  let audioUrl: string | undefined;
-  if (taskData.resultJson) {
     try {
-      const resultData = JSON.parse(taskData.resultJson);
-      audioUrl = resultData.resultUrls?.[0] || resultData.audio_url;
-    } catch {
-      // ignore parse error
+      const response = await fetch(
+        `https://api.kie.ai/api/v1/jobs/recordInfo?taskId=${encodeURIComponent(record.external_task_id)}`,
+        {
+          method: 'GET',
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      if (response.ok) {
+        const result = await response.json();
+
+        if (result.code === 200 && result.data) {
+          const taskState = (result.data.state || '').toLowerCase();
+
+          // 解析 resultJson 获取音频 URL
+          let audioUrl: string | undefined;
+          if (result.data.resultJson) {
+            try {
+              const resultData = JSON.parse(result.data.resultJson);
+              audioUrl = resultData.resultUrls?.[0] || resultData.audio_url;
+            } catch {
+              // ignore
+            }
+          }
+
+          if (taskState === 'success' && audioUrl) {
+            // 更新数据库
+            await prisma.dialogue_records.update({
+              where: { id: record.id },
+              data: {
+                status: 'SUCCESS',
+                progress: 100,
+                audio_url: audioUrl,
+                completed_at: new Date(),
+              },
+            });
+
+            return {
+              task_id: taskId,
+              status: 'SUCCESS',
+              progress: 100,
+              audioUrl,
+            };
+          } else if (taskState === 'fail') {
+            const errorMsg = result.data.failMsg || 'Generation failed';
+            await prisma.dialogue_records.update({
+              where: { id: record.id },
+              data: {
+                status: 'FAILURE',
+                error_message: errorMsg,
+              },
+            });
+
+            return {
+              task_id: taskId,
+              status: 'FAILURE',
+              progress: 0,
+              error: errorMsg,
+            };
+          } else {
+            // 更新进度
+            const progress = taskState === 'generating' ? 60 : taskState === 'queuing' ? 30 : record.progress;
+            if (progress !== record.progress) {
+              await prisma.dialogue_records.update({
+                where: { id: record.id },
+                data: { progress },
+              });
+            }
+
+            return {
+              task_id: taskId,
+              status: 'PROCESSING',
+              progress,
+            };
+          }
+        }
+      }
+    } catch (error) {
+      console.error('查询 kie.ai 状态失败:', error);
     }
   }
 
-  // 映射状态
-  let status: DialogueTaskStatus['status'] = 'pending';
-  if (taskState === 'success') {
-    status = 'completed';
-  } else if (taskState === 'waiting' || taskState === 'queuing' || taskState === 'generating') {
-    status = 'processing';
-  } else if (taskState === 'fail') {
-    status = 'failed';
+  // 返回数据库中的状态
+  return {
+    task_id: taskId,
+    status: record.status as DialogueTaskStatus['status'],
+    progress: record.progress,
+    audioUrl: record.audio_url || undefined,
+    error: record.error_message || undefined,
+  };
+}
+
+/**
+ * Dialogue 记录类型
+ */
+export interface DialogueRecord {
+  id: number;
+  task_id: string;
+  status: string;
+  progress: number;
+  audio_url: string | null;
+  dialogue_json: string;
+  total_characters: number;
+  credits_cost: number;
+  duration: number | null;
+  created_at: Date;
+}
+
+/**
+ * 获取用户的 Dialogue 历史记录
+ */
+export async function getDialogueHistory(limit: number = 20): Promise<Array<{
+  task_id: string;
+  status: string;
+  audio_url: string | null;
+  total_characters: number;
+  credits_cost: number;
+  created_at: Date;
+}>> {
+  const { uid: userId } = await getCurrentUser();
+
+  const records = await prisma.dialogue_records.findMany({
+    where: { user_id: userId },
+    orderBy: { created_at: 'desc' },
+    take: limit,
+    select: {
+      task_id: true,
+      status: true,
+      audio_url: true,
+      total_characters: true,
+      credits_cost: true,
+      created_at: true,
+    },
+  });
+
+  return records;
+}
+
+/**
+ * 获取用户的 Dialogue 记录列表（用于 My Creations）
+ */
+export async function getDialogueRecords(limit: number = 50): Promise<DialogueRecord[]> {
+  const { uid: userId } = await getCurrentUser();
+
+  const records = await prisma.dialogue_records.findMany({
+    where: { user_id: userId },
+    orderBy: { created_at: 'desc' },
+    take: limit,
+    select: {
+      id: true,
+      task_id: true,
+      status: true,
+      progress: true,
+      audio_url: true,
+      dialogue_json: true,
+      total_characters: true,
+      credits_cost: true,
+      duration: true,
+      created_at: true,
+    },
+  });
+
+  return records;
+}
+
+/**
+ * 删除 Dialogue 记录
+ */
+export async function deleteDialogueRecord(id: number): Promise<void> {
+  const { uid: userId } = await getCurrentUser();
+
+  // 验证记录属于当前用户
+  const record = await prisma.dialogue_records.findFirst({
+    where: { id, user_id: userId },
+  });
+
+  if (!record) {
+    throw new Error('记录不存在或无权删除');
   }
 
-  return {
-    taskId,
-    status,
-    audioUrl,
-    error: taskData.failMsg,
-  };
+  await prisma.dialogue_records.delete({
+    where: { id },
+  });
 }

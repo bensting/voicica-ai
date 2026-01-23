@@ -7,16 +7,18 @@ import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 import { getMusicRecords, deleteMusicRecord, type MusicRecord } from '@/actions/music';
 import { getTtsRecords, deleteTtsRecord, type TtsRecord } from '@/actions/tts';
 import { getCoverRecords, deleteCoverRecord, type CoverRecord } from '@/actions/cover';
+import { getDialogueRecords, deleteDialogueRecord, type DialogueRecord } from '@/actions/dialogue';
 import { useMusicTaskPolling } from '@/hooks/useMusicTaskPolling';
 
 // 提取的组件
 import MusicDetailModal from './MusicDetailModal';
 import CoverDetailModal from './CoverDetailModal';
 import VoiceDetailModal from './VoiceDetailModal';
-import { MusicCard, CoverCard, VoiceCard } from './cards';
+import DialogueDetailModal from './DialogueDetailModal';
+import { MusicCard, CoverCard, VoiceCard, DialogueCard } from './cards';
 import { formatDateLong } from './utils';
 
-type TabType = 'music' | 'cover' | 'voices';
+type TabType = 'music' | 'cover' | 'voices' | 'dialogues';
 
 interface VideoItem {
   taskId: string;
@@ -38,6 +40,7 @@ const tabs: { id: TabType; label: string }[] = [
   { id: 'music', label: 'Music' },
   { id: 'cover', label: 'Cover' },
   { id: 'voices', label: 'Voices' },
+  { id: 'dialogues', label: 'Dialogues' },
 ];
 
 const emptyStateMessages: Record<TabType, { title: string; subtitle: string; createLink: string }> = {
@@ -55,6 +58,11 @@ const emptyStateMessages: Record<TabType, { title: string; subtitle: string; cre
     title: 'No content yet.',
     subtitle: 'Create your first voice.',
     createLink: '/native/create/voice',
+  },
+  dialogues: {
+    title: 'No content yet.',
+    subtitle: 'Create your first AI dialogue.',
+    createLink: '/native/create/dialogue',
   },
 };
 
@@ -92,7 +100,7 @@ export default function MyCreations() {
 
   // 从 URL 参数获取初始 tab
   const tabFromUrl = searchParams.get('tab') as TabType | null;
-  const initialTab = tabFromUrl && ['music', 'cover', 'voices'].includes(tabFromUrl)
+  const initialTab = tabFromUrl && ['music', 'cover', 'voices', 'dialogues'].includes(tabFromUrl)
     ? tabFromUrl
     : 'music';
 
@@ -102,11 +110,13 @@ export default function MyCreations() {
   const [musicRecords, setMusicRecords] = useState<MusicRecord[]>([]);
   const [voiceRecords, setVoiceRecords] = useState<TtsRecord[]>([]);
   const [coverRecords, setCoverRecords] = useState<CoverRecord[]>([]);
+  const [dialogueRecords, setDialogueRecords] = useState<DialogueRecord[]>([]);
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [selectedMusic, setSelectedMusic] = useState<MusicRecord | null>(null);
   const [selectedCover, setSelectedCover] = useState<CoverRecord | null>(null);
   const [selectedVoice, setSelectedVoice] = useState<TtsRecord | null>(null);
+  const [selectedDialogue, setSelectedDialogue] = useState<DialogueRecord | null>(null);
 
   // 下拉刷新相关
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -202,10 +212,29 @@ export default function MyCreations() {
     }
   }, []);
 
+  // 获取 Dialogue 列表
+  const fetchDialogues = useCallback(async (isRefresh = false) => {
+    try {
+      if (isRefresh) {
+        setRefreshing(true);
+      } else {
+        setLoading(true);
+      }
+
+      const records = await getDialogueRecords(50);
+      setDialogueRecords(records);
+    } catch (error) {
+      console.error('Failed to fetch dialogue records:', error);
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    }
+  }, []);
+
   // 同步 URL 参数到 activeTab
   useEffect(() => {
     const tabParam = searchParams.get('tab') as TabType | null;
-    if (tabParam && ['videos', 'music', 'cover', 'images'].includes(tabParam)) {
+    if (tabParam && ['music', 'cover', 'voices', 'dialogues'].includes(tabParam)) {
       setActiveTab(tabParam);
     }
   }, [searchParams]);
@@ -218,8 +247,10 @@ export default function MyCreations() {
       fetchVoices();
     } else if (activeTab === 'cover') {
       fetchCovers();
+    } else if (activeTab === 'dialogues') {
+      fetchDialogues();
     }
-  }, [activeTab, fetchMusic, fetchVoices, fetchCovers]);
+  }, [activeTab, fetchMusic, fetchVoices, fetchCovers, fetchDialogues]);
 
   // 使用 hook 轮询处理中的音乐任务状态
   useMusicTaskPolling({
@@ -274,6 +305,8 @@ export default function MyCreations() {
         await fetchVoices(true);
       } else if (activeTab === 'cover') {
         await fetchCovers(true);
+      } else if (activeTab === 'dialogues') {
+        await fetchDialogues(true);
       }
     }
     setPullDistance(0);
@@ -343,10 +376,29 @@ export default function MyCreations() {
     setVoiceRecords((prev) => prev.filter((v) => v.id !== voice.id));
   };
 
+  const handleDialogueClick = (dialogue: DialogueRecord) => {
+    // 只有完成的 dialogue 才能打开详情
+    if (dialogue.status === 'SUCCESS') {
+      setSelectedDialogue(dialogue);
+    }
+  };
+
+  const handleDialogueRecreate = () => {
+    // 跳转到创建页面
+    router.push('/native/create/dialogue');
+    setSelectedDialogue(null);
+  };
+
+  const handleDialogueDelete = async (dialogue: DialogueRecord) => {
+    await deleteDialogueRecord(dialogue.id);
+    setDialogueRecords((prev) => prev.filter((d) => d.id !== dialogue.id));
+  };
+
   // 过滤掉失败的记录
   const filteredMusicRecords = musicRecords.filter((m) => m.status !== 'FAILURE');
   const filteredVoiceRecords = voiceRecords.filter((v) => v.status !== 'FAILURE');
   const filteredCoverRecords = coverRecords.filter((c) => c.status !== 'FAILURE');
+  const filteredDialogueRecords = dialogueRecords.filter((d) => d.status !== 'FAILURE');
 
   const emptyState = emptyStateMessages[activeTab];
   const isEmpty = activeTab === 'music'
@@ -355,6 +407,8 @@ export default function MyCreations() {
     ? filteredVoiceRecords.length === 0
     : activeTab === 'cover'
     ? filteredCoverRecords.length === 0
+    : activeTab === 'dialogues'
+    ? filteredDialogueRecords.length === 0
     : true;
 
   // 按日期分组
@@ -384,6 +438,15 @@ export default function MyCreations() {
     groups[date].push(cover);
     return groups;
   }, {} as Record<string, CoverRecord[]>);
+
+  const groupedDialogueRecords = filteredDialogueRecords.reduce((groups, dialogue) => {
+    const date = formatDateLong(dialogue.created_at.toString());
+    if (!groups[date]) {
+      groups[date] = [];
+    }
+    groups[date].push(dialogue);
+    return groups;
+  }, {} as Record<string, DialogueRecord[]>);
 
   return (
     <div className="h-full flex flex-col">
@@ -550,6 +613,44 @@ export default function MyCreations() {
               ))}
             </div>
           )
+        ) : activeTab === 'dialogues' ? (
+          loading && dialogueRecords.length === 0 ? (
+            // 加载中
+            <div className="flex justify-center py-8">
+              <div className="w-8 h-8 border-3 border-purple-500 border-t-transparent rounded-full animate-spin" />
+            </div>
+          ) : isEmpty ? (
+            // 空状态
+            <div className="flex flex-col items-center justify-center py-8">
+              <EmptyIllustration />
+              <p className="mt-3 text-gray-400 text-center">{emptyState.title}</p>
+              <p className="text-gray-500 text-sm text-center">{emptyState.subtitle}</p>
+              <Link
+                href={emptyState.createLink}
+                className="mt-4 px-8 py-3 bg-white/10 border border-white/20 rounded-full text-white font-medium hover:bg-white/20 transition-colors"
+              >
+                Go create
+              </Link>
+            </div>
+          ) : (
+            // Dialogue 列表 - 按日期分组
+            <div className="space-y-4">
+              {Object.entries(groupedDialogueRecords).map(([date, records]) => (
+                <div key={date}>
+                  <h3 className="text-gray-500 text-sm mb-2">{date}</h3>
+                  <div className="space-y-1">
+                    {records.map((dialogue) => (
+                      <DialogueCard
+                        key={dialogue.task_id}
+                        dialogue={dialogue}
+                        onClick={() => handleDialogueClick(dialogue)}
+                      />
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )
         ) : isEmpty ? (
           // 其他 tab 的空状态
           <div className="flex flex-col items-center justify-center py-8">
@@ -593,6 +694,16 @@ export default function MyCreations() {
           onClose={() => setSelectedVoice(null)}
           onRecreate={handleVoiceRecreate}
           onDelete={handleVoiceDelete}
+        />
+      )}
+
+      {/* Dialogue 详情弹窗 */}
+      {selectedDialogue && (
+        <DialogueDetailModal
+          dialogue={selectedDialogue}
+          onClose={() => setSelectedDialogue(null)}
+          onRecreate={handleDialogueRecreate}
+          onDelete={handleDialogueDelete}
         />
       )}
     </div>

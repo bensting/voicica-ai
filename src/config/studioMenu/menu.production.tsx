@@ -103,13 +103,13 @@ export const studioMenuItems: StudioMenuItemConfig[] = [
     icon: <YouTubeIcon className="w-5 h-5" />,
   },
 
-  // Music AI - 生产环境暂未上线
+  // Music AI
   {
     id: 'ai-music',
     labelKey: 'studio.menu.aiMusic',
     href: '/studio/ai-music',
     category: 'music',
-    enabled: false,
+    enabled: true,
     icon: (
       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
@@ -133,7 +133,7 @@ export const studioMenuItems: StudioMenuItemConfig[] = [
     labelKey: 'studio.menu.aiSongOneClick',
     href: '/studio/ai-song',
     category: 'music',
-    enabled: false,
+    enabled: true,
     icon: (
       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
@@ -157,7 +157,7 @@ export const studioMenuItems: StudioMenuItemConfig[] = [
     labelKey: 'studio.menu.musicHistory',
     href: '/studio/music-history',
     category: 'music',
-    enabled: false,
+    enabled: true,
     icon: (
       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />

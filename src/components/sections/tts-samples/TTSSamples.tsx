@@ -108,13 +108,25 @@ export default function TTSSamples() {
       </div>
 
       {/* 右侧：示意图或演示 */}
-      <div className="bg-gradient-to-br from-pink-50 to-rose-50 rounded-2xl p-6 border border-pink-200 flex items-center justify-center min-h-[300px]">
-        <div className="text-center">
-          <div className="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-pink-400 to-rose-400 rounded-full flex items-center justify-center">
+      <div
+        className="rounded-2xl p-6 border border-pink-200 flex items-center justify-center min-h-[300px] relative overflow-hidden"
+        style={{
+          backgroundImage: "url('/images/pink_music_bg.png')",
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+        }}
+      >
+        <div className="absolute inset-0 bg-white/30 backdrop-blur-[2px]" />
+        <div className="text-center relative z-10">
+          <div className="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-pink-400 to-rose-400 rounded-full flex items-center justify-center shadow-lg shadow-pink-200">
             <Music className="w-10 h-10 text-white" />
           </div>
-          <p className="text-gray-600 mb-4">Write your lyrics, choose a style</p>
-          <p className="text-gray-900 font-semibold">AI creates your song in minutes</p>
+          <p className="text-gray-800 mb-2 font-medium bg-white/60 px-3 py-1 rounded-full inline-block backdrop-blur-sm">
+            Write your lyrics, choose a style
+          </p>
+          <p className="text-gray-900 font-bold text-lg drop-shadow-sm">
+            AI creates your song in minutes
+          </p>
         </div>
       </div>
     </div>

@@ -1,66 +1,15 @@
 'use client';
 
 import Link from 'next/link';
-import { Mic, Music, Video, FileText, Wand2, Download } from 'lucide-react';
-
-interface FeatureItem {
-  id: string;
-  name: string;
-  icon: React.ReactNode;
-  href: string;
-  gradient: string;
-}
-
-const features: FeatureItem[] = [
-  {
-    id: 'tts',
-    name: 'Text to Speech',
-    icon: <Mic className="w-6 h-6" />,
-    href: '/studio/tts',
-    gradient: 'from-purple-500 to-purple-600',
-  },
-  {
-    id: 'ai-music',
-    name: 'AI Music',
-    icon: <Music className="w-6 h-6" />,
-    href: '/studio/ai-music',
-    gradient: 'from-pink-500 to-rose-500',
-  },
-  {
-    id: 'ai-cover',
-    name: 'AI Cover',
-    icon: <Wand2 className="w-6 h-6" />,
-    href: '/studio/ai-cover',
-    gradient: 'from-orange-500 to-pink-500',
-  },
-  {
-    id: 'story',
-    name: 'Story Maker',
-    icon: <FileText className="w-6 h-6" />,
-    href: '/studio/story/generate',
-    gradient: 'from-blue-500 to-cyan-500',
-  },
-  {
-    id: 'tiktok',
-    name: 'TikTok Download',
-    icon: <Download className="w-6 h-6" />,
-    href: '/studio/tools/tiktok-downloader',
-    gradient: 'from-gray-700 to-gray-800',
-  },
-  {
-    id: 'youtube',
-    name: 'YouTube Download',
-    icon: <Video className="w-6 h-6" />,
-    href: '/studio/tools/youtube-downloader',
-    gradient: 'from-red-500 to-red-600',
-  },
-];
+import { getEnabledFeatures } from '@/config/studioFeatures';
 
 /**
  * Studio 功能入口网格
  * 横向滚动显示功能入口卡片
  */
 export default function StudioFeatureGrid() {
+  const features = getEnabledFeatures();
+
   return (
     <div className="py-4">
       <div className="flex gap-3 overflow-x-auto scrollbar-hide pb-2">

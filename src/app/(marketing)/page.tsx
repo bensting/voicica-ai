@@ -62,7 +62,7 @@ function SoundWaveAnimation() {
         {SOUND_WAVE_DATA.map((wave, i) => (
           <div
             key={i}
-            className="w-1 md:w-1.5 bg-gradient-to-t from-purple-500 to-pink-500 rounded-full"
+            className="w-1 md:w-1.5 bg-gradient-to-t from-pink-300 to-rose-300 rounded-full"
             style={{
               height: `${wave.height}%`,
               animation: `soundWave ${wave.duration}s ease-in-out infinite alternate`,
@@ -83,35 +83,35 @@ export default function Home() {
     <div className="min-h-screen">
       {/* Hero Section */}
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-        {/* Background */}
-        <div className="absolute inset-0 w-full h-full bg-gradient-to-br from-[#1a1a2e] via-[#2d1b4e] to-[#1a1a2e]" />
+        {/* Background - Rose Dawn Gradient */}
+        <div className="absolute inset-0 w-full h-full bg-gradient-to-br from-pink-50 via-white to-rose-50" />
         <SoundWaveAnimation />
 
         {/* Content */}
         <div className="relative z-10 max-w-4xl mx-auto px-4 py-20 text-center">
           {/* Brand Name */}
           <div className="mb-6">
-            <h2 className="text-xl md:text-2xl font-bold text-white">
+            <h2 className="text-xl md:text-2xl font-bold text-gray-800">
               Voicica
               <span className="inline-flex items-center">
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-rose-400">
                   .AI
                 </span>
-                <sup className="text-xs text-white/70 ml-1">®</sup>
+                <sup className="text-xs text-gray-400 ml-1">®</sup>
               </span>
             </h2>
           </div>
 
           {/* Main Title */}
-          <h1 className="font-bold text-white mb-4 text-3xl sm:text-4xl md:text-5xl lg:text-6xl leading-tight">
+          <h1 className="font-bold text-gray-900 mb-4 text-3xl sm:text-4xl md:text-5xl lg:text-6xl leading-tight">
             {t('home.heroTitlePrefix')}{' '}
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-400 to-purple-400">
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-400 via-rose-400 to-pink-400">
               {t('home.heroTitleHighlight')}
             </span>
           </h1>
 
           {/* Subtitle */}
-          <p className="text-white/80 text-base md:text-lg max-w-2xl mx-auto mb-10">
+          <p className="text-gray-600 text-base md:text-lg max-w-2xl mx-auto mb-10">
             {t('home.heroDescription')}
           </p>
 
@@ -120,7 +120,8 @@ export default function Home() {
             <GradientButton
               onClick={() => router.push('/studio/ai-song')}
               size="md"
-              className="w-full sm:w-auto min-w-[200px] py-4 rounded-xl text-lg"
+              variant="pink-rose"
+              className="w-full sm:w-auto min-w-[200px] py-4 rounded-xl text-lg shadow-pink-200"
             >
               <span>{t('home.lyricsToMusic')}</span>
               <Music className="w-5 h-5 ml-2" />
@@ -128,7 +129,8 @@ export default function Home() {
             <GradientButton
               onClick={() => router.push('/studio/tts')}
               size="md"
-              className="w-full sm:w-auto min-w-[200px] py-4 rounded-xl text-lg"
+              variant="pink-rose"
+              className="w-full sm:w-auto min-w-[200px] py-4 rounded-xl text-lg shadow-pink-200"
             >
               <span>{t('home.textToSpeech')}</span>
               <Mic className="w-5 h-5 ml-2" />

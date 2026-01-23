@@ -13,6 +13,10 @@ import {
   generateVoiceSampleForVoice,
   generateVoiceAvatarUploadUrl,
 } from '@/actions/admin/voices';
+import {
+  syncElevenlabsDialogueVoices,
+  getElevenlabsDialogueStats,
+} from '@/actions/admin/elevenlabs-dialogue-voices';
 
 interface Voice {
   id: number;
@@ -85,6 +89,10 @@ export default function VoicesManagementPage() {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
 
+  // ElevenLabs Dialogue 同步
+  const [syncingDialogue, setSyncingDialogue] = useState(false);
+  const [dialogueStats, setDialogueStats] = useState<{ total: number; dbCount: number; activeCount: number } | null>(null);
+
   // 解析风格数量筛选
   const getStyleCountParams = () => {
     if (!styleCountFilter) return {};
@@ -132,10 +140,41 @@ export default function VoicesManagementPage() {
     }
   }, []);
 
+  // 加载 ElevenLabs Dialogue 统计
+  const loadDialogueStats = useCallback(async () => {
+    try {
+      const stats = await getElevenlabsDialogueStats();
+      setDialogueStats(stats);
+    } catch (error) {
+      console.error('加载 Dialogue 统计失败:', error);
+    }
+  }, []);
+
+  // 同步 ElevenLabs Dialogue 声音
+  const handleSyncDialogue = async () => {
+    setSyncingDialogue(true);
+    try {
+      const result = await syncElevenlabsDialogueVoices();
+      if (result.success) {
+        alert(result.message);
+        loadDialogueStats();
+        loadVoices();
+      } else {
+        alert(`同步失败: ${result.message}`);
+      }
+    } catch (error) {
+      console.error('同步 Dialogue 声音失败:', error);
+      alert('同步失败');
+    } finally {
+      setSyncingDialogue(false);
+    }
+  };
+
   // 初始加载
   useEffect(() => {
     loadLocales();
-  }, [loadLocales]);
+    loadDialogueStats();
+  }, [loadLocales, loadDialogueStats]);
 
   // 筛选变化时重新加载
   useEffect(() => {
@@ -269,7 +308,7 @@ export default function VoicesManagementPage() {
 
   // 生成语音样本
   const handleGenerateSamples = async (voiceId: number, styleCount: number) => {
-    if (!confirm(`确定要为此语音生成 ${styleCount} 个风格的样本吗？这会覆盖现有样本。`)) {
+    if (!confirm(`确定要为此语音生成 ${styleCount} 个风格的样本吗？这会覆盖现有样本。\n\n注意：ElevenLabs 声音生成可能需要较长时间，请耐心等待。`)) {
       return;
     }
 
@@ -278,15 +317,16 @@ export default function VoicesManagementPage() {
       const result = await generateVoiceSampleForVoice(voiceId);
       if (result.success) {
         alert(result.message);
-        loadVoices(); // 刷新列表
       } else {
         alert(`生成失败: ${result.message}`);
       }
     } catch (error) {
       console.error('生成样本失败:', error);
-      alert('生成样本失败');
+      // 可能是超时但后台成功了，提示用户并刷新
+      alert('请求超时，但后台可能已成功生成。列表将自动刷新。');
     } finally {
       setGeneratingVoiceId(null);
+      loadVoices(); // 无论成功失败都刷新列表
     }
   };
 
@@ -384,12 +424,29 @@ export default function VoicesManagementPage() {
           <h1 className="text-2xl font-bold text-gray-900">语音管理</h1>
           <p className="text-gray-600 mt-1">管理所有语音，启用或禁用语音</p>
         </div>
-        <Link
-          href="/admin/voices/sync"
-          className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
-        >
-          Azure 同步
-        </Link>
+        <div className="flex items-center gap-3">
+          {/* ElevenLabs Dialogue 同步 */}
+          <div className="flex items-center gap-2">
+            {dialogueStats && (
+              <span className="text-sm text-gray-500">
+                Dialogue: {dialogueStats.dbCount}/{dialogueStats.total}
+              </span>
+            )}
+            <button
+              onClick={handleSyncDialogue}
+              disabled={syncingDialogue}
+              className="px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition-colors disabled:opacity-50"
+            >
+              {syncingDialogue ? '同步中...' : 'Dialogue 同步'}
+            </button>
+          </div>
+          <Link
+            href="/admin/voices/sync"
+            className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+          >
+            Azure 同步
+          </Link>
+        </div>
       </div>
 
       {/* 筛选栏 */}
@@ -453,6 +510,7 @@ export default function VoicesManagementPage() {
             <option value="microsoft">Microsoft</option>
             <option value="google">Google</option>
             <option value="fish">Fish Audio</option>
+            <option value="elevenlabs_dialogue">ElevenLabs Dialogue</option>
           </select>
 
           {/* 状态筛选 */}
@@ -627,10 +685,18 @@ export default function VoicesManagementPage() {
                             ? 'bg-blue-100 text-blue-700'
                             : voice.provider === 'fish'
                               ? 'bg-teal-100 text-teal-700'
-                              : 'bg-purple-100 text-purple-700'
+                              : voice.provider === 'elevenlabs_dialogue'
+                                ? 'bg-orange-100 text-orange-700'
+                                : 'bg-purple-100 text-purple-700'
                         }`}
                       >
-                        {voice.provider === 'google' ? 'Google' : voice.provider === 'fish' ? 'Fish Audio' : 'Microsoft'}
+                        {voice.provider === 'google'
+                          ? 'Google'
+                          : voice.provider === 'fish'
+                            ? 'Fish Audio'
+                            : voice.provider === 'elevenlabs_dialogue'
+                              ? 'ElevenLabs'
+                              : 'Microsoft'}
                       </span>
                     </td>
                     <td className="px-4 py-3">

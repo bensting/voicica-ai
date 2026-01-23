@@ -1,7 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 import { useCredits } from '@/contexts/CreditsContext';
 import GradientButton from '@/components/native/common/GradientButton';
@@ -10,6 +11,8 @@ import CreditsInfoBar from '@/components/native/common/CreditsInfoBar';
 import LoginModal from '@/components/native/LoginModal';
 import CreateSheet from '@/components/native/CreateSheet';
 import { calculateDialogueCost } from '@/config/creditsCost';
+import { getElevenlabsDialogueVoices } from '@/actions/admin/elevenlabs-dialogue-voices';
+import { createDialogueTask, getDialogueTaskStatus } from '@/actions/dialogue';
 
 // localStorage key
 const STORAGE_KEY = 'dialogue_draft';
@@ -31,14 +34,19 @@ const EMOTIONS = [
   { tag: '[sad]', label: 'sad' },
 ];
 
-// 可用的语音角色
-const VOICES = [
-  { id: 'liam', name: 'Liam', gender: 'Male' },
-  { id: 'jessica', name: 'Jessica', gender: 'Female' },
-  { id: 'michael', name: 'Michael', gender: 'Male' },
-  { id: 'sarah', name: 'Sarah', gender: 'Female' },
-  { id: 'david', name: 'David', gender: 'Male' },
-  { id: 'emma', name: 'Emma', gender: 'Female' },
+// 声音类型
+interface Voice {
+  id: string;
+  name: string;
+  display_name: string;
+  gender: string;
+  avatar_url: string;
+}
+
+// 默认声音（数据库加载失败时使用）
+const DEFAULT_VOICES: Voice[] = [
+  { id: 'Liam', name: 'elevenlabs_dialogue:Liam', display_name: 'Liam', gender: 'male', avatar_url: '' },
+  { id: 'Jessica', name: 'elevenlabs_dialogue:Jessica', display_name: 'Jessica', gender: 'female', avatar_url: '' },
 ];
 
 // 图标组件
@@ -73,22 +81,51 @@ const PlayIcon = () => (
 export default function NativeDialoguePage() {
   const router = useRouter();
   const { user } = useFirebaseAuth();
-  const { credits } = useCredits();
+  const { credits, refreshCredits } = useCredits();
 
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isCreateSheetOpen, setIsCreateSheetOpen] = useState(false);
   const [dialogues, setDialogues] = useState<DialogueSegment[]>([
-    { id: '1', text: '', voice: 'liam' },
+    { id: '1', text: '', voice: 'Liam' },
   ]);
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [activeVoiceSelector, setActiveVoiceSelector] = useState<string | null>(null);
+
+  // 声音列表
+  const [voices, setVoices] = useState<Voice[]>(DEFAULT_VOICES);
+  const [loadingVoices, setLoadingVoices] = useState(true);
+
+  // 生成状态
+  const [, setTaskId] = useState<string | null>(null);
+  const [generatedAudioUrl, setGeneratedAudioUrl] = useState<string | null>(null);
+  const pollingRef = useRef<NodeJS.Timeout | null>(null);
 
   // 总字符限制
   const maxTotalCharacters = 5000;
 
   // 计算总字符数
   const totalCharacters = dialogues.reduce((sum, d) => sum + d.text.length, 0);
+
+  // 加载声音列表
+  const loadVoices = useCallback(async () => {
+    setLoadingVoices(true);
+    try {
+      const result = await getElevenlabsDialogueVoices();
+      if (result.length > 0) {
+        setVoices(result);
+      }
+    } catch (error) {
+      console.error('加载声音列表失败:', error);
+    } finally {
+      setLoadingVoices(false);
+    }
+  }, []);
+
+  // 初始化加载声音
+  useEffect(() => {
+    loadVoices();
+  }, [loadVoices]);
 
   // 从 localStorage 加载
   useEffect(() => {
@@ -146,9 +183,14 @@ export default function NativeDialoguePage() {
     setActiveVoiceSelector(null);
   };
 
+  // 获取语音信息
+  const getVoice = (voiceId: string) => {
+    return voices.find(v => v.id === voiceId);
+  };
+
   // 获取语音名称
   const getVoiceName = (voiceId: string) => {
-    return VOICES.find(v => v.id === voiceId)?.name || voiceId;
+    return getVoice(voiceId)?.display_name || voiceId;
   };
 
   // 预估积分消耗
@@ -156,6 +198,45 @@ export default function NativeDialoguePage() {
 
   // 是否可以生成
   const canGenerate = dialogues.some(d => d.text.trim().length > 0) && !isGenerating;
+
+  // 轮询任务状态
+  const pollTaskStatus = useCallback(async (id: string) => {
+    try {
+      const status = await getDialogueTaskStatus(id);
+
+      if (status.status === 'completed' && status.audioUrl) {
+        setGeneratedAudioUrl(status.audioUrl);
+        setIsGenerating(false);
+        setTaskId(null);
+        refreshCredits();
+        // 清除轮询
+        if (pollingRef.current) {
+          clearInterval(pollingRef.current);
+          pollingRef.current = null;
+        }
+      } else if (status.status === 'failed') {
+        setError(status.error || 'Generation failed');
+        setIsGenerating(false);
+        setTaskId(null);
+        if (pollingRef.current) {
+          clearInterval(pollingRef.current);
+          pollingRef.current = null;
+        }
+      }
+      // pending/processing 继续轮询
+    } catch (err) {
+      console.error('Poll status error:', err);
+    }
+  }, [refreshCredits]);
+
+  // 清理轮询
+  useEffect(() => {
+    return () => {
+      if (pollingRef.current) {
+        clearInterval(pollingRef.current);
+      }
+    };
+  }, []);
 
   // 处理生成
   const handleGenerate = async () => {
@@ -168,11 +249,38 @@ export default function NativeDialoguePage() {
 
     setIsGenerating(true);
     setError(null);
+    setGeneratedAudioUrl(null);
 
     try {
-      // TODO: 调用 ElevenLabs V3 API
-      alert('Text to Dialogue API integration coming soon!');
-      setIsGenerating(false);
+      // 构建对话数据
+      const dialogueData = dialogues
+        .filter(d => d.text.trim().length > 0)
+        .map(d => ({
+          text: d.text,
+          voice: d.voice, // voice ID like 'Adam', 'Brian', etc.
+        }));
+
+      if (dialogueData.length === 0) {
+        setError('请输入对话内容');
+        setIsGenerating(false);
+        return;
+      }
+
+      // 创建任务
+      const result = await createDialogueTask({
+        dialogue: dialogueData,
+        stability: 0.5,
+      });
+
+      setTaskId(result.taskId);
+
+      // 开始轮询
+      pollingRef.current = setInterval(() => {
+        pollTaskStatus(result.taskId);
+      }, 3000);
+
+      // 立即执行一次
+      setTimeout(() => pollTaskStatus(result.taskId), 1000);
     } catch (err) {
       console.error('Dialogue task creation failed:', err);
       setError(err instanceof Error ? err.message : 'Failed to create task');
@@ -212,6 +320,25 @@ export default function NativeDialoguePage() {
         {error && (
           <div className="mb-3 p-3 bg-red-500/20 border border-red-500/30 rounded-xl">
             <p className="text-red-400 text-sm">{error}</p>
+          </div>
+        )}
+
+        {/* Generated Audio */}
+        {generatedAudioUrl && (
+          <div className="mb-4 p-4 bg-gradient-to-r from-purple-500/20 to-pink-500/20 border border-purple-500/30 rounded-xl">
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-white font-medium text-sm">Generated Dialogue</span>
+              <a
+                href={generatedAudioUrl}
+                download="dialogue.mp3"
+                className="px-3 py-1.5 bg-purple-600 text-white text-xs rounded-lg hover:bg-purple-700 transition-colors"
+              >
+                Download
+              </a>
+            </div>
+            <audio controls className="w-full" src={generatedAudioUrl}>
+              Your browser does not support the audio element.
+            </audio>
           </div>
         )}
 
@@ -293,26 +420,49 @@ export default function NativeDialoguePage() {
 
                 {/* Voice Options Dropdown */}
                 {activeVoiceSelector === dialogue.id && (
-                  <div className="mt-2 bg-gray-900 rounded-xl overflow-hidden border border-gray-700">
-                    {VOICES.map((voice) => (
-                      <button
-                        key={voice.id}
-                        onClick={() => updateDialogueVoice(dialogue.id, voice.id)}
-                        className={`w-full px-3 py-2.5 text-left flex items-center justify-between hover:bg-gray-800 transition-colors ${
-                          dialogue.voice === voice.id ? 'bg-purple-500/20' : ''
-                        }`}
-                      >
-                        <div>
-                          <span className="text-white text-sm">{voice.name}</span>
-                          <span className="text-gray-500 text-xs ml-2">{voice.gender}</span>
-                        </div>
-                        {dialogue.voice === voice.id && (
-                          <svg className="w-4 h-4 text-purple-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                            <polyline points="20,6 9,17 4,12" />
-                          </svg>
-                        )}
-                      </button>
-                    ))}
+                  <div className="mt-2 bg-gray-900 rounded-xl overflow-hidden border border-gray-700 max-h-60 overflow-y-auto">
+                    {loadingVoices ? (
+                      <div className="px-3 py-4 text-center text-gray-500 text-sm">
+                        Loading voices...
+                      </div>
+                    ) : (
+                      voices.map((voice) => (
+                        <button
+                          key={voice.id}
+                          onClick={() => updateDialogueVoice(dialogue.id, voice.id)}
+                          className={`w-full px-3 py-2.5 text-left flex items-center justify-between hover:bg-gray-800 transition-colors ${
+                            dialogue.voice === voice.id ? 'bg-purple-500/20' : ''
+                          }`}
+                        >
+                          <div className="flex items-center gap-2">
+                            {voice.avatar_url ? (
+                              <Image
+                                src={voice.avatar_url}
+                                alt={voice.display_name}
+                                width={28}
+                                height={28}
+                                className="rounded-full"
+                              />
+                            ) : (
+                              <div className="w-7 h-7 bg-gray-700 rounded-full flex items-center justify-center">
+                                <span className="text-gray-400 text-xs">
+                                  {voice.gender === 'male' ? '♂' : '♀'}
+                                </span>
+                              </div>
+                            )}
+                            <div>
+                              <span className="text-white text-sm">{voice.display_name}</span>
+                              <span className="text-gray-500 text-xs ml-2 capitalize">{voice.gender}</span>
+                            </div>
+                          </div>
+                          {dialogue.voice === voice.id && (
+                            <svg className="w-4 h-4 text-purple-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                              <polyline points="20,6 9,17 4,12" />
+                            </svg>
+                          )}
+                        </button>
+                      ))
+                    )}
                   </div>
                 )}
               </div>

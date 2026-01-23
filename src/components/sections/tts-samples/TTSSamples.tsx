@@ -47,21 +47,21 @@ export default function TTSSamples() {
   } = useTTSDemo();
 
   return (
-    <section className="py-12 sm:py-16 px-3 sm:px-4 bg-black">
+    <section className="py-12 sm:py-16 px-3 sm:px-4 bg-gradient-to-b from-white via-pink-50/50 to-rose-50">
       <div className="max-w-7xl mx-auto">
         {/* Section Header */}
         <div className="text-center mb-8 sm:mb-12">
-          <h2 className="text-2xl md:text-4xl font-bold text-white mb-4">
+          <h2 className="text-2xl md:text-4xl font-bold text-gray-900 mb-4">
             {t('ttsSamples.sectionTitle.prefix')}{' '}
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-rose-500">
               {t('ttsSamples.sectionTitle.highlight')}
             </span>{' '}
             {t('ttsSamples.sectionTitle.suffix')}
           </h2>
         </div>
 
-        {/* Main Content Card - 增强发光效果，移动端减小padding */}
-        <div className="bg-gradient-to-br from-gray-900/95 to-black/95 rounded-3xl p-4 sm:p-6 md:p-12 border border-gray-700 shadow-2xl shadow-purple-500/10 backdrop-blur-sm">
+        {/* Main Content Card */}
+        <div className="bg-white rounded-3xl p-4 sm:p-6 md:p-12 border border-pink-100 shadow-xl shadow-pink-100/50">
           {isLoadingConfig ? (
             <div className="flex items-center justify-center py-20">
               <div className="text-white text-lg">{t('ttsSamples.demoPanel.loadingConfig')}</div>

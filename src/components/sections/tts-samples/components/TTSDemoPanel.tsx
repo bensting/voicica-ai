@@ -76,7 +76,7 @@ export default function TTSDemoPanel({
   };
 
   return (
-    <div className="bg-gradient-to-br from-gray-950 to-black rounded-2xl p-3 sm:p-4 md:p-6 border border-gray-800">
+    <div className="bg-gradient-to-br from-pink-50 to-rose-50 rounded-2xl p-3 sm:p-4 md:p-6 border border-pink-200">
       {/* Voice & Language Selection */}
       <div className="flex flex-col md:flex-row items-stretch md:items-center gap-3 md:gap-4 mb-4">
         <div className="w-full md:flex-1">
@@ -106,16 +106,16 @@ export default function TTSDemoPanel({
           value={textInput}
           onChange={(e) => onTextChange(e.target.value)}
           maxLength={maxTextLength}
-          className="w-full h-48 px-4 py-3 bg-gray-900/90 border border-gray-700 rounded-xl text-white resize-none focus:outline-none focus:ring-2 focus:ring-purple-500 placeholder:text-gray-500"
+          className="w-full h-48 px-4 py-3 bg-white border border-pink-200 rounded-xl text-gray-900 resize-none focus:outline-none focus:ring-2 focus:ring-pink-400 placeholder:text-gray-400"
           placeholder={t('ttsSamples.demoPanel.textPlaceholder')}
         />
-        <div className="absolute bottom-3 right-3 text-xs text-gray-400">
+        <div className="absolute bottom-3 right-3 text-xs text-gray-500">
           {textInput.length}/{maxTextLength}
         </div>
       </div>
 
       {/* Listen Button */}
-      <GradientButton onClick={handleListenClick} disabled={isPlaying || !textInput.trim()} fullWidth size="lg">
+      <GradientButton onClick={handleListenClick} disabled={isPlaying || !textInput.trim()} fullWidth size="lg" variant="pink-rose">
         {isPlaying ? t('ttsSamples.demoPanel.playingButton') : t('ttsSamples.demoPanel.listenButton')}
       </GradientButton>
     </div>

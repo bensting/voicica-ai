@@ -4,6 +4,7 @@ import { useEffect, useState, useRef } from 'react';
 import type { Voice } from '@/types/voice';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
+import { useBottomNav } from '@/contexts/BottomNavContext';
 import { useVoices } from '@/components/features/studio/voices/hooks/useVoices';
 import { getAllLocaleOptions } from '@/utils/localeMapper';
 import type { LocaleOption } from '@/types/config';
@@ -95,8 +96,18 @@ export default function NativeVoiceSelectorSheet({
 }: VoiceSelectorSheetProps) {
   const { locale } = useLanguage();
   const { user, loading: authLoading } = useFirebaseAuth();
+  const { hideAll, showAll } = useBottomNav();
   const [isLanguageDropdownOpen, setIsLanguageDropdownOpen] = useState(false);
   const languageDropdownRef = useRef<HTMLDivElement>(null);
+
+  // 隐藏顶部和底部导航栏
+  useEffect(() => {
+    if (isOpen) {
+      hideAll();
+    } else {
+      showAll();
+    }
+  }, [isOpen, hideAll, showAll]);
 
   const {
     filteredVoices,

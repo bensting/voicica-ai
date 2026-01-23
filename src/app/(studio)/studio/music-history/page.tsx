@@ -321,13 +321,14 @@ export default function MusicHistoryPage() {
                 return (
                   <div
                     key={record.id}
-                    className={`bg-white rounded-xl border p-6 transition-all ${
+                    className={`bg-white rounded-xl border p-4 transition-all ${
                       isCurrentPlaying ? 'border-pink-300 shadow-md' : 'border-gray-200 hover:shadow-md'
                     }`}
                   >
-                    <div className="flex items-start gap-4">
+                    {/* Mobile Layout */}
+                    <div className="flex gap-3">
                       {/* Cover Image */}
-                      <div className="w-24 h-24 rounded-lg overflow-hidden flex-shrink-0 relative">
+                      <div className="w-16 h-16 md:w-20 md:h-20 rounded-lg overflow-hidden flex-shrink-0 relative">
                         {record.cover_url ? (
                           <img
                             src={record.cover_url}
@@ -336,75 +337,51 @@ export default function MusicHistoryPage() {
                           />
                         ) : (
                           <div className="w-full h-full bg-gradient-to-br from-pink-100 to-fuchsia-100 flex items-center justify-center">
-                            <Music className="w-10 h-10 text-pink-500" />
+                            <Music className="w-8 h-8 text-pink-500" />
                           </div>
                         )}
                         {/* 状态指示器 */}
                         {isProcessing && (
                           <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
                             <div className="text-center text-white">
-                              <Loader2 className="w-6 h-6 animate-spin mx-auto" />
-                              <span className="text-xs mt-1 block">{record.progress}%</span>
+                              <Loader2 className="w-5 h-5 animate-spin mx-auto" />
+                              <span className="text-[10px] mt-0.5 block">{record.progress}%</span>
                             </div>
                           </div>
                         )}
                         {isFailed && (
                           <div className="absolute inset-0 bg-red-500/50 flex items-center justify-center">
-                            <AlertCircle className="w-6 h-6 text-white" />
+                            <AlertCircle className="w-5 h-5 text-white" />
                           </div>
                         )}
                       </div>
 
                       {/* Info */}
                       <div className="flex-1 min-w-0">
-                        <h3 className="text-lg font-semibold text-gray-900 mb-2 truncate">
+                        <h3 className="text-base font-semibold text-gray-900 truncate">
                           {record.title || 'AI Music'}
                         </h3>
 
-                        <div className="flex flex-wrap items-center gap-3 text-sm text-gray-600 mb-3">
-                          {record.style && (
-                            <div className="flex items-center gap-1">
-                              <span className="text-pink-500">🎵</span>
-                              <span className="truncate max-w-[150px]">{record.style}</span>
-                            </div>
-                          )}
-                          <div className="flex items-center gap-1">
-                            <Clock className="w-4 h-4" />
-                            <span>{formatTime(record.duration)}</span>
-                          </div>
+                        <div className="flex items-center gap-2 text-xs text-gray-500 mt-1">
+                          <span className="flex items-center gap-0.5">
+                            <Clock className="w-3 h-3" />
+                            {formatTime(record.duration)}
+                          </span>
                           {hasVersion2 && (
-                            <span className="px-2 py-0.5 bg-purple-100 text-purple-600 rounded text-xs">
-                              2个版本
+                            <span className="px-1.5 py-0.5 bg-purple-100 text-purple-600 rounded text-[10px]">
+                              2版本
                             </span>
                           )}
                         </div>
 
-                        <p className="text-sm text-gray-500">{formatDate(record.created_at)}</p>
-
-                        {/* Mini Player - 当前播放 */}
-                        {isCurrentPlaying && (
-                          <div className="mt-3 flex items-center gap-2">
-                            <div
-                              className="flex-1 h-1 bg-gray-200 rounded-full cursor-pointer"
-                              onClick={handleSeek}
-                            >
-                              <div
-                                className="h-full bg-gradient-to-r from-pink-500 to-fuchsia-500 rounded-full"
-                                style={{ width: `${duration > 0 ? (currentTime / duration) * 100 : 0}%` }}
-                              />
-                            </div>
-                            <span className="text-xs text-gray-500 w-20 text-right">
-                              {formatTime(currentTime)} / {formatTime(duration)}
-                            </span>
-                          </div>
-                        )}
+                        <p className="text-xs text-gray-400 mt-1">{formatDate(record.created_at)}</p>
                       </div>
 
-                      {/* Actions */}
-                      <div className="flex items-center gap-2">
+                      {/* Actions - Desktop */}
+                      <div className="hidden md:flex items-center gap-1">
                         {/* 版本切换 */}
                         {hasVersion2 && record.status === 'SUCCESS' && (
-                          <div className="flex flex-col gap-1 mr-2">
+                          <div className="flex gap-1 mr-1">
                             <button
                               type="button"
                               onClick={() => handlePlay(record, 1)}
@@ -430,7 +407,6 @@ export default function MusicHistoryPage() {
                           </div>
                         )}
 
-                        {/* 播放按钮 */}
                         {record.status === 'SUCCESS' && (
                           <button
                             type="button"
@@ -446,7 +422,6 @@ export default function MusicHistoryPage() {
                           </button>
                         )}
 
-                        {/* 下载按钮 */}
                         {record.status === 'SUCCESS' && (
                           <button
                             type="button"
@@ -458,7 +433,6 @@ export default function MusicHistoryPage() {
                           </button>
                         )}
 
-                        {/* 删除按钮 */}
                         <button
                           type="button"
                           onClick={() => setDeletingId(record.id)}
@@ -466,6 +440,94 @@ export default function MusicHistoryPage() {
                           title="删除"
                         >
                           <Trash2 className="w-5 h-5 text-gray-600 group-hover:text-red-500" />
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Mini Player - 当前播放 */}
+                    {isCurrentPlaying && (
+                      <div className="mt-3 flex items-center gap-2">
+                        <div
+                          className="flex-1 h-1.5 bg-gray-200 rounded-full cursor-pointer"
+                          onClick={handleSeek}
+                        >
+                          <div
+                            className="h-full bg-gradient-to-r from-pink-500 to-fuchsia-500 rounded-full"
+                            style={{ width: `${duration > 0 ? (currentTime / duration) * 100 : 0}%` }}
+                          />
+                        </div>
+                        <span className="text-xs text-gray-500 whitespace-nowrap">
+                          {formatTime(currentTime)} / {formatTime(duration)}
+                        </span>
+                      </div>
+                    )}
+
+                    {/* Actions - Mobile */}
+                    <div className="flex md:hidden items-center justify-between mt-3 pt-3 border-t border-gray-100">
+                      {/* 版本切换 - Mobile */}
+                      <div className="flex gap-1">
+                        {hasVersion2 && record.status === 'SUCCESS' ? (
+                          <>
+                            <button
+                              type="button"
+                              onClick={() => handlePlay(record, 1)}
+                              className={`px-3 py-1.5 text-xs rounded-lg transition-colors ${
+                                isCurrentPlaying && playingVersion === 1
+                                  ? 'bg-pink-500 text-white'
+                                  : 'bg-gray-100 text-gray-600'
+                              }`}
+                            >
+                              版本1
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handlePlay(record, 2)}
+                              className={`px-3 py-1.5 text-xs rounded-lg transition-colors ${
+                                isCurrentPlaying && playingVersion === 2
+                                  ? 'bg-pink-500 text-white'
+                                  : 'bg-gray-100 text-gray-600'
+                              }`}
+                            >
+                              版本2
+                            </button>
+                          </>
+                        ) : (
+                          <span className="text-xs text-gray-400">
+                            {isProcessing ? '生成中...' : isFailed ? '生成失败' : ''}
+                          </span>
+                        )}
+                      </div>
+
+                      {/* Action Buttons - Mobile */}
+                      <div className="flex items-center gap-1">
+                        {record.status === 'SUCCESS' && (
+                          <>
+                            <button
+                              type="button"
+                              onClick={() => handlePlay(record, hasVersion2 ? playingVersion : 1)}
+                              className="p-2 hover:bg-pink-50 rounded-lg transition-colors"
+                            >
+                              {isCurrentPlaying && isPlaying ? (
+                                <Pause className="w-5 h-5 text-pink-500" />
+                              ) : (
+                                <Play className="w-5 h-5 text-gray-500" />
+                              )}
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleDownload(record, isCurrentPlaying ? playingVersion : 1)}
+                              className="p-2 hover:bg-blue-50 rounded-lg transition-colors"
+                            >
+                              <Download className="w-5 h-5 text-gray-500" />
+                            </button>
+                          </>
+                        )}
+                        <button
+                          type="button"
+                          onClick={() => setDeletingId(record.id)}
+                          className="p-2 hover:bg-red-50 rounded-lg transition-colors"
+                        >
+                          <Trash2 className="w-5 h-5 text-gray-500" />
                         </button>
                       </div>
                     </div>

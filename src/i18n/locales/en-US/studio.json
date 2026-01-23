@@ -1,5 +1,117 @@
 {
   "studio": {
+    "aiSong": {
+      "steps": {
+        "theme": "Theme",
+        "mood": "Mood",
+        "vocal": "Vocal",
+        "lyrics": "Lyrics",
+        "create": "Create"
+      },
+      "themes": {
+        "love": "Love",
+        "friendship": "Friendship",
+        "youth": "Youth",
+        "loneliness": "Loneliness",
+        "dream": "Dream",
+        "freedom": "Freedom",
+        "custom": "Custom"
+      },
+      "moods": {
+        "gentle": "Gentle",
+        "sad": "Melancholy",
+        "night": "Nighttime",
+        "passionate": "Passionate",
+        "ethereal": "Ethereal",
+        "healing": "Healing",
+        "custom": "Custom"
+      },
+      "vocals": {
+        "femaleEthereal": "Female · Ethereal",
+        "femaleGentle": "Female · Gentle",
+        "maleWarm": "Male · Warm",
+        "maleDeep": "Male · Deep",
+        "girlSweet": "Girl · Sweet",
+        "ambient": "Ambient Vocal"
+      },
+      "themeStep": {
+        "title": "What theme would you like for your song?",
+        "subtitle": "Choose a theme and AI will build your song's story",
+        "customLabel": "Enter your theme",
+        "customPlaceholder": "e.g., Graduation, First love, Travel, Summer memories..."
+      },
+      "moodStep": {
+        "title": "How do you want this song to feel?",
+        "subtitle": "Choose a mood and we'll create the atmosphere",
+        "customLabel": "Enter the feeling you want",
+        "customPlaceholder": "e.g., Nostalgic, Fresh, Mysterious, Cheerful..."
+      },
+      "vocalStep": {
+        "title": "What kind of voice fits the melody?",
+        "subtitle": "We'll use this voice style to shape the music"
+      },
+      "lyricsStep": {
+        "title": "Edit your lyrics",
+        "titleGenerating": "AI is writing lyrics for you...",
+        "subtitle": "Not satisfied? Click regenerate",
+        "subtitleGenerating": "Please wait, this may take a few seconds",
+        "basedOnSelection": "Generating lyrics based on your choices:",
+        "songTitleLabel": "Song Title",
+        "songTitlePlaceholder": "Enter song title",
+        "songTitleGenerating": "Generating title..."
+      },
+      "createStep": {
+        "title": "Ready to create?",
+        "titleGenerating": "Creating your song...",
+        "titleComplete": "Your song is ready!",
+        "subtitle": "Review your choices and start generating",
+        "subtitleGenerating": "Please wait, AI is composing music based on your choices (about 1-3 minutes)",
+        "subtitleComplete": "Have a listen! Not satisfied? Generate again"
+      },
+      "navigation": {
+        "previous": "Previous",
+        "next": "Next"
+      },
+      "lyricsPrompt": "Please write lyrics for a song.\nTheme: {{theme}}\nMood: {{mood}}\nVocal style: {{vocal}}\n\nRequirements:\n1. Include structure markers like [Verse 1], [Chorus], [Verse 2]\n2. Lyrics should match the theme and mood, suitable for singing\n3. Beautiful language with imagery\n4. Moderate length, about 150-200 words",
+      "fallbackTitle": "{{theme}} Song",
+      "lyricsEditor": {
+        "generating": "Generating lyrics...",
+        "placeholder": "Lyrics will appear here...",
+        "characters": "characters",
+        "regenerate": "Regenerate Lyrics",
+        "tipTitle": "Tip:",
+        "tipContent": "You can edit the lyrics directly, or click \"Regenerate\" to let AI create a new version"
+      },
+      "createPreview": {
+        "creating": "Creating...",
+        "creatingTime": "This may take 1-3 minutes",
+        "selectVersion": "Select version:",
+        "version": "Version",
+        "lyrics": "Lyrics",
+        "regenerateSong": "Regenerate Song",
+        "continueToMV": "Continue to MV",
+        "yourConfig": "Your Creation Config",
+        "lyricsPreview": "Lyrics Preview",
+        "noLyrics": "No lyrics yet",
+        "songTitle": "Song Title",
+        "optional": "(optional)",
+        "musicStyle": "Music Style",
+        "stylePlaceholder": "pop, ballad, acoustic, piano...",
+        "aiGenerate": "AI Generate",
+        "generating": "Generating...",
+        "styleTip": "Tip: You can enter style keywords like pop, rock, jazz, electronic, etc.",
+        "voice": "Voice",
+        "auto": "Auto",
+        "male": "Male",
+        "female": "Female",
+        "myCredits": "My Credits",
+        "cost": "Cost",
+        "credits": "credits",
+        "insufficientCredits": "Insufficient credits. Please top up or complete daily tasks to earn credits.",
+        "startGenerate": "Start Generating Song",
+        "download": "Download"
+      }
+    },
     "welcomeTitle": "Hi, welcome to Voicica AI",
     "welcomeSubtitle": "Unlock the power of AI with our cutting-edge tools for voice, video, music, and art. Transform your ideas into reality—faster, smarter, and effortlessly.",
     "featuredProducts": "Featured Products",

@@ -5,7 +5,7 @@
       "title": "AI Music Suno V5",
       "subtitle": "Turn your lyrics into full songs instantly. No instruments needed.",
       "buttonText": "Make Music Now",
-      "buttonLink": "/native/music",
+      "buttonLink": "/native/create/music",
       "image": "/images/banners/ai_music_banner.png",
       "gradient": "from-purple-600 to-blue-600",
       "tags": [
@@ -18,7 +18,7 @@
       "title": "Text to Dialogue",
       "subtitle": "Generate realistic multi-speaker dialogues from simple text.",
       "buttonText": "Generate Dialogue",
-      "buttonLink": "/native/dialogue",
+      "buttonLink": "/native/create/dialogue",
       "image": "/images/banners/dialogue_banner.png",
       "gradient": "from-cyan-500 to-blue-500",
       "tags": [
@@ -30,7 +30,7 @@
       "title": "AI Video Generator",
       "subtitle": "Create stunning videos from text or images",
       "buttonText": "Try It Now",
-      "buttonLink": "/native/video",
+      "buttonLink": "/native/create/video",
       "image": "",
       "gradient": "from-indigo-500 via-purple-500 to-pink-500"
     }

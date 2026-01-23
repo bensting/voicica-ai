@@ -1,8 +1,16 @@
 {
-  "version": "1.1.7",
-  "buildNumber": 18,
+  "version": "1.1.8",
+  "buildNumber": 19,
   "description": "原生应用版本（Android/iOS 应用壳）",
   "changelog": [
+    {
+      "version": "1.1.8",
+      "buildNumber": 19,
+      "date": "2026-01-24",
+      "changes": [
+        "修复应用图标显示问题"
+      ]
+    },
     {
       "version": "1.1.7",
       "buildNumber": 18,

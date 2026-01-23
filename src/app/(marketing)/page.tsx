@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { Music, Mic } from 'lucide-react';
+import { Music, Mic, Sparkles } from 'lucide-react';
 import TTSSamples from '@/components/sections/tts-samples';
 import FAQ from '@/components/sections/faq';
 import CTA from '@/components/sections/CTA';
@@ -116,15 +116,24 @@ export default function Home() {
           </p>
 
           {/* Action Buttons */}
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center flex-wrap">
             <GradientButton
-              onClick={() => router.push('/studio/ai-song')}
+              onClick={() => router.push('/studio/ai-music')}
               size="md"
               variant="pink-rose"
               className="w-full sm:w-auto min-w-[200px] py-4 rounded-xl text-lg shadow-pink-200"
             >
               <span>{t('home.lyricsToMusic')}</span>
               <Music className="w-5 h-5 ml-2" />
+            </GradientButton>
+            <GradientButton
+              onClick={() => router.push('/studio/ai-song')}
+              size="md"
+              variant="pink-rose"
+              className="w-full sm:w-auto min-w-[200px] py-4 rounded-xl text-lg shadow-pink-200"
+            >
+              <span>{t('home.aiSongOneClick')}</span>
+              <Sparkles className="w-5 h-5 ml-2" />
             </GradientButton>
             <GradientButton
               onClick={() => router.push('/studio/tts')}

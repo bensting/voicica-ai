@@ -13,7 +13,7 @@ const fs = require('fs');
 const path = require('path');
 
 // 文件路径
-const nativeVersionPath = path.join(__dirname, '../native-version.json');
+const nativeVersionPath = path.join(__dirname, '../src/native-version.json');
 const androidBuildGradlePath = path.join(__dirname, '../android/app/build.gradle');
 const iosProjectPath = path.join(__dirname, '../ios/App/App.xcodeproj/project.pbxproj');
 

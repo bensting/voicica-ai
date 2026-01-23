@@ -141,7 +141,7 @@ async function main() {
   section('步骤 2/5: 更新并同步版本号');
 
   // 读取版本信息
-  const versionPath = path.join(__dirname, '../native-version.json');
+  const versionPath = path.join(__dirname, '../src/native-version.json');
   const nativeVersion = JSON.parse(fs.readFileSync(versionPath, 'utf8'));
 
   // 递增 patch 版本号 (1.0.6 → 1.0.7)

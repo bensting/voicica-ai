@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
+import { useBottomNav } from '@/contexts/BottomNavContext';
 
 /**
  * 音乐播放数据接口
@@ -64,6 +65,13 @@ export default function MusicPlayerModal({
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(music.duration || 0);
+  const { hideAll, showAll } = useBottomNav();
+
+  // 隐藏顶部和底部导航栏
+  useEffect(() => {
+    hideAll();
+    return () => showAll();
+  }, [hideAll, showAll]);
 
   const displayTitle = music.title || 'AI Music';
   const displayLyrics = music.lyrics || music.prompt || '';

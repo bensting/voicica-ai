@@ -5,6 +5,7 @@ import { Download, Pencil } from 'lucide-react';
 import type { MusicRecord } from '@/actions/music';
 import GradientButton from '@/components/ui/GradientButton';
 import DeleteConfirmDialog from '@/components/native/ui/DeleteConfirmDialog';
+import { useBottomNav } from '@/contexts/BottomNavContext';
 import { formatTime, getModelDisplayName } from './utils';
 
 interface MusicDetailModalProps {
@@ -25,6 +26,13 @@ export default function MusicDetailModal({
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const { hide, show } = useBottomNav();
+
+  // 隐藏底部导航
+  useEffect(() => {
+    hide();
+    return () => show();
+  }, [hide, show]);
 
   // 双版本切换
   const [currentTrack, setCurrentTrack] = useState<1 | 2>(1);

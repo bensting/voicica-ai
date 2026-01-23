@@ -1,10 +1,11 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Download, Pencil } from 'lucide-react';
 import type { DialogueRecord } from '@/actions/dialogue';
 import GradientButton from '@/components/ui/GradientButton';
 import DeleteConfirmDialog from '@/components/native/ui/DeleteConfirmDialog';
+import { useBottomNav } from '@/contexts/BottomNavContext';
 import { formatTime } from './utils';
 
 interface DialogueDetailModalProps {

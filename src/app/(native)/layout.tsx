@@ -4,6 +4,7 @@ import { useEffect } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import NativeNavbar from '@/components/native/NativeNavbar';
 import BottomNav from '@/components/native/BottomNav';
+import { BottomNavProvider } from '@/contexts/BottomNavContext';
 import { initNotifications, registerNotificationClickListener } from '@/lib/notifications';
 
 // 不显示顶部导航的路径
@@ -41,19 +42,21 @@ export default function NativeLayout({
   const showBottomNav = !hideBottomNavPaths.some((path) => pathname.startsWith(path));
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-[#0a0a1a] to-slate-950 text-white selection:bg-purple-500/30">
-      {/* 顶部环境光效 */}
-      <div className="fixed top-0 left-0 right-0 h-[50vh] bg-purple-900/10 blur-[100px] pointer-events-none" />
-      <div className="fixed bottom-0 right-0 w-[50vh] h-[50vh] bg-blue-900/10 blur-[100px] pointer-events-none" />
+    <BottomNavProvider>
+      <div className="min-h-screen bg-gradient-to-br from-slate-950 via-[#0a0a1a] to-slate-950 text-white selection:bg-purple-500/30">
+        {/* 顶部环境光效 */}
+        <div className="fixed top-0 left-0 right-0 h-[50vh] bg-purple-900/10 blur-[100px] pointer-events-none" />
+        <div className="fixed bottom-0 right-0 w-[50vh] h-[50vh] bg-blue-900/10 blur-[100px] pointer-events-none" />
 
-      {/* 顶部导航 - 部分页面不显示 */}
-      {showNavbar && <NativeNavbar />}
+        {/* 顶部导航 - 部分页面不显示 */}
+        {showNavbar && <NativeNavbar />}
 
-      {/* 主内容区域 */}
-      <main className="relative z-10">{children}</main>
+        {/* 主内容区域 */}
+        <main className="relative z-10">{children}</main>
 
-      {/* 底部导航 - 部分页面不显示 */}
-      {showBottomNav && <BottomNav />}
-    </div>
+        {/* 底部导航 - 部分页面不显示 */}
+        {showBottomNav && <BottomNav />}
+      </div>
+    </BottomNavProvider>
   );
 }

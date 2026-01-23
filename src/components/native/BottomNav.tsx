@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import CreateSheet from './CreateSheet';
+import { useBottomNav } from '@/contexts/BottomNavContext';
 
 // 首页图标
 const HomeIcon = ({ active }: { active: boolean }) => (
@@ -54,9 +55,13 @@ const CloseIcon = () => (
 export default function BottomNav() {
   const pathname = usePathname();
   const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const { isVisible } = useBottomNav();
 
   const isExploreActive = pathname === '/native' || pathname.startsWith('/native/explore');
   const isMeActive = pathname.startsWith('/native/me');
+
+  // 通过 context 控制显示/隐藏
+  if (!isVisible) return null;
 
   return (
     <>

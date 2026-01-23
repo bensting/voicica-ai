@@ -27,6 +27,8 @@ import {
   X,
   Film,
   Loader2,
+  Play,
+  Image as ImageIcon,
 } from 'lucide-react';
 
 // localStorage keys
@@ -646,83 +648,139 @@ export default function StudioAiMusicPage() {
             </div>
 
             {/* Right Column: Preview */}
-            <div className="col-span-5 flex flex-col gap-4">
-              <div className="text-lg font-semibold text-gray-900">Preview</div>
-              <div className="flex-1 bg-gradient-to-br from-pink-50 to-rose-100 rounded-2xl border border-pink-200 flex items-center justify-center min-h-[400px]">
+            <div className="col-span-5 flex flex-col min-h-0">
+              <div className="flex-1 min-h-0 bg-gradient-to-br from-pink-50 to-rose-100 rounded-2xl border border-pink-200 flex overflow-hidden relative">
                 {generatingStatus === 'generating' ? (
-                  <div className="text-center px-8">
-                    <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-gradient-to-br from-pink-400 to-rose-400 flex items-center justify-center shadow-lg shadow-pink-200">
-                      <Music className="w-10 h-10 text-white animate-pulse" />
-                    </div>
-                    <h3 className="text-gray-900 font-semibold text-lg mb-2">Generating music...</h3>
-                    {generatingProgress > 0 && (
-                      <div className="mb-3">
-                        <div className="w-48 h-2 bg-pink-200 rounded-full overflow-hidden mx-auto">
-                          <div
-                            className="h-full bg-gradient-to-r from-pink-400 to-rose-400 transition-all duration-300"
-                            style={{ width: `${generatingProgress}%` }}
-                          />
-                        </div>
-                        <p className="text-pink-600 text-sm font-medium mt-2">{generatingProgress}%</p>
+                  <div className="absolute inset-0 flex items-center justify-center px-8">
+                    <div className="text-center">
+                      <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-gradient-to-br from-pink-400 to-rose-400 flex items-center justify-center shadow-lg shadow-pink-200">
+                        <Music className="w-10 h-10 text-white animate-pulse" />
                       </div>
-                    )}
-                    <p className="text-gray-500 text-sm">
-                      Estimated time: <span className="text-pink-600 font-medium">3-5 minutes</span>
-                    </p>
+                      <h3 className="text-gray-900 font-semibold text-lg mb-2">Generating music...</h3>
+                      {generatingProgress > 0 && (
+                        <div className="mb-3">
+                          <div className="w-48 h-2 bg-pink-200 rounded-full overflow-hidden mx-auto">
+                            <div
+                              className="h-full bg-gradient-to-r from-pink-400 to-rose-400 transition-all duration-300"
+                              style={{ width: `${generatingProgress}%` }}
+                            />
+                          </div>
+                          <p className="text-pink-600 text-sm font-medium mt-2">{generatingProgress}%</p>
+                        </div>
+                      )}
+                      <p className="text-gray-500 text-sm">
+                        Estimated time: <span className="text-pink-600 font-medium">3-5 minutes</span>
+                      </p>
+                    </div>
                   </div>
                 ) : generatingStatus === 'success' ? (
-                  <div className="text-center px-8">
-                    <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-green-100 flex items-center justify-center">
-                      <Check className="w-10 h-10 text-green-500" />
-                    </div>
-                    <h3 className="text-gray-900 font-semibold text-lg mb-2">Music Created!</h3>
-                    <p className="text-gray-500 text-sm mb-6">Your music has been generated successfully.</p>
-                    <div className="flex gap-3 justify-center">
-                      <button
-                        onClick={handleResetStatus}
-                        className="px-4 py-2 bg-white text-gray-700 rounded-xl text-sm font-medium hover:bg-gray-50 border border-gray-200"
-                      >
-                        Create Another
-                      </button>
-                      <button
-                        onClick={handleViewHistory}
-                        className="px-4 py-2 bg-gradient-to-r from-pink-400 to-rose-400 text-white rounded-xl text-sm font-medium hover:opacity-90 shadow-md shadow-pink-200"
-                      >
-                        View History
-                      </button>
+                  <div className="absolute inset-0 flex items-center justify-center px-8">
+                    <div className="text-center">
+                      <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-green-100 flex items-center justify-center">
+                        <Check className="w-10 h-10 text-green-500" />
+                      </div>
+                      <h3 className="text-gray-900 font-semibold text-lg mb-2">Music Created!</h3>
+                      <p className="text-gray-500 text-sm mb-6">Your music has been generated successfully.</p>
+                      <div className="flex gap-3 justify-center">
+                        <button
+                          onClick={handleResetStatus}
+                          className="px-4 py-2 bg-white text-gray-700 rounded-xl text-sm font-medium hover:bg-gray-50 border border-gray-200"
+                        >
+                          Create Another
+                        </button>
+                        <button
+                          onClick={handleViewHistory}
+                          className="px-4 py-2 bg-gradient-to-r from-pink-400 to-rose-400 text-white rounded-xl text-sm font-medium hover:opacity-90 shadow-md shadow-pink-200"
+                        >
+                          View History
+                        </button>
+                      </div>
                     </div>
                   </div>
                 ) : generatingStatus === 'error' ? (
-                  <div className="text-center px-8">
-                    <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-red-100 flex items-center justify-center">
-                      <X className="w-10 h-10 text-red-500" />
-                    </div>
-                    <h3 className="text-gray-900 font-semibold text-lg mb-2">Generation Failed</h3>
-                    <p className="text-red-500 text-sm mb-6">{generatingError || 'Something went wrong.'}</p>
-                    <div className="flex gap-3 justify-center">
-                      <button
-                        onClick={handleResetStatus}
-                        className="px-4 py-2 bg-white text-gray-700 rounded-xl text-sm font-medium hover:bg-gray-50 border border-gray-200"
-                      >
-                        Close
-                      </button>
-                      <button
-                        onClick={() => {
-                          handleResetStatus();
-                          void handleGenerate();
-                        }}
-                        className="px-4 py-2 bg-gradient-to-r from-pink-400 to-rose-400 text-white rounded-xl text-sm font-medium hover:opacity-90 shadow-md shadow-pink-200"
-                      >
-                        Try Again
-                      </button>
+                  <div className="absolute inset-0 flex items-center justify-center px-8">
+                    <div className="text-center">
+                      <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-red-100 flex items-center justify-center">
+                        <X className="w-10 h-10 text-red-500" />
+                      </div>
+                      <h3 className="text-gray-900 font-semibold text-lg mb-2">Generation Failed</h3>
+                      <p className="text-red-500 text-sm mb-6">{generatingError || 'Something went wrong.'}</p>
+                      <div className="flex gap-3 justify-center">
+                        <button
+                          onClick={handleResetStatus}
+                          className="px-4 py-2 bg-white text-gray-700 rounded-xl text-sm font-medium hover:bg-gray-50 border border-gray-200"
+                        >
+                          Close
+                        </button>
+                        <button
+                          onClick={() => {
+                            handleResetStatus();
+                            void handleGenerate();
+                          }}
+                          className="px-4 py-2 bg-gradient-to-r from-pink-400 to-rose-400 text-white rounded-xl text-sm font-medium hover:opacity-90 shadow-md shadow-pink-200"
+                        >
+                          Try Again
+                        </button>
+                      </div>
                     </div>
                   </div>
                 ) : (
-                  <div className="text-center px-8">
-                    <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-white/60 flex items-center justify-center border border-pink-200">
-                      <Music className="w-10 h-10 text-pink-300" />
+                  <div className="absolute inset-0 flex flex-col p-6 overflow-hidden">
+                    {/* Cover Image Placeholder */}
+                    <div className="flex-shrink-0 w-32 h-32 mx-auto mb-4 rounded-2xl bg-white/60 border-2 border-dashed border-pink-300 flex items-center justify-center">
+                      <div className="text-center">
+                        <ImageIcon className="w-10 h-10 text-pink-300 mx-auto mb-1" />
+                        <p className="text-pink-400 text-xs">Cover Image</p>
+                      </div>
                     </div>
-                    <p className="text-gray-400">Preview will appear here</p>
+
+                    {/* Title */}
+                    <div className="flex-shrink-0 text-center mb-3">
+                      <h3 className="text-lg font-semibold text-gray-800 truncate px-4">
+                        {title.trim() || (activeTab === 'simple' ? 'Untitled Song' : 'Your Song Title')}
+                      </h3>
+                      {style.trim() && (
+                        <p className="text-sm text-pink-600 mt-1 truncate px-4">{style}</p>
+                      )}
+                    </div>
+
+                    {/* Lyrics Preview - constrained height with scroll */}
+                    <div className="flex-1 min-h-0 overflow-hidden">
+                      <div className="h-full bg-white/50 rounded-xl p-4 overflow-y-auto">
+                        {activeTab === 'custom' ? (
+                          lyrics.trim() ? (
+                            <pre className="text-sm text-gray-600 whitespace-pre-wrap font-sans leading-relaxed">
+                              {lyrics}
+                            </pre>
+                          ) : (
+                            <p className="text-gray-400 text-sm text-center italic">
+                              Your lyrics will appear here...
+                            </p>
+                          )
+                        ) : (
+                          prompt.trim() ? (
+                            <p className="text-sm text-gray-600 leading-relaxed">
+                              {prompt}
+                            </p>
+                          ) : (
+                            <p className="text-gray-400 text-sm text-center italic">
+                              Your music prompt will appear here...
+                            </p>
+                          )
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Play Button (disabled) */}
+                    <div className="flex-shrink-0 flex justify-center mt-4">
+                      <button
+                        disabled
+                        className="flex items-center gap-2 px-6 py-3 bg-white/60 rounded-full border border-pink-200 text-pink-400 cursor-not-allowed"
+                      >
+                        <Play className="w-5 h-5 fill-current" />
+                        <span className="text-sm font-medium">Generate to Play</span>
+                      </button>
+                    </div>
                   </div>
                 )}
               </div>
@@ -896,46 +954,6 @@ export default function StudioAiMusicPage() {
           {error && (
             <div className="p-3 bg-red-50 border border-red-200 rounded-xl">
               <p className="text-red-600 text-sm">{error}</p>
-            </div>
-          )}
-
-          {/* Generation Status (Mobile) */}
-          {generatingStatus !== 'idle' && (
-            <div className="bg-white rounded-2xl p-4 border border-gray-200 shadow-sm">
-              {generatingStatus === 'generating' && (
-                <div className="text-center">
-                  <Loader2 className="w-8 h-8 mx-auto mb-2 text-purple-600 animate-spin" />
-                  <p className="text-gray-900 font-medium">Generating music...</p>
-                  {generatingProgress > 0 && (
-                    <p className="text-purple-600 text-sm">{generatingProgress}%</p>
-                  )}
-                </div>
-              )}
-              {generatingStatus === 'success' && (
-                <div className="text-center">
-                  <Check className="w-8 h-8 mx-auto mb-2 text-green-500" />
-                  <p className="text-gray-900 font-medium mb-3">Music Created!</p>
-                  <button
-                    onClick={handleViewHistory}
-                    className="px-4 py-2 bg-purple-600 text-white rounded-xl text-sm font-medium"
-                  >
-                    View History
-                  </button>
-                </div>
-              )}
-              {generatingStatus === 'error' && (
-                <div className="text-center">
-                  <X className="w-8 h-8 mx-auto mb-2 text-red-500" />
-                  <p className="text-gray-900 font-medium mb-1">Generation Failed</p>
-                  <p className="text-red-500 text-sm mb-3">{generatingError}</p>
-                  <button
-                    onClick={handleResetStatus}
-                    className="px-4 py-2 bg-gray-200 text-gray-700 rounded-xl text-sm font-medium"
-                  >
-                    Close
-                  </button>
-                </div>
-              )}
             </div>
           )}
         </div>
@@ -1162,6 +1180,84 @@ export default function StudioAiMusicPage() {
                 )}
               </GradientButton>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Mobile Generation Status Modal */}
+      {generatingStatus !== 'idle' && (
+        <div className="lg:hidden fixed inset-0 z-50 flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/50" />
+          <div className="relative w-[90%] max-w-sm aspect-[3/4] bg-gradient-to-br from-pink-50 to-rose-100 rounded-2xl border border-pink-200 flex items-center justify-center overflow-hidden">
+            {generatingStatus === 'generating' ? (
+              <div className="text-center px-8">
+                <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-gradient-to-br from-pink-400 to-rose-400 flex items-center justify-center shadow-lg shadow-pink-200">
+                  <Music className="w-10 h-10 text-white animate-pulse" />
+                </div>
+                <h3 className="text-gray-900 font-semibold text-lg mb-2">Generating music...</h3>
+                {generatingProgress > 0 && (
+                  <div className="mb-3">
+                    <div className="w-48 h-2 bg-pink-200 rounded-full overflow-hidden mx-auto">
+                      <div
+                        className="h-full bg-gradient-to-r from-pink-400 to-rose-400 transition-all duration-300"
+                        style={{ width: `${generatingProgress}%` }}
+                      />
+                    </div>
+                    <p className="text-pink-600 text-sm font-medium mt-2">{generatingProgress}%</p>
+                  </div>
+                )}
+                <p className="text-gray-500 text-sm">
+                  Estimated time: <span className="text-pink-600 font-medium">3-5 minutes</span>
+                </p>
+              </div>
+            ) : generatingStatus === 'success' ? (
+              <div className="text-center px-8">
+                <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-green-100 flex items-center justify-center">
+                  <Check className="w-10 h-10 text-green-500" />
+                </div>
+                <h3 className="text-gray-900 font-semibold text-lg mb-2">Music Created!</h3>
+                <p className="text-gray-500 text-sm mb-6">Your music has been generated successfully.</p>
+                <div className="flex flex-col gap-3">
+                  <button
+                    onClick={handleViewHistory}
+                    className="px-6 py-3 bg-gradient-to-r from-pink-400 to-rose-400 text-white rounded-xl text-sm font-medium hover:opacity-90 shadow-md shadow-pink-200"
+                  >
+                    View History
+                  </button>
+                  <button
+                    onClick={handleResetStatus}
+                    className="px-6 py-3 bg-white text-gray-700 rounded-xl text-sm font-medium hover:bg-gray-50 border border-gray-200"
+                  >
+                    Create Another
+                  </button>
+                </div>
+              </div>
+            ) : generatingStatus === 'error' ? (
+              <div className="text-center px-8">
+                <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-red-100 flex items-center justify-center">
+                  <X className="w-10 h-10 text-red-500" />
+                </div>
+                <h3 className="text-gray-900 font-semibold text-lg mb-2">Generation Failed</h3>
+                <p className="text-red-500 text-sm mb-6">{generatingError || 'Something went wrong.'}</p>
+                <div className="flex flex-col gap-3">
+                  <button
+                    onClick={() => {
+                      handleResetStatus();
+                      void handleGenerate();
+                    }}
+                    className="px-6 py-3 bg-gradient-to-r from-pink-400 to-rose-400 text-white rounded-xl text-sm font-medium hover:opacity-90 shadow-md shadow-pink-200"
+                  >
+                    Try Again
+                  </button>
+                  <button
+                    onClick={handleResetStatus}
+                    className="px-6 py-3 bg-white text-gray-700 rounded-xl text-sm font-medium hover:bg-gray-50 border border-gray-200"
+                  >
+                    Close
+                  </button>
+                </div>
+              </div>
+            ) : null}
           </div>
         </div>
       )}

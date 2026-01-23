@@ -22,6 +22,7 @@ export interface SampleGenerationStatus {
   taskId?: string;
   audioUrl?: string;
   error?: string;
+  debug?: string; // 临时调试信息
 }
 
 /**
@@ -82,10 +83,13 @@ export async function startElevenlabsSampleGeneration(voiceId: number): Promise<
 
     if (!createResponse.ok) {
       const errorText = await createResponse.text();
+      console.error('API 创建任务失败:', errorText);
       return { success: false, error: `API 创建任务失败: ${createResponse.status}` };
     }
 
     const createResult = await createResponse.json();
+    console.log('🎤 createTask 响应:', JSON.stringify(createResult, null, 2));
+
     if (createResult.code !== 200) {
       return { success: false, error: createResult.msg || 'API 创建任务失败' };
     }
@@ -117,9 +121,9 @@ export async function checkElevenlabsSampleStatus(
       return { status: 'failed', error: '未配置 KIE_API_KEY' };
     }
 
-    // 查询任务状态
+    // 查询任务状态 - 使用 /jobs/recordInfo 端点
     const statusResponse = await fetch(
-      `https://api.kie.ai/api/v1/jobs/getTaskDetail?taskId=${encodeURIComponent(taskId)}`,
+      `https://api.kie.ai/api/v1/jobs/recordInfo?taskId=${encodeURIComponent(taskId)}`,
       {
         method: 'GET',
         headers: { Authorization: `Bearer ${token}` },
@@ -127,23 +131,41 @@ export async function checkElevenlabsSampleStatus(
     );
 
     if (!statusResponse.ok) {
-      return { status: 'processing', taskId };
+      return { status: 'processing', taskId, debug: `HTTP ${statusResponse.status}` };
     }
 
     const statusResult = await statusResponse.json();
+    console.log('🔍 kie.ai 任务状态响应:', JSON.stringify(statusResult, null, 2));
+
     if (statusResult.code !== 200) {
-      return { status: 'processing', taskId };
+      return { status: 'processing', taskId, debug: `code=${statusResult.code}, msg=${statusResult.msg}` };
     }
 
     const taskData = statusResult.data;
-    const status = taskData.status;
 
-    if (status === 'SUCCESS' || status === 'COMPLETED') {
-      const audioUrl = taskData.output?.audio_url || taskData.audioUrl;
-      if (!audioUrl) {
-        return { status: 'failed', error: '任务完成但没有返回音频 URL' };
+    // data 为空时，任务可能还在队列中
+    if (!taskData) {
+      return { status: 'processing', taskId, debug: 'data is null' };
+    }
+
+    // kie.ai 使用 state 字段：waiting, queuing, generating, success, fail
+    const taskState = (taskData.state || '').toLowerCase();
+
+    // 解析 resultJson 获取音频 URL
+    let audioUrl: string | undefined;
+    if (taskData.resultJson) {
+      try {
+        const resultData = JSON.parse(taskData.resultJson);
+        audioUrl = resultData.resultUrls?.[0] || resultData.audio_url;
+      } catch {
+        console.error('解析 resultJson 失败');
       }
+    }
 
+    const debugInfo = `state=${taskState}, audioUrl=${audioUrl?.substring(0, 50) || 'none'}`;
+
+    // 检查是否完成：state = success
+    if (taskState === 'success' && audioUrl) {
       // 获取语音信息
       const voice = await prisma.voices.findUnique({
         where: { id: voiceId },
@@ -181,15 +203,16 @@ export async function checkElevenlabsSampleStatus(
       return { status: 'completed', audioUrl: uploadedUrl };
     }
 
-    if (status === 'FAILED' || status === 'ERROR') {
+    // state = fail
+    if (taskState === 'fail') {
       return {
         status: 'failed',
-        error: taskData.error || taskData.errorMessage || '任务执行失败',
+        error: taskData.failMsg || '任务执行失败',
       };
     }
 
     // pending/processing
-    return { status: 'processing', taskId };
+    return { status: 'processing', taskId, debug: debugInfo };
   } catch (error) {
     console.error('检查样本状态失败:', error);
     return { status: 'failed', error: error instanceof Error ? error.message : '检查失败' };
@@ -842,13 +865,12 @@ export async function generateVoiceSampleForVoice(voiceId: number): Promise<Sync
             language: voice.locale,
           });
         } else if (provider === 'elevenlabs_dialogue') {
-          // ElevenLabs Dialogue TTS（通过 kie.ai API）
-          // voice.name 格式为 "elevenlabs_dialogue:VoiceId"，提取 VoiceId
-          const voiceId = voice.name.includes(':') ? voice.name.split(':')[1] : voice.name;
-          ttsResult = await elevenlabsDialogueSynthesize({
-            text: sampleText,
-            voiceId,
-          });
+          // ElevenLabs Dialogue 使用异步生成，不在此函数处理
+          // 请使用 startElevenlabsSampleGeneration + checkElevenlabsSampleStatus
+          return {
+            success: false,
+            message: 'ElevenLabs 声音请使用专用的异步生成功能',
+          };
         } else {
           // Azure TTS（支持 style）
           ttsResult = await azureSynthesize({

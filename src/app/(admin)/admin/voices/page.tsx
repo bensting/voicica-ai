@@ -12,6 +12,9 @@ import {
   updateVoice,
   generateVoiceSampleForVoice,
   generateVoiceAvatarUploadUrl,
+  startElevenlabsSampleGeneration,
+  checkElevenlabsSampleStatus,
+  type SampleGenerationStatus,
 } from '@/actions/admin/voices';
 import {
   syncElevenlabsDialogueVoices,
@@ -92,6 +95,19 @@ export default function VoicesManagementPage() {
   // ElevenLabs Dialogue 同步
   const [syncingDialogue, setSyncingDialogue] = useState(false);
   const [dialogueStats, setDialogueStats] = useState<{ total: number; dbCount: number; activeCount: number } | null>(null);
+
+  // ElevenLabs 样本生成模态框
+  const [sampleGenModal, setSampleGenModal] = useState<{
+    isOpen: boolean;
+    voiceId: number;
+    voiceName: string;
+    taskId: string | null;
+    status: SampleGenerationStatus['status'];
+    error: string | null;
+    startTime: number;
+    elapsed: number;
+  } | null>(null);
+  const sampleGenPollingRef = useRef<NodeJS.Timeout | null>(null);
 
   // 解析风格数量筛选
   const getStyleCountParams = () => {
@@ -175,6 +191,15 @@ export default function VoicesManagementPage() {
     loadLocales();
     loadDialogueStats();
   }, [loadLocales, loadDialogueStats]);
+
+  // 清理轮询 interval
+  useEffect(() => {
+    return () => {
+      if (sampleGenPollingRef.current) {
+        clearInterval(sampleGenPollingRef.current);
+      }
+    };
+  }, []);
 
   // 筛选变化时重新加载
   useEffect(() => {
@@ -307,8 +332,14 @@ export default function VoicesManagementPage() {
   };
 
   // 生成语音样本
-  const handleGenerateSamples = async (voiceId: number, styleCount: number) => {
-    if (!confirm(`确定要为此语音生成 ${styleCount} 个风格的样本吗？这会覆盖现有样本。\n\n注意：ElevenLabs 声音生成可能需要较长时间，请耐心等待。`)) {
+  const handleGenerateSamples = async (voiceId: number, styleCount: number, provider: string) => {
+    // ElevenLabs 使用异步模态框
+    if (provider === 'elevenlabs_dialogue') {
+      handleStartElevenlabsSample(voiceId);
+      return;
+    }
+
+    if (!confirm(`确定要为此语音生成 ${styleCount} 个风格的样本吗？这会覆盖现有样本。`)) {
       return;
     }
 
@@ -322,12 +353,113 @@ export default function VoicesManagementPage() {
       }
     } catch (error) {
       console.error('生成样本失败:', error);
-      // 可能是超时但后台成功了，提示用户并刷新
-      alert('请求超时，但后台可能已成功生成。列表将自动刷新。');
+      alert('生成样本失败');
     } finally {
       setGeneratingVoiceId(null);
-      loadVoices(); // 无论成功失败都刷新列表
+      loadVoices();
     }
+  };
+
+  // 启动 ElevenLabs 样本生成
+  const handleStartElevenlabsSample = async (voiceId: number) => {
+    const voice = voices.find(v => v.id === voiceId);
+    if (!voice) return;
+
+    setSampleGenModal({
+      isOpen: true,
+      voiceId,
+      voiceName: voice.display_name,
+      taskId: null,
+      status: 'pending',
+      error: null,
+      startTime: Date.now(),
+      elapsed: 0,
+    });
+
+    try {
+      const result = await startElevenlabsSampleGeneration(voiceId);
+      if (!result.success || !result.taskId) {
+        setSampleGenModal(prev => prev ? { ...prev, status: 'failed', error: result.error || '启动失败' } : null);
+        return;
+      }
+
+      setSampleGenModal(prev => prev ? { ...prev, taskId: result.taskId!, status: 'processing' } : null);
+
+      // 开始轮询
+      startSamplePolling(voiceId, result.taskId);
+    } catch {
+      setSampleGenModal(prev => prev ? { ...prev, status: 'failed', error: '启动失败' } : null);
+    }
+  };
+
+  // 轮询样本生成状态
+  const startSamplePolling = (voiceId: number, taskId: string) => {
+    console.log('🚀 开始轮询:', { voiceId, taskId });
+
+    // 清除之前的轮询
+    if (sampleGenPollingRef.current) {
+      clearInterval(sampleGenPollingRef.current);
+    }
+
+    const maxDuration = 180000; // 3 分钟超时
+
+    sampleGenPollingRef.current = setInterval(async () => {
+      // 更新已用时间
+      setSampleGenModal(prev => {
+        if (!prev) return null;
+        const elapsed = Date.now() - prev.startTime;
+        if (elapsed >= maxDuration) {
+          // 超时
+          if (sampleGenPollingRef.current) {
+            clearInterval(sampleGenPollingRef.current);
+            sampleGenPollingRef.current = null;
+          }
+          return { ...prev, elapsed, status: 'failed', error: '生成超时，请点击"继续检查"按钮' };
+        }
+        return { ...prev, elapsed };
+      });
+
+      try {
+        console.log('🔄 轮询检查状态...', { voiceId, taskId });
+        const status = await checkElevenlabsSampleStatus(voiceId, taskId);
+        console.log('🔄 返回状态:', status);
+
+        if (status.status === 'completed') {
+          if (sampleGenPollingRef.current) {
+            clearInterval(sampleGenPollingRef.current);
+            sampleGenPollingRef.current = null;
+          }
+          setSampleGenModal(prev => prev ? { ...prev, status: 'completed' } : null);
+          loadVoices();
+        } else if (status.status === 'failed') {
+          if (sampleGenPollingRef.current) {
+            clearInterval(sampleGenPollingRef.current);
+            sampleGenPollingRef.current = null;
+          }
+          setSampleGenModal(prev => prev ? { ...prev, status: 'failed', error: status.error || '生成失败' } : null);
+        }
+      } catch (err) {
+        console.error('🔄 轮询出错:', err);
+      }
+    }, 3000);
+  };
+
+  // 继续检查状态
+  const handleContinueCheck = () => {
+    if (sampleGenModal?.taskId) {
+      setSampleGenModal(prev => prev ? { ...prev, status: 'processing', error: null, startTime: Date.now(), elapsed: 0 } : null);
+      startSamplePolling(sampleGenModal.voiceId, sampleGenModal.taskId);
+    }
+  };
+
+  // 关闭模态框
+  const handleCloseSampleModal = () => {
+    if (sampleGenPollingRef.current) {
+      clearInterval(sampleGenPollingRef.current);
+      sampleGenPollingRef.current = null;
+    }
+    setSampleGenModal(null);
+    loadVoices();
   };
 
   // 播放样例语音
@@ -786,7 +918,7 @@ export default function VoicesManagementPage() {
                           编辑
                         </button>
                         <button
-                          onClick={() => handleGenerateSamples(voice.id, voice.style_list.length)}
+                          onClick={() => handleGenerateSamples(voice.id, voice.style_list.length, voice.provider)}
                           disabled={generatingVoiceId === voice.id}
                           className="text-sm text-teal-600 hover:text-teal-700 disabled:opacity-50"
                         >
@@ -1111,6 +1243,83 @@ export default function VoicesManagementPage() {
                 </div>
               </>
             ) : null}
+          </div>
+        </div>
+      )}
+
+      {/* ElevenLabs 样本生成模态框 */}
+      {sampleGenModal?.isOpen && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl shadow-xl w-full max-w-md m-4">
+            <div className="px-6 py-4 border-b border-gray-200">
+              <h2 className="text-lg font-semibold text-gray-900">生成语音样本</h2>
+              <p className="text-sm text-gray-500 mt-1">{sampleGenModal.voiceName}</p>
+            </div>
+
+            <div className="px-6 py-8">
+              {/* 状态显示 */}
+              <div className="flex flex-col items-center">
+                {sampleGenModal.status === 'pending' && (
+                  <>
+                    <div className="w-12 h-12 border-4 border-purple-200 border-t-purple-600 rounded-full animate-spin mb-4" />
+                    <p className="text-gray-700 font-medium">正在启动任务...</p>
+                  </>
+                )}
+
+                {sampleGenModal.status === 'processing' && (
+                  <>
+                    <div className="w-12 h-12 border-4 border-purple-200 border-t-purple-600 rounded-full animate-spin mb-4" />
+                    <p className="text-gray-700 font-medium">正在生成语音样本...</p>
+                    <p className="text-gray-500 text-sm mt-2">
+                      已用时: {Math.floor(sampleGenModal.elapsed / 1000)} 秒
+                    </p>
+                    <p className="text-gray-400 text-xs mt-1">
+                      ElevenLabs 生成可能需要 1-2 分钟
+                    </p>
+                  </>
+                )}
+
+                {sampleGenModal.status === 'completed' && (
+                  <>
+                    <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mb-4">
+                      <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                    </div>
+                    <p className="text-green-700 font-medium">生成完成！</p>
+                  </>
+                )}
+
+                {sampleGenModal.status === 'failed' && (
+                  <>
+                    <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mb-4">
+                      <svg className="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </div>
+                    <p className="text-red-700 font-medium">生成失败</p>
+                    <p className="text-red-500 text-sm mt-2">{sampleGenModal.error}</p>
+                  </>
+                )}
+              </div>
+            </div>
+
+            <div className="px-6 py-4 border-t border-gray-200 flex justify-end gap-3">
+              {sampleGenModal.status === 'failed' && sampleGenModal.taskId && (
+                <button
+                  onClick={handleContinueCheck}
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                  继续检查
+                </button>
+              )}
+              <button
+                onClick={handleCloseSampleModal}
+                className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+              >
+                {sampleGenModal.status === 'completed' ? '完成' : '关闭'}
+              </button>
+            </div>
           </div>
         </div>
       )}

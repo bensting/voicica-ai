@@ -68,7 +68,7 @@ export async function createDialogueTask(
 
   // 检查用户积分
   const user = await prisma.users.findUnique({
-    where: { firebase_uid: userId },
+    where: { user_id: userId },
     select: { credits: true },
   });
 
@@ -125,7 +125,7 @@ export async function createDialogueTask(
 
   // 扣除积分
   await prisma.users.update({
-    where: { firebase_uid: userId },
+    where: { user_id: userId },
     data: {
       credits: { decrement: creditsRequired },
     },
@@ -136,16 +136,9 @@ export async function createDialogueTask(
     data: {
       user_id: userId,
       amount: -creditsRequired,
-      balance_after: user.credits - creditsRequired,
-      type: 'consumption',
+      task_id: taskId,
       description: `Dialogue generation (${totalCharacters} chars)`,
       product_type: 'dialogue',
-      metadata: {
-        taskId,
-        recordId,
-        totalCharacters,
-        dialogueCount: request.dialogue.length,
-      },
     },
   });
 
@@ -166,9 +159,9 @@ export async function getDialogueTaskStatus(
 
   const token = getKieApiToken();
 
-  // 调用 kie.ai 获取任务状态 API
+  // 调用 kie.ai 获取任务状态 API - 使用 /jobs/recordInfo 端点
   const response = await fetch(
-    `https://api.kie.ai/api/v1/jobs/getTaskDetail?taskId=${encodeURIComponent(taskId)}`,
+    `https://api.kie.ai/api/v1/jobs/recordInfo?taskId=${encodeURIComponent(taskId)}`,
     {
       method: 'GET',
       headers: {
@@ -191,20 +184,34 @@ export async function getDialogueTaskStatus(
 
   const taskData = result.data;
 
+  // kie.ai 使用 state 字段：waiting, queuing, generating, success, fail
+  const taskState = (taskData.state || '').toLowerCase();
+
+  // 解析 resultJson 获取音频 URL
+  let audioUrl: string | undefined;
+  if (taskData.resultJson) {
+    try {
+      const resultData = JSON.parse(taskData.resultJson);
+      audioUrl = resultData.resultUrls?.[0] || resultData.audio_url;
+    } catch {
+      // ignore parse error
+    }
+  }
+
   // 映射状态
   let status: DialogueTaskStatus['status'] = 'pending';
-  if (taskData.status === 'SUCCESS' || taskData.status === 'COMPLETED') {
+  if (taskState === 'success') {
     status = 'completed';
-  } else if (taskData.status === 'PROCESSING' || taskData.status === 'RUNNING') {
+  } else if (taskState === 'waiting' || taskState === 'queuing' || taskState === 'generating') {
     status = 'processing';
-  } else if (taskData.status === 'FAILED' || taskData.status === 'ERROR') {
+  } else if (taskState === 'fail') {
     status = 'failed';
   }
 
   return {
     taskId,
     status,
-    audioUrl: taskData.output?.audio_url || taskData.audioUrl,
-    error: taskData.error || taskData.errorMessage,
+    audioUrl,
+    error: taskData.failMsg,
   };
 }

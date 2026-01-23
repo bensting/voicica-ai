@@ -65,7 +65,7 @@ const config: CapacitorConfig = {
   // iOS 配置
   ios: {
     contentInset: 'automatic',
-    backgroundColor: '#ffffff',
+    backgroundColor: '#0a0a1a', // 深色背景，与应用主题一致
     // 允许混合内容
     allowsLinkPreview: true,
     scrollEnabled: true,
@@ -73,7 +73,7 @@ const config: CapacitorConfig = {
 
   // Android 配置
   android: {
-    backgroundColor: '#ffffff',
+    backgroundColor: '#0a0a1a', // 深色背景，与应用主题一致
     // 允许混合内容
     allowMixedContent: true,
     // 启用硬件加速

@@ -1,8 +1,17 @@
 {
-  "version": "1.1.8",
-  "buildNumber": 19,
+  "version": "1.1.9",
+  "buildNumber": 20,
   "description": "原生应用版本（Android/iOS 应用壳）",
   "changelog": [
+    {
+      "version": "1.1.9",
+      "buildNumber": 20,
+      "date": "2026-01-24",
+      "changes": [
+        "关闭开屏广告",
+        "修复启动时白色闪烁问题"
+      ]
+    },
     {
       "version": "1.1.8",
       "buildNumber": 19,

@@ -308,35 +308,57 @@ export function FirebaseAuthProvider({ children }: { children: React.ReactNode }
 
     // 在 Capacitor 原生环境中使用原生登录
     if (isNative) {
-      try {
-        console.log('[FirebaseAuth] 使用原生 Google 登录...');
-        const result = await FirebaseAuthentication.signInWithGoogle();
-        console.log('[FirebaseAuth] 原生登录返回结果:', JSON.stringify(result, null, 2));
+      // 重试逻辑：Capacitor 插件可能在第一次调用时还未完全初始化
+      const maxRetries = 2;
+      let lastError: unknown = null;
 
-        // 使用返回的 credential 在 Firebase Web SDK 中认证
-        if (result.credential?.idToken) {
-          console.log('[FirebaseAuth] 获取到 idToken，正在认证...');
-          const credential = GoogleAuthProvider.credential(result.credential.idToken);
-          await signInWithCredential(auth, credential);
-          console.log('[FirebaseAuth] 原生 Google 登录成功');
-        } else {
-          console.error('[FirebaseAuth] 未获取到 idToken');
-          throw new Error('No idToken returned from native sign-in');
+      for (let attempt = 1; attempt <= maxRetries; attempt++) {
+        try {
+          console.log(`[FirebaseAuth] 使用原生 Google 登录... (尝试 ${attempt}/${maxRetries})`);
+
+          // 首次尝试前短暂延迟，确保插件初始化完成
+          if (attempt === 1) {
+            await new Promise(resolve => setTimeout(resolve, 100));
+          }
+
+          const result = await FirebaseAuthentication.signInWithGoogle();
+          console.log('[FirebaseAuth] 原生登录返回结果:', JSON.stringify(result, null, 2));
+
+          // 使用返回的 credential 在 Firebase Web SDK 中认证
+          if (result.credential?.idToken) {
+            console.log('[FirebaseAuth] 获取到 idToken，正在认证...');
+            const credential = GoogleAuthProvider.credential(result.credential.idToken);
+            await signInWithCredential(auth, credential);
+            console.log('[FirebaseAuth] 原生 Google 登录成功');
+            return; // 成功，退出循环
+          } else {
+            console.error('[FirebaseAuth] 未获取到 idToken');
+            throw new Error('No idToken returned from native sign-in');
+          }
+        } catch (error: unknown) {
+          // 用户取消登录，静默处理，不重试
+          if (isUserCancelledError(error)) {
+            console.log('[FirebaseAuth] 用户取消了原生 Google 登录');
+            return;
+          }
+
+          lastError = error;
+          const err = error as { code?: string; message?: string };
+          console.error(`[FirebaseAuth] 原生 Google 登录失败 (尝试 ${attempt}/${maxRetries}):`);
+          console.error('  - Error:', error);
+          console.error('  - Code:', err?.code);
+          console.error('  - Message:', err?.message);
+
+          // 如果还有重试机会，等待后重试
+          if (attempt < maxRetries) {
+            console.log('[FirebaseAuth] 等待后重试...');
+            await new Promise(resolve => setTimeout(resolve, 500));
+          }
         }
-      } catch (error: unknown) {
-        // 用户取消登录，静默处理
-        if (isUserCancelledError(error)) {
-          console.log('[FirebaseAuth] 用户取消了原生 Google 登录');
-          return;
-        }
-        const err = error as { code?: string; message?: string };
-        console.error('[FirebaseAuth] 原生 Google 登录失败:');
-        console.error('  - Error:', error);
-        console.error('  - Code:', err?.code);
-        console.error('  - Message:', err?.message);
-        throw error;
       }
-      return;
+
+      // 所有重试都失败了
+      throw lastError;
     }
 
     // Web 环境使用 popup/redirect 方式

@@ -49,7 +49,7 @@ export function useAppStartAd() {
   const appOpenAdRef = useRef<typeof import('@/plugins/app-open-ad').AppOpenAd | null>(null);
 
   const isNative = Capacitor.isNativePlatform();
-  const isEnabled = admobConfig.enabled && isNative;
+  const isEnabled = admobConfig.enabled && admobConfig.appOpen.enabled && isNative;
 
   // 加载并显示 App Open 广告
   const showAppOpenAd = useCallback(async () => {

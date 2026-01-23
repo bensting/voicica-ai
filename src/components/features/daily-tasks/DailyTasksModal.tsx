@@ -152,7 +152,12 @@ export default function DailyTasksModal({ isOpen, onClose, onCreditsUpdated, onU
         onCreditsUpdated?.();
       } else if (!result.success) {
         const errorMsg = result.message || '签到失败';
-        console.error('❌ [DailyTasks] Checkin failed:', errorMsg);
+        // "No ads available" is a normal situation, not an error
+        if (result.reason === 'unavailable') {
+          console.log('[DailyTasks] No ads available:', errorMsg);
+        } else {
+          console.warn('[DailyTasks] Checkin failed:', errorMsg);
+        }
         setCheckinError(errorMsg);
         setPendingRetry('checkin');
         setTimeout(() => setCheckinError(null), 5000);

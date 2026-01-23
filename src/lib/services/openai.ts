@@ -567,6 +567,58 @@ Expand this into a comprehensive prompt that an AI music generator can use to cr
 }
 
 /**
+ * 生成语音/旁白文本
+ *
+ * @param prompt 用户描述（想要生成什么样的文本）
+ * @returns 生成的文本内容
+ */
+export async function generateSpeechText(prompt: string): Promise<string> {
+  const systemPrompt = `You are a professional voice-over and speech text writer. Generate clear, engaging text suitable for text-to-speech applications.
+
+Guidelines:
+- Write natural, conversational text that sounds good when spoken aloud
+- Avoid complex punctuation or formatting that might confuse TTS systems
+- Use appropriate pacing with sentence breaks
+- Match the tone and style requested by the user
+- Detect the language of the user's prompt and write in the SAME language
+- Keep the text concise but complete (typically 1-3 paragraphs)
+- Avoid overly long sentences
+
+Always respond with valid JSON in this format:
+{
+  "text": "The generated speech/voice-over text..."
+}`;
+
+  const userPrompt = `Write speech/voice-over text based on this description:
+${prompt}
+
+Create text that would sound natural and engaging when read aloud by a text-to-speech system.`;
+
+  const response = await openai.chat.completions.create({
+    model: 'gpt-4o-mini',
+    messages: [
+      { role: 'system', content: systemPrompt },
+      { role: 'user', content: userPrompt },
+    ],
+    temperature: 0.8,
+    max_tokens: 1000,
+    response_format: { type: 'json_object' },
+  });
+
+  const content = response.choices[0]?.message?.content;
+  if (!content) {
+    throw new Error('No response from OpenAI');
+  }
+
+  try {
+    const parsed = JSON.parse(content);
+    return parsed.text || '';
+  } catch {
+    throw new Error('Failed to parse text from OpenAI response');
+  }
+}
+
+/**
  * 为单个段落生成插图提示词
  *
  * @param storyTitle 故事标题

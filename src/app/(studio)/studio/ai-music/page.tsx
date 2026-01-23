@@ -648,45 +648,45 @@ export default function StudioAiMusicPage() {
             {/* Right Column: Preview */}
             <div className="col-span-5 flex flex-col gap-4">
               <div className="text-lg font-semibold text-gray-900">Preview</div>
-              <div className="flex-1 bg-gray-900 rounded-2xl border border-gray-200 flex items-center justify-center min-h-[400px]">
+              <div className="flex-1 bg-gradient-to-br from-pink-50 to-rose-100 rounded-2xl border border-pink-200 flex items-center justify-center min-h-[400px]">
                 {generatingStatus === 'generating' ? (
                   <div className="text-center px-8">
-                    <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gray-800 flex items-center justify-center">
-                      <Music className="w-8 h-8 text-gray-400 animate-pulse" />
+                    <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-gradient-to-br from-pink-400 to-rose-400 flex items-center justify-center shadow-lg shadow-pink-200">
+                      <Music className="w-10 h-10 text-white animate-pulse" />
                     </div>
-                    <h3 className="text-white font-semibold mb-2">Generating music...</h3>
+                    <h3 className="text-gray-900 font-semibold text-lg mb-2">Generating music...</h3>
                     {generatingProgress > 0 && (
-                      <div className="mb-2">
-                        <div className="w-48 h-2 bg-gray-700 rounded-full overflow-hidden mx-auto">
+                      <div className="mb-3">
+                        <div className="w-48 h-2 bg-pink-200 rounded-full overflow-hidden mx-auto">
                           <div
-                            className="h-full bg-gradient-to-r from-purple-500 to-pink-500 transition-all duration-300"
+                            className="h-full bg-gradient-to-r from-pink-400 to-rose-400 transition-all duration-300"
                             style={{ width: `${generatingProgress}%` }}
                           />
                         </div>
-                        <p className="text-purple-400 text-sm mt-1">{generatingProgress}%</p>
+                        <p className="text-pink-600 text-sm font-medium mt-2">{generatingProgress}%</p>
                       </div>
                     )}
-                    <p className="text-gray-400 text-sm">
-                      Estimated time: <span className="text-purple-400">3-5 minutes</span>
+                    <p className="text-gray-500 text-sm">
+                      Estimated time: <span className="text-pink-600 font-medium">3-5 minutes</span>
                     </p>
                   </div>
                 ) : generatingStatus === 'success' ? (
                   <div className="text-center px-8">
-                    <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-green-500/20 flex items-center justify-center">
-                      <Check className="w-8 h-8 text-green-400" />
+                    <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-green-100 flex items-center justify-center">
+                      <Check className="w-10 h-10 text-green-500" />
                     </div>
-                    <h3 className="text-white font-semibold mb-2">Music Created!</h3>
-                    <p className="text-gray-400 text-sm mb-6">Your music has been generated successfully.</p>
+                    <h3 className="text-gray-900 font-semibold text-lg mb-2">Music Created!</h3>
+                    <p className="text-gray-500 text-sm mb-6">Your music has been generated successfully.</p>
                     <div className="flex gap-3 justify-center">
                       <button
                         onClick={handleResetStatus}
-                        className="px-4 py-2 bg-gray-700 text-white rounded-xl text-sm font-medium hover:bg-gray-600"
+                        className="px-4 py-2 bg-white text-gray-700 rounded-xl text-sm font-medium hover:bg-gray-50 border border-gray-200"
                       >
                         Create Another
                       </button>
                       <button
                         onClick={handleViewHistory}
-                        className="px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl text-sm font-medium hover:opacity-90"
+                        className="px-4 py-2 bg-gradient-to-r from-pink-400 to-rose-400 text-white rounded-xl text-sm font-medium hover:opacity-90 shadow-md shadow-pink-200"
                       >
                         View History
                       </button>
@@ -694,15 +694,15 @@ export default function StudioAiMusicPage() {
                   </div>
                 ) : generatingStatus === 'error' ? (
                   <div className="text-center px-8">
-                    <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-red-500/20 flex items-center justify-center">
-                      <X className="w-8 h-8 text-red-400" />
+                    <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-red-100 flex items-center justify-center">
+                      <X className="w-10 h-10 text-red-500" />
                     </div>
-                    <h3 className="text-white font-semibold mb-2">Generation Failed</h3>
-                    <p className="text-red-400 text-sm mb-6">{generatingError || 'Something went wrong.'}</p>
+                    <h3 className="text-gray-900 font-semibold text-lg mb-2">Generation Failed</h3>
+                    <p className="text-red-500 text-sm mb-6">{generatingError || 'Something went wrong.'}</p>
                     <div className="flex gap-3 justify-center">
                       <button
                         onClick={handleResetStatus}
-                        className="px-4 py-2 bg-gray-700 text-white rounded-xl text-sm font-medium hover:bg-gray-600"
+                        className="px-4 py-2 bg-white text-gray-700 rounded-xl text-sm font-medium hover:bg-gray-50 border border-gray-200"
                       >
                         Close
                       </button>
@@ -711,7 +711,7 @@ export default function StudioAiMusicPage() {
                           handleResetStatus();
                           void handleGenerate();
                         }}
-                        className="px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl text-sm font-medium hover:opacity-90"
+                        className="px-4 py-2 bg-gradient-to-r from-pink-400 to-rose-400 text-white rounded-xl text-sm font-medium hover:opacity-90 shadow-md shadow-pink-200"
                       >
                         Try Again
                       </button>
@@ -719,10 +719,10 @@ export default function StudioAiMusicPage() {
                   </div>
                 ) : (
                   <div className="text-center px-8">
-                    <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gray-800 flex items-center justify-center">
-                      <Film className="w-8 h-8 text-gray-600" />
+                    <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-white/60 flex items-center justify-center border border-pink-200">
+                      <Music className="w-10 h-10 text-pink-300" />
                     </div>
-                    <p className="text-gray-500">Preview will appear here</p>
+                    <p className="text-gray-400">Preview will appear here</p>
                   </div>
                 )}
               </div>

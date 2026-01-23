@@ -6,9 +6,7 @@ import { X, Gift, Check, Loader2, Play, Crown, RefreshCw } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 import { useDailyTasks } from '@/hooks/useDailyTasks';
-import { isNativeApp } from '@/lib/capacitor';
 import LoginModal from '@/components/features/auth/LoginModal';
-import AppDownloadModal from './AppDownloadModal';
 import CelebrationEffect from './CelebrationEffect';
 
 // 广告加载超时时间（毫秒）
@@ -43,7 +41,6 @@ export default function DailyTasksModal({ isOpen, onClose, onCreditsUpdated, onU
   } = useDailyTasks();
 
   const [showLoginModal, setShowLoginModal] = useState(false);
-  const [showDownloadModal, setShowDownloadModal] = useState(false);
   const [lastClaimedCredits, setLastClaimedCredits] = useState<number | null>(null);
   const [showCelebration, setShowCelebration] = useState(false);
   const [adLoading, setAdLoading] = useState(false);
@@ -113,16 +110,9 @@ export default function DailyTasksModal({ isOpen, onClose, onCreditsUpdated, onU
     }, 5000);
   }, [t, clearAdTimeout, cancelClaiming]);
 
-  // 处理签到内部逻辑（原生端需要先观看插页式激励广告）
+  // 处理签到内部逻辑（需要先观看激励广告）
   const handleCheckinInternal = useCallback(async () => {
     if (checkinLoading || claiming) return;
-
-    // Web 端：弹出下载 App 引导页
-    if (!isNativeApp()) {
-      console.log('📱 [DailyTasks] Web platform for checkin, showing download modal...');
-      setShowDownloadModal(true);
-      return;
-    }
 
     cancelledRef.current = false;
     setCheckinError(null);
@@ -190,13 +180,6 @@ export default function DailyTasksModal({ isOpen, onClose, onCreditsUpdated, onU
   // 处理看广告领奖励内部逻辑
   const handleWatchAdInternal = useCallback(async () => {
     if (adLoading || claiming) return;
-
-    // Web 端：弹出下载 App 引导页
-    if (!isNativeApp()) {
-      console.log('📱 [DailyTasks] Web platform, showing download modal...');
-      setShowDownloadModal(true);
-      return;
-    }
 
     cancelledRef.current = false;
     setAdError(null);
@@ -650,13 +633,6 @@ export default function DailyTasksModal({ isOpen, onClose, onCreditsUpdated, onU
       <LoginModal
         isOpen={showLoginModal}
         onClose={() => setShowLoginModal(false)}
-      />
-
-      {/* App 下载引导弹窗 */}
-      <AppDownloadModal
-        isOpen={showDownloadModal}
-        onClose={() => setShowDownloadModal(false)}
-        onUpgradeClick={onUpgradeClick}
       />
 
       {/* 庆祝效果 */}

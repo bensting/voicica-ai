@@ -191,23 +191,21 @@ export function useDailyTasks(): UseDailyTasksReturn {
       setClaiming(true);
       setError(null);
 
-      // 原生平台需要先观看激励视频广告（与观看视频共享同一个广告缓存）
-      if (isNative) {
-        console.log('[useDailyTasks] 开始显示签到激励视频广告...');
-        const adWatched = await showRewardedAd();
+      // 签到前需要先观看激励视频广告（Web 端使用 AppLixir，原生端使用 AdMob/Appodeal）
+      console.log('[useDailyTasks] 开始显示签到激励视频广告...');
+      const adWatched = await showRewardedAd();
 
-        // 检查是否已取消
-        if (cancelledRef.current) {
-          console.log('[useDailyTasks] 签到已被用户取消');
-          return { success: false, message: '已取消' };
-        }
-
-        if (!adWatched) {
-          console.log('[useDailyTasks] 用户未完成广告观看，取消签到');
-          return { success: false, message: '请观看完整广告以完成签到' };
-        }
-        console.log('[useDailyTasks] 广告观看成功，开始签到...');
+      // 检查是否已取消
+      if (cancelledRef.current) {
+        console.log('[useDailyTasks] 签到已被用户取消');
+        return { success: false, message: '已取消' };
       }
+
+      if (!adWatched) {
+        console.log('[useDailyTasks] 用户未完成广告观看，取消签到');
+        return { success: false, message: '请观看完整广告以完成签到' };
+      }
+      console.log('[useDailyTasks] 广告观看成功，开始签到...');
 
       // 检查是否已取消
       if (cancelledRef.current) {

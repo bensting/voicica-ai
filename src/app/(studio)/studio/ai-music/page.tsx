@@ -57,6 +57,14 @@ export default function StudioAiMusicPage() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // AI Assistant States
+  const [isLyricsAssistantOpen, setIsLyricsAssistantOpen] = useState(false);
+  const [lyricsPrompt, setLyricsPrompt] = useState('');
+  const [isGeneratingLyrics, setIsGeneratingLyrics] = useState(false);
+  const [isStyleAssistantOpen, setIsStyleAssistantOpen] = useState(false);
+  const [stylePrompt, setStylePrompt] = useState('');
+  const [isGeneratingStyle, setIsGeneratingStyle] = useState(false);
+
   // Generation status
   const [generatingStatus, setGeneratingStatus] = useState<'idle' | 'generating' | 'success' | 'error'>('idle');
   const [generatingError, setGeneratingError] = useState<string | null>(null);
@@ -240,6 +248,71 @@ export default function StudioAiMusicPage() {
     router.push('/studio/music-history');
   };
 
+  // Generate Lyrics with AI (also generates title)
+  const handleGenerateLyrics = async () => {
+    if (!lyricsPrompt.trim()) return;
+
+    setIsGeneratingLyrics(true);
+    try {
+      const response = await fetch('/api/ai/generate-lyrics', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt: lyricsPrompt.trim() }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        throw new Error(data.error || 'Failed to generate lyrics');
+      }
+
+      if (data.lyrics) {
+        setLyrics(data.lyrics);
+      }
+      if (data.title) {
+        setTitle_(data.title);
+      }
+      setIsLyricsAssistantOpen(false);
+      setLyricsPrompt('');
+    } catch (err) {
+      console.error('Generate lyrics failed:', err);
+      setError(err instanceof Error ? err.message : 'Failed to generate lyrics');
+    } finally {
+      setIsGeneratingLyrics(false);
+    }
+  };
+
+  // Generate Style with AI
+  const handleGenerateStyle = async () => {
+    if (!stylePrompt.trim()) return;
+
+    setIsGeneratingStyle(true);
+    try {
+      const response = await fetch('/api/ai/generate-style', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt: stylePrompt.trim() }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        throw new Error(data.error || 'Failed to generate style');
+      }
+
+      if (data.style) {
+        setStyle(data.style);
+      }
+      setIsStyleAssistantOpen(false);
+      setStylePrompt('');
+    } catch (err) {
+      console.error('Generate style failed:', err);
+      setError(err instanceof Error ? err.message : 'Failed to generate style');
+    } finally {
+      setIsGeneratingStyle(false);
+    }
+  };
+
   const tabs: { id: MusicTab; label: string }[] = [
     { id: 'custom', label: 'Lyrics to Music' },
     { id: 'simple', label: 'Prompt to Music' },
@@ -342,7 +415,17 @@ export default function StudioAiMusicPage() {
                     {/* Lyrics */}
                     <div>
                       <div className="flex items-center justify-between mb-2">
-                        <span className="text-sm font-medium text-gray-700">Lyrics</span>
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm font-medium text-gray-700">Lyrics</span>
+                          <button
+                            onClick={() => setIsLyricsAssistantOpen(true)}
+                            disabled={isGenerating}
+                            className="flex items-center gap-1.5 px-2.5 py-1 bg-purple-100 hover:bg-purple-200 text-purple-700 rounded-lg text-xs font-medium transition-colors disabled:opacity-50"
+                          >
+                            <Sparkles className="w-3.5 h-3.5" />
+                            <span>Generate Lyrics</span>
+                          </button>
+                        </div>
                         <span className="text-xs text-gray-400">{lyrics.length}/{maxLyricsCharacters}</span>
                       </div>
                       <div className="relative">
@@ -366,9 +449,19 @@ export default function StudioAiMusicPage() {
 
                     {/* Style */}
                     <div>
-                      <div className="flex items-center gap-2 mb-2">
-                        <span className="text-sm font-medium text-gray-700">Style</span>
-                        <span className="text-xs text-gray-400">(optional)</span>
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm font-medium text-gray-700">Style</span>
+                          <span className="text-xs text-gray-400">(optional)</span>
+                          <button
+                            onClick={() => setIsStyleAssistantOpen(true)}
+                            disabled={isGenerating}
+                            className="flex items-center gap-1.5 px-2.5 py-1 bg-purple-100 hover:bg-purple-200 text-purple-700 rounded-lg text-xs font-medium transition-colors disabled:opacity-50"
+                          >
+                            <Sparkles className="w-3.5 h-3.5" />
+                            <span>Generate Style</span>
+                          </button>
+                        </div>
                       </div>
                       <input
                         type="text"
@@ -659,7 +752,17 @@ export default function StudioAiMusicPage() {
                 {/* Lyrics */}
                 <div>
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm font-medium text-gray-700">Lyrics</span>
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-medium text-gray-700">Lyrics</span>
+                      <button
+                        onClick={() => setIsLyricsAssistantOpen(true)}
+                        disabled={isGenerating}
+                        className="flex items-center gap-1 px-2 py-0.5 bg-purple-100 hover:bg-purple-200 text-purple-700 rounded-md text-xs font-medium transition-colors disabled:opacity-50"
+                      >
+                        <Sparkles className="w-3 h-3" />
+                        <span>Generate</span>
+                      </button>
+                    </div>
                     <span className="text-xs text-gray-400">{lyrics.length}/{maxLyricsCharacters}</span>
                   </div>
                   <textarea
@@ -673,9 +776,19 @@ export default function StudioAiMusicPage() {
 
                 {/* Style */}
                 <div>
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="text-sm font-medium text-gray-700">Style</span>
-                    <span className="text-xs text-gray-400">(optional)</span>
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-medium text-gray-700">Style</span>
+                      <span className="text-xs text-gray-400">(optional)</span>
+                      <button
+                        onClick={() => setIsStyleAssistantOpen(true)}
+                        disabled={isGenerating}
+                        className="flex items-center gap-1 px-2 py-0.5 bg-purple-100 hover:bg-purple-200 text-purple-700 rounded-md text-xs font-medium transition-colors disabled:opacity-50"
+                      >
+                        <Sparkles className="w-3 h-3" />
+                        <span>Generate</span>
+                      </button>
+                    </div>
                   </div>
                   <input
                     type="text"
@@ -852,6 +965,108 @@ export default function StudioAiMusicPage() {
         isOpen={isLoginModalOpen}
         onClose={() => setIsLoginModalOpen(false)}
       />
+
+      {/* Lyrics Assistant Modal */}
+      {isLyricsAssistantOpen && (
+        <div className="fixed inset-0 z-50 flex items-end lg:items-center justify-center">
+          <div className="absolute inset-0 bg-black/50" onClick={() => setIsLyricsAssistantOpen(false)} />
+          <div className="relative bg-white rounded-t-3xl lg:rounded-2xl w-full lg:max-w-lg max-h-[80vh] overflow-hidden">
+            <div className="p-4 border-b border-gray-200 flex items-center justify-between">
+              <h3 className="text-lg font-semibold text-gray-900">AI Lyrics Assistant</h3>
+              <button onClick={() => setIsLyricsAssistantOpen(false)} className="p-1 text-gray-400 hover:text-gray-600">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <div className="p-4 space-y-4">
+              <p className="text-sm text-gray-600">
+                Describe the theme, mood, or story you want for your lyrics. The AI will generate creative lyrics and a title for you.
+              </p>
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm font-medium text-gray-700">Your idea</span>
+                  <span className="text-xs text-gray-400">{lyricsPrompt.length}/500</span>
+                </div>
+                <textarea
+                  value={lyricsPrompt}
+                  onChange={(e) => e.target.value.length <= 500 && setLyricsPrompt(e.target.value)}
+                  placeholder="e.g., A love song about missing someone in autumn, melancholic but hopeful..."
+                  className="w-full h-32 p-4 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 resize-none focus:outline-none focus:ring-2 focus:ring-purple-400"
+                  disabled={isGeneratingLyrics}
+                />
+              </div>
+              <GradientButton
+                onClick={() => void handleGenerateLyrics()}
+                disabled={!lyricsPrompt.trim() || isGeneratingLyrics}
+                fullWidth
+                size="lg"
+              >
+                {isGeneratingLyrics ? (
+                  <div className="flex items-center gap-2">
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                    <span>Generating...</span>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-2">
+                    <Sparkles className="w-5 h-5" />
+                    <span>Generate Lyrics</span>
+                  </div>
+                )}
+              </GradientButton>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Style Assistant Modal */}
+      {isStyleAssistantOpen && (
+        <div className="fixed inset-0 z-50 flex items-end lg:items-center justify-center">
+          <div className="absolute inset-0 bg-black/50" onClick={() => setIsStyleAssistantOpen(false)} />
+          <div className="relative bg-white rounded-t-3xl lg:rounded-2xl w-full lg:max-w-lg max-h-[80vh] overflow-hidden">
+            <div className="p-4 border-b border-gray-200 flex items-center justify-between">
+              <h3 className="text-lg font-semibold text-gray-900">Style Assistant</h3>
+              <button onClick={() => setIsStyleAssistantOpen(false)} className="p-1 text-gray-400 hover:text-gray-600">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <div className="p-4 space-y-4">
+              <p className="text-sm text-gray-600">
+                Describe your song&apos;s mood, theme, or reference artists. AI will generate style tags for you.
+              </p>
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm font-medium text-gray-700">Your idea</span>
+                  <span className="text-xs text-gray-400">{stylePrompt.length}/500</span>
+                </div>
+                <textarea
+                  value={stylePrompt}
+                  onChange={(e) => e.target.value.length <= 500 && setStylePrompt(e.target.value)}
+                  placeholder="e.g., An energetic dance track like Dua Lipa, with synth and strong beats..."
+                  className="w-full h-32 p-4 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 resize-none focus:outline-none focus:ring-2 focus:ring-purple-400"
+                  disabled={isGeneratingStyle}
+                />
+              </div>
+              <GradientButton
+                onClick={() => void handleGenerateStyle()}
+                disabled={!stylePrompt.trim() || isGeneratingStyle}
+                fullWidth
+                size="lg"
+              >
+                {isGeneratingStyle ? (
+                  <div className="flex items-center gap-2">
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                    <span>Generating...</span>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-2">
+                    <Sparkles className="w-5 h-5" />
+                    <span>Generate Style</span>
+                  </div>
+                )}
+              </GradientButton>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }

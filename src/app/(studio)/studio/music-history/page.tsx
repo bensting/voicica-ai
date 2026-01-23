@@ -1,43 +1,45 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useStudio } from '@/contexts/StudioContext';
-import { Music, Clock, PlayCircle, Download, Trash2 } from 'lucide-react';
+import {
+  Music,
+  Clock,
+  PlayCircle,
+  Download,
+  Trash2,
+  Play,
+  Pause,
+  Loader2,
+  AlertCircle,
+  X,
+} from 'lucide-react';
+import { getMusicRecords, deleteMusicRecord, type MusicRecord } from '@/actions/music';
 
-// 模拟音乐历史数据
-const MOCK_HISTORY = [
-  {
-    id: '1',
-    title: '夜空下的思念',
-    theme: '爱情',
-    mood: '伤感',
-    duration: '2:30',
-    createdAt: '2024-01-15 14:30',
-    coverUrl: null,
-    status: 'completed',
-  },
-  {
-    id: '2',
-    title: '青春的旋律',
-    theme: '青春',
-    mood: '激情',
-    duration: '3:00',
-    createdAt: '2024-01-14 10:20',
-    coverUrl: null,
-    status: 'completed',
-  },
-  {
-    id: '3',
-    title: '自由之歌',
-    theme: '自由',
-    mood: '空灵',
-    duration: '2:45',
-    createdAt: '2024-01-13 16:45',
-    coverUrl: null,
-    status: 'completed',
-  },
-];
+/**
+ * 格式化时间 (秒 -> mm:ss)
+ */
+function formatTime(seconds: number | null): string {
+  if (!seconds) return '0:00';
+  const mins = Math.floor(seconds / 60);
+  const secs = Math.floor(seconds % 60);
+  return `${mins}:${secs.toString().padStart(2, '0')}`;
+}
+
+/**
+ * 格式化日期
+ */
+function formatDate(date: Date): string {
+  return new Date(date).toLocaleString('zh-CN', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+}
 
 /**
  * Music History Page
@@ -47,13 +49,171 @@ const MOCK_HISTORY = [
 export default function MusicHistoryPage() {
   const { t } = useLanguage();
   const { setTitle } = useStudio();
+  const router = useRouter();
+
+  // 数据状态
+  const [records, setRecords] = useState<MusicRecord[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // 播放器状态
+  const [playingId, setPlayingId] = useState<string | null>(null);
+  const [playingVersion, setPlayingVersion] = useState<1 | 2>(1);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(0);
+  const audioRef = useRef<HTMLAudioElement>(null);
+
+  // 删除确认
+  const [deletingId, setDeletingId] = useState<number | null>(null);
 
   useEffect(() => {
     setTitle(t('studio.menu.musicHistory'));
   }, [t, setTitle]);
 
+  // 加载数据
+  const loadRecords = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const data = await getMusicRecords(100);
+      setRecords(data);
+    } catch (err) {
+      console.error('加载音乐记录失败:', err);
+      setError('加载失败，请重试');
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    loadRecords();
+  }, [loadRecords]);
+
+  // 计算统计数据
+  const completedRecords = records.filter((r) => r.status === 'SUCCESS');
+  const totalDuration = completedRecords.reduce((sum, r) => sum + (r.duration || 0), 0);
+  const thisMonthCount = completedRecords.filter((r) => {
+    const recordDate = new Date(r.created_at);
+    const now = new Date();
+    return (
+      recordDate.getMonth() === now.getMonth() && recordDate.getFullYear() === now.getFullYear()
+    );
+  }).length;
+
+  // 播放器控制
+  const handlePlay = (record: MusicRecord, version: 1 | 2 = 1) => {
+    const audioUrl = version === 1 ? record.audio_url : record.audio_url_2;
+    if (!audioUrl) return;
+
+    // 如果点击的是当前正在播放的歌曲，切换播放/暂停
+    if (playingId === record.task_id && playingVersion === version) {
+      if (isPlaying) {
+        audioRef.current?.pause();
+      } else {
+        audioRef.current?.play();
+      }
+      setIsPlaying(!isPlaying);
+      return;
+    }
+
+    // 切换到新歌曲
+    setPlayingId(record.task_id);
+    setPlayingVersion(version);
+    setCurrentTime(0);
+    setDuration(0);
+    setIsPlaying(true);
+
+    // 等待音频元素更新后播放
+    setTimeout(() => {
+      audioRef.current?.play();
+    }, 100);
+  };
+
+  const handleTimeUpdate = () => {
+    if (audioRef.current) {
+      setCurrentTime(audioRef.current.currentTime);
+    }
+  };
+
+  const handleLoadedMetadata = () => {
+    if (audioRef.current) {
+      setDuration(audioRef.current.duration);
+    }
+  };
+
+  const handleEnded = () => {
+    setIsPlaying(false);
+  };
+
+  const handleSeek = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!audioRef.current || !duration) return;
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const percent = x / rect.width;
+    audioRef.current.currentTime = percent * duration;
+    setCurrentTime(percent * duration);
+  };
+
+  // 下载
+  const handleDownload = async (record: MusicRecord, version: 1 | 2 = 1) => {
+    const audioUrl = version === 1 ? record.audio_url : record.audio_url_2;
+    if (!audioUrl) return;
+
+    try {
+      const response = await fetch(audioUrl);
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${record.title || 'AI Music'}${record.audio_url_2 ? ` (v${version})` : ''}.mp3`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('下载失败:', error);
+    }
+  };
+
+  // 删除
+  const handleDelete = async (recordId: number) => {
+    try {
+      await deleteMusicRecord(recordId);
+      setRecords((prev) => prev.filter((r) => r.id !== recordId));
+      setDeletingId(null);
+      // 如果删除的是正在播放的歌曲，停止播放
+      const deletedRecord = records.find((r) => r.id === recordId);
+      if (deletedRecord && playingId === deletedRecord.task_id) {
+        setPlayingId(null);
+        setIsPlaying(false);
+      }
+    } catch (error) {
+      console.error('删除失败:', error);
+    }
+  };
+
+  // 获取当前播放的歌曲
+  const currentPlayingRecord = records.find((r) => r.task_id === playingId);
+  const currentAudioUrl = currentPlayingRecord
+    ? playingVersion === 1
+      ? currentPlayingRecord.audio_url
+      : currentPlayingRecord.audio_url_2
+    : null;
+
   return (
     <div className="min-h-[calc(100vh-60px)] bg-gradient-to-b from-pink-50 to-white">
+      {/* 隐藏的音频元素 */}
+      {currentAudioUrl && (
+        <audio
+          ref={audioRef}
+          src={currentAudioUrl}
+          onTimeUpdate={handleTimeUpdate}
+          onLoadedMetadata={handleLoadedMetadata}
+          onEnded={handleEnded}
+        />
+      )}
+
       <div className="max-w-6xl mx-auto px-4 py-8">
         {/* Header */}
         <div className="mb-8">
@@ -73,7 +233,7 @@ export default function MusicHistoryPage() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-gray-600">总创作数</p>
-                  <p className="text-2xl font-bold text-gray-900 mt-1">{MOCK_HISTORY.length}</p>
+                  <p className="text-2xl font-bold text-gray-900 mt-1">{completedRecords.length}</p>
                 </div>
                 <div className="w-12 h-12 rounded-lg bg-pink-50 flex items-center justify-center">
                   <Music className="w-6 h-6 text-pink-500" />
@@ -85,7 +245,9 @@ export default function MusicHistoryPage() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-gray-600">总时长</p>
-                  <p className="text-2xl font-bold text-gray-900 mt-1">8:15</p>
+                  <p className="text-2xl font-bold text-gray-900 mt-1">
+                    {Math.floor(totalDuration / 60)}:{String(Math.floor(totalDuration % 60)).padStart(2, '0')}
+                  </p>
                 </div>
                 <div className="w-12 h-12 rounded-lg bg-purple-50 flex items-center justify-center">
                   <Clock className="w-6 h-6 text-purple-500" />
@@ -97,7 +259,7 @@ export default function MusicHistoryPage() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-gray-600">本月创作</p>
-                  <p className="text-2xl font-bold text-gray-900 mt-1">3</p>
+                  <p className="text-2xl font-bold text-gray-900 mt-1">{thisMonthCount}</p>
                 </div>
                 <div className="w-12 h-12 rounded-lg bg-fuchsia-50 flex items-center justify-center">
                   <PlayCircle className="w-6 h-6 text-fuchsia-500" />
@@ -107,100 +269,248 @@ export default function MusicHistoryPage() {
           </div>
         </div>
 
-        {/* History List */}
-        <div className="space-y-4">
-          {MOCK_HISTORY.length === 0 ? (
-            // Empty State
-            <div className="bg-white rounded-2xl border border-gray-200 p-12 text-center">
-              <div className="w-20 h-20 mx-auto bg-gradient-to-br from-pink-50 to-fuchsia-50 rounded-full flex items-center justify-center mb-4">
-                <Music className="w-10 h-10 text-pink-400" />
-              </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">暂无音乐记录</h3>
-              <p className="text-gray-600 mb-6">开始创作你的第一首 AI 歌曲吧！</p>
-              <button
-                type="button"
-                className="px-6 py-3 bg-gradient-to-r from-pink-500 to-fuchsia-500 text-white rounded-xl hover:from-pink-600 hover:to-fuchsia-600 transition-all font-medium"
-              >
-                开始创作
-              </button>
-            </div>
-          ) : (
-            // History Items
-            MOCK_HISTORY.map((item) => (
-              <div
-                key={item.id}
-                className="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-md transition-all"
-              >
-                <div className="flex items-start gap-4">
-                  {/* Cover Image Placeholder */}
-                  <div className="w-24 h-24 rounded-lg bg-gradient-to-br from-pink-100 to-fuchsia-100 flex items-center justify-center flex-shrink-0">
-                    <Music className="w-10 h-10 text-pink-500" />
-                  </div>
+        {/* Loading State */}
+        {loading && (
+          <div className="flex items-center justify-center py-20">
+            <Loader2 className="w-8 h-8 text-pink-500 animate-spin" />
+          </div>
+        )}
 
-                  {/* Info */}
-                  <div className="flex-1 min-w-0">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-2">{item.title}</h3>
-
-                    <div className="flex flex-wrap items-center gap-3 text-sm text-gray-600 mb-3">
-                      <div className="flex items-center gap-1">
-                        <span className="text-pink-500">🎵</span>
-                        <span>主题: {item.theme}</span>
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <span className="text-purple-500">💫</span>
-                        <span>情绪: {item.mood}</span>
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <Clock className="w-4 h-4" />
-                        <span>{item.duration}</span>
-                      </div>
-                    </div>
-
-                    <p className="text-sm text-gray-500">{item.createdAt}</p>
-                  </div>
-
-                  {/* Actions */}
-                  <div className="flex items-center gap-2">
-                    <button
-                      type="button"
-                      className="p-2 hover:bg-pink-50 rounded-lg transition-colors group"
-                      title="播放"
-                    >
-                      <PlayCircle className="w-5 h-5 text-gray-600 group-hover:text-pink-500" />
-                    </button>
-                    <button
-                      type="button"
-                      className="p-2 hover:bg-blue-50 rounded-lg transition-colors group"
-                      title="下载"
-                    >
-                      <Download className="w-5 h-5 text-gray-600 group-hover:text-blue-500" />
-                    </button>
-                    <button
-                      type="button"
-                      className="p-2 hover:bg-red-50 rounded-lg transition-colors group"
-                      title="删除"
-                    >
-                      <Trash2 className="w-5 h-5 text-gray-600 group-hover:text-red-500" />
-                    </button>
-                  </div>
-                </div>
-              </div>
-            ))
-          )}
-        </div>
-
-        {/* Load More */}
-        {MOCK_HISTORY.length > 0 && (
-          <div className="mt-8 text-center">
+        {/* Error State */}
+        {error && !loading && (
+          <div className="bg-red-50 border border-red-200 rounded-xl p-6 text-center">
+            <AlertCircle className="w-10 h-10 text-red-500 mx-auto mb-3" />
+            <p className="text-red-600">{error}</p>
             <button
               type="button"
-              className="px-6 py-3 bg-white border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 transition-colors font-medium"
+              onClick={loadRecords}
+              className="mt-4 px-4 py-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-colors"
             >
-              加载更多
+              重试
             </button>
           </div>
         )}
+
+        {/* History List */}
+        {!loading && !error && (
+          <div className="space-y-4">
+            {records.length === 0 ? (
+              // Empty State
+              <div className="bg-white rounded-2xl border border-gray-200 p-12 text-center">
+                <div className="w-20 h-20 mx-auto bg-gradient-to-br from-pink-50 to-fuchsia-50 rounded-full flex items-center justify-center mb-4">
+                  <Music className="w-10 h-10 text-pink-400" />
+                </div>
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">暂无音乐记录</h3>
+                <p className="text-gray-600 mb-6">开始创作你的第一首 AI 歌曲吧！</p>
+                <button
+                  type="button"
+                  onClick={() => router.push('/studio/ai-song')}
+                  className="px-6 py-3 bg-gradient-to-r from-pink-500 to-fuchsia-500 text-white rounded-xl hover:from-pink-600 hover:to-fuchsia-600 transition-all font-medium"
+                >
+                  开始创作
+                </button>
+              </div>
+            ) : (
+              // History Items
+              records.map((record) => {
+                const isCurrentPlaying = playingId === record.task_id;
+                const isProcessing = record.status === 'PROCESSING' || record.status === 'PENDING';
+                const isFailed = record.status === 'FAILURE';
+                const hasVersion2 = !!record.audio_url_2;
+
+                return (
+                  <div
+                    key={record.id}
+                    className={`bg-white rounded-xl border p-6 transition-all ${
+                      isCurrentPlaying ? 'border-pink-300 shadow-md' : 'border-gray-200 hover:shadow-md'
+                    }`}
+                  >
+                    <div className="flex items-start gap-4">
+                      {/* Cover Image */}
+                      <div className="w-24 h-24 rounded-lg overflow-hidden flex-shrink-0 relative">
+                        {record.cover_url ? (
+                          <img
+                            src={record.cover_url}
+                            alt={record.title || 'Cover'}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <div className="w-full h-full bg-gradient-to-br from-pink-100 to-fuchsia-100 flex items-center justify-center">
+                            <Music className="w-10 h-10 text-pink-500" />
+                          </div>
+                        )}
+                        {/* 状态指示器 */}
+                        {isProcessing && (
+                          <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+                            <div className="text-center text-white">
+                              <Loader2 className="w-6 h-6 animate-spin mx-auto" />
+                              <span className="text-xs mt-1 block">{record.progress}%</span>
+                            </div>
+                          </div>
+                        )}
+                        {isFailed && (
+                          <div className="absolute inset-0 bg-red-500/50 flex items-center justify-center">
+                            <AlertCircle className="w-6 h-6 text-white" />
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Info */}
+                      <div className="flex-1 min-w-0">
+                        <h3 className="text-lg font-semibold text-gray-900 mb-2 truncate">
+                          {record.title || 'AI Music'}
+                        </h3>
+
+                        <div className="flex flex-wrap items-center gap-3 text-sm text-gray-600 mb-3">
+                          {record.style && (
+                            <div className="flex items-center gap-1">
+                              <span className="text-pink-500">🎵</span>
+                              <span className="truncate max-w-[150px]">{record.style}</span>
+                            </div>
+                          )}
+                          <div className="flex items-center gap-1">
+                            <Clock className="w-4 h-4" />
+                            <span>{formatTime(record.duration)}</span>
+                          </div>
+                          {hasVersion2 && (
+                            <span className="px-2 py-0.5 bg-purple-100 text-purple-600 rounded text-xs">
+                              2个版本
+                            </span>
+                          )}
+                        </div>
+
+                        <p className="text-sm text-gray-500">{formatDate(record.created_at)}</p>
+
+                        {/* Mini Player - 当前播放 */}
+                        {isCurrentPlaying && (
+                          <div className="mt-3 flex items-center gap-2">
+                            <div
+                              className="flex-1 h-1 bg-gray-200 rounded-full cursor-pointer"
+                              onClick={handleSeek}
+                            >
+                              <div
+                                className="h-full bg-gradient-to-r from-pink-500 to-fuchsia-500 rounded-full"
+                                style={{ width: `${duration > 0 ? (currentTime / duration) * 100 : 0}%` }}
+                              />
+                            </div>
+                            <span className="text-xs text-gray-500 w-20 text-right">
+                              {formatTime(currentTime)} / {formatTime(duration)}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Actions */}
+                      <div className="flex items-center gap-2">
+                        {/* 版本切换 */}
+                        {hasVersion2 && record.status === 'SUCCESS' && (
+                          <div className="flex flex-col gap-1 mr-2">
+                            <button
+                              type="button"
+                              onClick={() => handlePlay(record, 1)}
+                              className={`px-2 py-1 text-xs rounded transition-colors ${
+                                isCurrentPlaying && playingVersion === 1
+                                  ? 'bg-pink-500 text-white'
+                                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                              }`}
+                            >
+                              V1
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handlePlay(record, 2)}
+                              className={`px-2 py-1 text-xs rounded transition-colors ${
+                                isCurrentPlaying && playingVersion === 2
+                                  ? 'bg-pink-500 text-white'
+                                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                              }`}
+                            >
+                              V2
+                            </button>
+                          </div>
+                        )}
+
+                        {/* 播放按钮 */}
+                        {record.status === 'SUCCESS' && (
+                          <button
+                            type="button"
+                            onClick={() => handlePlay(record, hasVersion2 ? playingVersion : 1)}
+                            className="p-2 hover:bg-pink-50 rounded-lg transition-colors group"
+                            title="播放"
+                          >
+                            {isCurrentPlaying && isPlaying ? (
+                              <Pause className="w-5 h-5 text-pink-500" />
+                            ) : (
+                              <Play className="w-5 h-5 text-gray-600 group-hover:text-pink-500" />
+                            )}
+                          </button>
+                        )}
+
+                        {/* 下载按钮 */}
+                        {record.status === 'SUCCESS' && (
+                          <button
+                            type="button"
+                            onClick={() => handleDownload(record, isCurrentPlaying ? playingVersion : 1)}
+                            className="p-2 hover:bg-blue-50 rounded-lg transition-colors group"
+                            title="下载"
+                          >
+                            <Download className="w-5 h-5 text-gray-600 group-hover:text-blue-500" />
+                          </button>
+                        )}
+
+                        {/* 删除按钮 */}
+                        <button
+                          type="button"
+                          onClick={() => setDeletingId(record.id)}
+                          className="p-2 hover:bg-red-50 rounded-lg transition-colors group"
+                          title="删除"
+                        >
+                          <Trash2 className="w-5 h-5 text-gray-600 group-hover:text-red-500" />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })
+            )}
+          </div>
+        )}
       </div>
+
+      {/* Delete Confirmation Modal */}
+      {deletingId && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+          <div className="bg-white rounded-2xl p-6 max-w-sm mx-4 w-full">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-gray-900">确认删除</h3>
+              <button
+                type="button"
+                onClick={() => setDeletingId(null)}
+                className="p-1 hover:bg-gray-100 rounded-lg"
+              >
+                <X className="w-5 h-5 text-gray-500" />
+              </button>
+            </div>
+            <p className="text-gray-600 mb-6">确定要删除这首歌曲吗？此操作无法撤销。</p>
+            <div className="flex gap-3">
+              <button
+                type="button"
+                onClick={() => setDeletingId(null)}
+                className="flex-1 py-2 border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 transition-colors"
+              >
+                取消
+              </button>
+              <button
+                type="button"
+                onClick={() => handleDelete(deletingId)}
+                className="flex-1 py-2 bg-red-500 text-white rounded-xl hover:bg-red-600 transition-colors"
+              >
+                删除
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

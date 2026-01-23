@@ -25,7 +25,7 @@ export default function NativeNavbar() {
   return (
     <>
       <header
-        className="sticky top-0 z-50 bg-[#0a0a1a]"
+        className="sticky top-0 z-50 bg-slate-950/70 backdrop-blur-xl border-b border-white/5 transition-all duration-300"
         style={{ paddingTop: 'var(--safe-area-inset-top, 0px)' }}
       >
         <div className="flex items-center justify-between px-4 h-14">
@@ -37,6 +37,7 @@ export default function NativeNavbar() {
               width={120}
               height={24}
               priority
+              className="opacity-90 hover:opacity-100 transition-opacity"
             />
           </Link>
 
@@ -45,11 +46,11 @@ export default function NativeNavbar() {
             /* 已登录：显示积分 */
             <button
               onClick={() => router.push('/native/subscribe')}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#1a1a2e] border border-[#2a2a4a]"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 hover:bg-white/10 transition-all active:scale-95"
             >
-              <CrownIcon className="w-4 h-4 text-white" />
-              <span className="text-gray-500">|</span>
-              <CreditsIcon className="w-3.5 h-3.5 text-gray-400" />
+              <CrownIcon className="w-4 h-4 text-amber-400" />
+              <span className="text-white/20">|</span>
+              <CreditsIcon className="w-3.5 h-3.5 text-purple-400" />
               <span className="text-white text-sm font-medium">{credits}</span>
             </button>
           ) : (

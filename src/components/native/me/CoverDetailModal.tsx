@@ -1,10 +1,11 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Download, Pencil } from 'lucide-react';
 import type { CoverRecord } from '@/actions/cover';
 import GradientButton from '@/components/ui/GradientButton';
 import DeleteConfirmDialog from '@/components/native/ui/DeleteConfirmDialog';
+import { useBottomNav } from '@/contexts/BottomNavContext';
 import { formatTime } from './utils';
 
 interface CoverDetailModalProps {
@@ -25,6 +26,13 @@ export default function CoverDetailModal({
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(cover.duration || 0);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const { hide, show } = useBottomNav();
+
+  // 隐藏底部导航
+  useEffect(() => {
+    hide();
+    return () => show();
+  }, [hide, show]);
 
   const displayTitle = cover.voice_model_name || 'AI Cover';
 

@@ -1,13 +1,12 @@
 'use client';
 
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import dynamic from 'next/dynamic';
 import StudioSidebar from '@/components/layout/studio/StudioSidebar';
 import StudioTopNav from '@/components/layout/studio/StudioTopNav';
 import UpgradeModal from '@/components/features/pricing/UpgradeModal';
 import { StudioProvider, useStudio } from '@/contexts/StudioContext';
 import { useCredits } from '@/contexts/CreditsContext';
-import { useDailyTasks } from '@/hooks/useDailyTasks';
 
 // 动态导入每日任务弹窗
 const DailyTasksModal = dynamic(
@@ -25,30 +24,6 @@ function StudioLayoutContent({
   const [isDailyTasksModalOpen, setIsDailyTasksModalOpen] = useState(false);
   const { refreshCredits } = useCredits();
 
-  // 每日任务 - 统一在 layout 管理，避免重复弹窗
-  const {
-    shouldShowPopup,
-    markPopupShown,
-    dismissPopup,
-  } = useDailyTasks();
-
-  // 用于追踪是否已经处理过自动弹窗
-  const autoPopupHandledRef = useRef(false);
-
-  // 自动弹窗逻辑
-  useEffect(() => {
-    // 如果应该显示弹窗且弹窗当前未打开且尚未处理过
-    if (shouldShowPopup && !isDailyTasksModalOpen && !autoPopupHandledRef.current) {
-      console.log('[DailyTasks] Auto-popup triggered');
-      autoPopupHandledRef.current = true;
-      setIsDailyTasksModalOpen(true);
-    }
-    // 当 shouldShowPopup 变为 false 时，重置标志以允许下次自动弹窗
-    if (!shouldShowPopup) {
-      autoPopupHandledRef.current = false;
-    }
-  }, [shouldShowPopup, isDailyTasksModalOpen]);
-
   const handleUpgradeClick = () => {
     setIsUpgradeModalOpen(true);
   };
@@ -62,11 +37,8 @@ function StudioLayoutContent({
 
   // 关闭弹窗
   const handleDailyTasksClose = useCallback(() => {
-    markPopupShown(); // 记录已显示时间
-    dismissPopup();   // 标记为已 dismiss
     setIsDailyTasksModalOpen(false);
-    autoPopupHandledRef.current = false; // 重置，允许下一个周期自动弹窗
-  }, [markPopupShown, dismissPopup]);
+  }, []);
 
   // 注册打开每日任务弹窗的回调到 StudioContext，供子组件调用
   const { setDailyTasksCallback } = useStudio();

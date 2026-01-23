@@ -67,12 +67,12 @@ export default function LanguageSelector({
       {/* 选择按钮 - 与 VoiceSelector 相同高度 */}
       <button
         onClick={onToggle}
-        className="w-full h-[66px] flex items-center gap-2 px-4 bg-gray-900/90 border border-gray-700 rounded-xl hover:bg-gray-800 transition-colors"
+        className="w-full h-[66px] flex items-center gap-2 px-4 bg-white border border-pink-200 rounded-xl hover:bg-pink-50 transition-colors"
       >
         {selectedLocale ? (
           <>
             <FlagIcon countryCode={selectedLocale.countryCode} size="md" />
-            <span className="text-white text-sm whitespace-nowrap">{selectedLocale.name}</span>
+            <span className="text-gray-900 text-sm whitespace-nowrap">{selectedLocale.name}</span>
           </>
         ) : (
           <span className="text-gray-400 text-sm">{t('ttsSamples.languageSelector.placeholder')}</span>
@@ -84,7 +84,7 @@ export default function LanguageSelector({
 
       {/* 下拉菜单 */}
       {isOpen && availableLocales.length > 0 && (
-        <div className="absolute right-0 mt-2 w-64 bg-gray-800 border border-gray-700 rounded-xl shadow-lg z-10 overflow-hidden">
+        <div className="absolute right-0 mt-2 w-64 bg-white border border-pink-200 rounded-xl shadow-lg z-10 overflow-hidden">
           {/* 语言列表 - 隐藏滚动条 */}
           <div
             className="max-h-64 overflow-y-auto scrollbar-hide"
@@ -105,12 +105,12 @@ export default function LanguageSelector({
                   onSelect(locale);
                   onToggle();
                 }}
-                className={`w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-gray-700 transition-colors ${
-                  selectedLocale?.code === locale.code ? 'bg-gray-700' : ''
+                className={`w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-pink-50 transition-colors ${
+                  selectedLocale?.code === locale.code ? 'bg-pink-50' : ''
                 }`}
               >
                 <FlagIcon countryCode={locale.countryCode} size="md" />
-                <span className="text-white text-sm">{locale.name}</span>
+                <span className="text-gray-900 text-sm">{locale.name}</span>
               </button>
             ))}
           </div>
@@ -118,10 +118,10 @@ export default function LanguageSelector({
           {/* 解锁更多语言 CTA */}
           <div
             onClick={handleUnlockClick}
-            className="bg-gradient-to-r from-purple-600 to-purple-700 p-4 text-center cursor-pointer hover:from-purple-500 hover:to-purple-600 transition-all"
+            className="bg-gradient-to-r from-pink-400 to-rose-400 p-4 text-center cursor-pointer hover:from-pink-500 hover:to-rose-500 transition-all"
           >
             <div className="text-white font-bold text-sm mb-1">{t('ttsSamples.languageSelector.unlockTitle')}</div>
-            <div className="text-purple-100 text-xs">{t('ttsSamples.languageSelector.unlockSubtitle')}</div>
+            <div className="text-pink-100 text-xs">{t('ttsSamples.languageSelector.unlockSubtitle')}</div>
           </div>
         </div>
       )}

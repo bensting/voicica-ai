@@ -25,7 +25,7 @@ export default function FAQAccordion({ items }: FAQAccordionProps) {
       {items.map((item, index) => (
         <div
           key={item.id}
-          className="bg-gray-800/50 backdrop-blur-sm rounded-lg border border-gray-700 overflow-hidden transition-all hover:border-purple-500/50"
+          className="bg-white rounded-lg border border-pink-100 overflow-hidden transition-all hover:border-pink-300 shadow-sm"
         >
           <button
             onClick={() => toggleFAQ(index)}
@@ -33,23 +33,23 @@ export default function FAQAccordion({ items }: FAQAccordionProps) {
             aria-expanded={openIndex === index}
           >
             <div className="flex items-start gap-4 flex-1">
-              <span className="text-purple-400 font-bold text-lg flex-shrink-0">
+              <span className="text-pink-500 font-bold text-lg flex-shrink-0">
                 {index + 1}.
               </span>
               <span className={`font-medium text-base md:text-lg transition-colors ${
-                openIndex === index ? 'text-purple-400' : 'text-white group-hover:text-purple-300'
+                openIndex === index ? 'text-pink-500' : 'text-gray-900 group-hover:text-pink-500'
               }`}>
                 {item.question}
               </span>
             </div>
             <div className="flex-shrink-0 ml-4">
               {openIndex === index ? (
-                <div className="w-8 h-8 rounded-full bg-purple-500/20 flex items-center justify-center">
-                  <Minus className="w-5 h-5 text-purple-400" />
+                <div className="w-8 h-8 rounded-full bg-pink-100 flex items-center justify-center">
+                  <Minus className="w-5 h-5 text-pink-500" />
                 </div>
               ) : (
-                <div className="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center group-hover:bg-purple-500/20 transition-colors">
-                  <ChevronDown className="w-5 h-5 text-gray-400 group-hover:text-purple-400 transition-colors" />
+                <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center group-hover:bg-pink-100 transition-colors">
+                  <ChevronDown className="w-5 h-5 text-gray-400 group-hover:text-pink-500 transition-colors" />
                 </div>
               )}
             </div>
@@ -64,7 +64,7 @@ export default function FAQAccordion({ items }: FAQAccordionProps) {
             }`}
           >
             <div className="px-5 md:px-6 pb-5 md:pb-6 pl-16 md:pl-20">
-              <p className="text-gray-300 text-sm md:text-base leading-relaxed">
+              <p className="text-gray-600 text-sm md:text-base leading-relaxed">
                 {item.answer}
               </p>
             </div>

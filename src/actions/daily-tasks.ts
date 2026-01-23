@@ -33,6 +33,7 @@ export interface TaskResult {
   success: boolean;
   message?: string;
   credits?: number;
+  reason?: 'unavailable' | 'skipped' | 'error';
 }
 
 /**

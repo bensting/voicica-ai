@@ -5,7 +5,7 @@
  */
 import Stripe from 'stripe';
 import prisma from '@/lib/prisma';
-import { getCurrentUser } from '@/lib/auth-firebase';
+import { getUserOrAnonymous } from '@/lib/auth-firebase';
 import type { UserSubscription, UserSubscriptionListResponse } from '@/types/subscription';
 import {
   getPlans,
@@ -76,8 +76,7 @@ export async function getMySubscriptions(params?: {
   product_type?: string;
   platform?: string;
 }): Promise<UserSubscriptionListResponse> {
-  const user = await getCurrentUser();
-  const userId = user.uid;
+  const { user_id: userId } = await getUserOrAnonymous();
 
   const { status, product_type, platform } = params || {};
 
@@ -159,8 +158,7 @@ export async function getMySubscriptions(params?: {
  * 获取当前用户的活跃订阅
  */
 export async function getMyActiveSubscription(): Promise<UserSubscription | null> {
-  const user = await getCurrentUser();
-  const userId = user.uid;
+  const { user_id: userId } = await getUserOrAnonymous();
 
   const now = new Date();
   const activeSubscription = await prisma.user_subscriptions.findFirst({
@@ -216,8 +214,7 @@ export async function cancelSubscription(
   subscription_id: string;
   canceled_at: string;
 }> {
-  const user = await getCurrentUser();
-  const userId = user.uid;
+  const { user_id: userId } = await getUserOrAnonymous();
 
   // 查找订阅
   const subscription = await prisma.user_subscriptions.findFirst({

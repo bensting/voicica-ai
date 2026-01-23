@@ -31,6 +31,13 @@ export default function DialogueDetailModal({
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(dialogue.duration || 0);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const { hide, show } = useBottomNav();
+
+  // 隐藏底部导航
+  useEffect(() => {
+    hide();
+    return () => show();
+  }, [hide, show]);
 
   // 解析对话内容
   let dialogueItems: DialogueItem[] = [];

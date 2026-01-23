@@ -28,6 +28,8 @@ export interface AdMobConfig {
     ios: string;
     /** 显示间隔（分钟） */
     intervalMinutes: number;
+    /** 是否启用开屏广告 */
+    enabled: boolean;
   };
   /** 是否启用 */
   enabled: boolean;
@@ -106,6 +108,7 @@ const devConfig: AdMobConfig = {
   appOpen: {
     ...TEST_AD_IDS.appOpen,
     intervalMinutes: 1, // 开发环境 1 分钟，方便测试
+    enabled: false, // 关闭开屏广告
   },
   enabled: true, // 开发环境启用，使用测试广告
   useTestAds: true,
@@ -126,6 +129,7 @@ const prodConfig: AdMobConfig = {
   appOpen: {
     ...REAL_AD_IDS.appOpen,
     intervalMinutes: 30, // 生产环境 30 分钟
+    enabled: false, // 关闭开屏广告
   },
   enabled: true,
   useTestAds: false, // 使用真实广告
@@ -147,6 +151,7 @@ export const admobConfig: AdMobConfig = baseConfig.useTestAds
       appOpen: {
         ...TEST_AD_IDS.appOpen,
         intervalMinutes: baseConfig.appOpen.intervalMinutes,
+        enabled: baseConfig.appOpen.enabled,
       },
     }
   : baseConfig;
@@ -184,4 +189,11 @@ export function getAppOpenAdUnitId(platform: 'android' | 'ios'): string {
  */
 export function isAdMobEnabled(): boolean {
   return admobConfig.enabled;
+}
+
+/**
+ * 检查开屏广告是否启用
+ */
+export function isAppOpenAdEnabled(): boolean {
+  return admobConfig.enabled && admobConfig.appOpen.enabled;
 }

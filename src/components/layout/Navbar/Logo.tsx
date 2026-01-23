@@ -7,6 +7,9 @@ interface LogoProps {
 }
 
 export default function Logo({ dark = true }: LogoProps) {
+  // 紫色滤镜：将透明logo转换为紫色
+  const purpleFilter = 'brightness(0) saturate(100%) invert(26%) sepia(89%) saturate(1583%) hue-rotate(246deg) brightness(91%) contrast(101%)';
+
   return (
     <Link href="/" className="flex items-center hover:opacity-80 transition-opacity">
       <Image
@@ -16,7 +19,10 @@ export default function Logo({ dark = true }: LogoProps) {
         height={32}
         priority
         className="h-7 md:h-8 w-auto"
-        style={{ width: 'auto' }}
+        style={{
+          width: 'auto',
+          filter: dark ? purpleFilter : undefined,
+        }}
       />
     </Link>
   );

@@ -29,8 +29,11 @@ interface CreatePreviewProps {
   // 生成状态
   isGenerating: boolean;
   generatedAudioUrl: string | null;
+  generatedAudioUrl2?: string | null;
   generatedCoverUrl?: string | null;
+  generatedCoverUrl2?: string | null;
   generatedTitle?: string | null;
+  generatedLyrics?: string | null;
 
   // 操作回调
   onGenerate: () => void;
@@ -60,8 +63,11 @@ export default function CreatePreview({
   userCredits,
   isGenerating,
   generatedAudioUrl,
+  generatedAudioUrl2,
   generatedCoverUrl,
+  generatedCoverUrl2,
   generatedTitle,
+  generatedLyrics,
   onGenerate,
   onRegenerate,
   onContinueToMV,
@@ -71,6 +77,25 @@ export default function CreatePreview({
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [audioDuration, setAudioDuration] = useState(0);
+  const [selectedVersion, setSelectedVersion] = useState<1 | 2>(1);
+
+  // 是否有第二个版本
+  const hasVersion2 = !!generatedAudioUrl2;
+
+  // 当前选中版本的音频和封面
+  const currentAudioUrl = selectedVersion === 1 ? generatedAudioUrl : generatedAudioUrl2;
+  const currentCoverUrl = selectedVersion === 1 ? generatedCoverUrl : generatedCoverUrl2;
+
+  // 切换版本时重置播放状态
+  const handleVersionChange = (version: 1 | 2) => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+    }
+    setIsPlaying(false);
+    setCurrentTime(0);
+    setAudioDuration(0);
+    setSelectedVersion(version);
+  };
 
   const togglePlay = () => {
     if (audioRef.current) {
@@ -110,10 +135,11 @@ export default function CreatePreview({
   };
 
   const handleDownload = () => {
-    if (generatedAudioUrl) {
+    const audioUrl = selectedVersion === 1 ? generatedAudioUrl : generatedAudioUrl2;
+    if (audioUrl) {
       const link = document.createElement('a');
-      link.href = generatedAudioUrl;
-      link.download = `${generatedTitle || 'ai-song'}.mp3`;
+      link.href = audioUrl;
+      link.download = `${generatedTitle || 'ai-song'}_v${selectedVersion}.mp3`;
       link.click();
     }
   };
@@ -136,16 +162,50 @@ export default function CreatePreview({
 
   // 生成完成
   if (generatedAudioUrl) {
+    // 使用 API 返回的歌词，如果没有则使用用户输入的歌词
+    const displayLyrics = generatedLyrics || lyrics;
+
     return (
       <div className="space-y-4">
+        {/* 版本选择器 - 只在有两个版本时显示 */}
+        {hasVersion2 && (
+          <div className="flex items-center justify-center gap-2">
+            <span className="text-sm text-gray-500">选择版本：</span>
+            <div className="flex bg-gray-100 rounded-lg p-1">
+              <button
+                type="button"
+                onClick={() => handleVersionChange(1)}
+                className={`px-4 py-1.5 rounded-md text-sm font-medium transition-all ${
+                  selectedVersion === 1
+                    ? 'bg-white text-pink-600 shadow-sm'
+                    : 'text-gray-600 hover:text-gray-900'
+                }`}
+              >
+                版本 1
+              </button>
+              <button
+                type="button"
+                onClick={() => handleVersionChange(2)}
+                className={`px-4 py-1.5 rounded-md text-sm font-medium transition-all ${
+                  selectedVersion === 2
+                    ? 'bg-white text-pink-600 shadow-sm'
+                    : 'text-gray-600 hover:text-gray-900'
+                }`}
+              >
+                版本 2
+              </button>
+            </div>
+          </div>
+        )}
+
         {/* 音频播放器 */}
         <div className="w-full bg-gradient-to-r from-pink-50 to-fuchsia-50 rounded-xl p-6">
           <div className="flex items-center gap-4">
             {/* 封面图 */}
             <div className="w-20 h-20 flex-shrink-0 rounded-xl overflow-hidden bg-gradient-to-br from-pink-400 to-fuchsia-500">
-              {generatedCoverUrl ? (
+              {currentCoverUrl ? (
                 <img
-                  src={generatedCoverUrl}
+                  src={currentCoverUrl}
                   alt="Cover"
                   className="w-full h-full object-cover"
                 />
@@ -160,6 +220,7 @@ export default function CreatePreview({
             <div className="flex-1 space-y-2">
               <h4 className="font-semibold text-gray-900 truncate">
                 {generatedTitle || `${theme?.label}之歌`}
+                {hasVersion2 && <span className="text-xs text-gray-400 ml-2">(版本 {selectedVersion})</span>}
               </h4>
 
               {/* 进度条 */}
@@ -200,7 +261,7 @@ export default function CreatePreview({
           {/* 隐藏的 audio 元素 */}
           <audio
             ref={audioRef}
-            src={generatedAudioUrl}
+            src={currentAudioUrl || ''}
             onTimeUpdate={handleTimeUpdate}
             onLoadedMetadata={handleLoadedMetadata}
             onEnded={() => setIsPlaying(false)}
@@ -208,12 +269,12 @@ export default function CreatePreview({
         </div>
 
         {/* 歌词显示 */}
-        {lyrics && (
+        {displayLyrics && (
           <div className="bg-white rounded-xl border border-gray-200 p-4 space-y-2">
             <h4 className="font-medium text-gray-900 text-sm">歌词</h4>
             <div className="max-h-48 overflow-y-auto">
               <pre className="text-sm text-gray-600 whitespace-pre-wrap font-sans leading-relaxed">
-                {lyrics}
+                {displayLyrics}
               </pre>
             </div>
           </div>

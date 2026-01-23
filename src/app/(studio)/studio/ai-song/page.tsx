@@ -79,8 +79,11 @@ export default function AiSongPage() {
   const [isGeneratingStyle, setIsGeneratingStyle] = useState(false);
   const [isGeneratingSong, setIsGeneratingSong] = useState(false);
   const [generatedAudioUrl, setGeneratedAudioUrl] = useState<string | null>(null);
+  const [generatedAudioUrl2, setGeneratedAudioUrl2] = useState<string | null>(null);
   const [generatedCoverUrl, setGeneratedCoverUrl] = useState<string | null>(null);
+  const [generatedCoverUrl2, setGeneratedCoverUrl2] = useState<string | null>(null);
   const [generatedTitle, setGeneratedTitle] = useState<string | null>(null);
+  const [generatedLyrics, setGeneratedLyrics] = useState<string | null>(null);
   const [currentTaskId, setCurrentTaskId] = useState<string | null>(null);
   const pollingRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -218,10 +221,13 @@ export default function AiSongPage() {
       console.log('🎵 [pollTaskStatus]', status);
 
       if (status.status === 'SUCCESS' && status.result) {
-        // 生成成功
+        // 生成成功 - 保存两个版本
         setGeneratedAudioUrl(status.result.audio_url || null);
+        setGeneratedAudioUrl2(status.result.audio_url_2 || null);
         setGeneratedCoverUrl(status.result.cover_url || null);
+        setGeneratedCoverUrl2(status.result.cover_url_2 || null);
         setGeneratedTitle(status.result.title || null);
+        setGeneratedLyrics(status.result.lyrics || null);
         setIsGeneratingSong(false);
         if (pollingRef.current) {
           clearInterval(pollingRef.current);
@@ -273,8 +279,11 @@ export default function AiSongPage() {
   const handleGenerateSong = async () => {
     setIsGeneratingSong(true);
     setGeneratedAudioUrl(null);
+    setGeneratedAudioUrl2(null);
     setGeneratedCoverUrl(null);
+    setGeneratedCoverUrl2(null);
     setGeneratedTitle(null);
+    setGeneratedLyrics(null);
 
     try {
       // 获取用户选择的配置
@@ -540,8 +549,11 @@ export default function AiSongPage() {
               userCredits={credits}
               isGenerating={isGeneratingSong}
               generatedAudioUrl={generatedAudioUrl}
+              generatedAudioUrl2={generatedAudioUrl2}
               generatedCoverUrl={generatedCoverUrl}
+              generatedCoverUrl2={generatedCoverUrl2}
               generatedTitle={generatedTitle}
+              generatedLyrics={generatedLyrics}
               onGenerate={handleGenerateSong}
               onRegenerate={handleGenerateSong}
               onContinueToMV={() => console.log('Continue to MV')}

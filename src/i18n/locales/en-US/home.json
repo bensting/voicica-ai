@@ -1,5 +1,10 @@
 {
   "home": {
+    "heroTitlePrefix": "One-stop Platform for",
+    "heroTitleHighlight": "Music and Voice",
+    "heroDescription": "Create AI-powered music and natural voiceovers. No technical skills required. Bring your best ideas to life now.",
+    "lyricsToMusic": "Lyrics to Music",
+    "textToSpeech": "Text to Speech",
     "heroTitle": "100% Free Text-to-Voice for Everyone",
     "heroSubtitle": "Unlimited voices. Zero cost.",
     "heroFeature1": "Choose from 3200+ voices across 190+ languages.",

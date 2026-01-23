@@ -413,6 +413,9 @@ export default function StudioSidebar({ isOpen = false, onClose }: StudioSidebar
             {/* VOICEOVER AI */}
             {renderMobileSection('VOICEOVER AI', studioMenuCategories.voiceover)}
 
+            {/* MUSIC AI */}
+            {renderMobileSection('MUSIC AI', studioMenuCategories.music)}
+
             {/* STORY MAKER AI */}
             {renderMobileSection('STORY MAKER AI', studioMenuCategories.story)}
 

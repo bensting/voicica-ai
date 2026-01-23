@@ -4,7 +4,7 @@
  * Dialogue 生成 Server Actions
  * 使用 kie.ai 的 elevenlabs/text-to-dialogue-v3 API
  */
-import { getCurrentUser } from '@/lib/auth-firebase';
+import { getUserOrAnonymous } from '@/lib/auth-firebase';
 import prisma from '@/lib/prisma';
 import { calculateDialogueCost } from '@/config/creditsCost';
 import { v4 as uuidv4 } from 'uuid';
@@ -61,7 +61,7 @@ function getCallbackUrl(): string {
 export async function createDialogueTask(
   request: DialogueRequest
 ): Promise<DialogueTaskStatus> {
-  const { uid: userId } = await getCurrentUser();
+  const { user_id: userId } = await getUserOrAnonymous();
 
   // 计算总字符数
   const totalCharacters = request.dialogue.reduce(
@@ -217,7 +217,7 @@ export async function createDialogueTask(
 export async function getDialogueTaskStatus(
   taskId: string
 ): Promise<DialogueTaskStatus> {
-  await getCurrentUser();
+  await getUserOrAnonymous();
 
   // 先从数据库获取记录
   const record = await prisma.dialogue_records.findUnique({
@@ -363,7 +363,7 @@ export async function getDialogueHistory(limit: number = 20): Promise<Array<{
   credits_cost: number;
   created_at: Date;
 }>> {
-  const { uid: userId } = await getCurrentUser();
+  const { user_id: userId } = await getUserOrAnonymous();
 
   const records = await prisma.dialogue_records.findMany({
     where: { user_id: userId },
@@ -386,7 +386,7 @@ export async function getDialogueHistory(limit: number = 20): Promise<Array<{
  * 获取用户的 Dialogue 记录列表（用于 My Creations）
  */
 export async function getDialogueRecords(limit: number = 50): Promise<DialogueRecord[]> {
-  const { uid: userId } = await getCurrentUser();
+  const { user_id: userId } = await getUserOrAnonymous();
 
   const records = await prisma.dialogue_records.findMany({
     where: { user_id: userId },
@@ -413,7 +413,7 @@ export async function getDialogueRecords(limit: number = 50): Promise<DialogueRe
  * 删除 Dialogue 记录
  */
 export async function deleteDialogueRecord(id: number): Promise<void> {
-  const { uid: userId } = await getCurrentUser();
+  const { user_id: userId } = await getUserOrAnonymous();
 
   // 验证记录属于当前用户
   const record = await prisma.dialogue_records.findFirst({

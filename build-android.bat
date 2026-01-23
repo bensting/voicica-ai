@@ -6,8 +6,8 @@ echo ========================================
 echo.
 
 REM 读取版本信息（使用 PowerShell 解析 JSON，更可靠）
-for /f "usebackq" %%a in (`powershell -Command "(Get-Content native-version.json | ConvertFrom-Json).version"`) do set "APP_VERSION=%%a"
-for /f "usebackq" %%a in (`powershell -Command "(Get-Content native-version.json | ConvertFrom-Json).buildNumber"`) do set "BUILD_NUMBER=%%a"
+for /f "usebackq" %%a in (`powershell -Command "(Get-Content src/native-version.json | ConvertFrom-Json).version"`) do set "APP_VERSION=%%a"
+for /f "usebackq" %%a in (`powershell -Command "(Get-Content src/native-version.json | ConvertFrom-Json).buildNumber"`) do set "BUILD_NUMBER=%%a"
 
 echo 当前版本: v%APP_VERSION% (Build %BUILD_NUMBER%)
 echo.

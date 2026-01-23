@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
-import nativeVersion from '../../../../native-version.json';
+import nativeVersion from '@/native-version.json';
 
 // 支持的语言列表
 const languages = [

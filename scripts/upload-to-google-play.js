@@ -121,7 +121,7 @@ async function main() {
 
   // 读取版本信息
   const nativeVersion = JSON.parse(
-    fs.readFileSync(path.join(__dirname, '../native-version.json'), 'utf8')
+    fs.readFileSync(path.join(__dirname, '../src/native-version.json'), 'utf8')
   );
   info(`版本: ${nativeVersion.version} (Build ${nativeVersion.buildNumber})`);
 

@@ -177,7 +177,7 @@ async function main() {
 
   // 4. 重命名为测试包文件名
   const apkDir = path.join(__dirname, '../android/app/build/outputs/apk/release');
-  const versionPath = path.join(__dirname, '../native-version.json');
+  const versionPath = path.join(__dirname, '../src/native-version.json');
   const version = JSON.parse(fs.readFileSync(versionPath, 'utf8'));
 
   // Gradle 输出的是 app-release.apk

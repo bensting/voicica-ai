@@ -39,7 +39,7 @@ export default function NavDropdown({ dropdown, mobile = false, onLinkClick }: N
         <button
           onClick={() => setIsOpen(!isOpen)}
           className={`flex items-center justify-between w-full py-3 transition-colors font-medium ${
-            isOpen ? 'text-purple-600' : 'text-gray-900 hover:text-purple-600'
+            isOpen ? 'text-pink-500' : 'text-gray-900 hover:text-pink-500'
           }`}
         >
           <span>{t(dropdown.labelKey)}</span>
@@ -67,7 +67,7 @@ export default function NavDropdown({ dropdown, mobile = false, onLinkClick }: N
                     key={item.href}
                     href={item.href}
                     onClick={handleLinkClick}
-                    className="flex items-center gap-3 p-3 rounded-lg text-gray-700 hover:bg-white hover:text-purple-600 transition-colors"
+                    className="flex items-center gap-3 p-3 rounded-lg text-gray-700 hover:bg-white hover:text-pink-500 transition-colors"
                   >
                     {Icon && (
                       <div className="flex-shrink-0 w-10 h-10 bg-white rounded-lg flex items-center justify-center shadow-sm">
@@ -96,7 +96,7 @@ export default function NavDropdown({ dropdown, mobile = false, onLinkClick }: N
       onMouseEnter={() => setIsOpen(true)}
       onMouseLeave={() => setIsOpen(false)}
     >
-      <button className="flex items-center gap-1 text-white hover:text-purple-400 transition-colors font-medium">
+      <button className="flex items-center gap-1 text-gray-700 hover:text-pink-500 transition-colors font-medium">
         <span>{t(dropdown.labelKey)}</span>
         <svg
           className={`w-4 h-4 transition-transform ${isOpen ? 'rotate-180' : ''}`}
@@ -107,9 +107,9 @@ export default function NavDropdown({ dropdown, mobile = false, onLinkClick }: N
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
         </svg>
       </button>
-      {/* Purple underline indicator at navbar bottom */}
+      {/* Pink underline indicator at navbar bottom */}
       <span
-        className={`absolute bottom-0 left-0 right-0 h-0.5 bg-purple-500 transition-transform origin-left ${
+        className={`absolute bottom-0 left-0 right-0 h-0.5 bg-pink-400 transition-transform origin-left ${
           isOpen ? 'scale-x-100' : 'scale-x-0'
         }`}
       />

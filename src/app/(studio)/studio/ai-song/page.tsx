@@ -100,6 +100,18 @@ export default function AiSongPage() {
     setTitle(t('studio.menu.aiSong'));
   }, [t, setTitle]);
 
+  // 根据选择的声线自动设置声音性别
+  useEffect(() => {
+    if (selectedVocal) {
+      if (selectedVocal.includes('female') || selectedVocal.includes('girl')) {
+        setVocalGender('f');
+      } else if (selectedVocal.includes('male')) {
+        setVocalGender('m');
+      }
+      // ambient 不设置，保持自动
+    }
+  }, [selectedVocal]);
+
   // 判断当前步骤是否可以继续
   const canProceed = () => {
     switch (currentStep) {
@@ -497,6 +509,22 @@ export default function AiSongPage() {
                   {lyricsVocal?.icon} {lyricsVocal?.label}
                 </span>
               </div>
+            </div>
+
+            {/* 歌曲标题输入 */}
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-gray-700">
+                歌曲标题
+              </label>
+              <input
+                type="text"
+                value={songTitle}
+                onChange={(e) => setSongTitle(e.target.value)}
+                placeholder={isGeneratingLyrics ? '正在生成标题...' : '输入歌曲标题'}
+                disabled={isGeneratingLyrics}
+                className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-pink-500 focus:ring-2 focus:ring-pink-200 transition-all disabled:bg-gray-50 disabled:text-gray-400"
+                maxLength={50}
+              />
             </div>
 
             <LyricsEditor

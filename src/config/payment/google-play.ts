@@ -6,22 +6,22 @@
 
 export const googlePlayProducts = {
   starter: {
-    // Google Play 产品 ID
-    productId: 'starter_monthly_100k',
+    // Google Play 产品 ID (与 Google Play Console 一致)
+    productId: 'starter_monthly',
     // 对应的 Stripe 产品 ID
-    stripeProductId: 'prod_starter_100k',
+    stripeProductId: 'prod_starter_1k',
     // 积分数
-    credits: 100000,
+    credits: 1000,
   },
   creator: {
-    productId: 'creator_monthly_300k',
-    stripeProductId: 'prod_creator_300k',
-    credits: 300000,
+    productId: 'creator_monthly',
+    stripeProductId: 'prod_creator_3k',
+    credits: 3000,
   },
   pro: {
-    productId: 'pro_monthly_500k',
-    stripeProductId: 'prod_pro_500k',
-    credits: 500000,
+    productId: 'pro_monthly',
+    stripeProductId: 'prod_pro_5k',
+    credits: 5000,
   },
 };
 

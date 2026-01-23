@@ -196,16 +196,22 @@ export default function AiSongPage() {
 
       if (data.success && data.lyrics) {
         setLyrics(data.lyrics);
+        // 同时设置生成的歌名
+        if (data.title) {
+          setSongTitle(data.title);
+        }
       } else {
-        // 如果 API 失败，使用备用歌词
+        // 如果 API 失败，使用备用歌词和标题
         console.warn('歌词生成失败，使用备用歌词:', data.error);
+        setSongTitle(`${theme}之歌`);
         setLyrics(
           `[Verse 1]\n在夜晚的星空下\n我独自一人漫步\n思念如同潮水般涌来\n淹没了我的心\n\n[Chorus]\n${theme}的故事在心中回响\n${mood}的旋律轻轻唱\n\n[Verse 2]\n你是否也在想我\n在远方的某个角落\n我们的回忆如此清晰\n却触不可及\n\n[Chorus]\n${theme}的故事在心中回响\n${mood}的旋律轻轻唱`
         );
       }
     } catch (error) {
       console.error('歌词生成请求失败:', error);
-      // 使用备用歌词
+      // 使用备用歌词和标题
+      setSongTitle(`${theme}之歌`);
       setLyrics(
         `[Verse 1]\n在夜晚的星空下\n我独自一人漫步\n思念如同潮水般涌来\n淹没了我的心\n\n[Chorus]\n${theme}的故事在心中回响\n${mood}的旋律轻轻唱\n\n[Verse 2]\n你是否也在想我\n在远方的某个角落\n我们的回忆如此清晰\n却触不可及\n\n[Chorus]\n${theme}的故事在心中回响\n${mood}的旋律轻轻唱`
       );

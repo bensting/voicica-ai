@@ -105,14 +105,38 @@ export const studioMenuItems: StudioMenuItemConfig[] = [
 
   // Music AI - 生产环境暂未上线
   {
-    id: 'ai-song',
-    labelKey: 'studio.menu.aiSong',
-    href: '/studio/ai-song',
+    id: 'ai-music',
+    labelKey: 'studio.menu.aiMusic',
+    href: '/studio/ai-music',
     category: 'music',
     enabled: false,
     icon: (
       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
+      </svg>
+    ),
+  },
+  {
+    id: 'ai-cover',
+    labelKey: 'studio.menu.aiCover',
+    href: '/studio/ai-cover',
+    category: 'music',
+    enabled: false,
+    icon: (
+      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+      </svg>
+    ),
+  },
+  {
+    id: 'ai-song',
+    labelKey: 'studio.menu.aiSongOneClick',
+    href: '/studio/ai-song',
+    category: 'music',
+    enabled: false,
+    icon: (
+      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
       </svg>
     ),
   },

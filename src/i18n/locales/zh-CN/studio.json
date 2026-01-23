@@ -1,5 +1,117 @@
 {
   "studio": {
+    "aiSong": {
+      "steps": {
+        "theme": "主题",
+        "mood": "情绪",
+        "vocal": "声线",
+        "lyrics": "歌词",
+        "create": "生成"
+      },
+      "themes": {
+        "love": "爱情",
+        "friendship": "友情",
+        "youth": "青春",
+        "loneliness": "孤独",
+        "dream": "梦想",
+        "freedom": "自由",
+        "custom": "自己输入"
+      },
+      "moods": {
+        "gentle": "温柔",
+        "sad": "伤感",
+        "night": "夜晚",
+        "passionate": "激情",
+        "ethereal": "空灵",
+        "healing": "治愈",
+        "custom": "自己输入"
+      },
+      "vocals": {
+        "femaleEthereal": "女声 · 空灵",
+        "femaleGentle": "女声 · 温柔",
+        "maleWarm": "男声 · 温暖",
+        "maleDeep": "男声 · 低沉",
+        "girlSweet": "少女甜感",
+        "ambient": "氛围人声"
+      },
+      "themeStep": {
+        "title": "你想创作一首什么主题的歌？",
+        "subtitle": "选择一个主题，AI 会为你构建歌曲故事",
+        "customLabel": "输入你的主题",
+        "customPlaceholder": "例如：毕业季、初恋、旅行、夏天的回忆..."
+      },
+      "moodStep": {
+        "title": "你想让这首歌是什么感觉？",
+        "subtitle": "选择一个情绪，我们会为你构建歌曲氛围",
+        "customLabel": "输入你想要的感觉",
+        "customPlaceholder": "例如：怀旧、清新、神秘、欢快..."
+      },
+      "vocalStep": {
+        "title": "想让旋律更像哪种声音？",
+        "subtitle": "我们会用这个声线去塑造音乐氛围"
+      },
+      "lyricsStep": {
+        "title": "编辑你的歌词",
+        "titleGenerating": "AI 正在为你创作歌词...",
+        "subtitle": "不满意？可以点击重新生成",
+        "subtitleGenerating": "请稍候，这可能需要几秒钟",
+        "basedOnSelection": "根据你的选择生成歌词：",
+        "songTitleLabel": "歌曲标题",
+        "songTitlePlaceholder": "输入歌曲标题",
+        "songTitleGenerating": "正在生成标题..."
+      },
+      "createStep": {
+        "title": "准备好创作了吗？",
+        "titleGenerating": "正在为你创作歌曲...",
+        "titleComplete": "你的歌曲已生成！",
+        "subtitle": "检查你的选择，确认后开始生成",
+        "subtitleGenerating": "请稍候，AI 正在根据你的选择创作音乐（约1-3分钟）",
+        "subtitleComplete": "试听一下？不满意可以再生成一次"
+      },
+      "navigation": {
+        "previous": "上一步",
+        "next": "下一步"
+      },
+      "lyricsPrompt": "请为一首中文歌曲创作歌词。\n主题：{{theme}}\n情绪氛围：{{mood}}\n演唱声线：{{vocal}}\n\n要求：\n1. 歌词需要包含 [Verse 1]、[Chorus]、[Verse 2] 等结构标记\n2. 歌词要符合主题和情绪，适合演唱\n3. 语言优美，有意境\n4. 长度适中，大约 150-200 字",
+      "fallbackTitle": "{{theme}}之歌",
+      "lyricsEditor": {
+        "generating": "正在生成歌词...",
+        "placeholder": "歌词将在这里显示...",
+        "characters": "字符",
+        "regenerate": "重新生成歌词",
+        "tipTitle": "提示：",
+        "tipContent": "你可以直接编辑歌词，或点击「重新生成」让 AI 创作新的版本"
+      },
+      "createPreview": {
+        "creating": "正在创作中...",
+        "creatingTime": "这可能需要 1-3 分钟",
+        "selectVersion": "选择版本：",
+        "version": "版本",
+        "lyrics": "歌词",
+        "regenerateSong": "重新生成歌曲",
+        "continueToMV": "继续制作 MV",
+        "yourConfig": "你的创作配置",
+        "lyricsPreview": "歌词预览",
+        "noLyrics": "暂无歌词",
+        "songTitle": "歌曲标题",
+        "optional": "(可选)",
+        "musicStyle": "音乐风格",
+        "stylePlaceholder": "pop, ballad, acoustic, piano...",
+        "aiGenerate": "AI 生成",
+        "generating": "生成中...",
+        "styleTip": "提示：可以输入流行、摇滚、爵士、电子等风格关键词",
+        "voice": "声音",
+        "auto": "自动",
+        "male": "男声",
+        "female": "女声",
+        "myCredits": "我的积分",
+        "cost": "消耗",
+        "credits": "积分",
+        "insufficientCredits": "积分不足，请先充值或完成每日任务获取积分",
+        "startGenerate": "开始生成歌曲",
+        "download": "下载"
+      }
+    },
     "welcomeTitle": "Hi，欢迎来到 Voicica AI",
     "featuredProducts": "明星产品",
     "welcomeSubtitle": "借助我们先进的语音、视频、音乐和艺术 AI 工具，释放人工智能的力量。更快、更智能、更轻松地将您的创意变为现实。",

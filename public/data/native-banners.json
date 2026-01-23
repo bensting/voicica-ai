@@ -1,40 +1,38 @@
 {
   "banners": [
     {
-      "id": "1",
+      "id": "suno-v5",
+      "title": "AI Music Suno V5",
+      "subtitle": "Turn your lyrics into full songs instantly. No instruments needed.",
+      "buttonText": "Make Music Now",
+      "buttonLink": "/native/music",
+      "image": "/images/banners/ai_music_banner.png",
+      "gradient": "from-purple-600 to-blue-600",
+      "tags": [
+        "New",
+        "Hot"
+      ]
+    },
+    {
+      "id": "text-to-dialogue",
+      "title": "Text to Dialogue",
+      "subtitle": "Generate realistic multi-speaker dialogues from simple text.",
+      "buttonText": "Generate Dialogue",
+      "buttonLink": "/native/dialogue",
+      "image": "/images/banners/dialogue_banner.png",
+      "gradient": "from-cyan-500 to-blue-500",
+      "tags": [
+        "Beta"
+      ]
+    },
+    {
+      "id": "video-gen",
       "title": "AI Video Generator",
       "subtitle": "Create stunning videos from text or images",
       "buttonText": "Try It Now",
-      "buttonLink": "/native/create/video",
-      "image": "/images/native/banner-video.jpg",
-      "gradient": "from-purple-600/80 to-blue-600/80"
-    },
-    {
-      "id": "2",
-      "title": "AI Music Studio",
-      "subtitle": "Compose original music from descriptions",
-      "buttonText": "Try to use",
-      "buttonLink": "/native/create/music",
-      "image": "/images/native/banner-music.jpg",
-      "gradient": "from-pink-600/80 to-purple-600/80"
-    },
-    {
-      "id": "3",
-      "title": "Character Swap",
-      "subtitle": "Swap faces in your videos instantly",
-      "buttonText": "Try It Now",
-      "buttonLink": "/native/create/swap",
-      "image": "/images/native/banner-swap.jpg",
-      "gradient": "from-cyan-600/80 to-blue-600/80"
-    },
-    {
-      "id": "4",
-      "title": "AI Image Creator",
-      "subtitle": "Generate amazing images from text",
-      "buttonText": "Try to use",
-      "buttonLink": "/native/create/image",
-      "image": "/images/native/banner-image.jpg",
-      "gradient": "from-orange-600/80 to-pink-600/80"
+      "buttonLink": "/native/video",
+      "image": "",
+      "gradient": "from-indigo-500 via-purple-500 to-pink-500"
     }
   ]
 }

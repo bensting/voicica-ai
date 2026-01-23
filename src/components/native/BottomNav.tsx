@@ -62,20 +62,19 @@ export default function BottomNav() {
     <>
       {/* 底部导航 */}
       <nav
-        className="fixed bottom-0 left-0 right-0 z-50 bg-[#0a0a1a] border-t border-gray-800/50"
+        className="fixed bottom-0 left-0 right-0 z-50 bg-slate-950/80 backdrop-blur-xl border-t border-white/5"
         style={{ paddingBottom: 'var(--safe-area-inset-bottom, 0px)' }}
       >
         <div className="flex items-center justify-around h-16">
           {/* Explore */}
           <Link
             href="/native"
-            className="flex flex-col items-center justify-center flex-1 h-full"
+            className="flex flex-col items-center justify-center flex-1 h-full active:scale-95 transition-transform"
           >
             <HomeIcon active={isExploreActive} />
             <span
-              className={`text-xs mt-1 ${
-                isExploreActive ? 'text-white' : 'text-gray-500'
-              }`}
+              className={`text-xs mt-1 ${isExploreActive ? 'text-white font-medium' : 'text-slate-500'
+                }`}
             >
               Explore
             </span>
@@ -85,11 +84,10 @@ export default function BottomNav() {
           <div className="flex items-center justify-center flex-1">
             <button
               onClick={() => setIsCreateOpen(!isCreateOpen)}
-              className={`w-12 h-12 rounded-full flex items-center justify-center transition-all ${
-                isCreateOpen
-                  ? 'bg-gray-700'
-                  : 'bg-gradient-to-r from-cyan-400 via-purple-500 to-pink-500 shadow-lg shadow-purple-500/30'
-              }`}
+              className={`w-12 h-12 rounded-full flex items-center justify-center transition-all active:scale-95 ${isCreateOpen
+                  ? 'bg-slate-800 text-white'
+                  : 'bg-gradient-to-r from-cyan-500 via-purple-500 to-pink-500 shadow-lg shadow-purple-500/40 hover:shadow-purple-500/60 hover:-translate-y-0.5'
+                }`}
             >
               {isCreateOpen ? <CloseIcon /> : <PlusIcon />}
             </button>
@@ -102,9 +100,8 @@ export default function BottomNav() {
           >
             <UserIcon active={isMeActive} />
             <span
-              className={`text-xs mt-1 ${
-                isMeActive ? 'text-white' : 'text-gray-500'
-              }`}
+              className={`text-xs mt-1 ${isMeActive ? 'text-white' : 'text-gray-500'
+                }`}
             >
               Me
             </span>

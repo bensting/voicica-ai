@@ -66,8 +66,11 @@ export default function AiSongPage() {
   const [customMood, setCustomMood] = useState(''); // 自定义情绪文本
   const [selectedVocal, setSelectedVocal] = useState<string | null>(null);
   const [lyrics, setLyrics] = useState('');
-  const [selectedDuration, setSelectedDuration] = useState<string>('2min'); // 默认2分钟
+  const [songTitle, setSongTitle] = useState(''); // 歌曲标题
+  const [songStyle, setSongStyle] = useState(''); // 音乐风格
+  const [vocalGender, setVocalGender] = useState<'' | 'm' | 'f'>(''); // 声音性别
   const [isGeneratingLyrics, setIsGeneratingLyrics] = useState(false);
+  const [isGeneratingStyle, setIsGeneratingStyle] = useState(false);
   const [isGeneratingSong, setIsGeneratingSong] = useState(false);
   const [generatedAudioUrl, setGeneratedAudioUrl] = useState<string | null>(null);
   const [generatedCoverUrl, setGeneratedCoverUrl] = useState<string | null>(null);
@@ -234,6 +237,33 @@ export default function AiSongPage() {
     }
   };
 
+  // 生成音乐风格
+  const handleGenerateStyle = async () => {
+    setIsGeneratingStyle(true);
+    try {
+      const theme = getThemeText();
+      const mood = getMoodText();
+      const vocal = getVocalText();
+
+      const response = await fetch('/api/ai/generate-style', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          prompt: `主题：${theme}，情绪：${mood}，声线：${vocal}`,
+        }),
+      });
+
+      const data = await response.json();
+      if (data.success && data.style) {
+        setSongStyle(data.style);
+      }
+    } catch (error) {
+      console.error('生成风格失败:', error);
+    } finally {
+      setIsGeneratingStyle(false);
+    }
+  };
+
   const handleGenerateSong = async () => {
     setIsGeneratingSong(true);
     setGeneratedAudioUrl(null);
@@ -241,20 +271,27 @@ export default function AiSongPage() {
     setGeneratedTitle(null);
 
     try {
-      // 构建提示词
+      // 获取用户选择的配置
       const theme = getThemeText();
       const mood = getMoodText();
       const vocal = getVocalText();
+
+      // 使用用户输入的风格，如果为空则根据配置自动生成
+      const finalStyle = songStyle.trim() || `${mood}, ${vocal}`;
+      // 使用用户输入的标题，如果为空则自动生成
+      const finalTitle = songTitle.trim() || `${theme}之歌`;
+      // 使用用户选择的声音性别，如果为空则根据选择的声线推断
+      const finalVocalGender = vocalGender || getVocalGender();
 
       // 调用 API 创建任务
       const result = await createMusicTask({
         prompt: lyrics,
         model: 'music-4.5', // 默认使用 4.5 模型
         customMode: true, // 使用自定义模式（歌词模式）
-        style: `${mood}, ${vocal}`, // 风格
-        title: `${theme}之歌`,
+        style: finalStyle,
+        title: finalTitle,
         instrumental: false,
-        vocalGender: getVocalGender(),
+        vocalGender: finalVocalGender,
         isPublic: false,
       });
 
@@ -484,9 +521,15 @@ export default function AiSongPage() {
               theme={displayTheme}
               mood={displayMood}
               vocal={VOCAL_OPTIONS.find(opt => opt.id === selectedVocal)}
-              duration={selectedDuration}
               lyrics={lyrics}
-              onDurationChange={setSelectedDuration}
+              style={songStyle}
+              title={songTitle}
+              vocalGender={vocalGender}
+              onStyleChange={setSongStyle}
+              onTitleChange={setSongTitle}
+              onVocalGenderChange={setVocalGender}
+              onGenerateStyle={handleGenerateStyle}
+              isGeneratingStyle={isGeneratingStyle}
               isGenerating={isGeneratingSong}
               generatedAudioUrl={generatedAudioUrl}
               generatedCoverUrl={generatedCoverUrl}

@@ -1,18 +1,26 @@
 'use client';
 
 import { useRef, useState } from 'react';
-import { Sparkles, Play, Pause, Download, RefreshCw } from 'lucide-react';
+import { Sparkles, Play, Pause, Download, RefreshCw, Wand2 } from 'lucide-react';
 
 interface CreatePreviewProps {
   // 配置信息
   theme: { icon: string; label: string } | undefined;
   mood: { icon: string; label: string } | undefined;
   vocal: { icon: string; label: string } | undefined;
-  duration: string;
   lyrics: string;
 
-  // 时长选择
-  onDurationChange: (duration: string) => void;
+  // 可编辑字段
+  style: string;
+  title: string;
+  vocalGender: '' | 'm' | 'f';
+  onStyleChange: (style: string) => void;
+  onTitleChange: (title: string) => void;
+  onVocalGenderChange: (gender: '' | 'm' | 'f') => void;
+
+  // AI 生成风格
+  onGenerateStyle?: () => void;
+  isGeneratingStyle?: boolean;
 
   // 生成状态
   isGenerating: boolean;
@@ -35,9 +43,15 @@ export default function CreatePreview({
   theme,
   mood,
   vocal,
-  duration,
   lyrics,
-  onDurationChange,
+  style,
+  title,
+  vocalGender,
+  onStyleChange,
+  onTitleChange,
+  onVocalGenderChange,
+  onGenerateStyle,
+  isGeneratingStyle,
   isGenerating,
   generatedAudioUrl,
   generatedCoverUrl,
@@ -213,40 +227,21 @@ export default function CreatePreview({
       <div className="bg-gray-50 rounded-xl p-5 space-y-4">
         <h3 className="font-semibold text-gray-900 text-sm">你的创作配置</h3>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <div className="flex flex-wrap gap-2">
           {/* Theme */}
-          <div className="flex items-center gap-2 text-sm">
-            <span className="text-gray-500">主题：</span>
-            <span className="font-medium text-gray-900">
-              {theme?.icon} {theme?.label}
-            </span>
-          </div>
+          <span className="inline-flex items-center gap-1 px-3 py-1.5 bg-white rounded-full text-sm font-medium text-gray-700 shadow-sm">
+            {theme?.icon} {theme?.label}
+          </span>
 
           {/* Mood */}
-          <div className="flex items-center gap-2 text-sm">
-            <span className="text-gray-500">情绪：</span>
-            <span className="font-medium text-gray-900">
-              {mood?.icon} {mood?.label}
-            </span>
-          </div>
+          <span className="inline-flex items-center gap-1 px-3 py-1.5 bg-white rounded-full text-sm font-medium text-gray-700 shadow-sm">
+            {mood?.icon} {mood?.label}
+          </span>
 
           {/* Vocal */}
-          <div className="flex items-center gap-2 text-sm">
-            <span className="text-gray-500">声线：</span>
-            <span className="font-medium text-gray-900">
-              {vocal?.icon} {vocal?.label}
-            </span>
-          </div>
-
-          {/* Duration */}
-          <div className="flex items-center gap-2 text-sm">
-            <span className="text-gray-500">时长：</span>
-            <span className="font-medium text-gray-900">
-              {duration === '1min' && '⏱️ 1 分钟'}
-              {duration === '2min' && '⏱️ 2 分钟'}
-              {duration === '3min' && '⏱️ 3 分钟'}
-            </span>
-          </div>
+          <span className="inline-flex items-center gap-1 px-3 py-1.5 bg-white rounded-full text-sm font-medium text-gray-700 shadow-sm">
+            {vocal?.icon} {vocal?.label}
+          </span>
         </div>
       </div>
 
@@ -264,32 +259,103 @@ export default function CreatePreview({
         </div>
       </div>
 
-      {/* 时长选择 */}
-      <div className="space-y-3">
-        <label className="block text-sm font-medium text-gray-700">歌曲时长</label>
-        <div className="grid grid-cols-3 gap-3">
-          {[
-            { id: '1min', label: '1 分钟', icon: '⏱️' },
-            { id: '2min', label: '2 分钟', icon: '⏱️' },
-            { id: '3min', label: '3 分钟', icon: '⏱️' },
-          ].map((durationOption) => (
+      {/* 歌曲标题 */}
+      <div className="space-y-2">
+        <div className="flex items-center justify-between">
+          <label className="block text-sm font-medium text-gray-700">歌曲标题</label>
+          <span className="text-xs text-gray-400">(可选)</span>
+        </div>
+        <input
+          type="text"
+          value={title}
+          onChange={(e) => onTitleChange(e.target.value)}
+          placeholder={`${theme?.label || '我的'}之歌`}
+          className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-pink-500 focus:ring-2 focus:ring-pink-200 transition-all text-sm"
+          maxLength={100}
+        />
+      </div>
+
+      {/* 音乐风格 */}
+      <div className="space-y-2">
+        <div className="flex items-center justify-between">
+          <label className="block text-sm font-medium text-gray-700">音乐风格</label>
+          <span className="text-xs text-gray-400">(可选)</span>
+        </div>
+        <div className="relative">
+          <textarea
+            value={style}
+            onChange={(e) => onStyleChange(e.target.value)}
+            placeholder="pop, ballad, acoustic, piano..."
+            className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-pink-500 focus:ring-2 focus:ring-pink-200 transition-all text-sm resize-none"
+            rows={2}
+            maxLength={500}
+          />
+          {onGenerateStyle && (
             <button
-              key={durationOption.id}
               type="button"
-              onClick={() => onDurationChange(durationOption.id)}
-              className={`
-                p-3 rounded-xl border-2 transition-all text-center
-                ${
-                  duration === durationOption.id
-                    ? 'border-pink-500 bg-pink-50 text-pink-600'
-                    : 'border-gray-200 bg-white text-gray-700 hover:border-pink-300'
-                }
-              `}
+              onClick={onGenerateStyle}
+              disabled={isGeneratingStyle}
+              className="absolute right-2 bottom-2 px-3 py-1.5 bg-pink-100 text-pink-600 rounded-lg text-xs font-medium hover:bg-pink-200 transition-colors flex items-center gap-1 disabled:opacity-50"
             >
-              <div className="text-xl mb-1">{durationOption.icon}</div>
-              <div className="text-sm font-medium">{durationOption.label}</div>
+              <Wand2 className="w-3 h-3" />
+              {isGeneratingStyle ? '生成中...' : 'AI 生成'}
             </button>
-          ))}
+          )}
+        </div>
+        <p className="text-xs text-gray-400">
+          提示：可以输入流行、摇滚、爵士、电子等风格关键词
+        </p>
+      </div>
+
+      {/* 声音性别 */}
+      <div className="space-y-2">
+        <label className="block text-sm font-medium text-gray-700">声音</label>
+        <div className="grid grid-cols-3 gap-3">
+          <button
+            type="button"
+            onClick={() => onVocalGenderChange('')}
+            className={`
+              p-3 rounded-xl border-2 transition-all text-center
+              ${
+                vocalGender === ''
+                  ? 'border-pink-500 bg-pink-50 text-pink-600'
+                  : 'border-gray-200 bg-white text-gray-700 hover:border-pink-300'
+              }
+            `}
+          >
+            <div className="text-xl mb-1">🎵</div>
+            <div className="text-sm font-medium">自动</div>
+          </button>
+          <button
+            type="button"
+            onClick={() => onVocalGenderChange('m')}
+            className={`
+              p-3 rounded-xl border-2 transition-all text-center
+              ${
+                vocalGender === 'm'
+                  ? 'border-pink-500 bg-pink-50 text-pink-600'
+                  : 'border-gray-200 bg-white text-gray-700 hover:border-pink-300'
+              }
+            `}
+          >
+            <div className="text-xl mb-1">👨</div>
+            <div className="text-sm font-medium">男声</div>
+          </button>
+          <button
+            type="button"
+            onClick={() => onVocalGenderChange('f')}
+            className={`
+              p-3 rounded-xl border-2 transition-all text-center
+              ${
+                vocalGender === 'f'
+                  ? 'border-pink-500 bg-pink-50 text-pink-600'
+                  : 'border-gray-200 bg-white text-gray-700 hover:border-pink-300'
+              }
+            `}
+          >
+            <div className="text-xl mb-1">👩</div>
+            <div className="text-sm font-medium">女声</div>
+          </button>
         </div>
       </div>
 

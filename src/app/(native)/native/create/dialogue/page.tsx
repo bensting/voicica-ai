@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
@@ -16,6 +16,9 @@ import { createDialogueTask, getDialogueTaskStatus } from '@/actions/dialogue';
 
 // localStorage key
 const STORAGE_KEY = 'dialogue_draft';
+
+// 轮询超时时间（15分钟）
+const POLLING_TIMEOUT_MS = 15 * 60 * 1000;
 
 // 对话片段类型
 interface DialogueSegment {
@@ -43,10 +46,12 @@ interface Voice {
   avatar_url: string;
 }
 
-// 默认声音（数据库加载失败时使用）
+// 默认声音
 const DEFAULT_VOICES: Voice[] = [
   { id: 'Liam', name: 'elevenlabs_dialogue:Liam', display_name: 'Liam', gender: 'male', avatar_url: '' },
   { id: 'Jessica', name: 'elevenlabs_dialogue:Jessica', display_name: 'Jessica', gender: 'female', avatar_url: '' },
+  { id: 'Adam', name: 'elevenlabs_dialogue:Adam', display_name: 'Adam', gender: 'male', avatar_url: '' },
+  { id: 'Brian', name: 'elevenlabs_dialogue:Brian', display_name: 'Brian', gender: 'male', avatar_url: '' },
 ];
 
 // 图标组件
@@ -74,9 +79,17 @@ const PlayIcon = () => (
   </svg>
 );
 
+const DialogueIcon = () => (
+  <svg className="w-8 h-8 text-gray-400" viewBox="0 0 24 24" fill="currentColor">
+    <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/>
+    <circle cx="8" cy="10" r="1.5"/>
+    <circle cx="12" cy="10" r="1.5"/>
+    <circle cx="16" cy="10" r="1.5"/>
+  </svg>
+);
+
 /**
  * Native Text to Dialogue 页面
- * 多角色对话生成
  */
 export default function NativeDialoguePage() {
   const router = useRouter();
@@ -96,16 +109,24 @@ export default function NativeDialoguePage() {
   const [voices, setVoices] = useState<Voice[]>(DEFAULT_VOICES);
   const [loadingVoices, setLoadingVoices] = useState(true);
 
-  // 生成状态
-  const [, setTaskId] = useState<string | null>(null);
+  // 生成弹窗状态
+  const [isGeneratingModalOpen, setIsGeneratingModalOpen] = useState(false);
+  const [generatingStatus, setGeneratingStatus] = useState<'generating' | 'success' | 'error'>('generating');
+  const [generatingError, setGeneratingError] = useState<string | null>(null);
+  const [generatingProgress, setGeneratingProgress] = useState(0);
+  const [currentTaskId, setCurrentTaskId] = useState<string | null>(null);
+  const [taskCreatedAt, setTaskCreatedAt] = useState<Date | null>(null);
   const [generatedAudioUrl, setGeneratedAudioUrl] = useState<string | null>(null);
-  const pollingRef = useRef<NodeJS.Timeout | null>(null);
 
   // 总字符限制
   const maxTotalCharacters = 5000;
-
-  // 计算总字符数
   const totalCharacters = dialogues.reduce((sum, d) => sum + d.text.length, 0);
+
+  // 修正 voice ID 大小写
+  const fixVoiceCase = (voiceId: string): string => {
+    if (!voiceId) return 'Liam';
+    return voiceId.charAt(0).toUpperCase() + voiceId.slice(1).toLowerCase();
+  };
 
   // 加载声音列表
   const loadVoices = useCallback(async () => {
@@ -115,8 +136,8 @@ export default function NativeDialoguePage() {
       if (result.length > 0) {
         setVoices(result);
       }
-    } catch (error) {
-      console.error('加载声音列表失败:', error);
+    } catch (err) {
+      console.error('加载声音列表失败:', err);
     } finally {
       setLoadingVoices(false);
     }
@@ -134,10 +155,14 @@ export default function NativeDialoguePage() {
       try {
         const parsed = JSON.parse(saved);
         if (Array.isArray(parsed) && parsed.length > 0) {
-          setDialogues(parsed);
+          const fixed = parsed.map((d: DialogueSegment) => ({
+            ...d,
+            voice: fixVoiceCase(d.voice),
+          }));
+          setDialogues(fixed);
         }
       } catch {
-        // 忽略解析错误
+        // ignore
       }
     }
   }, []);
@@ -147,10 +172,54 @@ export default function NativeDialoguePage() {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(dialogues));
   }, [dialogues]);
 
+  // 轮询任务状态
+  useEffect(() => {
+    if (!currentTaskId || generatingStatus !== 'generating') {
+      return;
+    }
+
+    const pollInterval = setInterval(async () => {
+      // 超时检查
+      if (taskCreatedAt) {
+        const elapsed = Date.now() - taskCreatedAt.getTime();
+        if (elapsed >= POLLING_TIMEOUT_MS) {
+          setGeneratingStatus('error');
+          setGeneratingError('Generation timed out. Please check your history later.');
+          setCurrentTaskId(null);
+          setTaskCreatedAt(null);
+          return;
+        }
+      }
+
+      try {
+        const status = await getDialogueTaskStatus(currentTaskId);
+        setGeneratingProgress(status.progress);
+
+        if (status.status === 'SUCCESS' && status.audioUrl) {
+          setGeneratingStatus('success');
+          setGeneratedAudioUrl(status.audioUrl);
+          setCurrentTaskId(null);
+          setTaskCreatedAt(null);
+          refreshCredits();
+        } else if (status.status === 'FAILURE') {
+          setGeneratingStatus('error');
+          setGeneratingError(status.error || 'Generation failed');
+          setCurrentTaskId(null);
+          setTaskCreatedAt(null);
+        }
+      } catch (err) {
+        console.error('Poll status error:', err);
+      }
+    }, 3000);
+
+    return () => clearInterval(pollInterval);
+  }, [currentTaskId, generatingStatus, taskCreatedAt, refreshCredits]);
+
   // 添加对话
   const addDialogue = () => {
     const newId = Date.now().toString();
-    setDialogues([...dialogues, { id: newId, text: '', voice: 'jessica' }]);
+    const defaultVoice = voices[0]?.id || 'Jessica';
+    setDialogues([...dialogues, { id: newId, text: '', voice: defaultVoice }]);
   };
 
   // 删除对话
@@ -169,7 +238,7 @@ export default function NativeDialoguePage() {
     }
   };
 
-  // 插入情绪标签到对话
+  // 插入情绪标签
   const insertEmotion = (id: string, tag: string) => {
     const dialogue = dialogues.find(d => d.id === id);
     if (!dialogue) return;
@@ -183,14 +252,9 @@ export default function NativeDialoguePage() {
     setActiveVoiceSelector(null);
   };
 
-  // 获取语音信息
-  const getVoice = (voiceId: string) => {
-    return voices.find(v => v.id === voiceId);
-  };
-
   // 获取语音名称
   const getVoiceName = (voiceId: string) => {
-    return getVoice(voiceId)?.display_name || voiceId;
+    return voices.find(v => v.id === voiceId)?.display_name || voiceId;
   };
 
   // 预估积分消耗
@@ -199,44 +263,21 @@ export default function NativeDialoguePage() {
   // 是否可以生成
   const canGenerate = dialogues.some(d => d.text.trim().length > 0) && !isGenerating;
 
-  // 轮询任务状态
-  const pollTaskStatus = useCallback(async (id: string) => {
-    try {
-      const status = await getDialogueTaskStatus(id);
+  // 关闭生成弹窗
+  const handleCloseGeneratingModal = () => {
+    setIsGeneratingModalOpen(false);
+    setGeneratingStatus('generating');
+    setGeneratingError(null);
+    setCurrentTaskId(null);
+    setTaskCreatedAt(null);
+    setGeneratingProgress(0);
+  };
 
-      if (status.status === 'completed' && status.audioUrl) {
-        setGeneratedAudioUrl(status.audioUrl);
-        setIsGenerating(false);
-        setTaskId(null);
-        refreshCredits();
-        // 清除轮询
-        if (pollingRef.current) {
-          clearInterval(pollingRef.current);
-          pollingRef.current = null;
-        }
-      } else if (status.status === 'failed') {
-        setError(status.error || 'Generation failed');
-        setIsGenerating(false);
-        setTaskId(null);
-        if (pollingRef.current) {
-          clearInterval(pollingRef.current);
-          pollingRef.current = null;
-        }
-      }
-      // pending/processing 继续轮询
-    } catch (err) {
-      console.error('Poll status error:', err);
-    }
-  }, [refreshCredits]);
-
-  // 清理轮询
-  useEffect(() => {
-    return () => {
-      if (pollingRef.current) {
-        clearInterval(pollingRef.current);
-      }
-    };
-  }, []);
+  // 查看历史
+  const handleViewHistory = () => {
+    setIsGeneratingModalOpen(false);
+    router.push('/native/me?tab=dialogue');
+  };
 
   // 处理生成
   const handleGenerate = async () => {
@@ -247,9 +288,14 @@ export default function NativeDialoguePage() {
       return;
     }
 
+    // 打开生成弹窗
+    setIsGeneratingModalOpen(true);
+    setGeneratingStatus('generating');
+    setGeneratingError(null);
+    setGeneratingProgress(0);
+    setGeneratedAudioUrl(null);
     setIsGenerating(true);
     setError(null);
-    setGeneratedAudioUrl(null);
 
     try {
       // 构建对话数据
@@ -257,11 +303,12 @@ export default function NativeDialoguePage() {
         .filter(d => d.text.trim().length > 0)
         .map(d => ({
           text: d.text,
-          voice: d.voice, // voice ID like 'Adam', 'Brian', etc.
+          voice: d.voice,
         }));
 
       if (dialogueData.length === 0) {
-        setError('请输入对话内容');
+        setGeneratingStatus('error');
+        setGeneratingError('请输入对话内容');
         setIsGenerating(false);
         return;
       }
@@ -272,18 +319,18 @@ export default function NativeDialoguePage() {
         stability: 0.5,
       });
 
-      setTaskId(result.taskId);
+      setCurrentTaskId(result.task_id);
+      setTaskCreatedAt(new Date());
+      setGeneratingProgress(result.progress);
 
-      // 开始轮询
-      pollingRef.current = setInterval(() => {
-        pollTaskStatus(result.taskId);
-      }, 3000);
-
-      // 立即执行一次
-      setTimeout(() => pollTaskStatus(result.taskId), 1000);
+      // 清空草稿
+      setDialogues([{ id: '1', text: '', voice: 'Liam' }]);
+      localStorage.removeItem(STORAGE_KEY);
     } catch (err) {
       console.error('Dialogue task creation failed:', err);
-      setError(err instanceof Error ? err.message : 'Failed to create task');
+      setGeneratingStatus('error');
+      setGeneratingError(err instanceof Error ? err.message : 'Failed to create task');
+    } finally {
       setIsGenerating(false);
     }
   };
@@ -323,25 +370,6 @@ export default function NativeDialoguePage() {
           </div>
         )}
 
-        {/* Generated Audio */}
-        {generatedAudioUrl && (
-          <div className="mb-4 p-4 bg-gradient-to-r from-purple-500/20 to-pink-500/20 border border-purple-500/30 rounded-xl">
-            <div className="flex items-center justify-between mb-3">
-              <span className="text-white font-medium text-sm">Generated Dialogue</span>
-              <a
-                href={generatedAudioUrl}
-                download="dialogue.mp3"
-                className="px-3 py-1.5 bg-purple-600 text-white text-xs rounded-lg hover:bg-purple-700 transition-colors"
-              >
-                Download
-              </a>
-            </div>
-            <audio controls className="w-full" src={generatedAudioUrl}>
-              Your browser does not support the audio element.
-            </audio>
-          </div>
-        )}
-
         {/* Total Characters */}
         <div className="mb-3">
           <span className="text-gray-400 text-xs">
@@ -352,10 +380,7 @@ export default function NativeDialoguePage() {
         {/* Dialogue Segments */}
         <div className="space-y-4 mb-4">
           {dialogues.map((dialogue, index) => (
-            <div
-              key={dialogue.id}
-              className="bg-gray-800/60 rounded-2xl p-4"
-            >
+            <div key={dialogue.id} className="bg-gray-800/60 rounded-2xl p-4">
               {/* Header */}
               <div className="flex items-center justify-between mb-3">
                 <span className="text-white font-medium text-sm">Dialogue {index + 1}</span>
@@ -408,23 +433,16 @@ export default function NativeDialoguePage() {
                     <span>{getVoiceName(dialogue.voice)}</span>
                     <ChevronDownIcon />
                   </button>
-                  <button
-                    className="w-10 h-10 flex items-center justify-center bg-gray-900/60 rounded-xl text-gray-400 hover:text-white transition-colors"
-                  >
+                  <button className="w-10 h-10 flex items-center justify-center bg-gray-900/60 rounded-xl text-gray-400 hover:text-white transition-colors">
                     <PlayIcon />
                   </button>
                 </div>
-                <p className="text-gray-500 text-xs mt-1">
-                  Select the voice character for this dialogue.
-                </p>
 
                 {/* Voice Options Dropdown */}
                 {activeVoiceSelector === dialogue.id && (
                   <div className="mt-2 bg-gray-900 rounded-xl overflow-hidden border border-gray-700 max-h-60 overflow-y-auto">
                     {loadingVoices ? (
-                      <div className="px-3 py-4 text-center text-gray-500 text-sm">
-                        Loading voices...
-                      </div>
+                      <div className="px-3 py-4 text-center text-gray-500 text-sm">Loading voices...</div>
                     ) : (
                       voices.map((voice) => (
                         <button
@@ -436,18 +454,10 @@ export default function NativeDialoguePage() {
                         >
                           <div className="flex items-center gap-2">
                             {voice.avatar_url ? (
-                              <Image
-                                src={voice.avatar_url}
-                                alt={voice.display_name}
-                                width={28}
-                                height={28}
-                                className="rounded-full"
-                              />
+                              <Image src={voice.avatar_url} alt={voice.display_name} width={28} height={28} className="rounded-full" />
                             ) : (
                               <div className="w-7 h-7 bg-gray-700 rounded-full flex items-center justify-center">
-                                <span className="text-gray-400 text-xs">
-                                  {voice.gender === 'male' ? '♂' : '♀'}
-                                </span>
+                                <span className="text-gray-400 text-xs">{voice.gender === 'male' ? '♂' : '♀'}</span>
                               </div>
                             )}
                             <div>
@@ -486,17 +496,13 @@ export default function NativeDialoguePage() {
         className="fixed bottom-0 left-0 right-0 z-30 px-4 pt-3 pb-3 bg-[#0a0a1a]"
         style={{ paddingBottom: 'calc(var(--safe-area-inset-bottom, 0px) + 12px)' }}
       >
-        {/* Credits Info Bar */}
         <CreditsInfoBar
           credits={credits}
           creditRules={[{ name: 'Dialogue generation', description: '100 chars = 3 credits' }]}
           className="mb-3"
         />
 
-        <GradientButton
-          onClick={() => void handleGenerate()}
-          disabled={!canGenerate || isGenerating}
-        >
+        <GradientButton onClick={() => void handleGenerate()} disabled={!canGenerate || isGenerating}>
           {isGenerating ? (
             <>
               <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
@@ -516,6 +522,115 @@ export default function NativeDialoguePage() {
         </GradientButton>
       </div>
 
+      {/* Generating Full Page Modal */}
+      {isGeneratingModalOpen && (
+        <div
+          className="fixed inset-0 z-50 bg-[#0a0a1a] flex flex-col"
+          style={{ paddingTop: 'var(--safe-area-inset-top, 0px)' }}
+        >
+          {/* Header */}
+          <div className="flex items-center justify-between px-4 h-14">
+            <button onClick={handleCloseGeneratingModal} className="p-2 -ml-2 text-white">
+              <BackIcon />
+            </button>
+            <div className="flex items-center gap-1 text-white">
+              <CreditsIcon className="w-4 h-4" />
+              <span className="text-sm font-medium">{credits}</span>
+            </div>
+          </div>
+
+          {/* Content */}
+          <div className="flex-1 flex flex-col items-center justify-center px-8">
+            {generatingStatus === 'generating' && (
+              <>
+                <div className="relative w-20 h-20 mb-8">
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="w-16 h-16 rounded-2xl bg-gray-800 flex items-center justify-center animate-pulse">
+                      <DialogueIcon />
+                    </div>
+                  </div>
+                </div>
+                <h3 className="text-white font-semibold text-lg mb-2">Generating dialogue...</h3>
+                {generatingProgress > 0 && (
+                  <p className="text-blue-400 text-sm mb-2">{generatingProgress}%</p>
+                )}
+                <p className="text-gray-400 text-sm mb-8">
+                  Estimated time: <span className="text-blue-400">1-2 minutes</span>
+                </p>
+              </>
+            )}
+
+            {generatingStatus === 'success' && (
+              <>
+                <div className="w-20 h-20 mb-8 rounded-full bg-green-500/20 flex items-center justify-center">
+                  <svg className="w-10 h-10 text-green-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <polyline points="20,6 9,17 4,12" />
+                  </svg>
+                </div>
+                <h3 className="text-white font-semibold text-lg mb-2">Dialogue Created!</h3>
+                <p className="text-gray-400 text-sm mb-4">Your dialogue has been generated successfully.</p>
+
+                {/* Audio Player */}
+                {generatedAudioUrl && (
+                  <div className="w-full max-w-xs mb-6">
+                    <audio controls className="w-full" src={generatedAudioUrl}>
+                      Your browser does not support the audio element.
+                    </audio>
+                  </div>
+                )}
+
+                <div className="flex gap-3 w-full max-w-xs">
+                  <button
+                    onClick={handleCloseGeneratingModal}
+                    className="flex-1 py-3 bg-gray-700/50 text-white rounded-xl text-sm font-medium hover:bg-gray-600/50 transition-colors"
+                  >
+                    Create Another
+                  </button>
+                  <button
+                    onClick={handleViewHistory}
+                    className="flex-1 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl text-sm font-medium hover:opacity-90 transition-opacity"
+                  >
+                    View History
+                  </button>
+                </div>
+              </>
+            )}
+
+            {generatingStatus === 'error' && (
+              <>
+                <div className="w-20 h-20 mb-8 rounded-full bg-red-500/20 flex items-center justify-center">
+                  <svg className="w-10 h-10 text-red-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <circle cx="12" cy="12" r="10" />
+                    <path d="M15 9l-6 6M9 9l6 6" />
+                  </svg>
+                </div>
+                <h3 className="text-white font-semibold text-lg mb-2">Generation Failed</h3>
+                <p className="text-red-400 text-sm mb-8 text-center px-4">
+                  {generatingError || 'Something went wrong. Please try again.'}
+                </p>
+                <div className="flex gap-3 w-full max-w-xs">
+                  <button
+                    onClick={handleCloseGeneratingModal}
+                    className="flex-1 py-3 bg-gray-700/50 text-white rounded-xl text-sm font-medium hover:bg-gray-600/50 transition-colors"
+                  >
+                    Close
+                  </button>
+                  <button
+                    onClick={() => {
+                      handleCloseGeneratingModal();
+                      void handleGenerate();
+                    }}
+                    className="flex-1 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl text-sm font-medium hover:opacity-90 transition-opacity"
+                  >
+                    Try Again
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* Login Modal */}
       <LoginModal
         isOpen={isLoginModalOpen}
@@ -524,10 +639,7 @@ export default function NativeDialoguePage() {
       />
 
       {/* Create Sheet */}
-      <CreateSheet
-        isOpen={isCreateSheetOpen}
-        onClose={() => setIsCreateSheetOpen(false)}
-      />
+      <CreateSheet isOpen={isCreateSheetOpen} onClose={() => setIsCreateSheetOpen(false)} />
     </div>
   );
 }

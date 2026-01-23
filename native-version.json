@@ -1,8 +1,19 @@
 {
-  "version": "1.1.6",
-  "buildNumber": 17,
+  "version": "1.1.7",
+  "buildNumber": 18,
   "description": "原生应用版本（Android/iOS 应用壳）",
   "changelog": [
+    {
+      "version": "1.1.7",
+      "buildNumber": 18,
+      "date": "2026-01-24",
+      "changes": [
+        "新增 Dialogue 对话生成功能",
+        "My Creations 添加 Dialogues 标签",
+        "Settings 添加语言选择功能",
+        "修复详情弹窗底部导航显示问题"
+      ]
+    },
     {
       "version": "1.1.6",
       "buildNumber": 17,

@@ -248,16 +248,21 @@ export function useRewardedAd(): UseRewardedAdReturn {
           },
           adErrorCallbackFn: (err) => {
             const errorData = err.getError()?.data || {};
-            console.error('[RewardedAd] AppLixir error:', errorData);
-            const errorMsg = errorData.errorMessage || 'Ad error';
-            // 错误码 303 = 无可用广告
-            if (errorData.errorCode === 303 || errorMsg.includes('No Ads') || errorMsg.includes('No Video')) {
+            const errorCode = errorData.errorCode;
+            const errorMsg = errorData.errorMessage || '';
+
+            // 空错误对象或错误码 303 = 无可用广告，静默处理
+            const isNoAdsError = !errorCode || errorCode === 303 || errorMsg.includes('No Ads') || errorMsg.includes('No Video');
+
+            if (isNoAdsError) {
+              console.log('[RewardedAd] No ads available');
               setStatus('idle');
               resolve({ success: false, reason: 'unavailable', message: 'No ads available at this time' });
             } else {
-              setError(errorMsg);
+              console.error('[RewardedAd] AppLixir error:', errorData);
+              setError(errorMsg || 'Ad error');
               setStatus('error');
-              resolve({ success: false, reason: 'error', message: errorMsg });
+              resolve({ success: false, reason: 'error', message: errorMsg || 'Ad error' });
             }
           },
         });

@@ -44,8 +44,8 @@ export default function StudioTopNav({
   const { user } = useFirebaseAuth();
   const pathname = usePathname();
 
-  // Check if on AI Music related pages for pink theme
-  const isPinkTheme = pathname?.startsWith('/studio/ai-music') || pathname?.startsWith('/studio/ai-cover') || pathname?.startsWith('/studio/ai-song') || pathname?.startsWith('/studio/music-history');
+  // Apply pink theme to all studio pages
+  const isPinkTheme = pathname?.startsWith('/studio');
 
   const toggleMenu = () => {
     onMenuToggle?.(!isMenuOpen);

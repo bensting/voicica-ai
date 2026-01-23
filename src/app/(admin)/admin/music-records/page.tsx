@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import Image from 'next/image';
 import {
   getMusicRecords,
   getMusicRecordsStats,
@@ -726,7 +727,7 @@ export default function MusicRecordsPage() {
                   </audio>
                   {detailRecord.coverUrl && (
                     <div className="mt-2">
-                      <img src={detailRecord.coverUrl} alt="Cover" className="w-20 h-20 rounded-lg object-cover" />
+                      <Image src={detailRecord.coverUrl} alt="Cover" width={80} height={80} className="w-20 h-20 rounded-lg object-cover" />
                     </div>
                   )}
                 </div>
@@ -742,7 +743,7 @@ export default function MusicRecordsPage() {
                   </audio>
                   {detailRecord.coverUrl2 && (
                     <div className="mt-2">
-                      <img src={detailRecord.coverUrl2} alt="Cover 2" className="w-20 h-20 rounded-lg object-cover" />
+                      <Image src={detailRecord.coverUrl2} alt="Cover 2" width={80} height={80} className="w-20 h-20 rounded-lg object-cover" />
                     </div>
                   )}
                 </div>

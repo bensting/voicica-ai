@@ -40,13 +40,13 @@ export default function LanguageSwitcher({
   // theme="light" → 用于深色背景（浅色文字）
   // 弹出层统一使用白色背景
   const buttonStyles = theme === 'dark'
-    ? 'text-gray-700 hover:text-gray-900'
-    : 'text-white hover:text-purple-400';
+    ? 'text-gray-700 hover:text-pink-500'
+    : 'text-white hover:text-pink-300';
 
   // 弹出层统一白色背景
   const dropdownStyles = 'bg-white border-gray-200 shadow-xl';
-  const itemStyles = 'text-gray-700 hover:bg-purple-100 hover:text-purple-700';
-  const activeItemStyles = 'bg-purple-50 text-purple-600 font-medium';
+  const itemStyles = 'text-gray-700 hover:bg-pink-50 hover:text-pink-600';
+  const activeItemStyles = 'bg-pink-50 text-pink-600 font-medium';
 
   // 下拉菜单位置样式
   const positionStyles = dropdownPosition === 'up'

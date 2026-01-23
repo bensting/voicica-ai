@@ -11,7 +11,7 @@ interface GradientButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   /** 按钮尺寸 */
   size?: 'sm' | 'md' | 'lg';
   /** 渐变色方案 */
-  variant?: 'purple-pink' | 'blue-purple' | 'green-blue';
+  variant?: 'purple-pink' | 'blue-purple' | 'green-blue' | 'pink-rose';
   /** 是否全宽 */
   fullWidth?: boolean;
 }
@@ -58,6 +58,7 @@ export default function GradientButton({
     'purple-pink': 'from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600',
     'blue-purple': 'from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600',
     'green-blue': 'from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600',
+    'pink-rose': 'from-pink-400 to-rose-400 hover:from-pink-500 hover:to-rose-500',
   };
 
   // 图标尺寸映射

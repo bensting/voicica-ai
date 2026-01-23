@@ -459,6 +459,37 @@ model music_records {
   @@index([is_public], map: "ix_music_records_is_public")
 }
 
+/// 对话生成记录（ElevenLabs Text-to-Dialogue）
+model dialogue_records {
+  id                Int       @id @default(autoincrement())
+  user_id           String    @db.VarChar(255)
+  task_id           String    @unique @db.VarChar(255)
+  external_task_id  String?   @db.VarChar(255)  // KIE API 返回的 taskId
+
+  // 对话内容（JSON 格式存储多个对话片段）
+  dialogue_json     String    @db.Text          // [{ text: "...", voice: "Adam" }, ...]
+  total_characters  Int                         // 总字符数
+  credits_cost      Int                         // 消耗积分
+
+  // 状态
+  status            String    @db.VarChar(20)   // PENDING, PROCESSING, SUCCESS, FAILURE
+  progress          Int       @default(0)       // 0-100 进度
+
+  // 生成结果
+  audio_url         String?                     // 生成的音频 URL
+  duration          Float?                      // 音频时长（秒）
+
+  error_message     String?
+  completed_at      DateTime? @db.Timestamptz(6)
+  created_at        DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at        DateTime? @updatedAt @db.Timestamptz(6)
+
+  @@index([user_id], map: "ix_dialogue_records_user_id")
+  @@index([user_id, created_at], map: "ix_dialogue_records_user_created")
+  @@index([status], map: "ix_dialogue_records_status")
+  @@index([external_task_id], map: "ix_dialogue_records_external_task_id")
+}
+
 /// RVC 声音模型（用于 AI Cover 功能）
 model rvc_voice_models {
   id              Int       @id @default(autoincrement())

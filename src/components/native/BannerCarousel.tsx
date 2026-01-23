@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 
 interface Banner {
   id: string;
@@ -71,12 +72,28 @@ export default function BannerCarousel() {
         <div
           className={`absolute inset-0 bg-gradient-to-r ${currentBanner.gradient}`}
         >
-          {/* 背景图片 - 使用占位渐变，实际项目替换为真实图片 */}
-          <div className="absolute inset-0 bg-gradient-to-br from-purple-900/50 to-blue-900/50" />
-
-          {/* 装饰元素 */}
-          <div className="absolute top-4 right-4 w-24 h-24 bg-white/10 rounded-full blur-2xl" />
-          <div className="absolute bottom-0 right-8 w-32 h-32 bg-pink-500/20 rounded-full blur-3xl" />
+          {/* 背景图片 */}
+          {currentBanner.image ? (
+            <>
+              <Image
+                src={currentBanner.image}
+                alt={currentBanner.title}
+                fill
+                className="object-cover"
+                sizes="(max-width: 768px) 100vw, 800px"
+                priority={currentIndex === 0}
+              />
+              {/* 遮罩层，保证文字可读性 */}
+              <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent" />
+            </>
+          ) : (
+            <>
+              {/* 纯色渐变时的装饰 */}
+              <div className="absolute inset-0 bg-gradient-to-br from-purple-900/50 to-blue-900/50" />
+              <div className="absolute top-4 right-4 w-24 h-24 bg-white/10 rounded-full blur-2xl" />
+              <div className="absolute bottom-0 right-8 w-32 h-32 bg-pink-500/20 rounded-full blur-3xl" />
+            </>
+          )}
         </div>
 
         {/* 文字内容 */}
@@ -102,11 +119,10 @@ export default function BannerCarousel() {
             <button
               key={index}
               onClick={() => goToSlide(index)}
-              className={`h-1.5 rounded-full transition-all ${
-                index === currentIndex
-                  ? 'w-4 bg-white'
-                  : 'w-1.5 bg-white/40 hover:bg-white/60'
-              }`}
+              className={`h-1.5 rounded-full transition-all ${index === currentIndex
+                ? 'w-4 bg-white'
+                : 'w-1.5 bg-white/40 hover:bg-white/60'
+                }`}
               aria-label={`Go to slide ${index + 1}`}
             />
           ))}

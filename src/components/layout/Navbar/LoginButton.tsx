@@ -36,7 +36,7 @@ export default function LoginButton() {
     return (
       <button
         onClick={() => setIsLoginModalOpen(true)}
-        className="flex items-center gap-1.5 px-4 py-1.5 sm:px-6 sm:py-2 bg-white text-black rounded-full hover:bg-gray-200 transition-colors font-medium text-sm sm:text-base"
+        className="flex items-center gap-1.5 px-4 py-1.5 sm:px-6 sm:py-2 bg-gradient-to-r from-pink-400 to-rose-400 text-white rounded-full hover:from-pink-500 hover:to-rose-500 transition-all font-medium text-sm sm:text-base shadow-md hover:shadow-lg"
       >
         <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path

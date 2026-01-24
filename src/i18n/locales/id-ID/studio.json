@@ -1,5 +1,117 @@
 {
   "studio": {
+    "aiSong": {
+      "steps": {
+        "theme": "Tema",
+        "mood": "Suasana",
+        "vocal": "Vokal",
+        "lyrics": "Lirik",
+        "create": "Buat"
+      },
+      "themes": {
+        "love": "Cinta",
+        "friendship": "Persahabatan",
+        "youth": "Masa Muda",
+        "loneliness": "Kesepian",
+        "dream": "Mimpi",
+        "freedom": "Kebebasan",
+        "custom": "Kustom"
+      },
+      "moods": {
+        "gentle": "Lembut",
+        "sad": "Sedih",
+        "night": "Malam",
+        "passionate": "Penuh Gairah",
+        "ethereal": "Surgawi",
+        "healing": "Menyembuhkan",
+        "custom": "Kustom"
+      },
+      "vocals": {
+        "femaleEthereal": "Wanita · Surgawi",
+        "femaleGentle": "Wanita · Lembut",
+        "maleWarm": "Pria · Hangat",
+        "maleDeep": "Pria · Dalam",
+        "girlSweet": "Gadis · Manis",
+        "ambient": "Vokal Ambient"
+      },
+      "themeStep": {
+        "title": "Tema apa yang Anda inginkan untuk lagu Anda?",
+        "subtitle": "Pilih tema dan AI akan membangun cerita lagu Anda",
+        "customLabel": "Masukkan tema Anda",
+        "customPlaceholder": "Contoh: Wisuda, Cinta pertama, Perjalanan, Kenangan musim panas..."
+      },
+      "moodStep": {
+        "title": "Bagaimana Anda ingin lagu ini terasa?",
+        "subtitle": "Pilih suasana dan kami akan menciptakan atmosfernya",
+        "customLabel": "Masukkan perasaan yang Anda inginkan",
+        "customPlaceholder": "Contoh: Nostalgia, Segar, Misterius, Ceria..."
+      },
+      "vocalStep": {
+        "title": "Jenis suara apa yang cocok dengan melodi?",
+        "subtitle": "Kami akan menggunakan gaya vokal ini untuk membentuk musik"
+      },
+      "lyricsStep": {
+        "title": "Edit lirik Anda",
+        "titleGenerating": "AI sedang menulis lirik untuk Anda...",
+        "subtitle": "Tidak puas? Klik regenerasi",
+        "subtitleGenerating": "Mohon tunggu, ini mungkin butuh beberapa detik",
+        "basedOnSelection": "Membuat lirik berdasarkan pilihan Anda:",
+        "songTitleLabel": "Judul Lagu",
+        "songTitlePlaceholder": "Masukkan judul lagu",
+        "songTitleGenerating": "Membuat judul..."
+      },
+      "createStep": {
+        "title": "Siap untuk membuat?",
+        "titleGenerating": "Membuat lagu Anda...",
+        "titleComplete": "Lagu Anda sudah siap!",
+        "subtitle": "Tinjau pilihan Anda dan mulai generate",
+        "subtitleGenerating": "Mohon tunggu, AI sedang menggubah musik (sekitar 1-3 menit)",
+        "subtitleComplete": "Dengarkan! Tidak puas? Generate lagi"
+      },
+      "navigation": {
+        "previous": "Sebelumnya",
+        "next": "Selanjutnya"
+      },
+      "lyricsPrompt": "Silakan tulis lirik untuk sebuah lagu.\nTema: {{theme}}\nSuasana: {{mood}}\nGaya vokal: {{vocal}}\n\nPersyaratan:\n1. Sertakan penanda struktur seperti [Verse 1], [Chorus], [Verse 2]\n2. Lirik harus sesuai tema dan suasana, cocok untuk dinyanyikan\n3. Bahasa yang indah dengan imajinasi\n4. Panjang sedang, sekitar 150-200 kata",
+      "fallbackTitle": "Lagu {{theme}}",
+      "lyricsEditor": {
+        "generating": "Membuat lirik...",
+        "placeholder": "Lirik akan muncul di sini...",
+        "characters": "karakter",
+        "regenerate": "Regenerasi Lirik",
+        "tipTitle": "Tips:",
+        "tipContent": "Anda dapat mengedit lirik langsung, atau klik \"Regenerasi\" untuk membiarkan AI membuat versi baru"
+      },
+      "createPreview": {
+        "creating": "Membuat...",
+        "creatingTime": "Ini mungkin butuh 1-3 menit",
+        "selectVersion": "Pilih versi:",
+        "version": "Versi",
+        "lyrics": "Lirik",
+        "regenerateSong": "Regenerasi Lagu",
+        "continueToMV": "Lanjut ke MV",
+        "yourConfig": "Pengaturan Anda",
+        "lyricsPreview": "Pratinjau Lirik",
+        "noLyrics": "Belum ada lirik",
+        "songTitle": "Judul Lagu",
+        "optional": "(opsional)",
+        "musicStyle": "Gaya Musik",
+        "stylePlaceholder": "pop, balada, akustik, piano...",
+        "aiGenerate": "AI Generate",
+        "generating": "Membuat...",
+        "styleTip": "Tips: Anda dapat memasukkan kata kunci gaya seperti pop, rock, jazz, elektronik, dll.",
+        "voice": "Suara",
+        "auto": "Otomatis",
+        "male": "Pria",
+        "female": "Wanita",
+        "myCredits": "Kredit Saya",
+        "cost": "Biaya",
+        "credits": "kredit",
+        "insufficientCredits": "Kredit tidak cukup. Silakan isi ulang atau selesaikan tugas harian untuk mendapatkan kredit.",
+        "startGenerate": "Mulai Generate Lagu",
+        "download": "Unduh"
+      }
+    },
     "welcomeTitle": "Hai, selamat datang di Voicica AI",
     "welcomeSubtitle": "Buka kekuatan AI dengan alat canggih kami untuk suara, video, musik, dan seni. Wujudkan ide Anda—lebih cepat, lebih pintar, dan tanpa usaha.",
     "featuredProducts": "Produk Unggulan",

@@ -1,5 +1,117 @@
 {
   "studio": {
+    "aiSong": {
+      "steps": {
+        "theme": "الموضوع",
+        "mood": "المزاج",
+        "vocal": "الصوت",
+        "lyrics": "كلمات الأغنية",
+        "create": "إنشاء"
+      },
+      "themes": {
+        "love": "الحب",
+        "friendship": "الصداقة",
+        "youth": "الشباب",
+        "loneliness": "الوحدة",
+        "dream": "الحلم",
+        "freedom": "الحرية",
+        "custom": "مخصص"
+      },
+      "moods": {
+        "gentle": "لطيف",
+        "sad": "حزين",
+        "night": "ليلي",
+        "passionate": "عاطفي",
+        "ethereal": "أثيري",
+        "healing": "شفائي",
+        "custom": "مخصص"
+      },
+      "vocals": {
+        "femaleEthereal": "أنثى · أثيري",
+        "femaleGentle": "أنثى · لطيف",
+        "maleWarm": "ذكر · دافئ",
+        "maleDeep": "ذكر · عميق",
+        "girlSweet": "فتاة · حلو",
+        "ambient": "صوت محيط"
+      },
+      "themeStep": {
+        "title": "ما الموضوع الذي تريده لأغنيتك؟",
+        "subtitle": "اختر موضوعًا وسيبني الذكاء الاصطناعي قصة أغنيتك",
+        "customLabel": "أدخل موضوعك",
+        "customPlaceholder": "مثال: التخرج، الحب الأول، السفر، ذكريات الصيف..."
+      },
+      "moodStep": {
+        "title": "كيف تريد أن تشعرك هذه الأغنية؟",
+        "subtitle": "اختر مزاجًا وسنخلق الجو المناسب",
+        "customLabel": "أدخل الشعور الذي تريده",
+        "customPlaceholder": "مثال: حنين، منعش، غامض، مرح..."
+      },
+      "vocalStep": {
+        "title": "أي نوع من الصوت يناسب اللحن؟",
+        "subtitle": "سنستخدم هذا النمط الصوتي لتشكيل الموسيقى"
+      },
+      "lyricsStep": {
+        "title": "عدّل كلمات الأغنية",
+        "titleGenerating": "الذكاء الاصطناعي يكتب كلمات لك...",
+        "subtitle": "غير راضٍ؟ انقر لإعادة التوليد",
+        "subtitleGenerating": "يرجى الانتظار، قد يستغرق بضع ثوانٍ",
+        "basedOnSelection": "توليد الكلمات بناءً على اختياراتك:",
+        "songTitleLabel": "عنوان الأغنية",
+        "songTitlePlaceholder": "أدخل عنوان الأغنية",
+        "songTitleGenerating": "جارٍ توليد العنوان..."
+      },
+      "createStep": {
+        "title": "مستعد للإنشاء؟",
+        "titleGenerating": "جارٍ إنشاء أغنيتك...",
+        "titleComplete": "أغنيتك جاهزة!",
+        "subtitle": "راجع اختياراتك وابدأ التوليد",
+        "subtitleGenerating": "يرجى الانتظار، الذكاء الاصطناعي يؤلف الموسيقى (حوالي 1-3 دقائق)",
+        "subtitleComplete": "استمع! غير راضٍ؟ أعد التوليد"
+      },
+      "navigation": {
+        "previous": "السابق",
+        "next": "التالي"
+      },
+      "lyricsPrompt": "يرجى كتابة كلمات أغنية.\nالموضوع: {{theme}}\nالمزاج: {{mood}}\nنمط الصوت: {{vocal}}\n\nالمتطلبات:\n1. تضمين علامات البنية مثل [Verse 1], [Chorus], [Verse 2]\n2. يجب أن تتناسب الكلمات مع الموضوع والمزاج وتكون مناسبة للغناء\n3. لغة جميلة مع صور شعرية\n4. طول معتدل، حوالي 150-200 كلمة",
+      "fallbackTitle": "أغنية {{theme}}",
+      "lyricsEditor": {
+        "generating": "جارٍ توليد الكلمات...",
+        "placeholder": "ستظهر الكلمات هنا...",
+        "characters": "حرف",
+        "regenerate": "إعادة توليد الكلمات",
+        "tipTitle": "نصيحة:",
+        "tipContent": "يمكنك تعديل الكلمات مباشرة، أو انقر \"إعادة التوليد\" للسماح للذكاء الاصطناعي بإنشاء نسخة جديدة"
+      },
+      "createPreview": {
+        "creating": "جارٍ الإنشاء...",
+        "creatingTime": "قد يستغرق 1-3 دقائق",
+        "selectVersion": "اختر النسخة:",
+        "version": "النسخة",
+        "lyrics": "كلمات الأغنية",
+        "regenerateSong": "إعادة توليد الأغنية",
+        "continueToMV": "متابعة إلى MV",
+        "yourConfig": "إعداداتك",
+        "lyricsPreview": "معاينة الكلمات",
+        "noLyrics": "لا توجد كلمات بعد",
+        "songTitle": "عنوان الأغنية",
+        "optional": "(اختياري)",
+        "musicStyle": "نمط الموسيقى",
+        "stylePlaceholder": "بوب، باللاد، أكوستيك، بيانو...",
+        "aiGenerate": "توليد AI",
+        "generating": "جارٍ التوليد...",
+        "styleTip": "نصيحة: يمكنك إدخال كلمات أنماط مثل بوب، روك، جاز، إلكتروني، إلخ.",
+        "voice": "الصوت",
+        "auto": "تلقائي",
+        "male": "ذكر",
+        "female": "أنثى",
+        "myCredits": "رصيدي",
+        "cost": "التكلفة",
+        "credits": "رصيد",
+        "insufficientCredits": "رصيد غير كافٍ. يرجى الشحن أو إكمال المهام اليومية للحصول على رصيد.",
+        "startGenerate": "بدء توليد الأغنية",
+        "download": "تحميل"
+      }
+    },
     "welcomeTitle": "مرحبًا بك في Voicica AI",
     "welcomeSubtitle": "أطلق العنان لقوة الذكاء الاصطناعي مع أدواتنا المتطورة للصوت والفيديو والموسيقى والفن. حوّل أفكارك إلى واقع — بشكل أسرع وأذكى وبدون عناء.",
     "featuredProducts": "المنتجات المميزة",

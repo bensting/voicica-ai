@@ -196,7 +196,7 @@ export default function NativeVoiceSelectorSheet({
       {/* Full Screen Sheet */}
       <div
         className="fixed inset-0 z-50 bg-gray-900 flex flex-col"
-        style={{ paddingTop: 'var(--safe-area-inset-top, 0px)' }}
+        style={{ paddingTop: 'calc(var(--safe-area-inset-top, 0px) + 12px)' }}
       >
         {/* Header */}
         <div className="flex items-center justify-between px-4 py-3 border-b border-gray-800 flex-shrink-0">
@@ -310,7 +310,7 @@ export default function NativeVoiceSelectorSheet({
         {/* Voice List */}
         <div
           className="flex-1 overflow-y-auto px-4"
-          style={{ paddingBottom: 'var(--safe-area-inset-bottom, 0px)' }}
+          style={{ paddingBottom: 'calc(var(--safe-area-inset-bottom, 0px) + 24px)' }}
           onScroll={handleScroll}
         >
           {loading ? (

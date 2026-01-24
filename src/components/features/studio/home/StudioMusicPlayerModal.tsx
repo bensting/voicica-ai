@@ -67,7 +67,6 @@ export default function StudioMusicPlayerModal({
   const [duration, setDuration] = useState(music.duration || 0);
   const [copied, setCopied] = useState(false);
   const [isSharing, setIsSharing] = useState(false);
-  const [shareMessage, setShareMessage] = useState<string | null>(null);
 
   const displayTitle = music.title || 'AI Music';
   const displayLyrics = music.lyrics || music.prompt || '';
@@ -155,12 +154,6 @@ export default function StudioMusicPlayerModal({
     }
   };
 
-  // 显示临时消息
-  const showMessage = (msg: string) => {
-    setShareMessage(msg);
-    setTimeout(() => setShareMessage(null), 2000);
-  };
-
   // 分享
   const handleShare = async () => {
     if (!taskId) return;
@@ -178,14 +171,9 @@ export default function StudioMusicPlayerModal({
       } else {
         // 回退到复制链接
         await navigator.clipboard.writeText(result.url);
-        showMessage('Link copied!');
       }
     } catch (error) {
       console.error('Share failed:', error);
-      // 如果分享被取消，不显示错误
-      if (error instanceof Error && error.name !== 'AbortError') {
-        showMessage('Share failed');
-      }
     } finally {
       setIsSharing(false);
     }
@@ -376,12 +364,6 @@ export default function StudioMusicPlayerModal({
         </div>
       </div>
 
-      {/* Toast 消息 */}
-      {shareMessage && (
-        <div className="fixed top-20 left-1/2 -translate-x-1/2 z-[60] px-4 py-2 bg-gray-800 text-white text-sm rounded-lg shadow-lg">
-          {shareMessage}
-        </div>
-      )}
     </div>
   );
 }

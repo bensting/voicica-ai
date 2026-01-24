@@ -70,6 +70,7 @@ export default function MusicPlayerModal({
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(music.duration || 0);
   const [isSharing, setIsSharing] = useState(false);
+  const [shareMessage, setShareMessage] = useState<string | null>(null);
   const { hideAll, showAll } = useBottomNav();
 
   // 隐藏顶部和底部导航栏
@@ -141,6 +142,12 @@ export default function MusicPlayerModal({
     }
   };
 
+  // 显示临时消息
+  const showMessage = (msg: string) => {
+    setShareMessage(msg);
+    setTimeout(() => setShareMessage(null), 2000);
+  };
+
   // 分享
   const handleShare = async () => {
     if (!taskId) return;
@@ -158,13 +165,13 @@ export default function MusicPlayerModal({
       } else {
         // 回退到复制链接
         await navigator.clipboard.writeText(result.url);
-        alert('Share link copied to clipboard!');
+        showMessage('Link copied!');
       }
     } catch (error) {
       console.error('Share failed:', error);
       // 如果分享被取消，不显示错误
       if (error instanceof Error && error.name !== 'AbortError') {
-        alert('Failed to share');
+        showMessage('Share failed');
       }
     } finally {
       setIsSharing(false);
@@ -377,6 +384,13 @@ export default function MusicPlayerModal({
           </div>
         )}
       </div>
+
+      {/* Toast 消息 */}
+      {shareMessage && (
+        <div className="fixed top-20 left-1/2 -translate-x-1/2 z-[10000] px-4 py-2 bg-gray-800 text-white text-sm rounded-lg shadow-lg">
+          {shareMessage}
+        </div>
+      )}
     </div>
   );
 }

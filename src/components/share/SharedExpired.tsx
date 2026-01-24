@@ -46,7 +46,7 @@ export default function SharedExpired() {
 
         {/* CTA */}
         <Link
-          href="/native"
+          href="/"
           className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-medium rounded-full hover:opacity-90 transition-opacity"
         >
           <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">

@@ -1,8 +1,9 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { Download, Pencil } from 'lucide-react';
+import { Download, Pencil, Share2 } from 'lucide-react';
 import type { MusicRecord } from '@/actions/music';
+import { createShareLink } from '@/actions/share';
 import GradientButton from '@/components/ui/GradientButton';
 import DeleteConfirmDialog from '@/components/native/ui/DeleteConfirmDialog';
 import { useBottomNav } from '@/contexts/BottomNavContext';
@@ -26,6 +27,7 @@ export default function MusicDetailModal({
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [isSharing, setIsSharing] = useState(false);
   const { hide, show } = useBottomNav();
 
   // 隐藏底部导航
@@ -123,6 +125,36 @@ export default function MusicDetailModal({
     }
   };
 
+  // 分享
+  const handleShare = async () => {
+    if (!music.task_id) return;
+    setIsSharing(true);
+    try {
+      const result = await createShareLink('music', music.task_id);
+
+      // 尝试使用原生分享 API
+      if (navigator.share) {
+        await navigator.share({
+          title: displayTitle,
+          text: `Check out this AI-generated music: ${displayTitle}`,
+          url: result.url,
+        });
+      } else {
+        // 回退到复制链接
+        await navigator.clipboard.writeText(result.url);
+        alert('Share link copied to clipboard!');
+      }
+    } catch (error) {
+      console.error('Share failed:', error);
+      // 如果分享被取消，不显示错误
+      if (error instanceof Error && error.name !== 'AbortError') {
+        alert('Failed to share');
+      }
+    } finally {
+      setIsSharing(false);
+    }
+  };
+
   const progress = duration > 0 ? (currentTime / duration) * 100 : 0;
 
   return (
@@ -148,6 +180,18 @@ export default function MusicDetailModal({
           </svg>
         </button>
         <div className="flex items-center gap-2">
+          {/* 分享按钮 */}
+          <button
+            onClick={handleShare}
+            disabled={isSharing || !music.task_id}
+            className="w-10 h-10 flex items-center justify-center disabled:opacity-50"
+          >
+            {isSharing ? (
+              <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+            ) : (
+              <Share2 className="w-5 h-5 text-white" />
+            )}
+          </button>
           <button className="w-10 h-10 flex items-center justify-center">
             <svg className="w-5 h-5 text-white" viewBox="0 0 24 24" fill="currentColor">
               <circle cx="12" cy="6" r="2" />

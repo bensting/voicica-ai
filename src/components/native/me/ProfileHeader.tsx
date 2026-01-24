@@ -24,6 +24,7 @@ interface ProfileHeaderProps {
   userName?: string;
   avatarUrl?: string;
   isLoggedIn?: boolean;
+  onAvatarClick?: () => void;
 }
 
 /**
@@ -33,10 +34,16 @@ interface ProfileHeaderProps {
 export default function ProfileHeader({
   userName = 'Guest',
   avatarUrl,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   isLoggedIn = false,
+  onAvatarClick,
 }: ProfileHeaderProps) {
   const router = useRouter();
+
+  const handleAvatarClick = () => {
+    if (!isLoggedIn && onAvatarClick) {
+      onAvatarClick();
+    }
+  };
 
   const handleSettingsClick = () => {
     router.push('/native/settings');
@@ -61,16 +68,22 @@ export default function ProfileHeader({
 
       {/* 头像和用户名 */}
       <div className="relative z-10 flex flex-col items-center">
-        {avatarUrl ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={avatarUrl}
-            alt={userName}
-            className="w-20 h-20 rounded-full border-2 border-purple-500/30 object-cover"
-          />
-        ) : (
-          <DefaultAvatar />
-        )}
+        <button
+          onClick={handleAvatarClick}
+          disabled={isLoggedIn}
+          className={`${!isLoggedIn ? 'cursor-pointer active:scale-95 transition-transform' : ''}`}
+        >
+          {avatarUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={avatarUrl}
+              alt={userName}
+              className="w-20 h-20 rounded-full border-2 border-purple-500/30 object-cover"
+            />
+          ) : (
+            <DefaultAvatar />
+          )}
+        </button>
         <h1 className="mt-3 text-xl font-semibold text-white">{userName}</h1>
       </div>
     </div>

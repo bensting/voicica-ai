@@ -33,7 +33,7 @@ export class AppError extends Error {
  */
 export class UnauthorizedError extends AppError {
   constructor() {
-    super('UNAUTHORIZED', '未登录', undefined, 401);
+    super('UNAUTHORIZED', 'Not logged in', undefined, 401);
   }
 }
 
@@ -42,7 +42,7 @@ export class UnauthorizedError extends AppError {
  */
 export class NoAuthInfoError extends AppError {
   constructor() {
-    super('NO_AUTH_INFO', '未提供认证信息', undefined, 401);
+    super('NO_AUTH_INFO', 'No authentication info provided', undefined, 401);
   }
 }
 
@@ -57,7 +57,7 @@ export class InsufficientCreditsError extends AppError {
   constructor(required: number, current: number) {
     super(
       'INSUFFICIENT_CREDITS',
-      `积分不足。需要 ${required}，当前 ${current}`,
+      `Insufficient credits. Required: ${required}, Current: ${current}`,
       { required, current },
       400
     );
@@ -73,7 +73,7 @@ export class InsufficientCreditsError extends AppError {
  */
 export class TaskNotFoundError extends AppError {
   constructor(taskId: string) {
-    super('TASK_NOT_FOUND', `任务不存在: ${taskId}`, { taskId }, 404);
+    super('TASK_NOT_FOUND', `Task not found: ${taskId}`, { taskId }, 404);
   }
 }
 
@@ -84,7 +84,7 @@ export class TaskCreationError extends AppError {
   constructor(reason?: string) {
     super(
       'TASK_CREATION_FAILED',
-      reason ? `任务创建失败: ${reason}` : '任务创建失败',
+      reason ? `Task creation failed: ${reason}` : 'Task creation failed',
       { reason },
       500
     );
@@ -100,7 +100,7 @@ export class TaskCreationError extends AppError {
  */
 export class ValidationError extends AppError {
   constructor(field: string, message: string) {
-    super('VALIDATION_ERROR', `参数验证失败: ${field} - ${message}`, { field }, 400);
+    super('VALIDATION_ERROR', `Validation failed: ${field} - ${message}`, { field }, 400);
   }
 }
 
@@ -111,7 +111,7 @@ export class TextTooLongError extends AppError {
   constructor(maxLength: number, currentLength: number) {
     super(
       'TEXT_TOO_LONG',
-      `文本过长。最大长度 ${maxLength}，当前长度 ${currentLength}`,
+      `Text too long. Max: ${maxLength}, Current: ${currentLength}`,
       { maxLength, currentLength },
       400
     );
@@ -127,7 +127,7 @@ export class TextTooLongError extends AppError {
  */
 export class ResourceNotFoundError extends AppError {
   constructor(resource: string, id: string) {
-    super('RESOURCE_NOT_FOUND', `${resource}不存在: ${id}`, { resource, id }, 404);
+    super('RESOURCE_NOT_FOUND', `${resource} not found: ${id}`, { resource, id }, 404);
   }
 }
 
@@ -136,7 +136,7 @@ export class ResourceNotFoundError extends AppError {
  */
 export class VoiceNotFoundError extends AppError {
   constructor(voiceName: string) {
-    super('VOICE_NOT_FOUND', `语音模型不存在: ${voiceName}`, { voiceName }, 404);
+    super('VOICE_NOT_FOUND', `Voice model not found: ${voiceName}`, { voiceName }, 404);
   }
 }
 
@@ -166,7 +166,7 @@ export function errorToResponse(error: unknown): {
   console.error('❌ Unexpected error:', error);
   return {
     errorCode: 'INTERNAL_ERROR',
-    error: '服务器内部错误',
+    error: 'Internal server error',
   };
 }
 

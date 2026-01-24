@@ -284,7 +284,7 @@ export async function getTtsTaskStatus(taskId: string): Promise<TtsTaskStatus> {
   });
 
   if (!record) {
-    throw new Error(`任务不存在: ${taskId}`);
+    throw new Error(`Task not found: ${taskId}`);
   }
 
   switch (record.status) {
@@ -500,7 +500,7 @@ export async function getTtsRecordById(recordId: number): Promise<TtsRecord> {
   });
 
   if (!record) {
-    throw new Error(`记录不存在: ${recordId}`);
+    throw new Error(`Record not found: ${recordId}`);
   }
 
   // 验证记录是否属于当前用户
@@ -566,7 +566,7 @@ export async function deleteTtsRecord(recordId: string): Promise<void> {
   });
 
   if (!record) {
-    throw new Error(`记录不存在: ${recordId}`);
+    throw new Error(`Record not found: ${recordId}`);
   }
 
   // 验证记录是否属于当前用户
@@ -708,7 +708,7 @@ export async function checkAndHandleStuckTask(
   });
 
   if (!record) {
-    throw new Error(`记录不存在: ${recordId}`);
+    throw new Error(`Record not found: ${recordId}`);
   }
 
   // 验证权限

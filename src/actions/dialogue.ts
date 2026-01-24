@@ -38,7 +38,7 @@ interface DialogueTaskStatus {
 function getKieApiToken(): string {
   const token = process.env.KIE_API_KEY;
   if (!token) {
-    throw new Error('未配置 KIE_API_KEY 环境变量');
+    throw new Error('KIE_API_KEY environment variable not configured');
   }
   return token;
 }
@@ -98,11 +98,11 @@ export async function createDialogueTask(
   );
 
   if (totalCharacters === 0) {
-    throw new Error('对话内容不能为空');
+    throw new Error('Dialogue content cannot be empty');
   }
 
   if (totalCharacters > 5000) {
-    throw new Error('对话总字符数不能超过 5000');
+    throw new Error('Total characters cannot exceed 5000');
   }
 
   // 计算消耗的积分
@@ -115,11 +115,11 @@ export async function createDialogueTask(
   });
 
   if (!user) {
-    throw new Error('用户不存在');
+    throw new Error('User not found');
   }
 
   if (user.credits < creditsRequired) {
-    throw new Error(`积分不足，需要 ${creditsRequired} 积分`);
+    throw new Error(`Insufficient credits. Required: ${creditsRequired}, Current: ${user.credits}`);
   }
 
   const token = getKieApiToken();
@@ -164,28 +164,28 @@ export async function createDialogueTask(
 
   if (!response.ok) {
     const errorText = await response.text();
-    console.error('kie.ai API 错误:', response.status, errorText);
+    console.error('kie.ai API error:', response.status, errorText);
 
     // 更新记录状态为失败
     await prisma.dialogue_records.update({
       where: { task_id: taskId },
       data: {
         status: 'FAILURE',
-        error_message: `API 请求失败: ${response.status}`,
+        error_message: `API request failed: ${response.status}`,
       },
     });
 
     if (response.status === 401) {
-      throw new Error('API 认证失败');
+      throw new Error('API authentication failed');
     }
     if (response.status === 402) {
-      throw new Error('API 积分不足');
+      throw new Error('API credits insufficient');
     }
     if (response.status === 422) {
-      throw new Error('请求参数错误');
+      throw new Error('Invalid request parameters');
     }
 
-    throw new Error(`API 请求失败: ${response.status}`);
+    throw new Error(`API request failed: ${response.status}`);
   }
 
   const result = await response.json();
@@ -195,10 +195,10 @@ export async function createDialogueTask(
       where: { task_id: taskId },
       data: {
         status: 'FAILURE',
-        error_message: result.msg || 'API 返回错误',
+        error_message: result.msg || 'API returned error',
       },
     });
-    throw new Error(result.msg || 'API 返回错误');
+    throw new Error(result.msg || 'API returned error');
   }
 
   const externalTaskId = result.data.taskId;
@@ -253,7 +253,7 @@ export async function getDialogueTaskStatus(
   });
 
   if (!record) {
-    throw new Error('任务不存在');
+    throw new Error('Task not found');
   }
 
   // 如果已完成或失败，直接返回数据库状态
@@ -453,7 +453,7 @@ export async function deleteDialogueRecord(id: number): Promise<void> {
   });
 
   if (!record) {
-    throw new Error('记录不存在或无权删除');
+    throw new Error('Record not found or not authorized to delete');
   }
 
   await prisma.dialogue_records.delete({

@@ -28,7 +28,6 @@ export default function MusicDetailModal({
   const [duration, setDuration] = useState(0);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [isSharing, setIsSharing] = useState(false);
-  const [shareMessage, setShareMessage] = useState<string | null>(null);
   const { hide, show } = useBottomNav();
 
   // 隐藏底部导航
@@ -126,12 +125,6 @@ export default function MusicDetailModal({
     }
   };
 
-  // 显示临时消息
-  const showMessage = (msg: string) => {
-    setShareMessage(msg);
-    setTimeout(() => setShareMessage(null), 2000);
-  };
-
   // 分享
   const handleShare = async () => {
     if (!music.task_id) return;
@@ -149,14 +142,9 @@ export default function MusicDetailModal({
       } else {
         // 回退到复制链接
         await navigator.clipboard.writeText(result.url);
-        showMessage('Link copied!');
       }
     } catch (error) {
       console.error('Share failed:', error);
-      // 如果分享被取消，不显示错误
-      if (error instanceof Error && error.name !== 'AbortError') {
-        showMessage('Share failed');
-      }
     } finally {
       setIsSharing(false);
     }
@@ -351,13 +339,6 @@ export default function MusicDetailModal({
           </GradientButton>
         </div>
       </div>
-
-      {/* Toast 消息 */}
-      {shareMessage && (
-        <div className="fixed top-20 left-1/2 -translate-x-1/2 z-[10000] px-4 py-2 bg-gray-800 text-white text-sm rounded-lg shadow-lg animate-fade-in">
-          {shareMessage}
-        </div>
-      )}
 
       <DeleteConfirmDialog
         isOpen={showDeleteDialog}

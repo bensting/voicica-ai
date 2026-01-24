@@ -70,7 +70,6 @@ export default function MusicPlayerModal({
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(music.duration || 0);
   const [isSharing, setIsSharing] = useState(false);
-  const [shareUrl, setShareUrl] = useState<string | null>(null);
   const { hideAll, showAll } = useBottomNav();
 
   // 隐藏顶部和底部导航栏
@@ -148,7 +147,6 @@ export default function MusicPlayerModal({
     setIsSharing(true);
     try {
       const result = await createShareLink('music', taskId);
-      setShareUrl(result.url);
 
       // 尝试使用原生分享 API
       if (navigator.share) {

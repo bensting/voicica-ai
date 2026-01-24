@@ -38,7 +38,7 @@ export default function SharedMusicPlayer({ music }: SharedMusicPlayerProps) {
   const [duration, setDuration] = useState(music.duration || 0);
 
   const displayTitle = music.title || 'AI Music';
-  const { prompt: displayPrompt, lyrics: displayLyrics } = extractPromptAndLyrics(music.lyrics);
+  const { lyrics: displayLyrics } = extractPromptAndLyrics(music.lyrics);
 
   // 播放/暂停
   const togglePlay = () => {

@@ -1,8 +1,17 @@
 {
-  "version": "1.1.9",
-  "buildNumber": 20,
+  "version": "1.2.0",
+  "buildNumber": 21,
   "description": "原生应用版本（Android/iOS 应用壳）",
   "changelog": [
+    {
+      "version": "1.2.0",
+      "buildNumber": 21,
+      "date": "2026-01-24",
+      "changes": [
+        "新增音乐分享功能",
+        "添加 @capacitor/share 插件支持原生分享"
+      ]
+    },
     {
       "version": "1.1.9",
       "buildNumber": 20,

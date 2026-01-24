@@ -4,11 +4,13 @@ import { useEffect, useState, useRef, useMemo } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useStudio } from '@/contexts/StudioContext';
 import { useCredits } from '@/contexts/CreditsContext';
+import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 import { ChevronLeft, ChevronRight, Edit3 } from 'lucide-react';
 import Stepper from '@/components/features/studio/ai-song/Stepper';
 import OptionCard from '@/components/features/studio/ai-song/OptionCard';
 import LyricsEditor from '@/components/features/studio/ai-song/LyricsEditor';
 import CreatePreview from '@/components/features/studio/ai-song/CreatePreview';
+import LoginModal from '@/components/features/auth/LoginModal';
 import { createMusicTask, getMusicTaskStatus } from '@/actions/music';
 import { getMusicModelCredits } from '@/config/native/musicModels';
 
@@ -66,7 +68,9 @@ export default function AiSongPage() {
   const { t } = useLanguage();
   const { setTitle } = useStudio();
   const { credits } = useCredits();
+  const { user } = useFirebaseAuth();
   const [currentStep, setCurrentStep] = useState(0);
+  const [showLoginModal, setShowLoginModal] = useState(false);
 
   // 积分相关
   const creditsRequired = getMusicModelCredits('music-4.5');
@@ -169,6 +173,12 @@ export default function AiSongPage() {
   };
 
   const handleNext = () => {
+    // 检查用户是否登录
+    if (!user) {
+      setShowLoginModal(true);
+      return;
+    }
+
     if (currentStep < STEPS.length - 1 && canProceed()) {
       if (currentStep === 2) {
         handleGenerateLyrics();
@@ -670,6 +680,12 @@ export default function AiSongPage() {
           </div>
         </div>
       )}
+
+      {/* Login Modal */}
+      <LoginModal
+        isOpen={showLoginModal}
+        onClose={() => setShowLoginModal(false)}
+      />
     </div>
   );
 }

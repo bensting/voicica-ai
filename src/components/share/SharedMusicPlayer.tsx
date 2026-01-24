@@ -17,15 +17,18 @@ function formatTime(seconds: number): string {
   return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
 }
 
-// 提取纯歌词（去掉 prompt 部分）
-function extractLyrics(text: string | null): string | null {
-  if (!text) return null;
+// 提取 prompt 和歌词
+function extractPromptAndLyrics(text: string | null): { prompt: string | null; lyrics: string | null } {
+  if (!text) return { prompt: null, lyrics: null };
   // 歌词标记通常以 [Intro], [Verse], [Chorus], [Bridge], [Outro], [Hook] 等开头
   const lyricsMatch = text.match(/\[(Intro|Verse|Chorus|Bridge|Outro|Hook|Pre-Chorus|Refrain).*?\]/i);
-  if (lyricsMatch) {
-    return text.substring(lyricsMatch.index!).trim();
+  if (lyricsMatch && lyricsMatch.index !== undefined) {
+    const prompt = text.substring(0, lyricsMatch.index).trim() || null;
+    const lyrics = text.substring(lyricsMatch.index).trim();
+    return { prompt, lyrics };
   }
-  return null; // 如果没有歌词标记，不显示
+  // 没有歌词标记，整段作为 prompt
+  return { prompt: text.trim(), lyrics: null };
 }
 
 export default function SharedMusicPlayer({ music }: SharedMusicPlayerProps) {
@@ -35,7 +38,7 @@ export default function SharedMusicPlayer({ music }: SharedMusicPlayerProps) {
   const [duration, setDuration] = useState(music.duration || 0);
 
   const displayTitle = music.title || 'AI Music';
-  const displayLyrics = extractLyrics(music.lyrics);
+  const { prompt: displayPrompt, lyrics: displayLyrics } = extractPromptAndLyrics(music.lyrics);
 
   // 播放/暂停
   const togglePlay = () => {
@@ -139,17 +142,12 @@ export default function SharedMusicPlayer({ music }: SharedMusicPlayerProps) {
         </div>
 
         {/* 标题 */}
-        <h1 className="text-xl font-bold text-white mb-1 text-center">{displayTitle}</h1>
+        <h1 className="text-xl font-bold text-white mb-3 text-center">{displayTitle}</h1>
 
-        {/* 标签 */}
-        {music.tags && (
-          <p className="text-gray-400 text-sm mb-3">{music.tags}</p>
-        )}
-
-        {/* 歌词 - 可滚动查看（只显示纯歌词，不显示 prompt） */}
+        {/* 歌词 - 可滚动查看 */}
         {displayLyrics && (
-          <div className="w-full max-w-sm max-h-24 overflow-y-auto mb-4 scrollbar-thin">
-            <p className="text-gray-400 text-sm text-center whitespace-pre-wrap">
+          <div className="w-full max-w-sm max-h-28 overflow-y-auto mb-4">
+            <p className="text-gray-300 text-sm text-center whitespace-pre-wrap">
               {displayLyrics}
             </p>
           </div>

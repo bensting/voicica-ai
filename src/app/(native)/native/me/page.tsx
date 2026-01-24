@@ -81,6 +81,7 @@ export default function MePage() {
           userName={userName}
           avatarUrl={avatarUrl}
           isLoggedIn={isLoggedIn}
+          onAvatarClick={() => setIsLoginModalOpen(true)}
         />
 
         {/* 用户信息栏 */}

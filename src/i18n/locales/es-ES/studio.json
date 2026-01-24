@@ -1,5 +1,117 @@
 {
   "studio": {
+    "aiSong": {
+      "steps": {
+        "theme": "Tema",
+        "mood": "Estado de ánimo",
+        "vocal": "Voz",
+        "lyrics": "Letra",
+        "create": "Crear"
+      },
+      "themes": {
+        "love": "Amor",
+        "friendship": "Amistad",
+        "youth": "Juventud",
+        "loneliness": "Soledad",
+        "dream": "Sueño",
+        "freedom": "Libertad",
+        "custom": "Personalizado"
+      },
+      "moods": {
+        "gentle": "Suave",
+        "sad": "Melancólico",
+        "night": "Nocturno",
+        "passionate": "Apasionado",
+        "ethereal": "Etéreo",
+        "healing": "Sanador",
+        "custom": "Personalizado"
+      },
+      "vocals": {
+        "femaleEthereal": "Femenina · Etérea",
+        "femaleGentle": "Femenina · Suave",
+        "maleWarm": "Masculina · Cálida",
+        "maleDeep": "Masculina · Profunda",
+        "girlSweet": "Chica · Dulce",
+        "ambient": "Voz ambiental"
+      },
+      "themeStep": {
+        "title": "¿Qué tema quieres para tu canción?",
+        "subtitle": "Elige un tema y la IA construirá la historia de tu canción",
+        "customLabel": "Ingresa tu tema",
+        "customPlaceholder": "Ej: Graduación, Primer amor, Viaje, Recuerdos de verano..."
+      },
+      "moodStep": {
+        "title": "¿Cómo quieres que se sienta esta canción?",
+        "subtitle": "Elige un estado de ánimo y crearemos la atmósfera",
+        "customLabel": "Ingresa el sentimiento que deseas",
+        "customPlaceholder": "Ej: Nostálgico, Fresco, Misterioso, Alegre..."
+      },
+      "vocalStep": {
+        "title": "¿Qué tipo de voz encaja con la melodía?",
+        "subtitle": "Usaremos este estilo vocal para dar forma a la música"
+      },
+      "lyricsStep": {
+        "title": "Edita tu letra",
+        "titleGenerating": "La IA está escribiendo la letra para ti...",
+        "subtitle": "¿No estás satisfecho? Haz clic en regenerar",
+        "subtitleGenerating": "Por favor espera, esto puede tardar unos segundos",
+        "basedOnSelection": "Generando letra basada en tus elecciones:",
+        "songTitleLabel": "Título de la canción",
+        "songTitlePlaceholder": "Ingresa el título de la canción",
+        "songTitleGenerating": "Generando título..."
+      },
+      "createStep": {
+        "title": "¿Listo para crear?",
+        "titleGenerating": "Creando tu canción...",
+        "titleComplete": "¡Tu canción está lista!",
+        "subtitle": "Revisa tus elecciones y comienza a generar",
+        "subtitleGenerating": "Por favor espera, la IA está componiendo música (aproximadamente 1-3 minutos)",
+        "subtitleComplete": "¡Escúchala! ¿No estás satisfecho? Genera de nuevo"
+      },
+      "navigation": {
+        "previous": "Anterior",
+        "next": "Siguiente"
+      },
+      "lyricsPrompt": "Por favor escribe la letra de una canción.\nTema: {{theme}}\nEstado de ánimo: {{mood}}\nEstilo vocal: {{vocal}}\n\nRequisitos:\n1. Incluir marcadores de estructura como [Verse 1], [Chorus], [Verse 2]\n2. La letra debe coincidir con el tema y el ánimo, adecuada para cantar\n3. Lenguaje hermoso con imágenes\n4. Longitud moderada, aproximadamente 150-200 palabras",
+      "fallbackTitle": "Canción de {{theme}}",
+      "lyricsEditor": {
+        "generating": "Generando letra...",
+        "placeholder": "La letra aparecerá aquí...",
+        "characters": "caracteres",
+        "regenerate": "Regenerar letra",
+        "tipTitle": "Consejo:",
+        "tipContent": "Puedes editar la letra directamente, o hacer clic en \"Regenerar\" para que la IA cree una nueva versión"
+      },
+      "createPreview": {
+        "creating": "Creando...",
+        "creatingTime": "Esto puede tardar 1-3 minutos",
+        "selectVersion": "Seleccionar versión:",
+        "version": "Versión",
+        "lyrics": "Letra",
+        "regenerateSong": "Regenerar canción",
+        "continueToMV": "Continuar a MV",
+        "yourConfig": "Tu configuración",
+        "lyricsPreview": "Vista previa de la letra",
+        "noLyrics": "Aún no hay letra",
+        "songTitle": "Título de la canción",
+        "optional": "(opcional)",
+        "musicStyle": "Estilo musical",
+        "stylePlaceholder": "pop, balada, acústico, piano...",
+        "aiGenerate": "Generar con IA",
+        "generating": "Generando...",
+        "styleTip": "Consejo: Puedes ingresar palabras clave de estilo como pop, rock, jazz, electrónica, etc.",
+        "voice": "Voz",
+        "auto": "Automático",
+        "male": "Masculina",
+        "female": "Femenina",
+        "myCredits": "Mis créditos",
+        "cost": "Costo",
+        "credits": "créditos",
+        "insufficientCredits": "Créditos insuficientes. Por favor recarga o completa tareas diarias para obtener créditos.",
+        "startGenerate": "Comenzar a generar canción",
+        "download": "Descargar"
+      }
+    },
     "welcomeTitle": "Hola, bienvenido a Voicica AI",
     "welcomeSubtitle": "Desbloquea el poder de la IA con nuestras herramientas de vanguardia para voz, vídeo, música y arte. Transforma tus ideas en realidad, más rápido, más inteligente y sin esfuerzo.",
     "featuredProducts": "Productos destacados",

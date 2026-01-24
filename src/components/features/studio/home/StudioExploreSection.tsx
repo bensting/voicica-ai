@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Play } from 'lucide-react';
 import { getPublicMusicRecords, type PublicMusicRecord } from '@/actions/music';
-import MusicPlayerModal from '@/components/native/MusicPlayerModal';
+import StudioMusicPlayerModal from './StudioMusicPlayerModal';
 
 // 随机渐变色（用于无封面时）
 const gradients = [
@@ -155,7 +155,7 @@ export default function StudioExploreSection() {
 
       {/* 音乐播放器弹窗 */}
       {selectedMusic && (
-        <MusicPlayerModal
+        <StudioMusicPlayerModal
           music={{
             title: selectedMusic.title,
             cover_url: selectedMusic.cover_url,

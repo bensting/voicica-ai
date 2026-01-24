@@ -96,22 +96,11 @@ export default function MusicDetailModal({
     setCurrentTime(percent * duration);
   };
 
-  const handleDownload = async () => {
+  const handleDownload = () => {
     if (!currentAudioUrl) return;
-    try {
-      const response = await fetch(currentAudioUrl);
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `${displayTitle}${hasSecondTrack ? ` (Version ${currentTrack})` : ''}.mp3`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      window.URL.revokeObjectURL(url);
-    } catch (error) {
-      console.error('Download failed:', error);
-    }
+    // 直接打开音频 URL，让浏览器处理下载
+    // 避免 CORS 问题
+    window.open(currentAudioUrl, '_blank');
   };
 
   const handleConfirmDelete = async () => {

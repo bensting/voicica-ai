@@ -140,10 +140,7 @@ export default function CreatePreview({
   const handleDownload = () => {
     const audioUrl = selectedVersion === 1 ? generatedAudioUrl : generatedAudioUrl2;
     if (audioUrl) {
-      const link = document.createElement('a');
-      link.href = audioUrl;
-      link.download = `${generatedTitle || 'ai-song'}_v${selectedVersion}.mp3`;
-      link.click();
+      window.open(audioUrl, '_blank');
     }
   };
 

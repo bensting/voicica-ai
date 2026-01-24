@@ -73,22 +73,9 @@ export default function VoiceDetailModal({
     setCurrentTime(percent * duration);
   };
 
-  const handleDownload = async () => {
+  const handleDownload = () => {
     if (!voice.audio_url) return;
-    try {
-      const response = await fetch(voice.audio_url);
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `${displayTitle}.mp3`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      window.URL.revokeObjectURL(url);
-    } catch (error) {
-      console.error('Download failed:', error);
-    }
+    window.open(voice.audio_url, '_blank');
   };
 
   const handleConfirmDelete = async () => {

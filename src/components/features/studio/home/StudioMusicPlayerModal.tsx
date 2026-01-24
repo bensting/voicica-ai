@@ -124,22 +124,9 @@ export default function StudioMusicPlayerModal({
   };
 
   // 下载音频
-  const handleDownload = async () => {
+  const handleDownload = () => {
     if (!music.audio_url) return;
-    try {
-      const response = await fetch(music.audio_url);
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `${displayTitle}.mp3`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      window.URL.revokeObjectURL(url);
-    } catch (error) {
-      console.error('Download failed:', error);
-    }
+    window.open(music.audio_url, '_blank');
   };
 
   // 复制 prompt

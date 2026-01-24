@@ -36,16 +36,10 @@ function convertTtsRecordToGeneration(record: TtsRecord): Generation {
 }
 
 // 下载音频文件
-async function downloadAudio(audioUrl: string, filename: string): Promise<void> {
-  const link = document.createElement('a');
-  link.href = audioUrl;
-  link.download = filename;
-  link.style.display = 'none';
-  document.body.appendChild(link);
-  link.click();
-  setTimeout(() => {
-    document.body.removeChild(link);
-  }, 100);
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+async function downloadAudio(audioUrl: string, _filename: string): Promise<void> {
+  // 直接打开 URL，避免跨域下载问题
+  window.open(audioUrl, '_blank');
 }
 
 interface UseGenerationHistoryProps {

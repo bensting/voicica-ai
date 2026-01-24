@@ -72,22 +72,9 @@ export default function CoverDetailModal({
     setCurrentTime(percent * duration);
   };
 
-  const handleDownload = async () => {
+  const handleDownload = () => {
     if (!cover.output_url) return;
-    try {
-      const response = await fetch(cover.output_url);
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `${displayTitle}.mp3`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      window.URL.revokeObjectURL(url);
-    } catch (error) {
-      console.error('Download failed:', error);
-    }
+    window.open(cover.output_url, '_blank');
   };
 
   const handleConfirmDelete = async () => {

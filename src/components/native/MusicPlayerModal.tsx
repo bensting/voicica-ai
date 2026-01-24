@@ -124,22 +124,10 @@ export default function MusicPlayerModal({
   };
 
   // 下载音频
-  const handleDownload = async () => {
+  const handleDownload = () => {
     if (!music.audio_url) return;
-    try {
-      const response = await fetch(music.audio_url);
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `${displayTitle}.mp3`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      window.URL.revokeObjectURL(url);
-    } catch (error) {
-      console.error('Download failed:', error);
-    }
+    // 直接打开音频 URL，让浏览器处理下载
+    window.open(music.audio_url, '_blank');
   };
 
   // 分享

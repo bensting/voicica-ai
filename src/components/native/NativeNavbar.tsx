@@ -77,6 +77,8 @@ export default function NativeNavbar() {
         onClose={() => setIsLoginModalOpen(false)}
         onLoginSuccess={() => {
           setIsLoginModalOpen(false);
+          // 设置标记防止 Me 页面再次弹出登录框
+          sessionStorage.setItem('me_page_login_modal_shown', 'true');
           router.push('/native/me');
         }}
       />

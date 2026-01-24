@@ -565,6 +565,23 @@ model cover_records {
   @@index([voice_model_id], map: "ix_cover_records_voice_model_id")
 }
 
+/// 分享链接表
+model share_links {
+  id            Int       @id @default(autoincrement())
+  token         String    @unique @db.VarChar(32)      // 短token (nanoid)
+  resource_type String    @db.VarChar(50)              // music, dialogue, tts, cover
+  resource_id   String    @db.VarChar(100)             // 对应记录的 task_id
+  user_id       String    @db.VarChar(128)             // 创建分享的用户
+  expires_at    DateTime  @db.Timestamptz(6)           // 过期时间
+  view_count    Int       @default(0)                  // 查看次数
+  created_at    DateTime  @default(now()) @db.Timestamptz(6)
+
+  @@index([token], map: "ix_share_links_token")
+  @@index([resource_type, resource_id], map: "ix_share_links_resource")
+  @@index([user_id], map: "ix_share_links_user_id")
+  @@index([expires_at], map: "ix_share_links_expires_at")
+}
+
 /// 故事段落（一个故事多个段落）
 model story_paragraphs {
   id              String    @id @default(cuid())

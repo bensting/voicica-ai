@@ -207,6 +207,7 @@ export default function ExploreSection() {
             model: selectedMusic.model,
           }}
           onClose={() => setSelectedMusic(null)}
+          taskId={selectedMusic.task_id}
           showRecreateOnly
           onRecreate={() => handleRecreate(selectedMusic)}
         />

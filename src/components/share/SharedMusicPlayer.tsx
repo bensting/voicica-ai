@@ -108,7 +108,7 @@ export default function SharedMusicPlayer({ music }: SharedMusicPlayerProps) {
           />
         </Link>
         <Link
-          href="/native"
+          href="/"
           className="px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white text-sm font-medium rounded-full hover:opacity-90 transition-opacity"
         >
           Try Free
@@ -116,45 +116,48 @@ export default function SharedMusicPlayer({ music }: SharedMusicPlayerProps) {
       </header>
 
       {/* Content */}
-      <main className="flex-1 flex flex-col items-center justify-center px-6 py-4 min-h-0">
-        {/* 封面 */}
-        <div className="relative w-44 h-44 mb-4 rounded-2xl overflow-hidden shadow-2xl flex-shrink-0">
-          {music.cover_url ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={music.cover_url}
-              alt={displayTitle}
-              className="w-full h-full object-cover"
-            />
-          ) : (
-            <div className="w-full h-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
-              <svg className="w-16 h-16 text-white/50" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                <path d="M9 18V5l12-2v13" />
-                <circle cx="6" cy="18" r="3" />
-                <circle cx="18" cy="16" r="3" />
-              </svg>
+      <main className="flex-1 flex flex-col items-center px-6 py-6 min-h-0 overflow-hidden">
+        {/* 上半部分：封面 + 标题 */}
+        <div className="flex-shrink-0 flex flex-col items-center">
+          {/* 封面 */}
+          <div className="relative w-52 h-52 mb-4 rounded-2xl overflow-hidden shadow-2xl">
+            {music.cover_url ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={music.cover_url}
+                alt={displayTitle}
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <div className="w-full h-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
+                <svg className="w-20 h-20 text-white/50" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                  <path d="M9 18V5l12-2v13" />
+                  <circle cx="6" cy="18" r="3" />
+                  <circle cx="18" cy="16" r="3" />
+                </svg>
+              </div>
+            )}
+            {/* AI 标签 */}
+            <div className="absolute top-3 right-3 px-2 py-0.5 bg-purple-500 rounded text-white text-xs font-medium">
+              AI
             </div>
-          )}
-          {/* AI 标签 */}
-          <div className="absolute top-2 right-2 px-2 py-0.5 bg-purple-500 rounded text-white text-xs font-medium">
-            AI
           </div>
+
+          {/* 标题 */}
+          <h1 className="text-2xl font-bold text-white mb-2 text-center">{displayTitle}</h1>
         </div>
 
-        {/* 标题 */}
-        <h1 className="text-xl font-bold text-white mb-3 text-center">{displayTitle}</h1>
-
-        {/* 歌词 - 可滚动查看 */}
+        {/* 歌词区域 - 弹性空间，可滚动 */}
         {displayLyrics && (
-          <div className="w-full max-w-sm max-h-28 overflow-y-auto mb-4">
-            <p className="text-gray-300 text-sm text-center whitespace-pre-wrap">
+          <div className="flex-1 w-full max-w-sm overflow-y-auto my-4 min-h-0">
+            <p className="text-gray-300 text-sm text-center whitespace-pre-wrap leading-relaxed">
               {displayLyrics}
             </p>
           </div>
         )}
 
-        {/* 播放控制 */}
-        <div className="w-full max-w-xs mb-4 flex-shrink-0">
+        {/* 下半部分：播放控制 + CTA */}
+        <div className="flex-shrink-0 w-full max-w-sm">
           {/* 播放按钮 */}
           <button
             onClick={togglePlay}
@@ -182,24 +185,24 @@ export default function SharedMusicPlayer({ music }: SharedMusicPlayerProps) {
           </div>
 
           {/* 时间显示 */}
-          <div className="flex justify-between text-gray-500 text-xs">
+          <div className="flex justify-between text-gray-500 text-xs mb-4">
             <span>{formatTime(currentTime)}</span>
             <span>{formatTime(duration)}</span>
           </div>
-        </div>
 
-        {/* CTA */}
-        <div className="text-center flex-shrink-0">
-          <p className="text-gray-400 text-sm mb-2">Create your own AI music</p>
-          <Link
-            href="/native/create/music"
-            className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-purple-500 to-pink-500 text-white text-sm font-medium rounded-full hover:opacity-90 transition-opacity"
-          >
-            <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M12 5v14M5 12h14" />
-            </svg>
-            Create Now
-          </Link>
+          {/* CTA */}
+          <div className="text-center">
+            <p className="text-gray-400 text-sm mb-2">Create your own AI music</p>
+            <Link
+              href="/"
+              className="inline-flex items-center gap-2 px-6 py-2.5 bg-gradient-to-r from-purple-500 to-pink-500 text-white text-sm font-medium rounded-full hover:opacity-90 transition-opacity"
+            >
+              <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M12 5v14M5 12h14" />
+              </svg>
+              Create Now
+            </Link>
+          </div>
         </div>
       </main>
 

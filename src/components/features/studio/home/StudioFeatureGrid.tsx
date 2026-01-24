@@ -17,12 +17,12 @@ export default function StudioFeatureGrid() {
           <Link
             key={feature.id}
             href={feature.href}
-            className="flex flex-col items-center justify-center min-w-[90px] lg:min-w-[100px] h-[90px] lg:h-[100px] flex-shrink-0 bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md hover:border-pink-200 transition-all group"
+            className="flex flex-col items-center justify-center w-[100px] lg:w-[110px] aspect-square flex-shrink-0 bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md hover:border-pink-200 transition-all group"
           >
             <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${feature.gradient} flex items-center justify-center text-white mb-2 group-hover:scale-110 transition-transform`}>
               {feature.icon}
             </div>
-            <span className="text-xs text-gray-600 font-medium text-center px-1 leading-tight">
+            <span className="text-[11px] text-gray-600 font-medium text-center px-2 leading-tight line-clamp-2">
               {feature.name}
             </span>
           </Link>

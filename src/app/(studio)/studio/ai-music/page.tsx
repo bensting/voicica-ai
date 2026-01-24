@@ -20,7 +20,6 @@ import { createMusicTask, getMusicTaskStatus } from '@/actions/music';
 import {
   Music,
   Sparkles,
-  ChevronDown,
   Trash2,
   Upload,
   Crown,

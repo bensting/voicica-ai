@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { useBottomNav } from '@/contexts/BottomNavContext';
+import { Share } from '@capacitor/share';
 import { createShareLink } from '@/actions/share';
 
 /**
@@ -148,17 +149,13 @@ export default function MusicPlayerModal({
     try {
       const result = await createShareLink('music', taskId);
 
-      // 尝试使用原生分享 API
-      if (navigator.share) {
-        await navigator.share({
-          title: displayTitle,
-          text: `Check out this AI-generated music: ${displayTitle}`,
-          url: result.url,
-        });
-      } else {
-        // 回退到复制链接
-        await navigator.clipboard.writeText(result.url);
-      }
+      // 使用 Capacitor Share 插件
+      await Share.share({
+        title: displayTitle,
+        text: `Check out this AI-generated music: ${displayTitle}`,
+        url: result.url,
+        dialogTitle: 'Share Music',
+      });
     } catch (error) {
       console.error('Share failed:', error);
     } finally {

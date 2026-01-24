@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 import { useCredits } from '@/contexts/CreditsContext';
+import { useBottomNav } from '@/contexts/BottomNavContext';
 import LoginModal from './LoginModal';
 import CrownIcon from './common/CrownIcon';
 import CreditsIcon from './common/CreditsIcon';
@@ -13,14 +14,19 @@ import CreditsIcon from './common/CreditsIcon';
 /**
  * Native App 顶部导航栏
  * 包含 Logo 和 Login & Rewards 按钮
+ * 支持通过 Context 控制显示/隐藏
  */
 export default function NativeNavbar() {
   const router = useRouter();
   const { user } = useFirebaseAuth();
   const { credits } = useCredits();
+  const { isTopNavVisible } = useBottomNav();
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
   const isLoggedIn = !!user;
+
+  // 通过 Context 控制隐藏
+  if (!isTopNavVisible) return null;
 
   return (
     <>

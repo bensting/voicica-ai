@@ -25,7 +25,7 @@ export const appConfig: AppConfig = {
    */
   credits: {
     // Web 端
-    anonymous_user: 0,
+    anonymous_user: 50,
     registered_user: 100,
     // Native App 端
     native: {

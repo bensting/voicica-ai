@@ -108,7 +108,7 @@ export async function createVideoTask(request: VideoGenerationRequest): Promise<
     // 1. 计算所需积分
     const requiredCredits = calculateVideoCost(request.resolution, request.duration);
     if (requiredCredits === 0) {
-      throw new Error(`不支持的分辨率或时长组合: ${request.resolution} / ${request.duration}s`);
+      throw new Error(`Unsupported resolution or duration: ${request.resolution} / ${request.duration}s`);
     }
 
     // 2. 检查积分是否足够
@@ -222,7 +222,7 @@ export async function getVideoTaskStatus(taskId: string): Promise<VideoTaskStatu
   });
 
   if (!record) {
-    throw new Error(`任务不存在: ${taskId}`);
+    throw new Error(`Task not found: ${taskId}`);
   }
 
   switch (record.status) {
@@ -271,7 +271,7 @@ export async function getVideoTaskStatus(taskId: string): Promise<VideoTaskStatu
       };
 
     default:
-      throw new Error(`未知任务状态: ${record.status}`);
+      throw new Error(`Unknown task status: ${record.status}`);
   }
 }
 
@@ -411,7 +411,7 @@ export async function deleteVideoRecord(recordId: string): Promise<void> {
 
   const numericId = parseInt(recordId, 10);
   if (isNaN(numericId)) {
-    throw new Error(`无效的记录 ID: ${recordId}`);
+    throw new Error(`Invalid record ID: ${recordId}`);
   }
 
   const record = await prisma.video_records.findUnique({
@@ -419,11 +419,11 @@ export async function deleteVideoRecord(recordId: string): Promise<void> {
   });
 
   if (!record) {
-    throw new Error(`记录不存在: ${recordId}`);
+    throw new Error(`Record not found: ${recordId}`);
   }
 
   if (record.user_id !== userId) {
-    throw new Error('无权删除此记录');
+    throw new Error('Not authorized to delete this record');
   }
 
   await prisma.video_records.delete({
@@ -452,11 +452,11 @@ export async function checkAndHandleStuckVideoTask(
   });
 
   if (!record) {
-    throw new Error(`记录不存在: ${recordId}`);
+    throw new Error(`Record not found: ${recordId}`);
   }
 
   if (record.user_id !== userId) {
-    throw new Error('无权访问此记录');
+    throw new Error('Not authorized to access this record');
   }
 
   // 如果任务已经完成，直接返回

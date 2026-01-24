@@ -246,7 +246,7 @@ export async function createCoverTask(request: CoverGenerationRequest): Promise<
     });
 
     if (!voiceModel || !voiceModel.is_active) {
-      throw new Error('声音模型不存在或已禁用');
+      throw new Error('Voice model not found or disabled');
     }
 
     // 3. 生成任务 ID
@@ -399,7 +399,7 @@ export async function processCoverTask(taskId: string): Promise<CoverTaskStatus>
   });
 
   if (!record) {
-    throw new Error(`任务不存在: ${taskId}`);
+    throw new Error(`Task not found: ${taskId}`);
   }
 
   try {
@@ -408,7 +408,7 @@ export async function processCoverTask(taskId: string): Promise<CoverTaskStatus>
       case 'PROCESSING': {
         // 检查 Replicate 任务状态
         if (!record.rvc_task_id) {
-          throw new Error('Replicate 任务 ID 缺失');
+          throw new Error('Replicate task ID missing');
         }
 
         const predictionStatus = await getReplicatePrediction(record.rvc_task_id);
@@ -579,11 +579,11 @@ export async function deleteCoverRecord(recordId: number): Promise<void> {
   });
 
   if (!record) {
-    throw new Error(`记录不存在: ${recordId}`);
+    throw new Error(`Record not found: ${recordId}`);
   }
 
   if (record.user_id !== userId) {
-    throw new Error('无权删除此记录');
+    throw new Error('Not authorized to delete this record');
   }
 
   await prisma.cover_records.delete({

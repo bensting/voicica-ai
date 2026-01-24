@@ -284,7 +284,7 @@ export async function getTtsTaskStatus(taskId: string): Promise<TtsTaskStatus> {
   });
 
   if (!record) {
-    throw new Error(`任务不存在: ${taskId}`);
+    throw new Error(`Task not found: ${taskId}`);
   }
 
   switch (record.status) {
@@ -333,7 +333,7 @@ export async function getTtsTaskStatus(taskId: string): Promise<TtsTaskStatus> {
       };
 
     default:
-      throw new Error(`未知任务状态: ${record.status}`);
+      throw new Error(`Unknown task status: ${record.status}`);
   }
 }
 
@@ -500,12 +500,12 @@ export async function getTtsRecordById(recordId: number): Promise<TtsRecord> {
   });
 
   if (!record) {
-    throw new Error(`记录不存在: ${recordId}`);
+    throw new Error(`Record not found: ${recordId}`);
   }
 
   // 验证记录是否属于当前用户
   if (record.user_id !== userId) {
-    throw new Error('无权访问此记录');
+    throw new Error('Not authorized to access this record');
   }
 
   // 关联查询语音信息
@@ -558,7 +558,7 @@ export async function deleteTtsRecord(recordId: string): Promise<void> {
   // 将 string ID 转换为 number（数据库使用 number ID）
   const numericId = parseInt(recordId, 10);
   if (isNaN(numericId)) {
-    throw new Error(`无效的记录 ID: ${recordId}`);
+    throw new Error(`Invalid record ID: ${recordId}`);
   }
 
   const record = await prisma.tts_records.findUnique({
@@ -566,12 +566,12 @@ export async function deleteTtsRecord(recordId: string): Promise<void> {
   });
 
   if (!record) {
-    throw new Error(`记录不存在: ${recordId}`);
+    throw new Error(`Record not found: ${recordId}`);
   }
 
   // 验证记录是否属于当前用户
   if (record.user_id !== userId) {
-    throw new Error('无权删除此记录');
+    throw new Error('Not authorized to delete this record');
   }
 
   // 删除记录
@@ -634,12 +634,12 @@ export async function getTtsRecordByTaskId(taskId: string): Promise<TtsRecord> {
   });
 
   if (!record) {
-    throw new Error(`记录不存在: ${taskId}`);
+    throw new Error(`Record not found: ${taskId}`);
   }
 
   // 验证记录是否属于当前用户
   if (record.user_id !== userId) {
-    throw new Error('无权访问此记录');
+    throw new Error('Not authorized to access this record');
   }
 
   // 获取语音信息
@@ -708,12 +708,12 @@ export async function checkAndHandleStuckTask(
   });
 
   if (!record) {
-    throw new Error(`记录不存在: ${recordId}`);
+    throw new Error(`Record not found: ${recordId}`);
   }
 
   // 验证权限
   if (record.user_id !== userId) {
-    throw new Error('无权访问此记录');
+    throw new Error('Not authorized to access this record');
   }
 
   // 2. 如果任务已经完成，直接返回

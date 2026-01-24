@@ -160,7 +160,7 @@ export async function createMusicTask(request: MusicGenerationRequest): Promise<
     // 1. 获取模型配置并计算积分
     const modelConfig = getMusicModelById(request.model);
     if (!modelConfig) {
-      throw new Error(`不支持的模型: ${request.model}`);
+      throw new Error(`Unsupported model: ${request.model}`);
     }
     const requiredCredits = modelConfig.credits;
 
@@ -239,10 +239,10 @@ export async function createMusicTask(request: MusicGenerationRequest): Promise<
         where: { task_id: taskId },
         data: {
           status: 'FAILURE',
-          error_message: result.msg || 'KIE API 调用失败',
+          error_message: result.msg || 'KIE API call failed',
         },
       });
-      throw new Error(result.msg || 'KIE API 调用失败');
+      throw new Error(result.msg || 'KIE API call failed');
     }
 
     // 6. 更新记录，保存外部任务 ID
@@ -423,7 +423,7 @@ export async function getMusicTaskStatus(taskId: string): Promise<MusicTaskStatu
   });
 
   if (!record) {
-    throw new Error(`任务不存在: ${taskId}`);
+    throw new Error(`Task not found: ${taskId}`);
   }
 
   // 如果任务还在处理中，且有外部任务 ID，直接查询 KIE API
@@ -577,7 +577,7 @@ export async function getMusicTaskStatus(taskId: string): Promise<MusicTaskStatu
       };
 
     default:
-      throw new Error(`未知任务状态: ${record.status}`);
+      throw new Error(`Unknown task status: ${record.status}`);
   }
 }
 
@@ -634,11 +634,11 @@ export async function deleteMusicRecord(recordId: number): Promise<void> {
   });
 
   if (!record) {
-    throw new Error(`记录不存在: ${recordId}`);
+    throw new Error(`Record not found: ${recordId}`);
   }
 
   if (record.user_id !== userId) {
-    throw new Error('无权删除此记录');
+    throw new Error('Not authorized to delete this record');
   }
 
   await prisma.music_records.delete({

@@ -109,7 +109,10 @@ export default function DialogueDetailModal({
       )}
 
       {/* 顶部导航 */}
-      <div className="flex items-center justify-between p-4">
+      <div
+        className="flex items-center justify-between px-4 pb-2"
+        style={{ paddingTop: 'calc(var(--safe-area-inset-top, 0px) + 12px)' }}
+      >
         <button
           onClick={onClose}
           className="w-10 h-10 flex items-center justify-center bg-gray-800/50 rounded-full"
@@ -164,7 +167,10 @@ export default function DialogueDetailModal({
       </div>
 
       {/* 底部播放器和操作按钮 */}
-      <div className="flex-shrink-0 px-6 pb-8 bg-[#0a0a1a]">
+      <div
+        className="flex-shrink-0 px-6 bg-[#0a0a1a]"
+        style={{ paddingBottom: 'calc(var(--safe-area-inset-bottom, 0px) + 24px)' }}
+      >
         <div
           className="w-full h-1 bg-gray-700 rounded-full cursor-pointer mb-2"
           onClick={handleProgressClick}

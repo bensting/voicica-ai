@@ -167,7 +167,10 @@ export default function MusicPlayerModal({
       )}
 
       {/* 顶部导航 */}
-      <div className="flex items-center justify-between p-4">
+      <div
+        className="flex items-center justify-between px-4 pb-2"
+        style={{ paddingTop: 'calc(var(--safe-area-inset-top, 0px) + 12px)' }}
+      >
         <button
           onClick={onClose}
           className="w-10 h-10 flex items-center justify-center bg-gray-800/50 rounded-full"
@@ -247,7 +250,10 @@ export default function MusicPlayerModal({
       </div>
 
       {/* 底部播放器和操作按钮 - 固定在底部 */}
-      <div className="flex-shrink-0 px-6 pt-4 pb-8 bg-[#0a0a1a] border-t border-gray-800/50">
+      <div
+        className="flex-shrink-0 px-6 pt-4 bg-[#0a0a1a] border-t border-gray-800/50"
+        style={{ paddingBottom: 'calc(var(--safe-area-inset-bottom, 0px) + 24px)' }}
+      >
         {/* 进度条 */}
         <div
           className="w-full h-1 bg-gray-700 rounded-full cursor-pointer mb-2"

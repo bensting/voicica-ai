@@ -161,7 +161,7 @@ export default function StudioMusicPlayerModal({
     try {
       const result = await createShareLink('music', taskId);
 
-      // 尝试使用原生分享 API
+      // Web 端使用 navigator.share
       if (navigator.share) {
         await navigator.share({
           title: displayTitle,
@@ -169,8 +169,9 @@ export default function StudioMusicPlayerModal({
           url: result.url,
         });
       } else {
-        // 回退到复制链接
+        // 回退到复制链接并打开新窗口
         await navigator.clipboard.writeText(result.url);
+        window.open(result.url, '_blank');
       }
     } catch (error) {
       console.error('Share failed:', error);

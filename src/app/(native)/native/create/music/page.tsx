@@ -106,6 +106,7 @@ export default function NativeMusicPage() {
   const [isGeneratingModalOpen, setIsGeneratingModalOpen] = useState(false);
   const [generatingStatus, setGeneratingStatus] = useState<'generating' | 'success' | 'error'>('generating');
   const [generatingError, setGeneratingError] = useState<string | null>(null);
+  const [generatingErrorCode, setGeneratingErrorCode] = useState<string | null>(null);
   const [currentTaskId, setCurrentTaskId] = useState<string | null>(null);
   const [taskCreatedAt, setTaskCreatedAt] = useState<Date | null>(null);
   const [generatingProgress, setGeneratingProgress] = useState(0);
@@ -377,6 +378,7 @@ export default function NativeMusicPage() {
         console.log('🎵 [handleGenerate] 任务失败，显示错误');
         setGeneratingStatus('error');
         setGeneratingError(result.error || 'Failed to create music task');
+        setGeneratingErrorCode(result.errorCode || null);
         setIsGenerating(false);
         return;
       }
@@ -398,6 +400,7 @@ export default function NativeMusicPage() {
       console.error('🎵 [handleGenerate] 捕获错误:', err);
       setGeneratingStatus('error');
       setGeneratingError(err instanceof Error ? err.message : 'Failed to generate music');
+      setGeneratingErrorCode(null);
     } finally {
       setIsGenerating(false);
       console.log('🎵 [handleGenerate] 完成');
@@ -409,9 +412,16 @@ export default function NativeMusicPage() {
     setIsGeneratingModalOpen(false);
     setGeneratingStatus('generating');
     setGeneratingError(null);
+    setGeneratingErrorCode(null);
     setCurrentTaskId(null);
     setTaskCreatedAt(null);
     setGeneratingProgress(0);
+  };
+
+  // 跳转到订阅页面
+  const handleUpgrade = () => {
+    setIsGeneratingModalOpen(false);
+    router.push('/native/subscribe');
   };
 
   // 查看历史
@@ -1047,14 +1057,22 @@ export default function NativeMusicPage() {
               <>
                 {/* Error Icon */}
                 <div className="w-20 h-20 mb-8 rounded-full bg-red-500/20 flex items-center justify-center">
-                  <svg className="w-10 h-10 text-red-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <circle cx="12" cy="12" r="10" />
-                    <path d="M15 9l-6 6M9 9l6 6" />
-                  </svg>
+                  {generatingErrorCode === 'INSUFFICIENT_CREDITS' ? (
+                    <CreditsIcon className="w-10 h-10 text-red-400" />
+                  ) : (
+                    <svg className="w-10 h-10 text-red-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <circle cx="12" cy="12" r="10" />
+                      <path d="M15 9l-6 6M9 9l6 6" />
+                    </svg>
+                  )}
                 </div>
-                <h3 className="text-white font-semibold text-lg mb-2">Generation Failed</h3>
+                <h3 className="text-white font-semibold text-lg mb-2">
+                  {generatingErrorCode === 'INSUFFICIENT_CREDITS' ? 'Insufficient Credits' : 'Generation Failed'}
+                </h3>
                 <p className="text-red-400 text-sm mb-8 text-center px-4">
-                  {generatingError || 'Something went wrong. Please try again.'}
+                  {generatingErrorCode === 'INSUFFICIENT_CREDITS'
+                    ? 'You don\'t have enough credits. Upgrade to get more!'
+                    : (generatingError || 'Something went wrong. Please try again.')}
                 </p>
                 <div className="flex gap-3 w-full max-w-xs">
                   <button
@@ -1063,15 +1081,25 @@ export default function NativeMusicPage() {
                   >
                     Close
                   </button>
-                  <button
-                    onClick={() => {
-                      handleCloseGeneratingModal();
-                      void handleGenerate();
-                    }}
-                    className="flex-1 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl text-sm font-medium hover:opacity-90 transition-opacity"
-                  >
-                    Try Again
-                  </button>
+                  {generatingErrorCode === 'INSUFFICIENT_CREDITS' ? (
+                    <button
+                      onClick={handleUpgrade}
+                      className="flex-1 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl text-sm font-medium hover:opacity-90 transition-opacity flex items-center justify-center gap-2"
+                    >
+                      <CrownIcon className="w-4 h-4" />
+                      Upgrade
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => {
+                        handleCloseGeneratingModal();
+                        void handleGenerate();
+                      }}
+                      className="flex-1 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl text-sm font-medium hover:opacity-90 transition-opacity"
+                    >
+                      Try Again
+                    </button>
+                  )}
                 </div>
               </>
             )}

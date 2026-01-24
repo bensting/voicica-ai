@@ -8,6 +8,7 @@ import { useCredits } from '@/contexts/CreditsContext';
 import GradientButton from '@/components/native/common/GradientButton';
 import CreditsIcon from '@/components/native/common/CreditsIcon';
 import CreditsInfoBar from '@/components/native/common/CreditsInfoBar';
+import CrownIcon from '@/components/native/common/CrownIcon';
 import LoginModal from '@/components/native/LoginModal';
 import CreateSheet from '@/components/native/CreateSheet';
 import { calculateDialogueCost } from '@/config/creditsCost';
@@ -308,7 +309,7 @@ export default function NativeDialoguePage() {
 
       if (dialogueData.length === 0) {
         setGeneratingStatus('error');
-        setGeneratingError('请输入对话内容');
+        setGeneratingError('Please enter dialogue content');
         setIsGenerating(false);
         return;
       }
@@ -599,14 +600,22 @@ export default function NativeDialoguePage() {
             {generatingStatus === 'error' && (
               <>
                 <div className="w-20 h-20 mb-8 rounded-full bg-red-500/20 flex items-center justify-center">
-                  <svg className="w-10 h-10 text-red-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <circle cx="12" cy="12" r="10" />
-                    <path d="M15 9l-6 6M9 9l6 6" />
-                  </svg>
+                  {generatingError?.includes('Insufficient credits') ? (
+                    <CreditsIcon className="w-10 h-10 text-red-400" />
+                  ) : (
+                    <svg className="w-10 h-10 text-red-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <circle cx="12" cy="12" r="10" />
+                      <path d="M15 9l-6 6M9 9l6 6" />
+                    </svg>
+                  )}
                 </div>
-                <h3 className="text-white font-semibold text-lg mb-2">Generation Failed</h3>
+                <h3 className="text-white font-semibold text-lg mb-2">
+                  {generatingError?.includes('Insufficient credits') ? 'Insufficient Credits' : 'Generation Failed'}
+                </h3>
                 <p className="text-red-400 text-sm mb-8 text-center px-4">
-                  {generatingError || 'Something went wrong. Please try again.'}
+                  {generatingError?.includes('Insufficient credits')
+                    ? 'You don\'t have enough credits. Upgrade to get more!'
+                    : (generatingError || 'Something went wrong. Please try again.')}
                 </p>
                 <div className="flex gap-3 w-full max-w-xs">
                   <button
@@ -615,15 +624,28 @@ export default function NativeDialoguePage() {
                   >
                     Close
                   </button>
-                  <button
-                    onClick={() => {
-                      handleCloseGeneratingModal();
-                      void handleGenerate();
-                    }}
-                    className="flex-1 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl text-sm font-medium hover:opacity-90 transition-opacity"
-                  >
-                    Try Again
-                  </button>
+                  {generatingError?.includes('Insufficient credits') ? (
+                    <button
+                      onClick={() => {
+                        handleCloseGeneratingModal();
+                        router.push('/native/subscribe');
+                      }}
+                      className="flex-1 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl text-sm font-medium hover:opacity-90 transition-opacity flex items-center justify-center gap-2"
+                    >
+                      <CrownIcon className="w-4 h-4" />
+                      Upgrade
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => {
+                        handleCloseGeneratingModal();
+                        void handleGenerate();
+                      }}
+                      className="flex-1 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl text-sm font-medium hover:opacity-90 transition-opacity"
+                    >
+                      Try Again
+                    </button>
+                  )}
                 </div>
               </>
             )}

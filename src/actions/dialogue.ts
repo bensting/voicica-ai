@@ -8,6 +8,7 @@ import { getUserOrAnonymous } from '@/lib/auth-firebase';
 import prisma from '@/lib/prisma';
 import { calculateDialogueCost } from '@/config/creditsCost';
 import { v4 as uuidv4 } from 'uuid';
+import { uploadAudio } from '@/lib/services/r2-storage';
 
 /**
  * Dialogue 请求参数
@@ -40,6 +41,33 @@ function getKieApiToken(): string {
     throw new Error('未配置 KIE_API_KEY 环境变量');
   }
   return token;
+}
+
+/**
+ * 下载音频并上传到 R2
+ */
+async function downloadAndUploadToR2(
+  url: string,
+  taskId: string
+): Promise<string | null> {
+  try {
+    console.log(`📥 [R2 Upload] 下载 Dialogue 音频: ${url}`);
+
+    const response = await fetch(url);
+    if (!response.ok) {
+      console.error(`📥 [R2 Upload] 下载失败: ${response.status}`);
+      return null;
+    }
+
+    const buffer = Buffer.from(await response.arrayBuffer());
+    const fileName = `dialogue_${taskId}.mp3`;
+    const r2Url = await uploadAudio(buffer, fileName, 'audio/mpeg', 'dialogue_audio');
+    console.log(`✅ [R2 Upload] Dialogue 音频上传成功: ${r2Url}`);
+    return r2Url;
+  } catch (error) {
+    console.error(`❌ [R2 Upload] 上传失败:`, error);
+    return null;
+  }
 }
 
 /**
@@ -270,13 +298,17 @@ export async function getDialogueTaskStatus(
           }
 
           if (taskState === 'success' && audioUrl) {
+            // 下载并上传到 R2（与 webhook 保持一致）
+            const r2Url = await downloadAndUploadToR2(audioUrl, taskId);
+            const finalAudioUrl = r2Url || audioUrl; // 如果 R2 上传失败，使用原始 URL
+
             // 更新数据库
             await prisma.dialogue_records.update({
               where: { id: record.id },
               data: {
                 status: 'SUCCESS',
                 progress: 100,
-                audio_url: audioUrl,
+                audio_url: finalAudioUrl,
                 completed_at: new Date(),
               },
             });
@@ -285,7 +317,7 @@ export async function getDialogueTaskStatus(
               task_id: taskId,
               status: 'SUCCESS',
               progress: 100,
-              audioUrl,
+              audioUrl: finalAudioUrl,
             };
           } else if (taskState === 'fail') {
             const errorMsg = result.data.failMsg || 'Generation failed';

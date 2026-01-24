@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { useBottomNav } from '@/contexts/BottomNavContext';
+import { createShareLink } from '@/actions/share';
 
 /**
  * 音乐播放数据接口
@@ -20,6 +21,8 @@ export interface MusicPlayerData {
 interface MusicPlayerModalProps {
   music: MusicPlayerData;
   onClose: () => void;
+  /** 音乐记录的 task_id（用于分享） */
+  taskId?: string;
   /** 是否显示完整操作（下载+重新创建），默认 false */
   showFullActions?: boolean;
   /** 是否只显示 Recreate 按钮（用于公开音乐） */
@@ -55,6 +58,7 @@ function getModelDisplayName(model: string | null | undefined): string {
 export default function MusicPlayerModal({
   music,
   onClose,
+  taskId,
   showFullActions = false,
   showRecreateOnly = false,
   onRecreate,
@@ -65,6 +69,8 @@ export default function MusicPlayerModal({
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(music.duration || 0);
+  const [isSharing, setIsSharing] = useState(false);
+  const [shareUrl, setShareUrl] = useState<string | null>(null);
   const { hideAll, showAll } = useBottomNav();
 
   // 隐藏顶部和底部导航栏
@@ -136,6 +142,37 @@ export default function MusicPlayerModal({
     }
   };
 
+  // 分享
+  const handleShare = async () => {
+    if (!taskId) return;
+    setIsSharing(true);
+    try {
+      const result = await createShareLink('music', taskId);
+      setShareUrl(result.url);
+
+      // 尝试使用原生分享 API
+      if (navigator.share) {
+        await navigator.share({
+          title: displayTitle,
+          text: `Check out this AI-generated music: ${displayTitle}`,
+          url: result.url,
+        });
+      } else {
+        // 回退到复制链接
+        await navigator.clipboard.writeText(result.url);
+        alert('Share link copied to clipboard!');
+      }
+    } catch (error) {
+      console.error('Share failed:', error);
+      // 如果分享被取消，不显示错误
+      if (error instanceof Error && error.name !== 'AbortError') {
+        alert('Failed to share');
+      }
+    } finally {
+      setIsSharing(false);
+    }
+  };
+
   const progress = duration > 0 ? (currentTime / duration) * 100 : 0;
 
   return (
@@ -162,6 +199,26 @@ export default function MusicPlayerModal({
           </svg>
         </button>
         <div className="flex items-center gap-2">
+          {/* 分享按钮 */}
+          {taskId && (
+            <button
+              onClick={handleShare}
+              disabled={isSharing}
+              className="w-10 h-10 flex items-center justify-center disabled:opacity-50"
+            >
+              {isSharing ? (
+                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+              ) : (
+                <svg className="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <circle cx="18" cy="5" r="3" />
+                  <circle cx="6" cy="12" r="3" />
+                  <circle cx="18" cy="19" r="3" />
+                  <path d="M8.59 13.51l6.83 3.98M15.41 6.51l-6.82 3.98" />
+                </svg>
+              )}
+            </button>
+          )}
+          {/* 更多菜单 */}
           <button className="w-10 h-10 flex items-center justify-center">
             <svg className="w-5 h-5 text-white" viewBox="0 0 24 24" fill="currentColor">
               <circle cx="12" cy="6" r="2" />

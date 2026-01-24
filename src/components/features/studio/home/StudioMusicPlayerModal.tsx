@@ -1,7 +1,8 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { X, Play, Pause, Download, Copy, Check } from 'lucide-react';
+import { X, Play, Pause, Download, Copy, Check, Share2 } from 'lucide-react';
+import { createShareLink } from '@/actions/share';
 
 /**
  * Studio 音乐播放数据接口
@@ -20,6 +21,8 @@ export interface StudioMusicPlayerData {
 interface StudioMusicPlayerModalProps {
   music: StudioMusicPlayerData;
   onClose: () => void;
+  /** 音乐记录的 task_id（用于分享） */
+  taskId?: string;
   /** 是否显示完整操作（下载+重新创建），默认 false */
   showFullActions?: boolean;
   /** 是否只显示 Recreate 按钮（用于公开音乐） */
@@ -53,6 +56,7 @@ function getModelDisplayName(model: string | null | undefined): string {
 export default function StudioMusicPlayerModal({
   music,
   onClose,
+  taskId,
   showFullActions = false,
   showRecreateOnly = false,
   onRecreate,
@@ -62,6 +66,7 @@ export default function StudioMusicPlayerModal({
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(music.duration || 0);
   const [copied, setCopied] = useState(false);
+  const [isSharing, setIsSharing] = useState(false);
 
   const displayTitle = music.title || 'AI Music';
   const displayLyrics = music.lyrics || music.prompt || '';
@@ -149,6 +154,36 @@ export default function StudioMusicPlayerModal({
     }
   };
 
+  // 分享
+  const handleShare = async () => {
+    if (!taskId) return;
+    setIsSharing(true);
+    try {
+      const result = await createShareLink('music', taskId);
+
+      // 尝试使用原生分享 API
+      if (navigator.share) {
+        await navigator.share({
+          title: displayTitle,
+          text: `Check out this AI-generated music: ${displayTitle}`,
+          url: result.url,
+        });
+      } else {
+        // 回退到复制链接
+        await navigator.clipboard.writeText(result.url);
+        alert('Share link copied to clipboard!');
+      }
+    } catch (error) {
+      console.error('Share failed:', error);
+      // 如果分享被取消，不显示错误
+      if (error instanceof Error && error.name !== 'AbortError') {
+        alert('Failed to share');
+      }
+    } finally {
+      setIsSharing(false);
+    }
+  };
+
   const progress = duration > 0 ? (currentTime / duration) * 100 : 0;
 
   return (
@@ -166,13 +201,30 @@ export default function StudioMusicPlayerModal({
 
       {/* 弹窗内容 */}
       <div className="relative w-full max-w-lg bg-white rounded-2xl shadow-2xl overflow-hidden">
-        {/* 关闭按钮 */}
-        <button
-          onClick={onClose}
-          className="absolute top-4 right-4 z-10 w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 transition-colors"
-        >
-          <X className="w-4 h-4 text-gray-600" />
-        </button>
+        {/* 顶部按钮 */}
+        <div className="absolute top-4 right-4 z-10 flex items-center gap-2">
+          {/* 分享按钮 */}
+          {taskId && (
+            <button
+              onClick={handleShare}
+              disabled={isSharing}
+              className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 transition-colors disabled:opacity-50"
+            >
+              {isSharing ? (
+                <div className="w-4 h-4 border-2 border-gray-600 border-t-transparent rounded-full animate-spin" />
+              ) : (
+                <Share2 className="w-4 h-4 text-gray-600" />
+              )}
+            </button>
+          )}
+          {/* 关闭按钮 */}
+          <button
+            onClick={onClose}
+            className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 transition-colors"
+          >
+            <X className="w-4 h-4 text-gray-600" />
+          </button>
+        </div>
 
         {/* 封面区域 */}
         <div className="relative aspect-video bg-gradient-to-br from-pink-500 to-rose-500">

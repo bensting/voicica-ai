@@ -795,16 +795,24 @@ export default function StudioAiMusicPage() {
         <div className="flex-1 px-4 py-4 space-y-4 pb-24">
           {/* Model Selector */}
           <div className="bg-white rounded-2xl p-4 border border-gray-200 shadow-sm">
+            <div className="text-sm text-gray-600 mb-3">{t('studio.menu.aiMusic')} Model</div>
             <button
               onClick={() => setIsModelSelectorOpen(true)}
-              className="w-full flex items-center justify-between p-3 bg-purple-50 rounded-xl"
+              className="w-full flex items-center justify-between p-3 bg-gradient-to-r from-purple-50 to-purple-100 rounded-xl border border-purple-200"
             >
               <div className="flex items-center gap-2">
                 <Sparkles className="w-5 h-5 text-purple-600" />
-                <span className="font-medium text-gray-900">{selectedModel?.name || model}</span>
-                {selectedModel?.isPremium && <Crown className="w-4 h-4 text-yellow-500" />}
+                <div className="text-left">
+                  <div className="font-medium text-gray-900 flex items-center gap-1.5">
+                    {selectedModel?.name || model}
+                    {selectedModel?.isPremium && <Crown className="w-4 h-4 text-yellow-500" />}
+                  </div>
+                  <div className="text-xs text-gray-500 line-clamp-1">{selectedModel?.description}</div>
+                </div>
               </div>
-              <ChevronDown className="w-4 h-4 text-gray-400" />
+              <span className="px-2 py-0.5 bg-purple-100 text-purple-700 text-xs font-medium rounded-full flex-shrink-0">
+                Latest
+              </span>
             </button>
           </div>
 
@@ -950,6 +958,53 @@ export default function StudioAiMusicPage() {
                 )}
               </div>
             )}
+
+            {/* Parameters - Visibility & Instrumental */}
+            <div className="mt-4 pt-4 border-t border-gray-100">
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-gray-600">Visibility</span>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => setIsPublic(true)}
+                    className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
+                      isPublic ? 'bg-purple-100 text-purple-700' : 'bg-gray-100 text-gray-500'
+                    }`}
+                  >
+                    Public
+                  </button>
+                  <button
+                    onClick={() => setIsPublic(false)}
+                    className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
+                      !isPublic ? 'bg-purple-100 text-purple-700' : 'bg-gray-100 text-gray-500'
+                    }`}
+                  >
+                    Private
+                  </button>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between mt-3">
+                <span className="text-sm text-gray-600">Instrumental</span>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => setIsInstrumental(false)}
+                    className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
+                      !isInstrumental ? 'bg-purple-100 text-purple-700' : 'bg-gray-100 text-gray-500'
+                    }`}
+                  >
+                    Off
+                  </button>
+                  <button
+                    onClick={() => setIsInstrumental(true)}
+                    className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
+                      isInstrumental ? 'bg-purple-100 text-purple-700' : 'bg-gray-100 text-gray-500'
+                    }`}
+                  >
+                    On
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
 
           {/* Error */}

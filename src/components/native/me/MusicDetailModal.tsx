@@ -142,14 +142,9 @@ export default function MusicDetailModal({
       } else {
         // 回退到复制链接
         await navigator.clipboard.writeText(result.url);
-        alert('Share link copied to clipboard!');
       }
     } catch (error) {
       console.error('Share failed:', error);
-      // 如果分享被取消，不显示错误
-      if (error instanceof Error && error.name !== 'AbortError') {
-        alert('Failed to share');
-      }
     } finally {
       setIsSharing(false);
     }

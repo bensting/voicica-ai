@@ -157,7 +157,7 @@ export async function POST(req: NextRequest) {
       negativePrompt,
       resolution: normalizeResolution(quality) as '768p' | '1080p',
       duration: parseDuration(duration) as 5 | 8 | 10 | 15,
-      aspectRatio: aspectRatio as '16:9' | '9:16',
+      aspectRatio: aspectRatio as '16:9' | '9:16' | '1:1' | '4:3' | '3:4' | '21:9',
       model: modelConfig.apiModelId,
       seed,
       creditsCost,

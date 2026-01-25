@@ -619,6 +619,62 @@ Create text that would sound natural and engaging when read aloud by a text-to-s
 }
 
 /**
+ * 生成视频生成提示词
+ *
+ * @param prompt 用户的简短描述或想法
+ * @returns 生成的完整视频提示词
+ */
+export async function generateVideoPrompt(prompt: string): Promise<string> {
+  const systemPrompt = `You are a video prompt expert for AI video generation systems. Create detailed, effective prompts based on user ideas.
+
+Guidelines:
+- Create a comprehensive video generation prompt that includes:
+  - Subject/scene description (what is happening, who/what is in the frame)
+  - Setting/environment (location, time of day, weather, atmosphere)
+  - Camera movement/angle (static, panning, tracking, aerial, close-up, wide shot, etc.)
+  - Lighting and mood (natural light, dramatic, soft, golden hour, etc.)
+  - Visual style (cinematic, documentary, artistic, realistic, etc.)
+  - Motion details (how subjects move, speed, direction)
+- Keep the prompt clear and descriptive, max 300 words
+- Detect the language of the user's input and write the prompt in the SAME language
+- Make it specific enough for AI to generate a coherent video
+- Focus on visual elements that translate well to video
+
+Always respond with valid JSON in this format:
+{
+  "prompt": "The complete video generation prompt..."
+}`;
+
+  const userPrompt = `Based on this idea, create a detailed video generation prompt:
+${prompt}
+
+Expand this into a comprehensive prompt that an AI video generator can use to create a visually stunning video.`;
+
+  const response = await openai.chat.completions.create({
+    model: 'gpt-4o-mini',
+    messages: [
+      { role: 'system', content: systemPrompt },
+      { role: 'user', content: userPrompt },
+    ],
+    temperature: 0.8,
+    max_tokens: 800,
+    response_format: { type: 'json_object' },
+  });
+
+  const content = response.choices[0]?.message?.content;
+  if (!content) {
+    throw new Error('No response from OpenAI');
+  }
+
+  try {
+    const parsed = JSON.parse(content);
+    return parsed.prompt || '';
+  } catch {
+    throw new Error('Failed to parse video prompt from OpenAI response');
+  }
+}
+
+/**
  * 为单个段落生成插图提示词
  *
  * @param storyTitle 故事标题

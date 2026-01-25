@@ -75,6 +75,34 @@ const modelNameMap: Record<string, string> = {
   'pixverse-v5': 'Pixverse V5',
 };
 
+// 格式化错误信息
+function formatErrorMessage(message: string | undefined): string {
+  if (!message) return 'An error occurred during video generation';
+
+  // 检测 HTML 内容
+  if (message.includes('<!DOCTYPE') || message.includes('<html') || message.includes('<head>')) {
+    // 尝试从 HTML 中提取关键信息
+    const titleMatch = message.match(/<title>([^<]+)<\/title>/i);
+    if (titleMatch) {
+      const title = titleMatch[1];
+      // 提取错误码（如 522, 500 等）
+      const codeMatch = title.match(/\d{3}/);
+      if (codeMatch) {
+        return `Server error (${codeMatch[0]}). Please try again later.`;
+      }
+      return 'Server error. Please try again later.';
+    }
+    return 'Server error. Please try again later.';
+  }
+
+  // 截断过长的消息
+  if (message.length > 200) {
+    return message.substring(0, 200) + '...';
+  }
+
+  return message;
+}
+
 export default function VideoTaskPage() {
   const params = useParams();
   const router = useRouter();
@@ -294,7 +322,7 @@ export default function VideoTaskPage() {
             </svg>
             <div className="text-red-400 text-center text-lg">Generation Failed</div>
             <div className="text-gray-500 text-sm text-center max-w-xs">
-              {task.error_message || 'An error occurred during video generation'}
+              {formatErrorMessage(task.error_message)}
             </div>
           </div>
         )}

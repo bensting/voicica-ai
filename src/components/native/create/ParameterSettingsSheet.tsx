@@ -1,9 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
-import { VideoModel, calculateCredits } from '@/config/native/videoModels';
-import GradientButton from '@/components/native/common/GradientButton';
-import CreditsIcon from '@/components/native/common/CreditsIcon';
+import { VideoModel } from '@/config/native/videoModels';
 
 interface VideoParams {
   quality: string;
@@ -18,8 +16,6 @@ interface ParameterSettingsSheetProps {
   model: VideoModel;
   params: VideoParams;
   onParamsChange: (params: VideoParams) => void;
-  onCreateVideo: () => void;
-  generateAudio?: boolean;
 }
 
 // 横屏图标
@@ -68,8 +64,6 @@ export default function ParameterSettingsSheet({
   model,
   params,
   onParamsChange,
-  onCreateVideo,
-  generateAudio,
 }: ParameterSettingsSheetProps) {
   // 禁止背景滚动
   useEffect(() => {
@@ -87,14 +81,6 @@ export default function ParameterSettingsSheet({
 
   const updateParam = <K extends keyof VideoParams>(key: K, value: VideoParams[K]) => {
     onParamsChange({ ...params, [key]: value });
-  };
-
-  const credits = calculateCredits(model, params.quality, params.duration, generateAudio);
-
-  const handleCreate = () => {
-    onClose();
-    // Delay slightly to allow sheet animation before starting API call
-    setTimeout(() => onCreateVideo(), 100);
   };
 
   return (
@@ -189,7 +175,10 @@ export default function ParameterSettingsSheet({
           </div>
 
           {/* Visibility */}
-          <div className="mb-4">
+          <div
+            className="mb-4"
+            style={{ paddingBottom: 'calc(16px + var(--safe-area-inset-bottom, 0px))' }}
+          >
             <h3 className="text-white text-sm font-medium mb-2">Visibility</h3>
             <div className="flex gap-2">
               <button
@@ -214,18 +203,6 @@ export default function ParameterSettingsSheet({
               </button>
             </div>
           </div>
-        </div>
-
-        {/* Create Video Button */}
-        <div
-          className="px-5 pt-3 pb-5"
-          style={{ paddingBottom: 'calc(20px + var(--safe-area-inset-bottom, 0px))' }}
-        >
-          <GradientButton onClick={handleCreate}>
-            <span>Create Video</span>
-            <CreditsIcon className="w-3.5 h-3.5" />
-            <span>{credits}</span>
-          </GradientButton>
         </div>
       </div>
     </>

@@ -1,8 +1,17 @@
 {
-  "version": "1.2.3",
-  "buildNumber": 24,
+  "version": "1.2.4",
+  "buildNumber": 25,
   "description": "原生应用版本（Android/iOS 应用壳）",
   "changelog": [
+    {
+      "version": "1.2.4",
+      "buildNumber": 25,
+      "date": "2026-01-26",
+      "changes": [
+        "更新应用图标和启动画面",
+        "优化 PWA 图标资源"
+      ]
+    },
     {
       "version": "1.2.3",
       "buildNumber": 24,

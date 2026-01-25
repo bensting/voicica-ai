@@ -326,6 +326,8 @@ export default function CreateVideoPage() {
                 <ScreenIcon />
                 {params.aspectRatio}
               </span>
+              <span className="text-gray-600">|</span>
+              <span>{params.visibility === 'public' ? 'Public' : 'Private'}</span>
             </div>
             <ChevronUpIcon />
           </button>

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import CreateSheet from '@/components/native/CreateSheet';
 import PromptSection from '@/components/native/create/PromptSection';
@@ -80,7 +80,7 @@ export default function CreateVideoPage() {
   const [isCreateSheetOpen, setIsCreateSheetOpen] = useState(false);
   const [isParamsSheetOpen, setIsParamsSheetOpen] = useState(false);
   const [mode, setMode] = useState<ModeType>('generate');
-  const [prompt, setPrompt] = useState('');
+  const [prompt, setPromptState] = useState('');
   const [selectedModel, setSelectedModel] = useState<VideoModel>(defaultVideoModel);
   const [startFrame, setStartFrame] = useState<string | null>(null);
   const [endFrame, setEndFrame] = useState<string | null>(null);
@@ -101,23 +101,19 @@ export default function CreateVideoPage() {
   useEffect(() => {
     const savedPrompt = localStorage.getItem(VIDEO_PROMPT_STORAGE_KEY);
     if (savedPrompt) {
-      setPrompt(savedPrompt);
+      setPromptState(savedPrompt);
     }
   }, []);
 
-  // 保存 prompt 到 localStorage（跳过初始加载）
-  const isInitialMount = useRef(true);
-  useEffect(() => {
-    if (isInitialMount.current) {
-      isInitialMount.current = false;
-      return;
-    }
-    if (prompt) {
-      localStorage.setItem(VIDEO_PROMPT_STORAGE_KEY, prompt);
+  // 包装 setPrompt，同时保存到 localStorage
+  const setPrompt = (value: string) => {
+    setPromptState(value);
+    if (value) {
+      localStorage.setItem(VIDEO_PROMPT_STORAGE_KEY, value);
     } else {
       localStorage.removeItem(VIDEO_PROMPT_STORAGE_KEY);
     }
-  }, [prompt]);
+  };
 
   // 当模型变化时，重置参数为新模型的默认值，并清空图片
   useEffect(() => {

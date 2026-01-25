@@ -172,9 +172,8 @@ export default function PromptSection({
 
       // Set the generated prompt
       onPromptChange(data.prompt.slice(0, maxLength));
-      // Close the sheet
+      // Close the sheet (keep input for next time)
       setIsGenerateSheetOpen(false);
-      setGenerateInput('');
     } catch (err) {
       setGenerateError(err instanceof Error ? err.message : 'Failed to generate prompt');
     } finally {

@@ -26,7 +26,7 @@ export default function Logo({ dark = true }: LogoProps) {
       */}
       <span className={`text-2xl md:text-3xl font-bold tracking-tight ${dark ? 'text-gray-900' : 'text-white'}`} style={{ fontFamily: 'var(--font-fredoka)' }}>
         Voicica
-        <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-rose-500 font-bold italic">
+        <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-rose-500 font-bold ml-0.5">
           .AI
         </span>
       </span>

@@ -190,7 +190,7 @@ export default function CreateVideoPage() {
     }
   };
 
-  const credits = calculateCredits(selectedModel, params.quality, params.duration);
+  const credits = calculateCredits(selectedModel, params.quality, params.duration, generateAudio);
 
   return (
     <div className="min-h-screen bg-[#0a0a1a] flex flex-col">
@@ -358,6 +358,7 @@ export default function CreateVideoPage() {
         params={params}
         onParamsChange={setParams}
         onCreateVideo={handleCreateVideo}
+        generateAudio={generateAudio}
       />
     </div>
   );

@@ -105,7 +105,7 @@ export const videoModelsConfig: VideoModel[] = [
     description: 'The most capable model',
     icon: 'google',
     apiModelId: 'google:3@2', // Runware model ID
-    enabled: { development: true, production: true },
+    enabled: { development: true, production: false },
     qualityOptions: [
       { value: '512p', label: '512p', credits: 100 },
       { value: '768p', label: '768p', credits: 125 },
@@ -182,7 +182,7 @@ export const videoModelsConfig: VideoModel[] = [
   },
   {
     id: 'pixverse-v5',
-    name: 'Pixverse V5',
+    name: 'PixVerse v5 Fast',
     description: 'Lightning-fast videos with crisp detail',
     icon: 'pixverse',
     apiModelId: 'pixverse:1@5-fast',
@@ -272,8 +272,8 @@ export const videoModelsConfig: VideoModel[] = [
     apiBackend: 'kie',
     enabled: { development: true, production: true },
     qualityOptions: [
-      { value: '480p', label: '480p', credits: 60 },
-      { value: '720p', label: '720p', credits: 90 },
+      { value: '480p', label: '480p', credits: 40 },
+      { value: '720p', label: '720p', credits: 80 },
     ],
     durationOptions: [
       { value: '4s', label: '4s' },
@@ -281,9 +281,10 @@ export const videoModelsConfig: VideoModel[] = [
       { value: '12s', label: '12s' },
     ],
     aspectRatioOptions: seedanceAspectRatios,
+    // 基础积分（无音频），有音频时 x2
     creditsMatrix: {
-      '480p': { '4s': 30, '8s': 60, '12s': 90 },
-      '720p': { '4s': 45, '8s': 90, '12s': 135 },
+      '480p': { '4s': 20, '8s': 40, '12s': 60 },
+      '720p': { '4s': 40, '8s': 80, '12s': 120 },
     },
     defaultQuality: '720p',
     defaultDuration: '8s',
@@ -298,11 +299,22 @@ export const videoModels = videoModelsConfig.filter(
   (model) => (isDevelopment ? model.enabled.development : model.enabled.production)
 );
 
-export const defaultVideoModel = videoModels[0];
+// 默认选择 Seedance 1.5 Pro，如果不可用则选第一个
+export const defaultVideoModel = videoModels.find(m => m.id === 'seedance-1.5-pro') || videoModels[0];
 
-// 根据模型、画质和时长计算积分
-export function calculateCredits(model: VideoModel, quality: string, duration: string): number {
-  return model.creditsMatrix[quality]?.[duration] || 0;
+// 根据模型、画质、时长和音频选项计算积分
+export function calculateCredits(
+  model: VideoModel,
+  quality: string,
+  duration: string,
+  generateAudio?: boolean
+): number {
+  const baseCredits = model.creditsMatrix[quality]?.[duration] || 0;
+  // 如果模型支持音频生成且启用了音频，积分翻倍
+  if (model.modelOptions?.generateAudio && generateAudio) {
+    return baseCredits * 2;
+  }
+  return baseCredits;
 }
 
 // 获取模型的默认参数

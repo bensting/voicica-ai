@@ -19,6 +19,7 @@ interface ParameterSettingsSheetProps {
   params: VideoParams;
   onParamsChange: (params: VideoParams) => void;
   onCreateVideo: () => void;
+  generateAudio?: boolean;
 }
 
 // 横屏图标
@@ -68,6 +69,7 @@ export default function ParameterSettingsSheet({
   params,
   onParamsChange,
   onCreateVideo,
+  generateAudio,
 }: ParameterSettingsSheetProps) {
   // 禁止背景滚动
   useEffect(() => {
@@ -87,7 +89,7 @@ export default function ParameterSettingsSheet({
     onParamsChange({ ...params, [key]: value });
   };
 
-  const credits = calculateCredits(model, params.quality, params.duration);
+  const credits = calculateCredits(model, params.quality, params.duration, generateAudio);
 
   const handleCreate = () => {
     onClose();

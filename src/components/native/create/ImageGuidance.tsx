@@ -131,7 +131,7 @@ export default function ImageGuidance({
               <InfoIcon />
             </button>
             {showTooltip && (
-              <div className="absolute left-0 top-6 z-50 w-56 p-3 bg-gray-800 rounded-lg shadow-lg border border-gray-700">
+              <div className="absolute right-0 top-6 z-50 w-56 p-3 bg-gray-800 rounded-lg shadow-lg border border-gray-700">
                 <p className="text-xs text-gray-300 leading-relaxed">
                   Upload 0-{maxImages} images. Supports JPG/PNG/WebP, up to 10 MB each.
                 </p>
@@ -199,7 +199,7 @@ export default function ImageGuidance({
           </button>
           {/* Tooltip */}
           {showTooltip && (
-            <div className="absolute left-0 top-6 z-50 w-56 p-3 bg-gray-800 rounded-lg shadow-lg border border-gray-700">
+            <div className="absolute right-0 top-6 z-50 w-56 p-3 bg-gray-800 rounded-lg shadow-lg border border-gray-700">
               <p className="text-xs text-gray-300 leading-relaxed">
                 Supports JPG/JPEG/PNG, up to 10 MB. Minimum width/height is 300px.
               </p>

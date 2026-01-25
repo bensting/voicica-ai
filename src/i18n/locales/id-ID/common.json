@@ -1,6 +1,7 @@
 {
   "common": {
     "brand": "Voicica AI",
+    "ok": "OK",
     "cancel": "Batal",
     "close": "Tutup",
     "confirm": "Konfirmasi",

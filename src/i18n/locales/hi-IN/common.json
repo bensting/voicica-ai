@@ -1,6 +1,7 @@
 {
   "common": {
     "brand": "Voicica AI",
+    "ok": "ठीक है",
     "cancel": "रद्द करें",
     "close": "बंद करें",
     "confirm": "पुष्टि करें",

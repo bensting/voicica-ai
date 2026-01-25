@@ -90,8 +90,8 @@ const ChevronDownIcon = () => (
 );
 
 // 魔法棒图标
-const MagicWandIcon = () => (
-  <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+const MagicWandIcon = ({ className = "w-3.5 h-3.5" }: { className?: string }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
     <path d="M15 4V2M15 16v-2M8 9h2M20 9h2M17.8 11.8L19 13M17.8 6.2L19 5M12.2 11.8L11 13M12.2 6.2L11 5" />
     <path d="M3 21l9-9" strokeLinecap="round" />
   </svg>
@@ -99,7 +99,7 @@ const MagicWandIcon = () => (
 
 // 删除图标
 const TrashIcon = () => (
-  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+  <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
     <path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2m3 0v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6h14z" />
   </svg>
 );
@@ -215,18 +215,18 @@ export default function PromptSection({
           {/* Generate Prompt Button */}
           <button
             onClick={() => setIsGenerateSheetOpen(true)}
-            className="flex items-center gap-2 px-3 py-1.5 bg-gray-700/60 rounded-full text-sm text-gray-300 hover:bg-gray-600/60 transition-colors"
+            className="flex items-center gap-1.5 px-2.5 py-1 bg-gray-700/60 rounded-full text-xs text-gray-300 hover:bg-gray-600/60 transition-colors"
           >
             <MagicWandIcon />
             <span>Generate Prompt</span>
           </button>
 
           {/* Character Count & Clear */}
-          <div className="flex items-center gap-3">
-            <span className="text-sm text-gray-500">
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-gray-500">
               {prompt.length}/{maxLength}
             </span>
-            <div className="w-px h-4 bg-gray-700" />
+            <div className="w-px h-3.5 bg-gray-700" />
             <button
               onClick={handleClear}
               className="text-gray-500 hover:text-gray-300 transition-colors"
@@ -317,7 +317,7 @@ export default function PromptSection({
                   </>
                 ) : (
                   <>
-                    <MagicWandIcon />
+                    <MagicWandIcon className="w-4 h-4" />
                     <span>Generate</span>
                   </>
                 )}

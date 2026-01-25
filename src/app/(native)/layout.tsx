@@ -27,6 +27,14 @@ export default function NativeLayout({
   const pathname = usePathname();
   const router = useRouter();
 
+  // 添加 native-app class 到 body（禁用文本选择）
+  useEffect(() => {
+    document.body.classList.add('native-app');
+    return () => {
+      document.body.classList.remove('native-app');
+    };
+  }, []);
+
   // 初始化本地推送通知
   useEffect(() => {
     initNotifications();

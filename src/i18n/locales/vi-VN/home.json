@@ -1,5 +1,13 @@
 {
   "home": {
+    "heroTitlePrefix": "Nền tảng Tất cả trong Một cho",
+    "heroTitleHighlight": "Giọng nói, Âm nhạc & Video",
+    "heroDescription": "Tạo giọng nói tự nhiên, nhạc AI và video ấn tượng. Không cần kỹ năng kỹ thuật. Biến ý tưởng hay nhất của bạn thành hiện thực ngay bây giờ.",
+    "heroFreeTag": "Miễn phí 100%",
+    "heroFreeSubtag": "Không cần thẻ tín dụng",
+    "textToSpeech": "Văn bản thành Giọng nói",
+    "lyricsToMusic": "Lời nhạc thành Âm nhạc",
+    "aiSongOneClick": "Bài hát AI Một chạm",
     "heroTitle": "Chuyển văn bản thành giọng nói miễn phí 100% cho mọi người",
     "heroSubtitle": "Không giới hạn giọng nói. Hoàn toàn miễn phí.",
     "heroFeature1": "Chọn từ hơn 3200 giọng nói với hơn 190 ngôn ngữ.",

@@ -1,5 +1,13 @@
 {
   "home": {
+    "heroTitlePrefix": "Plataforma Todo en Uno para",
+    "heroTitleHighlight": "Voz, Música y Videos",
+    "heroDescription": "Crea locuciones naturales, música con IA y videos impresionantes. Sin conocimientos técnicos. Da vida a tus mejores ideas ahora.",
+    "heroFreeTag": "100% Gratis",
+    "heroFreeSubtag": "Sin tarjeta de crédito",
+    "textToSpeech": "Texto a Voz",
+    "lyricsToMusic": "Letras a Música",
+    "aiSongOneClick": "Canción IA Un Clic",
     "heroTitle": "Texto a voz 100% gratuito para todos",
     "heroSubtitle": "Voces ilimitadas. Coste cero.",
     "heroFeature1": "Elige entre más de 3200 voces en más de 190 idiomas.",

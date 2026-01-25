@@ -1,11 +1,13 @@
 {
   "home": {
     "heroTitlePrefix": "一站式",
-    "heroTitleHighlight": "音樂與語音",
-    "heroDescription": "創建 AI 驅動的音樂和自然語音。無需技術技能，立即將您的創意變為現實。",
+    "heroTitleHighlight": "語音、音樂與影片",
+    "heroDescription": "創建自然語音、AI 驅動的音樂和精彩影片。無需技術技能，立即將您的創意變為現實。",
+    "heroFreeTag": "100% 免費",
+    "heroFreeSubtag": "無需信用卡",
+    "textToSpeech": "文字轉語音",
     "lyricsToMusic": "歌詞轉音樂",
     "aiSongOneClick": "AI歌曲一鍵生成",
-    "textToSpeech": "文字轉語音",
     "heroTitle": "100% 免費的文字轉語音",
     "heroSubtitle": "無限語音，完全免費。",
     "heroFeature1": "超過 3200 種語音，支援 190+ 種語言。",

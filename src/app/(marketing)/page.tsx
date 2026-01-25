@@ -102,6 +102,14 @@ export default function Home() {
             </h2>
           </div>
 
+          {/* 100% Free Badge */}
+          <div className="mb-6 flex justify-center">
+            <div className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-green-400 to-emerald-500 rounded-full shadow-lg shadow-green-200/50">
+              <span className="text-white font-bold text-lg md:text-xl">{t('home.heroFreeTag') || '100% Free'}</span>
+              <span className="text-white/80 text-sm hidden sm:inline">- {t('home.heroFreeSubtag') || 'No credit card required'}</span>
+            </div>
+          </div>
+
           {/* Main Title */}
           <h1 className="font-bold text-gray-900 mb-4 text-3xl sm:text-4xl md:text-5xl lg:text-6xl leading-tight">
             {t('home.heroTitlePrefix')}{' '}
@@ -115,8 +123,17 @@ export default function Home() {
             {t('home.heroDescription')}
           </p>
 
-          {/* Action Buttons */}
+          {/* Action Buttons - Order: Voice, Music, Videos */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center flex-wrap">
+            <GradientButton
+              onClick={() => router.push('/studio/tts')}
+              size="md"
+              variant="pink-rose"
+              className="w-full sm:w-auto min-w-[200px] py-4 rounded-xl text-lg shadow-pink-200"
+            >
+              <span>{t('home.textToSpeech')}</span>
+              <Mic className="w-5 h-5 ml-2" />
+            </GradientButton>
             <GradientButton
               onClick={() => router.push('/studio/ai-music')}
               size="md"
@@ -134,15 +151,6 @@ export default function Home() {
             >
               <span>{t('home.aiSongOneClick')}</span>
               <Sparkles className="w-5 h-5 ml-2" />
-            </GradientButton>
-            <GradientButton
-              onClick={() => router.push('/studio/tts')}
-              size="md"
-              variant="pink-rose"
-              className="w-full sm:w-auto min-w-[200px] py-4 rounded-xl text-lg shadow-pink-200"
-            >
-              <span>{t('home.textToSpeech')}</span>
-              <Mic className="w-5 h-5 ml-2" />
             </GradientButton>
           </div>
         </div>

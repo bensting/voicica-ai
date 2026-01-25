@@ -37,15 +37,6 @@ const CloseIcon = () => (
   </svg>
 );
 
-// 图片图标
-const ImageIcon = () => (
-  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-    <rect x="3" y="3" width="18" height="18" rx="2" />
-    <circle cx="8.5" cy="8.5" r="1.5" />
-    <path d="M21 15l-5-5L5 21" />
-  </svg>
-);
-
 /**
  * Image Guidance 组件
  * 根据模型配置显示不同的图片上传 UI
@@ -149,34 +140,26 @@ export default function ImageGuidance({
           </div>
         </div>
 
-        {/* Images Grid */}
-        <div className="space-y-3">
+        {/* Images - 横向排列 */}
+        <div className="flex gap-3 flex-wrap">
           {/* 已上传的图片 */}
           {images.map((img, index) => (
-            <div
-              key={index}
-              className="flex items-center gap-3 p-3 bg-gray-800/60 rounded-xl"
-            >
-              <div className="relative w-16 h-16 rounded-lg overflow-hidden flex-shrink-0">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={img}
-                  alt={`Reference ${index + 1}`}
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2">
-                  <ImageIcon />
-                  <span className="text-white text-sm">File {index + 1}</span>
-                </div>
-              </div>
+            <div key={index} className="relative w-28 h-28 rounded-xl overflow-hidden">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={img}
+                alt={`Reference ${index + 1}`}
+                className="w-full h-full object-cover"
+              />
               <button
                 onClick={() => handleRemoveImage('multi', index)}
-                className="px-3 py-1 text-sm text-red-400 hover:text-red-300 transition-colors"
+                className="absolute top-1.5 right-1.5 w-5 h-5 bg-black/60 rounded-full flex items-center justify-center text-white"
               >
-                Remove
+                <CloseIcon />
               </button>
+              <span className="absolute bottom-1.5 left-1.5 text-[10px] text-white bg-black/60 px-1.5 py-0.5 rounded">
+                {index + 1}/{maxImages}
+              </span>
             </div>
           ))}
 
@@ -184,20 +167,18 @@ export default function ImageGuidance({
           {images.length < maxImages && (
             <button
               onClick={() => handleImageUpload('multi')}
-              className="w-full flex items-center justify-center gap-2 py-3 border-2 border-dashed border-gray-600 rounded-xl text-gray-400 hover:border-gray-500 hover:text-gray-300 transition-colors"
+              className="w-28 h-28 border-2 border-dashed border-gray-600 rounded-xl flex flex-col items-center justify-center gap-1.5 text-gray-500 hover:border-gray-500 hover:text-gray-400 transition-colors"
             >
               <PlusIcon />
-              <span className="text-sm">
-                {images.length === 0 ? 'Upload' : `Add more files (${images.length}/${maxImages})`}
-              </span>
+              <span className="text-xs">Upload</span>
             </button>
           )}
-
-          {/* 说明文字 */}
-          <p className="text-xs text-gray-500">
-            Upload 0-{maxImages} images. Leave empty to generate video from text only.
-          </p>
         </div>
+
+        {/* 说明文字 */}
+        <p className="text-xs text-gray-500 mt-2">
+          Upload 0-{maxImages} images. Leave empty to generate video from text only.
+        </p>
       </div>
     );
   }

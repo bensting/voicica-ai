@@ -1,6 +1,7 @@
 package ai.voicica.app;
 
 import android.os.Bundle;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
 import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
@@ -18,6 +19,12 @@ public class MainActivity extends BridgeActivity {
         registerPlugin(GooglePlayBillingPlugin.class);
 
         super.onCreate(savedInstanceState);
+
+        // 设置自定义 User-Agent 用于平台识别
+        WebView webView = getBridge().getWebView();
+        WebSettings settings = webView.getSettings();
+        String ua = settings.getUserAgentString();
+        settings.setUserAgentString(ua + " VoicicaApp/android");
 
         // 开启 WebView 调试（Chrome DevTools 远程调试）
         WebView.setWebContentsDebuggingEnabled(true);

@@ -1,4 +1,5 @@
 import UIKit
+import WebKit
 import Capacitor
 
 @UIApplicationMain
@@ -7,7 +8,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        // Override point for customization after application launch.
+        // 设置自定义 User-Agent 用于平台识别（追加到默认 UA）
+        let webView = WKWebView()
+        webView.evaluateJavaScript("navigator.userAgent") { (result, error) in
+            if let defaultUA = result as? String {
+                let customUA = defaultUA + " VoicicaApp/ios"
+                UserDefaults.standard.register(defaults: ["UserAgent": customUA])
+            }
+        }
+
         return true
     }
 

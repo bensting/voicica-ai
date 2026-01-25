@@ -28,28 +28,11 @@ export default function Navbar() {
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 md:h-20">
-          {/* Left Section: Logo */}
-          <div className="flex-shrink-0 flex items-center">
-            <Logo />
-          </div>
-
-          {/* Center Section: Navigation Links - Desktop */}
-          <div className="hidden md:flex flex-1 justify-center">
-            <div className="px-6 py-2 bg-white/40 backdrop-blur-md rounded-full border border-white/30 shadow-sm">
-              <NavLinks />
-            </div>
-          </div>
-
-          {/* Right Section: Language, Login & Mobile Toggle */}
-          <div className="flex items-center gap-3 md:gap-4">
-            <div className="hidden md:flex items-center gap-3">
-              <LanguageSwitcher theme="dark" variant="compact" />
-              <LoginButton />
-            </div>
-
-            {/* Mobile Menu Button - Moved to right */}
+          {/* Left Section: Mobile Menu Button (visible on mobile) / Logo (visible on desktop) */}
+          <div className="flex items-center">
+            {/* Mobile Menu Button - LEFT side on mobile */}
             <button
-              className="md:hidden p-2 text-gray-700 hover:text-pink-500 rounded-lg hover:bg-pink-50 transition-colors"
+              className="md:hidden p-2 text-gray-700 hover:text-pink-500 rounded-lg hover:bg-pink-50 transition-colors -ml-2"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               aria-label="Toggle menu"
             >
@@ -63,12 +46,47 @@ export default function Navbar() {
                 </svg>
               )}
             </button>
+
+            {/* Logo - visible on desktop */}
+            <div className="hidden md:flex flex-shrink-0">
+              <Logo />
+            </div>
+          </div>
+
+          {/* Center Section: Logo (mobile) / Navigation Links (desktop) */}
+          <div className="flex-1 flex justify-center">
+            {/* Mobile: Logo in center */}
+            <div className="md:hidden">
+              <Logo />
+            </div>
+
+            {/* Desktop: Navigation Links */}
+            <div className="hidden md:flex">
+              <div className="px-6 py-2 bg-white/40 backdrop-blur-md rounded-full border border-white/30 shadow-sm">
+                <NavLinks />
+              </div>
+            </div>
+          </div>
+
+          {/* Right Section: Language + Login */}
+          <div className="flex items-center gap-2 md:gap-3">
+            {/* Mobile: Show icons */}
+            <div className="flex md:hidden items-center gap-2">
+              <LanguageSwitcher theme="dark" variant="compact" />
+              <LoginButton />
+            </div>
+
+            {/* Desktop: Show full buttons */}
+            <div className="hidden md:flex items-center gap-3">
+              <LanguageSwitcher theme="dark" variant="compact" />
+              <LoginButton />
+            </div>
           </div>
         </div>
 
         {/* Mobile Menu Overlay - Glassmorphism */}
         {mobileMenuOpen && (
-          <div className="md:hidden fixed inset-0 top-20 z-40 bg-white/80 backdrop-blur-3xl animate-fade-in p-4 flex flex-col overflow-y-auto">
+          <div className="md:hidden fixed inset-0 top-16 z-40 bg-white/95 backdrop-blur-3xl animate-fade-in p-4 flex flex-col overflow-y-auto">
             <div className="flex flex-col space-y-4 mt-4">
               <NavLinks mobile onLinkClick={() => setMobileMenuOpen(false)} />
               <div className="h-px bg-gray-100 my-4" />

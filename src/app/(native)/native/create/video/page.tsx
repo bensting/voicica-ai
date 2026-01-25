@@ -80,13 +80,7 @@ export default function CreateVideoPage() {
   const [isCreateSheetOpen, setIsCreateSheetOpen] = useState(false);
   const [isParamsSheetOpen, setIsParamsSheetOpen] = useState(false);
   const [mode, setMode] = useState<ModeType>('generate');
-  const [prompt, setPrompt] = useState(() => {
-    // 从 localStorage 恢复 prompt
-    if (typeof window !== 'undefined') {
-      return localStorage.getItem(VIDEO_PROMPT_STORAGE_KEY) || '';
-    }
-    return '';
-  });
+  const [prompt, setPrompt] = useState('');
   const [selectedModel, setSelectedModel] = useState<VideoModel>(defaultVideoModel);
   const [startFrame, setStartFrame] = useState<string | null>(null);
   const [endFrame, setEndFrame] = useState<string | null>(null);
@@ -107,6 +101,8 @@ export default function CreateVideoPage() {
   useEffect(() => {
     if (prompt) {
       localStorage.setItem(VIDEO_PROMPT_STORAGE_KEY, prompt);
+    } else {
+      localStorage.removeItem(VIDEO_PROMPT_STORAGE_KEY);
     }
   }, [prompt]);
 

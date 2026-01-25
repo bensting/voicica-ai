@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { useNativeBack } from '@/hooks/useNativeBack';
 import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 import { useCredits } from '@/contexts/CreditsContext';
 import { getMyActiveSubscription } from '@/actions/subscription';
@@ -52,6 +53,7 @@ const CrownIcon = () => (
  */
 export default function NativeSubscribePage() {
   const router = useRouter();
+  const goBack = useNativeBack();
   const { user, loading: authLoading } = useFirebaseAuth();
   const { credits } = useCredits();
   const { purchase: googlePlayPurchase, shouldUseGooglePlay, isLoading: gpLoading } = useGooglePlayBilling();
@@ -204,7 +206,7 @@ export default function NativeSubscribePage() {
 
       {/* 关闭按钮 - 直接放在容器里，和 LoginModal 一样 */}
       <button
-        onClick={() => router.back()}
+        onClick={goBack}
         className="absolute left-4 z-20 w-10 h-10 flex items-center justify-center bg-gray-800/50 rounded-full text-gray-300 hover:text-white transition-colors"
         style={{ top: 'calc(var(--safe-area-inset-top, 0px) + 8px)' }}
       >

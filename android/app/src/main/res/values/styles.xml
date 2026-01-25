@@ -15,9 +15,10 @@
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:navigationBarColor">@android:color/transparent</item>
         <item name="android:windowLightStatusBar">false</item>
-        <!-- 禁用 Action Mode（文本选择模式的顶部栏） -->
+        <!-- Action Mode 样式（文本选择模式） -->
         <item name="windowActionModeOverlay">true</item>
-        <item name="actionModeBackground">@android:color/transparent</item>
+        <item name="actionModeBackground">@drawable/action_mode_background</item>
+        <item name="android:actionModeBackground">@drawable/action_mode_background</item>
     </style>
 
     <style name="AppTheme.NoActionBar" parent="Theme.AppCompat.NoActionBar">
@@ -28,9 +29,11 @@
         <!-- Edge-to-edge support -->
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:navigationBarColor">@android:color/transparent</item>
-        <!-- 禁用 Action Mode -->
+        <!-- Action Mode 样式（文本选择模式） -->
         <item name="windowActionModeOverlay">true</item>
-        <item name="actionModeBackground">@android:color/transparent</item>
+        <item name="actionModeBackground">@drawable/action_mode_background</item>
+        <item name="actionModeCloseDrawable">@android:drawable/ic_menu_close_clear_cancel</item>
+        <item name="android:actionModeBackground">@drawable/action_mode_background</item>
     </style>
 
 

@@ -1,11 +1,13 @@
 {
   "home": {
     "heroTitlePrefix": "Platform Lengkap untuk",
-    "heroTitleHighlight": "Musik dan Suara",
-    "heroDescription": "Buat musik dan sulih suara alami dengan AI. Tanpa keahlian teknis. Wujudkan ide terbaik Anda sekarang.",
+    "heroTitleHighlight": "Suara, Musik & Video",
+    "heroDescription": "Buat sulih suara alami, musik AI, dan video menakjubkan. Tanpa keahlian teknis. Wujudkan ide terbaik Anda sekarang.",
+    "heroFreeTag": "100% Gratis",
+    "heroFreeSubtag": "Tanpa kartu kredit",
+    "textToSpeech": "Teks ke Suara",
     "lyricsToMusic": "Lirik ke Musik",
     "aiSongOneClick": "AI Lagu Satu Klik",
-    "textToSpeech": "Teks ke Suara",
     "heroTitle": "100% Gratis Teks ke Suara untuk Semua",
     "heroSubtitle": "Suara tak terbatas. Tanpa biaya.",
     "heroFeature1": "Pilih dari 3200+ suara dalam 190+ bahasa.",

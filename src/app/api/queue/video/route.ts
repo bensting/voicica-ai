@@ -35,6 +35,9 @@ async function handleVideoTask(req: NextRequest) {
     creditsCost,
     isAnonymous,
     startFrame,
+    images,
+    fixedLens,
+    generateAudio,
   } = payload;
 
   console.log(`🚀 [VideoQueue] 开始处理视频任务: ${taskId}`);
@@ -108,46 +111,55 @@ async function handleVideoTask(req: NextRequest) {
 
     if (apiBackend === 'kie') {
       // 使用 Kie.ai API (Seedance 1.5 Pro)
-      console.log(`🎬 [VideoQueue] 提交 Kie.ai 任务: model=${model}, resolution=${resolution}, duration=${duration}s, hasImage=${!!startFrame}`);
+      const imageCount = images?.length || (startFrame ? 1 : 0);
+      console.log(`🎬 [VideoQueue] 提交 Kie.ai 任务: model=${model}, resolution=${resolution}, duration=${duration}s, images=${imageCount}, fixedLens=${fixedLens}, generateAudio=${generateAudio}`);
 
       // Kie.ai 需要图片 URL，如果是 base64 则先上传到 R2
       let inputUrls: string[] | undefined;
-      if (startFrame) {
-        // 检查是否是 base64 data URL
-        if (startFrame.startsWith('data:')) {
-          console.log(`📤 [VideoQueue] 上传起始帧图片到 R2...`);
-          // 解析 base64 data URL
-          const matches = startFrame.match(/^data:([^;]+);base64,(.+)$/);
-          if (matches) {
-            const contentType = matches[1];
-            const base64Data = matches[2];
-            const imageBuffer = Buffer.from(base64Data, 'base64');
-            const extension = contentType.split('/')[1] || 'jpg';
-            const imageFileName = `${uuidv4()}.${extension}`;
-            const imageUrl = await uploadImage(
-              imageBuffer,
-              imageFileName,
-              contentType,
-              `video-frames/${userId}`
-            );
-            inputUrls = [imageUrl];
-            console.log(`✅ [VideoQueue] 起始帧图片上传成功: ${imageUrl}`);
+
+      // 优先使用 images 数组（多图模式）
+      const imagesToProcess = images && images.length > 0 ? images : (startFrame ? [startFrame] : []);
+
+      if (imagesToProcess.length > 0) {
+        inputUrls = [];
+        for (let i = 0; i < imagesToProcess.length; i++) {
+          const img = imagesToProcess[i];
+          // 检查是否是 base64 data URL
+          if (img.startsWith('data:')) {
+            console.log(`📤 [VideoQueue] 上传图片 ${i + 1}/${imagesToProcess.length} 到 R2...`);
+            // 解析 base64 data URL
+            const matches = img.match(/^data:([^;]+);base64,(.+)$/);
+            if (matches) {
+              const contentType = matches[1];
+              const base64Data = matches[2];
+              const imageBuffer = Buffer.from(base64Data, 'base64');
+              const extension = contentType.split('/')[1] || 'jpg';
+              const imageFileName = `${uuidv4()}.${extension}`;
+              const imageUrl = await uploadImage(
+                imageBuffer,
+                imageFileName,
+                contentType,
+                `video-frames/${userId}`
+              );
+              inputUrls.push(imageUrl);
+              console.log(`✅ [VideoQueue] 图片 ${i + 1} 上传成功: ${imageUrl}`);
+            }
+          } else {
+            // 已经是 URL
+            inputUrls.push(img);
           }
-        } else {
-          // 已经是 URL
-          inputUrls = [startFrame];
         }
       }
 
       const kieResult: KieGeneratedVideo = await generateKieVideoAndWait(
         {
           prompt,
-          inputUrls,
+          inputUrls: inputUrls && inputUrls.length > 0 ? inputUrls : undefined,
           aspectRatio: aspectRatio as '1:1' | '21:9' | '4:3' | '3:4' | '16:9' | '9:16',
           resolution: resolution as '480p' | '720p',
           duration: String(duration) as '4' | '8' | '12',
-          fixedLens: false,
-          generateAudio: false,
+          fixedLens: fixedLens ?? false,
+          generateAudio: generateAudio ?? false,
         },
         async (progress) => {
           // 更新进度（30% - 90%）

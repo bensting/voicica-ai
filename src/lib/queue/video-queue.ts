@@ -30,6 +30,12 @@ export interface VideoQueuePayload {
   startFrame?: string;
   /** 结束帧图片 (base64 data URL) - 仅部分模型支持 */
   endFrame?: string;
+  /** 多图模式下的参考图片数组 (base64 data URL) */
+  images?: string[];
+  /** 固定镜头 - Seedance 模型专用 */
+  fixedLens?: boolean;
+  /** 生成音频 - Seedance 模型专用 */
+  generateAudio?: boolean;
 }
 
 // 初始化 QStash 客户端

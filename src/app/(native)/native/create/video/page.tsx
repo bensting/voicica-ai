@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import CreateSheet from '@/components/native/CreateSheet';
 import PromptSection from '@/components/native/create/PromptSection';
 import ImageGuidance from '@/components/native/create/ImageGuidance';
+import AdvancedOptions from '@/components/native/create/AdvancedOptions';
 import ParameterSettingsSheet from '@/components/native/create/ParameterSettingsSheet';
 import GradientButton from '@/components/native/common/GradientButton';
 import CreditsIcon from '@/components/native/common/CreditsIcon';
@@ -81,6 +82,9 @@ export default function CreateVideoPage() {
   const [selectedModel, setSelectedModel] = useState<VideoModel>(defaultVideoModel);
   const [startFrame, setStartFrame] = useState<string | null>(null);
   const [endFrame, setEndFrame] = useState<string | null>(null);
+  const [images, setImages] = useState<string[]>([]); // 多图模式
+  const [fixedLens, setFixedLens] = useState(false);
+  const [generateAudio, setGenerateAudio] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [params, setParams] = useState<VideoParams>(() => {
@@ -101,6 +105,10 @@ export default function CreateVideoPage() {
     // 切换模型时清空已上传的图片
     setStartFrame(null);
     setEndFrame(null);
+    setImages([]);
+    // 重置高级选项
+    setFixedLens(false);
+    setGenerateAudio(false);
   }, [selectedModel]);
 
   const handleBack = () => {
@@ -118,22 +126,43 @@ export default function CreateVideoPage() {
     setError(null);
 
     try {
+      // 构建请求体
+      const requestBody: Record<string, unknown> = {
+        prompt: prompt.trim(),
+        modelId: selectedModel.id,
+        quality: params.quality,
+        duration: params.duration,
+        aspectRatio: params.aspectRatio,
+        visibility: params.visibility,
+      };
+
+      // 根据图片引导模式传递不同参数
+      if (selectedModel.imageGuidance?.mode === 'multi') {
+        if (images.length > 0) {
+          requestBody.images = images;
+        }
+      } else {
+        if (startFrame) requestBody.startFrame = startFrame;
+        if (endFrame) requestBody.endFrame = endFrame;
+      }
+
+      // 如果模型支持高级选项，传递它们
+      if (selectedModel.modelOptions) {
+        if (selectedModel.modelOptions.fixedLens !== undefined) {
+          requestBody.fixedLens = fixedLens;
+        }
+        if (selectedModel.modelOptions.generateAudio !== undefined) {
+          requestBody.generateAudio = generateAudio;
+        }
+      }
+
       const response = await fetch('/api/v1/native/video/create', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           ...(token ? { Authorization: `Bearer ${token}` } : {}),
         },
-        body: JSON.stringify({
-          prompt: prompt.trim(),
-          modelId: selectedModel.id,
-          quality: params.quality,
-          duration: params.duration,
-          aspectRatio: params.aspectRatio,
-          visibility: params.visibility,
-          startFrame: startFrame || undefined,
-          endFrame: endFrame || undefined,
-        }),
+        body: JSON.stringify(requestBody),
       });
 
       const data = await response.json();
@@ -212,15 +241,15 @@ export default function CreateVideoPage() {
         </div>
       </header>
 
-      {/* 内容区域 - 不滚动 */}
-      <div className="flex-1 px-4">
+      {/* 内容区域 - 可滚动 */}
+      <div className="flex-1 px-4 overflow-auto">
         {/* Prompt 区域 */}
         <PromptSection
           prompt={prompt}
           onPromptChange={setPrompt}
           selectedModel={selectedModel}
           onModelChange={handleModelChange}
-          maxLength={2000}
+          maxLength={2500}
         />
 
         {/* Image Guidance */}
@@ -230,6 +259,17 @@ export default function CreateVideoPage() {
           endFrame={endFrame}
           onStartFrameChange={setStartFrame}
           onEndFrameChange={setEndFrame}
+          images={images}
+          onImagesChange={setImages}
+        />
+
+        {/* Advanced Options (模型特有) */}
+        <AdvancedOptions
+          config={selectedModel.modelOptions}
+          fixedLens={fixedLens}
+          generateAudio={generateAudio}
+          onFixedLensChange={setFixedLens}
+          onGenerateAudioChange={setGenerateAudio}
         />
 
         {/* Parameters */}
@@ -269,6 +309,9 @@ export default function CreateVideoPage() {
             <ChevronUpIcon />
           </button>
         </div>
+
+        {/* 底部留白，防止被按钮遮挡 */}
+        <div className="h-4" />
       </div>
 
       {/* 底部按钮 */}

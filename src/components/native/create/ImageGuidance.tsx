@@ -9,6 +9,10 @@ interface ImageGuidanceProps {
   endFrame: string | null;
   onStartFrameChange: (image: string | null) => void;
   onEndFrameChange: (image: string | null) => void;
+  /** 多图模式下的图片数组 */
+  images?: string[];
+  /** 多图模式下的图片变更回调 */
+  onImagesChange?: (images: string[]) => void;
 }
 
 // 信息图标
@@ -33,11 +37,21 @@ const CloseIcon = () => (
   </svg>
 );
 
+// 图片图标
+const ImageIcon = () => (
+  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+    <rect x="3" y="3" width="18" height="18" rx="2" />
+    <circle cx="8.5" cy="8.5" r="1.5" />
+    <path d="M21 15l-5-5L5 21" />
+  </svg>
+);
+
 /**
  * Image Guidance 组件
  * 根据模型配置显示不同的图片上传 UI
  * - single: 单图模式（显示一个上传框）
  * - startEnd: 首尾帧模式（显示 Start Frame + End Frame）
+ * - multi: 多图参考模式（支持多张图片）
  */
 export default function ImageGuidance({
   config,
@@ -45,6 +59,8 @@ export default function ImageGuidance({
   endFrame,
   onStartFrameChange,
   onEndFrameChange,
+  images = [],
+  onImagesChange,
 }: ImageGuidanceProps) {
   const [showTooltip, setShowTooltip] = useState(false);
 
@@ -53,18 +69,22 @@ export default function ImageGuidance({
     return null;
   }
 
-  const handleImageUpload = (type: 'start' | 'end') => {
+  const maxImages = config.maxImages || 2;
+  const isMultiMode = config.mode === 'multi';
+  const isStartEndMode = config.mode === 'startEnd';
+
+  const handleImageUpload = (type: 'start' | 'end' | 'multi', index?: number) => {
     const input = document.createElement('input');
     input.type = 'file';
-    input.accept = 'image/jpeg,image/jpg,image/png';
+    input.accept = 'image/jpeg,image/jpg,image/png,image/webp';
     input.onchange = (e) => {
       const file = (e.target as HTMLInputElement).files?.[0];
       if (!file) return;
 
       // Validate file type
-      const validTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+      const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
       if (!validTypes.includes(file.type)) {
-        alert('Please upload a JPG, JPEG, or PNG image.');
+        alert('Please upload a JPG, JPEG, PNG, or WebP image.');
         return;
       }
 
@@ -75,44 +95,114 @@ export default function ImageGuidance({
         return;
       }
 
-      // Validate image dimensions
-      const img = new Image();
-      img.onload = () => {
-        if (img.width < 300 || img.height < 300) {
-          alert('Image width and height must be at least 300px.');
-          return;
+      // Read as base64
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const result = e.target?.result as string;
+        if (type === 'multi' && onImagesChange) {
+          const newImages = [...images, result];
+          onImagesChange(newImages);
+        } else if (type === 'start') {
+          onStartFrameChange(result);
+        } else if (type === 'end') {
+          onEndFrameChange(result);
         }
-
-        // Read as base64
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          const result = e.target?.result as string;
-          if (type === 'start') {
-            onStartFrameChange(result);
-          } else {
-            onEndFrameChange(result);
-          }
-        };
-        reader.readAsDataURL(file);
       };
-      img.onerror = () => {
-        alert('Failed to load image. Please try another file.');
-      };
-      img.src = URL.createObjectURL(file);
+      reader.readAsDataURL(file);
     };
     input.click();
   };
 
-  const handleRemoveImage = (type: 'start' | 'end') => {
-    if (type === 'start') {
+  const handleRemoveImage = (type: 'start' | 'end' | 'multi', index?: number) => {
+    if (type === 'multi' && onImagesChange && index !== undefined) {
+      const newImages = images.filter((_, i) => i !== index);
+      onImagesChange(newImages);
+    } else if (type === 'start') {
       onStartFrameChange(null);
-    } else {
+    } else if (type === 'end') {
       onEndFrameChange(null);
     }
   };
 
-  const isStartEndMode = config.mode === 'startEnd';
+  // 多图模式 UI
+  if (isMultiMode) {
+    return (
+      <div className="mt-6">
+        {/* Header */}
+        <div className="flex items-center gap-2 mb-3">
+          <h3 className="text-white font-semibold">Image Guidance (optional)</h3>
+          <div className="relative">
+            <button
+              className="text-gray-500 hover:text-gray-400"
+              onClick={() => setShowTooltip(!showTooltip)}
+              onBlur={() => setTimeout(() => setShowTooltip(false), 150)}
+            >
+              <InfoIcon />
+            </button>
+            {showTooltip && (
+              <div className="absolute left-0 top-6 z-50 w-56 p-3 bg-gray-800 rounded-lg shadow-lg border border-gray-700">
+                <p className="text-xs text-gray-300 leading-relaxed">
+                  Upload 0-{maxImages} images. Supports JPG/PNG/WebP, up to 10 MB each.
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
 
+        {/* Images Grid */}
+        <div className="space-y-3">
+          {/* 已上传的图片 */}
+          {images.map((img, index) => (
+            <div
+              key={index}
+              className="flex items-center gap-3 p-3 bg-gray-800/60 rounded-xl"
+            >
+              <div className="relative w-16 h-16 rounded-lg overflow-hidden flex-shrink-0">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={img}
+                  alt={`Reference ${index + 1}`}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2">
+                  <ImageIcon />
+                  <span className="text-white text-sm">File {index + 1}</span>
+                </div>
+              </div>
+              <button
+                onClick={() => handleRemoveImage('multi', index)}
+                className="px-3 py-1 text-sm text-red-400 hover:text-red-300 transition-colors"
+              >
+                Remove
+              </button>
+            </div>
+          ))}
+
+          {/* 添加更多按钮 */}
+          {images.length < maxImages && (
+            <button
+              onClick={() => handleImageUpload('multi')}
+              className="w-full flex items-center justify-center gap-2 py-3 border-2 border-dashed border-gray-600 rounded-xl text-gray-400 hover:border-gray-500 hover:text-gray-300 transition-colors"
+            >
+              <PlusIcon />
+              <span className="text-sm">
+                {images.length === 0 ? 'Upload' : `Add more files (${images.length}/${maxImages})`}
+              </span>
+            </button>
+          )}
+
+          {/* 说明文字 */}
+          <p className="text-xs text-gray-500">
+            Upload 0-{maxImages} images. Leave empty to generate video from text only.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  // 单图 / 首尾帧模式 UI (保持原有逻辑)
   return (
     <div className="mt-6">
       {/* Header */}

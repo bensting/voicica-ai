@@ -29,8 +29,18 @@ export interface AspectRatioOption {
 // 图片引导配置
 export interface ImageGuidanceConfig {
   enabled: boolean;
-  /** 'single' = 单图, 'startEnd' = 首尾帧 */
-  mode: 'single' | 'startEnd';
+  /** 'single' = 单图, 'startEnd' = 首尾帧, 'multi' = 多图参考 */
+  mode: 'single' | 'startEnd' | 'multi';
+  /** 多图模式下最大图片数量 */
+  maxImages?: number;
+}
+
+// 模型特有选项配置
+export interface ModelOptionsConfig {
+  /** 固定镜头选项 */
+  fixedLens?: boolean;
+  /** 生成音频选项 */
+  generateAudio?: boolean;
 }
 
 // 模型配置
@@ -58,6 +68,8 @@ export interface VideoModel {
   defaultAspectRatio: string;
   // 图片引导配置
   imageGuidance?: ImageGuidanceConfig;
+  // 模型特有选项
+  modelOptions?: ModelOptionsConfig;
 }
 
 const isDevelopment = process.env.NODE_ENV === 'development';
@@ -276,7 +288,8 @@ export const videoModelsConfig: VideoModel[] = [
     defaultQuality: '720p',
     defaultDuration: '8s',
     defaultAspectRatio: '16:9',
-    imageGuidance: { enabled: true, mode: 'single' },
+    imageGuidance: { enabled: true, mode: 'multi', maxImages: 2 },
+    modelOptions: { fixedLens: true, generateAudio: true },
   },
 ];
 

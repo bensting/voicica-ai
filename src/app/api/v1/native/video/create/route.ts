@@ -25,6 +25,12 @@ interface CreateVideoRequest {
   startFrame?: string;
   /** 结束帧图片 (base64) - 仅部分模型支持 */
   endFrame?: string;
+  /** 多图模式下的参考图片数组 (base64) */
+  images?: string[];
+  /** 固定镜头 - Seedance 模型专用 */
+  fixedLens?: boolean;
+  /** 生成音频 - Seedance 模型专用 */
+  generateAudio?: boolean;
 }
 
 /**
@@ -50,8 +56,21 @@ export async function POST(req: NextRequest) {
 
     // 2. 解析请求参数
     const body: CreateVideoRequest = await req.json();
-    const { prompt, modelId, quality, duration, aspectRatio, visibility, negativePrompt, seed, startFrame, endFrame } =
-      body;
+    const {
+      prompt,
+      modelId,
+      quality,
+      duration,
+      aspectRatio,
+      visibility,
+      negativePrompt,
+      seed,
+      startFrame,
+      endFrame,
+      images,
+      fixedLens,
+      generateAudio,
+    } = body;
 
     // 3. 验证参数
     if (!prompt?.trim()) {
@@ -164,6 +183,9 @@ export async function POST(req: NextRequest) {
       isAnonymous: is_anonymous,
       startFrame,
       endFrame,
+      images,
+      fixedLens,
+      generateAudio,
     });
 
     console.log(

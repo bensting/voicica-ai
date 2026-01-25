@@ -128,7 +128,7 @@ const prodConfig: AdMobConfig = {
   interstitialRewarded: REAL_AD_IDS.interstitialRewarded,
   appOpen: {
     ...REAL_AD_IDS.appOpen,
-    intervalMinutes: 30, // 生产环境 30 分钟
+    intervalMinutes: 15, // 生产环境 15 分钟
     enabled: true, // 启用开屏广告
   },
   enabled: true,

@@ -84,8 +84,6 @@ export default function VideoTaskPage() {
   const [task, setTask] = useState<VideoTask | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [showDownloadModal, setShowDownloadModal] = useState(false);
-  const [downloadOption, setDownloadOption] = useState<'watermark' | 'no-watermark'>('watermark');
 
   // 获取任务状态
   const fetchTaskStatus = useCallback(async () => {
@@ -135,17 +133,8 @@ export default function VideoTaskPage() {
 
   const [downloading, setDownloading] = useState(false);
 
-  const handleDownloadClick = () => {
-    setShowDownloadModal(true);
-  };
-
-  const handleConfirmDownload = async () => {
+  const handleDownload = async () => {
     if (!task?.video_url || downloading) return;
-
-    if (downloadOption === 'no-watermark') {
-      // TODO: 检查用户是否有会员权限
-      // 暂时直接下载
-    }
 
     try {
       setDownloading(true);
@@ -165,7 +154,6 @@ export default function VideoTaskPage() {
 
       // 释放 Blob URL
       URL.revokeObjectURL(blobUrl);
-      setShowDownloadModal(false);
     } catch (err) {
       console.error('Download failed:', err);
       alert('Download failed, please try again');
@@ -343,9 +331,18 @@ export default function VideoTaskPage() {
 
         {/* 下载按钮 */}
         {isSuccess && (
-          <GradientButton onClick={handleDownloadClick}>
-            <DownloadIcon />
-            <span>Download</span>
+          <GradientButton onClick={handleDownload} disabled={downloading}>
+            {downloading ? (
+              <>
+                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                <span>Downloading...</span>
+              </>
+            ) : (
+              <>
+                <DownloadIcon />
+                <span>Download</span>
+              </>
+            )}
           </GradientButton>
         )}
 
@@ -364,75 +361,6 @@ export default function VideoTaskPage() {
         )}
       </div>
 
-      {/* 下载选项弹窗 */}
-      {showDownloadModal && (
-        <div className="fixed inset-0 z-50 flex items-end justify-center">
-          {/* 遮罩 */}
-          <div
-            className="absolute inset-0 bg-black/60"
-            onClick={() => setShowDownloadModal(false)}
-          />
-
-          {/* 弹窗内容 */}
-          <div
-            className="relative w-full bg-[#1a1a2e] rounded-t-2xl p-4 pb-8"
-            style={{ paddingBottom: 'calc(32px + var(--safe-area-inset-bottom, 0px))' }}
-          >
-            {/* 拖动指示条 */}
-            <div className="flex justify-center mb-4">
-              <div className="w-10 h-1 bg-gray-600 rounded-full" />
-            </div>
-
-            {/* 选项 */}
-            <div className="space-y-3 mb-6">
-              {/* With Watermark */}
-              <button
-                onClick={() => setDownloadOption('watermark')}
-                className="w-full flex items-center justify-between p-4 rounded-xl bg-gray-800/50"
-              >
-                <span className="text-white">With Watermark</span>
-                <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
-                  downloadOption === 'watermark' ? 'border-blue-500' : 'border-gray-500'
-                }`}>
-                  {downloadOption === 'watermark' && (
-                    <div className="w-2.5 h-2.5 rounded-full bg-blue-500" />
-                  )}
-                </div>
-              </button>
-
-              {/* Without Watermark */}
-              <button
-                onClick={() => setDownloadOption('no-watermark')}
-                className="w-full flex items-center justify-between p-4 rounded-xl bg-gray-800/50"
-              >
-                <span className="text-white">Without Watermark<span className="ml-1">👑</span></span>
-                <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
-                  downloadOption === 'no-watermark' ? 'border-blue-500' : 'border-gray-500'
-                }`}>
-                  {downloadOption === 'no-watermark' && (
-                    <div className="w-2.5 h-2.5 rounded-full bg-blue-500" />
-                  )}
-                </div>
-              </button>
-            </div>
-
-            {/* 下载按钮 */}
-            <GradientButton onClick={handleConfirmDownload} disabled={downloading}>
-              {downloading ? (
-                <>
-                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                  <span>Downloading...</span>
-                </>
-              ) : (
-                <>
-                  <DownloadIcon />
-                  <span>Download</span>
-                </>
-              )}
-            </GradientButton>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

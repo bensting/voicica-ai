@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import CreateSheet from '@/components/native/CreateSheet';
 import PromptSection from '@/components/native/create/PromptSection';
@@ -97,8 +97,21 @@ export default function CreateVideoPage() {
     };
   });
 
-  // 保存 prompt 到 localStorage
+  // 从 localStorage 恢复 prompt
   useEffect(() => {
+    const savedPrompt = localStorage.getItem(VIDEO_PROMPT_STORAGE_KEY);
+    if (savedPrompt) {
+      setPrompt(savedPrompt);
+    }
+  }, []);
+
+  // 保存 prompt 到 localStorage（跳过初始加载）
+  const isInitialMount = useRef(true);
+  useEffect(() => {
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      return;
+    }
     if (prompt) {
       localStorage.setItem(VIDEO_PROMPT_STORAGE_KEY, prompt);
     } else {

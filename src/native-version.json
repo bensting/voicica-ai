@@ -1,8 +1,17 @@
 {
-  "version": "1.2.0",
-  "buildNumber": 21,
+  "version": "1.2.1",
+  "buildNumber": 22,
   "description": "原生应用版本（Android/iOS 应用壳）",
   "changelog": [
+    {
+      "version": "1.2.1",
+      "buildNumber": 22,
+      "date": "2026-01-25",
+      "changes": [
+        "修复长按文本时出现白色 Action Mode 背景问题",
+        "优化 Android 主题样式"
+      ]
+    },
     {
       "version": "1.2.0",
       "buildNumber": 21,

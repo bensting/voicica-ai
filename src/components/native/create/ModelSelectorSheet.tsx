@@ -78,6 +78,17 @@ const KlingIcon = () => (
   </div>
 );
 
+// Seedance (ByteDance) 图标
+const SeedanceIcon = () => (
+  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#00F5E8] via-[#00D4AA] to-[#00B894] flex items-center justify-center">
+    <svg className="w-7 h-7 text-white" viewBox="0 0 24 24" fill="none">
+      <path d="M12 2L4 7v10l8 5 8-5V7l-8-5z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
+      <path d="M12 12l8-5M12 12v10M12 12L4 7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+      <circle cx="12" cy="12" r="2" fill="currentColor" />
+    </svg>
+  </div>
+);
+
 // 图标映射
 const iconComponents: Record<string, React.FC> = {
   google: GoogleIcon,
@@ -87,6 +98,7 @@ const iconComponents: Record<string, React.FC> = {
   pixverse: PixverseIcon,
   wan: WanIcon,
   kling: KlingIcon,
+  seedance: SeedanceIcon,
 };
 
 /**

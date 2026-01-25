@@ -38,9 +38,11 @@ export interface VideoModel {
   id: string;
   name: string;
   description: string;
-  icon: 'google' | 'openai' | 'vidu' | 'pixverse' | 'wan' | 'kling';
+  icon: 'google' | 'openai' | 'vidu' | 'pixverse' | 'wan' | 'kling' | 'seedance';
   /** 后端 API 使用的模型 ID */
   apiModelId: string;
+  /** API 后端类型：runware (默认) 或 kie */
+  apiBackend?: 'runware' | 'kie';
   enabled: {
     development: boolean;
     production: boolean;
@@ -68,6 +70,16 @@ const standardAspectRatios: AspectRatioOption[] = [
 
 const extendedAspectRatios: AspectRatioOption[] = [
   { value: '16:9', label: '16:9', icon: 'landscape' },
+  { value: '4:3', label: '4:3', icon: 'classic' },
+  { value: '1:1', label: '1:1', icon: 'square' },
+  { value: '3:4', label: '3:4', icon: 'portrait' },
+  { value: '9:16', label: '9:16', icon: 'portrait' },
+];
+
+// Seedance 扩展宽高比 (包含 21:9)
+const seedanceAspectRatios: AspectRatioOption[] = [
+  { value: '16:9', label: '16:9', icon: 'landscape' },
+  { value: '21:9', label: '21:9', icon: 'landscape' },
   { value: '4:3', label: '4:3', icon: 'classic' },
   { value: '1:1', label: '1:1', icon: 'square' },
   { value: '3:4', label: '3:4', icon: 'portrait' },
@@ -236,6 +248,33 @@ export const videoModelsConfig: VideoModel[] = [
     },
     defaultQuality: '720p',
     defaultDuration: '5s',
+    defaultAspectRatio: '16:9',
+    imageGuidance: { enabled: true, mode: 'single' },
+  },
+  {
+    id: 'seedance-1.5-pro',
+    name: 'Seedance 1.5 Pro',
+    description: 'Cinematic video with character consistency',
+    icon: 'seedance',
+    apiModelId: 'bytedance/seedance-1.5-pro',
+    apiBackend: 'kie',
+    enabled: { development: true, production: true },
+    qualityOptions: [
+      { value: '480p', label: '480p', credits: 60 },
+      { value: '720p', label: '720p', credits: 90 },
+    ],
+    durationOptions: [
+      { value: '4s', label: '4s' },
+      { value: '8s', label: '8s' },
+      { value: '12s', label: '12s' },
+    ],
+    aspectRatioOptions: seedanceAspectRatios,
+    creditsMatrix: {
+      '480p': { '4s': 30, '8s': 60, '12s': 90 },
+      '720p': { '4s': 45, '8s': 90, '12s': 135 },
+    },
+    defaultQuality: '720p',
+    defaultDuration: '8s',
     defaultAspectRatio: '16:9',
     imageGuidance: { enabled: true, mode: 'single' },
   },

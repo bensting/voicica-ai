@@ -2,16 +2,19 @@
  * Video 任务队列处理函数 (Upstash QStash)
  *
  * 由 QStash 调用，处理异步视频生成任务
- * 使用 Runware API 进行视频生成
+ * 支持 Runware API 和 Kie.ai API 进行视频生成
  */
 import { NextRequest, NextResponse } from 'next/server';
 import { verifySignatureAppRouter } from '@upstash/qstash/nextjs';
 import prisma from '@/lib/prisma';
 import { generateVideoAndWait } from '@/lib/services/runware-video';
-import { uploadVideo } from '@/lib/services/r2-storage';
+import { generateKieVideoAndWait, type KieGeneratedVideo } from '@/lib/services/kie-video';
+import { uploadVideo, uploadImage } from '@/lib/services/r2-storage';
+import { v4 as uuidv4 } from 'uuid';
 import { ProductType } from '@/config/productType';
 import type { VideoQueuePayload } from '@/lib/queue/video-queue';
 import { deductCreditsAtomic, refundCredits, type DeductionBreakdown } from '@/lib/credits';
+import { videoModelsConfig } from '@/config/native/videoModels';
 
 // 允许长时间运行（Hobby 计划最大 300 秒）
 export const maxDuration = 300;
@@ -96,37 +99,107 @@ async function handleVideoTask(req: NextRequest) {
       data: { progress: 20 },
     });
 
-    // 5. 提交视频生成任务到 Runware
-    console.log(`🎬 [VideoQueue] 提交 Runware 任务: model=${model}, resolution=${resolution}, duration=${duration}s, hasImage=${!!startFrame}`);
+    // 5. 根据模型配置选择 API 后端
+    const modelConfig = videoModelsConfig.find((m) => m.apiModelId === model);
+    const apiBackend = modelConfig?.apiBackend || 'runware';
 
-    const runwareResult = await generateVideoAndWait(
-      {
-        prompt,
-        negativePrompt,
-        model, // Runware model ID (e.g., "google:3@2")
-        duration,
-        aspectRatio: aspectRatio as '16:9' | '9:16',
-        seed,
-        // 传递起始帧图片（如果有）
-        inputImage: startFrame,
-        // TODO: endFrame 支持需要根据具体模型 API 实现
-      },
-      async (progress) => {
-        // 更新进度（30% - 90%）
-        await prisma.video_records.update({
-          where: { task_id: taskId },
-          data: { progress },
-        });
+    let videoResultURL: string | undefined;
+    let apiCost: number | undefined;
+
+    if (apiBackend === 'kie') {
+      // 使用 Kie.ai API (Seedance 1.5 Pro)
+      console.log(`🎬 [VideoQueue] 提交 Kie.ai 任务: model=${model}, resolution=${resolution}, duration=${duration}s, hasImage=${!!startFrame}`);
+
+      // Kie.ai 需要图片 URL，如果是 base64 则先上传到 R2
+      let inputUrls: string[] | undefined;
+      if (startFrame) {
+        // 检查是否是 base64 data URL
+        if (startFrame.startsWith('data:')) {
+          console.log(`📤 [VideoQueue] 上传起始帧图片到 R2...`);
+          // 解析 base64 data URL
+          const matches = startFrame.match(/^data:([^;]+);base64,(.+)$/);
+          if (matches) {
+            const contentType = matches[1];
+            const base64Data = matches[2];
+            const imageBuffer = Buffer.from(base64Data, 'base64');
+            const extension = contentType.split('/')[1] || 'jpg';
+            const imageFileName = `${uuidv4()}.${extension}`;
+            const imageUrl = await uploadImage(
+              imageBuffer,
+              imageFileName,
+              contentType,
+              `video-frames/${userId}`
+            );
+            inputUrls = [imageUrl];
+            console.log(`✅ [VideoQueue] 起始帧图片上传成功: ${imageUrl}`);
+          }
+        } else {
+          // 已经是 URL
+          inputUrls = [startFrame];
+        }
       }
-    );
 
-    if (!runwareResult.videoURL) {
-      throw new Error('Video generation completed but no video URL returned');
+      const kieResult: KieGeneratedVideo = await generateKieVideoAndWait(
+        {
+          prompt,
+          inputUrls,
+          aspectRatio: aspectRatio as '1:1' | '21:9' | '4:3' | '3:4' | '16:9' | '9:16',
+          resolution: resolution as '480p' | '720p',
+          duration: String(duration) as '4' | '8' | '12',
+          fixedLens: false,
+          generateAudio: false,
+        },
+        async (progress) => {
+          // 更新进度（30% - 90%）
+          await prisma.video_records.update({
+            where: { task_id: taskId },
+            data: { progress },
+          });
+        }
+      );
+
+      if (!kieResult.videoURL) {
+        throw new Error('Video generation completed but no video URL returned');
+      }
+
+      videoResultURL = kieResult.videoURL;
+      apiCost = kieResult.costTime ? kieResult.costTime / 1000 : undefined; // Convert ms to seconds as cost indicator
+    } else {
+      // 使用 Runware API (默认)
+      console.log(`🎬 [VideoQueue] 提交 Runware 任务: model=${model}, resolution=${resolution}, duration=${duration}s, hasImage=${!!startFrame}`);
+
+      const runwareResult = await generateVideoAndWait(
+        {
+          prompt,
+          negativePrompt,
+          model, // Runware model ID (e.g., "google:3@2")
+          duration,
+          aspectRatio: aspectRatio as '16:9' | '9:16',
+          seed,
+          // 传递起始帧图片（如果有）
+          inputImage: startFrame,
+          // TODO: endFrame 支持需要根据具体模型 API 实现
+        },
+        async (progress) => {
+          // 更新进度（30% - 90%）
+          await prisma.video_records.update({
+            where: { task_id: taskId },
+            data: { progress },
+          });
+        }
+      );
+
+      if (!runwareResult.videoURL) {
+        throw new Error('Video generation completed but no video URL returned');
+      }
+
+      videoResultURL = runwareResult.videoURL;
+      apiCost = runwareResult.cost;
     }
 
     // 6. 下载视频并上传到 R2
     console.log(`📤 [VideoQueue] 下载视频并上传到 R2...`);
-    const videoResponse = await fetch(runwareResult.videoURL);
+    const videoResponse = await fetch(videoResultURL);
     if (!videoResponse.ok) {
       throw new Error(`Failed to download video: ${videoResponse.status}`);
     }
@@ -140,7 +213,7 @@ async function handleVideoTask(req: NextRequest) {
       `videos/${userId}`
     );
 
-    // 9. 更新任务状态为成功
+    // 7. 更新任务状态为成功
     await prisma.video_records.update({
       where: { task_id: taskId },
       data: {
@@ -148,7 +221,7 @@ async function handleVideoTask(req: NextRequest) {
         progress: 100,
         video_url: videoUrl,
         actual_duration: duration, // 实际时长等于请求时长
-        api_cost: runwareResult.cost, // 实际 API 成本
+        api_cost: apiCost, // 实际 API 成本
         completed_at: new Date(),
       },
     });
@@ -162,7 +235,7 @@ async function handleVideoTask(req: NextRequest) {
       },
     });
 
-    console.log(`✅ [VideoQueue] 视频任务处理成功: ${taskId}, api_cost=${runwareResult.cost}`);
+    console.log(`✅ [VideoQueue] 视频任务处理成功: ${taskId}, api_cost=${apiCost}, backend=${apiBackend}`);
 
     return NextResponse.json({
       success: true,

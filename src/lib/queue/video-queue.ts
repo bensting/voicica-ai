@@ -17,7 +17,7 @@ export interface VideoQueuePayload {
   /** 时长（秒） */
   duration: VideoDuration;
   /** 宽高比 */
-  aspectRatio: '16:9' | '9:16';
+  aspectRatio: '16:9' | '9:16' | '1:1' | '4:3' | '3:4' | '21:9';
   /** 模型 */
   model: string;
   /** 随机种子 */
@@ -26,7 +26,7 @@ export interface VideoQueuePayload {
   creditsCost: number;
   /** 是否匿名用户 */
   isAnonymous: boolean;
-  /** 起始帧图片 (base64 data URL) */
+  /** 起始帧图片 (base64 data URL 或 URL) */
   startFrame?: string;
   /** 结束帧图片 (base64 data URL) - 仅部分模型支持 */
   endFrame?: string;

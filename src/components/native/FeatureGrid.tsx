@@ -2,8 +2,8 @@
 
 import Link from 'next/link';
 import {
-  getMenuItemsByCategory,
-  getAvailableCategories,
+  getAvailableMenuItems,
+  getCategoryConfig,
   CreateMenuIcon,
 } from '@/config/native/createMenuConfig';
 
@@ -118,48 +118,44 @@ const iconMap: Record<CreateMenuIcon, React.FC> = {
   youtube: YoutubeIcon,
 };
 
+// 颜色映射 - 图标颜色和背景渐变（按类别）
+const colorMap: Record<string, { icon: string; bg: string }> = {
+  purple: { icon: 'text-purple-400', bg: 'bg-purple-500/20' },
+  pink: { icon: 'text-pink-400', bg: 'bg-pink-500/20' },
+  blue: { icon: 'text-blue-400', bg: 'bg-blue-500/20' },
+  cyan: { icon: 'text-cyan-400', bg: 'bg-cyan-500/20' },
+};
+
 /**
  * 功能入口网格
- * 按分类显示，每个分类一行
+ * 4 列统一网格 + 按类别彩色图标
  */
 export default function FeatureGrid() {
-  const categories = getAvailableCategories();
+  const items = getAvailableMenuItems();
 
   return (
-    <div className="py-4 space-y-4">
-      {categories.map((category) => {
-        const items = getMenuItemsByCategory(category.id);
-        if (items.length === 0) return null;
-
-        return (
-          <div key={category.id}>
-            {/* 分类标题 */}
-            <h3 className="px-4 mb-2 text-xs font-medium text-gray-400 uppercase tracking-wider">
-              {category.title}
-            </h3>
-            {/* 功能项 */}
-            <div className="flex gap-2 px-4 overflow-x-auto scrollbar-hide">
-              {items.map((feature) => {
-                const IconComponent = iconMap[feature.icon];
-                return (
-                  <Link
-                    key={feature.id}
-                    href={feature.href}
-                    className="flex flex-col items-center justify-center w-[72px] h-[72px] flex-shrink-0 bg-gray-800/60 rounded-xl hover:bg-gray-700/60 transition-colors"
-                  >
-                    <div className="text-gray-300 mb-1.5">
-                      <IconComponent />
-                    </div>
-                    <span className="text-[10px] text-gray-300 font-medium whitespace-nowrap">
-                      {feature.shortName}
-                    </span>
-                  </Link>
-                );
-              })}
-            </div>
-          </div>
-        );
-      })}
+    <div className="py-4 px-4">
+      <div className="grid grid-cols-4 gap-3">
+        {items.map((feature) => {
+          const IconComponent = iconMap[feature.icon];
+          const categoryConfig = getCategoryConfig(feature.category);
+          const colors = colorMap[categoryConfig?.color || 'purple'];
+          return (
+            <Link
+              key={feature.id}
+              href={feature.href}
+              className={`flex flex-col items-center justify-center aspect-square rounded-2xl ${colors.bg} hover:opacity-80 transition-opacity`}
+            >
+              <div className={`${colors.icon} mb-1.5`}>
+                <IconComponent />
+              </div>
+              <span className="text-[10px] text-gray-300 font-medium text-center leading-tight px-1">
+                {feature.shortName}
+              </span>
+            </Link>
+          );
+        })}
+      </div>
     </div>
   );
 }

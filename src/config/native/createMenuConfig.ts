@@ -14,14 +14,15 @@ export interface CategoryConfig {
   id: CreateMenuCategory;
   title: string;
   order: number;
+  color: string;
 }
 
 /** 类别配置列表 */
 export const categoryConfigs: CategoryConfig[] = [
-  { id: 'voiceover', title: 'VOICEOVER AI', order: 1 },
-  { id: 'music', title: 'MUSIC AI', order: 2 },
-  { id: 'video', title: 'VIDEO AI', order: 3 },
-  { id: 'tools', title: 'OTHER TOOLS', order: 4 },
+  { id: 'voiceover', title: 'VOICEOVER AI', order: 1, color: 'purple' },
+  { id: 'music', title: 'MUSIC AI', order: 2, color: 'pink' },
+  { id: 'video', title: 'VIDEO AI', order: 3, color: 'blue' },
+  { id: 'tools', title: 'OTHER TOOLS', order: 4, color: 'cyan' },
 ];
 
 export interface CreateMenuItem {
@@ -165,4 +166,11 @@ export function getAvailableCategories(): CategoryConfig[] {
   return categoryConfigs
     .filter((config) => categoriesWithItems.has(config.id))
     .sort((a, b) => a.order - b.order);
+}
+
+/**
+ * 根据类别 ID 获取类别配置
+ */
+export function getCategoryConfig(categoryId: CreateMenuCategory): CategoryConfig | undefined {
+  return categoryConfigs.find((config) => config.id === categoryId);
 }

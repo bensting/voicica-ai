@@ -117,8 +117,9 @@ export async function getDailyTasksStatus(): Promise<DailyTasksStatus | null> {
 /**
  * 签到领取积分
  * 使用原子操作防止并发重复领取
+ * @param addToPermanent 是否添加到永久积分（默认添加到当月积分）
  */
-export async function checkin(): Promise<TaskResult> {
+export async function checkin(addToPermanent: boolean = false): Promise<TaskResult> {
   try {
     const authUser = await getOptionalUser();
     if (!authUser) {
@@ -170,14 +171,14 @@ export async function checkin(): Promise<TaskResult> {
         return { success: false, message: 'Already checked in today' };
       }
 
-      console.log(`[checkin] Successfully checked in, updating monthly_credits...`);
+      console.log(`[checkin] Successfully checked in, updating ${addToPermanent ? 'credits' : 'monthly_credits'}...`);
 
-      // 增加用户当月积分（每日任务获得的积分只计入当月积分，不计入永久积分）
+      // 增加用户积分（credits 是永久积分，monthly_credits 是当月积分）
       await tx.users.update({
         where: { user_id: authUser.uid },
-        data: {
-          monthly_credits: { increment: credits },
-        },
+        data: addToPermanent
+          ? { credits: { increment: credits } }
+          : { monthly_credits: { increment: credits } },
       });
 
       // 记录积分历史
@@ -185,7 +186,7 @@ export async function checkin(): Promise<TaskResult> {
         data: {
           user_id: authUser.uid,
           amount: credits,
-          description: 'Daily check-in reward',
+          description: addToPermanent ? 'Daily check-in reward (permanent)' : 'Daily check-in reward',
           product_type: 'daily_checkin',
         },
       });
@@ -204,8 +205,9 @@ export async function checkin(): Promise<TaskResult> {
  * 领取广告奖励
  * 使用原子操作防止并发重复领取
  * @param adWatched 是否真的看完了广告（第一阶段模拟为 true）
+ * @param addToPermanent 是否添加到永久积分（默认添加到当月积分）
  */
-export async function claimAdReward(adWatched: boolean = true): Promise<TaskResult> {
+export async function claimAdReward(adWatched: boolean = true, addToPermanent: boolean = false): Promise<TaskResult> {
   try {
     if (!adWatched) {
       return { success: false, message: 'Please watch the ad first' };
@@ -262,14 +264,14 @@ export async function claimAdReward(adWatched: boolean = true): Promise<TaskResu
 
         // 如果更新成功，说明成功领取了这个档位
         if (updateResult.count > 0) {
-          console.log(`[claimAdReward] Successfully claimed tier ${newClaimed}, credits: ${credits}`);
+          console.log(`[claimAdReward] Successfully claimed tier ${newClaimed}, credits: ${credits}, addToPermanent: ${addToPermanent}`);
 
-          // 增加用户当月积分（广告奖励只计入当月积分，不计入永久积分）
+          // 增加用户积分（credits 是永久积分，monthly_credits 是当月积分）
           await tx.users.update({
             where: { user_id: authUser.uid },
-            data: {
-              monthly_credits: { increment: credits },
-            },
+            data: addToPermanent
+              ? { credits: { increment: credits } }
+              : { monthly_credits: { increment: credits } },
           });
 
           // 记录积分历史
@@ -277,7 +279,7 @@ export async function claimAdReward(adWatched: boolean = true): Promise<TaskResu
             data: {
               user_id: authUser.uid,
               amount: credits,
-              description: `Ad reward tier ${newClaimed}`,
+              description: addToPermanent ? `Ad reward tier ${newClaimed} (permanent)` : `Ad reward tier ${newClaimed}`,
               product_type: 'ad_reward',
             },
           });

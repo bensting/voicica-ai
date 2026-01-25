@@ -4,6 +4,7 @@ import { useEffect } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import NativeNavbar from '@/components/native/NativeNavbar';
 import BottomNav from '@/components/native/BottomNav';
+import WebUpdatePrompt from '@/components/native/WebUpdatePrompt';
 import { BottomNavProvider } from '@/contexts/BottomNavContext';
 import { initNotifications, registerNotificationClickListener } from '@/lib/notifications';
 
@@ -56,6 +57,9 @@ export default function NativeLayout({
 
         {/* 底部导航 - 部分页面不显示 */}
         {showBottomNav && <BottomNav />}
+
+        {/* Web 内容更新提示 */}
+        <WebUpdatePrompt />
       </div>
     </BottomNavProvider>
   );

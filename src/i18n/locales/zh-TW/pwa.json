@@ -43,5 +43,12 @@
     "install": "立即安裝",
     "later": "稍後",
     "progress": "下載中... {{progress}}%"
+  },
+  "webUpdate": {
+    "title": "內容已更新",
+    "previousVersion": "舊版本",
+    "description": "新功能和改進已就緒，重新整理以取得最新版本。",
+    "refresh": "立即重新整理",
+    "later": "稍後"
   }
 }

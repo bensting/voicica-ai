@@ -43,5 +43,12 @@
     "install": "Install Now",
     "later": "Later",
     "progress": "Downloading... {{progress}}%"
+  },
+  "webUpdate": {
+    "title": "Content Updated",
+    "previousVersion": "Previous",
+    "description": "New features and improvements are available. Refresh to get the latest version.",
+    "refresh": "Refresh Now",
+    "later": "Later"
   }
 }

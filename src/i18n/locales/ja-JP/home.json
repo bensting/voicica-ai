@@ -1,11 +1,13 @@
 {
   "home": {
-    "heroTitlePrefix": "ワンストップ",
-    "heroTitleHighlight": "音楽と音声",
-    "heroDescription": "AIで音楽と自然なナレーションを作成。技術的なスキルは不要。今すぐアイデアを実現しましょう。",
+    "heroTitlePrefix": "オールインワン",
+    "heroTitleHighlight": "音声・音楽・動画",
+    "heroDescription": "自然なナレーション、AI音楽、魅力的な動画を作成。技術的なスキルは不要。今すぐアイデアを実現しましょう。",
+    "heroFreeTag": "100%無料",
+    "heroFreeSubtag": "クレジットカード不要",
+    "textToSpeech": "テキスト読み上げ",
     "lyricsToMusic": "歌詞から音楽へ",
     "aiSongOneClick": "AIソング ワンクリック",
-    "textToSpeech": "テキスト読み上げ",
     "heroTitle": "誰でも100%無料のテキスト読み上げ",
     "heroSubtitle": "無制限の音声。コストゼロ。",
     "heroFeature1": "190以上の言語で3200以上の音声から選択。",

@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 import { useCredits } from '@/contexts/CreditsContext';
 import { useSubscription } from '@/contexts/SubscriptionContext';
+import CreatePageHeader from '@/components/native/common/CreatePageHeader';
 import GradientButton from '@/components/native/common/GradientButton';
 import CreditsIcon from '@/components/native/common/CreditsIcon';
 import CreditsInfoBar from '@/components/native/common/CreditsInfoBar';
@@ -12,7 +13,6 @@ import AssistantInput from '@/components/native/common/AssistantInput';
 import AssistantModal from '@/components/native/common/AssistantModal';
 import CrownIcon from '@/components/native/common/CrownIcon';
 import LoginModal from '@/components/native/LoginModal';
-import CreateSheet from '@/components/native/CreateSheet';
 import {
   musicModelsConfig,
   defaultMusicModelId,
@@ -91,7 +91,6 @@ export default function NativeMusicPage() {
   const { isSubscribed } = useSubscription();
 
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
-  const [isCreateSheetOpen, setIsCreateSheetOpen] = useState(false);
   const [isModelSelectorOpen, setIsModelSelectorOpen] = useState(false);
   const [isParameterSheetOpen, setIsParameterSheetOpen] = useState(false);
   const [isLyricsAssistantOpen, setIsLyricsAssistantOpen] = useState(false);
@@ -498,28 +497,18 @@ export default function NativeMusicPage() {
 
   return (
     <div className="min-h-screen bg-[#0a0a1a] flex flex-col">
-      {/* Fixed Header */}
-      <div
-        className="fixed top-0 left-0 right-0 z-30 bg-[#0a0a1a]"
-        style={{ paddingTop: 'var(--safe-area-inset-top, 0px)' }}
-      >
-        {/* Top Bar */}
-        <div className="flex items-center justify-between px-4 h-14">
-          <button onClick={() => router.back()} className="p-2 -ml-2 text-white">
-            <BackIcon />
-          </button>
-          <button
-            onClick={() => setIsCreateSheetOpen(true)}
-            className="flex items-center gap-1 text-white font-semibold"
-          >
-            <span>AI Music</span>
-            <ChevronDownIcon />
-          </button>
-          <div className="w-10" />
-        </div>
+      {/* Header */}
+      <CreatePageHeader title="AI Music" />
 
+      {/* Content Area */}
+      <div
+        className="flex-1 flex flex-col px-4"
+        style={{
+          paddingBottom: 'calc(80px + var(--safe-area-inset-bottom, 0px))',
+        }}
+      >
         {/* Tabs */}
-        <div className="flex mx-4 p-1 bg-gray-800/60 rounded-xl">
+        <div className="flex p-1 bg-gray-800/60 rounded-xl mb-4">
           {tabs.map((tab) => (
             <button
               key={tab.id}
@@ -534,16 +523,6 @@ export default function NativeMusicPage() {
             </button>
           ))}
         </div>
-      </div>
-
-      {/* Content Area */}
-      <div
-        className="flex-1 flex flex-col px-4"
-        style={{
-          paddingTop: 'calc(var(--safe-area-inset-top, 0px) + 120px)',
-          paddingBottom: 'calc(80px + var(--safe-area-inset-bottom, 0px))',
-        }}
-      >
         {/* Error Message */}
         {error && (
           <div className="mb-3 p-3 bg-red-500/20 border border-red-500/30 rounded-xl">
@@ -805,12 +784,6 @@ export default function NativeMusicPage() {
         isOpen={isLoginModalOpen}
         onClose={() => setIsLoginModalOpen(false)}
         onLoginSuccess={() => setIsLoginModalOpen(false)}
-      />
-
-      {/* Create Sheet */}
-      <CreateSheet
-        isOpen={isCreateSheetOpen}
-        onClose={() => setIsCreateSheetOpen(false)}
       />
 
       {/* Model Selector Sheet */}

@@ -27,13 +27,8 @@ export default function NativeLayout({
   const pathname = usePathname();
   const router = useRouter();
 
-  // 添加 native-app class 到 body（禁用文本选择）
-  useEffect(() => {
-    document.body.classList.add('native-app');
-    return () => {
-      document.body.classList.remove('native-app');
-    };
-  }, []);
+  // 注意：之前添加 native-app class 来禁用文本选择，但这可能影响点击事件
+  // 如果需要禁用文本选择，应该在 Android 原生层（WebView 设置）处理
 
   // 初始化本地推送通知
   useEffect(() => {
@@ -53,9 +48,15 @@ export default function NativeLayout({
   return (
     <BottomNavProvider>
       <div className="min-h-screen bg-gradient-to-br from-slate-950 via-[#0a0a1a] to-slate-950 text-white selection:bg-purple-500/30">
-        {/* 顶部环境光效 */}
-        <div className="fixed top-0 left-0 right-0 h-[50vh] bg-purple-900/10 blur-[100px] pointer-events-none" />
-        <div className="fixed bottom-0 right-0 w-[50vh] h-[50vh] bg-blue-900/10 blur-[100px] pointer-events-none" />
+        {/* 顶部环境光效 - 确保在最底层且不影响触摸 */}
+        <div
+          className="fixed inset-0 z-0 pointer-events-none overflow-hidden"
+          aria-hidden="true"
+          style={{ transform: 'translateZ(0)' }}
+        >
+          <div className="absolute top-0 left-0 right-0 h-[50vh] bg-purple-900/10 blur-[100px]" />
+          <div className="absolute bottom-0 right-0 w-[50vh] h-[50vh] bg-blue-900/10 blur-[100px]" />
+        </div>
 
         {/* 顶部导航 - 部分页面不显示 */}
         {showNavbar && <NativeNavbar />}

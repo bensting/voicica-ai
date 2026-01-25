@@ -63,10 +63,11 @@ const KlingIconSmall = () => (
 
 // Seedance 图标（小）
 const SeedanceIconSmall = () => (
-  <svg className="w-4 h-4 text-teal-400" viewBox="0 0 24 24" fill="none">
-    <path d="M12 2L4 7v10l8 5 8-5V7l-8-5z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
-    <path d="M12 12l8-5M12 12v10M12 12L4 7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-    <circle cx="12" cy="12" r="2" fill="currentColor" />
+  <svg className="w-4 h-4" viewBox="0 0 384 384" fill="white">
+    <rect x="30" y="95" width="55" height="250" />
+    <rect x="110" y="150" width="55" height="195" />
+    <rect x="200" y="35" width="55" height="310" />
+    <rect x="295" y="95" width="55" height="250" />
   </svg>
 );
 

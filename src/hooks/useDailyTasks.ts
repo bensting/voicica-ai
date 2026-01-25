@@ -239,7 +239,7 @@ export function useDailyTasks(): UseDailyTasksReturn {
       }
       checkinInProgressRef.current = false;
     }
-  }, [refresh, showRewardedAd]);
+  }, [refresh, showRewardedAd, isNative]);
 
   // 用于跟踪奖励是否已领取
   const rewardClaimedRef = useRef(false);

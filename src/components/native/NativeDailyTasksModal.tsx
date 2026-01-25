@@ -271,39 +271,35 @@ export default function NativeDailyTasksModal({ isOpen, onClose, onCreditsUpdate
 
         <div className="space-y-3 mb-3">
           {/* 签到 */}
-          <div className="bg-purple-500/10 border border-purple-500/20 rounded-xl p-4 flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-purple-500/20 flex items-center justify-center">
-                <PlayIcon />
-              </div>
-              <div>
-                <p className="font-medium text-white">{t('dailyTasks.checkin')}</p>
-                <p className="text-xs text-gray-400">+{formatCredits(config?.checkin_credits || 0)} {t('dailyTasks.credits')}</p>
-              </div>
+          <div className="bg-purple-500/10 border border-purple-500/20 rounded-xl p-3 flex items-center gap-3">
+            <div className="w-9 h-9 shrink-0 rounded-full bg-purple-500/20 flex items-center justify-center">
+              <PlayIcon />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="font-medium text-white text-sm">{t('dailyTasks.checkin')}</p>
+              <p className="text-xs text-gray-400">+{formatCredits(config?.checkin_credits || 0)} {t('dailyTasks.credits')}</p>
             </div>
             <button
               onClick={() => setShowLoginModal(true)}
-              className="px-4 py-2 bg-purple-600 text-white font-medium text-sm rounded-lg flex items-center gap-1.5"
+              className="shrink-0 px-3 py-2 bg-purple-600 text-white font-medium text-xs rounded-lg flex items-center gap-1"
             >
               <PlayIcon />
-              {t('dailyTasks.watchCheckinGet', { credits: formatCredits(config?.checkin_credits || 0) })}
+              <span>Watch +{config?.checkin_credits || 0}</span>
             </button>
           </div>
 
           {/* 看视频 */}
-          <div className="bg-green-500/10 border border-green-500/20 rounded-xl p-4 flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-green-500/20 flex items-center justify-center text-green-400">
-                <PlayIcon />
-              </div>
-              <div>
-                <p className="font-medium text-white">{t('dailyTasks.watchAds')}</p>
-                <p className="text-xs text-gray-400">+{formatCredits(totalAdCredits)} {t('dailyTasks.credits')}</p>
-              </div>
+          <div className="bg-green-500/10 border border-green-500/20 rounded-xl p-3 flex items-center gap-3">
+            <div className="w-9 h-9 shrink-0 rounded-full bg-green-500/20 flex items-center justify-center text-green-400">
+              <PlayIcon />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="font-medium text-white text-sm">{t('dailyTasks.watchAds')}</p>
+              <p className="text-xs text-gray-400">+{formatCredits(totalAdCredits)} {t('dailyTasks.credits')}</p>
             </div>
             <button
               onClick={() => setShowLoginModal(true)}
-              className="px-4 py-2 bg-green-600 text-white font-medium text-sm rounded-lg"
+              className="shrink-0 px-3 py-2 bg-green-600 text-white font-medium text-xs rounded-lg"
             >
               {t('dailyTasks.claim')}
             </button>
@@ -361,23 +357,21 @@ export default function NativeDailyTasksModal({ isOpen, onClose, onCreditsUpdate
         </div>
 
         {/* 签到任务 */}
-        <div className="border border-white/10 rounded-xl p-4 mb-4">
-          <div className="flex items-center justify-between gap-3">
-            <div className="flex items-center gap-3 min-w-0">
-              <div className={`w-10 h-10 shrink-0 rounded-full flex items-center justify-center ${
-                status.checkinDone ? 'bg-green-500/20 text-green-400' : 'bg-purple-500/20 text-purple-400'
-              }`}>
-                {status.checkinDone ? <CheckIcon /> : <PlayIcon />}
-              </div>
-              <div className="min-w-0">
-                <p className="font-medium text-white truncate">{t('dailyTasks.checkin')}</p>
-                <p className="text-sm text-gray-400">+{formatCredits(config?.checkin_credits || 0)} {t('dailyTasks.credits')}</p>
-              </div>
+        <div className="border border-white/10 rounded-xl p-3 mb-4">
+          <div className="flex items-center gap-3">
+            <div className={`w-9 h-9 shrink-0 rounded-full flex items-center justify-center ${
+              status.checkinDone ? 'bg-green-500/20 text-green-400' : 'bg-purple-500/20 text-purple-400'
+            }`}>
+              {status.checkinDone ? <CheckIcon /> : <PlayIcon />}
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="font-medium text-white text-sm">{t('dailyTasks.checkin')}</p>
+              <p className="text-xs text-gray-400">+{formatCredits(config?.checkin_credits || 0)} {t('dailyTasks.credits')}</p>
             </div>
             <button
               onClick={handleCheckin}
               disabled={status.checkinDone || claiming || checkinLoading}
-              className={`shrink-0 px-3 py-2 rounded-lg font-medium text-sm flex items-center gap-1.5 whitespace-nowrap ${
+              className={`shrink-0 px-3 py-2 rounded-lg font-medium text-xs flex items-center gap-1 whitespace-nowrap ${
                 status.checkinDone
                   ? 'bg-white/10 text-gray-500 cursor-not-allowed'
                   : 'bg-purple-600 text-white disabled:opacity-50'
@@ -390,7 +384,7 @@ export default function NativeDailyTasksModal({ isOpen, onClose, onCreditsUpdate
               ) : (
                 <>
                   <PlayIcon />
-                  <span>+{config?.checkin_credits || 0}</span>
+                  <span>Watch +{config?.checkin_credits || 0}</span>
                 </>
               )}
             </button>
@@ -403,18 +397,16 @@ export default function NativeDailyTasksModal({ isOpen, onClose, onCreditsUpdate
         </div>
 
         {/* 看广告任务 */}
-        <div className="border border-white/10 rounded-xl p-4">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-green-500/20 flex items-center justify-center text-green-400">
-                <PlayIcon />
-              </div>
-              <div>
-                <p className="font-medium text-white">{t('dailyTasks.watchAds')}</p>
-                <p className="text-sm text-gray-400">
-                  {formatCredits(status.adRewardsCredits)} / {formatCredits(totalAdCredits)} {t('dailyTasks.credits')}
-                </p>
-              </div>
+        <div className="border border-white/10 rounded-xl p-3">
+          <div className="flex items-center gap-3 mb-3">
+            <div className="w-9 h-9 shrink-0 rounded-full bg-green-500/20 flex items-center justify-center text-green-400">
+              <PlayIcon />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="font-medium text-white text-sm">{t('dailyTasks.watchAds')}</p>
+              <p className="text-xs text-gray-400">
+                {formatCredits(status.adRewardsCredits)} / {formatCredits(totalAdCredits)} {t('dailyTasks.credits')}
+              </p>
             </div>
           </div>
 

@@ -19,16 +19,17 @@ body.platform-android {
   --safe-area-inset-bottom: env(safe-area-inset-bottom, 0px);
 }
 
-/* 原生 App 禁用文本选择（避免弹出系统菜单） */
+/* 原生 App 禁用长按文本选择（避免弹出系统菜单） */
+/* 注意：不使用 -webkit-touch-callout: none，它可能影响触摸事件 */
 body.native-app {
   -webkit-user-select: none;
-  -webkit-touch-callout: none;
   user-select: none;
 }
 
 /* 允许输入框和文本区域选择文本 */
 body.native-app input,
-body.native-app textarea {
+body.native-app textarea,
+body.native-app [contenteditable="true"] {
   -webkit-user-select: text;
   user-select: text;
 }

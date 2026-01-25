@@ -114,7 +114,7 @@ export default function LoginModal({ isOpen, onClose, onLoginSuccess }: LoginMod
   // Email 登录视图
   if (view === 'email-login') {
     return (
-      <div className="fixed inset-0 z-50 animate-fade-in">
+      <div className="fixed inset-0 z-[10010] animate-fade-in">
         <EmailLoginForm
           onBack={() => setView('main')}
           onForgotPassword={() => setView('forgot-password')}
@@ -127,7 +127,7 @@ export default function LoginModal({ isOpen, onClose, onLoginSuccess }: LoginMod
   // 注册视图
   if (view === 'register') {
     return (
-      <div className="fixed inset-0 z-50 animate-fade-in">
+      <div className="fixed inset-0 z-[10010] animate-fade-in">
         <RegisterForm
           onBack={() => setView('main')}
           onSuccess={handleRegisterSuccess}
@@ -139,7 +139,7 @@ export default function LoginModal({ isOpen, onClose, onLoginSuccess }: LoginMod
   // 忘记密码视图
   if (view === 'forgot-password') {
     return (
-      <div className="fixed inset-0 z-50 animate-fade-in">
+      <div className="fixed inset-0 z-[10010] animate-fade-in">
         <ForgotPasswordForm onBack={() => setView('email-login')} />
       </div>
     );
@@ -147,7 +147,7 @@ export default function LoginModal({ isOpen, onClose, onLoginSuccess }: LoginMod
 
   // 主视图
   return (
-    <div className="fixed inset-0 z-50 bg-[#0a0a1a] animate-fade-in overflow-auto">
+    <div className="fixed inset-0 z-[10010] bg-[#0a0a1a] animate-fade-in overflow-auto">
       {/* 背景图片 */}
       <div
         className="absolute inset-x-0 top-0 h-[60%] bg-cover bg-center bg-no-repeat"

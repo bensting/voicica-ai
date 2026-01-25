@@ -37,11 +37,11 @@ interface VideoItem {
 }
 
 const tabs: { id: TabType; label: string }[] = [
-  { id: 'video', label: 'Video' },
-  { id: 'music', label: 'Music' },
-  { id: 'cover', label: 'Cover' },
   { id: 'voices', label: 'Voices' },
   { id: 'dialogues', label: 'Dialogues' },
+  { id: 'music', label: 'Music' },
+  { id: 'cover', label: 'Cover' },
+  { id: 'video', label: 'Video' },
 ];
 
 const emptyStateMessages: Record<TabType, { title: string; subtitle: string; createLink: string }> = {
@@ -106,9 +106,9 @@ export default function MyCreations() {
 
   // 从 URL 参数获取初始 tab
   const tabFromUrl = searchParams.get('tab') as TabType | null;
-  const initialTab = tabFromUrl && ['video', 'music', 'cover', 'voices', 'dialogues'].includes(tabFromUrl)
+  const initialTab = tabFromUrl && ['voices', 'dialogues', 'music', 'cover', 'video'].includes(tabFromUrl)
     ? tabFromUrl
-    : 'video';
+    : 'voices';
 
   const [activeTab, setActiveTab] = useState<TabType>(initialTab);
   const [videos, setVideos] = useState<VideoItem[]>([]);
@@ -238,7 +238,7 @@ export default function MyCreations() {
   // 同步 URL 参数到 activeTab
   useEffect(() => {
     const tabParam = searchParams.get('tab') as TabType | null;
-    if (tabParam && ['video', 'music', 'cover', 'voices', 'dialogues'].includes(tabParam)) {
+    if (tabParam && ['voices', 'dialogues', 'music', 'cover', 'video'].includes(tabParam)) {
       setActiveTab(tabParam);
     }
   }, [searchParams]);

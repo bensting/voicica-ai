@@ -15,10 +15,10 @@ import MusicDetailModal from './MusicDetailModal';
 import CoverDetailModal from './CoverDetailModal';
 import VoiceDetailModal from './VoiceDetailModal';
 import DialogueDetailModal from './DialogueDetailModal';
-import { MusicCard, CoverCard, VoiceCard, DialogueCard } from './cards';
+import { MusicCard, CoverCard, VoiceCard, DialogueCard, VideoCard } from './cards';
 import { formatDateLong } from './utils';
 
-type TabType = 'music' | 'cover' | 'voices' | 'dialogues';
+type TabType = 'video' | 'music' | 'cover' | 'voices' | 'dialogues';
 
 interface VideoItem {
   taskId: string;
@@ -37,6 +37,7 @@ interface VideoItem {
 }
 
 const tabs: { id: TabType; label: string }[] = [
+  { id: 'video', label: 'Video' },
   { id: 'music', label: 'Music' },
   { id: 'cover', label: 'Cover' },
   { id: 'voices', label: 'Voices' },
@@ -44,6 +45,11 @@ const tabs: { id: TabType; label: string }[] = [
 ];
 
 const emptyStateMessages: Record<TabType, { title: string; subtitle: string; createLink: string }> = {
+  video: {
+    title: 'No content yet.',
+    subtitle: 'Create your first AI video.',
+    createLink: '/native/create/video',
+  },
   music: {
     title: 'No content yet.',
     subtitle: 'Create your first AI music.',
@@ -100,12 +106,11 @@ export default function MyCreations() {
 
   // 从 URL 参数获取初始 tab
   const tabFromUrl = searchParams.get('tab') as TabType | null;
-  const initialTab = tabFromUrl && ['music', 'cover', 'voices', 'dialogues'].includes(tabFromUrl)
+  const initialTab = tabFromUrl && ['video', 'music', 'cover', 'voices', 'dialogues'].includes(tabFromUrl)
     ? tabFromUrl
-    : 'music';
+    : 'video';
 
   const [activeTab, setActiveTab] = useState<TabType>(initialTab);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [videos, setVideos] = useState<VideoItem[]>([]);
   const [musicRecords, setMusicRecords] = useState<MusicRecord[]>([]);
   const [voiceRecords, setVoiceRecords] = useState<TtsRecord[]>([]);
@@ -125,8 +130,7 @@ export default function MyCreations() {
   const startY = useRef(0);
   const PULL_THRESHOLD = 60;
 
-  // 获取视频列表 (预留，暂未使用)
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  // 获取视频列表
   const fetchVideos = useCallback(async (isRefresh = false) => {
     if (!token) return;
 
@@ -234,14 +238,16 @@ export default function MyCreations() {
   // 同步 URL 参数到 activeTab
   useEffect(() => {
     const tabParam = searchParams.get('tab') as TabType | null;
-    if (tabParam && ['music', 'cover', 'voices', 'dialogues'].includes(tabParam)) {
+    if (tabParam && ['video', 'music', 'cover', 'voices', 'dialogues'].includes(tabParam)) {
       setActiveTab(tabParam);
     }
   }, [searchParams]);
 
   // 初始加载
   useEffect(() => {
-    if (activeTab === 'music') {
+    if (activeTab === 'video') {
+      fetchVideos();
+    } else if (activeTab === 'music') {
       fetchMusic();
     } else if (activeTab === 'voices') {
       fetchVoices();
@@ -250,7 +256,7 @@ export default function MyCreations() {
     } else if (activeTab === 'dialogues') {
       fetchDialogues();
     }
-  }, [activeTab, fetchMusic, fetchVoices, fetchCovers, fetchDialogues]);
+  }, [activeTab, fetchVideos, fetchMusic, fetchVoices, fetchCovers, fetchDialogues]);
 
   // 使用 hook 轮询处理中的音乐任务状态
   useMusicTaskPolling({
@@ -299,7 +305,9 @@ export default function MyCreations() {
 
   const handleTouchEnd = async () => {
     if (pullDistance >= PULL_THRESHOLD && !refreshing) {
-      if (activeTab === 'music') {
+      if (activeTab === 'video') {
+        await fetchVideos(true);
+      } else if (activeTab === 'music') {
         await fetchMusic(true);
       } else if (activeTab === 'voices') {
         await fetchVoices(true);
@@ -313,7 +321,6 @@ export default function MyCreations() {
     setIsPulling(false);
   };
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleVideoClick = (video: VideoItem) => {
     router.push(`/native/video/task/${video.taskId}`);
   };
@@ -395,13 +402,16 @@ export default function MyCreations() {
   };
 
   // 过滤掉失败的记录
+  const filteredVideoRecords = videos.filter((v) => v.status !== 'FAILURE');
   const filteredMusicRecords = musicRecords.filter((m) => m.status !== 'FAILURE');
   const filteredVoiceRecords = voiceRecords.filter((v) => v.status !== 'FAILURE');
   const filteredCoverRecords = coverRecords.filter((c) => c.status !== 'FAILURE');
   const filteredDialogueRecords = dialogueRecords.filter((d) => d.status !== 'FAILURE');
 
   const emptyState = emptyStateMessages[activeTab];
-  const isEmpty = activeTab === 'music'
+  const isEmpty = activeTab === 'video'
+    ? filteredVideoRecords.length === 0
+    : activeTab === 'music'
     ? filteredMusicRecords.length === 0
     : activeTab === 'voices'
     ? filteredVoiceRecords.length === 0
@@ -412,6 +422,15 @@ export default function MyCreations() {
     : true;
 
   // 按日期分组
+  const groupedVideoRecords = filteredVideoRecords.reduce((groups, video) => {
+    const date = formatDateLong(video.createdAt);
+    if (!groups[date]) {
+      groups[date] = [];
+    }
+    groups[date].push(video);
+    return groups;
+  }, {} as Record<string, VideoItem[]>);
+
   const groupedMusicRecords = filteredMusicRecords.reduce((groups, music) => {
     const date = formatDateLong(music.created_at.toString());
     if (!groups[date]) {
@@ -499,7 +518,45 @@ export default function MyCreations() {
         )}
 
         {/* 内容区域 */}
-        {activeTab === 'music' ? (
+        {activeTab === 'video' ? (
+          loading && videos.length === 0 ? (
+            // 加载中
+            <div className="flex justify-center py-8">
+              <div className="w-8 h-8 border-3 border-blue-500 border-t-transparent rounded-full animate-spin" />
+            </div>
+          ) : isEmpty ? (
+            // 空状态
+            <div className="flex flex-col items-center justify-center py-8">
+              <EmptyIllustration />
+              <p className="mt-3 text-gray-400 text-center">{emptyState.title}</p>
+              <p className="text-gray-500 text-sm text-center">{emptyState.subtitle}</p>
+              <Link
+                href={emptyState.createLink}
+                className="mt-4 px-8 py-3 bg-white/10 border border-white/20 rounded-full text-white font-medium hover:bg-white/20 transition-colors"
+              >
+                Go create
+              </Link>
+            </div>
+          ) : (
+            // 视频列表 - 按日期分组
+            <div className="space-y-4">
+              {Object.entries(groupedVideoRecords).map(([date, records]) => (
+                <div key={date}>
+                  <h3 className="text-gray-500 text-sm mb-2">{date}</h3>
+                  <div className="space-y-1">
+                    {records.map((video) => (
+                      <VideoCard
+                        key={video.taskId}
+                        video={video}
+                        onClick={() => handleVideoClick(video)}
+                      />
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )
+        ) : activeTab === 'music' ? (
           loading && musicRecords.length === 0 ? (
             // 加载中
             <div className="flex justify-center py-8">

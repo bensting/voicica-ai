@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { VideoModel } from '@/config/native/videoModels';
 import ModelSelectorSheet from './ModelSelectorSheet';
 
@@ -89,13 +89,11 @@ const ChevronDownIcon = () => (
   </svg>
 );
 
-// AI 助手图标
-const AssistantIcon = () => (
-  <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
-    <circle cx="12" cy="12" r="10" fill="#3B82F6" />
-    <circle cx="8" cy="10" r="1.5" fill="white" />
-    <circle cx="16" cy="10" r="1.5" fill="white" />
-    <path d="M8 14c0 2 2 3 4 3s4-1 4-3" stroke="white" strokeWidth="1.5" fill="none" />
+// 魔法棒图标
+const MagicWandIcon = () => (
+  <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <path d="M15 4V2M15 16v-2M8 9h2M20 9h2M17.8 11.8L19 13M17.8 6.2L19 5M12.2 11.8L11 13M12.2 6.2L11 5" />
+    <path d="M3 21l9-9" strokeLinecap="round" />
   </svg>
 );
 
@@ -103,6 +101,25 @@ const AssistantIcon = () => (
 const TrashIcon = () => (
   <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
     <path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2m3 0v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6h14z" />
+  </svg>
+);
+
+// Loading 图标
+const LoadingSpinner = () => (
+  <svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none">
+    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+    <path
+      className="opacity-75"
+      fill="currentColor"
+      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+    />
+  </svg>
+);
+
+// 关闭图标
+const CloseIcon = () => (
+  <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <path d="M18 6L6 18M6 6l12 12" />
   </svg>
 );
 
@@ -117,9 +134,52 @@ export default function PromptSection({
   maxLength,
 }: PromptSectionProps) {
   const [isModelSheetOpen, setIsModelSheetOpen] = useState(false);
+  const [isGenerateSheetOpen, setIsGenerateSheetOpen] = useState(false);
+  const [generateInput, setGenerateInput] = useState('');
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [generateError, setGenerateError] = useState<string | null>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
+
+  // Focus input when sheet opens
+  useEffect(() => {
+    if (isGenerateSheetOpen && inputRef.current) {
+      setTimeout(() => inputRef.current?.focus(), 100);
+    }
+  }, [isGenerateSheetOpen]);
 
   const handleClear = () => {
     onPromptChange('');
+  };
+
+  const handleGeneratePrompt = async () => {
+    if (!generateInput.trim() || isGenerating) return;
+
+    setIsGenerating(true);
+    setGenerateError(null);
+
+    try {
+      const response = await fetch('/api/ai/generate-video-prompt', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt: generateInput.trim() }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        throw new Error(data.error || 'Failed to generate prompt');
+      }
+
+      // Set the generated prompt
+      onPromptChange(data.prompt.slice(0, maxLength));
+      // Close the sheet
+      setIsGenerateSheetOpen(false);
+      setGenerateInput('');
+    } catch (err) {
+      setGenerateError(err instanceof Error ? err.message : 'Failed to generate prompt');
+    } finally {
+      setIsGenerating(false);
+    }
   };
 
   const SmallIcon = smallIconMap[selectedModel.icon] || GoogleIconSmall;
@@ -152,10 +212,13 @@ export default function PromptSection({
 
         {/* Bottom Bar */}
         <div className="flex items-center justify-between mt-3 pt-3 border-t border-gray-700/50">
-          {/* Assistant Button */}
-          <button className="flex items-center gap-2 px-3 py-1.5 bg-gray-700/60 rounded-full text-sm text-gray-300 hover:bg-gray-600/60 transition-colors">
-            <AssistantIcon />
-            <span>Assistant</span>
+          {/* Generate Prompt Button */}
+          <button
+            onClick={() => setIsGenerateSheetOpen(true)}
+            className="flex items-center gap-2 px-3 py-1.5 bg-gray-700/60 rounded-full text-sm text-gray-300 hover:bg-gray-600/60 transition-colors"
+          >
+            <MagicWandIcon />
+            <span>Generate Prompt</span>
           </button>
 
           {/* Character Count & Clear */}
@@ -181,6 +244,88 @@ export default function PromptSection({
         selectedModelId={selectedModel.id}
         onSelect={onModelChange}
       />
+
+      {/* Generate Prompt Sheet */}
+      {isGenerateSheetOpen && (
+        <div className="fixed inset-0 z-50 flex items-end justify-center">
+          {/* Backdrop */}
+          <div
+            className="absolute inset-0 bg-black/60"
+            onClick={() => !isGenerating && setIsGenerateSheetOpen(false)}
+          />
+
+          {/* Sheet */}
+          <div
+            className="relative w-full max-w-lg bg-[#1a1a2e] rounded-t-3xl animate-slide-up"
+            style={{ paddingBottom: 'var(--safe-area-inset-bottom, 16px)' }}
+          >
+            {/* Handle */}
+            <div className="flex justify-center pt-3 pb-2">
+              <div className="w-10 h-1 bg-gray-600 rounded-full" />
+            </div>
+
+            {/* Header */}
+            <div className="flex items-center justify-between px-4 pb-4">
+              <h3 className="text-lg font-semibold text-white">Generate Prompt</h3>
+              <button
+                onClick={() => !isGenerating && setIsGenerateSheetOpen(false)}
+                className="p-1 text-gray-400 hover:text-white transition-colors"
+                disabled={isGenerating}
+              >
+                <CloseIcon />
+              </button>
+            </div>
+
+            {/* Content */}
+            <div className="px-4 pb-4">
+              <p className="text-sm text-gray-400 mb-3">
+                Describe what you want to create, and AI will generate a detailed prompt for you.
+              </p>
+
+              {/* Input */}
+              <textarea
+                ref={inputRef}
+                value={generateInput}
+                onChange={(e) => setGenerateInput(e.target.value.slice(0, 500))}
+                placeholder="e.g., A cat playing piano in a jazz bar"
+                className="w-full h-24 p-3 bg-gray-800/60 rounded-xl text-white placeholder-gray-500 resize-none focus:outline-none focus:ring-2 focus:ring-purple-500/50 text-sm"
+                disabled={isGenerating}
+              />
+
+              {/* Character count */}
+              <div className="flex justify-end mt-1 mb-3">
+                <span className="text-xs text-gray-500">{generateInput.length}/500</span>
+              </div>
+
+              {/* Error */}
+              {generateError && (
+                <div className="mb-3 p-2 bg-red-500/20 border border-red-500/40 rounded-lg text-red-400 text-sm text-center">
+                  {generateError}
+                </div>
+              )}
+
+              {/* Generate Button */}
+              <button
+                onClick={handleGeneratePrompt}
+                disabled={!generateInput.trim() || isGenerating}
+                className="w-full py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-medium rounded-xl hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              >
+                {isGenerating ? (
+                  <>
+                    <LoadingSpinner />
+                    <span>Generating...</span>
+                  </>
+                ) : (
+                  <>
+                    <MagicWandIcon />
+                    <span>Generate</span>
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

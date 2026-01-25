@@ -1,6 +1,8 @@
 package ai.voicica.app;
 
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.view.ActionMode;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import androidx.core.view.WindowCompat;
@@ -17,6 +19,10 @@ public class MainActivity extends BridgeActivity {
         registerPlugin(AppodealPlugin.class);
         registerPlugin(AppOpenAdPlugin.class);
         registerPlugin(GooglePlayBillingPlugin.class);
+
+        // 重要：在 super.onCreate() 之前设置主题！
+        // 修复 Action Mode（文本选择）背景显示为 splash 的问题
+        setTheme(R.style.AppTheme_NoActionBar);
 
         super.onCreate(savedInstanceState);
 
@@ -37,6 +43,15 @@ public class MainActivity extends BridgeActivity {
         if (controller != null) {
             controller.setAppearanceLightStatusBars(false); // false = light icons (for dark bg)
             controller.setAppearanceLightNavigationBars(true); // true = dark icons (for light bg)
+        }
+    }
+
+    @Override
+    public void onActionModeStarted(ActionMode mode) {
+        super.onActionModeStarted(mode);
+        // 强制设置 Action Mode 背景为深色，避免 splash 主题的背景
+        if (mode != null && mode.getMenuView() != null) {
+            mode.getMenuView().setBackgroundColor(0xFF1a1a2e); // 深色背景
         }
     }
 }

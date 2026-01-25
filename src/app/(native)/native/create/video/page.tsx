@@ -134,7 +134,7 @@ export default function CreateVideoPage() {
   }, [selectedModel]);
 
   const handleBack = () => {
-    window.history.back();
+    router.back();
   };
 
   const handleModelChange = (model: VideoModel) => {

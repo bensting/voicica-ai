@@ -20,6 +20,10 @@ public class MainActivity extends BridgeActivity {
 
         super.onCreate(savedInstanceState);
 
+        // 强制设置主题，修复 Action Mode（文本选择）背景显示为 splash 的问题
+        // Capacitor 3+ 在 onStart 才设置主题，导致 Action Mode 使用了 splash 主题
+        setTheme(R.style.AppTheme_NoActionBar);
+
         // 设置自定义 User-Agent 用于平台识别
         WebView webView = getBridge().getWebView();
         WebSettings settings = webView.getSettings();

@@ -123,7 +123,7 @@ const colorMap: Record<string, { icon: string; bg: string }> = {
   purple: { icon: 'text-purple-400', bg: 'bg-purple-500/20' },
   pink: { icon: 'text-pink-400', bg: 'bg-pink-500/20' },
   blue: { icon: 'text-blue-400', bg: 'bg-blue-500/20' },
-  cyan: { icon: 'text-cyan-400', bg: 'bg-cyan-500/20' },
+  emerald: { icon: 'text-emerald-400', bg: 'bg-emerald-500/20' },
 };
 
 /**

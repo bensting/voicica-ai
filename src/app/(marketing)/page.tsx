@@ -7,6 +7,7 @@ import FAQ from '@/components/sections/faq';
 import CTA from '@/components/sections/CTA';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { GradientButton } from '@/components/ui';
+import AppDownloadButtons from '@/components/common/AppDownloadButtons';
 
 // 预生成的声波数据（避免 hydration mismatch）
 const SOUND_WAVE_DATA = [
@@ -153,6 +154,9 @@ export default function Home() {
               <Sparkles className="w-5 h-5 ml-2" />
             </GradientButton>
           </div>
+
+          {/* App Download Section */}
+          <AppDownloadButtons variant="light" className="mt-12" />
         </div>
 
         {/* Bottom Gradient Fade */}

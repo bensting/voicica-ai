@@ -34,6 +34,9 @@
     "adError": "广告加载失败，请稍后再试",
 
     "resetTip": "任务每日零点重置",
-    "noAdsPromo": "不想看广告？立即成为会员！"
+    "noAdsPromo": "不想看广告？立即成为会员！",
+    "watchMore": "继续观看 +1",
+    "noAdsTitle": "跳过广告，畅享无限！",
+    "noAdsSubtitle": "立即成为VIP会员"
   }
 }

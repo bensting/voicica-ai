@@ -38,7 +38,7 @@ interface UseDailyTasksReturn {
   /** 签到 */
   doCheckin: () => Promise<TaskResult>;
   /** 领取广告奖励 */
-  doClaimAdReward: () => Promise<TaskResult>;
+  doClaimAdReward: (bonusMode?: boolean) => Promise<TaskResult>;
   /** 标记弹窗已显示 */
   markPopupShown: () => void;
   /** 关闭弹窗（不再显示今天） */
@@ -220,8 +220,8 @@ export function useDailyTasks(): UseDailyTasksReturn {
         return { success: false, message: '已取消' };
       }
 
-      // 调用签到接口
-      const result = await checkin();
+      // 调用签到接口（原生 App 积分加到永久积分）
+      const result = await checkin(isNative);
       if (result.success && !cancelledRef.current) {
         await refresh();
       }
@@ -239,14 +239,14 @@ export function useDailyTasks(): UseDailyTasksReturn {
       }
       checkinInProgressRef.current = false;
     }
-  }, [refresh, showRewardedAd]);
+  }, [refresh, showRewardedAd, isNative]);
 
   // 用于跟踪奖励是否已领取
   const rewardClaimedRef = useRef(false);
   const claimResultRef = useRef<TaskResult | null>(null);
 
   // 领取广告奖励
-  const doClaimAdReward = useCallback(async (): Promise<TaskResult> => {
+  const doClaimAdReward = useCallback(async (bonusMode: boolean = false): Promise<TaskResult> => {
     try {
       cancelledRef.current = false;
       setClaiming(true);
@@ -274,7 +274,7 @@ export function useDailyTasks(): UseDailyTasksReturn {
             if (!rewardClaimedRef.current) {
               rewardClaimedRef.current = true;
               console.log('[DailyTasks] 第1个广告完成，立即领取奖励...');
-              const result = await claimAdReward(true);
+              const result = await claimAdReward(true, isNative, bonusMode); // 原生 App 积分加到永久积分
               claimResultRef.current = result;
               console.log('[DailyTasks] 奖励领取结果:', result);
               if (result.success) {
@@ -329,7 +329,7 @@ export function useDailyTasks(): UseDailyTasksReturn {
 
       // 兜底：如果事件没有触发，在广告结束后领取
       console.log('[DailyTasks] 广告观看成功，领取奖励（兜底）...');
-      const result = await claimAdReward(true);
+      const result = await claimAdReward(true, isNative, bonusMode); // 原生 App 积分加到永久积分
       if (result.success && !cancelledRef.current) {
         await refresh();
       }

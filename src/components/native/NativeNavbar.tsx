@@ -1,15 +1,26 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 import { useCredits } from '@/contexts/CreditsContext';
 import { useBottomNav } from '@/contexts/BottomNavContext';
+import { useDailyTasks } from '@/hooks/useDailyTasks';
 import LoginModal from './LoginModal';
+import NativeDailyTasksModal from './NativeDailyTasksModal';
 import CrownIcon from './common/CrownIcon';
 import CreditsIcon from './common/CreditsIcon';
+
+// 宝箱图标
+const TreasureIcon = () => (
+  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+    <path d="M3 10h18v10a2 2 0 01-2 2H5a2 2 0 01-2-2V10z" fill="currentColor" fillOpacity="0.2" />
+    <path d="M3 10h18M3 10V8a2 2 0 012-2h14a2 2 0 012 2v2M12 10v5M9 15h6" />
+    <path d="M7 6V4a2 2 0 012-2h6a2 2 0 012 2v2" />
+  </svg>
+);
 
 /**
  * Native App 顶部导航栏
@@ -19,11 +30,27 @@ import CreditsIcon from './common/CreditsIcon';
 export default function NativeNavbar() {
   const router = useRouter();
   const { user } = useFirebaseAuth();
-  const { credits } = useCredits();
+  const { credits, refreshCredits } = useCredits();
   const { isTopNavVisible } = useBottomNav();
+  const { shouldShowPopup, status, config } = useDailyTasks();
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const [isDailyTasksOpen, setIsDailyTasksOpen] = useState(false);
+  const [hasAutoShown, setHasAutoShown] = useState(false);
 
   const isLoggedIn = !!user;
+
+  // 自动弹出每日任务弹窗（每30分钟，有未领奖励时）
+  useEffect(() => {
+    if (shouldShowPopup && !isDailyTasksOpen && !hasAutoShown) {
+      setIsDailyTasksOpen(true);
+      setHasAutoShown(true);
+    }
+  }, [shouldShowPopup, isDailyTasksOpen, hasAutoShown]);
+
+  // 判断是否有未领取的奖励（用于显示小红点）
+  const hasUnclaimedRewards = status
+    ? !status.checkinDone || status.adRewardsClaimed < (config?.ad_reward_tiers?.length || 0)
+    : true; // 未加载时默认显示
 
   // 通过 Context 控制隐藏
   if (!isTopNavVisible) return null;
@@ -35,17 +62,32 @@ export default function NativeNavbar() {
         style={{ paddingTop: 'var(--safe-area-inset-top, 0px)' }}
       >
         <div className="flex items-center justify-between px-4 h-14">
-          {/* Logo */}
-          <Link href="/native" className="flex items-center">
-            <Image
-              src="/logo/voice-labs-logo-dark.svg"
-              alt="VoicicaAI"
-              width={120}
-              height={24}
-              priority
-              className="opacity-90 hover:opacity-100 transition-opacity"
-            />
-          </Link>
+          {/* Logo + Free 按钮 */}
+          <div className="flex items-center gap-3">
+            <Link href="/native" className="flex items-center">
+              <Image
+                src="/logo/voice-labs-logo-dark.svg"
+                alt="VoicicaAI"
+                width={120}
+                height={24}
+                priority
+                className="opacity-90 hover:opacity-100 transition-opacity"
+              />
+            </Link>
+
+            {/* 每日任务按钮 - 宝箱 + FREE */}
+            <button
+              onClick={() => setIsDailyTasksOpen(true)}
+              className="relative flex items-center gap-1 px-2 py-1 rounded-lg bg-gradient-to-r from-amber-500/20 to-orange-500/20 border border-amber-500/30 hover:from-amber-500/30 hover:to-orange-500/30 transition-all active:scale-95"
+            >
+              <TreasureIcon />
+              <span className="text-xs font-bold text-amber-400">FREE</span>
+              {/* 小红点提示 - 有未领取的奖励时显示 */}
+              {hasUnclaimedRewards && (
+                <span className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full animate-pulse" />
+              )}
+            </button>
+          </div>
 
           {/* 右侧区域 */}
           {isLoggedIn ? (
@@ -81,6 +123,13 @@ export default function NativeNavbar() {
           sessionStorage.setItem('me_page_login_modal_shown', 'true');
           router.push('/native/me');
         }}
+      />
+
+      {/* 每日任务弹窗 */}
+      <NativeDailyTasksModal
+        isOpen={isDailyTasksOpen}
+        onClose={() => setIsDailyTasksOpen(false)}
+        onCreditsUpdated={refreshCredits}
       />
     </>
   );

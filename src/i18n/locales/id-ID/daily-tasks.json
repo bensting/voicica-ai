@@ -34,6 +34,9 @@
     "adError": "Gagal memuat iklan, silakan coba lagi nanti",
 
     "resetTip": "Tugas direset setiap hari pada tengah malam",
-    "noAdsPromo": "Tidak ingin menonton iklan? Jadilah member!"
+    "noAdsPromo": "Tidak ingin menonton iklan? Jadilah member!",
+    "watchMore": "Tonton lagi +1",
+    "noAdsTitle": "Lewati iklan, dapatkan tak terbatas!",
+    "noAdsSubtitle": "Jadi member VIP hari ini"
   }
 }

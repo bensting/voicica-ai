@@ -129,7 +129,7 @@ const prodConfig: AdMobConfig = {
   appOpen: {
     ...REAL_AD_IDS.appOpen,
     intervalMinutes: 30, // 生产环境 30 分钟
-    enabled: false, // 关闭开屏广告
+    enabled: true, // 启用开屏广告
   },
   enabled: true,
   useTestAds: false, // 使用真实广告

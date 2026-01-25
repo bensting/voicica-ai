@@ -34,6 +34,9 @@
     "adError": "Failed to load ad, please try again later",
 
     "resetTip": "Tasks reset daily at midnight",
-    "noAdsPromo": "Don't want to watch ads? Become a member!"
+    "noAdsPromo": "Don't want to watch ads? Become a member!",
+    "watchMore": "Watch More +1",
+    "noAdsTitle": "Skip the ads, get unlimited!",
+    "noAdsSubtitle": "Become a VIP member today"
   }
 }

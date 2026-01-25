@@ -34,6 +34,9 @@
     "adError": "Falha ao carregar anúncio, por favor tente novamente mais tarde",
 
     "resetTip": "As tarefas são reiniciadas diariamente à meia-noite",
-    "noAdsPromo": "Não quer assistir anúncios? Torne-se membro!"
+    "noAdsPromo": "Não quer assistir anúncios? Torne-se membro!",
+    "watchMore": "Assistir mais +1",
+    "noAdsTitle": "Pule os anúncios, tenha ilimitado!",
+    "noAdsSubtitle": "Torne-se membro VIP hoje"
   }
 }

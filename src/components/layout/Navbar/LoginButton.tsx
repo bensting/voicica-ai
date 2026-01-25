@@ -36,17 +36,29 @@ export default function LoginButton() {
     return (
       <button
         onClick={() => setIsLoginModalOpen(true)}
-        className="flex items-center gap-1.5 px-4 py-1.5 sm:px-6 sm:py-2 bg-gradient-to-r from-pink-400 to-rose-400 text-white rounded-full hover:from-pink-500 hover:to-rose-500 transition-all font-medium text-sm sm:text-base shadow-md hover:shadow-lg"
+        className="relative group flex items-center gap-2 px-6 py-2.5 rounded-full shadow-lg shadow-pink-300/40 hover:shadow-xl hover:shadow-pink-400/50 hover:-translate-y-0.5 transition-all duration-300 overflow-hidden"
       >
-        <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-          />
-        </svg>
-        <span className="hidden sm:inline">{t('navbar.login')}</span>
+        {/* Gradient Background */}
+        <div className="absolute inset-0 bg-gradient-to-r from-pink-500 via-rose-500 to-pink-500 bg-[length:200%_auto] animate-gradient-x" />
+
+        {/* Shine Effect */}
+        <div className="absolute inset-0 opacity-0 group-hover:opacity-20 bg-gradient-to-b from-white to-transparent transition-opacity duration-300" />
+
+        {/* Top Highlight (Glassy look) */}
+        <div className="absolute top-0 left-0 right-0 h-1/2 bg-gradient-to-b from-white/20 to-transparent opacity-50 rounded-t-full" />
+
+        {/* Content */}
+        <div className="relative flex items-center gap-2 text-white font-bold tracking-wide text-sm sm:text-base">
+          <svg className="w-5 h-5 drop-shadow-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2.5}
+              d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+            />
+          </svg>
+          <span className="hidden sm:inline drop-shadow-sm">{t('navbar.login')}</span>
+        </div>
       </button>
     );
   };

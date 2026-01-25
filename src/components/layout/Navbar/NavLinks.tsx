@@ -89,28 +89,44 @@ export default function NavLinks({ mobile = false, onLinkClick }: NavLinksProps 
     return handleClick;
   };
 
+  // Helper to add icons to specific nav items specific to the design
+  const getLabelIcon = (key: string) => {
+    if (key === 'nav.studio') return <span className="ml-1 text-lg">✨</span>;
+    if (key === 'nav.freeTools') return <span className="ml-1 text-lg">🎁</span>;
+    return null;
+  };
+
   if (mobile) {
     return (
-      <div className="flex flex-col">
+      <div className="flex flex-col space-y-1">
         {orderedItems.map((item, index) => {
           if (item.type === 'link') {
             const link = item.data;
-            const isLast = index === orderedItems.length - 1;
             return (
               <Link
                 key={link.href}
                 href={link.href}
                 onClick={getClickHandler(link.type, link.sectionId, link.openInNewWindow, link.href)}
-                className={`text-gray-900 hover:text-pink-500 transition-colors font-medium py-3 ${
-                  !isLast ? 'border-b border-gray-100' : ''
-                }`}
+                className="group flex items-center justify-between p-3 rounded-xl text-gray-700 hover:bg-pink-50 hover:text-pink-600 transition-all font-medium"
               >
-                {t(link.labelKey)}
+                <div className="flex items-center">
+                  {t(link.labelKey)}
+                  {getLabelIcon(link.labelKey)}
+                </div>
+                <svg className="w-5 h-5 text-gray-300 group-hover:text-pink-400 -rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
               </Link>
             );
           } else {
             return (
-              <NavDropdown key={item.data.id} dropdown={item.data} mobile onLinkClick={onLinkClick} />
+              <NavDropdown
+                key={item.data.id}
+                dropdown={item.data}
+                mobile
+                onLinkClick={onLinkClick}
+                labelIcon={getLabelIcon(item.data.labelKey)}
+              />
             );
           }
         })}
@@ -119,7 +135,7 @@ export default function NavLinks({ mobile = false, onLinkClick }: NavLinksProps 
   }
 
   return (
-    <div className="hidden md:flex items-center space-x-8">
+    <div className="hidden md:flex items-center space-x-1">
       {orderedItems.map((item) => {
         if (item.type === 'link') {
           const link = item.data;
@@ -128,13 +144,20 @@ export default function NavLinks({ mobile = false, onLinkClick }: NavLinksProps 
               key={link.href}
               href={link.href}
               onClick={getClickHandler(link.type, link.sectionId, link.openInNewWindow, link.href)}
-              className="text-gray-700 hover:text-pink-500 transition-colors font-medium"
+              className="text-gray-700 hover:text-pink-500 transition-colors font-medium px-4 py-2 rounded-full hover:bg-white/50"
             >
               {t(link.labelKey)}
+              {getLabelIcon(link.labelKey)}
             </Link>
           );
         } else {
-          return <NavDropdown key={item.data.id} dropdown={item.data} />;
+          return (
+            <NavDropdown
+              key={item.data.id}
+              dropdown={item.data}
+              labelIcon={getLabelIcon(item.data.labelKey)}
+            />
+          );
         }
       })}
     </div>

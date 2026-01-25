@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Script from "next/script";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Fredoka } from "next/font/google";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { cookies } from "next/headers";
@@ -37,6 +37,12 @@ const geistSans = Geist({
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+});
+
+const fredoka = Fredoka({
+  variable: "--font-fredoka",
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700"],
 });
 
 // 多语言 SEO 配置
@@ -251,7 +257,7 @@ export default async function RootLayout({
   return (
     <html lang={initialLocale.split('-')[0]} className="scroll-smooth" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} ${fredoka.variable} antialiased`}
         suppressHydrationWarning
       >
         <LanguageProvider initialLocale={initialLocale}>
@@ -261,17 +267,17 @@ export default async function RootLayout({
                 <CreditsProvider>
                   <SubscriptionProvider>
                     <AudioSettingsProvider>
-                    <DeviceFingerprintProvider>
-                      <AdMobProvider>
-                        <CapacitorProvider />
-                        {children}
-                        <PWAUpdatePrompt />
-                        <AppUpdatePrompt />
-                        <GooglePlayUpdatePrompt />
-                        <ServerActionErrorHandler />
-                        <AccountLinkingModal />
-                      </AdMobProvider>
-                    </DeviceFingerprintProvider>
+                      <DeviceFingerprintProvider>
+                        <AdMobProvider>
+                          <CapacitorProvider />
+                          {children}
+                          <PWAUpdatePrompt />
+                          <AppUpdatePrompt />
+                          <GooglePlayUpdatePrompt />
+                          <ServerActionErrorHandler />
+                          <AccountLinkingModal />
+                        </AdMobProvider>
+                      </DeviceFingerprintProvider>
                     </AudioSettingsProvider>
                   </SubscriptionProvider>
                 </CreditsProvider>

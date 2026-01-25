@@ -25,50 +25,66 @@ export default function Hero() {
       <HeroBackground />
 
       {/* Content */}
-      <div className="relative z-10 max-w-lg mx-auto px-4 py-16 md:py-20">
-        {/* Brand Name */}
-        <div className="text-center mb-4">
-          <h2 className="text-2xl md:text-3xl font-bold italic text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-rose-400 tracking-tight">
-            Voicica.AI
-          </h2>
-        </div>
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
 
-        {/* 100% Free Badge */}
-        <div className="flex justify-center mb-6">
-          <div className="inline-flex items-center px-5 py-2 bg-gradient-to-r from-pink-400 to-rose-400 rounded-full shadow-lg shadow-pink-200/50">
-            <span className="text-white font-semibold text-sm">
-              {t('home.heroFreeTag') || '100% Free'}
-            </span>
+        <div className="grid lg:grid-cols-2 gap-12 lg:gap-8 items-center">
+          {/* Left Column: Text Content */}
+          <div className="flex flex-col items-center lg:items-start text-center lg:text-left">
+            {/* Brand Name */}
+            <div className="mb-6">
+              <h2 className="text-3xl md:text-4xl font-black italic text-[#ff8da1] tracking-wide drop-shadow-sm font-sans">
+                Voicica.AI
+              </h2>
+            </div>
+
+            {/* 100% Free Badge */}
+            <div className="mb-8">
+              <div className="inline-flex items-center px-6 py-2 bg-[#ff8da1] rounded-full shadow-lg shadow-pink-300/50 transform hover:scale-105 transition-transform duration-300">
+                <span className="text-white font-bold text-base tracking-wide">
+                  {t('home.heroFreeTag') || '100% Free'}
+                </span>
+              </div>
+            </div>
+
+            {/* Main Title */}
+            <div className="mb-6 max-w-2xl">
+              <h1 className="font-extrabold text-gray-900 text-4xl sm:text-5xl md:text-6xl leading-tight tracking-tight">
+                {t('home.heroTitlePrefix')}{' '}
+                {t('home.heroTitleHighlight')}
+              </h1>
+            </div>
+
+            {/* Subtitle */}
+            <p className="text-gray-500 text-base md:text-lg max-w-lg mb-8 leading-relaxed">
+              {t('home.heroDescription')}
+            </p>
+
+            {/* Trust Indicator */}
+            <p className="text-sm text-gray-400 mb-10 font-medium">
+              {t('home.trustedByCreators') || 'Trusted by 1,000,000+ Creators'}
+            </p>
+
+            {/* App Download Buttons (Desktop location) */}
+            <div className="hidden lg:block">
+              <AppDownloadButtons variant="light" layout="horizontal" className="grayscale hover:grayscale-0 transition-all duration-500 opacity-80 hover:opacity-100" />
+            </div>
+          </div>
+
+          {/* Right Column: Feature Cards (Mobile-like container on right) */}
+          <div className="w-full max-w-md mx-auto lg:mr-0">
+            {/* Feature Cards */}
+            <FeatureCards />
+
+            {/* App Download Buttons (Mobile location) */}
+            <div className="lg:hidden mt-10 flex justify-center">
+              <AppDownloadButtons variant="light" layout="horizontal" className="grayscale hover:grayscale-0 transition-all duration-500 opacity-80 hover:opacity-100" />
+            </div>
           </div>
         </div>
-
-        {/* Main Title */}
-        <div className="text-center mb-4 max-w-md mx-auto">
-          <h1 className="font-extrabold text-gray-900 text-3xl sm:text-4xl md:text-5xl leading-tight">
-            {t('home.heroTitlePrefix')}{' '}
-            {t('home.heroTitleHighlight')}
-          </h1>
-        </div>
-
-        {/* Subtitle */}
-        <p className="text-gray-500 text-sm md:text-base text-center max-w-xs mx-auto mb-4">
-          {t('home.heroDescription')}
-        </p>
-
-        {/* Trust Indicator */}
-        <p className="text-center text-sm text-gray-400 mb-8 max-w-[200px] mx-auto">
-          {t('home.trustedByCreators') || 'Trusted by 1,000,000+ Creators'}
-        </p>
-
-        {/* Feature Cards */}
-        <FeatureCards />
-
-        {/* App Download Section */}
-        <AppDownloadButtons variant="light" layout="horizontal" className="mt-8" />
       </div>
 
       {/* Bottom Gradient Fade */}
-      <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-white to-transparent" />
+      <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-white to-transparent pointer-events-none" />
     </section>
   );
 }
@@ -78,14 +94,21 @@ export default function Hero() {
  */
 function HeroBackground() {
   return (
-    <div className="absolute inset-0 w-full h-full">
-      <div className="absolute inset-0 bg-gradient-to-b from-pink-50 via-white to-white" />
-      {/* Left pink gradient */}
-      <div className="absolute top-0 left-0 w-[500px] h-full bg-gradient-to-r from-pink-200/60 to-transparent" />
-      {/* Right purple gradient */}
-      <div className="absolute top-0 right-0 w-[500px] h-full bg-gradient-to-l from-purple-200/50 to-transparent" />
-      {/* Top center glow */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[400px] bg-gradient-to-b from-pink-100/40 to-transparent rounded-full blur-3xl" />
+    <div className="absolute inset-0 w-full h-full bg-[#fff0f5]">
+      {/* Main gradient background */}
+      <div className="absolute inset-0 bg-gradient-to-b from-pink-100/50 via-white/80 to-white" />
+
+      {/* Left pink orb */}
+      <div className="absolute top-[-10%] left-[-10%] w-[600px] h-[600px] bg-pink-200/40 rounded-full blur-[100px] mix-blend-multiply animate-blob" />
+
+      {/* Right purple orb */}
+      <div className="absolute top-[10%] right-[-20%] w-[500px] h-[500px] bg-purple-200/40 rounded-full blur-[100px] mix-blend-multiply animate-blob animation-delay-2000" />
+
+      {/* Center highlight */}
+      <div className="absolute top-[20%] left-1/2 -translate-x-1/2 w-[800px] h-[800px] bg-gradient-to-b from-white/40 to-transparent rounded-full blur-3xl pointer-events-none animate-blob animation-delay-4000" />
+
+      {/* Mesh grid pattern overlay (optional, subtle texture) */}
+      <div className="absolute inset-0 opacity-[0.03] bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMSIgY3k9IjEiIHI9IjEiIGZpbGw9IiMwMDAiLz48L3N2Zz4=')] [mask-image:linear-gradient(to_bottom,white,transparent)]" />
     </div>
   );
 }
@@ -98,31 +121,37 @@ function FeatureCards() {
   const { t } = useLanguage();
 
   return (
-    <div className="space-y-4 mb-8">
+    <div className="space-y-5 mb-8">
       {/* Main Card - AI Song One-Click */}
       <button
         onClick={() => router.push('/studio/ai-song')}
-        className="w-full group"
+        className="w-full group relative z-10"
       >
-        {/* White outer + Pink inner border */}
-        <div className="rounded-full p-[2px] bg-white shadow-lg shadow-pink-100/30 hover:shadow-xl hover:scale-[1.02] transition-all duration-300">
-          <div className="rounded-full p-[2px] bg-gradient-to-r from-pink-200 to-pink-300">
-            <div className="bg-white rounded-full px-4 py-3 flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                {/* Pink square icon */}
-                <div className="w-12 h-12 bg-gradient-to-br from-pink-500 to-rose-500 rounded-xl flex items-center justify-center shadow-md">
-                  <WandIcon />
-                </div>
-                {/* Title */}
+        <div className="relative rounded-[2rem] p-[3px] bg-gradient-to-r from-pink-300 via-pink-200 to-pink-300 shadow-xl shadow-pink-200/40 hover:shadow-2xl hover:shadow-pink-300/50 hover:-translate-y-1 transition-all duration-300">
+          <div className="bg-white rounded-[1.8rem] px-5 py-4 flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              {/* Icon Circle */}
+              <div className="w-14 h-14 bg-gradient-to-br from-[#ff8da1] to-[#ff5c7c] rounded-full flex items-center justify-center shadow-lg shadow-pink-200">
+                <WandIcon />
+              </div>
+              {/* Title */}
+              <div className="flex flex-col items-start">
                 <h3 className="font-bold text-gray-800 text-lg flex items-center gap-2">
                   {t('home.aiSongOneClick')}
-                  <Sparkles className="w-5 h-5 text-pink-400" />
                 </h3>
+                <div className="flex items-center text-pink-400 gap-1">
+                  <Sparkles className="w-4 h-4" />
+                  <span className="text-xs font-medium">Magic Create</span>
+                </div>
               </div>
-              {/* Play Sample */}
-              <span className="inline-flex items-center gap-1.5 text-sm text-pink-500 group-hover:text-pink-600 transition-colors">
-                <Play className="w-4 h-4" />
-                {t('home.playSample') || 'Play Sample'}
+            </div>
+            {/* Play Sample Button */}
+            <div className="bg-pink-50 pl-3 pr-4 py-2 rounded-full flex items-center gap-2 group-hover:bg-pink-100 transition-colors">
+              <div className="w-6 h-6 bg-white rounded-full flex items-center justify-center shadow-sm">
+                <Play className="w-3 h-3 text-pink-500 ml-0.5" fill="currentColor" />
+              </div>
+              <span className="text-xs font-bold text-pink-500">
+                {t('home.playSample') || 'Sample'}
               </span>
             </div>
           </div>
@@ -130,19 +159,21 @@ function FeatureCards() {
       </button>
 
       {/* Two Small Cards */}
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-2 gap-4">
         {/* Text to Speech */}
         <FeatureCardSmall
-          icon={<Mic className="w-6 h-6 text-blue-400" />}
+          icon={<Mic className="w-6 h-6 text-[#ff8da1]" />}
           title={t('home.textToSpeech')}
           href="/studio/tts"
+          delay={100}
         />
 
         {/* Lyrics to Music */}
         <FeatureCardSmall
-          icon={<Music className="w-6 h-6 text-pink-400" />}
+          icon={<Music className="w-6 h-6 text-[#ff8da1]" />}
           title={t('home.lyricsToMusic')}
           href="/studio/ai-music"
+          delay={200}
         />
       </div>
     </div>
@@ -156,27 +187,31 @@ interface FeatureCardSmallProps {
   icon: React.ReactNode;
   title: string;
   href: string;
+  delay?: number;
 }
 
-function FeatureCardSmall({ icon, title, href }: FeatureCardSmallProps) {
+function FeatureCardSmall({ icon, title, href, delay = 0 }: FeatureCardSmallProps) {
   const router = useRouter();
   const { t } = useLanguage();
 
   return (
     <button
       onClick={() => router.push(href)}
-      className="group"
+      className="group relative h-full"
+      style={{ animationDelay: `${delay}ms` }}
     >
-      <div className="rounded-3xl p-[2px] bg-white shadow-md shadow-pink-50 hover:shadow-lg hover:scale-[1.02] transition-all duration-300">
-        <div className="rounded-3xl p-[2px] bg-gradient-to-r from-pink-100 to-pink-200">
-          <div className="bg-white rounded-3xl p-4 flex flex-col items-center text-center gap-2">
+      <div className="h-full rounded-[2rem] p-[2px] bg-white border-2 border-pink-100 hover:border-pink-300 shadow-lg shadow-pink-50 hover:shadow-xl hover:shadow-pink-100 hover:-translate-y-1 transition-all duration-300">
+        <div className="h-full bg-white rounded-[1.8rem] p-4 flex flex-col items-center justify-center text-center gap-3">
+          <div className="p-3 bg-pink-50 rounded-2xl group-hover:bg-pink-100 transition-colors">
             {icon}
-            <span className="text-sm font-bold text-gray-800">
-              {title}
-            </span>
-            <span className="inline-flex items-center gap-1 text-xs text-gray-400 group-hover:text-pink-500 transition-colors">
-              <Play className="w-3 h-3" />
-              {t('home.playSample') || 'Play Sample'}
+          </div>
+          <span className="text-sm font-bold text-gray-700 group-hover:text-gray-900">
+            {title}
+          </span>
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gray-50 group-hover:bg-pink-50 transition-colors">
+            <Play className="w-3 h-3 text-pink-400" fill="currentColor" />
+            <span className="text-[10px] font-medium text-gray-400 group-hover:text-pink-500">
+              Sample
             </span>
           </div>
         </div>

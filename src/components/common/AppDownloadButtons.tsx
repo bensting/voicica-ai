@@ -49,7 +49,7 @@ export default function AppDownloadButtons({
   return (
     <div className={`flex flex-col items-center gap-4 ${className}`}>
       {/* 下载按钮行 */}
-      <div className="flex flex-wrap items-center justify-center gap-3">
+      <div className="flex flex-wrap items-start justify-center gap-3">
         {/* Google Play */}
         <a
           href="https://play.google.com/store/apps/details?id=ai.voicica.app"
@@ -68,35 +68,36 @@ export default function AppDownloadButtons({
           </div>
         </a>
 
-        {/* App Store */}
-        <div
-          className={`flex items-center gap-2 px-4 py-2.5 rounded-lg border transition-all ${
-            isDark
-              ? 'bg-gray-800/50 border-gray-700 text-gray-400'
-              : 'bg-gray-100 border-gray-300 text-gray-500'
-          }`}
-        >
-          <AppleIcon />
-          <div className="flex flex-col">
-            <span className="text-[10px] uppercase tracking-wide opacity-80">Download on the</span>
-            <span className="text-sm font-semibold -mt-0.5">App Store</span>
+        {/* App Store + Coming Soon */}
+        <div className="flex flex-col items-center">
+          <div
+            className={`flex items-center gap-2 px-4 py-2.5 rounded-lg border ${
+              isDark
+                ? 'bg-gray-800/50 border-gray-700 text-gray-400'
+                : 'bg-gray-100 border-gray-300 text-gray-500'
+            }`}
+          >
+            <AppleIcon />
+            <div className="flex flex-col">
+              <span className="text-[10px] uppercase tracking-wide opacity-80">Download on the</span>
+              <span className="text-sm font-semibold -mt-0.5">App Store</span>
+            </div>
           </div>
+          {/* Coming Soon 文字 */}
+          <span className={`text-xs mt-1.5 ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>
+            iOS Coming Soon
+          </span>
         </div>
       </div>
-
-      {/* Coming Soon 文字 */}
-      <span className={`text-xs ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>
-        iOS Coming Soon
-      </span>
 
       {/* Web Version 链接 */}
       {showWebLink && (
         <Link
           href={webLinkHref}
-          className={`flex items-center gap-1.5 text-sm transition-colors ${
+          className={`flex items-center gap-1.5 text-base font-medium transition-colors ${
             isDark
-              ? 'text-gray-400 hover:text-white'
-              : 'text-gray-500 hover:text-gray-900'
+              ? 'text-gray-300 hover:text-white'
+              : 'text-gray-600 hover:text-gray-900'
           }`}
         >
           <span>Web Version</span>

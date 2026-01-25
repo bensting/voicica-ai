@@ -52,23 +52,21 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Main Title */}
-          <div className="text-center mb-4">
-            <h1 className="font-bold text-gray-900 text-2xl sm:text-3xl md:text-4xl leading-tight">
-              {t('home.heroTitlePrefix')}
-            </h1>
-            <h1 className="font-bold text-transparent bg-clip-text bg-gradient-to-r from-pink-400 via-rose-400 to-pink-400 text-2xl sm:text-3xl md:text-4xl leading-tight">
+          {/* Main Title - Widest */}
+          <div className="text-center mb-4 max-w-md mx-auto">
+            <h1 className="font-extrabold text-gray-900 text-3xl sm:text-4xl md:text-5xl leading-tight">
+              {t('home.heroTitlePrefix')}{' '}
               {t('home.heroTitleHighlight')}
             </h1>
           </div>
 
-          {/* Subtitle */}
-          <p className="text-gray-500 text-sm md:text-base text-center max-w-sm mx-auto mb-4">
+          {/* Subtitle - Medium width */}
+          <p className="text-gray-500 text-sm md:text-base text-center max-w-xs mx-auto mb-4">
             {t('home.heroDescription')}
           </p>
 
-          {/* Trust Indicator */}
-          <p className="text-center text-sm text-gray-400 mb-8">
+          {/* Trust Indicator - Narrowest */}
+          <p className="text-center text-sm text-gray-400 mb-8 max-w-[200px] mx-auto">
             {t('home.trustedByCreators') || 'Trusted by 1,000,000+ Creators'}
           </p>
 

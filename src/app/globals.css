@@ -19,8 +19,19 @@ body.platform-android {
   --safe-area-inset-bottom: env(safe-area-inset-bottom, 0px);
 }
 
-/* 原生 App 样式 - 暂时禁用文本选择控制，避免影响点击事件 */
-/* 如果需要禁用文本选择，应该在 Android 原生层处理，而不是 CSS */
+/* 原生 App 样式 - 禁用非输入元素的文本选择 */
+body.native-app {
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* 允许输入框和文本区域选择文字 */
+body.native-app input,
+body.native-app textarea,
+body.native-app [contenteditable="true"] {
+  -webkit-user-select: text;
+  user-select: text;
+}
 
 @theme inline {
   --color-background: var(--background);

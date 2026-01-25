@@ -1,7 +1,11 @@
 'use client';
 
 import Link from 'next/link';
-import { getMenuItemsByCategory, CreateMenuIcon } from '@/config/native/createMenuConfig';
+import {
+  getMenuItemsByCategory,
+  getAvailableCategories,
+  CreateMenuIcon,
+} from '@/config/native/createMenuConfig';
 
 // 图标组件 (w-6 h-6 for FeatureGrid)
 const MusicIcon = () => (
@@ -63,44 +67,99 @@ const DialogueIcon = () => (
   </svg>
 );
 
+const VideoIcon = () => (
+  <svg
+    className="w-6 h-6"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.5"
+  >
+    <rect x="2" y="4" width="20" height="16" rx="2" />
+    <polygon points="10,8 16,12 10,16" fill="currentColor" stroke="none" />
+  </svg>
+);
+
+const CloneIcon = () => (
+  <svg
+    className="w-6 h-6"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.5"
+  >
+    <circle cx="12" cy="7" r="4" />
+    <path d="M5.5 21a6.5 6.5 0 0113 0" />
+    <path d="M16 11l2 2 4-4" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+);
+
+const TiktokIcon = () => (
+  <svg className="w-6 h-6" viewBox="0 0 24 24" fill="currentColor">
+    <path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-5.2 1.74 2.89 2.89 0 012.31-4.64 2.93 2.93 0 01.88.13V9.4a6.84 6.84 0 00-1-.05A6.33 6.33 0 005 20.1a6.34 6.34 0 0010.86-4.43v-7a8.16 8.16 0 004.77 1.52v-3.4a4.85 4.85 0 01-1-.1z" />
+  </svg>
+);
+
+const YoutubeIcon = () => (
+  <svg className="w-6 h-6" viewBox="0 0 24 24" fill="currentColor">
+    <path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
+  </svg>
+);
+
 // 图标映射
 const iconMap: Record<CreateMenuIcon, React.FC> = {
   music: MusicIcon,
   cover: CoverIcon,
   voice: VoiceIcon,
   dialogue: DialogueIcon,
+  video: VideoIcon,
+  clone: CloneIcon,
+  tiktok: TiktokIcon,
+  youtube: YoutubeIcon,
 };
 
 /**
  * 功能入口网格
- * 单行横向滚动显示
+ * 按分类显示，每个分类一行
  */
 export default function FeatureGrid() {
-  const musicItems = getMenuItemsByCategory('music');
-  const voiceItems = getMenuItemsByCategory('voice');
-  const allItems = [...musicItems, ...voiceItems];
+  const categories = getAvailableCategories();
 
   return (
-    <div className="py-5">
-      <div className="flex gap-2 px-4 overflow-x-auto scrollbar-hide">
-        {allItems.map((feature) => {
-          const IconComponent = iconMap[feature.icon];
-          return (
-            <Link
-              key={feature.id}
-              href={feature.href}
-              className="flex flex-col items-center justify-center w-[72px] h-[72px] flex-shrink-0 bg-gray-800/60 rounded-xl hover:bg-gray-700/60 transition-colors"
-            >
-              <div className="text-gray-300 mb-1.5">
-                <IconComponent />
-              </div>
-              <span className="text-[10px] text-gray-300 font-medium whitespace-nowrap">
-                {feature.shortName}
-              </span>
-            </Link>
-          );
-        })}
-      </div>
+    <div className="py-4 space-y-4">
+      {categories.map((category) => {
+        const items = getMenuItemsByCategory(category.id);
+        if (items.length === 0) return null;
+
+        return (
+          <div key={category.id}>
+            {/* 分类标题 */}
+            <h3 className="px-4 mb-2 text-xs font-medium text-gray-400 uppercase tracking-wider">
+              {category.title}
+            </h3>
+            {/* 功能项 */}
+            <div className="flex gap-2 px-4 overflow-x-auto scrollbar-hide">
+              {items.map((feature) => {
+                const IconComponent = iconMap[feature.icon];
+                return (
+                  <Link
+                    key={feature.id}
+                    href={feature.href}
+                    className="flex flex-col items-center justify-center w-[72px] h-[72px] flex-shrink-0 bg-gray-800/60 rounded-xl hover:bg-gray-700/60 transition-colors"
+                  >
+                    <div className="text-gray-300 mb-1.5">
+                      <IconComponent />
+                    </div>
+                    <span className="text-[10px] text-gray-300 font-medium whitespace-nowrap">
+                      {feature.shortName}
+                    </span>
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+        );
+      })}
     </div>
   );
 }

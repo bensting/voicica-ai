@@ -4,10 +4,25 @@
  */
 
 /** 功能类别 */
-export type CreateMenuCategory = 'music' | 'voice';
+export type CreateMenuCategory = 'voiceover' | 'music' | 'video' | 'tools';
 
 /** 图标类型 */
-export type CreateMenuIcon = 'music' | 'cover' | 'voice' | 'dialogue';
+export type CreateMenuIcon = 'music' | 'cover' | 'voice' | 'dialogue' | 'video' | 'clone' | 'tiktok' | 'youtube';
+
+/** 类别配置 */
+export interface CategoryConfig {
+  id: CreateMenuCategory;
+  title: string;
+  order: number;
+}
+
+/** 类别配置列表 */
+export const categoryConfigs: CategoryConfig[] = [
+  { id: 'voiceover', title: 'VOICEOVER AI', order: 1 },
+  { id: 'music', title: 'MUSIC AI', order: 2 },
+  { id: 'video', title: 'VIDEO AI', order: 3 },
+  { id: 'tools', title: 'OTHER TOOLS', order: 4 },
+];
 
 export interface CreateMenuItem {
   id: string;
@@ -31,12 +46,44 @@ const isDevelopment = process.env.NODE_ENV === 'development';
 
 /**
  * 创建菜单配置
- * category - 功能类别 (music / voice)
+ * category - 功能类别 (voiceover / music / video / tools)
  * enabled.development - 开发环境是否显示
  * enabled.production - 生产环境是否显示
  */
 export const createMenuItems: CreateMenuItem[] = [
-  // ========== Music 类别 ==========
+  // ========== Voiceover 类别 ==========
+  {
+    id: 'voice',
+    icon: 'voice',
+    category: 'voiceover',
+    title: 'Text to Voice',
+    shortName: 'Text to Voice',
+    description: 'Convert text to natural speech',
+    href: '/native/create/voice',
+    enabled: { development: true, production: true },
+  },
+  {
+    id: 'dialogue',
+    icon: 'dialogue',
+    category: 'voiceover',
+    title: 'Text to Dialogue',
+    shortName: 'Text to Dialogue',
+    description: 'Create multi-character dialogues',
+    href: '/native/create/dialogue',
+    enabled: { development: true, production: true },
+  },
+  {
+    id: 'clone',
+    icon: 'clone',
+    category: 'voiceover',
+    title: 'Voice Clone',
+    shortName: 'Voice Clone',
+    description: 'Clone your voice with AI',
+    href: '/native/create/clone',
+    enabled: { development: true, production: false },
+  },
+
+  // ========== AI Music 类别 ==========
   {
     id: 'music',
     icon: 'music',
@@ -58,25 +105,37 @@ export const createMenuItems: CreateMenuItem[] = [
     enabled: { development: true, production: true },
   },
 
-  // ========== Voice 类别 ==========
+  // ========== AI Video 类别 ==========
   {
-    id: 'voice',
-    icon: 'voice',
-    category: 'voice',
-    title: 'Text to Voice',
-    shortName: 'Text to Voice',
-    description: 'Convert text to natural speech',
-    href: '/native/create/voice',
+    id: 'video',
+    icon: 'video',
+    category: 'video',
+    title: 'Text to Video',
+    shortName: 'Text to Video',
+    description: 'Generate videos from text prompts',
+    href: '/native/create/video',
+    enabled: { development: true, production: false },
+  },
+
+  // ========== AI Other Tools 类别 ==========
+  {
+    id: 'tiktok-downloader',
+    icon: 'tiktok',
+    category: 'tools',
+    title: 'TikTok Downloader',
+    shortName: 'TikTok',
+    description: 'Download TikTok videos without watermark',
+    href: '/native/tools/tiktok',
     enabled: { development: true, production: true },
   },
   {
-    id: 'dialogue',
-    icon: 'dialogue',
-    category: 'voice',
-    title: 'Text to Dialogue',
-    shortName: 'Text to Dialogue',
-    description: 'Create multi-character dialogues',
-    href: '/native/create/dialogue',
+    id: 'youtube-downloader',
+    icon: 'youtube',
+    category: 'tools',
+    title: 'YouTube Downloader',
+    shortName: 'YouTube',
+    description: 'Download YouTube videos and audio',
+    href: '/native/tools/youtube',
     enabled: { development: true, production: true },
   },
 ];
@@ -95,4 +154,15 @@ export function getAvailableMenuItems(): CreateMenuItem[] {
  */
 export function getMenuItemsByCategory(category: CreateMenuCategory): CreateMenuItem[] {
   return getAvailableMenuItems().filter((item) => item.category === category);
+}
+
+/**
+ * 获取有内容的类别（按顺序）
+ */
+export function getAvailableCategories(): CategoryConfig[] {
+  const availableItems = getAvailableMenuItems();
+  const categoriesWithItems = new Set(availableItems.map((item) => item.category));
+  return categoryConfigs
+    .filter((config) => categoriesWithItems.has(config.id))
+    .sort((a, b) => a.order - b.order);
 }

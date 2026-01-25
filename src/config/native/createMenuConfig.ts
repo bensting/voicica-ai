@@ -111,11 +111,11 @@ export const createMenuItems: CreateMenuItem[] = [
     id: 'video',
     icon: 'video',
     category: 'video',
-    title: 'Text to Video',
-    shortName: 'Text to Video',
+    title: 'AI Video',
+    shortName: 'AI Video',
     description: 'Generate videos from text prompts',
     href: '/native/create/video',
-    enabled: { development: true, production: false },
+    enabled: { development: true, production: true },
   },
 
   // ========== AI Other Tools 类别 ==========
@@ -127,7 +127,7 @@ export const createMenuItems: CreateMenuItem[] = [
     shortName: 'TikTok Downloader',
     description: 'Download TikTok videos without watermark',
     href: '/native/tools/tiktok',
-    enabled: { development: true, production: true },
+    enabled: { development: true, production: false },
   },
   {
     id: 'youtube-downloader',
@@ -137,7 +137,7 @@ export const createMenuItems: CreateMenuItem[] = [
     shortName: 'YouTube Downloader',
     description: 'Download YouTube videos and audio',
     href: '/native/tools/youtube',
-    enabled: { development: true, production: true },
+    enabled: { development: true, production: false },
   },
 ];
 

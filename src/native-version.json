@@ -1,8 +1,17 @@
 {
-  "version": "1.2.1",
-  "buildNumber": 22,
+  "version": "1.2.2",
+  "buildNumber": 23,
   "description": "原生应用版本（Android/iOS 应用壳）",
   "changelog": [
+    {
+      "version": "1.2.2",
+      "buildNumber": 23,
+      "date": "2026-01-26",
+      "changes": [
+        "修复长按文本选择时 Action Mode 显示 splash 背景的问题",
+        "在 MainActivity 强制设置主题，绕过 Capacitor 主题设置过晚的问题"
+      ]
+    },
     {
       "version": "1.2.1",
       "buildNumber": 22,

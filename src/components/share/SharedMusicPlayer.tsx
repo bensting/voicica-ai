@@ -185,14 +185,14 @@ export default function SharedMusicPlayer({ music }: SharedMusicPlayerProps) {
           </div>
 
           {/* 时间显示 */}
-          <div className="flex justify-between text-gray-500 text-xs mb-4">
+          <div className="flex justify-between text-gray-500 text-xs mb-3">
             <span>{formatTime(currentTime)}</span>
             <span>{formatTime(duration)}</span>
           </div>
 
           {/* CTA */}
           <div className="text-center">
-            <p className="text-gray-400 text-sm mb-2">Create your own AI music</p>
+            <p className="text-gray-400 text-xs mb-1.5">Create your own AI music</p>
             <Link
               href="/"
               className="inline-flex items-center gap-2 px-6 py-2.5 bg-gradient-to-r from-purple-500 to-pink-500 text-white text-sm font-medium rounded-full hover:opacity-90 transition-opacity"

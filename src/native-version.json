@@ -1,8 +1,17 @@
 {
-  "version": "1.2.2",
-  "buildNumber": 23,
+  "version": "1.2.3",
+  "buildNumber": 24,
   "description": "原生应用版本（Android/iOS 应用壳）",
   "changelog": [
+    {
+      "version": "1.2.3",
+      "buildNumber": 24,
+      "date": "2026-01-26",
+      "changes": [
+        "修复文本选择 Action Mode 显示 splash 背景的问题",
+        "setTheme() 移到 super.onCreate() 之前确保主题正确应用"
+      ]
+    },
     {
       "version": "1.2.2",
       "buildNumber": 23,

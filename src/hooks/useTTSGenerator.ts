@@ -2,6 +2,7 @@ import { useState, useCallback } from 'react';
 import { createTtsTask } from '@/actions/tts';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAudioSettings } from '@/contexts/AudioSettingsContext';
+import { detectPlatform } from '@/lib/platform';
 import type { Voice } from '@/types/voice';
 
 /**
@@ -103,6 +104,9 @@ export function useTTSGenerator(
       // 检查是否有关联的故事 ID（从故事页面跳转过来）
       const storyId = typeof window !== 'undefined' ? sessionStorage.getItem('ttsStoryId') : null;
 
+      // 检测当前平台
+      const platform = detectPlatform();
+
       // 调用 Server Action 提交任务（使用 AudioSettings Context 中的音频参数）
       const result = await createTtsTask({
         text,
@@ -113,6 +117,7 @@ export function useTTSGenerator(
         pitch: audioSettings.pitch,
         volume: audioSettings.volume,
         story_id: storyId || undefined, // 关联故事（可选）
+        platform, // 来源平台
       });
 
       // 生成后清除 storyId，避免后续生成误关联

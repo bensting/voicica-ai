@@ -89,6 +89,7 @@ model tts_records {
   created_at      DateTime  @default(now()) @db.Timestamptz(6)
   updated_at      DateTime? @updatedAt @db.Timestamptz(6)
   share_id        String?   @unique(map: "ix_tts_records_share_id") @db.VarChar(12)
+  platform        String?   @db.VarChar(20) // web, mobile-web, android, ios
 
   // 关联故事（可选）
   story_id        String?
@@ -100,6 +101,7 @@ model tts_records {
   @@index([user_id, status], map: "ix_tts_records_user_status")
   @@index([user_id, status, created_at], map: "ix_tts_records_user_status_created")
   @@index([story_id], map: "ix_tts_records_story_id")
+  @@index([platform], map: "ix_tts_records_platform")
 }
 
 model user_subscriptions {

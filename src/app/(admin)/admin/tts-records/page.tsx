@@ -30,6 +30,16 @@ const STATUS_LABELS: Record<string, string> = {
 };
 
 /**
+ * 平台标签配置
+ */
+const PLATFORM_CONFIG: Record<string, { label: string; icon: string; bg: string; text: string }> = {
+  web: { label: 'Web', icon: '🖥️', bg: 'bg-slate-100', text: 'text-slate-700' },
+  'mobile-web': { label: 'Mobile', icon: '📱', bg: 'bg-orange-100', text: 'text-orange-700' },
+  android: { label: 'Android', icon: '🤖', bg: 'bg-green-100', text: 'text-green-700' },
+  ios: { label: 'iOS', icon: '🍎', bg: 'bg-blue-100', text: 'text-blue-700' },
+};
+
+/**
  * TTS 记录管理页面
  */
 export default function TtsRecordsPage() {
@@ -51,6 +61,7 @@ export default function TtsRecordsPage() {
 
   // 筛选条件
   const [statusFilter, setStatusFilter] = useState('');
+  const [platformFilter, setPlatformFilter] = useState('');
   const [userIdFilter, setUserIdFilter] = useState('');
   const [searchFilter, setSearchFilter] = useState('');
   const [startDate, setStartDate] = useState('');
@@ -71,6 +82,7 @@ export default function TtsRecordsPage() {
           page,
           pageSize: 20,
           status: statusFilter || undefined,
+          platform: platformFilter || undefined,
           userId: userIdFilter || undefined,
           search: searchFilter || undefined,
           startDate: startDate || undefined,
@@ -88,7 +100,7 @@ export default function TtsRecordsPage() {
     } finally {
       setLoading(false);
     }
-  }, [page, statusFilter, userIdFilter, searchFilter, startDate, endDate]);
+  }, [page, statusFilter, platformFilter, userIdFilter, searchFilter, startDate, endDate]);
 
   useEffect(() => {
     loadData();
@@ -143,6 +155,7 @@ export default function TtsRecordsPage() {
   // 重置筛选
   const handleResetFilters = () => {
     setStatusFilter('');
+    setPlatformFilter('');
     setUserIdFilter('');
     setSearchFilter('');
     setStartDate('');
@@ -259,6 +272,23 @@ export default function TtsRecordsPage() {
             </select>
           </div>
           <div>
+            <label className="block text-sm text-gray-600 mb-1">平台</label>
+            <select
+              value={platformFilter}
+              onChange={(e) => {
+                setPlatformFilter(e.target.value);
+                setPage(1);
+              }}
+              className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
+            >
+              <option value="">全部平台</option>
+              <option value="web">🖥️ Web</option>
+              <option value="mobile-web">📱 Mobile Web</option>
+              <option value="android">🤖 Android</option>
+              <option value="ios">🍎 iOS</option>
+            </select>
+          </div>
+          <div>
             <label className="block text-sm text-gray-600 mb-1">用户ID</label>
             <input
               type="text"
@@ -372,6 +402,9 @@ export default function TtsRecordsPage() {
                     用户
                   </th>
                   <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                    平台
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                     状态
                   </th>
                   <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
@@ -425,6 +458,20 @@ export default function TtsRecordsPage() {
                           ? record.userId.slice(0, 6) + '...' + record.userId.slice(-4)
                           : record.userId}
                       </div>
+                    </td>
+                    <td className="px-4 py-3">
+                      {record.platform ? (
+                        <span
+                          className={`inline-flex items-center gap-1 px-2 py-0.5 text-xs font-medium rounded-full ${
+                            PLATFORM_CONFIG[record.platform]?.bg || 'bg-gray-100'
+                          } ${PLATFORM_CONFIG[record.platform]?.text || 'text-gray-800'}`}
+                        >
+                          <span>{PLATFORM_CONFIG[record.platform]?.icon}</span>
+                          <span>{PLATFORM_CONFIG[record.platform]?.label || record.platform}</span>
+                        </span>
+                      ) : (
+                        <span className="text-xs text-gray-400">-</span>
+                      )}
                     </td>
                     <td className="px-4 py-3">
                       <span
@@ -546,6 +593,21 @@ export default function TtsRecordsPage() {
                   >
                     {STATUS_LABELS[detailRecord.status] || detailRecord.status}
                   </span>
+                </div>
+                <div>
+                  <div className="text-sm text-gray-500">平台</div>
+                  {detailRecord.platform ? (
+                    <span
+                      className={`inline-flex items-center gap-1 px-2 py-0.5 text-xs font-medium rounded-full ${
+                        PLATFORM_CONFIG[detailRecord.platform]?.bg || 'bg-gray-100'
+                      } ${PLATFORM_CONFIG[detailRecord.platform]?.text || 'text-gray-800'}`}
+                    >
+                      <span>{PLATFORM_CONFIG[detailRecord.platform]?.icon}</span>
+                      <span>{PLATFORM_CONFIG[detailRecord.platform]?.label || detailRecord.platform}</span>
+                    </span>
+                  ) : (
+                    <span className="text-sm text-gray-400">-</span>
+                  )}
                 </div>
                 <div>
                   <div className="text-sm text-gray-500">进度</div>

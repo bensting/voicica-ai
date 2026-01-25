@@ -17,6 +17,7 @@ interface TtsRecordsQuery {
   search?: string;
   startDate?: string;
   endDate?: string;
+  platform?: string;
 }
 
 /**
@@ -42,6 +43,7 @@ export interface TtsRecordItem {
   format: string;
   errorMessage: string | null;
   shareId: string | null;
+  platform: string | null;
   createdAt: string;
   completedAt: string | null;
 }
@@ -60,6 +62,7 @@ export async function getTtsRecords(query: TtsRecordsQuery = {}) {
     search,
     startDate,
     endDate,
+    platform,
   } = query;
 
   // 构建查询条件
@@ -94,6 +97,10 @@ export async function getTtsRecords(query: TtsRecordsQuery = {}) {
     }
   }
 
+  if (platform) {
+    where.platform = platform;
+  }
+
   const [total, records] = await Promise.all([
     prisma.tts_records.count({ where }),
     prisma.tts_records.findMany({
@@ -124,6 +131,7 @@ export async function getTtsRecords(query: TtsRecordsQuery = {}) {
     format: record.format,
     errorMessage: record.error_message,
     shareId: record.share_id,
+    platform: record.platform,
     createdAt: record.created_at.toISOString(),
     completedAt: record.completed_at?.toISOString() || null,
   }));

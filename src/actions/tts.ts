@@ -32,6 +32,7 @@ export interface TtsRequest {
   volume?: number;
   story_id?: string; // 关联的故事 ID（可选）
   paragraph_id?: string; // 关联的段落 ID（可选）
+  platform?: string; // 来源平台：web, mobile-web, android, ios
 }
 
 export interface TtsTaskStatus {
@@ -227,6 +228,7 @@ export async function createTtsTask(request: TtsRequest): Promise<TtsTaskStatus>
         format: 'mp3',
         share_id: shareId,
         story_id: request.story_id || null, // 关联故事（可选）
+        platform: request.platform || null, // 来源平台
       },
     });
 

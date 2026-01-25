@@ -25,22 +25,21 @@ export default function Home() {
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
         {/* Background - Pink/Purple Gradient */}
         <div className="absolute inset-0 w-full h-full">
-          <div className="absolute inset-0 bg-gradient-to-br from-pink-100 via-white to-purple-100" />
-          <div className="absolute top-0 left-0 w-96 h-96 bg-pink-200/40 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2" />
-          <div className="absolute bottom-0 right-0 w-96 h-96 bg-purple-200/40 rounded-full blur-3xl translate-x-1/2 translate-y-1/2" />
-          <div className="absolute top-1/2 left-1/2 w-64 h-64 bg-blue-100/30 rounded-full blur-2xl -translate-x-1/2 -translate-y-1/2" />
+          <div className="absolute inset-0 bg-gradient-to-b from-pink-50 via-white to-white" />
+          {/* Left pink gradient */}
+          <div className="absolute top-0 left-0 w-[500px] h-full bg-gradient-to-r from-pink-200/60 to-transparent" />
+          {/* Right purple gradient */}
+          <div className="absolute top-0 right-0 w-[500px] h-full bg-gradient-to-l from-purple-200/50 to-transparent" />
+          {/* Top center glow */}
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[400px] bg-gradient-to-b from-pink-100/40 to-transparent rounded-full blur-3xl" />
         </div>
 
         {/* Content */}
         <div className="relative z-10 max-w-lg mx-auto px-4 py-16 md:py-20">
           {/* Brand Name */}
           <div className="text-center mb-4">
-            <h2 className="text-2xl md:text-3xl font-extrabold text-gray-800 tracking-tight">
-              Voicica
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-rose-500">
-                .AI
-              </span>
-              <sup className="text-xs text-gray-400 ml-0.5">®</sup>
+            <h2 className="text-2xl md:text-3xl font-bold italic text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-rose-400 tracking-tight">
+              Voicica.AI
             </h2>
           </div>
 

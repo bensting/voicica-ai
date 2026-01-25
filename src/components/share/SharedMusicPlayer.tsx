@@ -109,7 +109,7 @@ export default function SharedMusicPlayer({ music }: SharedMusicPlayerProps) {
         </Link>
         <Link
           href="/"
-          className="px-4 py-1.5 bg-gradient-to-r from-purple-500 to-pink-500 text-white text-sm font-medium rounded-full hover:opacity-90 transition-opacity"
+          className="inline-flex items-center justify-center px-4 py-1.5 bg-gradient-to-r from-purple-500 to-pink-500 text-white text-sm font-medium rounded-full hover:opacity-90 transition-opacity"
         >
           Try Free
         </Link>

@@ -13,16 +13,16 @@ import ai.voicica.app.plugins.GooglePlayBillingPlugin;
 public class MainActivity extends BridgeActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // 强制设置主题，必须在 super.onCreate() 之前调用
+        // 修复 Action Mode（文本选择）背景显示为 splash 的问题
+        setTheme(R.style.AppTheme_NoActionBar);
+
         // 注册自定义插件
         registerPlugin(AppodealPlugin.class);
         registerPlugin(AppOpenAdPlugin.class);
         registerPlugin(GooglePlayBillingPlugin.class);
 
         super.onCreate(savedInstanceState);
-
-        // 强制设置主题，修复 Action Mode（文本选择）背景显示为 splash 的问题
-        // Capacitor 3+ 在 onStart 才设置主题，导致 Action Mode 使用了 splash 主题
-        setTheme(R.style.AppTheme_NoActionBar);
 
         // 设置自定义 User-Agent 用于平台识别
         WebView webView = getBridge().getWebView();

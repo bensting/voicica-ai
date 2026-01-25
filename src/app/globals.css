@@ -26,6 +26,14 @@ body.native-app {
   user-select: none;
 }
 
+/* 确保按钮和可点击元素的触摸事件正常 */
+body.native-app button,
+body.native-app a,
+body.native-app [role="button"] {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
 /* 允许输入框和文本区域选择文本 */
 body.native-app input,
 body.native-app textarea,

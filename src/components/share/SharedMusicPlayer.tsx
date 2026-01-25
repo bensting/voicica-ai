@@ -116,11 +116,11 @@ export default function SharedMusicPlayer({ music }: SharedMusicPlayerProps) {
       </header>
 
       {/* Content */}
-      <main className="flex-1 flex flex-col items-center px-6 py-6 min-h-0 overflow-hidden">
+      <main className="flex-1 flex flex-col items-center px-6 py-4 min-h-0 overflow-hidden">
         {/* 上半部分：封面 + 标题 */}
         <div className="flex-shrink-0 flex flex-col items-center">
           {/* 封面 */}
-          <div className="relative w-52 h-52 mb-4 rounded-2xl overflow-hidden shadow-2xl">
+          <div className="relative w-44 h-44 mb-3 rounded-2xl overflow-hidden shadow-2xl">
             {music.cover_url ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img
@@ -144,12 +144,12 @@ export default function SharedMusicPlayer({ music }: SharedMusicPlayerProps) {
           </div>
 
           {/* 标题 */}
-          <h1 className="text-2xl font-bold text-white mb-2 text-center">{displayTitle}</h1>
+          <h1 className="text-xl font-bold text-white mb-1 text-center">{displayTitle}</h1>
         </div>
 
         {/* 歌词区域 - 弹性空间，可滚动 */}
         {displayLyrics && (
-          <div className="flex-1 w-full max-w-sm overflow-y-auto my-4 min-h-0">
+          <div className="flex-1 w-full max-w-sm overflow-y-auto my-3 min-h-[80px]">
             <p className="text-gray-300 text-sm text-center whitespace-pre-wrap leading-relaxed">
               {displayLyrics}
             </p>
@@ -162,12 +162,12 @@ export default function SharedMusicPlayer({ music }: SharedMusicPlayerProps) {
           <button
             onClick={togglePlay}
             disabled={!music.audio_url}
-            className="mx-auto mb-3 w-14 h-14 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center shadow-lg hover:opacity-90 transition-opacity disabled:opacity-50"
+            className="mx-auto mb-2 w-12 h-12 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center shadow-lg hover:opacity-90 transition-opacity disabled:opacity-50"
           >
             {isPlaying ? (
-              <Pause className="w-7 h-7 text-white" fill="white" />
+              <Pause className="w-6 h-6 text-white" fill="white" />
             ) : (
-              <Play className="w-7 h-7 text-white ml-1" fill="white" />
+              <Play className="w-6 h-6 text-white ml-0.5" fill="white" />
             )}
           </button>
 

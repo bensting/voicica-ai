@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { useNativeBack } from '@/hooks/useNativeBack';
 import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 import { useCredits } from '@/contexts/CreditsContext';
 import { useAudioSettings } from '@/contexts/AudioSettingsContext';
@@ -104,6 +105,7 @@ const CloseIcon = () => (
  */
 export default function NativeTTSPage() {
   const router = useRouter();
+  const goBack = useNativeBack();
   const { user } = useFirebaseAuth();
   const { credits } = useCredits();
   const { settings, updateSettings } = useAudioSettings();
@@ -297,7 +299,7 @@ export default function NativeTTSPage() {
     >
       {/* Header */}
       <div className="flex items-center justify-between px-4 h-14 flex-shrink-0">
-        <button onClick={() => router.back()} className="p-2 -ml-2 text-white">
+        <button onClick={goBack} className="p-2 -ml-2 text-white">
           <BackIcon />
         </button>
         <button

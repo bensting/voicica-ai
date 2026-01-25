@@ -198,25 +198,24 @@ export default function NativeSubscribePage() {
   const isProcessing = processingId !== null || gpLoading;
 
   return (
-    <div className="fixed inset-0 z-[9999] bg-[#0a0a1a] flex flex-col">
+    <div className="fixed inset-0 z-[9999] bg-[#0a0a1a] flex flex-col overflow-auto">
       {/* Background gradient */}
       <div className="absolute inset-0 bg-gradient-to-b from-purple-900/30 via-transparent to-transparent pointer-events-none" />
 
-      {/* Header - 不使用 fixed，直接放在 flex 容器内 */}
-      <header
-        className="relative z-10 px-4 shrink-0"
-        style={{ paddingTop: 'calc(var(--safe-area-inset-top, 0px) + 8px)', paddingBottom: '8px' }}
+      {/* 关闭按钮 - 直接放在容器里，和 LoginModal 一样 */}
+      <button
+        onClick={() => router.back()}
+        className="absolute left-4 z-20 w-10 h-10 flex items-center justify-center bg-gray-800/50 rounded-full text-gray-300 hover:text-white transition-colors"
+        style={{ top: 'calc(var(--safe-area-inset-top, 0px) + 8px)' }}
       >
-        <button
-          onClick={() => router.back()}
-          className="w-10 h-10 flex items-center justify-center bg-gray-800/50 rounded-full text-gray-300 hover:text-white transition-colors"
-        >
-          <CloseIcon />
-        </button>
-      </header>
+        <CloseIcon />
+      </button>
 
       {/* Credits display */}
-      <div className="relative z-10 text-center py-4">
+      <div
+        className="relative z-10 text-center py-4"
+        style={{ marginTop: 'calc(var(--safe-area-inset-top, 0px) + 56px)' }}
+      >
         <div className="flex items-center justify-center gap-2 text-purple-400 mb-1">
           <CreditsIcon className="w-6 h-6" />
           <span className="text-4xl font-bold text-white">{credits}</span>

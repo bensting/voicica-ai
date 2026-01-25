@@ -27,13 +27,8 @@ export default function NativeLayout({
   const pathname = usePathname();
   const router = useRouter();
 
-  // 添加 native-app class 到 body（禁用文本选择）
-  useEffect(() => {
-    document.body.classList.add('native-app');
-    return () => {
-      document.body.classList.remove('native-app');
-    };
-  }, []);
+  // 注意：之前添加 native-app class 来禁用文本选择，但这可能影响点击事件
+  // 如果需要禁用文本选择，应该在 Android 原生层（WebView 设置）处理
 
   // 初始化本地推送通知
   useEffect(() => {

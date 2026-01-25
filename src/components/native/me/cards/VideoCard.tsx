@@ -1,5 +1,7 @@
 'use client';
 
+import { useState } from 'react';
+
 interface VideoItem {
   taskId: string;
   status: 'PENDING' | 'PROCESSING' | 'SUCCESS' | 'FAILURE';
@@ -29,7 +31,21 @@ const VideoIcon = () => (
   </svg>
 );
 
+// Play icon overlay
+const PlayOverlay = () => (
+  <div className="absolute inset-0 flex items-center justify-center bg-black/20">
+    <div className="w-6 h-6 rounded-full bg-white/90 flex items-center justify-center">
+      <svg className="w-3 h-3 text-gray-800 ml-0.5" viewBox="0 0 24 24" fill="currentColor">
+        <polygon points="5,3 19,12 5,21" />
+      </svg>
+    </div>
+  </div>
+);
+
 export default function VideoCard({ video, onClick }: VideoCardProps) {
+  const [frameLoaded, setFrameLoaded] = useState(false);
+  const [frameError, setFrameError] = useState(false);
+
   const isProcessing = video.status === 'PENDING' || video.status === 'PROCESSING';
   const isSuccess = video.status === 'SUCCESS';
   const isFailed = video.status === 'FAILURE';
@@ -37,17 +53,46 @@ export default function VideoCard({ video, onClick }: VideoCardProps) {
   const displayTitle = video.prompt?.substring(0, 40) || 'AI Video';
   const displaySubtitle = `${video.resolution} / ${video.duration}s`;
 
+  // 优先使用 thumbnailUrl，否则用 videoUrl 加载第一帧
+  const previewUrl = video.thumbnailUrl || video.videoUrl;
+  const useVideoFrame = !video.thumbnailUrl && video.videoUrl;
+
   return (
     <button onClick={onClick} className="flex items-center gap-3 w-full py-3">
       {/* Thumbnail */}
       <div className="relative w-16 h-16 flex-shrink-0 bg-gray-800 rounded-lg overflow-hidden">
-        {isSuccess && video.thumbnailUrl ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={video.thumbnailUrl}
-            alt={displayTitle}
-            className="w-full h-full object-cover"
-          />
+        {isSuccess && previewUrl && !frameError ? (
+          <>
+            {useVideoFrame ? (
+              // 使用 video 标签加载第一帧
+              <video
+                src={previewUrl}
+                className="w-full h-full object-cover"
+                muted
+                playsInline
+                preload="metadata"
+                onLoadedData={() => setFrameLoaded(true)}
+                onError={() => setFrameError(true)}
+              />
+            ) : (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={previewUrl}
+                alt={displayTitle}
+                className="w-full h-full object-cover"
+                onLoad={() => setFrameLoaded(true)}
+                onError={() => setFrameError(true)}
+              />
+            )}
+            {/* 加载中的占位 */}
+            {!frameLoaded && (
+              <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-blue-900 to-purple-900">
+                <div className="w-4 h-4 border-2 border-blue-400 border-t-transparent rounded-full animate-spin" />
+              </div>
+            )}
+            {/* 播放图标覆盖层 */}
+            {frameLoaded && <PlayOverlay />}
+          </>
         ) : (
           <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-blue-900 to-purple-900">
             {isProcessing && (
@@ -63,7 +108,8 @@ export default function VideoCard({ video, onClick }: VideoCardProps) {
                 <line x1="9" y1="9" x2="15" y2="15" />
               </svg>
             )}
-            {!isProcessing && !isFailed && <VideoIcon />}
+            {isSuccess && frameError && <VideoIcon />}
+            {!isProcessing && !isFailed && !isSuccess && <VideoIcon />}
           </div>
         )}
         {/* Status tag */}

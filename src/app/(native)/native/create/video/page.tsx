@@ -8,7 +8,8 @@ import ImageGuidance from '@/components/native/create/ImageGuidance';
 import AdvancedOptions from '@/components/native/create/AdvancedOptions';
 import ParameterSettingsSheet from '@/components/native/create/ParameterSettingsSheet';
 import GradientButton from '@/components/native/common/GradientButton';
-import CreditsIcon from '@/components/native/common/CreditsIcon';
+import CreditsInfoBar from '@/components/native/common/CreditsInfoBar';
+import { useCredits } from '@/contexts/CreditsContext';
 import { VideoModel, defaultVideoModel, getModelDefaults, calculateCredits } from '@/config/native/videoModels';
 import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 
@@ -77,6 +78,7 @@ const VIDEO_PROMPT_STORAGE_KEY = 'video_draft_prompt';
 export default function CreateVideoPage() {
   const router = useRouter();
   const { token } = useFirebaseAuth();
+  const { credits: userCredits } = useCredits();
   const [isCreateSheetOpen, setIsCreateSheetOpen] = useState(false);
   const [isParamsSheetOpen, setIsParamsSheetOpen] = useState(false);
   const [mode, setMode] = useState<ModeType>('generate');
@@ -211,7 +213,7 @@ export default function CreateVideoPage() {
     }
   };
 
-  const credits = calculateCredits(selectedModel, params.quality, params.duration, generateAudio);
+  const requiredCredits = calculateCredits(selectedModel, params.quality, params.duration, generateAudio);
 
   return (
     <div className="min-h-screen bg-[#0a0a1a] flex flex-col">
@@ -333,15 +335,22 @@ export default function CreateVideoPage() {
           </button>
         </div>
 
-        {/* 底部留白，防止被按钮遮挡 */}
-        <div className="h-4" />
+        {/* 底部留白，防止被固定按钮遮挡 */}
+        <div className="h-32" />
       </div>
 
-      {/* 底部按钮 */}
+      {/* 固定底部按钮 */}
       <div
-        className="px-4 pt-4 pb-4 bg-[#0a0a1a]"
-        style={{ paddingBottom: 'calc(16px + var(--safe-area-inset-bottom, 0px))' }}
+        className="fixed bottom-0 left-0 right-0 z-30 px-4 pt-3 pb-3 bg-[#0a0a1a]"
+        style={{ paddingBottom: 'calc(var(--safe-area-inset-bottom, 0px) + 12px)' }}
       >
+        {/* Credits Info Bar */}
+        <CreditsInfoBar
+          credits={userCredits}
+          creditRules={[{ name: 'Video generation', credits: requiredCredits }]}
+          className="mb-3"
+        />
+
         {/* Error Message */}
         {error && (
           <div className="mb-3 p-2 bg-red-500/20 border border-red-500/40 rounded-lg text-red-400 text-sm text-center">
@@ -358,11 +367,7 @@ export default function CreateVideoPage() {
               <span>Creating...</span>
             </>
           ) : (
-            <>
-              <span>Create Video</span>
-              <CreditsIcon className="w-3.5 h-3.5" />
-              <span>{credits}</span>
-            </>
+            <span>Create</span>
           )}
         </GradientButton>
       </div>

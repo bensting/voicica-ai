@@ -4,6 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useLanguage } from '@/contexts/LanguageContext';
 import LanguageSwitcher from '@/components/layout/Navbar/LanguageSwitcher';
+import AppDownloadButtons from '@/components/common/AppDownloadButtons';
 
 /**
  * Footer Brand Section
@@ -47,6 +48,9 @@ export default function FooterBrand() {
           </svg>
         </Link>
       </div>
+
+      {/* App Download */}
+      <AppDownloadButtons variant="dark" layout="vertical" showWebLink={false} />
 
       {/* Language Selector */}
       <div>

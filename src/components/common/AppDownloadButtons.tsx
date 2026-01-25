@@ -5,6 +5,8 @@ import Link from 'next/link';
 interface AppDownloadButtonsProps {
   /** 显示变体：dark 深色背景，light 浅色背景 */
   variant?: 'dark' | 'light';
+  /** 布局方向：horizontal 水平，vertical 垂直 */
+  layout?: 'horizontal' | 'vertical';
   /** 是否显示 Web Version 链接 */
   showWebLink?: boolean;
   /** Web Version 链接地址 */
@@ -40,16 +42,18 @@ const ArrowRightIcon = () => (
  */
 export default function AppDownloadButtons({
   variant = 'dark',
+  layout = 'horizontal',
   showWebLink = true,
   webLinkHref = '/studio',
   className = '',
 }: AppDownloadButtonsProps) {
   const isDark = variant === 'dark';
+  const isVertical = layout === 'vertical';
 
   return (
-    <div className={`flex flex-col items-center gap-4 ${className}`}>
-      {/* 下载按钮行 */}
-      <div className="flex flex-wrap items-start justify-center gap-3">
+    <div className={`flex flex-col ${isVertical ? 'items-start' : 'items-center'} gap-4 ${className}`}>
+      {/* 下载按钮 */}
+      <div className={`flex ${isVertical ? 'flex-col items-start' : 'flex-wrap items-start justify-center'} gap-3`}>
         {/* Google Play */}
         <a
           href="https://play.google.com/store/apps/details?id=ai.voicica.app"
@@ -69,7 +73,7 @@ export default function AppDownloadButtons({
         </a>
 
         {/* App Store + Coming Soon */}
-        <div className="flex flex-col items-center">
+        <div className={`flex flex-col ${isVertical ? 'items-start' : 'items-center'}`}>
           <div
             className={`flex items-center gap-2 px-4 py-2.5 rounded-lg border ${
               isDark

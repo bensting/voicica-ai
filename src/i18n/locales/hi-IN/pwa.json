@@ -43,5 +43,12 @@
     "install": "अभी इंस्टॉल करें",
     "later": "बाद में",
     "progress": "डाउनलोड हो रहा है... {{progress}}%"
+  },
+  "webUpdate": {
+    "title": "Content Updated",
+    "previousVersion": "Previous",
+    "description": "New features and improvements are available. Refresh to get the latest version.",
+    "refresh": "Refresh Now",
+    "later": "Later"
   }
 }

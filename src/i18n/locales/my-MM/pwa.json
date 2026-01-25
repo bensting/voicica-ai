@@ -43,5 +43,12 @@
     "install": "ယခုပင်ထည့်သွင်း",
     "later": "နောက်မှ",
     "progress": "ဒေါင်းလုဒ်လုပ်နေသည်... {{progress}}%"
+  },
+  "webUpdate": {
+    "title": "Content Updated",
+    "previousVersion": "Previous",
+    "description": "New features and improvements are available. Refresh to get the latest version.",
+    "refresh": "Refresh Now",
+    "later": "Later"
   }
 }

@@ -64,7 +64,7 @@ export default function ImageGuidance({
   const isMultiMode = config.mode === 'multi';
   const isStartEndMode = config.mode === 'startEnd';
 
-  const handleImageUpload = (type: 'start' | 'end' | 'multi', index?: number) => {
+  const handleImageUpload = (type: 'start' | 'end' | 'multi', _index?: number) => {
     const input = document.createElement('input');
     input.type = 'file';
     input.accept = 'image/jpeg,image/jpg,image/png,image/webp';

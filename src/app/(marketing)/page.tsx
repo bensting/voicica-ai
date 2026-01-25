@@ -45,8 +45,8 @@ export default function Home() {
 
           {/* 100% Free Badge */}
           <div className="flex justify-center mb-6">
-            <div className="inline-flex items-center px-4 py-1.5 bg-gradient-to-r from-green-400 to-emerald-500 rounded-full shadow-lg shadow-green-200/50">
-              <span className="text-white font-bold text-sm">
+            <div className="inline-flex items-center px-5 py-2 bg-gradient-to-r from-pink-400 to-rose-400 rounded-full shadow-lg shadow-pink-200/50">
+              <span className="text-white font-semibold text-sm">
                 {t('home.heroFreeTag') || '100% Free'}
               </span>
             </div>
@@ -56,20 +56,19 @@ export default function Home() {
           <div className="text-center mb-4">
             <h1 className="font-bold text-gray-900 text-2xl sm:text-3xl md:text-4xl leading-tight">
               {t('home.heroTitlePrefix')}
-              <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-500 via-rose-500 to-pink-500">
-                {t('home.heroTitleHighlight')}
-              </span>
+            </h1>
+            <h1 className="font-bold text-transparent bg-clip-text bg-gradient-to-r from-pink-400 via-rose-400 to-pink-400 text-2xl sm:text-3xl md:text-4xl leading-tight">
+              {t('home.heroTitleHighlight')}
             </h1>
           </div>
 
           {/* Subtitle */}
-          <p className="text-gray-500 text-sm md:text-base text-center max-w-md mx-auto mb-4">
+          <p className="text-gray-500 text-sm md:text-base text-center max-w-sm mx-auto mb-4">
             {t('home.heroDescription')}
           </p>
 
           {/* Trust Indicator */}
-          <p className="text-center text-xs text-gray-400 mb-8">
+          <p className="text-center text-sm text-gray-400 mb-8">
             {t('home.trustedByCreators') || 'Trusted by 1,000,000+ Creators'}
           </p>
 

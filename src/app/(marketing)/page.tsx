@@ -77,23 +77,27 @@ export default function Home() {
               onClick={() => router.push('/studio/ai-song')}
               className="w-full group"
             >
-              <div className="relative bg-white/70 backdrop-blur-xl rounded-[28px] p-5 shadow-lg shadow-pink-100/50 border border-white/60 hover:shadow-xl hover:scale-[1.02] transition-all duration-300">
-                <div className="flex items-center gap-4">
-                  <div className="w-14 h-14 bg-gradient-to-br from-pink-400 to-rose-500 rounded-2xl flex items-center justify-center shadow-lg shadow-pink-200/50">
-                    <WandIcon />
+              {/* White outer + Pink inner border */}
+              <div className="rounded-full p-[2px] bg-white shadow-lg shadow-pink-100/30 hover:shadow-xl hover:scale-[1.02] transition-all duration-300">
+                <div className="rounded-full p-[2px] bg-gradient-to-r from-pink-200 to-pink-300">
+                  <div className="bg-white rounded-full px-4 py-3 flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      {/* Pink square icon */}
+                      <div className="w-12 h-12 bg-gradient-to-br from-pink-500 to-rose-500 rounded-xl flex items-center justify-center shadow-md">
+                        <WandIcon />
+                      </div>
+                      {/* Title */}
+                      <h3 className="font-bold text-gray-800 text-lg flex items-center gap-2">
+                        {t('home.aiSongOneClick')}
+                        <Sparkles className="w-5 h-5 text-pink-400" />
+                      </h3>
+                    </div>
+                    {/* Play Sample */}
+                    <span className="inline-flex items-center gap-1.5 text-sm text-pink-500 group-hover:text-pink-600 transition-colors">
+                      <Play className="w-4 h-4" />
+                      {t('home.playSample') || 'Play Sample'}
+                    </span>
                   </div>
-                  <div className="flex-1 text-left">
-                    <h3 className="font-bold text-gray-800 text-lg flex items-center gap-2">
-                      {t('home.aiSongOneClick')}
-                      <Sparkles className="w-4 h-4 text-pink-400" />
-                    </h3>
-                  </div>
-                </div>
-                <div className="mt-3 flex justify-end">
-                  <span className="inline-flex items-center gap-1.5 text-xs bg-pink-50 text-pink-500 px-3 py-1.5 rounded-full border border-pink-100 group-hover:bg-pink-100 transition-colors">
-                    <Play className="w-3 h-3" />
-                    {t('home.playSample') || 'Play Sample'}
-                  </span>
                 </div>
               </div>
             </button>
@@ -105,18 +109,18 @@ export default function Home() {
                 onClick={() => router.push('/studio/tts')}
                 className="group"
               >
-                <div className="bg-white/70 backdrop-blur-xl rounded-[24px] p-4 shadow-md shadow-gray-100/50 border border-white/60 hover:shadow-lg hover:scale-[1.02] transition-all duration-300">
-                  <div className="flex flex-col items-center text-center gap-2">
-                    <div className="w-10 h-10 bg-blue-50 rounded-full flex items-center justify-center">
-                      <Mic className="w-5 h-5 text-blue-500" />
+                <div className="rounded-3xl p-[2px] bg-white shadow-md shadow-pink-50 hover:shadow-lg hover:scale-[1.02] transition-all duration-300">
+                  <div className="rounded-3xl p-[2px] bg-gradient-to-r from-pink-100 to-pink-200">
+                    <div className="bg-white rounded-3xl p-4 flex flex-col items-center text-center gap-2">
+                      <Mic className="w-6 h-6 text-blue-400" />
+                      <span className="text-sm font-bold text-gray-800">
+                        {t('home.textToSpeech')}
+                      </span>
+                      <span className="inline-flex items-center gap-1 text-xs text-gray-400 group-hover:text-pink-500 transition-colors">
+                        <Play className="w-3 h-3" />
+                        {t('home.playSample') || 'Play Sample'}
+                      </span>
                     </div>
-                    <span className="text-sm font-bold text-gray-700">
-                      {t('home.textToSpeech')}
-                    </span>
-                    <span className="inline-flex items-center gap-1 text-[10px] text-gray-400 group-hover:text-blue-500 transition-colors">
-                      <Play className="w-2.5 h-2.5" />
-                      {t('home.playSample') || 'Play Sample'}
-                    </span>
                   </div>
                 </div>
               </button>
@@ -126,18 +130,18 @@ export default function Home() {
                 onClick={() => router.push('/studio/ai-music')}
                 className="group"
               >
-                <div className="bg-white/70 backdrop-blur-xl rounded-[24px] p-4 shadow-md shadow-gray-100/50 border border-white/60 hover:shadow-lg hover:scale-[1.02] transition-all duration-300">
-                  <div className="flex flex-col items-center text-center gap-2">
-                    <div className="w-10 h-10 bg-purple-50 rounded-full flex items-center justify-center">
-                      <Music className="w-5 h-5 text-purple-500" />
+                <div className="rounded-3xl p-[2px] bg-white shadow-md shadow-pink-50 hover:shadow-lg hover:scale-[1.02] transition-all duration-300">
+                  <div className="rounded-3xl p-[2px] bg-gradient-to-r from-pink-100 to-pink-200">
+                    <div className="bg-white rounded-3xl p-4 flex flex-col items-center text-center gap-2">
+                      <Music className="w-6 h-6 text-pink-400" />
+                      <span className="text-sm font-bold text-gray-800">
+                        {t('home.lyricsToMusic')}
+                      </span>
+                      <span className="inline-flex items-center gap-1 text-xs text-gray-400 group-hover:text-pink-500 transition-colors">
+                        <Play className="w-3 h-3" />
+                        {t('home.playSample') || 'Play Sample'}
+                      </span>
                     </div>
-                    <span className="text-sm font-bold text-gray-700">
-                      {t('home.lyricsToMusic')}
-                    </span>
-                    <span className="inline-flex items-center gap-1 text-[10px] text-gray-400 group-hover:text-purple-500 transition-colors">
-                      <Play className="w-2.5 h-2.5" />
-                      {t('home.playSample') || 'Play Sample'}
-                    </span>
                   </div>
                 </div>
               </button>

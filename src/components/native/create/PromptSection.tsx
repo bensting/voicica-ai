@@ -22,10 +22,51 @@ const GoogleIconSmall = () => (
   </svg>
 );
 
-// 其他小图标
+// OpenAI 图标（小）
 const OpenAIIconSmall = () => (
   <svg className="w-4 h-4 text-white" viewBox="0 0 24 24" fill="currentColor">
     <path d="M22.2819 9.8211a5.9847 5.9847 0 0 0-.5157-4.9108 6.0462 6.0462 0 0 0-6.5098-2.9A6.0651 6.0651 0 0 0 4.9807 4.1818a5.9847 5.9847 0 0 0-3.9977 2.9 6.0462 6.0462 0 0 0 .7427 7.0966 5.98 5.98 0 0 0 .511 4.9107 6.051 6.051 0 0 0 6.5146 2.9001A5.9847 5.9847 0 0 0 13.2599 24a6.0557 6.0557 0 0 0 5.7718-4.2058 5.9894 5.9894 0 0 0 3.9977-2.9001 6.0557 6.0557 0 0 0-.7475-7.0729z" />
+  </svg>
+);
+
+// Vidu 图标（小）
+const ViduIconSmall = () => (
+  <svg className="w-4 h-4 text-cyan-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z" />
+    <path d="M8 12l3 3 5-6" />
+  </svg>
+);
+
+// Pixverse 图标（小）
+const PixverseIconSmall = () => (
+  <svg className="w-4 h-4 text-purple-400" viewBox="0 0 24 24" fill="currentColor">
+    <path d="M13 3L4 14h7l-2 7 9-11h-7l2-7z" />
+  </svg>
+);
+
+// Wan 图标（小）
+const WanIconSmall = () => (
+  <svg className="w-4 h-4 text-blue-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <polygon points="12 2 2 7 12 12 22 7 12 2" />
+    <polyline points="2 17 12 22 22 17" />
+    <polyline points="2 12 12 17 22 12" />
+  </svg>
+);
+
+// Kling 图标（小）
+const KlingIconSmall = () => (
+  <svg className="w-4 h-4 text-gray-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+    <circle cx="12" cy="12" r="10" />
+    <path d="M12 6v6l4 2" />
+  </svg>
+);
+
+// Seedance 图标（小）
+const SeedanceIconSmall = () => (
+  <svg className="w-4 h-4 text-teal-400" viewBox="0 0 24 24" fill="none">
+    <path d="M12 2L4 7v10l8 5 8-5V7l-8-5z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
+    <path d="M12 12l8-5M12 12v10M12 12L4 7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+    <circle cx="12" cy="12" r="2" fill="currentColor" />
   </svg>
 );
 
@@ -33,6 +74,11 @@ const OpenAIIconSmall = () => (
 const smallIconMap: Record<string, React.FC> = {
   google: GoogleIconSmall,
   openai: OpenAIIconSmall,
+  vidu: ViduIconSmall,
+  pixverse: PixverseIconSmall,
+  wan: WanIconSmall,
+  kling: KlingIconSmall,
+  seedance: SeedanceIconSmall,
 };
 
 // 下拉箭头

@@ -9,6 +9,7 @@ import { AUDIO_SETTINGS_RANGE } from '@/types/audioSettings';
 import { createTtsTask } from '@/actions/tts';
 import type { Voice } from '@/types/voice';
 import { calculateVoiceCost, type VoiceType } from '@/config/creditsCost';
+import CreatePageHeader from '@/components/native/common/CreatePageHeader';
 import GradientButton from '@/components/native/common/GradientButton';
 import CreditsIcon from '@/components/native/common/CreditsIcon';
 import CreditsInfoBar from '@/components/native/common/CreditsInfoBar';
@@ -16,25 +17,10 @@ import AssistantInput from '@/components/native/common/AssistantInput';
 import AssistantModal from '@/components/native/common/AssistantModal';
 import NativeVoiceSelectorSheet from '@/components/native/create/voice/VoiceSelectorSheet';
 import LoginModal from '@/components/native/LoginModal';
-import CreateSheet from '@/components/native/CreateSheet';
 
 // localStorage keys
 const STORAGE_KEY_TEXT = 'tts_draft_text';
 const STORAGE_KEY_VOICE = 'tts_draft_voice';
-
-// 返回图标
-const BackIcon = () => (
-  <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-    <path d="M19 12H5M12 19l-7-7 7-7" />
-  </svg>
-);
-
-// 下拉箭头图标
-const ChevronDownIcon = () => (
-  <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-    <path d="M6 9l6 6 6-6" />
-  </svg>
-);
 
 // 垃圾桶图标
 const TrashIcon = () => (
@@ -113,7 +99,6 @@ export default function NativeTTSPage() {
   const [activeSettingsTab, setActiveSettingsTab] = useState<'speed' | 'volume' | 'pitch'>('speed');
   const [tempSettings, setTempSettings] = useState(settings);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
-  const [isCreateSheetOpen, setIsCreateSheetOpen] = useState(false);
   const [text, setText] = useState('');
   const [selectedVoice, setSelectedVoice] = useState<Voice | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
@@ -291,24 +276,9 @@ export default function NativeTTSPage() {
   };
 
   return (
-    <div
-      className="min-h-screen bg-[#0a0a1a] flex flex-col"
-      style={{ paddingTop: 'var(--safe-area-inset-top, 0px)' }}
-    >
+    <div className="min-h-screen bg-[#0a0a1a] flex flex-col">
       {/* Header */}
-      <div className="flex items-center justify-between px-4 h-14 flex-shrink-0">
-        <button onClick={() => router.back()} className="p-2 -ml-2 text-white">
-          <BackIcon />
-        </button>
-        <button
-          onClick={() => setIsCreateSheetOpen(true)}
-          className="flex items-center gap-1 text-white font-semibold"
-        >
-          <span>Text to Voice</span>
-          <ChevronDownIcon />
-        </button>
-        <div className="w-10" />
-      </div>
+      <CreatePageHeader title="Text to Voice" />
 
       {/* Content */}
       <div
@@ -451,12 +421,6 @@ export default function NativeTTSPage() {
         isOpen={isLoginModalOpen}
         onClose={() => setIsLoginModalOpen(false)}
         onLoginSuccess={() => setIsLoginModalOpen(false)}
-      />
-
-      {/* Create Sheet */}
-      <CreateSheet
-        isOpen={isCreateSheetOpen}
-        onClose={() => setIsCreateSheetOpen(false)}
       />
 
       {/* Text Assistant Modal */}

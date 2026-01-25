@@ -1,6 +1,7 @@
 {
   "common": {
     "brand": "Voicica AI",
+    "ok": "OK",
     "cancel": "Hủy",
     "close": "Đóng",
     "confirm": "Xác nhận",

@@ -362,22 +362,22 @@ export default function NativeDailyTasksModal({ isOpen, onClose, onCreditsUpdate
 
         {/* 签到任务 */}
         <div className="border border-white/10 rounded-xl p-4 mb-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex items-center gap-3 min-w-0">
+              <div className={`w-10 h-10 shrink-0 rounded-full flex items-center justify-center ${
                 status.checkinDone ? 'bg-green-500/20 text-green-400' : 'bg-purple-500/20 text-purple-400'
               }`}>
                 {status.checkinDone ? <CheckIcon /> : <PlayIcon />}
               </div>
-              <div>
-                <p className="font-medium text-white">{t('dailyTasks.checkin')}</p>
+              <div className="min-w-0">
+                <p className="font-medium text-white truncate">{t('dailyTasks.checkin')}</p>
                 <p className="text-sm text-gray-400">+{formatCredits(config?.checkin_credits || 0)} {t('dailyTasks.credits')}</p>
               </div>
             </div>
             <button
               onClick={handleCheckin}
               disabled={status.checkinDone || claiming || checkinLoading}
-              className={`px-4 py-2 rounded-lg font-medium text-sm flex items-center gap-1.5 ${
+              className={`shrink-0 px-3 py-2 rounded-lg font-medium text-sm flex items-center gap-1.5 whitespace-nowrap ${
                 status.checkinDone
                   ? 'bg-white/10 text-gray-500 cursor-not-allowed'
                   : 'bg-purple-600 text-white disabled:opacity-50'
@@ -390,7 +390,7 @@ export default function NativeDailyTasksModal({ isOpen, onClose, onCreditsUpdate
               ) : (
                 <>
                   <PlayIcon />
-                  {t('dailyTasks.watchCheckinGet', { credits: formatCredits(config?.checkin_credits || 0) })}
+                  <span>+{config?.checkin_credits || 0}</span>
                 </>
               )}
             </button>

@@ -1,14 +1,15 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { Download, Pencil, Share2 } from 'lucide-react';
+import { Share2 } from 'lucide-react';
 import type { MusicRecord } from '@/actions/music';
 import { Share } from '@capacitor/share';
 import { createShareLink } from '@/actions/share';
-import GradientButton from '@/components/ui/GradientButton';
+import DetailActionBar from './DetailActionBar';
 import DeleteConfirmDialog from '@/components/native/ui/DeleteConfirmDialog';
 import { useBottomNav } from '@/contexts/BottomNavContext';
 import { formatTime, getModelDisplayName } from './utils';
+import { downloadFile } from '@/lib/native-download';
 
 interface MusicDetailModalProps {
   music: MusicRecord;
@@ -29,6 +30,7 @@ export default function MusicDetailModal({
   const [duration, setDuration] = useState(0);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [isSharing, setIsSharing] = useState(false);
+  const [downloading, setDownloading] = useState(false);
   const { hide, show } = useBottomNav();
 
   // 隐藏底部导航
@@ -96,11 +98,22 @@ export default function MusicDetailModal({
     setCurrentTime(percent * duration);
   };
 
-  const handleDownload = () => {
-    if (!currentAudioUrl) return;
-    // 直接打开音频 URL，让浏览器处理下载
-    // 避免 CORS 问题
-    window.open(currentAudioUrl, '_blank');
+  const handleDownload = async () => {
+    if (!currentAudioUrl || downloading) return;
+    setDownloading(true);
+    try {
+      const fileName = `voicica_music_${music.task_id}.mp3`;
+      const result = await downloadFile({
+        url: currentAudioUrl,
+        fileName,
+        type: 'audio',
+      });
+      if (!result.success) {
+        alert(`Download failed: ${result.error}`);
+      }
+    } finally {
+      setDownloading(false);
+    }
   };
 
   const handleConfirmDelete = async () => {
@@ -326,25 +339,14 @@ export default function MusicDetailModal({
           </span>
         </div>
 
-        <div className="flex gap-3">
-          <button
-            onClick={() => onRecreate(music)}
-            className="flex-[1] flex items-center justify-center gap-1.5 py-3 bg-gray-800/80 border border-gray-700 rounded-xl text-white text-sm font-medium hover:bg-gray-700 transition-all"
-          >
-            <Pencil size={14} />
-            Recreate
-          </button>
-          <GradientButton
-            icon={Download}
-            iconPosition="left"
-            size="md"
-            onClick={handleDownload}
-            disabled={!currentAudioUrl}
-            className="flex-[2] !py-3"
-          >
-            Download
-          </GradientButton>
-        </div>
+        <DetailActionBar
+          showRecreate
+          onRecreate={() => onRecreate(music)}
+          showDownload
+          onDownload={handleDownload}
+          downloadDisabled={!currentAudioUrl}
+          downloading={downloading}
+        />
       </div>
 
       <DeleteConfirmDialog

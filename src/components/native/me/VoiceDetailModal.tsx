@@ -1,12 +1,12 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { Download, Pencil } from 'lucide-react';
 import type { TtsRecord } from '@/actions/tts';
-import GradientButton from '@/components/ui/GradientButton';
+import DetailActionBar from './DetailActionBar';
 import DeleteConfirmDialog from '@/components/native/ui/DeleteConfirmDialog';
 import { useBottomNav } from '@/contexts/BottomNavContext';
 import { formatTime } from './utils';
+import { downloadFile } from '@/lib/native-download';
 
 interface VoiceDetailModalProps {
   voice: TtsRecord;
@@ -26,6 +26,7 @@ export default function VoiceDetailModal({
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(voice.duration || 0);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [downloading, setDownloading] = useState(false);
   const { hide, show } = useBottomNav();
 
   // 隐藏底部导航
@@ -73,9 +74,22 @@ export default function VoiceDetailModal({
     setCurrentTime(percent * duration);
   };
 
-  const handleDownload = () => {
-    if (!voice.audio_url) return;
-    window.open(voice.audio_url, '_blank');
+  const handleDownload = async () => {
+    if (!voice.audio_url || downloading) return;
+    setDownloading(true);
+    try {
+      const fileName = `voicica_tts_${voice.task_id}.mp3`;
+      const result = await downloadFile({
+        url: voice.audio_url,
+        fileName,
+        type: 'audio',
+      });
+      if (!result.success) {
+        alert(`Download failed: ${result.error}`);
+      }
+    } finally {
+      setDownloading(false);
+    }
   };
 
   const handleConfirmDelete = async () => {
@@ -207,25 +221,14 @@ export default function VoiceDetailModal({
           </button>
         </div>
 
-        <div className="flex gap-3">
-          <button
-            onClick={onRecreate}
-            className="flex-[1] flex items-center justify-center gap-1.5 py-3 bg-gray-800/80 border border-gray-700 rounded-xl text-white text-sm font-medium hover:bg-gray-700 transition-all"
-          >
-            <Pencil size={14} />
-            Recreate
-          </button>
-          <GradientButton
-            icon={Download}
-            iconPosition="left"
-            size="md"
-            onClick={handleDownload}
-            disabled={!voice.audio_url}
-            className="flex-[2] !py-3"
-          >
-            Download
-          </GradientButton>
-        </div>
+        <DetailActionBar
+          showRecreate
+          onRecreate={onRecreate}
+          showDownload
+          onDownload={handleDownload}
+          downloadDisabled={!voice.audio_url}
+          downloading={downloading}
+        />
       </div>
 
       <DeleteConfirmDialog

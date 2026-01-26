@@ -214,6 +214,7 @@ function PublicVideoPlayPageContent() {
             <video
               src={video.videoUrl}
               controls
+              controlsList="nodownload"
               autoPlay
               loop
               playsInline

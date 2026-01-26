@@ -325,7 +325,7 @@ export default function NativeVoiceSelectorSheet({
             <div className="space-y-2 pb-6">
               {filteredVoices.map((voice) => {
                 const isSelected = selectedVoice?.name === voice.name;
-                const isPlaying = playingVoiceId === voice.name;
+                const isPlaying = playingVoiceId === voice.id;
 
                 return (
                   <div

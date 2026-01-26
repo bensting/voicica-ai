@@ -36,46 +36,42 @@ export default function LanguageSwitcher({
   const currentLocale = locales.find((l) => l.code === locale) || locales[0];
 
   // Theme-based styles
-  // theme="dark" → 用于白色/浅色背景（深色文字）
-  // theme="light" → 用于深色背景（浅色文字）
-  // 弹出层统一使用白色背景
   const buttonStyles = theme === 'dark'
-    ? 'text-gray-700 hover:text-pink-500'
-    : 'text-white hover:text-pink-300';
+    ? 'text-pink-500 bg-pink-50 hover:bg-pink-100 rounded-full w-10 h-10 justify-center'
+    : 'text-white bg-white/20 hover:bg-white/30 rounded-full w-10 h-10 justify-center';
 
   // 弹出层统一白色背景
-  const dropdownStyles = 'bg-white border-gray-200 shadow-xl';
-  const itemStyles = 'text-gray-700 hover:bg-pink-50 hover:text-pink-600';
-  const activeItemStyles = 'bg-pink-50 text-pink-600 font-medium';
+  const dropdownStyles = 'bg-white/95 backdrop-blur-xl border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.12)] rounded-2xl overflow-hidden';
+  const itemStyles = 'text-gray-600 hover:bg-pink-50 hover:text-pink-600';
+  const activeItemStyles = 'bg-pink-50 text-pink-600 font-bold';
 
   // 下拉菜单位置样式
   const positionStyles = dropdownPosition === 'up'
-    ? 'bottom-full mb-2 left-0'
-    : 'top-full mt-2 right-0';
+    ? 'bottom-full mb-3 left-1/2 -translate-x-1/2'
+    : 'top-full mt-3 right-0';
 
   return (
     <div className="relative" ref={dropdownRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className={`flex items-center gap-2 transition-all ${variant === 'compact' ? 'p-2 bg-white/20 hover:bg-white/30 rounded-lg text-white' : buttonStyles}`}
+        className={`flex items-center gap-2 transition-all duration-300 ${variant === 'compact' ? 'p-2 rounded-full hover:bg-pink-50 text-gray-500 hover:text-pink-500' : buttonStyles}`}
         aria-label="Switch language"
       >
-        <svg className={variant === 'compact' ? 'w-4 h-4' : 'w-5 h-5'} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-          />
-        </svg>
+        {/* Globe Icon */}
+        <div className={`flex items-center justify-center ${variant === 'compact' ? '' : 'w-full h-full'}`}>
+          <svg className={variant === 'compact' ? 'w-6 h-6' : 'w-5 h-5'} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        </div>
+
         {variant === 'full' && (
-          <span className="hidden sm:inline text-sm font-medium" suppressHydrationWarning>
+          <span className="hidden sm:inline text-sm font-medium pr-2" suppressHydrationWarning>
             {isReady ? currentLocale.nativeName : ''}
           </span>
         )}
-        {showArrow && (
+        {showArrow && variant === 'full' && (
           <svg
-            className={`w-4 h-4 transition-transform ${isOpen ? 'rotate-180' : ''}`}
+            className={`w-4 h-4 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`}
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -86,35 +82,33 @@ export default function LanguageSwitcher({
       </button>
 
       {/* 下拉菜单 */}
-      {isOpen && (
-        <div className={`absolute w-48 rounded-lg border py-1 z-50 ${positionStyles} ${dropdownStyles}`}>
-          {locales.map((loc) => (
-            <button
-              key={loc.code}
-              onClick={() => {
-                setLocale(loc.code);
-                setIsOpen(false);
-              }}
-              className={`w-full text-left px-4 py-2 transition-colors ${
-                locale === loc.code ? activeItemStyles : itemStyles
+      <div className={`absolute w-40 py-1.5 z-50 transition-all duration-200 transform origin-top-right ${positionStyles} ${dropdownStyles} ${isOpen ? 'opacity-100 scale-100 visible' : 'opacity-0 scale-95 invisible'
+        }`}>
+        {locales.map((loc) => (
+          <button
+            key={loc.code}
+            onClick={() => {
+              setLocale(loc.code);
+              setIsOpen(false);
+            }}
+            className={`w-full text-left px-4 py-2.5 transition-colors text-sm ${locale === loc.code ? activeItemStyles : itemStyles
               }`}
-            >
-              <div className="flex items-center justify-between">
-                <span>{loc.nativeName}</span>
-                {locale === loc.code && (
-                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                    <path
-                      fillRule="evenodd"
-                      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                )}
-              </div>
-            </button>
-          ))}
-        </div>
-      )}
+          >
+            <div className="flex items-center justify-between">
+              <span>{loc.nativeName}</span>
+              {locale === loc.code && (
+                <svg className="w-4 h-4 text-pink-500" fill="currentColor" viewBox="0 0 20 20">
+                  <path
+                    fillRule="evenodd"
+                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+              )}
+            </div>
+          </button>
+        ))}
+      </div>
     </div>
   );
 }

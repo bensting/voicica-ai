@@ -41,79 +41,23 @@ export async function downloadFile(options: DownloadOptions): Promise<DownloadRe
 
 /**
  * 原生平台下载
- * 使用 fetch + Filesystem.writeFile 方式，兼容性更好
+ * 使用 Browser 插件打开外部浏览器下载，最可靠
  */
 async function downloadNative(
   url: string,
-  fileName: string,
-  onProgress?: (progress: number) => void
+  _fileName: string,
+  _onProgress?: (progress: number) => void
 ): Promise<DownloadResult> {
   try {
-    const { Filesystem, Directory } = await import('@capacitor/filesystem');
+    const { Browser } = await import('@capacitor/browser');
 
-    console.log('📥 [Native Download] 开始下载:', url);
+    console.log('📥 [Native Download] 使用外部浏览器下载:', url);
 
-    // 确保目录存在
-    try {
-      await Filesystem.mkdir({
-        directory: Directory.Documents,
-        path: 'Voicica',
-        recursive: true,
-      });
-    } catch {
-      // 目录可能已存在，忽略错误
-    }
-
-    // 使用 fetch 下载文件
-    const response = await fetch(url);
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}`);
-    }
-
-    // 获取文件大小用于进度计算
-    const contentLength = response.headers.get('content-length');
-    const total = contentLength ? parseInt(contentLength, 10) : 0;
-
-    // 读取响应流
-    const reader = response.body?.getReader();
-    if (!reader) {
-      throw new Error('No response body');
-    }
-
-    const chunks: Uint8Array[] = [];
-    let received = 0;
-
-    while (true) {
-      const { done, value } = await reader.read();
-      if (done) break;
-
-      chunks.push(value);
-      received += value.length;
-
-      if (onProgress && total > 0) {
-        onProgress(Math.round((received / total) * 100));
-      }
-    }
-
-    // 合并 chunks 并转为 base64
-    const blob = new Blob(chunks as BlobPart[]);
-    const base64Data = await blobToBase64(blob);
-
-    // 写入文件
-    const result = await Filesystem.writeFile({
-      path: `Voicica/${fileName}`,
-      data: base64Data,
-      directory: Directory.Documents,
-    });
-
-    console.log('✅ [Native Download] 下载完成:', result.uri);
-
-    // 显示保存成功提示
-    alert(`File saved to Documents/Voicica/${fileName}`);
+    // 使用外部浏览器打开下载链接
+    await Browser.open({ url });
 
     return {
       success: true,
-      filePath: result.uri,
     };
   } catch (error) {
     console.error('❌ [Native Download] 下载失败:', error);
@@ -122,23 +66,6 @@ async function downloadNative(
       error: error instanceof Error ? error.message : 'Download failed',
     };
   }
-}
-
-/**
- * 将 Blob 转换为 base64 字符串
- */
-function blobToBase64(blob: Blob): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      const base64 = reader.result as string;
-      // 移除 data:xxx;base64, 前缀
-      const base64Data = base64.split(',')[1];
-      resolve(base64Data);
-    };
-    reader.onerror = reject;
-    reader.readAsDataURL(blob);
-  });
 }
 
 /**

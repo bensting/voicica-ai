@@ -16,7 +16,6 @@ const WandIcon = () => (
  * Hero Section - Marketing 首页主视觉区域
  */
 export default function Hero() {
-  const router = useRouter();
   const { t } = useLanguage();
 
   return (
@@ -192,7 +191,6 @@ interface FeatureCardSmallProps {
 
 function FeatureCardSmall({ icon, title, href, delay = 0 }: FeatureCardSmallProps) {
   const router = useRouter();
-  const { t } = useLanguage();
 
   return (
     <button

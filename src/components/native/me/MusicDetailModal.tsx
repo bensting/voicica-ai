@@ -291,9 +291,9 @@ export default function MusicDetailModal({
         className="flex-shrink-0 px-6 bg-[#0a0a1a]"
         style={{ paddingBottom: 'calc(var(--safe-area-inset-bottom, 0px) + 24px)' }}
       >
-        {/* 进度条 - 粉色渐变 + 大圆点 */}
+        {/* 进度条 - 粉色渐变 + 发光圆点 */}
         <div
-          className="w-full h-1.5 bg-gray-700 rounded-full cursor-pointer mb-2 relative"
+          className="w-full h-2 bg-gray-700/60 rounded-full cursor-pointer mb-2 relative"
           onClick={handleProgressClick}
         >
           <div
@@ -304,8 +304,11 @@ export default function MusicDetailModal({
             }}
           />
           <div
-            className="absolute top-1/2 -translate-y-1/2 w-4 h-4 bg-white rounded-full shadow-lg"
-            style={{ left: `calc(${progress}% - 8px)` }}
+            className="absolute top-1/2 -translate-y-1/2 w-5 h-5 bg-white rounded-full"
+            style={{
+              left: `calc(${progress}% - 10px)`,
+              boxShadow: '0 0 12px 4px rgba(255, 255, 255, 0.5)'
+            }}
           />
         </div>
 

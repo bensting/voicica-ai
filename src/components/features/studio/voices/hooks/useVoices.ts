@@ -200,8 +200,8 @@ export function useVoices({ locale, authLoading }: UseVoicesProps): UseVoicesRet
       return false;
     }
 
-    // Provider filter
-    if (selectedProvider !== 'all' && voice.provider !== selectedProvider) {
+    // Provider filter (case-insensitive)
+    if (selectedProvider !== 'all' && voice.provider.toLowerCase() !== selectedProvider.toLowerCase()) {
       return false;
     }
 

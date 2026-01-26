@@ -8,7 +8,7 @@ import { useBottomNav } from '@/contexts/BottomNavContext';
 import { useVoices } from '@/components/features/studio/voices/hooks/useVoices';
 import { getAllLocaleOptions } from '@/utils/localeMapper';
 import type { LocaleOption } from '@/types/config';
-import { TTS_GENDER_OPTIONS, TTS_PROVIDER_OPTIONS } from '@/config/ttsVoiceFilters';
+import { TTS_GENDER_OPTIONS, TTS_PROVIDER_OPTIONS, isTTSProvider } from '@/config/ttsVoiceFilters';
 import ProviderIcon from '@/components/ui/icons/ProviderIcon';
 import { User, UserRound, Users, Layers } from 'lucide-react';
 
@@ -135,6 +135,9 @@ export default function NativeVoiceSelectorSheet({
     loadMoreVoices,
     loadingMore,
   } = useVoices({ locale, user, authLoading });
+
+  // 仅显示 TTS 供应商的语音（Microsoft, Google）
+  const ttsFilteredVoices = filteredVoices.filter(voice => isTTSProvider(voice.provider));
 
   // 获取所有可用语言，但优先显示常用语言
   const allLanguages = getAllLocaleOptions();
@@ -426,13 +429,13 @@ export default function NativeVoiceSelectorSheet({
             <div className="flex items-center justify-center py-12">
               <div className="w-8 h-8 border-3 border-purple-500 border-t-transparent rounded-full animate-spin" />
             </div>
-          ) : filteredVoices.length === 0 ? (
+          ) : ttsFilteredVoices.length === 0 ? (
             <div className="text-center py-12 text-gray-500">
               No voices found
             </div>
           ) : (
             <div className="space-y-2 pb-6">
-              {filteredVoices.map((voice) => {
+              {ttsFilteredVoices.map((voice) => {
                 const isSelected = selectedVoice?.name === voice.name;
                 const isPlaying = playingVoiceId === voice.id;
 

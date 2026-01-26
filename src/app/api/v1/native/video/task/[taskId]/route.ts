@@ -12,6 +12,8 @@ import { getUserOrAnonymous } from '@/lib/auth-firebase';
 import { queryKieVideoTaskStatus } from '@/lib/services/kie-video';
 import { uploadVideo } from '@/lib/services/r2-storage';
 import { videoModelsConfig } from '@/config/native/videoModels';
+import { refundCreditsSimple } from '@/lib/credits';
+import { ProductType } from '@/config/productType';
 
 /**
  * 从 URL 下载视频并上传到 R2
@@ -145,10 +147,13 @@ export async function GET(
         });
       }
 
-      // 如果 KIE 返回失败，更新数据库
+      // 如果 KIE 返回失败，更新数据库（使用乐观锁防止重复处理）
       if (kieStatus.status === 'FAILURE') {
-        await prisma.video_records.update({
-          where: { task_id: taskId },
+        const updateResult = await prisma.video_records.updateMany({
+          where: {
+            task_id: taskId,
+            status: 'PROCESSING', // 乐观锁：防止重复处理
+          },
           data: {
             status: 'FAILURE',
             progress: 0,
@@ -157,17 +162,38 @@ export async function GET(
           },
         });
 
-        // 更新 task_queue
-        await prisma.task_queue.updateMany({
-          where: { task_id: taskId },
-          data: {
-            status: 'FAILURE',
-            error_message: kieStatus.error || 'Video generation failed',
-            completed_at: new Date(),
-          },
-        });
+        // 如果更新成功（count > 0），说明是第一个处理的，需要返还积分
+        if (updateResult.count > 0) {
+          // 更新 task_queue
+          await prisma.task_queue.updateMany({
+            where: { task_id: taskId },
+            data: {
+              status: 'FAILURE',
+              error_message: kieStatus.error || 'Video generation failed',
+              completed_at: new Date(),
+            },
+          });
 
-        console.log(`❌ [Video Status] 视频生成失败: ${taskId}, error=${kieStatus.error}`);
+          // 返还积分
+          if (task.credits_cost && task.credits_cost > 0) {
+            try {
+              await refundCreditsSimple(
+                task.user_id,
+                task.credits_cost,
+                ProductType.TEXT_TO_VIDEO,
+                `Video generation failed (KIE): ${kieStatus.error || 'Unknown error'}`,
+                task.task_id
+              );
+              console.log(`💰 [Video Status] 积分已返还: ${task.credits_cost}`);
+            } catch (refundError) {
+              console.error(`❌ [Video Status] 积分返还失败:`, refundError);
+            }
+          }
+
+          console.log(`❌ [Video Status] 视频生成失败: ${taskId}, error=${kieStatus.error}`);
+        } else {
+          console.log(`⚠️ [Video Status] 任务已被其他请求处理，跳过积分返还: ${taskId}`);
+        }
 
         return NextResponse.json({
           success: true,

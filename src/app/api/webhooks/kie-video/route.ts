@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { uploadVideo } from '@/lib/services/r2-storage';
+import { refundCreditsSimple } from '@/lib/credits';
+import { ProductType } from '@/config/productType';
 
 /**
  * KIE API 视频生成回调处理
@@ -60,16 +62,43 @@ export async function POST(request: NextRequest) {
     if (payload.code !== 200) {
       console.error('🎬 [KIE Video Callback] 回调错误:', payload.msg);
 
-      // 尝试根据 external_task_id 更新记录状态
+      // 尝试根据 external_task_id 更新记录状态并返还积分（使用乐观锁防止重复）
       if (payload.data?.taskId) {
-        await prisma.video_records.updateMany({
+        const failedRecord = await prisma.video_records.findFirst({
           where: { external_task_id: payload.data.taskId },
-          data: {
-            status: 'FAILURE',
-            error_message: payload.msg || 'Generation failed',
-            completed_at: new Date(),
-          },
         });
+
+        if (failedRecord) {
+          const updateResult = await prisma.video_records.updateMany({
+            where: {
+              id: failedRecord.id,
+              status: 'PROCESSING', // 乐观锁：防止重复处理
+            },
+            data: {
+              status: 'FAILURE',
+              error_message: payload.msg || 'Generation failed',
+              completed_at: new Date(),
+            },
+          });
+
+          // 如果更新成功（count > 0），说明是第一个处理的，需要返还积分
+          if (updateResult.count > 0 && failedRecord.credits_cost && failedRecord.credits_cost > 0) {
+            try {
+              await refundCreditsSimple(
+                failedRecord.user_id,
+                failedRecord.credits_cost,
+                ProductType.TEXT_TO_VIDEO,
+                `Video generation failed (KIE callback error): ${payload.msg || 'Unknown error'}`,
+                failedRecord.task_id
+              );
+              console.log(`💰 [KIE Video Callback] 积分已返还: ${failedRecord.credits_cost}`);
+            } catch (refundError) {
+              console.error(`❌ [KIE Video Callback] 积分返还失败:`, refundError);
+            }
+          } else if (updateResult.count === 0) {
+            console.log(`⚠️ [KIE Video Callback] 任务已被其他请求处理，跳过: ${failedRecord.task_id}`);
+          }
+        }
       }
 
       return NextResponse.json({ success: false, error: payload.msg });
@@ -90,9 +119,12 @@ export async function POST(request: NextRequest) {
     console.log(`🎬 [KIE Video Callback] 状态: ${state}, 记录ID: ${record.task_id}`);
 
     if (state === 'fail') {
-      // 生成失败
-      await prisma.video_records.update({
-        where: { id: record.id },
+      // 生成失败 - 使用乐观锁，只有 PROCESSING 状态才能更新为 FAILURE
+      const updateResult = await prisma.video_records.updateMany({
+        where: {
+          id: record.id,
+          status: 'PROCESSING', // 乐观锁：防止重复处理
+        },
         data: {
           status: 'FAILURE',
           progress: 0,
@@ -101,16 +133,38 @@ export async function POST(request: NextRequest) {
         },
       });
 
-      await prisma.task_queue.updateMany({
-        where: { task_id: record.task_id },
-        data: {
-          status: 'FAILURE',
-          error_message: failMsg || 'Video generation failed',
-          completed_at: new Date(),
-        },
-      });
+      // 如果更新成功（count > 0），说明是第一个处理的，需要返还积分
+      if (updateResult.count > 0) {
+        await prisma.task_queue.updateMany({
+          where: { task_id: record.task_id },
+          data: {
+            status: 'FAILURE',
+            error_message: failMsg || 'Video generation failed',
+            completed_at: new Date(),
+          },
+        });
 
-      console.log(`🎬 [KIE Video Callback] 视频生成失败: ${record.task_id}`);
+        // 返还积分
+        if (record.credits_cost && record.credits_cost > 0) {
+          try {
+            await refundCreditsSimple(
+              record.user_id,
+              record.credits_cost,
+              ProductType.TEXT_TO_VIDEO,
+              `Video generation failed (KIE): ${failMsg || 'Unknown error'}`,
+              record.task_id
+            );
+            console.log(`💰 [KIE Video Callback] 积分已返还: ${record.credits_cost}`);
+          } catch (refundError) {
+            console.error(`❌ [KIE Video Callback] 积分返还失败:`, refundError);
+          }
+        }
+
+        console.log(`🎬 [KIE Video Callback] 视频生成失败: ${record.task_id}`);
+      } else {
+        console.log(`⚠️ [KIE Video Callback] 任务已被其他请求处理，跳过: ${record.task_id}`);
+      }
+
       return NextResponse.json({ success: true });
     }
 

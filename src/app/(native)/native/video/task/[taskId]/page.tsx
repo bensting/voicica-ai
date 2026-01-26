@@ -176,7 +176,6 @@ export default function VideoTaskPage() {
     router.back();
   };
 
-  const [downloading, setDownloading] = useState(false);
   const [updatingVisibility, setUpdatingVisibility] = useState(false);
 
   const handleToggleVisibility = async () => {
@@ -210,33 +209,10 @@ export default function VideoTaskPage() {
     }
   };
 
-  const handleDownload = async () => {
-    if (!task?.video_url || downloading) return;
-
-    try {
-      setDownloading(true);
-
-      // 通过 fetch 下载视频为 Blob
-      const response = await fetch(task.video_url);
-      const blob = await response.blob();
-
-      // 创建 Blob URL 并触发下载
-      const blobUrl = URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = blobUrl;
-      link.download = `voicica_${taskId}.mp4`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-
-      // 释放 Blob URL
-      URL.revokeObjectURL(blobUrl);
-    } catch (err) {
-      console.error('Download failed:', err);
-      alert('Download failed, please try again');
-    } finally {
-      setDownloading(false);
-    }
+  const handleDownload = () => {
+    if (!task?.video_url) return;
+    // 直接打开视频 URL，用户可以从浏览器保存
+    window.open(task.video_url, '_blank');
   };
 
   const handleDelete = async () => {
@@ -329,7 +305,7 @@ export default function VideoTaskPage() {
       )}
 
       {/* 视频区域 */}
-      <div className="flex-1 flex items-center justify-center relative">
+      <div className="flex-1 min-h-0 flex items-center justify-center relative overflow-hidden">
         {isProcessing && (
           <div className="flex flex-col items-center gap-4">
             <div className="w-20 h-20 border-4 border-purple-500 border-t-transparent rounded-full animate-spin" />
@@ -339,7 +315,7 @@ export default function VideoTaskPage() {
         )}
 
         {isSuccess && task.video_url && (
-          <div className="relative w-full h-full">
+          <div className="relative w-full h-full flex items-center justify-center">
             {/* 水印 */}
             <div className="absolute top-4 right-4 z-10 pointer-events-none">
               <span className="text-white/60 text-sm font-medium tracking-wide">Voicica AI</span>
@@ -351,7 +327,7 @@ export default function VideoTaskPage() {
               autoPlay
               loop
               playsInline
-              className="w-full h-full object-contain"
+              className="max-w-full max-h-full object-contain"
             />
           </div>
         )}
@@ -431,18 +407,9 @@ export default function VideoTaskPage() {
 
         {/* 下载按钮 */}
         {isSuccess && (
-          <GradientButton onClick={handleDownload} disabled={downloading}>
-            {downloading ? (
-              <>
-                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                <span>Downloading...</span>
-              </>
-            ) : (
-              <>
-                <DownloadIcon />
-                <span>Download</span>
-              </>
-            )}
+          <GradientButton onClick={handleDownload}>
+            <DownloadIcon />
+            <span>Download</span>
           </GradientButton>
         )}
 

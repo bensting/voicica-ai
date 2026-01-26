@@ -9,9 +9,10 @@ import { getUserOrAnonymous } from '@/lib/auth-firebase';
 import { v4 as uuidv4 } from 'uuid';
 import { nanoid } from 'nanoid';
 import { InsufficientCreditsError, errorToResponse } from '@/lib/errors';
-import { checkCredits } from '@/lib/credits';
+import { checkCredits, refundCreditsSimple } from '@/lib/credits';
 import { getMusicModelById } from '@/config/native/musicModels';
 import { uploadAudio, uploadImage } from '@/lib/services/r2-storage';
+import { ProductType } from '@/config/productType';
 
 // KIE API 配置
 const KIE_API_BASE = 'https://api.kie.ai/api/v1';
@@ -511,6 +512,47 @@ export async function getMusicTaskStatus(taskId: string): Promise<MusicTaskStatu
       };
     }
 
+    // 如果 KIE 返回失败，更新数据库并返还积分（使用乐观锁防止重复处理）
+    if (kieStatus.status === 'FAILURE') {
+      const updateResult = await prisma.music_records.updateMany({
+        where: {
+          task_id: taskId,
+          status: 'PROCESSING', // 乐观锁：防止重复处理
+        },
+        data: {
+          status: 'FAILURE',
+          progress: 0,
+          error_message: kieStatus.error || 'Music generation failed',
+        },
+      });
+
+      // 如果更新成功（count > 0），说明是第一个处理的，需要返还积分
+      if (updateResult.count > 0 && record.credits_cost && record.credits_cost > 0) {
+        try {
+          await refundCreditsSimple(
+            record.user_id,
+            record.credits_cost,
+            ProductType.AI_MUSIC,
+            `Music generation failed (KIE): ${kieStatus.error || 'Unknown error'}`,
+            record.task_id
+          );
+          console.log(`💰 [getMusicTaskStatus] 积分已返还: ${record.credits_cost}`);
+        } catch (refundError) {
+          console.error(`❌ [getMusicTaskStatus] 积分返还失败:`, refundError);
+        }
+      } else if (updateResult.count === 0) {
+        console.log(`⚠️ [getMusicTaskStatus] 任务已被其他请求处理，跳过积分返还: ${taskId}`);
+      }
+
+      return {
+        task_id: taskId,
+        status: 'FAILURE',
+        progress: 0,
+        result: null,
+        error: kieStatus.error || null,
+      };
+    }
+
     // 更新进度
     if (kieStatus.progress !== record.progress) {
       await prisma.music_records.update({
@@ -521,7 +563,7 @@ export async function getMusicTaskStatus(taskId: string): Promise<MusicTaskStatu
 
     return {
       task_id: taskId,
-      status: kieStatus.status === 'FAILURE' ? 'FAILURE' : 'PROCESSING',
+      status: 'PROCESSING',
       progress: kieStatus.progress,
       result: null,
       error: kieStatus.error || null,

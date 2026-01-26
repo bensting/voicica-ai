@@ -95,23 +95,14 @@ async function handleVideoTask(req: NextRequest) {
 
     console.log(`🔓 [VideoQueue] 任务 ${taskId} 状态已锁定为 PROCESSING`);
 
-    // 3. 扣减积分（返回扣减详情用于失败时精确返还）
-    deductionBreakdown = await deductCreditsAtomic(
-      userId,
-      creditsCost,
-      ProductType.TEXT_TO_VIDEO,
-      isAnonymous,
-      `Video: ${prompt.substring(0, 30)}${prompt.length > 30 ? '...' : ''}`,
-      taskId
-    );
-
-    // 4. 更新进度到 20%
+    // 3. 更新进度到 20%
     await prisma.video_records.update({
       where: { task_id: taskId },
       data: { progress: 20 },
     });
 
-    // 5. 根据模型配置选择 API 后端
+    // 4. 根据模型配置选择 API 后端
+    // 注意：积分扣减移到 API 调用成功后，和 Music 保持一致
     const modelConfig = videoModelsConfig.find((m) => m.apiModelId === model);
     const apiBackend = modelConfig?.apiBackend || 'runware';
 
@@ -173,6 +164,17 @@ async function handleVideoTask(req: NextRequest) {
         callBackUrl: getCallbackUrl(),
       });
 
+      // KIE API 调用成功后才扣减积分（和 Music 保持一致）
+      deductionBreakdown = await deductCreditsAtomic(
+        userId,
+        creditsCost,
+        ProductType.TEXT_TO_VIDEO,
+        isAnonymous,
+        `Video: ${prompt.substring(0, 30)}${prompt.length > 30 ? '...' : ''}`,
+        taskId
+      );
+      console.log(`💰 [VideoQueue] KIE 任务已接受，积分已扣减: ${creditsCost}`);
+
       // 保存外部任务 ID，用于 webhook 回调和前端轮询
       await prisma.video_records.update({
         where: { task_id: taskId },
@@ -226,9 +228,20 @@ async function handleVideoTask(req: NextRequest) {
 
       videoResultURL = runwareResult.videoURL;
       apiCost = runwareResult.cost;
+
+      // Runware API 调用成功后才扣减积分（和 Music 保持一致）
+      deductionBreakdown = await deductCreditsAtomic(
+        userId,
+        creditsCost,
+        ProductType.TEXT_TO_VIDEO,
+        isAnonymous,
+        `Video: ${prompt.substring(0, 30)}${prompt.length > 30 ? '...' : ''}`,
+        taskId
+      );
+      console.log(`💰 [VideoQueue] Runware 任务成功，积分已扣减: ${creditsCost}`);
     }
 
-    // 6. 下载视频并上传到 R2
+    // 5. 下载视频并上传到 R2
     console.log(`📤 [VideoQueue] 下载视频并上传到 R2...`);
     const videoResponse = await fetch(videoResultURL);
     if (!videoResponse.ok) {
@@ -244,7 +257,7 @@ async function handleVideoTask(req: NextRequest) {
       `videos/${userId}`
     );
 
-    // 7. 更新任务状态为成功
+    // 6. 更新任务状态为成功
     await prisma.video_records.update({
       where: { task_id: taskId },
       data: {

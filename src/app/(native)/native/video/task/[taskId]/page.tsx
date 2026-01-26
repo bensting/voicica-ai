@@ -52,6 +52,22 @@ const DownloadIcon = () => (
   </svg>
 );
 
+// 公开图标
+const PublicIcon = () => (
+  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+    <circle cx="12" cy="12" r="10" />
+    <path d="M2 12h20M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z" />
+  </svg>
+);
+
+// 私有图标
+const PrivateIcon = () => (
+  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+    <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+    <path d="M7 11V7a5 5 0 0110 0v4" />
+  </svg>
+);
+
 interface VideoTask {
   task_id: string;
   status: 'PENDING' | 'PROCESSING' | 'SUCCESS' | 'FAILURE';
@@ -64,6 +80,7 @@ interface VideoTask {
   video_url?: string;
   error_message?: string;
   created_at: string;
+  is_public?: boolean;
 }
 
 // 模型名称映射
@@ -159,35 +176,43 @@ export default function VideoTaskPage() {
     router.back();
   };
 
-  const [downloading, setDownloading] = useState(false);
+  const [updatingVisibility, setUpdatingVisibility] = useState(false);
 
-  const handleDownload = async () => {
-    if (!task?.video_url || downloading) return;
+  const handleToggleVisibility = async () => {
+    if (!task || updatingVisibility) return;
+
+    const newIsPublic = !task.is_public;
 
     try {
-      setDownloading(true);
+      setUpdatingVisibility(true);
 
-      // 通过 fetch 下载视频为 Blob
-      const response = await fetch(task.video_url);
-      const blob = await response.blob();
+      const response = await fetch(`/api/v1/native/video/task/${taskId}/visibility`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify({ is_public: newIsPublic }),
+      });
 
-      // 创建 Blob URL 并触发下载
-      const blobUrl = URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = blobUrl;
-      link.download = `voicica_${taskId}.mp4`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+      if (!response.ok) {
+        throw new Error('Failed to update visibility');
+      }
 
-      // 释放 Blob URL
-      URL.revokeObjectURL(blobUrl);
+      // 更新本地状态
+      setTask((prev) => (prev ? { ...prev, is_public: newIsPublic } : null));
     } catch (err) {
-      console.error('Download failed:', err);
-      alert('Download failed, please try again');
+      console.error('Toggle visibility failed:', err);
+      alert('Failed to update visibility');
     } finally {
-      setDownloading(false);
+      setUpdatingVisibility(false);
     }
+  };
+
+  const handleDownload = () => {
+    if (!task?.video_url) return;
+    // 直接打开视频 URL，用户可以从浏览器保存
+    window.open(task.video_url, '_blank');
   };
 
   const handleDelete = async () => {
@@ -245,12 +270,12 @@ export default function VideoTaskPage() {
   const modelName = modelNameMap[task.model] || task.model;
 
   return (
-    <div
-      className="min-h-screen bg-[#0a0a1a] flex flex-col"
-      style={{ paddingTop: 'var(--safe-area-inset-top, 0px)' }}
-    >
-      {/* Header */}
-      <div className="flex items-center justify-between px-4 h-14">
+    <div className="fixed inset-0 bg-[#0a0a1a] flex flex-col">
+      {/* Header - 固定顶部 */}
+      <div
+        className="flex-shrink-0 flex items-center justify-between px-4 h-14"
+        style={{ paddingTop: 'var(--safe-area-inset-top, 0px)' }}
+      >
         <button onClick={handleBack} className="p-2 -ml-2 text-white">
           <BackIcon />
         </button>
@@ -259,28 +284,28 @@ export default function VideoTaskPage() {
         </button>
       </div>
 
-      {/* 右侧操作按钮 */}
-      {isSuccess && (
-        <div className="absolute right-4 top-20 flex flex-col gap-4 z-10">
-          <button
-            onClick={handleExtend}
-            className="flex flex-col items-center gap-1 text-white/80 hover:text-white"
-          >
-            <ExtendIcon />
-            <span className="text-xs">Extend</span>
-          </button>
-          <button
-            onClick={handleEdit}
-            className="flex flex-col items-center gap-1 text-white/80 hover:text-white"
-          >
-            <EditIcon />
-            <span className="text-xs">Edit</span>
-          </button>
-        </div>
-      )}
+      {/* 视频区域 - 中间自适应 */}
+      <div className="flex-1 min-h-0 flex items-center justify-center relative overflow-hidden">
+        {/* 右侧操作按钮 */}
+        {isSuccess && (
+          <div className="absolute right-4 top-4 flex flex-col gap-4 z-10">
+            <button
+              onClick={handleExtend}
+              className="flex flex-col items-center gap-1 text-white/80 hover:text-white"
+            >
+              <ExtendIcon />
+              <span className="text-xs">Extend</span>
+            </button>
+            <button
+              onClick={handleEdit}
+              className="flex flex-col items-center gap-1 text-white/80 hover:text-white"
+            >
+              <EditIcon />
+              <span className="text-xs">Edit</span>
+            </button>
+          </div>
+        )}
 
-      {/* 视频区域 */}
-      <div className="flex-1 flex items-center justify-center relative">
         {isProcessing && (
           <div className="flex flex-col items-center gap-4">
             <div className="w-20 h-20 border-4 border-purple-500 border-t-transparent rounded-full animate-spin" />
@@ -290,9 +315,9 @@ export default function VideoTaskPage() {
         )}
 
         {isSuccess && task.video_url && (
-          <div className="relative w-full h-full">
+          <div className="relative w-full h-full flex items-center justify-center p-4">
             {/* 水印 */}
-            <div className="absolute top-4 right-4 z-10 pointer-events-none">
+            <div className="absolute top-4 right-16 z-10 pointer-events-none">
               <span className="text-white/60 text-sm font-medium tracking-wide">Voicica AI</span>
             </div>
 
@@ -302,7 +327,7 @@ export default function VideoTaskPage() {
               autoPlay
               loop
               playsInline
-              className="w-full h-full object-contain"
+              className="max-w-full max-h-full object-contain"
             />
           </div>
         )}
@@ -328,9 +353,9 @@ export default function VideoTaskPage() {
         )}
       </div>
 
-      {/* 底部信息区域 */}
+      {/* 底部信息区域 - 固定底部 */}
       <div
-        className="px-4 pb-4"
+        className="flex-shrink-0 px-4 pb-4 bg-[#0a0a1a]"
         style={{ paddingBottom: 'calc(16px + var(--safe-area-inset-bottom, 0px))' }}
       >
         {/* Prompt */}
@@ -357,20 +382,34 @@ export default function VideoTaskPage() {
           </span>
         </div>
 
+        {/* 公开/私有切换 */}
+        {isSuccess && (
+          <div className="flex items-center justify-between mb-4 px-1">
+            <div className="flex items-center gap-2 text-gray-400">
+              {task.is_public ? <PublicIcon /> : <PrivateIcon />}
+              <span className="text-sm">{task.is_public ? 'Public' : 'Private'}</span>
+            </div>
+            <button
+              onClick={handleToggleVisibility}
+              disabled={updatingVisibility}
+              className={`relative w-12 h-6 rounded-full transition-colors ${
+                task.is_public ? 'bg-purple-600' : 'bg-gray-600'
+              } ${updatingVisibility ? 'opacity-50' : ''}`}
+            >
+              <span
+                className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-transform ${
+                  task.is_public ? 'left-7' : 'left-1'
+                }`}
+              />
+            </button>
+          </div>
+        )}
+
         {/* 下载按钮 */}
         {isSuccess && (
-          <GradientButton onClick={handleDownload} disabled={downloading}>
-            {downloading ? (
-              <>
-                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                <span>Downloading...</span>
-              </>
-            ) : (
-              <>
-                <DownloadIcon />
-                <span>Download</span>
-              </>
-            )}
+          <GradientButton onClick={handleDownload}>
+            <DownloadIcon />
+            <span>Download</span>
           </GradientButton>
         )}
 

@@ -402,7 +402,7 @@ export default function NativeVoiceSelectorSheet({
           {/* Used Toggle */}
           <button
             onClick={() => setUsedOnly(!usedOnly)}
-            className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap ${
+            className={`ml-auto flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap ${
               usedOnly
                 ? 'bg-purple-600 text-white'
                 : 'bg-gray-800 text-gray-400'

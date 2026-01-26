@@ -89,8 +89,13 @@ function MusicCard({ music, index, onClick }: { music: PublicMusicRecord; index:
  */
 function ExploreVideoCard({ video, index, onClick }: { video: PublicVideo; index: number; onClick: () => void }) {
   const [frameLoaded, setFrameLoaded] = useState(false);
+  const [frameError, setFrameError] = useState(false);
   const displayTitle = video.prompt?.substring(0, 30) || 'AI Video';
   const gradient = gradients[index % gradients.length];
+
+  // 优先使用缩略图，否则用视频 URL 加载第一帧
+  const previewUrl = video.thumbnailUrl || video.videoUrl;
+  const useVideoFrame = !video.thumbnailUrl && video.videoUrl;
 
   return (
     <div
@@ -98,16 +103,28 @@ function ExploreVideoCard({ video, index, onClick }: { video: PublicVideo; index
       className="relative rounded-2xl overflow-hidden cursor-pointer active:scale-[0.98] transition-transform aspect-square"
     >
       {/* 视频预览帧 */}
-      {video.videoUrl ? (
+      {previewUrl && !frameError ? (
         <>
-          <video
-            src={video.videoUrl}
-            className="absolute inset-0 w-full h-full object-cover"
-            muted
-            playsInline
-            preload="metadata"
-            onLoadedData={() => setFrameLoaded(true)}
-          />
+          {useVideoFrame ? (
+            <video
+              src={`${previewUrl}#t=0.1`}
+              className="absolute inset-0 w-full h-full object-cover"
+              muted
+              playsInline
+              preload="metadata"
+              onLoadedData={() => setFrameLoaded(true)}
+              onError={() => setFrameError(true)}
+            />
+          ) : (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={previewUrl}
+              alt={displayTitle}
+              className="absolute inset-0 w-full h-full object-cover"
+              onLoad={() => setFrameLoaded(true)}
+              onError={() => setFrameError(true)}
+            />
+          )}
           {!frameLoaded && (
             <div className={`absolute inset-0 bg-gradient-to-br ${gradient}`} />
           )}

@@ -52,6 +52,22 @@ const DownloadIcon = () => (
   </svg>
 );
 
+// 公开图标
+const PublicIcon = () => (
+  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+    <circle cx="12" cy="12" r="10" />
+    <path d="M2 12h20M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z" />
+  </svg>
+);
+
+// 私有图标
+const PrivateIcon = () => (
+  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+    <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+    <path d="M7 11V7a5 5 0 0110 0v4" />
+  </svg>
+);
+
 interface VideoTask {
   task_id: string;
   status: 'PENDING' | 'PROCESSING' | 'SUCCESS' | 'FAILURE';
@@ -64,6 +80,7 @@ interface VideoTask {
   video_url?: string;
   error_message?: string;
   created_at: string;
+  is_public?: boolean;
 }
 
 // 模型名称映射
@@ -160,6 +177,38 @@ export default function VideoTaskPage() {
   };
 
   const [downloading, setDownloading] = useState(false);
+  const [updatingVisibility, setUpdatingVisibility] = useState(false);
+
+  const handleToggleVisibility = async () => {
+    if (!task || updatingVisibility) return;
+
+    const newIsPublic = !task.is_public;
+
+    try {
+      setUpdatingVisibility(true);
+
+      const response = await fetch(`/api/v1/native/video/task/${taskId}/visibility`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify({ is_public: newIsPublic }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update visibility');
+      }
+
+      // 更新本地状态
+      setTask((prev) => (prev ? { ...prev, is_public: newIsPublic } : null));
+    } catch (err) {
+      console.error('Toggle visibility failed:', err);
+      alert('Failed to update visibility');
+    } finally {
+      setUpdatingVisibility(false);
+    }
+  };
 
   const handleDownload = async () => {
     if (!task?.video_url || downloading) return;
@@ -356,6 +405,29 @@ export default function VideoTaskPage() {
             {task.duration}s
           </span>
         </div>
+
+        {/* 公开/私有切换 */}
+        {isSuccess && (
+          <div className="flex items-center justify-between mb-4 px-1">
+            <div className="flex items-center gap-2 text-gray-400">
+              {task.is_public ? <PublicIcon /> : <PrivateIcon />}
+              <span className="text-sm">{task.is_public ? 'Public' : 'Private'}</span>
+            </div>
+            <button
+              onClick={handleToggleVisibility}
+              disabled={updatingVisibility}
+              className={`relative w-12 h-6 rounded-full transition-colors ${
+                task.is_public ? 'bg-purple-600' : 'bg-gray-600'
+              } ${updatingVisibility ? 'opacity-50' : ''}`}
+            >
+              <span
+                className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-transform ${
+                  task.is_public ? 'left-7' : 'left-1'
+                }`}
+              />
+            </button>
+          </div>
+        )}
 
         {/* 下载按钮 */}
         {isSuccess && (

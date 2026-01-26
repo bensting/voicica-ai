@@ -216,27 +216,29 @@ export default function MusicDetailModal({
 
       {/* 可滚动内容区域 */}
       <div className="flex-1 overflow-y-auto px-6 pb-4">
-        {/* 封面图 */}
+        {/* 封面图 - 带渐变边框 */}
         <div className="flex justify-center mb-4">
-          <div className="relative w-48 h-48 rounded-xl overflow-hidden shadow-2xl">
-            {currentCoverUrl ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={currentCoverUrl}
-                alt={displayTitle}
-                className="w-full h-full object-cover"
-              />
-            ) : (
-              <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-purple-900 to-pink-900">
-                <svg className="w-16 h-16 text-white/30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                  <path d="M9 18V5l12-2v13" />
-                  <circle cx="6" cy="18" r="3" />
-                  <circle cx="18" cy="16" r="3" />
-                </svg>
+          <div className="relative p-1 rounded-2xl" style={{ background: 'linear-gradient(135deg, #ec4899 0%, #8b5cf6 50%, #06b6d4 100%)' }}>
+            <div className="relative w-44 h-44 rounded-xl overflow-hidden">
+              {currentCoverUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={currentCoverUrl}
+                  alt={displayTitle}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-purple-900 to-pink-900">
+                  <svg className="w-16 h-16 text-white/30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                    <path d="M9 18V5l12-2v13" />
+                    <circle cx="6" cy="18" r="3" />
+                    <circle cx="18" cy="16" r="3" />
+                  </svg>
+                </div>
+              )}
+              <div className="absolute top-2 right-2 px-2 py-0.5 bg-pink-500 rounded text-white text-xs font-medium">
+                AI
               </div>
-            )}
-            <div className="absolute top-2 right-2 px-2 py-0.5 bg-purple-500 rounded text-white text-xs font-medium">
-              AI
             </div>
           </div>
         </div>
@@ -246,24 +248,30 @@ export default function MusicDetailModal({
         {/* 版本切换器 - 只在有两个版本时显示 */}
         {hasSecondTrack && (
           <div className="flex justify-center mb-4">
-            <div className="inline-flex bg-gray-800/60 rounded-lg p-1">
+            <div className="inline-flex border border-gray-700 rounded-full p-0.5">
               <button
                 onClick={() => switchTrack(1)}
-                className={`px-4 py-1.5 text-sm font-medium rounded-md transition-colors ${
+                className={`px-4 py-1.5 text-sm font-medium rounded-full transition-all ${
                   currentTrack === 1
-                    ? 'bg-purple-500 text-white'
-                    : 'text-gray-400 hover:text-white'
+                    ? 'text-white'
+                    : 'text-gray-500 hover:text-gray-300'
                 }`}
+                style={currentTrack === 1 ? {
+                  background: 'linear-gradient(90deg, #ec4899 0%, #a855f7 100%)'
+                } : {}}
               >
                 Version 1
               </button>
               <button
                 onClick={() => switchTrack(2)}
-                className={`px-4 py-1.5 text-sm font-medium rounded-md transition-colors ${
+                className={`px-4 py-1.5 text-sm font-medium rounded-full transition-all ${
                   currentTrack === 2
-                    ? 'bg-purple-500 text-white'
-                    : 'text-gray-400 hover:text-white'
+                    ? 'text-white'
+                    : 'text-gray-500 hover:text-gray-300'
                 }`}
+                style={currentTrack === 2 ? {
+                  background: 'linear-gradient(90deg, #ec4899 0%, #a855f7 100%)'
+                } : {}}
               >
                 Version 2
               </button>
@@ -283,60 +291,76 @@ export default function MusicDetailModal({
         className="flex-shrink-0 px-6 bg-[#0a0a1a]"
         style={{ paddingBottom: 'calc(var(--safe-area-inset-bottom, 0px) + 24px)' }}
       >
+        {/* 进度条 - 粉色渐变 + 大圆点 */}
         <div
-          className="w-full h-1 bg-gray-700 rounded-full cursor-pointer mb-2"
+          className="w-full h-1.5 bg-gray-700 rounded-full cursor-pointer mb-2 relative"
           onClick={handleProgressClick}
         >
           <div
-            className="h-full bg-gradient-to-r from-cyan-400 to-purple-500 rounded-full relative"
-            style={{ width: `${progress}%` }}
-          >
-            <div className="absolute right-0 top-1/2 -translate-y-1/2 w-3 h-3 bg-cyan-400 rounded-full" />
-          </div>
+            className="h-full rounded-full"
+            style={{
+              width: `${progress}%`,
+              background: 'linear-gradient(90deg, #ec4899 0%, #f472b6 100%)'
+            }}
+          />
+          <div
+            className="absolute top-1/2 -translate-y-1/2 w-4 h-4 bg-white rounded-full shadow-lg"
+            style={{ left: `calc(${progress}% - 8px)` }}
+          />
         </div>
 
-        <div className="flex justify-between text-gray-500 text-xs mb-4">
+        <div className="flex justify-between text-gray-500 text-xs mb-3">
           <span>{formatTime(currentTime)}</span>
           <span>{formatTime(duration)}</span>
         </div>
 
-        <div className="flex justify-center mb-4">
+        {/* 播放按钮 + 分页指示器 */}
+        <div className="flex flex-col items-center mb-4">
           <button
             onClick={togglePlay}
             disabled={!currentAudioUrl}
-            className="w-16 h-16 flex items-center justify-center bg-gray-700 rounded-full hover:bg-gray-600 transition-colors disabled:opacity-50"
+            className="w-14 h-14 flex items-center justify-center bg-gray-800 rounded-full hover:bg-gray-700 transition-colors disabled:opacity-50 mb-2"
           >
             {isPlaying ? (
-              <svg className="w-7 h-7 text-white" viewBox="0 0 24 24" fill="currentColor">
+              <svg className="w-6 h-6 text-white" viewBox="0 0 24 24" fill="currentColor">
                 <rect x="6" y="4" width="4" height="16" rx="1" />
                 <rect x="14" y="4" width="4" height="16" rx="1" />
               </svg>
             ) : (
-              <svg className="w-7 h-7 text-white ml-1" viewBox="0 0 24 24" fill="currentColor">
+              <svg className="w-6 h-6 text-white ml-0.5" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M8 5v14l11-7z" />
               </svg>
             )}
           </button>
+          {/* 分页指示器 */}
+          {hasSecondTrack && (
+            <div className="flex gap-1.5">
+              <div className={`w-1.5 h-1.5 rounded-full ${currentTrack === 1 ? 'bg-white' : 'bg-gray-600'}`} />
+              <div className={`w-1.5 h-1.5 rounded-full ${currentTrack === 2 ? 'bg-white' : 'bg-gray-600'}`} />
+            </div>
+          )}
         </div>
 
-        <div className="flex items-center justify-between mb-3">
-          <p className="text-gray-500 text-sm flex-1 truncate">
-            {music.prompt || 'No prompt provided yet.'}
-          </p>
-          <button
-            onClick={() => setShowDeleteDialog(true)}
-            className="ml-2 p-2 text-gray-500 hover:text-red-500 transition-colors"
-          >
-            <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2" />
-            </svg>
-          </button>
-        </div>
-
-        <div className="mb-4">
-          <span className="inline-block px-3 py-1 bg-gray-800 rounded-full text-gray-400 text-xs">
-            {getModelDisplayName(music.model)}
-          </span>
+        {/* 底部卡片区域 */}
+        <div className="bg-gray-800/50 rounded-xl p-3 mb-3">
+          <div className="flex items-center justify-between">
+            <p className="text-gray-400 text-sm flex-1 truncate">
+              {music.prompt || 'No prompt provided yet.'}
+            </p>
+            <button
+              onClick={() => setShowDeleteDialog(true)}
+              className="ml-2 p-1.5 text-gray-500 hover:text-red-500 transition-colors"
+            >
+              <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2" />
+              </svg>
+            </button>
+          </div>
+          <div className="mt-2">
+            <span className="inline-block px-2.5 py-0.5 bg-gray-700 rounded-full text-gray-400 text-xs">
+              {getModelDisplayName(music.model)}
+            </span>
+          </div>
         </div>
 
         <DetailActionBar

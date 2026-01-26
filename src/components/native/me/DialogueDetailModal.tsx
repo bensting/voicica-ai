@@ -7,6 +7,7 @@ import DeleteConfirmDialog from '@/components/native/ui/DeleteConfirmDialog';
 import { useBottomNav } from '@/contexts/BottomNavContext';
 import { formatTime } from './utils';
 import { downloadFile } from '@/lib/native-download';
+import { showToast } from '@/lib/native-toast';
 
 interface DialogueDetailModalProps {
   dialogue: DialogueRecord;
@@ -94,8 +95,10 @@ export default function DialogueDetailModal({
         fileName,
         type: 'audio',
       });
-      if (!result.success) {
-        alert(`Download failed: ${result.error}`);
+      if (result.success) {
+        showToast({ text: 'Download completed', duration: 'short' });
+      } else {
+        showToast({ text: `Download failed: ${result.error}`, duration: 'long' });
       }
     } finally {
       setDownloading(false);

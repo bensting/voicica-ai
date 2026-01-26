@@ -41,30 +41,91 @@ export async function downloadFile(options: DownloadOptions): Promise<DownloadRe
 
 /**
  * 原生平台下载
- * 使用 Browser 插件打开外部浏览器下载，最可靠
+ * 使用 Filesystem 下载文件到设备 Downloads 目录
  */
 async function downloadNative(
   url: string,
-  _fileName: string,
-  _onProgress?: (progress: number) => void
+  fileName: string,
+  onProgress?: (progress: number) => void
 ): Promise<DownloadResult> {
   try {
-    const { Browser } = await import('@capacitor/browser');
+    const { Filesystem, Directory } = await import('@capacitor/filesystem');
 
-    console.log('📥 [Native Download] 使用外部浏览器下载:', url);
+    console.log('📥 [Native Download] 开始下载:', url);
 
-    // 使用外部浏览器打开下载链接
-    await Browser.open({ url });
+    // 使用 fetch 下载文件
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+
+    // 获取文件大小用于进度计算
+    const contentLength = response.headers.get('content-length');
+    const total = contentLength ? parseInt(contentLength, 10) : 0;
+
+    // 读取响应流
+    const reader = response.body?.getReader();
+    if (!reader) {
+      throw new Error('No response body');
+    }
+
+    const chunks: Uint8Array[] = [];
+    let received = 0;
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+
+      chunks.push(value);
+      received += value.length;
+
+      if (onProgress && total > 0) {
+        onProgress(Math.round((received / total) * 100));
+      }
+    }
+
+    // 合并 chunks 并转为 base64
+    const blob = new Blob(chunks);
+    const arrayBuffer = await blob.arrayBuffer();
+    const base64 = btoa(
+      new Uint8Array(arrayBuffer).reduce(
+        (data, byte) => data + String.fromCharCode(byte),
+        ''
+      )
+    );
+
+    console.log('📥 [Native Download] 文件下载完成，正在保存...');
+
+    // 保存到 Documents 目录（Downloads 可能不可用）
+    const result = await Filesystem.writeFile({
+      path: fileName,
+      data: base64,
+      directory: Directory.Documents,
+    });
+
+    console.log('✅ [Native Download] 文件已保存:', result.uri);
 
     return {
       success: true,
+      filePath: result.uri,
     };
   } catch (error) {
     console.error('❌ [Native Download] 下载失败:', error);
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : 'Download failed',
-    };
+
+    // 如果 Filesystem 失败，回退到使用 Browser 打开
+    try {
+      const { Browser } = await import('@capacitor/browser');
+      console.log('📥 [Native Download] 回退到外部浏览器下载');
+      await Browser.open({ url });
+      return {
+        success: true,
+      };
+    } catch (browserError) {
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Download failed',
+      };
+    }
   }
 }
 

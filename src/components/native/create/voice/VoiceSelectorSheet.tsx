@@ -10,7 +10,7 @@ import { getAllLocaleOptions } from '@/utils/localeMapper';
 import type { LocaleOption } from '@/types/config';
 import { TTS_GENDER_OPTIONS, TTS_PROVIDER_OPTIONS } from '@/config/ttsVoiceFilters';
 import ProviderIcon from '@/components/ui/icons/ProviderIcon';
-import { User, UserRound, Users } from 'lucide-react';
+import { User, UserRound, Users, Layers } from 'lucide-react';
 
 interface VoiceSelectorSheetProps {
   isOpen: boolean;
@@ -368,7 +368,7 @@ export default function NativeVoiceSelectorSheet({
               className="flex items-center gap-1.5 px-3 py-2 bg-gray-800 text-white rounded-lg text-sm"
             >
               {selectedProvider === 'all' ? (
-                <span className="text-gray-400 text-xs">All</span>
+                <Layers className="w-4 h-4 text-gray-400" />
               ) : (
                 <ProviderIcon provider={selectedProvider.toLowerCase()} className="w-4 h-4" />
               )}
@@ -387,7 +387,9 @@ export default function NativeVoiceSelectorSheet({
                         : 'text-gray-300 hover:bg-gray-700'
                     }`}
                   >
-                    {option.value !== 'all' && (
+                    {option.value === 'all' ? (
+                      <Layers className="w-4 h-4 text-gray-400" />
+                    ) : (
                       <ProviderIcon provider={option.value.toLowerCase()} className="w-4 h-4" />
                     )}
                     {option.label}

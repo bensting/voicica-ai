@@ -46,9 +46,12 @@ export async function downloadFile(options: DownloadOptions): Promise<DownloadRe
  */
 async function downloadNative(
   url: string,
-  _fileName: string,
+  _fileName?: string,
   _onProgress?: (progress: number) => void
 ): Promise<DownloadResult> {
+  // Note: fileName and onProgress are unused because we delegate to system browser
+  void _fileName;
+  void _onProgress;
   try {
     const { Browser } = await import('@capacitor/browser');
 

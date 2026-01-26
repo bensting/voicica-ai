@@ -35,6 +35,7 @@ import {
 import { auth } from '@/lib/firebase';
 import { isInAppBrowser, isCapacitorNative } from '@/config/inAppBrowser';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { setUserId as setAnalyticsUserId, logLogin } from '@/lib/native-analytics';
 
 // Capacitor Firebase Auth 插件（仅在原生环境中使用）
 import { FirebaseAuthentication } from '@capacitor-firebase/authentication';
@@ -150,6 +151,9 @@ export function FirebaseAuthProvider({ children }: { children: React.ReactNode }
         // cookie 设置完成后，再更新状态（这样 UserContext 获取数据时 cookie 已就绪）
         setUser(firebaseUser);
         setToken(idToken);
+
+        // 设置 Analytics User ID
+        setAnalyticsUserId(firebaseUser.uid);
       } else {
         // 先清除 token cookie，确保后续请求不会携带旧 token
         try {
@@ -167,6 +171,9 @@ export function FirebaseAuthProvider({ children }: { children: React.ReactNode }
         // cookie 清除完成后再更新状态
         setUser(null);
         setToken(null);
+
+        // 清除 Analytics User ID
+        setAnalyticsUserId(null);
       }
 
       setLoading(false);
@@ -330,6 +337,7 @@ export function FirebaseAuthProvider({ children }: { children: React.ReactNode }
             const credential = GoogleAuthProvider.credential(result.credential.idToken);
             await signInWithCredential(auth, credential);
             console.log('[FirebaseAuth] 原生 Google 登录成功');
+            logLogin('google_native');
             return; // 成功，退出循环
           } else {
             console.error('[FirebaseAuth] 未获取到 idToken');
@@ -423,6 +431,7 @@ export function FirebaseAuthProvider({ children }: { children: React.ReactNode }
       }
 
       console.log('[FirebaseAuth] 邮箱登录成功');
+      logLogin('email');
     } catch (error) {
       // 邮箱未验证是预期的业务逻辑错误，不需要 error 级别
       const err = error as { code?: string };

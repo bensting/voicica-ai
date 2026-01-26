@@ -6,7 +6,6 @@ import android.webkit.WebView;
 import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
 import com.getcapacitor.BridgeActivity;
-import ai.voicica.app.plugins.AppodealPlugin;
 import ai.voicica.app.plugins.AppOpenAdPlugin;
 import ai.voicica.app.plugins.GooglePlayBillingPlugin;
 
@@ -18,7 +17,6 @@ public class MainActivity extends BridgeActivity {
         setTheme(R.style.AppTheme_NoActionBar);
 
         // 注册自定义插件
-        registerPlugin(AppodealPlugin.class);
         registerPlugin(AppOpenAdPlugin.class);
         registerPlugin(GooglePlayBillingPlugin.class);
 

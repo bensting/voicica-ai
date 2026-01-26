@@ -177,7 +177,14 @@ async function downloadWeb(
     }
 
     // 合并 chunks
-    const blob = new Blob(chunks as BlobPart[]);
+    const totalLength = chunks.reduce((acc, chunk) => acc + chunk.length, 0);
+    const mergedArray = new Uint8Array(totalLength);
+    let offset = 0;
+    for (const chunk of chunks) {
+      mergedArray.set(chunk, offset);
+      offset += chunk.length;
+    }
+    const blob = new Blob([mergedArray]);
     const blobUrl = URL.createObjectURL(blob);
 
     // 触发下载
@@ -211,16 +218,14 @@ export async function downloadWithToast(
   fileName: string,
   type: 'audio' | 'video' | 'image' = 'video'
 ): Promise<boolean> {
+  const { showToast } = await import('@/lib/native-toast');
   const result = await downloadFile({ url, fileName, type });
 
   if (result.success) {
-    // 可以在这里添加成功提示
-    console.log('✅ 下载成功:', fileName);
+    showToast({ text: 'Download completed', duration: 'short' });
     return true;
   } else {
-    // 可以在这里添加失败提示
-    console.error('❌ 下载失败:', result.error);
-    alert(`Download failed: ${result.error}`);
+    showToast({ text: `Download failed: ${result.error}`, duration: 'long' });
     return false;
   }
 }

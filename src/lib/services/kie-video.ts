@@ -25,6 +25,8 @@ export interface KieGenerateVideoParams {
   fixedLens?: boolean;
   /** 生成音频 */
   generateAudio?: boolean;
+  /** 回调 URL (可选) */
+  callBackUrl?: string;
 }
 
 /**
@@ -62,7 +64,7 @@ export interface KieTaskStatusResponse {
  * 视频生成结果
  */
 export interface KieGeneratedVideo {
-  /** 任务 ID */
+  /** KIE 外部任务 ID */
   taskId: string;
   /** 视频 URL */
   videoURL?: string;
@@ -72,6 +74,14 @@ export interface KieGeneratedVideo {
   errorMessage?: string;
   /** 耗时 (毫秒) */
   costTime?: number;
+}
+
+/**
+ * 任务创建回调参数
+ */
+export interface KieTaskCreatedCallback {
+  /** KIE 外部任务 ID */
+  externalTaskId: string;
 }
 
 /**
@@ -100,20 +110,33 @@ export async function createKieVideoTask(params: KieGenerateVideoParams): Promis
     resolution: params.resolution,
     duration: params.duration,
     hasImages: params.inputUrls?.length || 0,
+    hasCallbackUrl: !!params.callBackUrl,
   });
 
-  const requestBody = {
-    model: 'bytedance/seedance-1.5-pro',
-    input: {
-      prompt: params.prompt,
-      input_urls: params.inputUrls || [],
-      aspect_ratio: params.aspectRatio,
-      resolution: params.resolution,
-      duration: params.duration,
-      fixed_lens: params.fixedLens ?? false,
-      generate_audio: params.generateAudio ?? false,
-    },
+  // 构建 input 对象，只有在有图片时才包含 input_urls
+  const inputParams: Record<string, unknown> = {
+    prompt: params.prompt,
+    aspect_ratio: params.aspectRatio,
+    resolution: params.resolution,
+    duration: params.duration,
+    fixed_lens: params.fixedLens ?? false,
+    generate_audio: params.generateAudio ?? false,
   };
+
+  // 只有在有图片 URL 时才添加 input_urls 参数
+  if (params.inputUrls && params.inputUrls.length > 0) {
+    inputParams.input_urls = params.inputUrls;
+  }
+
+  const requestBody: Record<string, unknown> = {
+    model: 'bytedance/seedance-1.5-pro',
+    input: inputParams,
+  };
+
+  // 添加回调 URL（如果提供）
+  if (params.callBackUrl) {
+    requestBody.callBackUrl = params.callBackUrl;
+  }
 
   const response = await fetch(`${KIE_API_BASE_URL}/jobs/createTask`, {
     method: 'POST',
@@ -264,18 +287,25 @@ export async function waitForKieVideoCompletion(
  *
  * @param params 生成参数
  * @param onProgress 进度回调
+ * @param onTaskCreated 任务创建后的回调（用于保存外部任务 ID）
  * @returns 完成的视频信息
  */
 export async function generateKieVideoAndWait(
   params: KieGenerateVideoParams,
-  onProgress?: (progress: number) => Promise<void>
+  onProgress?: (progress: number) => Promise<void>,
+  onTaskCreated?: (callback: KieTaskCreatedCallback) => Promise<void>
 ): Promise<KieGeneratedVideo> {
   // 1. 创建任务
-  const taskId = await createKieVideoTask(params);
+  const externalTaskId = await createKieVideoTask(params);
 
-  // 2. 轮询等待完成
+  // 2. 通知调用者任务已创建（用于保存外部任务 ID）
+  if (onTaskCreated) {
+    await onTaskCreated({ externalTaskId });
+  }
+
+  // 3. 轮询等待完成
   return waitForKieVideoCompletion(
-    taskId,
+    externalTaskId,
     600000, // 10 minutes max
     10000, // 10 seconds interval
     onProgress

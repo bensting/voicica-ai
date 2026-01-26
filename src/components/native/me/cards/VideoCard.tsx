@@ -64,9 +64,9 @@ export default function VideoCard({ video, onClick }: VideoCardProps) {
         {isSuccess && previewUrl && !frameError ? (
           <>
             {useVideoFrame ? (
-              // 使用 video 标签加载第一帧
+              // 使用 video 标签加载第一帧，#t=0.1 强制加载特定帧
               <video
-                src={previewUrl}
+                src={`${previewUrl}#t=0.1`}
                 className="w-full h-full object-cover"
                 muted
                 playsInline

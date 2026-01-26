@@ -28,3 +28,18 @@ export const TTS_PROVIDER_OPTIONS: FilterOption[] = [
   { value: 'Microsoft', label: 'Microsoft' },
   { value: 'Google', label: 'Google' },
 ];
+
+/**
+ * TTS 允许的供应商列表（用于默认筛选）
+ * 当选择 "All" 时，只显示这些供应商的语音
+ */
+export const TTS_ALLOWED_PROVIDERS = ['Microsoft', 'Google'];
+
+/**
+ * 检查供应商是否在 TTS 允许列表中（大小写不敏感）
+ */
+export function isTTSProvider(provider: string): boolean {
+  return TTS_ALLOWED_PROVIDERS.some(
+    p => p.toLowerCase() === provider.toLowerCase()
+  );
+}

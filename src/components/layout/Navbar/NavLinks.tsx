@@ -99,7 +99,7 @@ export default function NavLinks({ mobile = false, onLinkClick }: NavLinksProps 
   if (mobile) {
     return (
       <div className="flex flex-col space-y-1">
-        {orderedItems.map((item, index) => {
+        {orderedItems.map((item) => {
           if (item.type === 'link') {
             const link = item.data;
             return (

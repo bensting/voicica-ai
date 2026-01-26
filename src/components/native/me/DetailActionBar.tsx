@@ -34,11 +34,11 @@ export default function DetailActionBar({
   downloadText = 'Download',
 }: DetailActionBarProps) {
   return (
-    <div className="flex gap-3">
+    <div className="flex gap-2.5">
       {showRecreate && onRecreate && (
         <button
           onClick={onRecreate}
-          className="flex-[1] flex items-center justify-center gap-1.5 py-3 bg-gray-800/80 border border-gray-700 rounded-xl text-white text-sm font-medium hover:bg-gray-700 transition-all"
+          className="flex-[1] flex items-center justify-center gap-1.5 py-2 bg-gray-800/80 border border-gray-700 rounded-lg text-white text-sm font-medium hover:bg-gray-700 transition-all"
         >
           <Pencil size={14} />
           Recreate
@@ -48,13 +48,14 @@ export default function DetailActionBar({
         <GradientButton
           icon={downloading ? undefined : Download}
           iconPosition="left"
+          iconSize={15}
           onClick={onDownload}
           disabled={downloadDisabled || downloading}
-          className={`${showRecreate ? 'flex-[2]' : 'flex-1'} !w-auto !py-3`}
+          className={`${showRecreate ? 'flex-[2]' : 'flex-1'} !w-auto`}
         >
           {downloading ? (
             <div className="flex items-center gap-2">
-              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+              <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
               <span>Downloading...</span>
             </div>
           ) : (

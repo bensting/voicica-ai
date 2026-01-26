@@ -38,6 +38,10 @@ interface UseVoicesReturn {
   selectedRole: string;
   setSelectedRole: (role: string) => void;
 
+  // Provider filter state
+  selectedProvider: string;
+  setSelectedProvider: (provider: string) => void;
+
   // Used only filter state
   usedOnly: boolean;
   setUsedOnly: (usedOnly: boolean) => void;
@@ -83,6 +87,9 @@ export function useVoices({ locale, authLoading }: UseVoicesProps): UseVoicesRet
 
   // Role filter state
   const [selectedRole, setSelectedRole] = useState<string>('all');
+
+  // Provider filter state
+  const [selectedProvider, setSelectedProvider] = useState<string>('all');
 
   // Used only filter state
   const [usedOnly, setUsedOnly] = useState(false);
@@ -193,6 +200,11 @@ export function useVoices({ locale, authLoading }: UseVoicesProps): UseVoicesRet
       return false;
     }
 
+    // Provider filter
+    if (selectedProvider !== 'all' && voice.provider !== selectedProvider) {
+      return false;
+    }
+
     // Used only filter
     if (usedOnly && !usedVoiceNames.includes(voice.name)) {
       return false;
@@ -258,6 +270,10 @@ export function useVoices({ locale, authLoading }: UseVoicesProps): UseVoicesRet
     // Role filter state
     selectedRole,
     setSelectedRole,
+
+    // Provider filter state
+    selectedProvider,
+    setSelectedProvider,
 
     // Used only filter state
     usedOnly,

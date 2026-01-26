@@ -125,7 +125,7 @@ async function downloadNative(
       return {
         success: true,
       };
-    } catch (browserError) {
+    } catch {
       return {
         success: false,
         error: error instanceof Error ? error.message : 'Download failed',

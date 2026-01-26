@@ -28,7 +28,7 @@ export async function showToast(options: ToastOptions): Promise<void> {
         position,
       });
       return;
-    } catch (error) {
+    } catch {
       console.warn('Toast plugin not available, falling back to web toast');
     }
   }

@@ -8,7 +8,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { verifySignatureAppRouter } from '@upstash/qstash/nextjs';
 import prisma from '@/lib/prisma';
 import { generateVideoAndWait } from '@/lib/services/runware-video';
-import { generateKieVideoAndWait, type KieGeneratedVideo } from '@/lib/services/kie-video';
+import { generateKieVideoAndWait, type KieGeneratedVideo, type KieTaskCreatedCallback } from '@/lib/services/kie-video';
 import { uploadVideo, uploadImage } from '@/lib/services/r2-storage';
 import { v4 as uuidv4 } from 'uuid';
 import { ProductType } from '@/config/productType';
@@ -18,6 +18,15 @@ import { videoModelsConfig } from '@/config/native/videoModels';
 
 // 允许长时间运行（Hobby 计划最大 300 秒）
 export const maxDuration = 300;
+
+/**
+ * 构建回调 URL
+ * 注意：必须使用 www.voicica.ai，因为 voicica.ai 会 301 重定向，POST 请求不会跟随重定向
+ */
+function getCallbackUrl(): string {
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://www.voicica.ai';
+  return `${baseUrl}/api/webhooks/kie-video`;
+}
 
 // 处理函数（不带签名验证，用于开发环境）
 async function handleVideoTask(req: NextRequest) {
@@ -160,12 +169,21 @@ async function handleVideoTask(req: NextRequest) {
           duration: String(duration) as '4' | '8' | '12',
           fixedLens: fixedLens ?? false,
           generateAudio: generateAudio ?? false,
+          callBackUrl: getCallbackUrl(),
         },
         async (progress) => {
           // 更新进度（30% - 90%）
           await prisma.video_records.update({
             where: { task_id: taskId },
             data: { progress },
+          });
+        },
+        async ({ externalTaskId }: KieTaskCreatedCallback) => {
+          // 保存 KIE 外部任务 ID，用于 webhook 回调查找
+          console.log(`🎬 [VideoQueue] 保存外部任务 ID: ${externalTaskId}`);
+          await prisma.video_records.update({
+            where: { task_id: taskId },
+            data: { external_task_id: externalTaskId },
           });
         }
       );

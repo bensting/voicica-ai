@@ -242,9 +242,10 @@ model app_releases {
 
 /// Video generation records (Text-to-Video, Image-to-Video)
 model video_records {
-  user_id         String    @db.VarChar(255)
-  task_id         String    @unique(map: "ix_video_records_task_id") @db.VarChar(255)
-  task_type       String    @db.VarChar(50) // text_to_video, image_to_video
+  user_id          String    @db.VarChar(255)
+  task_id          String    @unique(map: "ix_video_records_task_id") @db.VarChar(255)
+  external_task_id String?   @db.VarChar(255) // KIE API external task ID for webhook lookup
+  task_type        String    @db.VarChar(50) // text_to_video, image_to_video
   model           String    @db.VarChar(50) // veo-3.1, etc.
   prompt          String    // User's text prompt
   prompt_zh       String?   // Translated Chinese prompt (if translation enabled)
@@ -276,6 +277,7 @@ model video_records {
   @@index([user_id, status], map: "ix_video_records_user_status")
   @@index([user_id, status, created_at], map: "ix_video_records_user_status_created")
   @@index([is_public], map: "ix_video_records_is_public")
+  @@index([external_task_id], map: "ix_video_records_external_task_id")
 }
 
 /// 用户事件追踪表（通用）

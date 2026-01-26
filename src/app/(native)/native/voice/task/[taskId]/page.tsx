@@ -5,8 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { getTtsRecordByTaskId } from '@/actions/tts';
 import type { TtsRecord } from '@/actions/tts';
 import GradientButton from '@/components/native/common/GradientButton';
-import { downloadFile } from '@/lib/native-download';
-import { showToast } from '@/lib/native-toast';
+import { handleDownloadWithState } from '@/lib/native-download';
 
 // 返回图标
 const BackIcon = () => (
@@ -177,24 +176,14 @@ export default function TTSTaskPage() {
     setCurrentTime(time);
   };
 
-  const handleDownload = async () => {
-    if (!task?.audio_url || downloading) return;
-    setDownloading(true);
-    try {
-      const fileName = `voicica_tts_${taskId}.mp3`;
-      const result = await downloadFile({
-        url: task.audio_url,
-        fileName,
-        type: 'audio',
-      });
-      if (result.success) {
-        showToast({ text: 'Download completed', duration: 'short' });
-      } else {
-        showToast({ text: `Download failed: ${result.error}`, duration: 'long' });
-      }
-    } finally {
-      setDownloading(false);
-    }
+  const handleDownload = () => {
+    if (downloading) return;
+    handleDownloadWithState(
+      task?.audio_url,
+      `voicica_tts_${taskId}.mp3`,
+      setDownloading,
+      'audio'
+    );
   };
 
   const handleShare = async () => {

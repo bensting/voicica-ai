@@ -9,8 +9,7 @@ import DetailActionBar from './DetailActionBar';
 import DeleteConfirmDialog from '@/components/native/ui/DeleteConfirmDialog';
 import { useBottomNav } from '@/contexts/BottomNavContext';
 import { formatTime, getModelDisplayName } from './utils';
-import { downloadFile } from '@/lib/native-download';
-import { showToast } from '@/lib/native-toast';
+import { handleDownloadWithState } from '@/lib/native-download';
 
 interface MusicDetailModalProps {
   music: MusicRecord;
@@ -99,24 +98,14 @@ export default function MusicDetailModal({
     setCurrentTime(percent * duration);
   };
 
-  const handleDownload = async () => {
-    if (!currentAudioUrl || downloading) return;
-    setDownloading(true);
-    try {
-      const fileName = `voicica_music_${music.task_id}.mp3`;
-      const result = await downloadFile({
-        url: currentAudioUrl,
-        fileName,
-        type: 'audio',
-      });
-      if (result.success) {
-        showToast({ text: 'Download completed', duration: 'short' });
-      } else {
-        showToast({ text: `Download failed: ${result.error}`, duration: 'long' });
-      }
-    } finally {
-      setDownloading(false);
-    }
+  const handleDownload = () => {
+    if (downloading) return;
+    handleDownloadWithState(
+      currentAudioUrl,
+      `voicica_music_${music.task_id}.mp3`,
+      setDownloading,
+      'audio'
+    );
   };
 
   const handleConfirmDelete = async () => {

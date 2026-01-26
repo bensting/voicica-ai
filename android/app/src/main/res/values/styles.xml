@@ -34,6 +34,16 @@
         <item name="actionModeBackground">@drawable/action_mode_background</item>
         <item name="actionModeCloseDrawable">@android:drawable/ic_menu_close_clear_cancel</item>
         <item name="android:actionModeBackground">@drawable/action_mode_background</item>
+        <!-- Alert Dialog 样式 - 避免显示为 splash -->
+        <item name="alertDialogTheme">@style/AppTheme.AlertDialog</item>
+        <item name="android:alertDialogTheme">@style/AppTheme.AlertDialog</item>
+    </style>
+
+    <!-- 自定义 Alert Dialog 样式 -->
+    <style name="AppTheme.AlertDialog" parent="Theme.AppCompat.Dialog.Alert">
+        <item name="android:windowBackground">@drawable/dialog_background</item>
+        <item name="android:background">@drawable/dialog_background</item>
+        <item name="colorAccent">@color/colorAccent</item>
     </style>
 
 

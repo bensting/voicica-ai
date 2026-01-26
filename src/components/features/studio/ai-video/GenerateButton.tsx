@@ -32,7 +32,7 @@ export default function GenerateButton({
         transition-all duration-200
         ${disabled || isGenerating
           ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-          : 'bg-gradient-to-r from-purple-600 to-purple-700 text-white hover:from-purple-700 hover:to-purple-800 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5'
+          : 'bg-gradient-to-r from-pink-500 to-rose-500 text-white hover:from-pink-600 hover:to-rose-600 shadow-lg shadow-pink-200/50 hover:shadow-xl hover:shadow-pink-300/50 transform hover:-translate-y-0.5'
         }
       `}
     >

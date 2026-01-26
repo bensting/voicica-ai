@@ -9,6 +9,7 @@ import { getTtsRecords, deleteTtsRecord, type TtsRecord } from '@/actions/tts';
 import { getCoverRecords, deleteCoverRecord, type CoverRecord } from '@/actions/cover';
 import { getDialogueRecords, deleteDialogueRecord, type DialogueRecord } from '@/actions/dialogue';
 import { useMusicTaskPolling } from '@/hooks/useMusicTaskPolling';
+import { useVideoTaskPolling } from '@/hooks/useVideoTaskPolling';
 
 // 提取的组件
 import MusicDetailModal from './MusicDetailModal';
@@ -282,6 +283,28 @@ export default function MyCreations() {
             };
           }
           return record;
+        })
+      );
+    }, []),
+  });
+
+  // 使用 hook 轮询处理中的视频任务状态
+  useVideoTaskPolling({
+    videos,
+    enabled: activeTab === 'video',
+    onStatusUpdate: useCallback((taskId, status) => {
+      setVideos((prev) =>
+        prev.map((video) => {
+          if (video.taskId === taskId) {
+            return {
+              ...video,
+              status: status.status,
+              progress: status.progress,
+              videoUrl: status.video_url || video.videoUrl,
+              errorMessage: status.error_message || video.errorMessage,
+            };
+          }
+          return video;
         })
       );
     }, []),

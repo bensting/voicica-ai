@@ -9,9 +9,10 @@ interface NavDropdownProps {
   dropdown: NavDropdownType;
   mobile?: boolean;
   onLinkClick?: () => void;
+  labelIcon?: React.ReactNode;
 }
 
-export default function NavDropdown({ dropdown, mobile = false, onLinkClick }: NavDropdownProps) {
+export default function NavDropdown({ dropdown, mobile = false, onLinkClick, labelIcon }: NavDropdownProps) {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const { t } = useLanguage();
@@ -35,16 +36,18 @@ export default function NavDropdown({ dropdown, mobile = false, onLinkClick }: N
 
   if (mobile) {
     return (
-      <div className="border-b border-gray-100 last:border-b-0">
+      <div className="border-b border-gray-50 last:border-b-0">
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className={`flex items-center justify-between w-full py-3 transition-colors font-medium ${
-            isOpen ? 'text-pink-500' : 'text-gray-900 hover:text-pink-500'
-          }`}
+          className={`group flex items-center justify-between w-full p-3 rounded-xl transition-all font-medium ${isOpen ? 'bg-pink-50 text-pink-600' : 'text-gray-700 hover:bg-gray-50'
+            }`}
         >
-          <span>{t(dropdown.labelKey)}</span>
+          <span className="flex items-center">
+            {t(dropdown.labelKey)}
+            {labelIcon}
+          </span>
           <svg
-            className={`w-4 h-4 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
+            className={`w-4 h-4 transition-transform duration-200 text-gray-400 group-hover:text-pink-500 ${isOpen ? 'rotate-180 text-pink-500' : ''}`}
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -53,11 +56,10 @@ export default function NavDropdown({ dropdown, mobile = false, onLinkClick }: N
           </svg>
         </button>
         <div
-          className={`overflow-hidden transition-all duration-200 ${
-            isOpen ? 'max-h-96 opacity-100 pb-3' : 'max-h-0 opacity-0'
-          }`}
+          className={`overflow-hidden transition-all duration-300 ease-in-out ${isOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
+            }`}
         >
-          <div className="bg-gray-50 rounded-xl p-2">
+          <div className="pl-4 pr-2 pb-2 pt-1 space-y-1">
             {dropdown.items
               .filter((item) => item.enabled !== false)
               .map((item) => {
@@ -67,17 +69,17 @@ export default function NavDropdown({ dropdown, mobile = false, onLinkClick }: N
                     key={item.href}
                     href={item.href}
                     onClick={handleLinkClick}
-                    className="flex items-center gap-3 p-3 rounded-lg text-gray-700 hover:bg-white hover:text-pink-500 transition-colors"
+                    className="flex items-center gap-3 p-3 rounded-xl text-gray-700 hover:bg-pink-50 hover:text-pink-600 transition-colors"
                   >
                     {Icon && (
-                      <div className="flex-shrink-0 w-10 h-10 bg-white rounded-lg flex items-center justify-center shadow-sm">
-                        <Icon className="w-5 h-5 text-gray-900" />
+                      <div className="flex-shrink-0 w-8 h-8 bg-white rounded-lg flex items-center justify-center shadow-sm text-pink-500">
+                        <Icon className="w-4 h-4" />
                       </div>
                     )}
                     <div className="flex-1 min-w-0">
-                      <div className="font-medium text-gray-900">{t(item.labelKey)}</div>
+                      <div className="font-medium text-sm">{t(item.labelKey)}</div>
                       {item.descriptionKey && (
-                        <div className="text-xs text-gray-500 truncate">{t(item.descriptionKey)}</div>
+                        <div className="text-xs text-gray-400 truncate mt-0.5">{t(item.descriptionKey)}</div>
                       )}
                     </div>
                   </Link>
@@ -92,14 +94,16 @@ export default function NavDropdown({ dropdown, mobile = false, onLinkClick }: N
   return (
     <div
       ref={dropdownRef}
-      className="relative h-16 flex items-center"
+      className="relative h-10 flex items-center"
       onMouseEnter={() => setIsOpen(true)}
       onMouseLeave={() => setIsOpen(false)}
     >
-      <button className="flex items-center gap-1 text-gray-700 hover:text-pink-500 transition-colors font-medium">
+      <button className={`flex items-center gap-1 px-4 py-2 rounded-full transition-all duration-300 font-medium ${isOpen ? 'bg-pink-50 text-pink-600' : 'text-gray-700 hover:text-pink-500 hover:bg-white/50'
+        }`}>
         <span>{t(dropdown.labelKey)}</span>
+        {labelIcon}
         <svg
-          className={`w-4 h-4 transition-transform ${isOpen ? 'rotate-180' : ''}`}
+          className={`w-4 h-4 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`}
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -107,44 +111,38 @@ export default function NavDropdown({ dropdown, mobile = false, onLinkClick }: N
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
         </svg>
       </button>
-      {/* Pink underline indicator at navbar bottom */}
-      <span
-        className={`absolute bottom-0 left-0 right-0 h-0.5 bg-pink-400 transition-transform origin-left ${
-          isOpen ? 'scale-x-100' : 'scale-x-0'
-        }`}
-      />
 
-      {isOpen && (
-        <div className="absolute top-full left-0">
-          <div className="p-3 bg-pink-50 shadow-xl border border-gray-200 border-t-0 min-w-[320px]">
-            {dropdown.items
-              .filter((item) => item.enabled !== false)
-              .map((item) => {
-                const Icon = item.icon;
-                return (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    onClick={handleLinkClick}
-                    className="flex items-start gap-3 px-4 py-3 text-gray-700 hover:text-gray-900 hover:bg-white transition-colors"
-                  >
-                    {Icon && (
-                      <div className="flex-shrink-0 w-10 h-10 bg-white rounded-lg flex items-center justify-center">
-                        <Icon className="w-5 h-5 text-gray-900" />
-                      </div>
-                    )}
-                    <div>
-                      <div className="font-semibold">{t(item.labelKey)}</div>
-                      {item.descriptionKey && (
-                        <div className="text-sm text-gray-500">{t(item.descriptionKey)}</div>
-                      )}
+      {/* Dropdown Card */}
+      <div className={`absolute top-full left-0 pt-2 transition-all duration-300 transform origin-top-left ${isOpen ? 'opacity-100 scale-100 translate-y-0 visible' : 'opacity-0 scale-95 -translate-y-2 invisible'
+        }`}>
+        <div className="rounded-2xl bg-white/90 backdrop-blur-xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-white/40 p-2 min-w-[280px] overflow-hidden">
+          {dropdown.items
+            .filter((item) => item.enabled !== false)
+            .map((item) => {
+              const Icon = item.icon;
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  onClick={handleLinkClick}
+                  className="group flex items-start gap-3 p-3 rounded-xl hover:bg-pink-50 transition-colors"
+                >
+                  {Icon && (
+                    <div className="flex-shrink-0 w-10 h-10 bg-gradient-to-br from-pink-100 to-rose-50 rounded-lg flex items-center justify-center text-pink-500 group-hover:text-pink-600 group-hover:scale-110 transition-all duration-300">
+                      <Icon className="w-5 h-5" />
                     </div>
-                  </Link>
-                );
-              })}
-          </div>
+                  )}
+                  <div>
+                    <div className="font-bold text-gray-800 group-hover:text-pink-600 transition-colors text-sm">{t(item.labelKey)}</div>
+                    {item.descriptionKey && (
+                      <div className="text-xs text-gray-500 group-hover:text-pink-400/80 mt-0.5 leading-relaxed">{t(item.descriptionKey)}</div>
+                    )}
+                  </div>
+                </Link>
+              );
+            })}
         </div>
-      )}
+      </div>
     </div>
   );
 }

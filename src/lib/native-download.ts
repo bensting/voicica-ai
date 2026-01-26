@@ -41,96 +41,33 @@ export async function downloadFile(options: DownloadOptions): Promise<DownloadRe
 
 /**
  * 原生平台下载
- * 使用 Filesystem 下载文件到设备 Downloads 目录
+ * 使用系统浏览器下载，文件会保存到系统下载目录
+ * 这是最可靠的方式，用户可以在文件管理器中找到下载的文件
  */
 async function downloadNative(
   url: string,
-  fileName: string,
-  onProgress?: (progress: number) => void
+  _fileName: string,
+  _onProgress?: (progress: number) => void
 ): Promise<DownloadResult> {
   try {
-    const { Filesystem, Directory } = await import('@capacitor/filesystem');
+    const { Browser } = await import('@capacitor/browser');
 
-    console.log('📥 [Native Download] 开始下载:', url);
+    console.log('📥 [Native Download] 使用系统浏览器下载:', url);
 
-    // 使用 fetch 下载文件
-    const response = await fetch(url);
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}`);
-    }
-
-    // 获取文件大小用于进度计算
-    const contentLength = response.headers.get('content-length');
-    const total = contentLength ? parseInt(contentLength, 10) : 0;
-
-    // 读取响应流
-    const reader = response.body?.getReader();
-    if (!reader) {
-      throw new Error('No response body');
-    }
-
-    const chunks: Uint8Array[] = [];
-    let received = 0;
-
-    while (true) {
-      const { done, value } = await reader.read();
-      if (done) break;
-
-      chunks.push(value);
-      received += value.length;
-
-      if (onProgress && total > 0) {
-        onProgress(Math.round((received / total) * 100));
-      }
-    }
-
-    // 合并 chunks 并转为 base64
-    const totalLength = chunks.reduce((acc, chunk) => acc + chunk.length, 0);
-    const mergedArray = new Uint8Array(totalLength);
-    let offset = 0;
-    for (const chunk of chunks) {
-      mergedArray.set(chunk, offset);
-      offset += chunk.length;
-    }
-    const base64 = btoa(
-      mergedArray.reduce(
-        (data, byte) => data + String.fromCharCode(byte),
-        ''
-      )
-    );
-
-    console.log('📥 [Native Download] 文件下载完成，正在保存...');
-
-    // 保存到 Documents 目录（Downloads 可能不可用）
-    const result = await Filesystem.writeFile({
-      path: fileName,
-      data: base64,
-      directory: Directory.Documents,
-    });
-
-    console.log('✅ [Native Download] 文件已保存:', result.uri);
+    // 使用系统浏览器打开下载链接
+    // 系统会自动处理下载并保存到下载目录
+    await Browser.open({ url });
 
     return {
       success: true,
-      filePath: result.uri,
+      filePath: 'browser',
     };
   } catch (error) {
     console.error('❌ [Native Download] 下载失败:', error);
-
-    // 如果 Filesystem 失败，回退到使用 Browser 打开
-    try {
-      const { Browser } = await import('@capacitor/browser');
-      console.log('📥 [Native Download] 回退到外部浏览器下载');
-      await Browser.open({ url });
-      return {
-        success: true,
-      };
-    } catch {
-      return {
-        success: false,
-        error: error instanceof Error ? error.message : 'Download failed',
-      };
-    }
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Download failed',
+    };
   }
 }
 
@@ -222,10 +159,34 @@ export async function downloadWithToast(
   const result = await downloadFile({ url, fileName, type });
 
   if (result.success) {
-    showToast({ text: 'Download completed', duration: 'short' });
+    // 原生端用浏览器下载，Web 端直接下载
+    const msg = result.filePath === 'browser'
+      ? 'Download started in browser'
+      : 'Download completed';
+    showToast({ text: msg, duration: 'short' });
     return true;
   } else {
     showToast({ text: `Download failed: ${result.error}`, duration: 'long' });
     return false;
+  }
+}
+
+/**
+ * 通用下载处理函数，用于 Modal 组件
+ * 自动处理 loading 状态和 Toast 提示
+ */
+export async function handleDownloadWithState(
+  url: string | undefined | null,
+  fileName: string,
+  setDownloading: (v: boolean) => void,
+  type: 'audio' | 'video' | 'image' = 'audio'
+): Promise<void> {
+  if (!url) return;
+
+  setDownloading(true);
+  try {
+    await downloadWithToast(url, fileName, type);
+  } finally {
+    setDownloading(false);
   }
 }

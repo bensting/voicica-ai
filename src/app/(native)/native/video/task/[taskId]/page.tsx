@@ -5,7 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 import GradientButton from '@/components/native/common/GradientButton';
 import DetailActionBar from '@/components/native/me/DetailActionBar';
-import { downloadFile } from '@/lib/native-download';
+import { handleDownloadWithState } from '@/lib/native-download';
 
 // 返回图标
 const BackIcon = () => (
@@ -206,26 +206,14 @@ export default function VideoTaskPage() {
 
   const [downloading, setDownloading] = useState(false);
 
-  const handleDownload = async () => {
-    if (!task?.video_url || downloading) return;
-
-    setDownloading(true);
-    try {
-      const fileName = `voicica_${taskId}.mp4`;
-      const result = await downloadFile({
-        url: task.video_url,
-        fileName,
-        type: 'video',
-      });
-
-      if (result.success) {
-        alert('Download completed!');
-      } else {
-        alert(`Download failed: ${result.error}`);
-      }
-    } finally {
-      setDownloading(false);
-    }
+  const handleDownload = () => {
+    if (downloading) return;
+    handleDownloadWithState(
+      task?.video_url,
+      `voicica_${taskId}.mp4`,
+      setDownloading,
+      'video'
+    );
   };
 
   const handleDelete = async () => {

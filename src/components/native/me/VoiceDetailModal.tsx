@@ -6,8 +6,7 @@ import DetailActionBar from './DetailActionBar';
 import DeleteConfirmDialog from '@/components/native/ui/DeleteConfirmDialog';
 import { useBottomNav } from '@/contexts/BottomNavContext';
 import { formatTime } from './utils';
-import { downloadFile } from '@/lib/native-download';
-import { showToast } from '@/lib/native-toast';
+import { handleDownloadWithState } from '@/lib/native-download';
 
 interface VoiceDetailModalProps {
   voice: TtsRecord;
@@ -75,24 +74,14 @@ export default function VoiceDetailModal({
     setCurrentTime(percent * duration);
   };
 
-  const handleDownload = async () => {
-    if (!voice.audio_url || downloading) return;
-    setDownloading(true);
-    try {
-      const fileName = `voicica_tts_${voice.task_id}.mp3`;
-      const result = await downloadFile({
-        url: voice.audio_url,
-        fileName,
-        type: 'audio',
-      });
-      if (result.success) {
-        showToast({ text: 'Download completed', duration: 'short' });
-      } else {
-        showToast({ text: `Download failed: ${result.error}`, duration: 'long' });
-      }
-    } finally {
-      setDownloading(false);
-    }
+  const handleDownload = () => {
+    if (downloading) return;
+    handleDownloadWithState(
+      voice.audio_url,
+      `voicica_tts_${voice.task_id}.mp3`,
+      setDownloading,
+      'audio'
+    );
   };
 
   const handleConfirmDelete = async () => {

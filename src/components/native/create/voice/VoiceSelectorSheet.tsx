@@ -467,11 +467,14 @@ export default function NativeVoiceSelectorSheet({
                       <div className="text-white font-medium text-sm truncate">
                         {voice.display_name}
                       </div>
-                      <div className="text-gray-400 text-xs">
-                        {voice.locale} · {voice.gender}
-                        {voice.role && voice.role !== 'Standard' && (
-                          <span className="ml-1 text-purple-400">· {voice.role}</span>
-                        )}
+                      <div className="flex items-center gap-1.5 text-gray-400 text-xs">
+                        <span>{voice.locale}</span>
+                        <span>·</span>
+                        {voice.gender === 'male' && <User className="w-3 h-3 text-blue-400" />}
+                        {voice.gender === 'female' && <UserRound className="w-3 h-3 text-pink-400" />}
+                        {voice.gender === 'neutral' && <Users className="w-3 h-3 text-gray-400" />}
+                        <span>·</span>
+                        <ProviderIcon provider={voice.provider.toLowerCase()} className="w-3.5 h-3.5" />
                       </div>
                     </div>
 

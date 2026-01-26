@@ -1,8 +1,19 @@
 {
-  "version": "1.2.4",
-  "buildNumber": 25,
+  "version": "1.2.5",
+  "buildNumber": 26,
   "description": "原生应用版本（Android/iOS 应用壳）",
   "changelog": [
+    {
+      "version": "1.2.5",
+      "buildNumber": 26,
+      "date": "2026-01-26",
+      "changes": [
+        "新增 Toast 插件支持原生 Toast 提示",
+        "修复下载功能，使用 Filesystem 保存文件到 Documents 目录",
+        "修复 Alert 对话框显示 splash 背景的问题",
+        "用 Toast 替代 Alert 提供更好的用户体验"
+      ]
+    },
     {
       "version": "1.2.4",
       "buildNumber": 25,

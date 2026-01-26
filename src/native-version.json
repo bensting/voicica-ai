@@ -1,8 +1,18 @@
 {
-  "version": "1.2.5",
-  "buildNumber": 26,
+  "version": "1.2.6",
+  "buildNumber": 27,
   "description": "原生应用版本（Android/iOS 应用壳）",
   "changelog": [
+    {
+      "version": "1.2.6",
+      "buildNumber": 27,
+      "date": "2026-01-26",
+      "changes": [
+        "移除 Appodeal SDK，减小 APK 体积约 30-50MB",
+        "新增 Firebase Analytics 数据分析支持",
+        "自动追踪用户登录、页面浏览等事件"
+      ]
+    },
     {
       "version": "1.2.5",
       "buildNumber": 26,

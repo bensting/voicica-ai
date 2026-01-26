@@ -5,6 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { getTtsRecordByTaskId } from '@/actions/tts';
 import type { TtsRecord } from '@/actions/tts';
 import GradientButton from '@/components/native/common/GradientButton';
+import { downloadFile } from '@/lib/native-download';
 
 // 返回图标
 const BackIcon = () => (
@@ -83,6 +84,7 @@ export default function TTSTaskPage() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
+  const [downloading, setDownloading] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   // 获取任务状态
@@ -175,22 +177,20 @@ export default function TTSTaskPage() {
   };
 
   const handleDownload = async () => {
-    if (!task?.audio_url) return;
-
+    if (!task?.audio_url || downloading) return;
+    setDownloading(true);
     try {
-      const response = await fetch(task.audio_url);
-      const blob = await response.blob();
-      const blobUrl = URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = blobUrl;
-      link.download = `voicica_tts_${taskId}.mp3`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(blobUrl);
-    } catch (err) {
-      console.error('Download failed:', err);
-      alert('Download failed, please try again');
+      const fileName = `voicica_tts_${taskId}.mp3`;
+      const result = await downloadFile({
+        url: task.audio_url,
+        fileName,
+        type: 'audio',
+      });
+      if (!result.success) {
+        alert(`Download failed: ${result.error}`);
+      }
+    } finally {
+      setDownloading(false);
     }
   };
 
@@ -353,12 +353,17 @@ export default function TTSTaskPage() {
 
               <button
                 onClick={handleDownload}
-                className="flex flex-col items-center gap-1 text-gray-400 hover:text-white transition-colors"
+                disabled={downloading}
+                className="flex flex-col items-center gap-1 text-gray-400 hover:text-white transition-colors disabled:opacity-50"
               >
                 <div className="w-12 h-12 rounded-full bg-gray-800 flex items-center justify-center">
-                  <DownloadIcon />
+                  {downloading ? (
+                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  ) : (
+                    <DownloadIcon />
+                  )}
                 </div>
-                <span className="text-xs">Download</span>
+                <span className="text-xs">{downloading ? 'Downloading...' : 'Download'}</span>
               </button>
 
               <button

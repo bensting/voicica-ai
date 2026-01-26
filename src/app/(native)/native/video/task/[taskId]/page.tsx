@@ -4,6 +4,8 @@ import { useState, useEffect, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 import GradientButton from '@/components/native/common/GradientButton';
+import DetailActionBar from '@/components/native/me/DetailActionBar';
+import { downloadFile } from '@/lib/native-download';
 
 // 返回图标
 const BackIcon = () => (
@@ -42,13 +44,6 @@ const EditIcon = () => (
 const DeleteIcon = () => (
   <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
     <path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2m3 0v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6h14z" />
-  </svg>
-);
-
-// 下载图标
-const DownloadIcon = () => (
-  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-    <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3" />
   </svg>
 );
 
@@ -209,10 +204,28 @@ export default function VideoTaskPage() {
     }
   };
 
-  const handleDownload = () => {
-    if (!task?.video_url) return;
-    // 直接打开视频 URL，用户可以从浏览器保存
-    window.open(task.video_url, '_blank');
+  const [downloading, setDownloading] = useState(false);
+
+  const handleDownload = async () => {
+    if (!task?.video_url || downloading) return;
+
+    setDownloading(true);
+    try {
+      const fileName = `voicica_${taskId}.mp4`;
+      const result = await downloadFile({
+        url: task.video_url,
+        fileName,
+        type: 'video',
+      });
+
+      if (result.success) {
+        alert('Download completed!');
+      } else {
+        alert(`Download failed: ${result.error}`);
+      }
+    } finally {
+      setDownloading(false);
+    }
   };
 
   const handleDelete = async () => {
@@ -230,6 +243,16 @@ export default function VideoTaskPage() {
   const handleEdit = () => {
     // TODO: 跳转到 Edit 页面
     router.push(`/native/create/video?mode=edit&taskId=${taskId}`);
+  };
+
+  const handleRecreate = () => {
+    if (!task) return;
+    const params = new URLSearchParams({
+      prompt: task.prompt,
+      model: task.model,
+      aspectRatio: task.aspect_ratio,
+    });
+    router.push(`/native/create/video?${params.toString()}`);
   };
 
   if (loading) {
@@ -324,6 +347,7 @@ export default function VideoTaskPage() {
             <video
               src={task.video_url}
               controls
+              controlsList="nodownload"
               autoPlay
               loop
               playsInline
@@ -405,12 +429,15 @@ export default function VideoTaskPage() {
           </div>
         )}
 
-        {/* 下载按钮 */}
+        {/* 底部操作栏 */}
         {isSuccess && (
-          <GradientButton onClick={handleDownload}>
-            <DownloadIcon />
-            <span>Download</span>
-          </GradientButton>
+          <DetailActionBar
+            showRecreate
+            onRecreate={handleRecreate}
+            showDownload
+            onDownload={handleDownload}
+            downloading={downloading}
+          />
         )}
 
         {/* 失败时的重试按钮 */}

@@ -1,7 +1,7 @@
 'use client';
 
 import { Pencil, Download } from 'lucide-react';
-import GradientButton from '@/components/ui/GradientButton';
+import GradientButton from '@/components/native/common/GradientButton';
 
 interface DetailActionBarProps {
   /** 是否显示 Recreate 按钮 */
@@ -48,10 +48,9 @@ export default function DetailActionBar({
         <GradientButton
           icon={downloading ? undefined : Download}
           iconPosition="left"
-          size="md"
           onClick={onDownload}
           disabled={downloadDisabled || downloading}
-          className={`${showRecreate ? 'flex-[2]' : 'flex-1'} !py-3`}
+          className={`${showRecreate ? 'flex-[2]' : 'flex-1'} !w-auto !py-3`}
         >
           {downloading ? (
             <div className="flex items-center gap-2">

@@ -270,12 +270,12 @@ export default function VideoTaskPage() {
   const modelName = modelNameMap[task.model] || task.model;
 
   return (
-    <div
-      className="min-h-screen bg-[#0a0a1a] flex flex-col"
-      style={{ paddingTop: 'var(--safe-area-inset-top, 0px)' }}
-    >
-      {/* Header */}
-      <div className="flex items-center justify-between px-4 h-14">
+    <div className="fixed inset-0 bg-[#0a0a1a] flex flex-col">
+      {/* Header - 固定顶部 */}
+      <div
+        className="flex-shrink-0 flex items-center justify-between px-4 h-14"
+        style={{ paddingTop: 'var(--safe-area-inset-top, 0px)' }}
+      >
         <button onClick={handleBack} className="p-2 -ml-2 text-white">
           <BackIcon />
         </button>
@@ -284,28 +284,28 @@ export default function VideoTaskPage() {
         </button>
       </div>
 
-      {/* 右侧操作按钮 */}
-      {isSuccess && (
-        <div className="absolute right-4 top-20 flex flex-col gap-4 z-10">
-          <button
-            onClick={handleExtend}
-            className="flex flex-col items-center gap-1 text-white/80 hover:text-white"
-          >
-            <ExtendIcon />
-            <span className="text-xs">Extend</span>
-          </button>
-          <button
-            onClick={handleEdit}
-            className="flex flex-col items-center gap-1 text-white/80 hover:text-white"
-          >
-            <EditIcon />
-            <span className="text-xs">Edit</span>
-          </button>
-        </div>
-      )}
-
-      {/* 视频区域 */}
+      {/* 视频区域 - 中间自适应 */}
       <div className="flex-1 min-h-0 flex items-center justify-center relative overflow-hidden">
+        {/* 右侧操作按钮 */}
+        {isSuccess && (
+          <div className="absolute right-4 top-4 flex flex-col gap-4 z-10">
+            <button
+              onClick={handleExtend}
+              className="flex flex-col items-center gap-1 text-white/80 hover:text-white"
+            >
+              <ExtendIcon />
+              <span className="text-xs">Extend</span>
+            </button>
+            <button
+              onClick={handleEdit}
+              className="flex flex-col items-center gap-1 text-white/80 hover:text-white"
+            >
+              <EditIcon />
+              <span className="text-xs">Edit</span>
+            </button>
+          </div>
+        )}
+
         {isProcessing && (
           <div className="flex flex-col items-center gap-4">
             <div className="w-20 h-20 border-4 border-purple-500 border-t-transparent rounded-full animate-spin" />
@@ -315,9 +315,9 @@ export default function VideoTaskPage() {
         )}
 
         {isSuccess && task.video_url && (
-          <div className="relative w-full h-full flex items-center justify-center">
+          <div className="relative w-full h-full flex items-center justify-center p-4">
             {/* 水印 */}
-            <div className="absolute top-4 right-4 z-10 pointer-events-none">
+            <div className="absolute top-4 right-16 z-10 pointer-events-none">
               <span className="text-white/60 text-sm font-medium tracking-wide">Voicica AI</span>
             </div>
 
@@ -353,9 +353,9 @@ export default function VideoTaskPage() {
         )}
       </div>
 
-      {/* 底部信息区域 */}
+      {/* 底部信息区域 - 固定底部 */}
       <div
-        className="px-4 pb-4"
+        className="flex-shrink-0 px-4 pb-4 bg-[#0a0a1a]"
         style={{ paddingBottom: 'calc(16px + var(--safe-area-inset-bottom, 0px))' }}
       >
         {/* Prompt */}

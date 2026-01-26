@@ -2,10 +2,30 @@
  * Kie.ai Video Generation Service
  *
  * AI 视频生成服务，支持 Seedance 1.5 Pro 模型
+ * 采用和 Music 相同的异步模式：提交任务 -> Webhook回调/前端轮询
+ *
  * 文档: https://kie.ai/seedance-1-5-pro
  */
 
 const KIE_API_BASE_URL = 'https://api.kie.ai/api/v1';
+
+/**
+ * KIE API 错误码定义
+ *
+ * 致命错误（任务失败）:
+ * - 401: Unauthorized - 认证失败
+ * - 402: Insufficient Credits - 余额不足
+ * - 404: Not Found - 资源不存在
+ * - 422: Validation Error - 参数验证失败
+ * - 501: Generation Failed - 生成失败
+ * - 505: Feature Disabled - 功能禁用
+ *
+ * 可重试错误（继续等待）:
+ * - 429: Rate Limited - 限流
+ * - 455: Service Unavailable - 服务维护中
+ * - 500: Server Error - 服务器错误
+ */
+const FATAL_ERROR_CODES = [401, 402, 404, 422, 501, 505];
 
 /**
  * 视频生成参数
@@ -61,27 +81,19 @@ export interface KieTaskStatusResponse {
 }
 
 /**
- * 视频生成结果
+ * 视频任务状态结果（不抛异常，返回状态对象）
  */
-export interface KieGeneratedVideo {
-  /** KIE 外部任务 ID */
-  taskId: string;
-  /** 视频 URL */
-  videoURL?: string;
+export interface KieVideoTaskStatus {
   /** 状态 */
-  status: 'waiting' | 'success' | 'fail';
+  status: 'PENDING' | 'PROCESSING' | 'SUCCESS' | 'FAILURE';
+  /** 进度 0-100 */
+  progress: number;
+  /** 视频 URL（成功时） */
+  videoUrl?: string;
   /** 错误信息 */
-  errorMessage?: string;
-  /** 耗时 (毫秒) */
+  error?: string;
+  /** 耗时（毫秒） */
   costTime?: number;
-}
-
-/**
- * 任务创建回调参数
- */
-export interface KieTaskCreatedCallback {
-  /** KIE 外部任务 ID */
-  externalTaskId: string;
 }
 
 /**
@@ -99,7 +111,8 @@ function getKieApiKey(): string {
  * 创建视频生成任务
  *
  * @param params 生成参数
- * @returns 任务 ID
+ * @returns 外部任务 ID
+ * @throws Error 如果创建失败
  */
 export async function createKieVideoTask(params: KieGenerateVideoParams): Promise<string> {
   const apiKey = getKieApiKey();
@@ -147,30 +160,19 @@ export async function createKieVideoTask(params: KieGenerateVideoParams): Promis
     body: JSON.stringify(requestBody),
   });
 
-  if (!response.ok) {
-    const errorText = await response.text();
-    console.error('❌ [Kie Video] Create task failed:', response.status, errorText);
+  // 解析响应
+  const result: KieCreateTaskResponse = await response.json().catch(() => ({
+    code: response.status,
+    msg: `HTTP ${response.status}`,
+    data: { taskId: '' },
+  }));
 
-    if (response.status === 401) {
-      throw new Error('Kie API authentication failed');
-    }
-    if (response.status === 402) {
-      throw new Error('Kie API insufficient balance');
-    }
-    if (response.status === 422) {
-      throw new Error('Kie API parameter validation failed');
-    }
-    if (response.status === 429) {
-      throw new Error('Kie API rate limit exceeded');
-    }
-
-    throw new Error(`Kie API error: ${response.status} ${errorText}`);
-  }
-
-  const result: KieCreateTaskResponse = await response.json();
+  console.log(`🎬 [Kie Video] Create task response: code=${result.code}, msg=${result.msg}`);
 
   if (result.code !== 200) {
-    throw new Error(`Kie API error: ${result.msg}`);
+    const errorMsg = result.msg || `Error code: ${result.code}`;
+    console.error(`❌ [Kie Video] Create task failed: ${errorMsg}`);
+    throw new Error(errorMsg);
   }
 
   console.log('✅ [Kie Video] Task created:', result.data.taskId);
@@ -178,136 +180,98 @@ export async function createKieVideoTask(params: KieGenerateVideoParams): Promis
 }
 
 /**
- * 查询任务状态
+ * 查询 KIE API 视频任务状态（不抛异常，返回状态对象）
  *
- * @param taskId 任务 ID
- * @returns 任务状态
- */
-export async function getKieTaskStatus(taskId: string): Promise<KieGeneratedVideo> {
-  const apiKey = getKieApiKey();
-
-  const response = await fetch(`${KIE_API_BASE_URL}/jobs/recordInfo?taskId=${taskId}`, {
-    method: 'GET',
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-    },
-  });
-
-  if (!response.ok) {
-    throw new Error(`Kie API error: ${response.status}`);
-  }
-
-  const result: KieTaskStatusResponse = await response.json();
-
-  if (result.code !== 200) {
-    throw new Error(`Kie API error: ${result.msg}`);
-  }
-
-  const data = result.data;
-  let videoURL: string | undefined;
-
-  if (data.state === 'success' && data.resultJson) {
-    try {
-      const resultData = JSON.parse(data.resultJson);
-      videoURL = resultData.resultUrls?.[0];
-    } catch {
-      console.error('❌ [Kie Video] Failed to parse resultJson:', data.resultJson);
-    }
-  }
-
-  return {
-    taskId: data.taskId,
-    videoURL,
-    status: data.state,
-    errorMessage: data.failMsg || undefined,
-    costTime: data.costTime || undefined,
-  };
-}
-
-/**
- * 轮询等待视频生成完成
+ * 和 Music 的 queryKieTaskStatus 保持一致的模式
  *
- * @param taskId 任务 ID
- * @param maxWaitMs 最大等待时间（毫秒），默认 10 分钟
- * @param pollIntervalMs 轮询间隔（毫秒），默认 10 秒
- * @param onProgress 进度回调
- * @returns 完成的视频信息
+ * @param externalTaskId KIE 外部任务 ID
+ * @returns 任务状态对象
  */
-export async function waitForKieVideoCompletion(
-  taskId: string,
-  maxWaitMs: number = 600000,
-  pollIntervalMs: number = 10000,
-  onProgress?: (progress: number) => Promise<void>
-): Promise<KieGeneratedVideo> {
-  const startTime = Date.now();
-  let pollCount = 0;
+export async function queryKieVideoTaskStatus(externalTaskId: string): Promise<KieVideoTaskStatus> {
+  try {
+    const apiKey = getKieApiKey();
 
-  while (Date.now() - startTime < maxWaitMs) {
-    pollCount++;
+    const response = await fetch(`${KIE_API_BASE_URL}/jobs/recordInfo?taskId=${externalTaskId}`, {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+      },
+    });
 
-    try {
-      const status = await getKieTaskStatus(taskId);
+    const result: KieTaskStatusResponse = await response.json().catch(() => ({
+      code: response.status,
+      msg: `HTTP ${response.status}`,
+      data: null as unknown as KieTaskStatusResponse['data'],
+    }));
 
-      // 计算进度（30% 到 90%，基于轮询次数和时间）
-      const elapsedRatio = Math.min((Date.now() - startTime) / maxWaitMs, 0.9);
-      const progress = Math.floor(30 + elapsedRatio * 60);
+    console.log(`🎬 [Kie Video] Task status response: code=${result.code}, state=${result.data?.state}`);
 
-      if (onProgress) {
-        await onProgress(progress);
+    // 处理非 200 状态码
+    if (result.code !== 200) {
+      const errorMsg = result.msg || `Error code: ${result.code}`;
+
+      // 致命错误 - 返回失败状态
+      if (FATAL_ERROR_CODES.includes(result.code)) {
+        console.error(`❌ [Kie Video] Fatal error (${result.code}): ${errorMsg}`);
+        return {
+          status: 'FAILURE',
+          progress: 0,
+          error: errorMsg,
+        };
       }
 
-      console.log(`🔄 [Kie Video] Poll #${pollCount}, status=${status.status}, progress=${progress}%`);
-
-      if (status.status === 'success') {
-        console.log('✅ [Kie Video] Video generation completed:', status.videoURL);
-        return status;
-      }
-
-      if (status.status === 'fail') {
-        throw new Error(status.errorMessage || 'Video generation failed');
-      }
-    } catch (error) {
-      // 如果是轮询错误（非失败状态），继续轮询
-      if (error instanceof Error && !error.message.includes('Video generation failed')) {
-        console.warn(`⚠️ [Kie Video] Poll error (will retry):`, error);
-      } else {
-        throw error;
-      }
+      // 可重试错误 - 返回处理中状态（继续等待）
+      console.warn(`⚠️ [Kie Video] Retryable error (${result.code}): ${errorMsg}`);
+      return {
+        status: 'PROCESSING',
+        progress: 30,
+        error: errorMsg,
+      };
     }
 
-    // 等待下一次轮询
-    await new Promise((resolve) => setTimeout(resolve, pollIntervalMs));
+    const data = result.data;
+
+    // 成功状态
+    if (data.state === 'success') {
+      let videoUrl: string | undefined;
+      if (data.resultJson) {
+        try {
+          const resultData = JSON.parse(data.resultJson);
+          videoUrl = resultData.resultUrls?.[0];
+        } catch {
+          console.error('❌ [Kie Video] Failed to parse resultJson:', data.resultJson);
+        }
+      }
+
+      return {
+        status: 'SUCCESS',
+        progress: 100,
+        videoUrl,
+        costTime: data.costTime || undefined,
+      };
+    }
+
+    // 失败状态
+    if (data.state === 'fail') {
+      return {
+        status: 'FAILURE',
+        progress: 0,
+        error: data.failMsg || 'Video generation failed',
+      };
+    }
+
+    // 等待中（waiting）
+    return {
+      status: 'PROCESSING',
+      progress: 50, // KIE 没有返回具体进度，给一个中间值
+    };
+  } catch (error) {
+    console.error('❌ [Kie Video] Query task status error:', error);
+    // 网络错误等，返回处理中状态（让前端继续轮询）
+    return {
+      status: 'PROCESSING',
+      progress: 30,
+      error: error instanceof Error ? error.message : 'Unknown error',
+    };
   }
-
-  throw new Error(`Video generation timeout (exceeded ${maxWaitMs / 1000} seconds)`);
-}
-
-/**
- * 生成视频并等待完成
- *
- * @param params 生成参数
- * @param onProgress 进度回调
- * @param onTaskCreated 任务创建后的回调（用于保存外部任务 ID）
- * @returns 完成的视频信息
- */
-export async function generateKieVideoAndWait(
-  params: KieGenerateVideoParams,
-  onProgress?: (progress: number) => Promise<void>,
-  onTaskCreated?: (callback: KieTaskCreatedCallback) => Promise<void>
-): Promise<KieGeneratedVideo> {
-  // 1. 创建任务
-  const externalTaskId = await createKieVideoTask(params);
-
-  // 2. 通知调用者任务已创建（用于保存外部任务 ID）
-  if (onTaskCreated) {
-    await onTaskCreated({ externalTaskId });
-  }
-
-  // 3. 轮询等待完成
-  return waitForKieVideoCompletion(
-    externalTaskId,
-    600000, // 10 minutes max
-    10000, // 10 seconds interval
-    onProgress
-  );
 }

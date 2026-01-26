@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { uploadVideo } from '@/lib/services/r2-storage';
-import { v4 as uuidv4 } from 'uuid';
 
 /**
  * KIE API 视频生成回调处理

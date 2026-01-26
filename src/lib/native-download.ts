@@ -85,10 +85,15 @@ async function downloadNative(
     }
 
     // 合并 chunks 并转为 base64
-    const blob = new Blob(chunks);
-    const arrayBuffer = await blob.arrayBuffer();
+    const totalLength = chunks.reduce((acc, chunk) => acc + chunk.length, 0);
+    const mergedArray = new Uint8Array(totalLength);
+    let offset = 0;
+    for (const chunk of chunks) {
+      mergedArray.set(chunk, offset);
+      offset += chunk.length;
+    }
     const base64 = btoa(
-      new Uint8Array(arrayBuffer).reduce(
+      mergedArray.reduce(
         (data, byte) => data + String.fromCharCode(byte),
         ''
       )

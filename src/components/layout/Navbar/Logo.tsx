@@ -7,9 +7,6 @@ interface LogoProps {
 }
 
 export default function Logo({ dark = true }: LogoProps) {
-  // 少女粉滤镜：将透明logo转换为粉色
-  const pinkFilter = 'brightness(0) saturate(100%) invert(56%) sepia(52%) saturate(4594%) hue-rotate(314deg) brightness(98%) contrast(91%)';
-
   return (
     <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacitygroup">
       <Image

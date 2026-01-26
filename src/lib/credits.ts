@@ -406,3 +406,66 @@ export async function refundCredits(
 
   console.log(`✅ [refundCredits] 精确返还积分成功: ${breakdown.total} (永久: ${breakdown.fromCredits}, 当月: ${breakdown.fromMonthlyCredits}), 用户: ${userId}`);
 }
+
+/**
+ * 简化版积分返还（不需要 breakdown 信息）
+ *
+ * 用于 KIE 等异步任务失败时的积分返还，此时无法获取原始扣减详情。
+ * 返还的积分全部加到永久积分(credits)，对用户更有利（永久积分不会过期）。
+ *
+ * @param userId 用户 ID
+ * @param amount 返还数量
+ * @param productType 产品类型
+ * @param description 描述信息
+ * @param taskId 任务 ID（可选）
+ */
+export async function refundCreditsSimple(
+  userId: string,
+  amount: number,
+  productType: ProductType,
+  description: string,
+  taskId?: string
+): Promise<void> {
+  // 判断是否为匿名用户：先尝试在 users 表中查找
+  const normalUser = await prisma.users.findUnique({
+    where: { user_id: userId },
+    select: { user_id: true },
+  });
+
+  const isAnonymous = !normalUser;
+
+  await prisma.$transaction(async (tx) => {
+    if (isAnonymous) {
+      // 匿名用户：返还到 credits
+      await tx.anonymous_users.update({
+        where: { user_id: userId },
+        data: {
+          credits: { increment: amount },
+          total_credits_used: { decrement: amount },
+        },
+      });
+    } else {
+      // 正式用户：返还到永久积分(credits)
+      await tx.users.update({
+        where: { user_id: userId },
+        data: {
+          credits: { increment: amount },
+          total_credits_used: { decrement: amount },
+        },
+      });
+    }
+
+    // 记录到 credit_history
+    await tx.credit_history.create({
+      data: {
+        user_id: userId,
+        amount: amount,
+        description,
+        product_type: productType,
+        task_id: taskId,
+      },
+    });
+  });
+
+  console.log(`✅ [refundCreditsSimple] 返还积分成功: ${amount}, 用户: ${userId}, 匿名: ${isAnonymous}`);
+}

@@ -70,7 +70,7 @@ export default function VideoCard({ video, onClick }: VideoCardProps) {
                 className="w-full h-full object-cover"
                 muted
                 playsInline
-                preload="auto"
+                preload="metadata"
                 onLoadedData={() => setFrameLoaded(true)}
                 onError={() => setFrameError(true)}
               />

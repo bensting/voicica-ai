@@ -8,7 +8,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { verifySignatureAppRouter } from '@upstash/qstash/nextjs';
 import prisma from '@/lib/prisma';
 import { generateVideoAndWait } from '@/lib/services/runware-video';
-import { generateKieVideoAndWait, type KieGeneratedVideo, type KieTaskCreatedCallback } from '@/lib/services/kie-video';
+import { createKieVideoTask } from '@/lib/services/kie-video';
 import { uploadVideo, uploadImage } from '@/lib/services/r2-storage';
 import { v4 as uuidv4 } from 'uuid';
 import { ProductType } from '@/config/productType';
@@ -120,6 +120,7 @@ async function handleVideoTask(req: NextRequest) {
 
     if (apiBackend === 'kie') {
       // 使用 Kie.ai API (Seedance 1.5 Pro)
+      // 采用和 Music 相同的异步模式：提交任务 -> 立即返回 -> Webhook回调/前端轮询
       const imageCount = images?.length || (startFrame ? 1 : 0);
       console.log(`🎬 [VideoQueue] 提交 Kie.ai 任务: model=${model}, resolution=${resolution}, duration=${duration}s, images=${imageCount}, fixedLens=${fixedLens}, generateAudio=${generateAudio}`);
 
@@ -160,40 +161,40 @@ async function handleVideoTask(req: NextRequest) {
         }
       }
 
-      const kieResult: KieGeneratedVideo = await generateKieVideoAndWait(
-        {
-          prompt,
-          inputUrls: inputUrls && inputUrls.length > 0 ? inputUrls : undefined,
-          aspectRatio: aspectRatio as '1:1' | '21:9' | '4:3' | '3:4' | '16:9' | '9:16',
-          resolution: resolution as '480p' | '720p',
-          duration: String(duration) as '4' | '8' | '12',
-          fixedLens: fixedLens ?? false,
-          generateAudio: generateAudio ?? false,
-          callBackUrl: getCallbackUrl(),
-        },
-        async (progress) => {
-          // 更新进度（30% - 90%）
-          await prisma.video_records.update({
-            where: { task_id: taskId },
-            data: { progress },
-          });
-        },
-        async ({ externalTaskId }: KieTaskCreatedCallback) => {
-          // 保存 KIE 外部任务 ID，用于 webhook 回调查找
-          console.log(`🎬 [VideoQueue] 保存外部任务 ID: ${externalTaskId}`);
-          await prisma.video_records.update({
-            where: { task_id: taskId },
-            data: { external_task_id: externalTaskId },
-          });
-        }
-      );
+      // 提交任务到 KIE API（不等待完成）
+      const externalTaskId = await createKieVideoTask({
+        prompt,
+        inputUrls: inputUrls && inputUrls.length > 0 ? inputUrls : undefined,
+        aspectRatio: aspectRatio as '1:1' | '21:9' | '4:3' | '3:4' | '16:9' | '9:16',
+        resolution: resolution as '480p' | '720p',
+        duration: String(duration) as '4' | '8' | '12',
+        fixedLens: fixedLens ?? false,
+        generateAudio: generateAudio ?? false,
+        callBackUrl: getCallbackUrl(),
+      });
 
-      if (!kieResult.videoURL) {
-        throw new Error('Video generation completed but no video URL returned');
-      }
+      // 保存外部任务 ID，用于 webhook 回调和前端轮询
+      await prisma.video_records.update({
+        where: { task_id: taskId },
+        data: {
+          external_task_id: externalTaskId,
+          progress: 30,
+        },
+      });
 
-      videoResultURL = kieResult.videoURL;
-      apiCost = kieResult.costTime ? kieResult.costTime / 1000 : undefined; // Convert ms to seconds as cost indicator
+      console.log(`✅ [VideoQueue] KIE 任务已提交: ${taskId} -> ${externalTaskId}`);
+      console.log(`📡 [VideoQueue] 等待 Webhook 回调或前端轮询完成任务`);
+
+      // KIE 任务立即返回，不等待完成
+      // 任务完成将通过以下方式处理：
+      // 1. Webhook 回调 (/api/webhooks/kie-video)
+      // 2. 前端轮询时主动查询 KIE API
+      return NextResponse.json({
+        success: true,
+        taskId,
+        externalTaskId,
+        message: 'Task submitted to KIE, waiting for completion via webhook or polling',
+      });
     } else {
       // 使用 Runware API (默认)
       console.log(`🎬 [VideoQueue] 提交 Runware 任务: model=${model}, resolution=${resolution}, duration=${duration}s, hasImage=${!!startFrame}`);

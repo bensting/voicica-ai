@@ -18,6 +18,8 @@ export const ProductType = {
   TEXT_TO_SPEECH: 'text_to_speech',
   /** 文字转视频 */
   TEXT_TO_VIDEO: 'text_to_video',
+  /** AI 音乐生成 */
+  AI_MUSIC: 'ai_music',
   /** 语音克隆 */
   VOICE_CLONING: 'voice_cloning',
   /** YouTube 视频下载器 */

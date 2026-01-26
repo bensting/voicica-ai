@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { uploadAudio, uploadImage } from '@/lib/services/r2-storage';
+import { refundCreditsSimple } from '@/lib/credits';
+import { ProductType } from '@/config/productType';
 
 /**
  * KIE API 音乐生成回调处理
@@ -118,15 +120,42 @@ export async function POST(request: NextRequest) {
     if (payload.code !== 200) {
       console.error('🎵 [KIE Callback] 回调错误:', payload.msg);
 
-      // 尝试根据 task_id 更新记录状态
+      // 尝试根据 task_id 更新记录状态并返还积分（使用乐观锁防止重复）
       if (payload.data?.task_id) {
-        await prisma.music_records.updateMany({
+        const failedRecord = await prisma.music_records.findFirst({
           where: { external_task_id: payload.data.task_id },
-          data: {
-            status: 'FAILURE',
-            error_message: payload.msg || 'Generation failed',
-          },
         });
+
+        if (failedRecord) {
+          const updateResult = await prisma.music_records.updateMany({
+            where: {
+              id: failedRecord.id,
+              status: 'PROCESSING', // 乐观锁：防止重复处理
+            },
+            data: {
+              status: 'FAILURE',
+              error_message: payload.msg || 'Generation failed',
+            },
+          });
+
+          // 如果更新成功（count > 0），说明是第一个处理的，需要返还积分
+          if (updateResult.count > 0 && failedRecord.credits_cost && failedRecord.credits_cost > 0) {
+            try {
+              await refundCreditsSimple(
+                failedRecord.user_id,
+                failedRecord.credits_cost,
+                ProductType.AI_MUSIC,
+                `Music generation failed (KIE callback error): ${payload.msg || 'Unknown error'}`,
+                failedRecord.task_id
+              );
+              console.log(`💰 [KIE Callback] 积分已返还: ${failedRecord.credits_cost}`);
+            } catch (refundError) {
+              console.error(`❌ [KIE Callback] 积分返还失败:`, refundError);
+            }
+          } else if (updateResult.count === 0) {
+            console.log(`⚠️ [KIE Callback] 任务已被其他请求处理，跳过: ${failedRecord.task_id}`);
+          }
+        }
       }
 
       return NextResponse.json({ success: false, error: payload.msg });

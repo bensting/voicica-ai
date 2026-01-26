@@ -10,6 +10,7 @@ import DeleteConfirmDialog from '@/components/native/ui/DeleteConfirmDialog';
 import { useBottomNav } from '@/contexts/BottomNavContext';
 import { formatTime, getModelDisplayName } from './utils';
 import { downloadFile } from '@/lib/native-download';
+import { showToast } from '@/lib/native-toast';
 
 interface MusicDetailModalProps {
   music: MusicRecord;
@@ -108,8 +109,10 @@ export default function MusicDetailModal({
         fileName,
         type: 'audio',
       });
-      if (!result.success) {
-        alert(`Download failed: ${result.error}`);
+      if (result.success) {
+        showToast({ text: 'Download completed', duration: 'short' });
+      } else {
+        showToast({ text: `Download failed: ${result.error}`, duration: 'long' });
       }
     } finally {
       setDownloading(false);

@@ -6,6 +6,7 @@ import { getTtsRecordByTaskId } from '@/actions/tts';
 import type { TtsRecord } from '@/actions/tts';
 import GradientButton from '@/components/native/common/GradientButton';
 import { downloadFile } from '@/lib/native-download';
+import { showToast } from '@/lib/native-toast';
 
 // 返回图标
 const BackIcon = () => (
@@ -186,8 +187,10 @@ export default function TTSTaskPage() {
         fileName,
         type: 'audio',
       });
-      if (!result.success) {
-        alert(`Download failed: ${result.error}`);
+      if (result.success) {
+        showToast({ text: 'Download completed', duration: 'short' });
+      } else {
+        showToast({ text: `Download failed: ${result.error}`, duration: 'long' });
       }
     } finally {
       setDownloading(false);

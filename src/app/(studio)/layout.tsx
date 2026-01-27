@@ -7,6 +7,7 @@ import StudioTopNav from '@/components/layout/studio/StudioTopNav';
 import UpgradeModal from '@/components/features/pricing/UpgradeModal';
 import { StudioProvider, useStudio } from '@/contexts/StudioContext';
 import { useCredits } from '@/contexts/CreditsContext';
+import AdsterraSocialBar from '@/components/ads/AdsterraSocialBar';
 
 // 动态导入每日任务弹窗
 const DailyTasksModal = dynamic(
@@ -90,6 +91,9 @@ function StudioLayoutContent({
           onUpgradeClick={handleUpgradeClick}
         />
       )}
+
+      {/* ========== Social Bar 广告 ========== */}
+      <AdsterraSocialBar />
     </div>
   );
 }

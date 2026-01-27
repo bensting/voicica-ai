@@ -304,7 +304,7 @@ export default function ExploreSection() {
                 key={video.id}
                 video={video}
                 index={index}
-                onClick={() => router.push(`/native/video/play/${video.taskId}`)}
+                onClick={() => router.push(`/native/video/play/${video.taskId}?from=explore`)}
               />
             ))}
           </div>

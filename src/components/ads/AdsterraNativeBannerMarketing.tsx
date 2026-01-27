@@ -68,25 +68,12 @@ export default function AdsterraNativeBannerMarketing({
   return (
     <div className="w-full py-6">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="w-full bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl border border-gray-200 overflow-hidden">
-          <div className="p-4">
-            {/* Sponsored 标签 */}
-            <div className="flex items-center gap-2 text-gray-400 text-xs mb-3">
-              <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <rect x="3" y="3" width="18" height="18" rx="2" />
-                <path d="M9 9h6v6H9z" />
-              </svg>
-              <span>Sponsored · {position}</span>
-            </div>
-
-            {/* Adsterra Native Banner 容器 */}
-            <div
-              ref={containerRef}
-              id={config.containerId}
-              className="min-h-[200px]"
-            />
-          </div>
-        </div>
+        {/* Adsterra Native Banner 容器 - 给予足够宽度让广告横向排列 */}
+        <div
+          ref={containerRef}
+          id={config.containerId}
+          className="w-full"
+        />
       </div>
     </div>
   );

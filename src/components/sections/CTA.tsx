@@ -90,14 +90,17 @@ export default function CTA({
       <div className="relative z-10 max-w-6xl mx-auto text-center">
         {/* Brand Logo */}
         <div className="mb-6 flex items-center justify-center">
-          <Image
-            src="/logo/voice-labs-logo-dark.svg"
-            alt="AI-Voice-Labs.com"
-            width={250}
-            height={40}
-            priority
-            className="h-10 md:h-12 lg:h-14 w-auto brightness-0"
-          />
+          <picture>
+            <source srcSet="/logo/logo-full-transparent-light-256.webp" type="image/webp" />
+            <Image
+              src="/logo/logo-full-transparent-light.png"
+              alt="Voicica.AI"
+              width={250}
+              height={40}
+              priority
+              className="h-10 md:h-12 lg:h-14 w-auto"
+            />
+          </picture>
         </div>
 
         {/* Main Title */}

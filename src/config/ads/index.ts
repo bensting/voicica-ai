@@ -56,3 +56,12 @@ export {
   type NativeAdProvider,
   type RewardedAdConfig,
 } from './rewarded';
+
+// Adsterra (Web Smart Link)
+export {
+  adsterraConfig,
+  getAdsterraSmartLinkUrl,
+  getAdsterraMinWaitSeconds,
+  isAdsterraEnabled,
+  type AdsterraConfig,
+} from './adsterra';

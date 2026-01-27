@@ -71,9 +71,12 @@
     <style name="AppTheme.NoActionBarLaunch" parent="Theme.SplashScreen">
         <!-- Splash 结束后自动切换到此主题 -->
         <item name="postSplashScreenTheme">@style/AppTheme.NoActionBar</item>
-        <!-- Splash 背景 -->
-        <item name="android:background">@drawable/splash</item>
-        <!-- Action Mode 样式 - 防止文本选择时显示 splash 背景 -->
+        <!-- Android 12+ SplashScreen API: 使用背景色 + 图标，不再使用全屏 splash 图片 -->
+        <!-- 这样可以避免 Action Mode（文本选择）时背景显示 splash 图片的问题 -->
+        <item name="windowSplashScreenBackground">#0a0a1a</item>
+        <item name="windowSplashScreenAnimatedIcon">@mipmap/ic_launcher_foreground</item>
+        <item name="android:windowBackground">#0a0a1a</item>
+        <!-- Action Mode 样式 - 防止文本选择时显示错误背景 -->
         <item name="windowActionModeOverlay">true</item>
         <item name="actionModeBackground">@drawable/action_mode_background</item>
         <item name="android:actionModeBackground">@drawable/action_mode_background</item>

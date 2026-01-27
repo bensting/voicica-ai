@@ -70,10 +70,10 @@ export default function NativeNavbar() {
                 <Image
                   src="/logo/logo-transparent.png"
                   alt="VoicicaAI"
-                  width={40}
-                  height={40}
+                  width={48}
+                  height={48}
                   priority
-                  className="h-10 w-10 opacity-90 hover:opacity-100 transition-opacity"
+                  className="h-12 w-12 opacity-90 hover:opacity-100 transition-opacity"
                 />
               </picture>
             </Link>

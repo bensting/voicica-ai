@@ -1,4 +1,3 @@
-import { useRouter } from 'next/navigation';
 import { LocaleOption } from '@/types/config';
 import type { Voice } from '@/types/voice';
 import { GradientButton } from '@/components/ui';
@@ -61,7 +60,6 @@ export default function TTSDemoPanel({
   isPlaying,
   onTextChange,
 }: TTSDemoPanelProps) {
-  const router = useRouter();
   const { t } = useLanguage();
   const { triggerPopunder } = usePopunder();
 

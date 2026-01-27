@@ -60,6 +60,7 @@ export interface TtsRecordVoice {
   provider: string;
   locale: string;
   country: string;
+  gender: string;
   avatar_url: string;
 }
 
@@ -352,30 +353,64 @@ export async function getTtsRecords(limit: number = 50): Promise<TtsRecord[]> {
     take: limit,
   });
 
-  return records.map((r) => ({
-    id: r.id,
-    user_id: r.user_id,
-    task_id: r.task_id,
-    text: r.text,
-    voice_name: r.voice_name,
-    language: r.language,
-    style: r.style,
-    speed: r.speed,
-    pitch: r.pitch,
-    volume: r.volume,
-    credits_cost: r.credits_cost,
-    character_count: r.character_count,
-    status: r.status,
-    progress: r.progress,
-    audio_url: r.audio_url,
-    duration: r.duration,
-    format: r.format,
-    error_message: r.error_message,
-    created_at: r.created_at,
-    completed_at: r.completed_at,
-    share_id: r.share_id,
-    story_id: r.story_id,
-  }));
+  // 获取所有不重复的 voice_name
+  const voiceNames = [...new Set(records.map(r => r.voice_name))];
+
+  // 批量查询语音信息
+  const voices = await prisma.voices.findMany({
+    where: { name: { in: voiceNames } },
+    select: {
+      id: true,
+      name: true,
+      display_name: true,
+      provider: true,
+      locale: true,
+      country: true,
+      gender: true,
+      avatar_url: true,
+    },
+  });
+
+  // 创建 voice_name -> voice 的映射
+  const voiceMap = new Map(voices.map(v => [v.name, v]));
+
+  return records.map((r) => {
+    const voice = voiceMap.get(r.voice_name);
+    return {
+      id: r.id,
+      user_id: r.user_id,
+      task_id: r.task_id,
+      text: r.text,
+      voice_name: r.voice_name,
+      language: r.language,
+      style: r.style,
+      speed: r.speed,
+      pitch: r.pitch,
+      volume: r.volume,
+      credits_cost: r.credits_cost,
+      character_count: r.character_count,
+      status: r.status,
+      progress: r.progress,
+      audio_url: r.audio_url,
+      duration: r.duration,
+      format: r.format,
+      error_message: r.error_message,
+      created_at: r.created_at,
+      completed_at: r.completed_at,
+      share_id: r.share_id,
+      story_id: r.story_id,
+      voice: voice ? {
+        id: voice.id,
+        name: voice.name,
+        display_name: voice.display_name,
+        provider: voice.provider,
+        locale: voice.locale,
+        country: voice.country,
+        gender: voice.gender,
+        avatar_url: voice.avatar_url,
+      } : null,
+    };
+  });
 }
 
 /**
@@ -474,6 +509,7 @@ export async function queryTtsRecords(params: {
         provider: voice.provider,
         locale: voice.locale,
         country: voice.country,
+        gender: voice.gender,
         avatar_url: voice.avatar_url,
       } : null,
     };
@@ -545,6 +581,7 @@ export async function getTtsRecordById(recordId: number): Promise<TtsRecord> {
       provider: voice.provider,
       locale: voice.locale,
       country: voice.country,
+      gender: voice.gender,
       avatar_url: voice.avatar_url,
     } : null,
   };
@@ -679,6 +716,7 @@ export async function getTtsRecordByTaskId(taskId: string): Promise<TtsRecord> {
       provider: voice.provider,
       locale: voice.locale,
       country: voice.country,
+      gender: voice.gender,
       avatar_url: voice.avatar_url,
     } : null,
   };

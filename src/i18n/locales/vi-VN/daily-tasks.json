@@ -27,6 +27,17 @@
     "adInterrupted": "Vui lòng xem hết video để nhận phần thưởng",
     "adUnavailable": "Không có quảng cáo, vui lòng thử lại sau",
     "adError": "Tải quảng cáo thất bại, vui lòng thử lại sau",
+
+    "watchingAd": "Đang xem quảng cáo...",
+    "keepAdOpen": "Vui lòng giữ cửa sổ quảng cáo mở",
+    "adCompleted": "Hoàn thành!",
+    "clickToClaimReward": "Nhấp bên dưới để nhận phần thưởng",
+    "claimReward": "Nhận thưởng",
+    "exploreAdTip": "Khám phá quảng cáo để tìm ưu đãi độc quyền",
+    "adWindowClosedNoReward": "Cửa sổ quảng cáo đã đóng, không thể nhận thưởng",
+    "adFailed": "Thất bại",
+    "windowClosedTip": "Vui lòng xem quảng cáo lại",
+
     "resetTip": "Nhiệm vụ được đặt lại hàng ngày lúc nửa đêm",
     "noAdsPromo": "Không muốn xem quảng cáo? Trở thành thành viên!",
     "watchMore": "Xem thêm +1",

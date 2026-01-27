@@ -85,9 +85,9 @@ export default function StudioTopNav({
             </picture>
             {/* 桌面端 - 深色 logo (浅色背景) */}
             <picture className="hidden lg:block">
-              <source srcSet="/logo/logo-full-transparent-256.webp" type="image/webp" />
+              <source srcSet="/logo/logo-full-transparent-light-256.webp" type="image/webp" />
               <Image
-                src="/logo/logo-full-transparent.png"
+                src="/logo/logo-full-transparent-light.png"
                 alt="Voicica.AI"
                 width={140}
                 height={28}

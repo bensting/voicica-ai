@@ -65,14 +65,17 @@ export default function NativeNavbar() {
           {/* Logo + Free 按钮 */}
           <div className="flex items-center gap-3">
             <Link href="/native" className="flex items-center">
-              <Image
-                src="/logo/voice-labs-logo-dark.svg"
-                alt="VoicicaAI"
-                width={120}
-                height={24}
-                priority
-                className="opacity-90 hover:opacity-100 transition-opacity"
-              />
+              <picture>
+                <source srcSet="/logo/logo-transparent-256.webp" type="image/webp" />
+                <Image
+                  src="/logo/logo-transparent.png"
+                  alt="VoicicaAI"
+                  width={40}
+                  height={40}
+                  priority
+                  className="h-10 w-10 opacity-90 hover:opacity-100 transition-opacity"
+                />
+              </picture>
             </Link>
 
             {/* 每日任务按钮 - 宝箱 + FREE */}

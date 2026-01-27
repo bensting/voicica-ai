@@ -33,6 +33,16 @@
     "adUnavailable": "Tidak ada iklan tersedia, silakan coba lagi nanti",
     "adError": "Gagal memuat iklan, silakan coba lagi nanti",
 
+    "watchingAd": "Menonton iklan...",
+    "keepAdOpen": "Harap biarkan jendela iklan terbuka",
+    "adCompleted": "Selesai!",
+    "clickToClaimReward": "Klik di bawah untuk klaim hadiah",
+    "claimReward": "Klaim Hadiah",
+    "exploreAdTip": "Jelajahi iklan untuk menemukan penawaran eksklusif",
+    "adWindowClosedNoReward": "Jendela iklan ditutup, tidak dapat klaim hadiah",
+    "adFailed": "Gagal",
+    "windowClosedTip": "Silakan tonton iklan lagi",
+
     "resetTip": "Tugas direset setiap hari pada tengah malam",
     "noAdsPromo": "Tidak ingin menonton iklan? Jadilah member!",
     "watchMore": "Tonton lagi +1",

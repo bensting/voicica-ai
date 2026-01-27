@@ -33,6 +33,16 @@
     "adUnavailable": "暂无可用广告，请稍后再试",
     "adError": "广告加载失败，请稍后再试",
 
+    "watchingAd": "观看广告中...",
+    "keepAdOpen": "请保持广告窗口打开",
+    "adCompleted": "观看完成！",
+    "clickToClaimReward": "点击下方按钮领取奖励",
+    "claimReward": "领取奖励",
+    "exploreAdTip": "浏览广告内容可发现更多精彩优惠",
+    "adWindowClosedNoReward": "广告窗口已关闭，无法领取奖励",
+    "adFailed": "领取失败",
+    "windowClosedTip": "请重新观看广告",
+
     "resetTip": "任务每日零点重置",
     "noAdsPromo": "不想看广告？立即成为会员！",
     "watchMore": "继续观看 +1",

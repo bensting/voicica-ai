@@ -33,6 +33,16 @@
     "adUnavailable": "No hay anuncios disponibles, por favor inténtalo más tarde",
     "adError": "Error al cargar el anuncio, por favor inténtalo más tarde",
 
+    "watchingAd": "Viendo anuncio...",
+    "keepAdOpen": "Por favor mantén la ventana del anuncio abierta",
+    "adCompleted": "¡Completado!",
+    "clickToClaimReward": "Haz clic abajo para reclamar tu recompensa",
+    "claimReward": "Reclamar recompensa",
+    "exploreAdTip": "Explora el anuncio para ofertas exclusivas",
+    "adWindowClosedNoReward": "Ventana del anuncio cerrada, no se puede reclamar",
+    "adFailed": "Fallido",
+    "windowClosedTip": "Por favor mira el anuncio de nuevo",
+
     "resetTip": "Las tareas se reinician diariamente a medianoche",
     "noAdsPromo": "¿No quieres ver anuncios? ¡Hazte miembro!",
     "watchMore": "Ver más +1",

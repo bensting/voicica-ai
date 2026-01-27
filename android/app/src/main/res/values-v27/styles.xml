@@ -26,6 +26,8 @@
         <item name="windowNoTitle">true</item>
         <!-- 深色窗口背景 -->
         <item name="android:windowBackground">#0a0a1a</item>
+        <!-- 浮动元素背景色（如浮动工具栏） -->
+        <item name="android:colorBackgroundFloating">#1a1a2e</item>
         <!-- Edge-to-edge support -->
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:navigationBarColor">@android:color/transparent</item>
@@ -35,9 +37,28 @@
         <item name="actionModeBackground">@drawable/action_mode_background</item>
         <item name="actionModeCloseDrawable">@android:drawable/ic_menu_close_clear_cancel</item>
         <item name="android:actionModeBackground">@drawable/action_mode_background</item>
+        <item name="actionModeStyle">@style/ActionModeStyle</item>
+        <item name="actionModePopupWindowStyle">@style/ActionModePopupStyle</item>
         <!-- Alert Dialog 样式 -->
         <item name="alertDialogTheme">@style/AppTheme.AlertDialog</item>
         <item name="android:alertDialogTheme">@style/AppTheme.AlertDialog</item>
+        <!-- Popup 窗口样式 -->
+        <item name="android:popupWindowStyle">@style/PopupWindowStyle</item>
+    </style>
+
+    <!-- Action Mode 样式 -->
+    <style name="ActionModeStyle" parent="Widget.AppCompat.ActionMode">
+        <item name="background">@drawable/action_mode_background</item>
+    </style>
+
+    <!-- Popup 窗口样式 -->
+    <style name="PopupWindowStyle" parent="android:Widget.PopupWindow">
+        <item name="android:popupBackground">@drawable/action_mode_background</item>
+    </style>
+
+    <!-- Action Mode Popup 样式（浮动工具栏） -->
+    <style name="ActionModePopupStyle" parent="Widget.AppCompat.Light.PopupMenu">
+        <item name="android:popupBackground">@drawable/action_mode_background</item>
     </style>
 
     <!-- 自定义 Alert Dialog 样式 -->
@@ -45,5 +66,20 @@
         <item name="android:windowBackground">@drawable/dialog_background</item>
         <item name="android:background">@drawable/dialog_background</item>
         <item name="colorAccent">@color/colorAccent</item>
+    </style>
+
+    <!-- 启动画面主题 - 需要覆盖 Action Mode 样式 -->
+    <style name="AppTheme.NoActionBarLaunch" parent="Theme.SplashScreen">
+        <!-- Splash 结束后自动切换到此主题 -->
+        <item name="postSplashScreenTheme">@style/AppTheme.NoActionBar</item>
+        <!-- Splash 背景 -->
+        <item name="android:background">@drawable/splash</item>
+        <!-- Action Mode 样式 - 防止文本选择时显示 splash 背景 -->
+        <item name="windowActionModeOverlay">true</item>
+        <item name="actionModeBackground">@drawable/action_mode_background</item>
+        <item name="android:actionModeBackground">@drawable/action_mode_background</item>
+        <item name="actionModePopupWindowStyle">@style/ActionModePopupStyle</item>
+        <!-- 浮动元素使用深色背景 -->
+        <item name="android:colorBackgroundFloating">#1a1a2e</item>
     </style>
 </resources>

@@ -1,8 +1,27 @@
 {
-  "version": "1.2.7",
-  "buildNumber": 28,
+  "version": "1.2.9",
+  "buildNumber": 30,
   "description": "原生应用版本（Android/iOS 应用壳）",
   "changelog": [
+    {
+      "version": "1.2.9",
+      "buildNumber": 30,
+      "date": "2026-01-27",
+      "changes": [
+        "添加 postSplashScreenTheme 自动切换主题",
+        "添加 colorBackgroundFloating 确保浮动元素使用深色背景",
+        "优化开机画面与文本选择工具栏的背景配置"
+      ]
+    },
+    {
+      "version": "1.2.8",
+      "buildNumber": 29,
+      "date": "2026-01-27",
+      "changes": [
+        "修复文本选择浮动工具栏显示 splash 背景的问题",
+        "新增 ActionModePopupStyle 样式确保弹出窗口使用深色背景"
+      ]
+    },
     {
       "version": "1.2.7",
       "buildNumber": 28,

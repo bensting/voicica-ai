@@ -6,8 +6,11 @@ import { X, Gift, Check, Loader2, Play, Crown, RefreshCw } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 import { useDailyTasks } from '@/hooks/useDailyTasks';
+import { useAdsterraSmartLink } from '@/hooks/useAdsterraSmartLink';
+import { claimAdReward, checkin } from '@/actions/daily-tasks';
 import LoginModal from '@/components/features/auth/LoginModal';
 import CelebrationEffect from './CelebrationEffect';
+import { Capacitor } from '@capacitor/core';
 
 // 广告加载超时时间（毫秒）
 const AD_LOADING_TIMEOUT = 30000;
@@ -39,6 +42,10 @@ export default function DailyTasksModal({ isOpen, onClose, onCreditsUpdated, onU
     refresh,
     cancelClaiming,
   } = useDailyTasks();
+
+  // Adsterra Smart Link for web
+  const adsterra = useAdsterraSmartLink();
+  const isNative = Capacitor.isNativePlatform();
 
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [lastClaimedCredits, setLastClaimedCredits] = useState<number | null>(null);
@@ -112,13 +119,59 @@ export default function DailyTasksModal({ isOpen, onClose, onCreditsUpdated, onU
 
   // 处理签到内部逻辑（需要先观看激励广告）
   const handleCheckinInternal = useCallback(async () => {
-    if (checkinLoading || claiming) return;
+    if (checkinLoading || claiming || adsterra.isShowing) return;
 
     cancelledRef.current = false;
     setCheckinError(null);
     setCheckinLoading(true);
     setPendingRetry(null);
 
+    // Web 端使用 Adsterra Smart Link
+    if (!isNative && adsterra.isEnabled) {
+      console.log('🎬 [DailyTasks] Starting Adsterra Smart Link for checkin...');
+      setCheckinLoading(false); // Adsterra 使用自己的 isShowing 状态
+
+      const adResult = await adsterra.showAd();
+
+      if (cancelledRef.current) {
+        console.log('🚫 [DailyTasks] Checkin was cancelled');
+        return;
+      }
+
+      if (adResult.success) {
+        // 广告完成，执行签到
+        console.log('🎬 [DailyTasks] Adsterra completed, doing checkin...');
+        try {
+          const result = await checkin(false);
+          if (result.success && result.credits) {
+            await refresh();
+            setTimeout(() => {
+              setLastClaimedCredits(result.credits!);
+              setShowCelebration(true);
+            }, 300);
+            onCreditsUpdated?.();
+          } else {
+            setCheckinError(result.message || '签到失败');
+            setPendingRetry('checkin');
+            setTimeout(() => setCheckinError(null), 5000);
+          }
+        } catch (err) {
+          console.error('❌ [DailyTasks] Checkin error:', err);
+          setCheckinError('签到失败，请稍后再试');
+          setPendingRetry('checkin');
+          setTimeout(() => setCheckinError(null), 5000);
+        }
+      } else {
+        if (adResult.reason !== 'cancelled') {
+          setCheckinError(adResult.message || '广告未完成');
+          setPendingRetry('checkin');
+          setTimeout(() => setCheckinError(null), 5000);
+        }
+      }
+      return;
+    }
+
+    // 原生 App：使用 useDailyTasks 中的 doCheckin
     // 设置超时
     clearAdTimeout();
     timeoutRef.current = setTimeout(() => {
@@ -175,7 +228,7 @@ export default function DailyTasksModal({ isOpen, onClose, onCreditsUpdated, onU
         setCheckinLoading(false);
       }
     }
-  }, [checkinLoading, claiming, doCheckin, onCreditsUpdated, t, clearAdTimeout]);
+  }, [checkinLoading, claiming, doCheckin, onCreditsUpdated, t, clearAdTimeout, isNative, adsterra, refresh]);
 
   // 处理签到（包装函数）
   const handleCheckin = useCallback(() => {
@@ -184,13 +237,59 @@ export default function DailyTasksModal({ isOpen, onClose, onCreditsUpdated, onU
 
   // 处理看广告领奖励内部逻辑
   const handleWatchAdInternal = useCallback(async () => {
-    if (adLoading || claiming) return;
+    if (adLoading || claiming || adsterra.isShowing) return;
 
     cancelledRef.current = false;
     setAdError(null);
     setAdLoading(true);
     setPendingRetry(null);
 
+    // Web 端使用 Adsterra Smart Link
+    if (!isNative && adsterra.isEnabled) {
+      console.log('🎬 [DailyTasks] Starting Adsterra Smart Link...');
+      setAdLoading(false); // Adsterra 使用自己的 isShowing 状态
+
+      const adResult = await adsterra.showAd();
+
+      if (cancelledRef.current) {
+        console.log('🚫 [DailyTasks] Ad was cancelled');
+        return;
+      }
+
+      if (adResult.success) {
+        // 广告完成，领取奖励
+        console.log('🎬 [DailyTasks] Adsterra completed, claiming reward...');
+        try {
+          const result = await claimAdReward(true, false, false);
+          if (result.success && result.credits) {
+            await refresh();
+            setTimeout(() => {
+              setLastClaimedCredits(result.credits!);
+              setShowCelebration(true);
+            }, 300);
+            onCreditsUpdated?.();
+          } else {
+            setAdError(result.message || '领取失败');
+            setPendingRetry('ad');
+            setTimeout(() => setAdError(null), 5000);
+          }
+        } catch (err) {
+          console.error('❌ [DailyTasks] Claim error:', err);
+          setAdError('领取失败，请稍后再试');
+          setPendingRetry('ad');
+          setTimeout(() => setAdError(null), 5000);
+        }
+      } else {
+        if (adResult.reason !== 'cancelled') {
+          setAdError(adResult.message || '广告未完成');
+          setPendingRetry('ad');
+          setTimeout(() => setAdError(null), 5000);
+        }
+      }
+      return;
+    }
+
+    // 原生 App：使用 useDailyTasks 中的 doClaimAdReward
     // 设置超时
     clearAdTimeout();
     timeoutRef.current = setTimeout(() => {
@@ -204,7 +303,6 @@ export default function DailyTasksModal({ isOpen, onClose, onCreditsUpdated, onU
     }, AD_LOADING_TIMEOUT);
 
     try {
-      // 原生 App：使用 useDailyTasks 中的 doClaimAdReward（内部使用 useRewardedAd）
       console.log('🎬 [DailyTasks] Starting ad via doClaimAdReward...');
       const result = await doClaimAdReward();
 
@@ -246,7 +344,7 @@ export default function DailyTasksModal({ isOpen, onClose, onCreditsUpdated, onU
         setAdLoading(false);
       }
     }
-  }, [adLoading, claiming, doClaimAdReward, onCreditsUpdated, t, clearAdTimeout]);
+  }, [adLoading, claiming, doClaimAdReward, onCreditsUpdated, t, clearAdTimeout, isNative, adsterra, refresh]);
 
   // 重试
   const handleRetry = useCallback(() => {
@@ -525,6 +623,79 @@ export default function DailyTasksModal({ isOpen, onClose, onCreditsUpdated, onU
 
   const modalContent = (
     <>
+      {/* Adsterra 倒计时覆盖层 */}
+      {adsterra.isShowing && (
+        <div className="fixed inset-0 flex flex-col items-center justify-center bg-black/70 backdrop-blur-sm z-[9999]">
+          <div className="bg-white rounded-2xl p-8 flex flex-col items-center shadow-2xl min-w-[320px]">
+            {!adsterra.isCompleted ? (
+              <>
+                {/* 倒计时圆环 */}
+                <div className="relative w-24 h-24 mb-4">
+                  <svg className="w-full h-full transform -rotate-90">
+                    <circle
+                      cx="48"
+                      cy="48"
+                      r="44"
+                      stroke="#e5e7eb"
+                      strokeWidth="8"
+                      fill="none"
+                    />
+                    <circle
+                      cx="48"
+                      cy="48"
+                      r="44"
+                      stroke="#8b5cf6"
+                      strokeWidth="8"
+                      fill="none"
+                      strokeLinecap="round"
+                      strokeDasharray={276.46}
+                      strokeDashoffset={276.46 * (adsterra.remainingSeconds / 30)}
+                      className="transition-all duration-1000"
+                    />
+                  </svg>
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <span className="text-3xl font-bold text-purple-600">{adsterra.remainingSeconds}</span>
+                  </div>
+                </div>
+                <p className="text-gray-700 font-medium text-lg">
+                  {t('dailyTasks.watchingAd') || '正在观看广告...'}
+                </p>
+                <p className="text-gray-400 text-sm mt-2 text-center">
+                  {t('dailyTasks.stayOnAdPage') || '请在广告页面停留片刻'}
+                </p>
+                {/* 取消按钮 */}
+                <button
+                  onClick={adsterra.cancel}
+                  className="mt-6 px-6 py-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors text-sm"
+                >
+                  {t('dailyTasks.cancel') || '取消'}
+                </button>
+              </>
+            ) : (
+              <>
+                {/* 完成状态 */}
+                <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center mb-4">
+                  <Check className="w-8 h-8 text-green-600" />
+                </div>
+                <p className="text-gray-700 font-medium text-lg">
+                  {t('dailyTasks.adCompleted') || '广告观看完成！'}
+                </p>
+                <p className="text-gray-400 text-sm mt-2">
+                  {t('dailyTasks.clickToClaimReward') || '点击领取奖励'}
+                </p>
+                <button
+                  onClick={adsterra.confirmComplete}
+                  className="mt-6 px-8 py-3 bg-purple-600 text-white font-semibold rounded-xl hover:bg-purple-700 transition-colors flex items-center gap-2"
+                >
+                  <Gift className="w-5 h-5" />
+                  {t('dailyTasks.claimReward') || '领取奖励'}
+                </button>
+              </>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* 广告加载中覆盖层 */}
       {(adLoading || checkinLoading) && (
         <div className="fixed inset-0 flex flex-col items-center justify-center bg-black/70 backdrop-blur-sm z-[9999]">

@@ -29,9 +29,9 @@ export default function Navbar() {
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16 md:h-20">
-            {/* Left Section: Mobile Menu Button (visible on mobile) / Logo (visible on desktop) */}
-            <div className="flex items-center">
-              {/* Mobile Menu Button - LEFT side on mobile */}
+            {/* Left Section: Mobile Menu Button + Logo */}
+            <div className="flex items-center gap-2">
+              {/* Mobile Menu Button */}
               <button
                 className="md:hidden p-2 text-gray-700 hover:text-pink-500 rounded-lg hover:bg-pink-50 transition-colors -ml-2"
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -48,19 +48,12 @@ export default function Navbar() {
                 )}
               </button>
 
-              {/* Logo - visible on desktop */}
-              <div className="hidden md:flex flex-shrink-0">
-                <Logo />
-              </div>
+              {/* Logo - visible on both mobile and desktop */}
+              <Logo />
             </div>
 
-            {/* Center Section: Logo (mobile) / Navigation Links (desktop) */}
+            {/* Center Section: Navigation Links (desktop only) */}
             <div className="flex-1 flex justify-center">
-              {/* Mobile: Logo in center */}
-              <div className="md:hidden">
-                <Logo />
-              </div>
-
               {/* Desktop: Navigation Links */}
               <div className="hidden md:flex">
                 <div className="px-6 py-2 bg-white/40 backdrop-blur-md rounded-full border border-white/30 shadow-sm">

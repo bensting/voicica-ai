@@ -394,13 +394,16 @@ export default function StudioSidebar({ isOpen = false, onClose }: StudioSidebar
             >
               <X className="w-5 h-5" />
             </button>
-            <Image
-              src="/logo/voice-labs-logo-light.svg"
-              alt="Voicica.AI"
-              width={110}
-              height={22}
-              className="h-5 w-auto"
-            />
+            <picture>
+              <source srcSet="/logo/logo-full-transparent-light-256.webp" type="image/webp" />
+              <Image
+                src="/logo/logo-full-transparent-light.png"
+                alt="Voicica.AI"
+                width={110}
+                height={22}
+                className="h-5 w-auto"
+              />
+            </picture>
             {/* 占位，保持 Logo 居中 */}
             <div className="w-9" />
           </div>

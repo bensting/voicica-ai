@@ -47,7 +47,8 @@ export default function AdsterraNativeBannerMarketing({
     };
 
     script.onerror = () => {
-      console.error('[AdsterraNativeBanner] Failed to load script');
+      // 广告脚本加载失败是正常情况（可能被广告拦截器阻止）
+      console.warn('[AdsterraNativeBanner] Failed to load script (may be blocked by ad blocker)');
     };
 
     // 添加到 body

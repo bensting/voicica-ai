@@ -1,8 +1,19 @@
 {
-  "version": "1.2.6",
-  "buildNumber": 27,
+  "version": "1.2.7",
+  "buildNumber": 28,
   "description": "原生应用版本（Android/iOS 应用壳）",
   "changelog": [
+    {
+      "version": "1.2.7",
+      "buildNumber": 28,
+      "date": "2026-01-27",
+      "changes": [
+        "更新全站 Logo 为新设计",
+        "优化导航栏样式，Studio 与 Marketing 风格统一",
+        "每日任务积分改为加到永久积分",
+        "修复 Android API 27+ 文本选择 Action Mode 样式问题"
+      ]
+    },
     {
       "version": "1.2.6",
       "buildNumber": 27,

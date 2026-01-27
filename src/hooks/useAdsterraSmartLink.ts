@@ -109,22 +109,14 @@ export function useAdsterraSmartLink(): UseAdsterraSmartLinkReturn {
     setIsWindowClosed(false);
 
     if (resolveRef.current) {
-      // 严格模式：如果窗口已关闭，不给奖励
-      if (isWindowClosed) {
-        resolveRef.current({
-          success: false,
-          message: '广告窗口已关闭，无法领取奖励',
-          reason: 'window_closed',
-        });
-      } else {
-        resolveRef.current({
-          success: true,
-          reason: 'completed',
-        });
-      }
+      // 只要倒计时完成，就给奖励（不管窗口是否关闭）
+      resolveRef.current({
+        success: true,
+        reason: 'completed',
+      });
       resolveRef.current = null;
     }
-  }, [isCompleted, isWindowClosed, clearTimers, closeAdWindow]);
+  }, [isCompleted, clearTimers, closeAdWindow]);
 
   // 显示广告
   const showAd = useCallback((): Promise<AdsterraResult> => {

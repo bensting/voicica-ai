@@ -2,7 +2,6 @@
 
 import { Menu, X, Crown, Gift } from 'lucide-react';
 import Image from 'next/image';
-import { usePathname } from 'next/navigation';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 import LanguageSwitcher from '@/components/layout/Navbar/LanguageSwitcher';
@@ -42,111 +41,69 @@ export default function StudioTopNav({
 }: StudioTopNavProps) {
   const { t } = useLanguage();
   const { user } = useFirebaseAuth();
-  const pathname = usePathname();
-
-  // Apply pink theme to all studio pages
-  const isPinkTheme = pathname?.startsWith('/studio');
 
   const toggleMenu = () => {
     onMenuToggle?.(!isMenuOpen);
   };
 
   return (
-    <div className="fixed top-0 left-0 right-0 z-40 bg-gradient-to-r from-purple-600 to-purple-500 lg:from-purple-50 lg:to-blue-50 lg:border-b lg:border-gray-200 safe-area-top">
-      <div className="flex items-center justify-between px-3 py-2.5 lg:px-4 lg:py-3 gap-2">
-        {/* ========== 左侧：Hamburger Menu (移动端) + Logo (移动端和桌面端) ========== */}
-        <div className="flex items-center gap-1.5 flex-shrink min-w-0 lg:ml-6">
+    <div className="fixed top-0 left-0 right-0 z-40 bg-white/70 backdrop-blur-xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border-b border-white/20 safe-area-top">
+      <div className="flex items-center justify-between px-4 sm:px-6 lg:px-8 h-16 md:h-20">
+        {/* ========== 左侧：Hamburger Menu (移动端) + Logo ========== */}
+        <div className="flex items-center gap-2 lg:ml-6">
           {/* Hamburger Menu - 仅移动端显示 */}
           <button
             onClick={toggleMenu}
-            className="p-2 hover:bg-white/10 rounded-lg transition-colors flex-shrink-0 lg:hidden"
+            className="p-2 text-gray-700 hover:text-pink-500 rounded-lg hover:bg-pink-50 transition-colors flex-shrink-0 lg:hidden -ml-2"
             aria-label="Toggle menu"
           >
             {isMenuOpen ? (
-              <X className="w-6 h-6 text-white" />
+              <X className="w-6 h-6" />
             ) : (
-              <Menu className="w-6 h-6 text-white" />
+              <Menu className="w-6 h-6" />
             )}
           </button>
 
-          {/* Logo - 移动端用亮色logo，桌面端用深色logo */}
-          <Link href="/studio" className="flex items-center min-w-0">
-            {/* 移动端 - 亮色 logo (紫色背景) */}
-            <Image
-              src="/logo/voice-labs-logo-dark.svg"
-              alt="Voicica.AI"
-              width={200}
-              height={28}
-              priority
-              className="h-7 w-auto lg:hidden"
-            />
-            {/* 桌面端 - 深色 logo (浅色背景), pink filter for Music AI pages */}
-            <Image
-              src="/logo/voice-labs-logo-light.svg"
-              alt="Voicica.AI"
-              width={200}
-              height={28}
-              priority
-              className={`h-7 w-auto hidden lg:block transition-all duration-300 ${isPinkTheme ? '[filter:brightness(0)_saturate(100%)_invert(56%)_sepia(52%)_saturate(4594%)_hue-rotate(314deg)_brightness(98%)_contrast(91%)]' : ''}`}
-            />
+          {/* Logo */}
+          <Link href="/studio" className="flex items-center">
+            <picture>
+              <source srcSet="/logo/logo-full-transparent-light-256.webp" type="image/webp" />
+              <Image
+                src="/logo/logo-full-transparent-light.png"
+                alt="Voicica.AI"
+                width={180}
+                height={48}
+                priority
+                className="h-10 md:h-12 w-auto object-contain"
+              />
+            </picture>
           </Link>
         </div>
 
-        {/* ========== 移动端右侧 (< lg) ========== */}
-        <div className="flex items-center gap-2 flex-shrink-0 mr-1 lg:hidden">
-          {/* Daily Tasks Button - 只显示礼物图标 */}
+        {/* ========== 右侧按钮区域 ========== */}
+        <div className="flex items-center gap-2 md:gap-3">
+          {/* Daily Tasks Button */}
           <button
             onClick={onDailyTasksClick}
-            className="p-2 bg-gradient-to-r from-pink-500 to-purple-500 text-white rounded-lg hover:from-pink-600 hover:to-purple-600 hover:shadow-lg transition-all"
+            className="flex items-center gap-1.5 px-2.5 py-1.5 md:px-4 md:py-2 bg-gradient-to-r from-pink-500 to-purple-500 text-white rounded-lg font-medium hover:from-pink-600 hover:to-purple-600 hover:shadow-lg transition-all"
             aria-label="Daily Tasks"
           >
             <Gift className="w-4 h-4" />
+            <span className="text-xs md:text-sm hidden sm:inline">{t('studio.dailyTasks') || '福利'}</span>
           </button>
 
-          {/* Upgrade Button - 只显示皇冠图标 */}
+          {/* Upgrade Button */}
           <button
             onClick={onUpgradeClick}
-            className="p-2 bg-gradient-to-r from-slate-800 to-slate-900 text-yellow-400 border-[3px] border-yellow-400/50 rounded-lg hover:border-yellow-400/70 hover:shadow-lg hover:shadow-yellow-400/20 transition-all"
+            className="flex items-center gap-1.5 px-2.5 py-1.5 md:px-4 md:py-2 bg-gradient-to-r from-slate-800 to-slate-900 text-yellow-400 border-2 border-yellow-400/30 rounded-lg font-medium hover:border-yellow-400/50 hover:shadow-lg hover:shadow-yellow-400/20 transition-all"
             aria-label="Upgrade"
           >
             <Crown className="w-4 h-4" />
+            <span className="text-xs md:text-sm hidden sm:inline">{t('studio.upgrade') || '升级'}</span>
           </button>
 
           {/* Language Switcher */}
-          <LanguageSwitcher theme="light" variant="compact" showArrow={false} />
-
-          {/* User Menu */}
-          <UserMenu size="sm" />
-        </div>
-
-        {/* ========== 桌面端右侧 (>= lg) ========== */}
-        <div className="hidden lg:flex items-center gap-3">
-          {/* Daily Tasks Button - 图标 + 文字 */}
-          <button
-            onClick={onDailyTasksClick}
-            className="flex items-center gap-2 px-4 py-1.5 bg-gradient-to-r from-pink-500 to-purple-500 text-white rounded-lg font-medium hover:from-pink-600 hover:to-purple-600 hover:shadow-lg transition-all"
-          >
-            <Gift className="w-4 h-4" />
-            <span className="text-sm">{t('studio.dailyTasks') || '福利'}</span>
-          </button>
-
-          {/* Upgrade Button - 始终显示 */}
-          <button
-            onClick={onUpgradeClick}
-            className="flex items-center gap-2 px-4 py-1.5 bg-gradient-to-r from-slate-800 to-slate-900 text-yellow-400 border-2 border-yellow-400/30 rounded-lg font-medium hover:border-yellow-400/50 hover:shadow-lg hover:shadow-yellow-400/20 transition-all"
-          >
-            <Crown className="w-4 h-4" />
-            <span className="text-sm hidden xl:inline">{t('studio.upgrade') || '购买/升级'}</span>
-          </button>
-
-          {/* Divider */}
-          <div className="h-6 w-px bg-gray-300"></div>
-
-          {/* Language Switcher - 桌面端显示完整名称 */}
-          <LanguageSwitcher theme="dark" variant="full" showArrow={true} />
-
-          {/* Divider */}
-          <div className="h-6 w-px bg-gray-300"></div>
+          <LanguageSwitcher theme="dark" variant="compact" />
 
           {/* User Menu or Login Button */}
           {user ? (

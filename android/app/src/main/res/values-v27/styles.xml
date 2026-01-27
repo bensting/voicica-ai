@@ -1,16 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- API 27+ specific theme with navigation bar handling -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+    <style name="AppTheme" parent="Theme.AppCompat.NoActionBar">
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
+        <!-- 深色窗口背景，避免白色闪烁 -->
+        <item name="android:windowBackground">#0a0a1a</item>
         <!-- Edge-to-edge support -->
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:navigationBarColor">@android:color/transparent</item>
         <item name="android:windowLightStatusBar">false</item>
         <item name="android:windowLightNavigationBar">true</item>
+        <!-- Action Mode 样式（文本选择模式） -->
+        <item name="windowActionModeOverlay">true</item>
+        <item name="actionModeBackground">@drawable/action_mode_background</item>
+        <item name="android:actionModeBackground">@drawable/action_mode_background</item>
+    </style>
+
+    <!-- NoActionBar 主题 - MainActivity 使用此主题 -->
+    <style name="AppTheme.NoActionBar" parent="Theme.AppCompat.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <!-- 深色窗口背景 -->
+        <item name="android:windowBackground">#0a0a1a</item>
+        <!-- Edge-to-edge support -->
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:windowLightNavigationBar">true</item>
+        <!-- Action Mode 样式（文本选择模式）- 关键修复 -->
+        <item name="windowActionModeOverlay">true</item>
+        <item name="actionModeBackground">@drawable/action_mode_background</item>
+        <item name="actionModeCloseDrawable">@android:drawable/ic_menu_close_clear_cancel</item>
+        <item name="android:actionModeBackground">@drawable/action_mode_background</item>
+        <!-- Alert Dialog 样式 -->
+        <item name="alertDialogTheme">@style/AppTheme.AlertDialog</item>
+        <item name="android:alertDialogTheme">@style/AppTheme.AlertDialog</item>
+    </style>
+
+    <!-- 自定义 Alert Dialog 样式 -->
+    <style name="AppTheme.AlertDialog" parent="Theme.AppCompat.Dialog.Alert">
+        <item name="android:windowBackground">@drawable/dialog_background</item>
+        <item name="android:background">@drawable/dialog_background</item>
+        <item name="colorAccent">@color/colorAccent</item>
     </style>
 </resources>

@@ -71,7 +71,20 @@ export default function StudioTopNav({
 
           {/* Logo */}
           <Link href="/studio" className="flex items-center min-w-0">
-            <picture>
+            {/* 移动端 - 白色 logo (紫色背景) */}
+            <picture className="lg:hidden">
+              <source srcSet="/logo/logo-full-transparent-light-256.webp" type="image/webp" />
+              <Image
+                src="/logo/logo-full-transparent-light.png"
+                alt="Voicica.AI"
+                width={140}
+                height={28}
+                priority
+                className="h-7 w-auto"
+              />
+            </picture>
+            {/* 桌面端 - 深色 logo (浅色背景) */}
+            <picture className="hidden lg:block">
               <source srcSet="/logo/logo-full-transparent-256.webp" type="image/webp" />
               <Image
                 src="/logo/logo-full-transparent.png"

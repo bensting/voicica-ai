@@ -57,7 +57,8 @@ export function getDailyTasksConfig(isNative: boolean = false): DailyTasksBaseCo
     return config.native;
   }
   // 否则返回默认配置（排除 native 属性）
-  const { native: _, ...baseConfig } = config;
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { native: _native, ...baseConfig } = config;
   return baseConfig;
 }
 

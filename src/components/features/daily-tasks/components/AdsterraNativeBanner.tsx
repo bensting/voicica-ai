@@ -56,7 +56,7 @@ export default function AdsterraNativeBanner() {
   const config = getAdseterraNativeBannerConfig();
 
   return (
-    <div className="w-full max-w-[320px] max-h-[200px] overflow-hidden rounded-xl border border-gray-200 bg-gray-50 p-2">
+    <div className="w-full max-w-[320px] max-h-[200px] overflow-y-auto rounded-xl border border-gray-200 bg-gray-50 p-2">
       <div id={config.containerId} ref={containerRef} className="w-full" />
     </div>
   );

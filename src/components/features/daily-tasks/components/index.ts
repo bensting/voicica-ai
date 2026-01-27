@@ -5,3 +5,4 @@ export { default as CheckinTaskCard } from './CheckinTaskCard';
 export { default as WatchAdsTaskCard } from './WatchAdsTaskCard';
 export { default as DailyTasksHeader } from './DailyTasksHeader';
 export { default as DailyTasksProgress } from './DailyTasksProgress';
+export { default as AdsterraNativeBanner } from './AdsterraNativeBanner';

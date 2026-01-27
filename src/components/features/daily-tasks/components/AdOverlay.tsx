@@ -1,7 +1,8 @@
 'use client';
 
-import { X, Gift, Check, AlertTriangle } from 'lucide-react';
+import { X, Gift, Check, AlertTriangle, MousePointerClick } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
+import AdsterraNativeBanner from './AdsterraNativeBanner';
 
 interface AdOverlayProps {
   isShowing: boolean;
@@ -101,6 +102,21 @@ export default function AdOverlay({
             </>
           )}
         </div>
+
+        {/* Native Banner 广告 */}
+        <div className="w-full mb-4">
+          <AdsterraNativeBanner />
+        </div>
+
+        {/* 点击提示 - 仅在倒计时中显示 */}
+        {!isCompleted && !isWindowClosed && (
+          <div className="w-full mb-4 p-3 bg-purple-50 border border-purple-200 rounded-lg flex items-center gap-2">
+            <MousePointerClick className="w-5 h-5 text-purple-500 flex-shrink-0" />
+            <p className="text-sm text-purple-700">
+              {t('dailyTasks.exploreAdTip') || '浏览广告内容可发现更多精彩优惠'}
+            </p>
+          </div>
+        )}
 
         {/* 窗口关闭警告 */}
         {isWindowClosed && (

@@ -51,20 +51,20 @@ export default function AdOverlay({
               cx="48"
               cy="48"
               r="44"
-              stroke={isWindowClosed ? '#ef4444' : isCompleted ? '#22c55e' : '#8b5cf6'}
+              stroke={isCompleted ? '#22c55e' : isWindowClosed ? '#ef4444' : '#8b5cf6'}
               strokeWidth="6"
               fill="none"
               strokeLinecap="round"
               strokeDasharray={276.46}
-              strokeDashoffset={isWindowClosed ? 0 : 276.46 * (1 - progress / 100)}
+              strokeDashoffset={isCompleted ? 0 : isWindowClosed ? 0 : 276.46 * (1 - progress / 100)}
               className="transition-all duration-1000"
             />
           </svg>
           <div className="absolute inset-0 flex items-center justify-center">
-            {isWindowClosed ? (
-              <X className="w-10 h-10 text-red-500" />
-            ) : isCompleted ? (
+            {isCompleted ? (
               <Check className="w-10 h-10 text-green-500" />
+            ) : isWindowClosed ? (
+              <X className="w-10 h-10 text-red-500" />
             ) : (
               <span className="text-3xl font-bold text-gray-800">{remainingSeconds}</span>
             )}
@@ -73,16 +73,8 @@ export default function AdOverlay({
 
         {/* 状态文字 */}
         <div className="text-center mb-6">
-          {isWindowClosed ? (
-            <>
-              <p className="text-lg font-semibold text-red-600 mb-1">
-                {t('dailyTasks.adFailed') || '领取失败'}
-              </p>
-              <p className="text-sm text-gray-500">
-                {t('dailyTasks.windowClosedTip') || '请重新观看广告'}
-              </p>
-            </>
-          ) : isCompleted ? (
+          {isCompleted ? (
+            // 倒计时完成，可以领取奖励
             <>
               <p className="text-lg font-semibold text-green-600 mb-1">
                 {t('dailyTasks.adCompleted') || '观看完成！'}
@@ -91,7 +83,18 @@ export default function AdOverlay({
                 {t('dailyTasks.clickToClaimReward') || '点击下方按钮领取奖励'}
               </p>
             </>
+          ) : isWindowClosed ? (
+            // 倒计时未完成就关闭窗口，失败
+            <>
+              <p className="text-lg font-semibold text-red-600 mb-1">
+                {t('dailyTasks.adFailed') || '领取失败'}
+              </p>
+              <p className="text-sm text-gray-500">
+                {t('dailyTasks.windowClosedTip') || '请重新观看广告'}
+              </p>
+            </>
           ) : (
+            // 正在观看中
             <>
               <p className="text-lg font-semibold text-gray-800 mb-1">
                 {t('dailyTasks.watchingAd') || '观看广告中...'}
@@ -118,8 +121,8 @@ export default function AdOverlay({
           </div>
         )}
 
-        {/* 窗口关闭警告 */}
-        {isWindowClosed && (
+        {/* 窗口关闭警告 - 仅在倒计时未完成时显示 */}
+        {isWindowClosed && !isCompleted && (
           <div className="w-full mb-4 p-3 bg-red-50 border border-red-200 rounded-lg flex items-center gap-2">
             <AlertTriangle className="w-5 h-5 text-red-500 flex-shrink-0" />
             <p className="text-sm text-red-700">
@@ -130,7 +133,8 @@ export default function AdOverlay({
 
         {/* 按钮 */}
         <div className="flex gap-3 w-full">
-          {isCompleted && !isWindowClosed ? (
+          {isCompleted ? (
+            // 倒计时完成，显示领取按钮
             <button
               onClick={onConfirm}
               className="flex-1 py-3 bg-purple-600 text-white font-semibold rounded-xl hover:bg-purple-700 transition-colors flex items-center justify-center gap-2"
@@ -139,6 +143,7 @@ export default function AdOverlay({
               {t('dailyTasks.claimReward') || '领取奖励'}
             </button>
           ) : isWindowClosed ? (
+            // 倒计时未完成就关闭窗口，显示关闭按钮
             <button
               onClick={onCancel}
               className="flex-1 py-3 bg-gray-100 text-gray-600 font-medium rounded-xl hover:bg-gray-200 transition-colors flex items-center justify-center gap-2"
@@ -147,6 +152,7 @@ export default function AdOverlay({
               {t('dailyTasks.close') || '关闭'}
             </button>
           ) : (
+            // 正在观看中，显示取消按钮
             <button
               onClick={onCancel}
               className="flex-1 py-3 bg-gray-100 text-gray-600 font-medium rounded-xl hover:bg-gray-200 transition-colors flex items-center justify-center gap-2"

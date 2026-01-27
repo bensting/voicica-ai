@@ -7,6 +7,8 @@ import DeleteConfirmDialog from '@/components/native/ui/DeleteConfirmDialog';
 import { useBottomNav } from '@/contexts/BottomNavContext';
 import { formatTime } from './utils';
 import { handleDownloadWithState } from '@/lib/native-download';
+import ProviderIcon from '@/components/ui/icons/ProviderIcon';
+import { User, UserRound, Users } from 'lucide-react';
 
 interface VoiceDetailModalProps {
   voice: TtsRecord;
@@ -35,8 +37,18 @@ export default function VoiceDetailModal({
     return () => show();
   }, [hide, show]);
 
-  const displayTitle = voice.voice_name || 'AI Voice';
+  // 使用关联的语音信息
+  const voiceInfo = voice.voice;
+  const displayName = voiceInfo?.display_name || voice.voice_name || 'AI Voice';
   const displayText = voice.text || '';
+
+  // 性别图标
+  const GenderIcon = () => {
+    if (!voiceInfo?.gender) return null;
+    if (voiceInfo.gender === 'male') return <User className="w-4 h-4 text-blue-400" />;
+    if (voiceInfo.gender === 'female') return <UserRound className="w-4 h-4 text-pink-400" />;
+    return <Users className="w-4 h-4 text-gray-400" />;
+  };
 
   const togglePlay = () => {
     if (!audioRef.current) return;
@@ -130,29 +142,49 @@ export default function VoiceDetailModal({
 
       {/* 可滚动内容区域 */}
       <div className="flex-1 overflow-y-auto px-6 pb-4">
-        {/* 图标 */}
+        {/* 头像 */}
         <div className="flex justify-center mb-4">
-          <div className="relative w-48 h-48 rounded-xl overflow-hidden shadow-2xl">
-            <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-cyan-900 to-purple-900">
-              <svg className="w-16 h-16 text-white/30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                <path d="M12 2a3 3 0 00-3 3v7a3 3 0 006 0V5a3 3 0 00-3-3z" />
-                <path d="M19 10v2a7 7 0 01-14 0v-2" />
-                <line x1="12" y1="19" x2="12" y2="22" />
-              </svg>
-            </div>
-            {/* AI 标签 */}
-            <div className="absolute top-2 right-2 px-2 py-0.5 bg-cyan-500 rounded text-white text-xs font-medium">
-              TTS
-            </div>
+          <div className="relative w-32 h-32 rounded-full overflow-hidden shadow-2xl">
+            {voiceInfo?.avatar_url ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={voiceInfo.avatar_url}
+                alt={displayName}
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-cyan-900 to-purple-900">
+                <svg className="w-12 h-12 text-white/30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                  <path d="M12 2a3 3 0 00-3 3v7a3 3 0 006 0V5a3 3 0 00-3-3z" />
+                  <path d="M19 10v2a7 7 0 01-14 0v-2" />
+                  <line x1="12" y1="19" x2="12" y2="22" />
+                </svg>
+              </div>
+            )}
           </div>
         </div>
 
-        {/* 标题 */}
-        <h1 className="text-2xl font-bold text-white text-center mb-4">{displayTitle}</h1>
+        {/* 语音名称 */}
+        <h1 className="text-xl font-bold text-white text-center mb-1">{displayName}</h1>
+
+        {/* 语音信息行：locale · gender · provider */}
+        <div className="flex items-center justify-center gap-2 text-gray-400 text-sm mb-4">
+          {voiceInfo ? (
+            <>
+              <span>{voiceInfo.locale}</span>
+              <span>·</span>
+              <GenderIcon />
+              <span>·</span>
+              <ProviderIcon provider={voiceInfo.provider.toLowerCase()} className="w-4 h-4" />
+            </>
+          ) : (
+            <span>{voice.voice_name}</span>
+          )}
+        </div>
 
         {/* 文本内容 */}
         {displayText && (
-          <div className="text-gray-300 text-sm leading-relaxed whitespace-pre-wrap mb-6 max-h-48 overflow-y-auto">
+          <div className="text-gray-300 text-sm leading-relaxed whitespace-pre-wrap mb-6 max-h-48 overflow-y-auto bg-gray-800/50 rounded-xl p-4">
             {displayText}
           </div>
         )}

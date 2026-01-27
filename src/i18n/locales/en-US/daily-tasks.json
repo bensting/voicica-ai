@@ -33,6 +33,16 @@
     "adUnavailable": "No ads available, please try again later",
     "adError": "Failed to load ad, please try again later",
 
+    "watchingAd": "Watching ad...",
+    "keepAdOpen": "Please keep the ad window open",
+    "adCompleted": "Complete!",
+    "clickToClaimReward": "Click below to claim your reward",
+    "claimReward": "Claim Reward",
+    "exploreAdTip": "Explore the ad for exclusive offers",
+    "adWindowClosedNoReward": "Ad window closed, cannot claim reward",
+    "adFailed": "Failed",
+    "windowClosedTip": "Please watch the ad again",
+
     "resetTip": "Tasks reset daily at midnight",
     "noAdsPromo": "Don't want to watch ads? Become a member!",
     "watchMore": "Watch More +1",

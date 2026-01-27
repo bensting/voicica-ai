@@ -33,6 +33,16 @@
     "adUnavailable": "広告がありません。後でもう一度お試しください",
     "adError": "広告の読み込みに失敗しました。後でもう一度お試しください",
 
+    "watchingAd": "広告を視聴中...",
+    "keepAdOpen": "広告ウィンドウを開いたままにしてください",
+    "adCompleted": "視聴完了！",
+    "clickToClaimReward": "下のボタンをクリックして報酬を受け取る",
+    "claimReward": "報酬を受け取る",
+    "exploreAdTip": "広告を見て限定オファーを発見しよう",
+    "adWindowClosedNoReward": "広告ウィンドウが閉じられました。報酬を受け取れません",
+    "adFailed": "失敗",
+    "windowClosedTip": "もう一度広告を見てください",
+
     "resetTip": "タスクは毎日深夜にリセットされます",
     "noAdsPromo": "広告を見たくないですか？メンバーになりましょう！",
     "watchMore": "もっと見る +1",

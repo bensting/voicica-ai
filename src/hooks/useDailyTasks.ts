@@ -9,7 +9,7 @@ import {
   type DailyTasksStatus,
   type TaskResult,
 } from '@/actions/daily-tasks';
-import { getDailyTasksConfig, type DailyTasksConfig } from '@/config/appConfig';
+import { getDailyTasksConfig, type DailyTasksBaseConfig } from '@/config/appConfig';
 import { useRewardedAd } from './useRewardedAd';
 import { Capacitor } from '@capacitor/core';
 
@@ -20,7 +20,7 @@ interface UseDailyTasksReturn {
   /** 每日任务状态 */
   status: DailyTasksStatus | null;
   /** 配置 */
-  config: DailyTasksConfig | null;
+  config: DailyTasksBaseConfig | null;
   /** 是否正在加载 */
   loading: boolean;
   /** 是否正在执行操作 */
@@ -83,7 +83,8 @@ export function useDailyTasks(): UseDailyTasksReturn {
   const isNative = Capacitor.isNativePlatform();
   const [status, setStatus] = useState<DailyTasksStatus | null>(null);
   // 直接从客户端同步获取配置，无需 Server Action 网络请求
-  const [config] = useState<DailyTasksConfig | null>(() => getDailyTasksConfig());
+  // Native App 和 Studio Web 使用各自独立的配置
+  const [config] = useState<DailyTasksBaseConfig | null>(() => getDailyTasksConfig(isNative));
   const [loading, setLoading] = useState(true);
   const [claiming, setClaiming] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -104,7 +105,7 @@ export function useDailyTasks(): UseDailyTasksReturn {
     try {
       setLoading(true);
       setError(null);
-      const data = await getDailyTasksStatus();
+      const data = await getDailyTasksStatus(isNative);
       setStatus(data);
     } catch (err) {
       console.error('❌ [useDailyTasks] 加载状态失败:', err);
@@ -112,7 +113,7 @@ export function useDailyTasks(): UseDailyTasksReturn {
     } finally {
       setLoading(false);
     }
-  }, [authLoading, user]);
+  }, [authLoading, user, isNative]);
 
   // 初始化加载
   useEffect(() => {
@@ -220,8 +221,8 @@ export function useDailyTasks(): UseDailyTasksReturn {
         return { success: false, message: '已取消' };
       }
 
-      // 调用签到接口（原生 App 积分加到永久积分）
-      const result = await checkin(isNative);
+      // 调用签到接口（原生 App 积分加到永久积分，并使用 native 配置）
+      const result = await checkin(isNative, isNative);
       if (result.success && !cancelledRef.current) {
         await refresh();
       }
@@ -274,7 +275,7 @@ export function useDailyTasks(): UseDailyTasksReturn {
             if (!rewardClaimedRef.current) {
               rewardClaimedRef.current = true;
               console.log('[DailyTasks] 第1个广告完成，立即领取奖励...');
-              const result = await claimAdReward(true, isNative, bonusMode); // 原生 App 积分加到永久积分
+              const result = await claimAdReward(true, isNative, bonusMode, isNative); // 原生 App 积分加到永久积分，并使用 native 配置
               claimResultRef.current = result;
               console.log('[DailyTasks] 奖励领取结果:', result);
               if (result.success) {
@@ -329,7 +330,7 @@ export function useDailyTasks(): UseDailyTasksReturn {
 
       // 兜底：如果事件没有触发，在广告结束后领取
       console.log('[DailyTasks] 广告观看成功，领取奖励（兜底）...');
-      const result = await claimAdReward(true, isNative, bonusMode); // 原生 App 积分加到永久积分
+      const result = await claimAdReward(true, isNative, bonusMode, isNative); // 原生 App 积分加到永久积分，并使用 native 配置
       if (result.success && !cancelledRef.current) {
         await refresh();
       }

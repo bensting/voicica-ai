@@ -14,7 +14,8 @@ interface AdsterraNativeBannerMarketingProps {
  * 显示 4 个卡片样式的原生广告
  */
 export default function AdsterraNativeBannerMarketing({
-  position: _position = 'Below Hero'
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  position = 'Below Hero'
 }: AdsterraNativeBannerMarketingProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const scriptLoadedRef = useRef(false);

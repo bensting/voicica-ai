@@ -45,15 +45,17 @@ function getTodayDate(): string {
 
 /**
  * 获取每日任务配置（Server Action 包装）
+ * @param isNative 是否为原生应用
  */
-export async function getDailyTasksConfigAction() {
-  return getDailyTasksConfig();
+export async function getDailyTasksConfigAction(isNative: boolean = false) {
+  return getDailyTasksConfig(isNative);
 }
 
 /**
  * 获取每日任务状态
+ * @param isNative 是否为原生应用
  */
-export async function getDailyTasksStatus(): Promise<DailyTasksStatus | null> {
+export async function getDailyTasksStatus(isNative: boolean = false): Promise<DailyTasksStatus | null> {
   try {
     const authUser = await getOptionalUser();
     if (!authUser) {
@@ -61,7 +63,7 @@ export async function getDailyTasksStatus(): Promise<DailyTasksStatus | null> {
       return null;
     }
 
-    const config = getDailyTasksConfig();
+    const config = getDailyTasksConfig(isNative);
     const today = getTodayDate();
 
     // 查询今日任务记录
@@ -118,15 +120,16 @@ export async function getDailyTasksStatus(): Promise<DailyTasksStatus | null> {
  * 签到领取积分
  * 使用原子操作防止并发重复领取
  * @param addToPermanent 是否添加到永久积分（默认添加到当月积分）
+ * @param isNative 是否为原生应用（用于获取对应的配置）
  */
-export async function checkin(addToPermanent: boolean = false): Promise<TaskResult> {
+export async function checkin(addToPermanent: boolean = false, isNative: boolean = false): Promise<TaskResult> {
   try {
     const authUser = await getOptionalUser();
     if (!authUser) {
       return { success: false, message: 'Please login first' };
     }
 
-    const config = getDailyTasksConfig();
+    const config = getDailyTasksConfig(isNative);
     if (!config.enabled) {
       return { success: false, message: 'Daily tasks disabled' };
     }
@@ -207,8 +210,9 @@ export async function checkin(addToPermanent: boolean = false): Promise<TaskResu
  * @param adWatched 是否真的看完了广告（第一阶段模拟为 true）
  * @param addToPermanent 是否添加到永久积分（默认添加到当月积分）
  * @param bonusMode 是否为奖励模式（所有档位领取完后，继续看广告获得固定1积分）
+ * @param isNative 是否为原生应用（用于获取对应的配置）
  */
-export async function claimAdReward(adWatched: boolean = true, addToPermanent: boolean = false, bonusMode: boolean = false): Promise<TaskResult> {
+export async function claimAdReward(adWatched: boolean = true, addToPermanent: boolean = false, bonusMode: boolean = false, isNative: boolean = false): Promise<TaskResult> {
   try {
     if (!adWatched) {
       return { success: false, message: 'Please watch the ad first' };
@@ -219,7 +223,7 @@ export async function claimAdReward(adWatched: boolean = true, addToPermanent: b
       return { success: false, message: 'Please login first' };
     }
 
-    const config = getDailyTasksConfig();
+    const config = getDailyTasksConfig(isNative);
     if (!config.enabled) {
       return { success: false, message: 'Daily tasks disabled' };
     }

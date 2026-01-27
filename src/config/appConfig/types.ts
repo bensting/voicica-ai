@@ -48,9 +48,9 @@ export interface VersionCheckConfig {
 }
 
 /**
- * 每日任务配置
+ * 每日任务基础配置
  */
-export interface DailyTasksConfig {
+export interface DailyTasksBaseConfig {
   /** 签到奖励积分 */
   checkin_credits: number;
   /** 广告奖励积分档位（递进式） */
@@ -59,6 +59,14 @@ export interface DailyTasksConfig {
   popup_interval_minutes: number;
   /** 是否启用 */
   enabled: boolean;
+}
+
+/**
+ * 每日任务配置（支持 Studio 和 Native 独立配置）
+ */
+export interface DailyTasksConfig extends DailyTasksBaseConfig {
+  /** Native App 独立配置（可选，不设置则使用默认值） */
+  native?: DailyTasksBaseConfig;
 }
 
 /**

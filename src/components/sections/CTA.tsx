@@ -1,6 +1,5 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { DollarSign, Headphones, Shield, RefreshCw } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -36,7 +35,6 @@ export default function CTA({
   buttons,
   features,
 }: CTAProps) {
-  const router = useRouter();
   const { t } = useLanguage();
 
   // Default buttons
@@ -77,11 +75,7 @@ export default function CTA({
   const ctaFeatures = features || defaultFeatures;
 
   const handleButtonClick = (button: CTAButton) => {
-    if (button.openInNewWindow) {
-      window.open(button.href, '_blank', 'noopener,noreferrer');
-    } else {
-      router.push(button.href);
-    }
+    window.open(button.href, '_blank', 'noopener,noreferrer');
   };
 
   return (

@@ -1,6 +1,5 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
 import { Music, Mic, Sparkles, Play } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import AppDownloadButtons from '@/components/common/AppDownloadButtons';
@@ -116,14 +115,13 @@ function HeroBackground() {
  * 功能卡片区域
  */
 function FeatureCards() {
-  const router = useRouter();
   const { t } = useLanguage();
 
   return (
     <div className="space-y-5 mb-8">
       {/* Main Card - AI Song One-Click */}
       <button
-        onClick={() => router.push('/studio/ai-song')}
+        onClick={() => window.open('/studio/ai-song', '_blank')}
         className="w-full group relative z-10"
       >
         <div className="relative rounded-[2rem] p-[3px] bg-gradient-to-r from-pink-300 via-pink-200 to-pink-300 shadow-xl shadow-pink-200/40 hover:shadow-2xl hover:shadow-pink-300/50 hover:-translate-y-1 transition-all duration-300">
@@ -190,11 +188,9 @@ interface FeatureCardSmallProps {
 }
 
 function FeatureCardSmall({ icon, title, href, delay = 0 }: FeatureCardSmallProps) {
-  const router = useRouter();
-
   return (
     <button
-      onClick={() => router.push(href)}
+      onClick={() => window.open(href, '_blank')}
       className="group relative h-full"
       style={{ animationDelay: `${delay}ms` }}
     >

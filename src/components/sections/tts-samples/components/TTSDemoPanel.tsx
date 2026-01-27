@@ -65,7 +65,7 @@ export default function TTSDemoPanel({
   const { t } = useLanguage();
   const { triggerPopunder } = usePopunder();
 
-  // Navigate to TTS page with pre-filled text and voice
+  // Navigate to TTS page with pre-filled text and voice (open in new tab)
   const handleListenClick = () => {
     if (!textInput.trim() || !selectedVoice) return;
 
@@ -76,8 +76,8 @@ export default function TTSDemoPanel({
     localStorage.setItem('tts_prefill_text', textInput);
     localStorage.setItem('tts_prefill_voice', JSON.stringify(selectedVoice));
 
-    // Navigate to TTS page
-    router.push('/studio/tts');
+    // Open TTS page in new tab
+    window.open('/studio/tts', '_blank');
   };
 
   return (

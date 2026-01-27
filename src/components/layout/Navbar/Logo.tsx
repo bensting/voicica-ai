@@ -1,32 +1,20 @@
 import Link from 'next/link';
 import Image from 'next/image';
 
-interface LogoProps {
-  /** 使用深色版本（用于浅色背景） */
-  dark?: boolean;
-}
-
-export default function Logo({ dark = true }: LogoProps) {
+export default function Logo() {
   return (
-    <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacitygroup">
-      <Image
-        src="/logo/flower-icon.png"
-        alt="Logo"
-        width={40}
-        height={40}
-        className="w-8 h-8 md:w-10 md:h-10 object-contain drop-shadow-sm group-hover:scale-110 transition-transform duration-300"
-      />
-      {/* 
-        Text Logo: Voicica.AI 
-        "Voicica" -> Dark/Black
-        ".AI" -> Pink Gradient
-      */}
-      <span className={`text-2xl md:text-3xl font-bold tracking-tight ${dark ? 'text-gray-900' : 'text-white'}`} style={{ fontFamily: 'var(--font-fredoka)' }}>
-        Voicica
-        <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-rose-500 font-bold ml-0.5">
-          .AI
-        </span>
-      </span>
+    <Link href="/" className="flex items-center hover:opacity-80 transition-opacity">
+      <picture>
+        <source srcSet="/logo/logo-full-transparent-256.webp" type="image/webp" />
+        <Image
+          src="/logo/logo-full-transparent.png"
+          alt="Voicica.AI"
+          width={180}
+          height={40}
+          priority
+          className="h-8 md:h-10 w-auto object-contain"
+        />
+      </picture>
     </Link>
   );
 }

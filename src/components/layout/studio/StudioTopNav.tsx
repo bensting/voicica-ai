@@ -69,26 +69,19 @@ export default function StudioTopNav({
             )}
           </button>
 
-          {/* Logo - 移动端用亮色logo，桌面端用深色logo */}
+          {/* Logo */}
           <Link href="/studio" className="flex items-center min-w-0">
-            {/* 移动端 - 亮色 logo (紫色背景) */}
-            <Image
-              src="/logo/voice-labs-logo-dark.svg"
-              alt="Voicica.AI"
-              width={200}
-              height={28}
-              priority
-              className="h-7 w-auto lg:hidden"
-            />
-            {/* 桌面端 - 深色 logo (浅色背景), pink filter for Music AI pages */}
-            <Image
-              src="/logo/voice-labs-logo-light.svg"
-              alt="Voicica.AI"
-              width={200}
-              height={28}
-              priority
-              className={`h-7 w-auto hidden lg:block transition-all duration-300 ${isPinkTheme ? '[filter:brightness(0)_saturate(100%)_invert(56%)_sepia(52%)_saturate(4594%)_hue-rotate(314deg)_brightness(98%)_contrast(91%)]' : ''}`}
-            />
+            <picture>
+              <source srcSet="/logo/logo-full-transparent-256.webp" type="image/webp" />
+              <Image
+                src="/logo/logo-full-transparent.png"
+                alt="Voicica.AI"
+                width={140}
+                height={28}
+                priority
+                className="h-7 w-auto"
+              />
+            </picture>
           </Link>
         </div>
 

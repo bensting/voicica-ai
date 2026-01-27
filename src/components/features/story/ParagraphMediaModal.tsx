@@ -19,6 +19,7 @@ import {
 import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
 import { createTtsTask, getTtsTaskStatus, updateParagraphAudio } from '@/actions/tts';
+import { detectPlatform } from '@/lib/platform';
 import { generateParagraphIllustration } from '@/actions/illustration';
 import VoiceSelectButton from '@/components/features/studio/tts/components/VoiceSelectButton';
 import type { Voice } from '@/types/voice';
@@ -237,6 +238,7 @@ export default function ParagraphMediaModal({
           language: selectedVoice.locale,
           style: selectedStyle || undefined,
           story_id: story.id,
+          platform: detectPlatform(),
         });
 
         if (result.status === 'FAILURE' && result.errorCode) {
@@ -283,6 +285,7 @@ export default function ParagraphMediaModal({
         language: selectedVoice.locale,
         style: selectedStyle || undefined,
         story_id: story.id,
+        platform: detectPlatform(),
       });
 
       if (result.status === 'FAILURE' && result.errorCode) {

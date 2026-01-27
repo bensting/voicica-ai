@@ -4,7 +4,8 @@ import Hero from '@/components/sections/Hero';
 import TTSSamples from '@/components/sections/tts-samples';
 import FAQ from '@/components/sections/faq';
 import CTA from '@/components/sections/CTA';
-import AdPlaceholder from '@/components/ads/AdPlaceholder';
+import AdsterraNativeBannerMarketing from '@/components/ads/AdsterraNativeBannerMarketing';
+import AdsterraBanner from '@/components/ads/AdsterraBanner';
 
 export default function Home() {
   return (
@@ -13,13 +14,13 @@ export default function Home() {
       <Hero />
 
       {/* Ad: Hero 下方 - Native Banner */}
-      <AdPlaceholder position="Below Hero" variant="native" height={120} />
+      <AdsterraNativeBannerMarketing position="Below Hero" />
 
       {/* TTS Samples Section */}
       <TTSSamples />
 
-      {/* Ad: CTA 上方 - Banner */}
-      <AdPlaceholder position="Above CTA" variant="banner" height={90} />
+      {/* Ad: CTA 上方 - Banner 728x90 */}
+      <AdsterraBanner />
 
       {/* CTA Section */}
       <CTA titleKey="cta.title" />

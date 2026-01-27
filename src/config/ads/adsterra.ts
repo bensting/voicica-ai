@@ -39,6 +39,19 @@ export interface AdsterraConfig {
     /** 冷却时间（小时） */
     cooldownHours: number;
   };
+  /** Banner 配置 */
+  banner: {
+    /** 是否启用 */
+    enabled: boolean;
+    /** 广告 key */
+    key: string;
+    /** 脚本 URL */
+    scriptUrl: string;
+    /** 宽度 */
+    width: number;
+    /** 高度 */
+    height: number;
+  };
 }
 
 /**
@@ -61,6 +74,13 @@ export const adsterraConfig: AdsterraConfig = {
     enabled: true,
     scriptUrl: 'https://pl28577187.effectivegatecpm.com/7f/c9/b8/7fc9b82b234616030c0b94e33f799bf9.js',
     cooldownHours: 24,
+  },
+  banner: {
+    enabled: true,
+    key: '8690212e7aa26dab900b6f2bd9b602cb',
+    scriptUrl: 'https://www.highperformanceformat.com/8690212e7aa26dab900b6f2bd9b602cb/invoke.js',
+    width: 728,
+    height: 90,
   },
 };
 
@@ -125,4 +145,18 @@ export function getPopunderConfig() {
  */
 export function isPopunderEnabled(): boolean {
   return adsterraConfig.popunder.enabled;
+}
+
+/**
+ * 获取 Banner 配置
+ */
+export function getBannerConfig() {
+  return adsterraConfig.banner;
+}
+
+/**
+ * 检查 Banner 是否启用
+ */
+export function isBannerEnabled(): boolean {
+  return adsterraConfig.banner.enabled;
 }

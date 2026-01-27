@@ -7,6 +7,7 @@ import { useCredits } from '@/contexts/CreditsContext';
 import { useAudioSettings } from '@/contexts/AudioSettingsContext';
 import { AUDIO_SETTINGS_RANGE } from '@/types/audioSettings';
 import { createTtsTask } from '@/actions/tts';
+import { detectPlatform } from '@/lib/platform';
 import type { Voice } from '@/types/voice';
 import { calculateVoiceCost, type VoiceType } from '@/config/creditsCost';
 import CreatePageHeader from '@/components/native/common/CreatePageHeader';
@@ -211,6 +212,7 @@ export default function NativeTTSPage() {
         speed: settings.speed,
         volume: settings.volume,
         pitch: settings.pitch,
+        platform: detectPlatform(),
       });
 
       if (result.status === 'FAILURE') {

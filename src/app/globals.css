@@ -267,3 +267,13 @@ body {
 .animate-spin-slow {
   animation: spin-slow 2s ease-in-out infinite;
 }
+
+/* ========== Adsterra Social Bar 强制底部显示 ========== */
+/* 覆盖 Adsterra 的默认顶部定位 */
+[id*="social-bar"],
+[class*="social-bar"],
+div[style*="position: fixed"][style*="top: 0"],
+div[style*="position:fixed"][style*="top:0"] {
+  top: auto !important;
+  bottom: 0 !important;
+}

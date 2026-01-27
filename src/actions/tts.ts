@@ -509,6 +509,7 @@ export async function queryTtsRecords(params: {
         provider: voice.provider,
         locale: voice.locale,
         country: voice.country,
+        gender: voice.gender,
         avatar_url: voice.avatar_url,
       } : null,
     };
@@ -580,6 +581,7 @@ export async function getTtsRecordById(recordId: number): Promise<TtsRecord> {
       provider: voice.provider,
       locale: voice.locale,
       country: voice.country,
+      gender: voice.gender,
       avatar_url: voice.avatar_url,
     } : null,
   };

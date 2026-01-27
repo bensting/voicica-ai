@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback, useRef } from 'react';
 import { createPortal } from 'react-dom';
-import { X, Gift, Check, Loader2, Play, Crown, RefreshCw } from 'lucide-react';
+import { X, Gift, Play, Crown, Loader2 } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 import { useDailyTasks } from '@/hooks/useDailyTasks';
@@ -11,25 +11,38 @@ import { claimAdReward, checkin } from '@/actions/daily-tasks';
 import LoginModal from '@/components/features/auth/LoginModal';
 import CelebrationEffect from './CelebrationEffect';
 import { Capacitor } from '@capacitor/core';
+import { formatCredits } from './utils';
+import {
+  AdOverlay,
+  LoadingOverlay,
+  RetryOverlay,
+  CheckinTaskCard,
+  WatchAdsTaskCard,
+  DailyTasksHeader,
+  DailyTasksProgress,
+} from './components';
 
 // 广告加载超时时间（毫秒）
 const AD_LOADING_TIMEOUT = 30000;
 
 interface DailyTasksModalProps {
-  /** 是否显示 */
   isOpen: boolean;
-  /** 关闭回调 */
   onClose: () => void;
-  /** 积分更新回调 */
   onCreditsUpdated?: () => void;
-  /** 打开升级弹窗回调 */
   onUpgradeClick?: () => void;
 }
+
+type TaskType = 'checkin' | 'ad';
 
 /**
  * 每日任务弹窗组件
  */
-export default function DailyTasksModal({ isOpen, onClose, onCreditsUpdated, onUpgradeClick }: DailyTasksModalProps) {
+export default function DailyTasksModal({
+  isOpen,
+  onClose,
+  onCreditsUpdated,
+  onUpgradeClick,
+}: DailyTasksModalProps) {
   const { t } = useLanguage();
   const { user } = useFirebaseAuth();
   const {
@@ -43,23 +56,30 @@ export default function DailyTasksModal({ isOpen, onClose, onCreditsUpdated, onU
     cancelClaiming,
   } = useDailyTasks();
 
-  // Adsterra Smart Link for web
   const adsterra = useAdsterraSmartLink();
   const isNative = Capacitor.isNativePlatform();
 
+  // UI 状态
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [lastClaimedCredits, setLastClaimedCredits] = useState<number | null>(null);
   const [showCelebration, setShowCelebration] = useState(false);
+
+  // 加载状态
   const [adLoading, setAdLoading] = useState(false);
   const [checkinLoading, setCheckinLoading] = useState(false);
+
+  // 错误状态
   const [adError, setAdError] = useState<string | null>(null);
   const [checkinError, setCheckinError] = useState<string | null>(null);
-  // 用于取消和重试
-  const [pendingRetry, setPendingRetry] = useState<'checkin' | 'ad' | null>(null);
+
+  // 重试状态
+  const [pendingRetry, setPendingRetry] = useState<TaskType | null>(null);
+
+  // Refs
   const cancelledRef = useRef(false);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  // 登录成功后刷新状态
+  // 登录成功后刷新
   useEffect(() => {
     if (user && showLoginModal) {
       setShowLoginModal(false);
@@ -67,13 +87,13 @@ export default function DailyTasksModal({ isOpen, onClose, onCreditsUpdated, onU
     }
   }, [user, showLoginModal, refresh]);
 
-  // 关闭弹窗时标记已显示
+  // 关闭弹窗
   const handleClose = useCallback(() => {
     markPopupShown();
     onClose();
   }, [markPopupShown, onClose]);
 
-  // 按 ESC 键关闭
+  // ESC 键关闭
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && isOpen) {
@@ -92,22 +112,23 @@ export default function DailyTasksModal({ isOpen, onClose, onCreditsUpdated, onU
     }
   }, []);
 
-  // 取消加载
-  const handleCancelLoading = useCallback((type: 'checkin' | 'ad') => {
-    console.log('🚫 [DailyTasks] User cancelled', type);
-    cancelledRef.current = true;
-    clearAdTimeout();
-    // 调用 hook 的取消方法，重置 claiming 状态
-    cancelClaiming();
+  // 显示成功效果
+  const showSuccess = useCallback((credits: number) => {
+    setTimeout(() => {
+      setLastClaimedCredits(credits);
+      setShowCelebration(true);
+    }, 300);
+    onCreditsUpdated?.();
+  }, [onCreditsUpdated]);
+
+  // 显示错误
+  const showError = useCallback((type: TaskType, message: string) => {
     if (type === 'checkin') {
-      setCheckinLoading(false);
-      setCheckinError(t('dailyTasks.cancelled') || '已取消');
-      setPendingRetry('checkin');
+      setCheckinError(message);
     } else {
-      setAdLoading(false);
-      setAdError(t('dailyTasks.cancelled') || '已取消');
-      setPendingRetry('ad');
+      setAdError(message);
     }
+    setPendingRetry(type);
     setTimeout(() => {
       if (type === 'checkin') {
         setCheckinError(null);
@@ -115,10 +136,53 @@ export default function DailyTasksModal({ isOpen, onClose, onCreditsUpdated, onU
         setAdError(null);
       }
     }, 5000);
-  }, [t, clearAdTimeout, cancelClaiming]);
+  }, []);
 
-  // 处理签到内部逻辑（需要先观看激励广告）
-  const handleCheckinInternal = useCallback(async () => {
+  // 取消加载
+  const handleCancelLoading = useCallback((type: TaskType) => {
+    console.log('🚫 [DailyTasks] User cancelled', type);
+    cancelledRef.current = true;
+    clearAdTimeout();
+    cancelClaiming();
+
+    if (type === 'checkin') {
+      setCheckinLoading(false);
+    } else {
+      setAdLoading(false);
+    }
+    showError(type, t('dailyTasks.cancelled') || '已取消');
+  }, [t, clearAdTimeout, cancelClaiming, showError]);
+
+  // Adsterra 广告完成后的处理
+  const handleAdsterraComplete = useCallback(async (type: TaskType) => {
+    if (cancelledRef.current) return;
+
+    try {
+      if (type === 'checkin') {
+        const result = await checkin(false);
+        if (result.success && result.credits) {
+          await refresh();
+          showSuccess(result.credits);
+        } else {
+          showError('checkin', result.message || '签到失败');
+        }
+      } else {
+        const result = await claimAdReward(true, false, false);
+        if (result.success && result.credits) {
+          await refresh();
+          showSuccess(result.credits);
+        } else {
+          showError('ad', result.message || '领取失败');
+        }
+      }
+    } catch (err) {
+      console.error('❌ [DailyTasks] Error:', err);
+      showError(type, type === 'checkin' ? '签到失败，请稍后再试' : '领取失败，请稍后再试');
+    }
+  }, [refresh, showSuccess, showError]);
+
+  // 处理签到
+  const handleCheckin = useCallback(async () => {
     if (checkinLoading || claiming || adsterra.isShowing) return;
 
     cancelledRef.current = false;
@@ -126,117 +190,66 @@ export default function DailyTasksModal({ isOpen, onClose, onCreditsUpdated, onU
     setCheckinLoading(true);
     setPendingRetry(null);
 
-    // Web 端使用 Adsterra Smart Link
+    // Web 端使用 Adsterra
     if (!isNative && adsterra.isEnabled) {
-      console.log('🎬 [DailyTasks] Starting Adsterra Smart Link for checkin...');
-      setCheckinLoading(false); // Adsterra 使用自己的 isShowing 状态
-
+      setCheckinLoading(false);
       const adResult = await adsterra.showAd();
 
-      if (cancelledRef.current) {
-        console.log('🚫 [DailyTasks] Checkin was cancelled');
-        return;
-      }
+      if (cancelledRef.current) return;
 
       if (adResult.success) {
-        // 广告完成，执行签到
-        console.log('🎬 [DailyTasks] Adsterra completed, doing checkin...');
-        try {
-          const result = await checkin(false);
-          if (result.success && result.credits) {
-            await refresh();
-            setTimeout(() => {
-              setLastClaimedCredits(result.credits!);
-              setShowCelebration(true);
-            }, 300);
-            onCreditsUpdated?.();
-          } else {
-            setCheckinError(result.message || '签到失败');
-            setPendingRetry('checkin');
-            setTimeout(() => setCheckinError(null), 5000);
-          }
-        } catch (err) {
-          console.error('❌ [DailyTasks] Checkin error:', err);
-          setCheckinError('签到失败，请稍后再试');
-          setPendingRetry('checkin');
-          setTimeout(() => setCheckinError(null), 5000);
-        }
-      } else {
-        if (adResult.reason !== 'cancelled') {
-          setCheckinError(adResult.message || '广告未完成');
-          setPendingRetry('checkin');
-          setTimeout(() => setCheckinError(null), 5000);
-        }
+        await handleAdsterraComplete('checkin');
+      } else if (adResult.reason !== 'cancelled') {
+        showError('checkin', adResult.message || '广告未完成');
       }
       return;
     }
 
-    // 原生 App：使用 useDailyTasks 中的 doCheckin
-    // 设置超时
+    // 原生 App
     clearAdTimeout();
     timeoutRef.current = setTimeout(() => {
       if (checkinLoading && !cancelledRef.current) {
-        console.warn('⏰ [DailyTasks] Checkin timeout');
         cancelledRef.current = true;
         setCheckinLoading(false);
-        setCheckinError(t('dailyTasks.timeout') || '加载超时，请重试');
-        setPendingRetry('checkin');
+        showError('checkin', t('dailyTasks.timeout') || '加载超时，请重试');
       }
     }, AD_LOADING_TIMEOUT);
 
     try {
-      console.log('🎬 [DailyTasks] Starting checkin with interstitial rewarded ad...');
       const result = await doCheckin();
 
-      // 检查是否已被取消
-      if (cancelledRef.current) {
-        console.log('🚫 [DailyTasks] Checkin was cancelled');
-        return;
-      }
-
+      if (cancelledRef.current) return;
       clearAdTimeout();
-      console.log('🎬 [DailyTasks] Checkin result:', result);
 
       if (result.success && result.credits) {
-        setTimeout(() => {
-          setLastClaimedCredits(result.credits!);
-          setShowCelebration(true);
-        }, 300);
-        onCreditsUpdated?.();
+        showSuccess(result.credits);
       } else if (!result.success) {
-        const errorMsg = result.message || '签到失败';
-        // "No ads available" is a normal situation, not an error
-        if (result.reason === 'unavailable') {
-          console.log('[DailyTasks] No ads available:', errorMsg);
-        } else {
-          console.warn('[DailyTasks] Checkin failed:', errorMsg);
-        }
-        setCheckinError(errorMsg);
-        setPendingRetry('checkin');
-        setTimeout(() => setCheckinError(null), 5000);
+        showError('checkin', result.message || '签到失败');
       }
     } catch (err) {
       if (cancelledRef.current) return;
       clearAdTimeout();
-      console.error('❌ [DailyTasks] Checkin error:', err);
-      const errorMsg = err instanceof Error ? err.message : '签到失败，请稍后再试';
-      setCheckinError(errorMsg);
-      setPendingRetry('checkin');
-      setTimeout(() => setCheckinError(null), 5000);
+      showError('checkin', err instanceof Error ? err.message : '签到失败，请稍后再试');
     } finally {
       if (!cancelledRef.current) {
         setCheckinLoading(false);
       }
     }
-  }, [checkinLoading, claiming, doCheckin, onCreditsUpdated, t, clearAdTimeout, isNative, adsterra, refresh]);
+  }, [
+    checkinLoading,
+    claiming,
+    adsterra,
+    isNative,
+    doCheckin,
+    t,
+    clearAdTimeout,
+    showSuccess,
+    showError,
+    handleAdsterraComplete,
+  ]);
 
-  // 处理签到（包装函数）
-  const handleCheckin = useCallback(() => {
-    handleCheckinInternal();
-  }, [handleCheckinInternal]);
-
-  // 处理看广告领奖励内部逻辑
-  const handleWatchAdInternal = useCallback(async () => {
+  // 处理看广告
+  const handleWatchAd = useCallback(async () => {
     if (adLoading || claiming || adsterra.isShowing) return;
 
     cancelledRef.current = false;
@@ -244,164 +257,101 @@ export default function DailyTasksModal({ isOpen, onClose, onCreditsUpdated, onU
     setAdLoading(true);
     setPendingRetry(null);
 
-    // Web 端使用 Adsterra Smart Link
+    // Web 端使用 Adsterra
     if (!isNative && adsterra.isEnabled) {
-      console.log('🎬 [DailyTasks] Starting Adsterra Smart Link...');
-      setAdLoading(false); // Adsterra 使用自己的 isShowing 状态
-
+      setAdLoading(false);
       const adResult = await adsterra.showAd();
 
-      if (cancelledRef.current) {
-        console.log('🚫 [DailyTasks] Ad was cancelled');
-        return;
-      }
+      if (cancelledRef.current) return;
 
       if (adResult.success) {
-        // 广告完成，领取奖励
-        console.log('🎬 [DailyTasks] Adsterra completed, claiming reward...');
-        try {
-          const result = await claimAdReward(true, false, false);
-          if (result.success && result.credits) {
-            await refresh();
-            setTimeout(() => {
-              setLastClaimedCredits(result.credits!);
-              setShowCelebration(true);
-            }, 300);
-            onCreditsUpdated?.();
-          } else {
-            setAdError(result.message || '领取失败');
-            setPendingRetry('ad');
-            setTimeout(() => setAdError(null), 5000);
-          }
-        } catch (err) {
-          console.error('❌ [DailyTasks] Claim error:', err);
-          setAdError('领取失败，请稍后再试');
-          setPendingRetry('ad');
-          setTimeout(() => setAdError(null), 5000);
-        }
-      } else {
-        if (adResult.reason !== 'cancelled') {
-          setAdError(adResult.message || '广告未完成');
-          setPendingRetry('ad');
-          setTimeout(() => setAdError(null), 5000);
-        }
+        await handleAdsterraComplete('ad');
+      } else if (adResult.reason !== 'cancelled') {
+        showError('ad', adResult.message || '广告未完成');
       }
       return;
     }
 
-    // 原生 App：使用 useDailyTasks 中的 doClaimAdReward
-    // 设置超时
+    // 原生 App
     clearAdTimeout();
     timeoutRef.current = setTimeout(() => {
       if (adLoading && !cancelledRef.current) {
-        console.warn('⏰ [DailyTasks] Ad loading timeout');
         cancelledRef.current = true;
         setAdLoading(false);
-        setAdError(t('dailyTasks.timeout') || '加载超时，请重试');
-        setPendingRetry('ad');
+        showError('ad', t('dailyTasks.timeout') || '加载超时，请重试');
       }
     }, AD_LOADING_TIMEOUT);
 
     try {
-      console.log('🎬 [DailyTasks] Starting ad via doClaimAdReward...');
       const result = await doClaimAdReward();
 
-      // 检查是否已被取消
-      if (cancelledRef.current) {
-        console.log('🚫 [DailyTasks] Ad was cancelled');
-        return;
-      }
-
+      if (cancelledRef.current) return;
       clearAdTimeout();
-      console.log('🎬 [DailyTasks] doClaimAdReward result:', result);
 
       if (result.success && result.credits) {
-        const earnedCredits = result.credits;
-        // 延迟显示庆祝效果，确保状态刷新完成后再显示
         setTimeout(() => {
-          setLastClaimedCredits(earnedCredits);
+          setLastClaimedCredits(result.credits!);
           setShowCelebration(true);
         }, 500);
         onCreditsUpdated?.();
       } else if (!result.success) {
-        // 显示详细错误信息用于调试
-        const errorMsg = result.message || '领取失败';
-        console.error('❌ [DailyTasks] Claim failed:', errorMsg);
-        setAdError(errorMsg);
-        setPendingRetry('ad');
-        setTimeout(() => setAdError(null), 5000);
+        showError('ad', result.message || '领取失败');
       }
     } catch (err) {
       if (cancelledRef.current) return;
       clearAdTimeout();
-      console.error('❌ [DailyTasks] Ad error:', err);
-      const errorMsg = err instanceof Error ? err.message : '广告加载失败，请稍后再试';
-      setAdError(errorMsg);
-      setPendingRetry('ad');
-      setTimeout(() => setAdError(null), 5000);
+      showError('ad', err instanceof Error ? err.message : '广告加载失败，请稍后再试');
     } finally {
       if (!cancelledRef.current) {
         setAdLoading(false);
       }
     }
-  }, [adLoading, claiming, doClaimAdReward, onCreditsUpdated, t, clearAdTimeout, isNative, adsterra, refresh]);
+  }, [
+    adLoading,
+    claiming,
+    adsterra,
+    isNative,
+    doClaimAdReward,
+    t,
+    clearAdTimeout,
+    onCreditsUpdated,
+    showError,
+    handleAdsterraComplete,
+  ]);
 
   // 重试
   const handleRetry = useCallback(() => {
     const retryType = pendingRetry;
     setPendingRetry(null);
     if (retryType === 'checkin') {
-      handleCheckinInternal();
+      handleCheckin();
     } else if (retryType === 'ad') {
-      handleWatchAdInternal();
+      handleWatchAd();
     }
-  }, [pendingRetry, handleCheckinInternal, handleWatchAdInternal]);
+  }, [pendingRetry, handleCheckin, handleWatchAd]);
 
-  // 处理看广告领奖励（包装函数）
-  const handleWatchAd = useCallback(() => {
-    handleWatchAdInternal();
-  }, [handleWatchAdInternal]);
-
-  // 庆祝效果完成后清理状态
+  // 庆祝完成
   const handleCelebrationComplete = useCallback(() => {
     setShowCelebration(false);
     setLastClaimedCredits(null);
   }, []);
 
-  // 如果弹窗未打开，不渲染
   if (!isOpen) return null;
 
-  // 如果配置未加载或未启用，显示加载状态
   const isConfigLoading = !config;
   const isDisabled = config && !config.enabled;
+  const isLoading = adLoading || checkinLoading;
 
-  // 格式化积分数字
-  const formatCredits = (credits: number) => {
-    return credits.toLocaleString();
-  };
-
-  // 渲染未登录状态
+  // 渲染未登录内容
   const renderGuestContent = () => {
     const totalAdCredits = config?.ad_reward_tiers?.reduce((a, b) => a + b, 0) || 0;
 
     return (
       <div>
-        {/* 标题 */}
-        <div className="text-center mb-5">
-          <div className="w-14 h-14 mx-auto mb-3 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center">
-            <Gift className="w-7 h-7 text-white" />
-          </div>
-          <h3 className="text-xl font-bold text-gray-900">
-            {t('dailyTasks.title')}
-          </h3>
-          <p className="text-sm text-gray-500">
-            {t('dailyTasks.loginToEarn')}
-          </p>
-        </div>
+        <DailyTasksHeader isLoggedIn={false} />
 
-        {/* 任务列表预览 */}
         <div className="space-y-3 mb-3">
-          {/* 签到任务（激励广告） */}
+          {/* 签到任务预览 */}
           <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl p-4 flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center">
@@ -409,7 +359,9 @@ export default function DailyTasksModal({ isOpen, onClose, onCreditsUpdated, onU
               </div>
               <div>
                 <p className="font-medium text-gray-900">{t('dailyTasks.checkin')}</p>
-                <p className="text-xs text-gray-500">+{formatCredits(config?.checkin_credits || 0)} {t('dailyTasks.credits')}</p>
+                <p className="text-xs text-gray-500">
+                  +{formatCredits(config?.checkin_credits || 0)} {t('dailyTasks.credits')}
+                </p>
               </div>
             </div>
             <button
@@ -421,7 +373,7 @@ export default function DailyTasksModal({ isOpen, onClose, onCreditsUpdated, onU
             </button>
           </div>
 
-          {/* 观看视频任务 */}
+          {/* 看广告任务预览 */}
           <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl p-4 flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
@@ -429,7 +381,9 @@ export default function DailyTasksModal({ isOpen, onClose, onCreditsUpdated, onU
               </div>
               <div>
                 <p className="font-medium text-gray-900">{t('dailyTasks.watchAds')}</p>
-                <p className="text-xs text-gray-500">+{formatCredits(totalAdCredits)} {t('dailyTasks.credits')}</p>
+                <p className="text-xs text-gray-500">
+                  +{formatCredits(totalAdCredits)} {t('dailyTasks.credits')}
+                </p>
               </div>
             </div>
             <button
@@ -452,9 +406,8 @@ export default function DailyTasksModal({ isOpen, onClose, onCreditsUpdated, onU
     );
   };
 
-  // 渲染已登录状态
+  // 渲染已登录内容
   const renderLoggedInContent = () => {
-    // 加载中显示骨架屏
     if (!status) {
       return (
         <div className="flex flex-col items-center justify-center py-12">
@@ -464,295 +417,70 @@ export default function DailyTasksModal({ isOpen, onClose, onCreditsUpdated, onU
       );
     }
 
-    const adTiers = config?.ad_reward_tiers || [];
-    const totalAdCredits = adTiers.reduce((sum, v) => sum + v, 0);
-
     return (
       <div>
-        {/* 标题 */}
-        <div className="text-center mb-6">
-          <div className="w-14 h-14 mx-auto mb-3 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center">
-            <Gift className="w-7 h-7 text-white" />
-          </div>
-          <h3 className="text-xl font-bold text-gray-900">
-            {t('dailyTasks.title')}
-          </h3>
-          <p className="text-sm text-gray-500">
-            {t('dailyTasks.subtitle')}
-          </p>
-        </div>
+        <DailyTasksHeader isLoggedIn={true} />
 
-        {/* 今日进度 */}
-        <div className="bg-gray-50 rounded-xl p-4 mb-5">
-          <div className="flex items-center justify-between text-sm">
-            <span className="text-gray-600">{t('dailyTasks.todayEarned')}</span>
-            <span className="font-semibold text-purple-600">
-              {formatCredits(status.todayTotalCredits)} / {formatCredits(status.todayMaxCredits)}
-            </span>
-          </div>
-          <div className="mt-2 h-2 bg-gray-200 rounded-full overflow-hidden">
-            <div
-              className="h-full bg-gradient-to-r from-purple-500 to-pink-500 rounded-full transition-all duration-500"
-              style={{ width: `${(status.todayTotalCredits / status.todayMaxCredits) * 100}%` }}
-            />
-          </div>
-        </div>
+        <DailyTasksProgress
+          earnedCredits={status.todayTotalCredits}
+          maxCredits={status.todayMaxCredits}
+        />
 
-        {/* 签到任务（激励广告） */}
-        <div className="border border-gray-200 rounded-xl p-4 mb-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                status.checkinDone ? 'bg-green-100' : 'bg-purple-100'
-              }`}>
-                {status.checkinDone ? (
-                  <Check className="w-5 h-5 text-green-600" />
-                ) : (
-                  <Play className="w-5 h-5 text-purple-600" />
-                )}
-              </div>
-              <div>
-                <p className="font-medium text-gray-900">{t('dailyTasks.checkin')}</p>
-                <p className="text-sm text-gray-500">+{formatCredits(config?.checkin_credits || 0)} {t('dailyTasks.credits')}</p>
-              </div>
-            </div>
-            <button
-              onClick={handleCheckin}
-              disabled={status.checkinDone || claiming || checkinLoading}
-              className={`px-4 py-2 rounded-lg font-medium text-sm transition-colors flex items-center gap-1.5 ${
-                status.checkinDone
-                  ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                  : 'bg-purple-600 text-white hover:bg-purple-700 disabled:opacity-50'
-              }`}
-            >
-              {(claiming || checkinLoading) ? (
-                <Loader2 className="w-4 h-4 animate-spin" />
-              ) : status.checkinDone ? (
-                t('dailyTasks.claimed')
-              ) : (
-                <>
-                  <Play className="w-4 h-4" />
-                  {t('dailyTasks.watchCheckinGet', { credits: formatCredits(config?.checkin_credits || 0) })}
-                </>
-              )}
-            </button>
-          </div>
+        <CheckinTaskCard
+          isDone={status.checkinDone}
+          credits={config?.checkin_credits || 0}
+          isLoading={claiming || checkinLoading}
+          error={checkinError}
+          onCheckin={handleCheckin}
+        />
 
-          {/* 签到错误提示 */}
-          {checkinError && (
-            <div className="mt-3 p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-600 text-center">
-              {checkinError}
-            </div>
-          )}
-        </div>
-
-        {/* 看广告赚积分 */}
-        <div className="border border-gray-200 rounded-xl p-4">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
-                <Play className="w-5 h-5 text-green-600" />
-              </div>
-              <div>
-                <p className="font-medium text-gray-900">{t('dailyTasks.watchAds')}</p>
-                <p className="text-sm text-gray-500">
-                  {formatCredits(status.adRewardsCredits)} / {formatCredits(totalAdCredits)} {t('dailyTasks.credits')}
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* 广告档位进度 */}
-          <div className="flex gap-1.5 mb-4">
-            {adTiers.map((tier, index) => {
-              const isClaimed = index < status.adRewardsClaimed;
-              const isNext = index === status.adRewardsClaimed;
-              return (
-                <div
-                  key={index}
-                  className={`flex-1 h-8 rounded-lg flex items-center justify-center text-xs font-medium transition-all ${
-                    isClaimed
-                      ? 'bg-green-500 text-white'
-                      : isNext
-                      ? 'bg-purple-100 text-purple-600 border-2 border-purple-300'
-                      : 'bg-gray-100 text-gray-400'
-                  }`}
-                >
-                  {isClaimed ? <Check className="w-3.5 h-3.5" /> : tier}
-                </div>
-              );
-            })}
-          </div>
-
-          {/* 广告错误提示 */}
-          {adError && (
-            <div className="mb-3 p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-600 text-center">
-              {adError}
-            </div>
-          )}
-
-          {/* 看广告按钮 */}
-          {status.nextAdReward !== null ? (
-            <button
-              onClick={handleWatchAd}
-              disabled={claiming || adLoading}
-              className="w-full py-3 bg-green-600 text-white font-semibold rounded-xl hover:bg-green-700 transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {(claiming || adLoading) ? (
-                <>
-                  <Loader2 className="w-5 h-5 animate-spin" />
-                  <span>{t('dailyTasks.loadingAd') || '加载广告中...'}</span>
-                </>
-              ) : (
-                <>
-                  <Play className="w-5 h-5" />
-                  {t('dailyTasks.watchAdGet', { credits: formatCredits(status.nextAdReward) })}
-                </>
-              )}
-            </button>
-          ) : (
-            <div className="w-full py-3 bg-gray-100 text-gray-400 font-semibold rounded-xl text-center">
-              {t('dailyTasks.allAdsClaimed')}
-            </div>
-          )}
-        </div>
-
+        <WatchAdsTaskCard
+          adTiers={config?.ad_reward_tiers || []}
+          claimedCount={status.adRewardsClaimed}
+          earnedCredits={status.adRewardsCredits}
+          nextReward={status.nextAdReward}
+          isLoading={claiming || adLoading}
+          error={adError}
+          onWatchAd={handleWatchAd}
+        />
       </div>
     );
   };
 
   const modalContent = (
     <>
-      {/* Adsterra 倒计时覆盖层 */}
-      {adsterra.isShowing && (
-        <div className="fixed inset-0 flex flex-col items-center justify-center bg-black/70 backdrop-blur-sm z-[9999]">
-          <div className="bg-white rounded-2xl p-8 flex flex-col items-center shadow-2xl min-w-[320px]">
-            {!adsterra.isCompleted ? (
-              <>
-                {/* 倒计时圆环 */}
-                <div className="relative w-24 h-24 mb-4">
-                  <svg className="w-full h-full transform -rotate-90">
-                    <circle
-                      cx="48"
-                      cy="48"
-                      r="44"
-                      stroke="#e5e7eb"
-                      strokeWidth="8"
-                      fill="none"
-                    />
-                    <circle
-                      cx="48"
-                      cy="48"
-                      r="44"
-                      stroke="#8b5cf6"
-                      strokeWidth="8"
-                      fill="none"
-                      strokeLinecap="round"
-                      strokeDasharray={276.46}
-                      strokeDashoffset={276.46 * (adsterra.remainingSeconds / 30)}
-                      className="transition-all duration-1000"
-                    />
-                  </svg>
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <span className="text-3xl font-bold text-purple-600">{adsterra.remainingSeconds}</span>
-                  </div>
-                </div>
-                <p className="text-gray-700 font-medium text-lg">
-                  {t('dailyTasks.watchingAd') || '正在观看广告...'}
-                </p>
-                <p className="text-gray-400 text-sm mt-2 text-center">
-                  {t('dailyTasks.stayOnAdPage') || '请在广告页面停留片刻'}
-                </p>
-                {/* 取消按钮 */}
-                <button
-                  onClick={adsterra.cancel}
-                  className="mt-6 px-6 py-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors text-sm"
-                >
-                  {t('dailyTasks.cancel') || '取消'}
-                </button>
-              </>
-            ) : (
-              <>
-                {/* 完成状态 */}
-                <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center mb-4">
-                  <Check className="w-8 h-8 text-green-600" />
-                </div>
-                <p className="text-gray-700 font-medium text-lg">
-                  {t('dailyTasks.adCompleted') || '广告观看完成！'}
-                </p>
-                <p className="text-gray-400 text-sm mt-2">
-                  {t('dailyTasks.clickToClaimReward') || '点击领取奖励'}
-                </p>
-                <button
-                  onClick={adsterra.confirmComplete}
-                  className="mt-6 px-8 py-3 bg-purple-600 text-white font-semibold rounded-xl hover:bg-purple-700 transition-colors flex items-center gap-2"
-                >
-                  <Gift className="w-5 h-5" />
-                  {t('dailyTasks.claimReward') || '领取奖励'}
-                </button>
-              </>
-            )}
-          </div>
-        </div>
-      )}
+      {/* Adsterra 广告覆盖层 */}
+      <AdOverlay
+        isShowing={adsterra.isShowing}
+        remainingSeconds={adsterra.remainingSeconds}
+        totalSeconds={adsterra.totalSeconds}
+        isCompleted={adsterra.isCompleted}
+        isWindowClosed={adsterra.isWindowClosed}
+        onCancel={adsterra.cancel}
+        onConfirm={adsterra.confirmComplete}
+      />
 
-      {/* 广告加载中覆盖层 */}
-      {(adLoading || checkinLoading) && (
-        <div className="fixed inset-0 flex flex-col items-center justify-center bg-black/70 backdrop-blur-sm z-[9999]">
-          <div className="bg-white rounded-2xl p-8 flex flex-col items-center shadow-2xl min-w-[280px]">
-            <Loader2 className="w-12 h-12 animate-spin text-purple-500 mb-4" />
-            <p className="text-gray-700 font-medium">{t('dailyTasks.loadingAd') || '加载广告中...'}</p>
-            <p className="text-gray-400 text-sm mt-1">{t('dailyTasks.pleaseWait') || '请稍候'}</p>
-            {/* 取消按钮 */}
-            <button
-              onClick={() => handleCancelLoading(checkinLoading ? 'checkin' : 'ad')}
-              className="mt-6 px-6 py-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors text-sm"
-            >
-              {t('dailyTasks.cancel') || '取消'}
-            </button>
-          </div>
-        </div>
-      )}
+      {/* 加载中覆盖层 */}
+      <LoadingOverlay
+        isLoading={isLoading && !adsterra.isShowing}
+        onCancel={() => handleCancelLoading(checkinLoading ? 'checkin' : 'ad')}
+      />
 
       {/* 重试覆盖层 */}
-      {pendingRetry && !adLoading && !checkinLoading && (
-        <div className="fixed inset-0 flex flex-col items-center justify-center bg-black/70 backdrop-blur-sm z-[9999]">
-          <div className="bg-white rounded-2xl p-8 flex flex-col items-center shadow-2xl min-w-[280px]">
-            <div className="w-12 h-12 rounded-full bg-orange-100 flex items-center justify-center mb-4">
-              <RefreshCw className="w-6 h-6 text-orange-500" />
-            </div>
-            <p className="text-gray-700 font-medium">
-              {pendingRetry === 'checkin'
-                ? (checkinError || t('dailyTasks.loadFailed') || '加载失败')
-                : (adError || t('dailyTasks.loadFailed') || '加载失败')
-              }
-            </p>
-            <div className="flex gap-3 mt-6">
-              <button
-                onClick={() => setPendingRetry(null)}
-                className="px-5 py-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors text-sm"
-              >
-                {t('dailyTasks.close') || '关闭'}
-              </button>
-              <button
-                onClick={handleRetry}
-                className="px-5 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors text-sm flex items-center gap-2"
-              >
-                <RefreshCw className="w-4 h-4" />
-                {t('dailyTasks.retry') || '重试'}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <RetryOverlay
+        isVisible={!!pendingRetry && !isLoading}
+        errorMessage={pendingRetry === 'checkin' ? checkinError : adError}
+        onClose={() => setPendingRetry(null)}
+        onRetry={handleRetry}
+      />
 
+      {/* 主弹窗 */}
       <div
         className={`fixed inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm transition-all z-[9998] ${
-          (adLoading || checkinLoading || pendingRetry) ? 'opacity-0 pointer-events-none' : 'opacity-100'
+          isLoading || pendingRetry || adsterra.isShowing ? 'opacity-0 pointer-events-none' : 'opacity-100'
         }`}
         onClick={handleClose}
       >
-        {/* 弹窗内容 */}
         <div
           className="relative w-full max-w-[420px] mx-4 bg-white rounded-2xl shadow-2xl max-h-[90vh] overflow-y-auto"
           onClick={(e) => e.stopPropagation()}
@@ -766,7 +494,7 @@ export default function DailyTasksModal({ isOpen, onClose, onCreditsUpdated, onU
             <X className="w-5 h-5" />
           </button>
 
-          {/* 内容区域 */}
+          {/* 内容 */}
           <div className="p-6">
             {isConfigLoading ? (
               <div className="flex flex-col items-center justify-center py-12">
@@ -777,17 +505,18 @@ export default function DailyTasksModal({ isOpen, onClose, onCreditsUpdated, onU
               <div className="flex flex-col items-center justify-center py-12">
                 <p className="text-sm text-gray-500">{t('dailyTasks.disabled') || '每日任务暂未开放'}</p>
               </div>
-            ) : user ? renderLoggedInContent() : renderGuestContent()}
+            ) : user ? (
+              renderLoggedInContent()
+            ) : (
+              renderGuestContent()
+            )}
           </div>
 
-          {/* 底部提示 */}
+          {/* 底部 */}
           {!isConfigLoading && !isDisabled && (
             <div className="px-6 pb-5 text-center space-y-2">
-              <p className="text-xs text-gray-400">
-                {t('dailyTasks.resetTip')}
-              </p>
+              <p className="text-xs text-gray-400">{t('dailyTasks.resetTip')}</p>
 
-              {/* 会员推广 */}
               {onUpgradeClick && (
                 <button
                   onClick={() => {

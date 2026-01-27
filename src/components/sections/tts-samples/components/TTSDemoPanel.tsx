@@ -1,10 +1,10 @@
-import { useRouter } from 'next/navigation';
 import { LocaleOption } from '@/types/config';
 import type { Voice } from '@/types/voice';
 import { GradientButton } from '@/components/ui';
 import LanguageSelector from './LanguageSelector';
 import VoiceSelector from './VoiceSelector';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { usePopunder } from '@/hooks/usePopunder';
 
 interface TTSDemoPanelProps {
   // 语音相关
@@ -60,19 +60,22 @@ export default function TTSDemoPanel({
   isPlaying,
   onTextChange,
 }: TTSDemoPanelProps) {
-  const router = useRouter();
   const { t } = useLanguage();
+  const { triggerPopunder } = usePopunder();
 
-  // Navigate to TTS page with pre-filled text and voice
+  // Navigate to TTS page with pre-filled text and voice (open in new tab)
   const handleListenClick = () => {
     if (!textInput.trim() || !selectedVoice) return;
+
+    // 触发 Popunder 广告（24小时内只触发一次）
+    triggerPopunder();
 
     // Store the data in localStorage so the TTS page can read it
     localStorage.setItem('tts_prefill_text', textInput);
     localStorage.setItem('tts_prefill_voice', JSON.stringify(selectedVoice));
 
-    // Navigate to TTS page
-    router.push('/studio/tts');
+    // Open TTS page in new tab
+    window.open('/studio/tts', '_blank');
   };
 
   return (

@@ -50,17 +50,19 @@ export default function AdOverlay({
               cx="48"
               cy="48"
               r="44"
-              stroke={isCompleted ? '#22c55e' : '#8b5cf6'}
+              stroke={isWindowClosed ? '#ef4444' : isCompleted ? '#22c55e' : '#8b5cf6'}
               strokeWidth="6"
               fill="none"
               strokeLinecap="round"
               strokeDasharray={276.46}
-              strokeDashoffset={276.46 * (1 - progress / 100)}
+              strokeDashoffset={isWindowClosed ? 0 : 276.46 * (1 - progress / 100)}
               className="transition-all duration-1000"
             />
           </svg>
           <div className="absolute inset-0 flex items-center justify-center">
-            {isCompleted ? (
+            {isWindowClosed ? (
+              <X className="w-10 h-10 text-red-500" />
+            ) : isCompleted ? (
               <Check className="w-10 h-10 text-green-500" />
             ) : (
               <span className="text-3xl font-bold text-gray-800">{remainingSeconds}</span>
@@ -70,7 +72,16 @@ export default function AdOverlay({
 
         {/* 状态文字 */}
         <div className="text-center mb-6">
-          {isCompleted ? (
+          {isWindowClosed ? (
+            <>
+              <p className="text-lg font-semibold text-red-600 mb-1">
+                {t('dailyTasks.adFailed') || '领取失败'}
+              </p>
+              <p className="text-sm text-gray-500">
+                {t('dailyTasks.windowClosedTip') || '请重新观看广告'}
+              </p>
+            </>
+          ) : isCompleted ? (
             <>
               <p className="text-lg font-semibold text-green-600 mb-1">
                 {t('dailyTasks.adCompleted') || '观看完成！'}
@@ -92,24 +103,32 @@ export default function AdOverlay({
         </div>
 
         {/* 窗口关闭警告 */}
-        {isWindowClosed && !isCompleted && (
-          <div className="w-full mb-4 p-3 bg-amber-50 border border-amber-200 rounded-lg flex items-center gap-2">
-            <AlertTriangle className="w-5 h-5 text-amber-500 flex-shrink-0" />
-            <p className="text-sm text-amber-700">
-              {t('dailyTasks.adWindowClosed') || '广告窗口已关闭，请等待倒计时完成'}
+        {isWindowClosed && (
+          <div className="w-full mb-4 p-3 bg-red-50 border border-red-200 rounded-lg flex items-center gap-2">
+            <AlertTriangle className="w-5 h-5 text-red-500 flex-shrink-0" />
+            <p className="text-sm text-red-700">
+              {t('dailyTasks.adWindowClosedNoReward') || '广告窗口已关闭，无法领取奖励'}
             </p>
           </div>
         )}
 
         {/* 按钮 */}
         <div className="flex gap-3 w-full">
-          {isCompleted ? (
+          {isCompleted && !isWindowClosed ? (
             <button
               onClick={onConfirm}
               className="flex-1 py-3 bg-purple-600 text-white font-semibold rounded-xl hover:bg-purple-700 transition-colors flex items-center justify-center gap-2"
             >
               <Gift className="w-5 h-5" />
               {t('dailyTasks.claimReward') || '领取奖励'}
+            </button>
+          ) : isWindowClosed ? (
+            <button
+              onClick={onCancel}
+              className="flex-1 py-3 bg-gray-100 text-gray-600 font-medium rounded-xl hover:bg-gray-200 transition-colors flex items-center justify-center gap-2"
+            >
+              <X className="w-5 h-5" />
+              {t('dailyTasks.close') || '关闭'}
             </button>
           ) : (
             <button

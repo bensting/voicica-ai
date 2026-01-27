@@ -716,6 +716,7 @@ export async function getTtsRecordByTaskId(taskId: string): Promise<TtsRecord> {
       provider: voice.provider,
       locale: voice.locale,
       country: voice.country,
+      gender: voice.gender,
       avatar_url: voice.avatar_url,
     } : null,
   };

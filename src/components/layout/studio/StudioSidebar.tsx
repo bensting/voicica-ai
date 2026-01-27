@@ -395,9 +395,9 @@ export default function StudioSidebar({ isOpen = false, onClose }: StudioSidebar
               <X className="w-5 h-5" />
             </button>
             <picture>
-              <source srcSet="/logo/logo-full-transparent-256.webp" type="image/webp" />
+              <source srcSet="/logo/logo-full-transparent-light-256.webp" type="image/webp" />
               <Image
-                src="/logo/logo-full-transparent.png"
+                src="/logo/logo-full-transparent-light.png"
                 alt="Voicica.AI"
                 width={110}
                 height={22}

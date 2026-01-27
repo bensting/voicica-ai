@@ -5,9 +5,9 @@ export default function Logo() {
   return (
     <Link href="/" className="flex items-center hover:opacity-80 transition-opacity">
       <picture>
-        <source srcSet="/logo/logo-full-transparent-256.webp" type="image/webp" />
+        <source srcSet="/logo/logo-full-transparent-light-256.webp" type="image/webp" />
         <Image
-          src="/logo/logo-full-transparent.png"
+          src="/logo/logo-full-transparent-light.png"
           alt="Voicica.AI"
           width={180}
           height={40}

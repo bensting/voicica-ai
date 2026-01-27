@@ -111,8 +111,11 @@ function PublicVideoPlayPageContent() {
     const from = searchParams.get('from');
     if (from === 'explore') {
       router.push('/native?tab=explore');
-    } else {
+    } else if (window.history.length > 1) {
       router.back();
+    } else {
+      // 没有历史记录时，返回首页
+      router.push('/native');
     }
   };
 

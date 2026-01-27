@@ -160,7 +160,7 @@ function PublicVideoPlayPageContent() {
         style={{ paddingTop: 'var(--safe-area-inset-top, 0px)' }}
       >
         {/* Header */}
-        <div className="flex items-center px-4 h-14">
+        <div className="flex items-center px-4 h-14 relative z-20">
           <button onClick={handleBack} className="p-2 -ml-2 text-white">
             <BackIcon />
           </button>
@@ -182,7 +182,7 @@ function PublicVideoPlayPageContent() {
     <div className="fixed inset-0 bg-[#0a0a1a] flex flex-col">
       {/* Header - 固定顶部 */}
       <div
-        className="flex-shrink-0 flex items-center justify-between px-4 h-14"
+        className="flex-shrink-0 flex items-center justify-between px-4 h-14 relative z-20"
         style={{ paddingTop: 'var(--safe-area-inset-top, 0px)' }}
       >
         <button onClick={handleBack} className="p-2 -ml-2 text-white">

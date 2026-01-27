@@ -54,7 +54,7 @@
     </style>
 
     <!-- Action Mode Popup 样式（浮动工具栏） -->
-    <style name="ActionModePopupStyle" parent="@style/Widget.AppCompat.PopupWindow.ActionMode">
+    <style name="ActionModePopupStyle" parent="Widget.AppCompat.Light.PopupMenu">
         <item name="android:popupBackground">@drawable/action_mode_background</item>
     </style>
 

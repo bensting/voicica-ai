@@ -34,9 +34,28 @@
         <item name="actionModeBackground">@drawable/action_mode_background</item>
         <item name="actionModeCloseDrawable">@android:drawable/ic_menu_close_clear_cancel</item>
         <item name="android:actionModeBackground">@drawable/action_mode_background</item>
+        <item name="actionModeStyle">@style/ActionModeStyle</item>
+        <item name="actionModePopupWindowStyle">@style/ActionModePopupStyle</item>
         <!-- Alert Dialog 样式 - 避免显示为 splash -->
         <item name="alertDialogTheme">@style/AppTheme.AlertDialog</item>
         <item name="android:alertDialogTheme">@style/AppTheme.AlertDialog</item>
+        <!-- Popup 窗口样式 -->
+        <item name="android:popupWindowStyle">@style/PopupWindowStyle</item>
+    </style>
+
+    <!-- Action Mode 样式 -->
+    <style name="ActionModeStyle" parent="Widget.AppCompat.ActionMode">
+        <item name="background">@drawable/action_mode_background</item>
+    </style>
+
+    <!-- Popup 窗口样式 -->
+    <style name="PopupWindowStyle" parent="android:Widget.PopupWindow">
+        <item name="android:popupBackground">@drawable/action_mode_background</item>
+    </style>
+
+    <!-- Action Mode Popup 样式（浮动工具栏） -->
+    <style name="ActionModePopupStyle" parent="@style/Widget.AppCompat.PopupWindow.ActionMode">
+        <item name="android:popupBackground">@drawable/action_mode_background</item>
     </style>
 
     <!-- 自定义 Alert Dialog 样式 -->
@@ -49,5 +68,10 @@
 
     <style name="AppTheme.NoActionBarLaunch" parent="Theme.SplashScreen">
         <item name="android:background">@drawable/splash</item>
+        <!-- Action Mode 样式 - 防止文本选择时显示 splash 背景 -->
+        <item name="windowActionModeOverlay">true</item>
+        <item name="actionModeBackground">@drawable/action_mode_background</item>
+        <item name="android:actionModeBackground">@drawable/action_mode_background</item>
+        <item name="actionModePopupWindowStyle">@style/ActionModePopupStyle</item>
     </style>
 </resources>

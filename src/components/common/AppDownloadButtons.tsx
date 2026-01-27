@@ -1,7 +1,5 @@
 'use client';
 
-import Link from 'next/link';
-
 interface AppDownloadButtonsProps {
   /** 显示变体：dark 深色背景，light 浅色背景 */
   variant?: 'dark' | 'light';
@@ -96,8 +94,10 @@ export default function AppDownloadButtons({
 
       {/* Web Version 链接 */}
       {showWebLink && (
-        <Link
+        <a
           href={webLinkHref}
+          target="_blank"
+          rel="noopener noreferrer"
           className={`flex items-center gap-1.5 px-5 py-2 rounded-lg border text-base font-medium transition-all hover:scale-105 ${
             isDark
               ? 'border-gray-600 text-gray-300 hover:text-white hover:border-gray-400'
@@ -106,7 +106,7 @@ export default function AppDownloadButtons({
         >
           <span>Web Version</span>
           <ArrowRightIcon />
-        </Link>
+        </a>
       )}
     </div>
   );

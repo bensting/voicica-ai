@@ -14,6 +14,7 @@ import { imageModels, type ImageModel, DEFAULT_IMAGE_MODEL_ID } from '@/config/n
 import { sendLocalNotification } from '@/lib/notifications';
 
 const IMAGE_MODEL_STORAGE_KEY = 'image_selected_model';
+const IMAGE_PROMPT_STORAGE_KEY = 'image_last_prompt';
 
 // 图标组件
 const ChevronDownIcon = () => (
@@ -140,7 +141,10 @@ export default function NativeImagePage() {
   const [taskId, setTaskId] = useState<string | null>(null);
 
   // 输入状态 - 默认选中 Seedream 4.5 或从 localStorage 恢复
-  const [prompt, setPrompt] = useState('');
+  const [prompt, setPrompt] = useState(() => {
+    if (typeof window === 'undefined') return '';
+    return localStorage.getItem(IMAGE_PROMPT_STORAGE_KEY) || '';
+  });
   const [selectedModel, setSelectedModel] = useState<ImageModel>(() => {
     // 服务端渲染时使用默认模型
     if (typeof window === 'undefined') {
@@ -181,6 +185,14 @@ export default function NativeImagePage() {
     // 保存选择到 localStorage
     localStorage.setItem(IMAGE_MODEL_STORAGE_KEY, selectedModel.id);
   }, [selectedModel]);
+
+  // 保存 prompt 到 localStorage（防抖）
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      localStorage.setItem(IMAGE_PROMPT_STORAGE_KEY, prompt);
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [prompt]);
 
   // 轮询任务状态
   useEffect(() => {

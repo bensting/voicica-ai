@@ -11,10 +11,11 @@ import GradientButton from '@/components/native/common/GradientButton';
 import CreditsInfoBar from '@/components/native/common/CreditsInfoBar';
 import GeneratingModal, { GeneratingStatus } from '@/components/native/common/GeneratingModal';
 import VideoDetailModal from '@/components/native/me/VideoDetailModal';
+import LoginModal from '@/components/native/LoginModal';
 import { useCredits } from '@/contexts/CreditsContext';
 import { VideoModel, defaultVideoModel, getModelDefaults, calculateCredits } from '@/config/native/videoModels';
 import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
-import { getVideoTaskStatus, getVideoRecordByTaskId, type VideoRecord } from '@/actions/video';
+import { getVideoRecordByTaskId, type VideoRecord } from '@/actions/video';
 import { checkCreditsBeforeGenerate } from '@/lib/credits-check';
 
 // 时钟图标
@@ -67,8 +68,9 @@ const VIDEO_PROMPT_STORAGE_KEY = 'video_draft_prompt';
 
 export default function CreateVideoPage() {
   const router = useRouter();
-  const { token } = useFirebaseAuth();
+  const { user, token } = useFirebaseAuth();
   const { credits: userCredits } = useCredits();
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isParamsSheetOpen, setIsParamsSheetOpen] = useState(false);
   const [mode, setMode] = useState<ModeType>('generate');
   const [prompt, setPromptState] = useState('');
@@ -136,7 +138,7 @@ export default function CreateVideoPage() {
     setSelectedModel(model);
   };
 
-  // Polling for task status
+  // Polling for task status via API
   const startPolling = useCallback((taskId: string) => {
     if (pollingRef.current) {
       clearInterval(pollingRef.current);
@@ -144,9 +146,22 @@ export default function CreateVideoPage() {
 
     pollingRef.current = setInterval(async () => {
       try {
-        const status = await getVideoTaskStatus(taskId);
+        // Use API endpoint instead of server action
+        const response = await fetch(`/api/v1/native/video/task/${taskId}`, {
+          headers: {
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          },
+        });
 
-        if (status.status === 'SUCCESS') {
+        if (!response.ok) {
+          console.error('Polling API error:', response.status);
+          return;
+        }
+
+        const data = await response.json();
+        const task = data.task;
+
+        if (task.status === 'SUCCESS') {
           // Stop polling
           if (pollingRef.current) {
             clearInterval(pollingRef.current);
@@ -167,23 +182,23 @@ export default function CreateVideoPage() {
           } else {
             setGeneratingStatus('success');
           }
-        } else if (status.status === 'FAILURE') {
+        } else if (task.status === 'FAILURE') {
           // Stop polling
           if (pollingRef.current) {
             clearInterval(pollingRef.current);
             pollingRef.current = null;
           }
           setGeneratingStatus('error');
-          setGeneratingError(status.error || 'Video generation failed');
+          setGeneratingError(task.error_message || 'Video generation failed');
         } else {
           // Still processing
-          setGeneratingProgress(status.progress || 0);
+          setGeneratingProgress(task.progress || 0);
         }
       } catch (err) {
         console.error('Polling error:', err);
       }
     }, 3000);
-  }, []);
+  }, [token]);
 
   // Cleanup polling on unmount
   useEffect(() => {
@@ -196,6 +211,12 @@ export default function CreateVideoPage() {
 
   const handleCreateVideo = async () => {
     if (!prompt.trim() || isCreating) return;
+
+    // Check login first
+    if (!user) {
+      setIsLoginModalOpen(true);
+      return;
+    }
 
     // Check credits before creating
     const hasEnoughCredits = checkCreditsBeforeGenerate({
@@ -252,11 +273,12 @@ export default function CreateVideoPage() {
 
       if (!response.ok) {
         if (response.status === 401) {
-          setError('Please login to create videos');
+          setIsLoginModalOpen(true);
           return;
         }
         if (response.status === 402) {
-          setError(`Insufficient credits. Need ${data.required}, have ${data.available}`);
+          // Already handled by checkCreditsBeforeGenerate, but as fallback
+          router.push('/native/subscribe');
           return;
         }
         throw new Error(data.error || 'Failed to create video');
@@ -472,6 +494,13 @@ export default function CreateVideoPage() {
           onDelete={handleDeleteVideo}
         />
       )}
+
+      {/* Login Modal */}
+      <LoginModal
+        isOpen={isLoginModalOpen}
+        onClose={() => setIsLoginModalOpen(false)}
+        onLoginSuccess={() => setIsLoginModalOpen(false)}
+      />
     </div>
   );
 }

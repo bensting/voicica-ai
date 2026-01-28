@@ -34,6 +34,32 @@ function formatDuration(seconds: number | null): string {
   return `${seconds}s`;
 }
 
+// 根据 aspect_ratio 计算 padding-bottom 百分比
+function getAspectRatioPadding(aspectRatio: string): string {
+  // 解析 "16:9" 或 "9:16" 格式
+  const parts = aspectRatio.split(':');
+  if (parts.length === 2) {
+    const width = parseFloat(parts[0]);
+    const height = parseFloat(parts[1]);
+    if (width > 0 && height > 0) {
+      return `${(height / width) * 100}%`;
+    }
+  }
+  // 默认 16:9
+  return '56.25%';
+}
+
+// 判断是否为竖屏视频
+function isPortraitVideo(aspectRatio: string): boolean {
+  const parts = aspectRatio.split(':');
+  if (parts.length === 2) {
+    const width = parseFloat(parts[0]);
+    const height = parseFloat(parts[1]);
+    return height > width;
+  }
+  return false;
+}
+
 export default function VideoDetailModal({
   video,
   onClose,
@@ -134,7 +160,10 @@ export default function VideoDetailModal({
       <div className="flex-1 overflow-y-auto px-4 pb-32">
         {/* Video Player */}
         <div
-          className="w-full aspect-video rounded-2xl overflow-hidden bg-gray-800 mb-4 relative"
+          className={`relative rounded-2xl overflow-hidden bg-gray-800 mb-4 mx-auto ${
+            isPortraitVideo(video.aspect_ratio) ? 'max-w-[280px]' : 'w-full'
+          }`}
+          style={{ paddingBottom: getAspectRatioPadding(video.aspect_ratio) }}
           onClick={handlePlayPause}
         >
           {video.video_url ? (
@@ -143,7 +172,7 @@ export default function VideoDetailModal({
                 ref={videoRef}
                 src={video.video_url}
                 poster={video.thumbnail_url || undefined}
-                className="w-full h-full object-contain"
+                className="absolute inset-0 w-full h-full object-cover"
                 playsInline
                 loop
                 onPlay={() => setIsPlaying(true)}
@@ -161,7 +190,7 @@ export default function VideoDetailModal({
               )}
             </>
           ) : (
-            <div className="w-full h-full flex items-center justify-center text-gray-500">
+            <div className="absolute inset-0 flex items-center justify-center text-gray-500">
               <svg className="w-16 h-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                 <rect x="2" y="4" width="20" height="16" rx="2" />
                 <path d="M10 9l5 3-5 3V9z" />

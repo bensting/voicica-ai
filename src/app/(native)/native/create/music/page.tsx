@@ -348,7 +348,7 @@ export default function NativeMusicPage() {
     }
 
     // 检查积分是否足够
-    const requiredCredits = selectedModel?.credits ?? 30;
+    const requiredCredits = selectedModel?.credits ?? 25;
     const hasEnoughCredits = checkCreditsBeforeGenerate({
       currentCredits: credits,
       requiredCredits,

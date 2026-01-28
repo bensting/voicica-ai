@@ -231,6 +231,45 @@ export async function createMusicTask(request: MusicGenerationRequest): Promise<
       body: JSON.stringify(kiePayload),
     });
 
+    // Check if response is OK before parsing JSON
+    if (!response.ok) {
+      console.error('❌ [createMusicTask] API error:', response.status, response.statusText);
+      await prisma.music_records.update({
+        where: { task_id: taskId },
+        data: {
+          status: 'FAILURE',
+          error_message: `API error: ${response.status} ${response.statusText}`,
+        },
+      });
+      return {
+        task_id: taskId,
+        status: 'FAILURE',
+        progress: 0,
+        result: null,
+        error: `API error: ${response.status}`,
+      };
+    }
+
+    // Check content type
+    const contentType = response.headers.get('content-type');
+    if (!contentType?.includes('application/json')) {
+      console.error('❌ [createMusicTask] Invalid content type:', contentType);
+      await prisma.music_records.update({
+        where: { task_id: taskId },
+        data: {
+          status: 'FAILURE',
+          error_message: 'Invalid API response',
+        },
+      });
+      return {
+        task_id: taskId,
+        status: 'FAILURE',
+        progress: 0,
+        result: null,
+        error: 'Invalid API response',
+      };
+    }
+
     const result = await response.json();
     console.log('🎵 [createMusicTask] KIE API 响应:', JSON.stringify(result, null, 2));
 
@@ -331,6 +370,19 @@ async function queryKieTaskStatus(externalTaskId: string): Promise<{
         'Authorization': `Bearer ${KIE_API_KEY}`,
       },
     });
+
+    // Check if response is OK before parsing JSON
+    if (!response.ok) {
+      console.error('❌ [queryKieTaskStatus] API error:', response.status, response.statusText);
+      return { status: 'PROCESSING', progress: 30 };
+    }
+
+    // Check content type to avoid parsing HTML as JSON
+    const contentType = response.headers.get('content-type');
+    if (!contentType?.includes('application/json')) {
+      console.error('❌ [queryKieTaskStatus] Invalid content type:', contentType);
+      return { status: 'PROCESSING', progress: 30 };
+    }
 
     const result = await response.json();
     console.log('🎵 [queryKieTaskStatus] KIE API 响应:', JSON.stringify(result, null, 2));

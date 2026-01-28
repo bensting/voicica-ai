@@ -214,6 +214,21 @@ export async function getImageTaskStatus(taskId: string): Promise<ImageTaskStatu
       },
     });
 
+    // Check if response is OK before parsing JSON
+    if (!response.ok) {
+      console.error('❌ [getImageTaskStatus] API error:', response.status, response.statusText);
+      // Return PROCESSING status to continue polling (might be temporary server error)
+      return { status: 'PROCESSING', progress: 50 };
+    }
+
+    // Check content type to avoid parsing HTML as JSON
+    const contentType = response.headers.get('content-type');
+    if (!contentType?.includes('application/json')) {
+      console.error('❌ [getImageTaskStatus] Invalid content type:', contentType);
+      // Return PROCESSING status to continue polling
+      return { status: 'PROCESSING', progress: 50 };
+    }
+
     const result = await response.json();
     console.log('🖼️ [getImageTaskStatus] KIE API 响应:', JSON.stringify(result, null, 2));
 

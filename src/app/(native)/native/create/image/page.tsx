@@ -286,8 +286,11 @@ export default function NativeImagePage() {
         throw new Error(data.error || 'Failed to generate prompt');
       }
 
-      // Set the generated prompt
-      setPrompt(data.prompt.slice(0, selectedModel.maxPromptLength));
+      // Set the generated prompt (truncate if exceeds max length)
+      const generatedPrompt = data.prompt || '';
+      setPrompt(generatedPrompt.substring(0, selectedModel.maxPromptLength));
+      // Clear the generate input
+      setGenerateInput('');
       // Close the sheet
       setIsGeneratePromptSheetOpen(false);
     } catch (err) {

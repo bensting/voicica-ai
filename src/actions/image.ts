@@ -277,3 +277,71 @@ export async function getImageTaskStatus(taskId: string): Promise<ImageTaskStatu
     };
   }
 }
+
+/**
+ * 图片记录类型
+ */
+export interface ImageRecord {
+  id: number;
+  user_id: string;
+  task_id: string;
+  model: string;
+  prompt: string;
+  aspect_ratio: string;
+  quality: string;
+  status: string;
+  progress: number;
+  image_url: string | null;
+  is_public: boolean;
+  credits_used: number;
+  error: string | null;
+  completed_at: Date | null;
+  created_at: Date;
+}
+
+/**
+ * 获取用户的图片记录列表
+ */
+export async function getImageRecords(limit: number = 50): Promise<ImageRecord[]> {
+  try {
+    const { user_id } = await getUserOrAnonymous();
+    if (!user_id) {
+      return [];
+    }
+
+    const records = await prisma.image_records.findMany({
+      where: { user_id },
+      orderBy: { created_at: 'desc' },
+      take: limit,
+    });
+
+    return records as ImageRecord[];
+  } catch (error) {
+    console.error('❌ [getImageRecords] Error:', error);
+    return [];
+  }
+}
+
+/**
+ * 删除图片记录
+ */
+export async function deleteImageRecord(id: number): Promise<boolean> {
+  try {
+    const { user_id } = await getUserOrAnonymous();
+    if (!user_id) {
+      return false;
+    }
+
+    await prisma.image_records.deleteMany({
+      where: {
+        id,
+        user_id,
+      },
+    });
+
+    return true;
+  } catch (error) {
+    console.error('❌ [deleteImageRecord] Error:', error);
+    return false;
+  }
+}

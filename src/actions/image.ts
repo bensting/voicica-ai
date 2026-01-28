@@ -70,11 +70,10 @@ export async function createImageTask(
 
     switch (params.modelId) {
       case 'z-image':
-        // Z-Image - 快速便宜
+        // Z-Image - 快速便宜，没有 quality 选项
         input = {
           prompt: params.prompt,
           aspect_ratio: params.aspectRatio,
-          resolution: params.quality, // '1K', '2K'
         };
         break;
 

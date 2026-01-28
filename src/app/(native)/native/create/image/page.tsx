@@ -9,12 +9,8 @@ import GradientButton from '@/components/native/common/GradientButton';
 import CreditsIcon from '@/components/native/common/CreditsIcon';
 import CreditsInfoBar from '@/components/native/common/CreditsInfoBar';
 import LoginModal from '@/components/native/LoginModal';
-import {
-  imageModels,
-  createImageTask,
-  getImageTaskStatus,
-  type ImageModel,
-} from '@/actions/image';
+import { createImageTask, getImageTaskStatus } from '@/actions/image';
+import { imageModels, type ImageModel } from '@/config/native/imageModels';
 import { sendLocalNotification } from '@/lib/notifications';
 
 // 图标组件

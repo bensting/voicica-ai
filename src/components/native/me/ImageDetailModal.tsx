@@ -1,9 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { Share2, X, Trash2 } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { X, MoreVertical, Trash2 } from 'lucide-react';
 import type { ImageRecord } from '@/actions/image';
-import { Share } from '@capacitor/share';
 import DetailActionBar from './DetailActionBar';
 import DeleteConfirmDialog from '@/components/native/ui/DeleteConfirmDialog';
 import { useBottomNav } from '@/contexts/BottomNavContext';
@@ -38,8 +37,9 @@ export default function ImageDetailModal({
   onDelete,
 }: ImageDetailModalProps) {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-  const [isSharing, setIsSharing] = useState(false);
+  const [showMenu, setShowMenu] = useState(false);
   const [downloading, setDownloading] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
   const { hide, show } = useBottomNav();
 
   // 隐藏底部导航
@@ -48,23 +48,21 @@ export default function ImageDetailModal({
     return () => show();
   }, [hide, show]);
 
-  const handleShare = async () => {
-    if (!image.image_url || isSharing) return;
+  // 点击外部关闭菜单
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setShowMenu(false);
+      }
+    };
 
-    setIsSharing(true);
-    try {
-      await Share.share({
-        title: 'AI Image',
-        text: image.prompt,
-        url: image.image_url,
-      });
-    } catch (error) {
-      // 用户取消分享
-      console.log('Share cancelled or failed:', error);
-    } finally {
-      setIsSharing(false);
+    if (showMenu) {
+      document.addEventListener('mousedown', handleClickOutside);
     }
-  };
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showMenu]);
 
   const handleDownload = async () => {
     if (!image.image_url) return;
@@ -89,20 +87,29 @@ export default function ImageDetailModal({
         <button onClick={onClose} className="p-2 -ml-2 text-white">
           <X size={24} />
         </button>
-        <div className="flex items-center gap-2">
+        <div className="relative" ref={menuRef}>
           <button
-            onClick={handleShare}
-            disabled={isSharing}
-            className="p-2 text-white disabled:opacity-50"
+            onClick={() => setShowMenu(!showMenu)}
+            className="p-2 text-white"
           >
-            <Share2 size={20} />
+            <MoreVertical size={20} />
           </button>
-          <button
-            onClick={() => setShowDeleteDialog(true)}
-            className="p-2 text-red-400"
-          >
-            <Trash2 size={20} />
-          </button>
+
+          {/* Dropdown Menu */}
+          {showMenu && (
+            <div className="absolute right-0 top-full mt-1 w-40 bg-gray-800 rounded-xl shadow-lg overflow-hidden z-10">
+              <button
+                onClick={() => {
+                  setShowMenu(false);
+                  setShowDeleteDialog(true);
+                }}
+                className="w-full flex items-center gap-3 px-4 py-3 text-red-400 hover:bg-gray-700 transition-colors"
+              >
+                <Trash2 size={18} />
+                <span>Delete</span>
+              </button>
+            </div>
+          )}
         </div>
       </div>
 

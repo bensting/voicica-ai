@@ -9,6 +9,7 @@ import AdvancedOptions from '@/components/native/create/AdvancedOptions';
 import ParameterSettingsSheet from '@/components/native/create/ParameterSettingsSheet';
 import GradientButton from '@/components/native/common/GradientButton';
 import CreditsInfoBar from '@/components/native/common/CreditsInfoBar';
+import CreditsIcon from '@/components/native/common/CreditsIcon';
 import GeneratingModal, { GeneratingStatus } from '@/components/native/common/GeneratingModal';
 import VideoDetailModal from '@/components/native/me/VideoDetailModal';
 import LoginModal from '@/components/native/LoginModal';
@@ -458,7 +459,15 @@ export default function CreateVideoPage() {
               <span>Creating...</span>
             </>
           ) : (
-            <span>Create</span>
+            <>
+              <span>Create</span>
+              {prompt.trim() && requiredCredits > 0 && (
+                <>
+                  <CreditsIcon className="w-3.5 h-3.5" />
+                  <span>{requiredCredits}</span>
+                </>
+              )}
+            </>
           )}
         </GradientButton>
       </div>

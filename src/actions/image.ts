@@ -345,3 +345,27 @@ export async function deleteImageRecord(id: number): Promise<boolean> {
     return false;
   }
 }
+
+/**
+ * 根据 taskId 获取单条图片记录
+ */
+export async function getImageRecordByTaskId(taskId: string): Promise<ImageRecord | null> {
+  try {
+    const { user_id } = await getUserOrAnonymous();
+    if (!user_id) {
+      return null;
+    }
+
+    const record = await prisma.image_records.findFirst({
+      where: {
+        task_id: taskId,
+        user_id,
+      },
+    });
+
+    return record as ImageRecord | null;
+  } catch (error) {
+    console.error('❌ [getImageRecordByTaskId] Error:', error);
+    return null;
+  }
+}

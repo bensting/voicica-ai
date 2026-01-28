@@ -9,9 +9,10 @@ import GradientButton from '@/components/native/common/GradientButton';
 import CreditsIcon from '@/components/native/common/CreditsIcon';
 import CreditsInfoBar from '@/components/native/common/CreditsInfoBar';
 import LoginModal from '@/components/native/LoginModal';
-import { createImageTask, getImageTaskStatus } from '@/actions/image';
+import { createImageTask, getImageTaskStatus, getImageRecordByTaskId, deleteImageRecord, type ImageRecord } from '@/actions/image';
 import { imageModels, type ImageModel, DEFAULT_IMAGE_MODEL_ID } from '@/config/native/imageModels';
 import { sendLocalNotification } from '@/lib/notifications';
+import ImageDetailModal from '@/components/native/me/ImageDetailModal';
 
 const IMAGE_MODEL_STORAGE_KEY = 'image_selected_model';
 const IMAGE_PROMPT_STORAGE_KEY = 'image_last_prompt';
@@ -139,6 +140,7 @@ export default function NativeImagePage() {
   const [generatingError, setGeneratingError] = useState<string | null>(null);
   const [generatingProgress, setGeneratingProgress] = useState(0);
   const [taskId, setTaskId] = useState<string | null>(null);
+  const [generatedImage, setGeneratedImage] = useState<ImageRecord | null>(null);
 
   // 输入状态 - 默认选中 Seedream 4.5 或从 localStorage 恢复
   const [prompt, setPrompt] = useState(() => {
@@ -210,9 +212,15 @@ export default function NativeImagePage() {
         if (status.status === 'SUCCESS') {
           setGeneratingStatus('success');
           setIsGenerating(false);
-          setTaskId(null);
           refreshCredits();
           sendLocalNotification('image', 'success');
+          // 获取生成的图片记录并显示详情
+          const imageRecord = await getImageRecordByTaskId(taskId);
+          if (imageRecord) {
+            setGeneratedImage(imageRecord);
+            setIsGeneratingModalOpen(false); // 关闭生成中弹窗
+          }
+          setTaskId(null);
         } else if (status.status === 'FAILURE') {
           setGeneratingStatus('error');
           setGeneratingError(status.error || 'Image generation failed');
@@ -837,6 +845,28 @@ export default function NativeImagePage() {
             </div>
           </div>
         </div>
+      )}
+
+      {/* Image Detail Modal - 生成成功后显示 */}
+      {generatedImage && (
+        <ImageDetailModal
+          image={generatedImage}
+          onClose={() => setGeneratedImage(null)}
+          onRecreate={(image) => {
+            // 使用生成的图片参数重新创建
+            setPrompt(image.prompt);
+            setAspectRatio(image.aspect_ratio);
+            if (image.quality) setQuality(image.quality);
+            const model = imageModels.find(m => m.id === image.model);
+            if (model) setSelectedModel(model);
+            setGeneratedImage(null);
+          }}
+          onDelete={async (image) => {
+            // 删除图片记录
+            await deleteImageRecord(image.id);
+            setGeneratedImage(null);
+          }}
+        />
       )}
 
       {/* Generating Modal */}

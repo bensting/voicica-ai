@@ -12,7 +12,7 @@ import { getUserOrAnonymous } from '@/lib/auth-firebase';
 const SHARE_LINK_EXPIRY_DAYS = 30;
 
 // 支持的资源类型
-export type ShareResourceType = 'music' | 'dialogue' | 'tts' | 'cover' | 'video';
+export type ShareResourceType = 'music' | 'dialogue' | 'tts' | 'cover' | 'video' | 'image';
 
 /**
  * 创建分享链接

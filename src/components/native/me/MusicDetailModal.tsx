@@ -1,10 +1,10 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { Share2 } from 'lucide-react';
 import type { MusicRecord } from '@/actions/music';
 import { Share } from '@capacitor/share';
 import { createShareLink } from '@/actions/share';
+import DetailModalHeader from './DetailModalHeader';
 import DetailActionBar from './DetailActionBar';
 import DeleteConfirmDialog from '@/components/native/ui/DeleteConfirmDialog';
 import { useBottomNav } from '@/contexts/BottomNavContext';
@@ -31,6 +31,7 @@ export default function MusicDetailModal({
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [isSharing, setIsSharing] = useState(false);
   const [downloading, setDownloading] = useState(false);
+  const [shareUrl, setShareUrl] = useState<string | null>(null);
   const { hide, show } = useBottomNav();
 
   // 隐藏底部导航
@@ -38,6 +39,15 @@ export default function MusicDetailModal({
     hide();
     return () => show();
   }, [hide, show]);
+
+  // 预先生成分享链接（用于"在浏览器打开"功能）
+  useEffect(() => {
+    if (music.task_id) {
+      createShareLink('music', music.task_id)
+        .then((result) => setShareUrl(result.url))
+        .catch((err) => console.error('Failed to create share link:', err));
+    }
+  }, [music.task_id]);
 
   // 双版本切换
   const [currentTrack, setCurrentTrack] = useState<1 | 2>(1);
@@ -171,40 +181,14 @@ export default function MusicDetailModal({
       )}
 
       {/* 顶部导航 */}
-      <div
-        className="flex items-center justify-between px-4 pb-2"
-        style={{ paddingTop: 'calc(var(--safe-area-inset-top, 0px) + 12px)' }}
-      >
-        <button
-          onClick={onClose}
-          className="w-10 h-10 flex items-center justify-center bg-gray-800/50 rounded-full"
-        >
-          <svg className="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <path d="M15 18l-6-6 6-6" />
-          </svg>
-        </button>
-        <div className="flex items-center gap-2">
-          {/* 分享按钮 */}
-          <button
-            onClick={handleShare}
-            disabled={isSharing || !music.task_id}
-            className="w-10 h-10 flex items-center justify-center disabled:opacity-50"
-          >
-            {isSharing ? (
-              <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-            ) : (
-              <Share2 className="w-5 h-5 text-white" />
-            )}
-          </button>
-          <button className="w-10 h-10 flex items-center justify-center">
-            <svg className="w-5 h-5 text-white" viewBox="0 0 24 24" fill="currentColor">
-              <circle cx="12" cy="6" r="2" />
-              <circle cx="12" cy="12" r="2" />
-              <circle cx="12" cy="18" r="2" />
-            </svg>
-          </button>
-        </div>
-      </div>
+      <DetailModalHeader
+        onClose={onClose}
+        onShare={handleShare}
+        onDelete={() => setShowDeleteDialog(true)}
+        isSharing={isSharing}
+        shareDisabled={!music.task_id}
+        browserUrl={shareUrl || undefined}
+      />
 
       {/* 可滚动内容区域 */}
       <div className="flex-1 overflow-y-auto px-6 pb-4">

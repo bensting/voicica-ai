@@ -74,6 +74,7 @@ export async function createImageTask(
         input = {
           prompt: params.prompt,
           aspect_ratio: params.aspectRatio,
+          resolution: params.quality, // '1K', '2K'
         };
         break;
 
@@ -82,7 +83,7 @@ export async function createImageTask(
         input = {
           prompt: params.prompt,
           aspect_ratio: params.aspectRatio,
-          quality: params.quality, // 'standard' or 'hd'
+          resolution: params.quality, // '1K', '2K'
         };
         break;
 
@@ -91,7 +92,7 @@ export async function createImageTask(
         input = {
           prompt: params.prompt,
           aspect_ratio: params.aspectRatio,
-          quality: params.quality, // 'basic' or 'high'
+          quality: params.quality, // 'basic' (2K) or 'high' (4K)
         };
         break;
 

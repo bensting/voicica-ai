@@ -21,11 +21,12 @@ export const imageModels: ImageModel[] = [
     description: 'Fast and affordable',
     icon: '/images/models/z-image.png',
     credits: 1,
-    maxPromptLength: 2000,
+    maxPromptLength: 1000,
     supportsImageInput: false,
-    aspectRatios: ['1:1', '4:3', '3:4', '16:9', '9:16'],
+    aspectRatios: ['16:9', '3:4', '1:1', '4:3', '9:16'],
     qualities: [
-      { id: 'standard', label: '1K' },
+      { id: '1K', label: '1K' },
+      { id: '2K', label: '2K', isPro: true },
     ],
   },
   {
@@ -34,12 +35,12 @@ export const imageModels: ImageModel[] = [
     description: 'Balanced quality and speed',
     icon: '/images/models/flux-2.png',
     credits: 10,
-    maxPromptLength: 4000,
+    maxPromptLength: 5000,
     supportsImageInput: false,
-    aspectRatios: ['1:1', '4:3', '3:4', '16:9', '9:16', '2:3', '3:2'],
+    aspectRatios: ['1:1', '4:3', '3:4', '16:9', '9:16', '3:2', '2:3'],
     qualities: [
-      { id: 'standard', label: '1K' },
-      { id: 'hd', label: '2K', isPro: true },
+      { id: '1K', label: '1K' },
+      { id: '2K', label: '2K', isPro: true },
     ],
   },
   {
@@ -50,7 +51,7 @@ export const imageModels: ImageModel[] = [
     credits: 15,
     maxPromptLength: 3000,
     supportsImageInput: false,
-    aspectRatios: ['1:1', '4:3', '3:4', '16:9', '9:16', '2:3', '3:2', '21:9'],
+    aspectRatios: ['16:9', '3:4', '1:1', '4:3', '9:16', '2:3', '3:2', '21:9'],
     qualities: [
       { id: 'basic', label: '2K' },
       { id: 'high', label: '4K', isPro: true },
@@ -64,7 +65,7 @@ export const imageModels: ImageModel[] = [
     credits: 20,
     maxPromptLength: 10000,
     supportsImageInput: true,
-    aspectRatios: ['1:1', '2:3', '3:2', '3:4', '4:3', '4:5', '5:4', '9:16', '16:9', '21:9'],
+    aspectRatios: ['16:9', '3:4', '1:1', '4:3', '9:16', '2:3', '3:2', '4:5', '5:4', '21:9'],
     qualities: [
       { id: '1K', label: '1K' },
       { id: '2K', label: '2K', isPro: true },

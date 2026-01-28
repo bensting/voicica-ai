@@ -20,6 +20,7 @@ import {
   getMusicModelById,
   type MusicModel,
 } from '@/config/native/musicModels';
+import { adConfig } from '@/config/native/adConfig';
 import { createMusicTask, getMusicTaskStatus, getMusicRecordByTaskId, deleteMusicRecord, type MusicRecord } from '@/actions/music';
 import { sendLocalNotification } from '@/lib/notifications';
 import { checkCreditsBeforeGenerate } from '@/lib/credits-check';
@@ -306,7 +307,7 @@ export default function NativeMusicPage() {
   })();
   const estimatedCredits = (() => {
     if (!hasInput) return 0;
-    return selectedModel?.credits ?? 30;
+    return selectedModel?.credits ?? 25;
   })();
 
   // 处理模型选择
@@ -348,7 +349,7 @@ export default function NativeMusicPage() {
     }
 
     // 检查积分是否足够
-    const requiredCredits = selectedModel?.credits ?? 30;
+    const requiredCredits = selectedModel?.credits ?? 25;
     const hasEnoughCredits = checkCreditsBeforeGenerate({
       currentCredits: credits,
       requiredCredits,
@@ -427,7 +428,7 @@ export default function NativeMusicPage() {
     setGeneratingProgress(0);
   };
 
-  // 非订阅用户：生成开始 5 秒后自动弹出激励广告
+  // 非订阅用户：生成开始后自动弹出激励广告
   useEffect(() => {
     if (!isGeneratingModalOpen || generatingStatus !== 'generating' || isSubscribed || adWatched) {
       return;
@@ -443,7 +444,7 @@ export default function NativeMusicPage() {
       } catch (err) {
         console.error('[Music] Ad error:', err);
       }
-    }, 5000); // 5秒后自动弹出
+    }, adConfig.rewardedAdDelayMs);
 
     return () => clearTimeout(timer);
   }, [isGeneratingModalOpen, generatingStatus, isSubscribed, adWatched, showRewardedAd]);
@@ -779,7 +780,7 @@ export default function NativeMusicPage() {
         {/* Credits Info Bar */}
         <CreditsInfoBar
           credits={credits}
-          creditRules={[{ name: 'Music generation', credits: 30 }]}
+          creditRules={[{ name: 'Music generation', credits: 25 }]}
           className="mb-3"
         />
 

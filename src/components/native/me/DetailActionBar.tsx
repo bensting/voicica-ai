@@ -115,8 +115,8 @@ export default function DetailActionBar({
         )}
       </div>
 
-      {/* Download Action Sheet */}
-      {showActionSheet && (
+      {/* Download Action Sheet - 仅新 API 使用 */}
+      {useNewApi && showActionSheet && (
         <>
           {/* Backdrop */}
           <div

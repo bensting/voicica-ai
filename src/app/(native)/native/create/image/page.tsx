@@ -107,14 +107,6 @@ const AspectRatioIcon = ({ ratio }: { ratio: string }) => {
   );
 };
 
-// 比例选项
-const aspectRatios = [
-  { id: '16:9', label: '16:9' },
-  { id: '3:4', label: '3:4' },
-  { id: '1:1', label: '1:1' },
-  { id: '4:3', label: '4:3' },
-  { id: '9:16', label: '9:16' },
-];
 
 /**
  * Native AI Image 页面
@@ -163,10 +155,13 @@ export default function NativeImagePage() {
     }
   }, [isGeneratePromptSheetOpen]);
 
-  // 当模型改变时，重置 quality 到模型的第一个选项
+  // 当模型改变时，重置 quality 和 aspectRatio 到模型的第一个选项
   useEffect(() => {
     if (selectedModel.qualities.length > 0) {
       setQuality(selectedModel.qualities[0].id);
+    }
+    if (selectedModel.aspectRatios.length > 0) {
+      setAspectRatio(selectedModel.aspectRatios[0]);
     }
   }, [selectedModel]);
 
@@ -743,18 +738,18 @@ export default function NativeImagePage() {
               <div>
                 <span className="text-white font-medium mb-3 block">Aspect Ratio</span>
                 <div className="grid grid-cols-3 gap-2">
-                  {aspectRatios.map((ratio) => (
+                  {selectedModel.aspectRatios.map((ratio) => (
                     <button
-                      key={ratio.id}
-                      onClick={() => setAspectRatio(ratio.id)}
+                      key={ratio}
+                      onClick={() => setAspectRatio(ratio)}
                       className={`flex items-center gap-2 py-3 px-4 rounded-xl text-sm font-medium transition-colors ${
-                        aspectRatio === ratio.id
+                        aspectRatio === ratio
                           ? 'bg-gray-600 text-white'
                           : 'bg-gray-800/60 text-gray-400 hover:bg-gray-700/60'
                       }`}
                     >
-                      <AspectRatioIcon ratio={ratio.id} />
-                      <span>{ratio.label}</span>
+                      <AspectRatioIcon ratio={ratio} />
+                      <span>{ratio}</span>
                     </button>
                   ))}
                 </div>

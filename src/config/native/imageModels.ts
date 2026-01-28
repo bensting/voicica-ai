@@ -51,7 +51,7 @@ export const imageModels: ImageModel[] = [
     icon: '/images/models/flux-2.png',
     credits: 10,
     maxPromptLength: 5000,
-    supportsImageInput: false,
+    supportsImageInput: true,
     aspectRatios: ['1:1', '4:3', '3:4', '16:9', '9:16', '3:2', '2:3'],
     qualities: [
       { id: '1K', label: '1K' },

@@ -21,8 +21,8 @@ export interface CategoryConfig {
 export const categoryConfigs: CategoryConfig[] = [
   { id: 'voiceover', title: 'VOICEOVER AI', order: 1, color: 'purple' },
   { id: 'music', title: 'MUSIC AI', order: 2, color: 'pink' },
-  { id: 'image', title: 'IMAGE AI', order: 3, color: 'cyan' },
-  { id: 'video', title: 'VIDEO AI', order: 4, color: 'blue' },
+  { id: 'video', title: 'VIDEO AI', order: 3, color: 'blue' },
+  { id: 'image', title: 'IMAGE AI', order: 4, color: 'cyan' },
   { id: 'tools', title: 'OTHER TOOLS', order: 5, color: 'emerald' },
 ];
 

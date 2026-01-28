@@ -43,13 +43,13 @@ export async function createImageTask(
 ): Promise<CreateImageTaskResult> {
   try {
     // 验证用户身份
-    const { userId, isAnonymous } = await getUserOrAnonymous();
-    if (!userId) {
+    const { user_id, is_anonymous } = await getUserOrAnonymous();
+    if (!user_id) {
       return { success: false, error: 'Please login first' };
     }
 
     // 匿名用户不能使用此功能
-    if (isAnonymous) {
+    if (is_anonymous) {
       return { success: false, error: 'Please login to use AI Image' };
     }
 
@@ -60,7 +60,7 @@ export async function createImageTask(
     }
 
     // 检查积分
-    const creditsCheck = await checkCredits(userId, model.credits, isAnonymous);
+    const creditsCheck = await checkCredits(user_id, model.credits, is_anonymous);
     if (!creditsCheck.hasEnough) {
       return { success: false, error: 'Insufficient credits' };
     }
@@ -93,6 +93,11 @@ export async function createImageTask(
           aspect_ratio: params.aspectRatio,
           quality: params.quality, // 'basic' (2K) or 'high' (4K)
         };
+
+        // 如果有引导图片
+        if (params.guidanceImageUrl) {
+          input.image_input = [params.guidanceImageUrl];
+        }
         break;
 
       case 'nano-banana-pro':
@@ -141,14 +146,13 @@ export async function createImageTask(
     // 扣除积分
     await prisma.$transaction([
       prisma.users.update({
-        where: { user_id: userId },
+        where: { user_id: user_id },
         data: { credits: { decrement: model.credits } },
       }),
       prisma.credit_history.create({
         data: {
-          user_id: userId,
+          user_id: user_id,
           amount: -model.credits,
-          type: 'USAGE',
           product_type: ProductType.IMAGE,
           description: `AI Image generation (${model.name})`,
         },
@@ -158,7 +162,7 @@ export async function createImageTask(
     // 创建图片记录
     await prisma.image_records.create({
       data: {
-        user_id: userId,
+        user_id: user_id,
         task_id: taskId,
         model: params.modelId,
         prompt: params.prompt,

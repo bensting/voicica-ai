@@ -475,6 +475,8 @@ export default function NativeVoiceSelectorSheet({
                       <div className="flex items-center gap-1.5 text-gray-400 text-xs">
                         <span>{voice.locale}</span>
                         <span>·</span>
+                        <span>{getFlagEmoji(voice.country || voice.locale.split('-')[1] || '')}</span>
+                        <span>·</span>
                         {voice.gender === 'male' && <User className="w-3 h-3 text-blue-400" />}
                         {voice.gender === 'female' && <UserRound className="w-3 h-3 text-pink-400" />}
                         {voice.gender === 'neutral' && <Users className="w-3 h-3 text-gray-400" />}

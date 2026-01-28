@@ -26,6 +26,18 @@ import GeneratingModal, { type GeneratingStatus } from '@/components/native/comm
 import NativeVoiceSelectorSheet from '@/components/native/create/voice/VoiceSelectorSheet';
 import VoiceDetailModal from '@/components/native/me/VoiceDetailModal';
 import LoginModal from '@/components/native/LoginModal';
+import ProviderIcon from '@/components/ui/icons/ProviderIcon';
+import { User, UserRound, Users } from 'lucide-react';
+
+// 将国家代码转换为国旗 Emoji
+function getFlagEmoji(countryCode: string): string {
+  if (!countryCode || countryCode.length !== 2) return '🌐';
+  const codePoints = countryCode
+    .toUpperCase()
+    .split('')
+    .map(char => 127397 + char.charCodeAt(0));
+  return String.fromCodePoint(...codePoints);
+}
 
 // localStorage keys
 const STORAGE_KEY_TEXT = 'tts_draft_text';
@@ -468,8 +480,16 @@ export default function NativeTTSPage() {
               {selectedVoice?.display_name || 'Select a voice'}
             </div>
             {selectedVoice && (
-              <div className="text-gray-400 text-xs">
-                {selectedVoice.locale} · {selectedVoice.gender}
+              <div className="flex items-center gap-1.5 text-gray-400 text-xs">
+                <span>{selectedVoice.locale}</span>
+                <span>·</span>
+                <span>{getFlagEmoji(selectedVoice.country || selectedVoice.locale.split('-')[1] || '')}</span>
+                <span>·</span>
+                {selectedVoice.gender === 'male' && <User className="w-3 h-3 text-blue-400" />}
+                {selectedVoice.gender === 'female' && <UserRound className="w-3 h-3 text-pink-400" />}
+                {selectedVoice.gender === 'neutral' && <Users className="w-3 h-3 text-gray-400" />}
+                <span>·</span>
+                <ProviderIcon provider={selectedVoice.provider.toLowerCase()} className="w-3.5 h-3.5" />
               </div>
             )}
           </div>

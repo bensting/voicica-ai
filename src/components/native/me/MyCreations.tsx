@@ -9,6 +9,7 @@ import { getTtsRecords, deleteTtsRecord, type TtsRecord } from '@/actions/tts';
 import { getCoverRecords, deleteCoverRecord, type CoverRecord } from '@/actions/cover';
 import { getDialogueRecords, deleteDialogueRecord, type DialogueRecord } from '@/actions/dialogue';
 import { getImageRecords, deleteImageRecord, type ImageRecord } from '@/actions/image';
+import { getVideoRecordByTaskId, deleteVideoRecord, type VideoRecord } from '@/actions/video';
 import { useMusicTaskPolling } from '@/hooks/useMusicTaskPolling';
 import { useVideoTaskPolling } from '@/hooks/useVideoTaskPolling';
 
@@ -18,6 +19,7 @@ import CoverDetailModal from './CoverDetailModal';
 import VoiceDetailModal from './VoiceDetailModal';
 import DialogueDetailModal from './DialogueDetailModal';
 import ImageDetailModal from './ImageDetailModal';
+import VideoDetailModal from './VideoDetailModal';
 import { MusicCard, CoverCard, VoiceCard, DialogueCard, VideoCard, ImageCard } from './cards';
 import { formatDateLong } from './utils';
 
@@ -133,6 +135,7 @@ export default function MyCreations() {
   const [selectedVoice, setSelectedVoice] = useState<TtsRecord | null>(null);
   const [selectedDialogue, setSelectedDialogue] = useState<DialogueRecord | null>(null);
   const [selectedImage, setSelectedImage] = useState<ImageRecord | null>(null);
+  const [selectedVideo, setSelectedVideo] = useState<VideoRecord | null>(null);
 
   // 下拉刷新相关
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -377,8 +380,28 @@ export default function MyCreations() {
     setIsPulling(false);
   };
 
-  const handleVideoClick = (video: VideoItem) => {
-    router.push(`/native/video/task/${video.taskId}`);
+  const handleVideoClick = async (video: VideoItem) => {
+    // Only completed videos can open detail modal
+    if (video.status === 'SUCCESS') {
+      const fullRecord = await getVideoRecordByTaskId(video.taskId);
+      if (fullRecord) {
+        setSelectedVideo(fullRecord);
+      }
+    }
+  };
+
+  const handleVideoRecreate = (video: VideoRecord) => {
+    // Navigate to create page with prompt
+    const params = new URLSearchParams();
+    if (video.prompt) params.set('prompt', video.prompt);
+    router.push(`/native/create/video?${params.toString()}`);
+    setSelectedVideo(null);
+  };
+
+  const handleVideoDelete = async (video: VideoRecord) => {
+    await deleteVideoRecord(String(video.id));
+    setVideos((prev) => prev.filter((v) => v.taskId !== video.task_id));
+    setSelectedVideo(null);
   };
 
   const handleMusicClick = (music: MusicRecord) => {
@@ -897,6 +920,16 @@ export default function MyCreations() {
           onClose={() => setSelectedImage(null)}
           onRecreate={handleImageRecreate}
           onDelete={handleImageDelete}
+        />
+      )}
+
+      {/* Video 详情弹窗 */}
+      {selectedVideo && (
+        <VideoDetailModal
+          video={selectedVideo}
+          onClose={() => setSelectedVideo(null)}
+          onRecreate={handleVideoRecreate}
+          onDelete={handleVideoDelete}
         />
       )}
     </div>

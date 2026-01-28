@@ -12,7 +12,9 @@ import LoginModal from '@/components/native/LoginModal';
 import { createImageTask, getImageTaskStatus, getImageRecordByTaskId, deleteImageRecord, type ImageRecord } from '@/actions/image';
 import { imageModels, type ImageModel, DEFAULT_IMAGE_MODEL_ID } from '@/config/native/imageModels';
 import { sendLocalNotification } from '@/lib/notifications';
+import { checkCreditsBeforeGenerate } from '@/lib/credits-check';
 import ImageDetailModal from '@/components/native/me/ImageDetailModal';
+import GeneratingModal, { type GeneratingStatus } from '@/components/native/common/GeneratingModal';
 
 const IMAGE_MODEL_STORAGE_KEY = 'image_selected_model';
 const IMAGE_PROMPT_STORAGE_KEY = 'image_last_prompt';
@@ -48,18 +50,6 @@ const InfoIcon = () => (
   <svg className="w-4 h-4 text-gray-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
     <circle cx="12" cy="12" r="10" />
     <path d="M12 16v-4M12 8h.01" />
-  </svg>
-);
-
-const BackIcon = () => (
-  <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-    <path d="M19 12H5M12 19l-7-7 7-7" />
-  </svg>
-);
-
-const CrownIcon = () => (
-  <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
-    <path d="M2.5 19h19v2h-19v-2zm19.57-9.36c-.21-.8-1.04-1.28-1.84-1.06l-4.63 1.22-3.15-5.14c-.45-.74-1.44-.96-2.19-.51-.27.16-.49.4-.62.68L6.5 9.8l-4.63-1.22c-.8-.22-1.63.26-1.84 1.06-.1.34-.04.72.14 1.03l4.85 8.13c.16.27.44.44.75.52.13.03.26.05.39.05h11.68c.13 0 .26-.02.39-.05.31-.08.59-.25.75-.52l4.85-8.13c.18-.31.24-.69.14-1.03z" />
   </svg>
 );
 
@@ -136,7 +126,7 @@ export default function NativeImagePage() {
 
   // 生成状态
   const [isGenerating, setIsGenerating] = useState(false);
-  const [generatingStatus, setGeneratingStatus] = useState<'generating' | 'success' | 'loading' | 'error'>('generating');
+  const [generatingStatus, setGeneratingStatus] = useState<GeneratingStatus>('generating');
   const [generatingError, setGeneratingError] = useState<string | null>(null);
   const [generatingProgress, setGeneratingProgress] = useState(0);
   const [taskId, setTaskId] = useState<string | null>(null);
@@ -336,6 +326,14 @@ export default function NativeImagePage() {
       return;
     }
 
+    // 检查积分是否足够
+    const hasEnoughCredits = checkCreditsBeforeGenerate({
+      currentCredits: credits,
+      requiredCredits: selectedModel.credits,
+      onInsufficientCredits: () => router.push('/native/subscribe'),
+    });
+    if (!hasEnoughCredits) return;
+
     // 打开生成中弹窗
     setIsGeneratingModalOpen(true);
     setGeneratingStatus('generating');
@@ -401,12 +399,6 @@ export default function NativeImagePage() {
     setGeneratingStatus('generating');
     setGeneratingError(null);
     setGeneratingProgress(0);
-  };
-
-  // 查看历史
-  const handleViewHistory = () => {
-    setIsGeneratingModalOpen(false);
-    router.push('/native/me?tab=image');
   };
 
   // 获取当前 quality 的显示标签
@@ -883,123 +875,20 @@ export default function NativeImagePage() {
       )}
 
       {/* Generating Modal */}
-      {isGeneratingModalOpen && (
-        <div
-          className="fixed inset-0 z-50 bg-[#0a0a1a] flex flex-col"
-          style={{ paddingTop: 'var(--safe-area-inset-top, 0px)' }}
-        >
-          {/* Header */}
-          <div className="flex items-center justify-between px-4 h-14">
-            <button
-              onClick={handleCloseGeneratingModal}
-              className="p-2 -ml-2 text-white"
-            >
-              <BackIcon />
-            </button>
-            <div className="flex items-center gap-1 text-white">
-              <CreditsIcon className="w-4 h-4" />
-              <span className="text-sm font-medium">{credits}</span>
-            </div>
-          </div>
-
-          {/* Content */}
-          <div className="flex-1 flex flex-col items-center justify-center px-8">
-            {generatingStatus === 'generating' && (
-              <>
-                <div className="relative w-20 h-20 mb-8">
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="w-16 h-16 rounded-2xl bg-gray-800 flex items-center justify-center">
-                      <div className="text-gray-400 animate-pulse text-2xl">🖼️</div>
-                    </div>
-                  </div>
-                </div>
-                <h3 className="text-white font-semibold text-lg mb-2">Creating AI Image...</h3>
-                {generatingProgress > 0 && (
-                  <p className="text-blue-400 text-sm mb-2">{generatingProgress}%</p>
-                )}
-                <p className="text-gray-400 text-sm mb-8">
-                  Estimated time: <span className="text-blue-400">30-60 seconds</span>
-                </p>
-                <button className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-full text-sm font-medium">
-                  <CrownIcon />
-                  <span>Use fast channel</span>
-                </button>
-              </>
-            )}
-
-            {generatingStatus === 'loading' && (
-              <>
-                <div className="w-20 h-20 mb-8 rounded-full bg-green-500/20 flex items-center justify-center">
-                  <svg className="w-10 h-10 text-green-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <polyline points="20,6 9,17 4,12" />
-                  </svg>
-                </div>
-                <h3 className="text-white font-semibold text-lg mb-2">Image Created!</h3>
-                <p className="text-gray-400 text-sm mb-4">Loading your image...</p>
-                <div className="w-6 h-6 border-2 border-purple-500 border-t-transparent rounded-full animate-spin" />
-              </>
-            )}
-
-            {generatingStatus === 'success' && (
-              <>
-                <div className="w-20 h-20 mb-8 rounded-full bg-green-500/20 flex items-center justify-center">
-                  <svg className="w-10 h-10 text-green-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <polyline points="20,6 9,17 4,12" />
-                  </svg>
-                </div>
-                <h3 className="text-white font-semibold text-lg mb-2">Image Created!</h3>
-                <p className="text-gray-400 text-sm mb-8">Your AI image has been generated.</p>
-                <div className="flex gap-3 w-full max-w-xs">
-                  <button
-                    onClick={handleCloseGeneratingModal}
-                    className="flex-1 py-3 bg-gray-700/50 text-white rounded-xl text-sm font-medium"
-                  >
-                    Create Another
-                  </button>
-                  <button
-                    onClick={handleViewHistory}
-                    className="flex-1 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl text-sm font-medium"
-                  >
-                    View
-                  </button>
-                </div>
-              </>
-            )}
-
-            {generatingStatus === 'error' && (
-              <>
-                <div className="w-20 h-20 mb-8 rounded-full bg-red-500/20 flex items-center justify-center">
-                  <svg className="w-10 h-10 text-red-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <circle cx="12" cy="12" r="10" />
-                    <path d="M15 9l-6 6M9 9l6 6" />
-                  </svg>
-                </div>
-                <h3 className="text-white font-semibold text-lg mb-2">Generation Failed</h3>
-                <p className="text-red-400 text-sm mb-8 text-center px-4">
-                  {generatingError || 'Something went wrong. Please try again.'}
-                </p>
-                <div className="flex gap-3 w-full max-w-xs">
-                  <button
-                    onClick={handleCloseGeneratingModal}
-                    className="flex-1 py-3 bg-gray-700/50 text-white rounded-xl text-sm font-medium"
-                  >
-                    Close
-                  </button>
-                  <button
-                    onClick={() => {
-                      handleCloseGeneratingModal();
-                      void handleGenerate();
-                    }}
-                    className="flex-1 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl text-sm font-medium"
-                  >
-                    Try Again
-                  </button>
-                </div>
-              </>
-            )}
-          </div>
-        </div>
-      )}
+      <GeneratingModal
+        isOpen={isGeneratingModalOpen}
+        status={generatingStatus}
+        type="image"
+        progress={generatingProgress}
+        error={generatingError}
+        credits={credits}
+        onClose={handleCloseGeneratingModal}
+        onCreateAnother={handleCloseGeneratingModal}
+        onTryAgain={() => {
+          handleCloseGeneratingModal();
+          void handleGenerate();
+        }}
+      />
     </div>
   );
 }

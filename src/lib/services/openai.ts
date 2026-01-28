@@ -678,9 +678,10 @@ Expand this into a comprehensive prompt that an AI video generator can use to cr
  * 生成图片生成提示词
  *
  * @param prompt 用户的简短描述或想法
+ * @param maxLength 最大字符长度限制（默认 800）
  * @returns 生成的完整图片提示词
  */
-export async function generateImagePrompt(prompt: string): Promise<string> {
+export async function generateImagePrompt(prompt: string, maxLength: number = 800): Promise<string> {
   const systemPrompt = `You are an expert AI image prompt engineer. Create detailed, effective prompts for AI image generation systems like Stable Diffusion, Midjourney, and DALL-E.
 
 Guidelines:
@@ -692,7 +693,7 @@ Guidelines:
   - Color palette and mood (warm, cool, vibrant, muted, etc.)
   - Composition hints (close-up, wide shot, centered, rule of thirds)
   - Quality modifiers (highly detailed, professional, 8k, masterpiece, etc.)
-- Keep the prompt clear and descriptive, max 300 words
+- IMPORTANT: Keep the prompt under ${maxLength} characters total
 - Detect the language of the user's input and write the prompt in the SAME language
 - Focus on visual elements that translate well to static images
 - Avoid including text or words to render in the image
@@ -700,13 +701,13 @@ Guidelines:
 
 Always respond with valid JSON in this format:
 {
-  "prompt": "The complete image generation prompt..."
+  "prompt": "The complete image generation prompt (must be under ${maxLength} characters)..."
 }`;
 
   const userPrompt = `Based on this idea, create a detailed image generation prompt:
 ${prompt}
 
-Expand this into a comprehensive prompt that an AI image generator can use to create a stunning, high-quality image.`;
+Expand this into a comprehensive prompt that an AI image generator can use to create a stunning, high-quality image. Remember: the prompt MUST be under ${maxLength} characters.`;
 
   const response = await openai.chat.completions.create({
     model: 'gpt-4o-mini',

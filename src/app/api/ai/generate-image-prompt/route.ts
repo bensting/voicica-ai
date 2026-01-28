@@ -10,7 +10,7 @@ import { generateImagePrompt } from '@/lib/services/openai';
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { prompt } = body;
+    const { prompt, maxLength } = body;
 
     if (!prompt || typeof prompt !== 'string') {
       return NextResponse.json(
@@ -32,9 +32,12 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    console.log(`🖼️ [Image Prompt] Generating: ${prompt.substring(0, 50)}...`);
+    // 限制生成的 prompt 长度为最大长度的 80%
+    const targetLength = maxLength ? Math.floor(maxLength * 0.8) : 800;
 
-    const generatedPrompt = await generateImagePrompt(prompt);
+    console.log(`🖼️ [Image Prompt] Generating: ${prompt.substring(0, 50)}... (maxLength: ${targetLength})`);
+
+    const generatedPrompt = await generateImagePrompt(prompt, targetLength);
 
     console.log(`✅ [Image Prompt] Generated: ${generatedPrompt.substring(0, 50)}...`);
 

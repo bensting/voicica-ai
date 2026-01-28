@@ -14,6 +14,8 @@ import GeneratingModal, { GeneratingStatus } from '@/components/native/common/Ge
 import VideoDetailModal from '@/components/native/me/VideoDetailModal';
 import LoginModal from '@/components/native/LoginModal';
 import { useCredits } from '@/contexts/CreditsContext';
+import { useSubscription } from '@/contexts/SubscriptionContext';
+import { useRewardedAd } from '@/hooks/useRewardedAd';
 import { VideoModel, defaultVideoModel, getModelDefaults, calculateCredits } from '@/config/native/videoModels';
 import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 import { getVideoRecordByTaskId, type VideoRecord } from '@/actions/video';
@@ -71,6 +73,13 @@ export default function CreateVideoPage() {
   const router = useRouter();
   const { user, token } = useFirebaseAuth();
   const { credits: userCredits } = useCredits();
+  const { isSubscribed } = useSubscription();
+  const { showRewardedAd } = useRewardedAd();
+
+  // 广告状态
+  const [adPlaying, setAdPlaying] = useState(false);
+  const [adWatched, setAdWatched] = useState(false);
+
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isParamsSheetOpen, setIsParamsSheetOpen] = useState(false);
   const [mode, setMode] = useState<ModeType>('generate');
@@ -291,6 +300,9 @@ export default function CreateVideoPage() {
       setGeneratingStatus('generating');
       setGeneratingProgress(0);
       setGeneratingError(null);
+      // 重置广告状态
+      setAdPlaying(false);
+      setAdWatched(false);
       setIsGeneratingModalOpen(true);
       startPolling(data.taskId);
     } catch (err) {
@@ -324,6 +336,21 @@ export default function CreateVideoPage() {
   const handleTryAgain = () => {
     setIsGeneratingModalOpen(false);
     setGeneratingError(null);
+  };
+
+  // 处理观看广告
+  const handleWatchAd = async () => {
+    setAdPlaying(true);
+    try {
+      const result = await showRewardedAd();
+      if (result.success) {
+        setAdWatched(true);
+      }
+    } catch (err) {
+      console.error('[Video] Ad error:', err);
+    } finally {
+      setAdPlaying(false);
+    }
   };
 
   const handleCloseVideoDetail = () => {
@@ -492,6 +519,10 @@ export default function CreateVideoPage() {
         onClose={handleCloseGeneratingModal}
         onCreateAnother={handleCreateAnother}
         onTryAgain={handleTryAgain}
+        showAdPrompt={!isSubscribed}
+        adPlaying={adPlaying}
+        adWatched={adWatched}
+        onWatchAd={handleWatchAd}
       />
 
       {/* Video Detail Modal */}

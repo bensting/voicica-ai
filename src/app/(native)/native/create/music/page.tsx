@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 import { useCredits } from '@/contexts/CreditsContext';
 import { useSubscription } from '@/contexts/SubscriptionContext';
+import { useRewardedAd } from '@/hooks/useRewardedAd';
 import CreatePageHeader from '@/components/native/common/CreatePageHeader';
 import GradientButton from '@/components/native/common/GradientButton';
 import CreditsIcon from '@/components/native/common/CreditsIcon';
@@ -86,6 +87,11 @@ export default function NativeMusicPage() {
   const { user } = useFirebaseAuth();
   const { credits } = useCredits();
   const { isSubscribed } = useSubscription();
+  const { showRewardedAd } = useRewardedAd();
+
+  // 广告状态
+  const [adPlaying, setAdPlaying] = useState(false);
+  const [adWatched, setAdWatched] = useState(false);
 
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isModelSelectorOpen, setIsModelSelectorOpen] = useState(false);
@@ -357,6 +363,9 @@ export default function NativeMusicPage() {
     setGeneratingStatus('generating');
     setGeneratingError(null);
     setError(null);
+    // 重置广告状态
+    setAdPlaying(false);
+    setAdWatched(false);
 
     // Simple/Custom tab 处理
     setIsGenerating(true);
@@ -418,6 +427,21 @@ export default function NativeMusicPage() {
     setCurrentTaskId(null);
     setTaskCreatedAt(null);
     setGeneratingProgress(0);
+  };
+
+  // 处理观看广告
+  const handleWatchAd = async () => {
+    setAdPlaying(true);
+    try {
+      const result = await showRewardedAd();
+      if (result.success) {
+        setAdWatched(true);
+      }
+    } catch (err) {
+      console.error('[Music] Ad error:', err);
+    } finally {
+      setAdPlaying(false);
+    }
   };
 
   // Debug: 监控弹窗状态变化
@@ -960,6 +984,10 @@ export default function NativeMusicPage() {
           handleCloseGeneratingModal();
           void handleGenerate();
         }}
+        showAdPrompt={!isSubscribed}
+        adPlaying={adPlaying}
+        adWatched={adWatched}
+        onWatchAd={handleWatchAd}
       />
 
       {/* Lyrics Assistant Sheet */}

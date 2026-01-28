@@ -13,6 +13,7 @@ import CreditsInfoBar from '@/components/native/common/CreditsInfoBar';
 import LoginModal from '@/components/native/LoginModal';
 import { createImageTask, getImageTaskStatus, getImageRecordByTaskId, deleteImageRecord, type ImageRecord } from '@/actions/image';
 import { imageModels, type ImageModel, DEFAULT_IMAGE_MODEL_ID } from '@/config/native/imageModels';
+import { adConfig } from '@/config/native/adConfig';
 import { sendLocalNotification } from '@/lib/notifications';
 import { checkCreditsBeforeGenerate } from '@/lib/credits-check';
 import ImageDetailModal from '@/components/native/me/ImageDetailModal';
@@ -410,7 +411,7 @@ export default function NativeImagePage() {
     setGeneratingProgress(0);
   };
 
-  // 非订阅用户：生成开始 5 秒后自动弹出激励广告
+  // 非订阅用户：生成开始后自动弹出激励广告
   useEffect(() => {
     if (!isGeneratingModalOpen || generatingStatus !== 'generating' || isSubscribed || adWatched) {
       return;
@@ -426,7 +427,7 @@ export default function NativeImagePage() {
       } catch (err) {
         console.error('[Image] Ad error:', err);
       }
-    }, 5000); // 5秒后自动弹出
+    }, adConfig.rewardedAdDelayMs);
 
     return () => clearTimeout(timer);
   }, [isGeneratingModalOpen, generatingStatus, isSubscribed, adWatched, showRewardedAd]);

@@ -17,6 +17,7 @@ import { useCredits } from '@/contexts/CreditsContext';
 import { useSubscription } from '@/contexts/SubscriptionContext';
 import { useRewardedAd } from '@/hooks/useRewardedAd';
 import { VideoModel, defaultVideoModel, getModelDefaults, calculateCredits } from '@/config/native/videoModels';
+import { adConfig } from '@/config/native/adConfig';
 import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 import { getVideoRecordByTaskId, type VideoRecord } from '@/actions/video';
 import { checkCreditsBeforeGenerate } from '@/lib/credits-check';
@@ -336,7 +337,7 @@ export default function CreateVideoPage() {
     setGeneratingError(null);
   };
 
-  // 非订阅用户：生成开始 5 秒后自动弹出激励广告
+  // 非订阅用户：生成开始后自动弹出激励广告
   useEffect(() => {
     if (!isGeneratingModalOpen || generatingStatus !== 'generating' || isSubscribed || adWatched) {
       return;
@@ -352,7 +353,7 @@ export default function CreateVideoPage() {
       } catch (err) {
         console.error('[Video] Ad error:', err);
       }
-    }, 5000); // 5秒后自动弹出
+    }, adConfig.rewardedAdDelayMs);
 
     return () => clearTimeout(timer);
   }, [isGeneratingModalOpen, generatingStatus, isSubscribed, adWatched, showRewardedAd]);

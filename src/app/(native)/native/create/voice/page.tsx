@@ -13,6 +13,7 @@ import type { TtsRecord } from '@/actions/tts';
 import { detectPlatform } from '@/lib/platform';
 import { sendLocalNotification } from '@/lib/notifications';
 import { checkCreditsBeforeGenerate } from '@/lib/credits-check';
+import { adConfig } from '@/config/native/adConfig';
 import type { Voice } from '@/types/voice';
 import { calculateVoiceCost, type VoiceType } from '@/config/creditsCost';
 import CreatePageHeader from '@/components/native/common/CreatePageHeader';
@@ -283,7 +284,7 @@ export default function NativeTTSPage() {
     }
   };
 
-  // 非订阅用户：生成开始 3 秒后自动弹出激励广告
+  // 非订阅用户：生成开始后自动弹出激励广告
   useEffect(() => {
     if (!isGeneratingModalOpen || generatingStatus !== 'generating' || isSubscribed || adWatched) {
       return;
@@ -299,7 +300,7 @@ export default function NativeTTSPage() {
       } catch (err) {
         console.error('[TTS] Ad error:', err);
       }
-    }, 3000); // 3秒后自动弹出
+    }, adConfig.rewardedAdDelayMs);
 
     return () => clearTimeout(timer);
   }, [isGeneratingModalOpen, generatingStatus, isSubscribed, adWatched, showRewardedAd]);

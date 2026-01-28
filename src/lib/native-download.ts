@@ -24,46 +24,83 @@ export interface DownloadResult {
 /**
  * 下载文件到设备
  *
- * - 原生 App: 使用 Capacitor FileTransfer 下载到本地存储
- * - Web: 使用 fetch + blob 下载
+ * - 原生 App: 使用 Capacitor Filesystem 下载到本地存储
+ * - Web: 在新窗口打开
  */
 export async function downloadFile(options: DownloadOptions): Promise<DownloadResult> {
-  const { url, fileName, onProgress } = options;
+  const { url, fileName, type, onProgress } = options;
 
-  // 原生平台使用 Capacitor
+  // 原生平台使用 Capacitor Filesystem
   if (Capacitor.isNativePlatform()) {
-    return downloadNative(url, fileName, onProgress);
+    return downloadNative(url, fileName, type, onProgress);
   }
 
-  // Web 平台使用 fetch + blob
+  // Web 平台在新窗口打开
   return downloadWeb(url, fileName, onProgress);
 }
 
 /**
  * 原生平台下载
- * 使用系统浏览器下载，文件会保存到系统下载目录
- * 这是最可靠的方式，用户可以在文件管理器中找到下载的文件
+ * 使用 Capacitor Filesystem 下载文件到设备存储
  */
 async function downloadNative(
   url: string,
-  _fileName?: string,
-  _onProgress?: (progress: number) => void
+  fileName: string,
+  type?: 'audio' | 'video' | 'image' | 'other',
+  onProgress?: (progress: number) => void
 ): Promise<DownloadResult> {
-  // Note: fileName and onProgress are unused because we delegate to system browser
-  void _fileName;
-  void _onProgress;
   try {
-    const { Browser } = await import('@capacitor/browser');
+    const { Filesystem, Directory } = await import('@capacitor/filesystem');
 
-    console.log('📥 [Native Download] 使用系统浏览器下载:', url);
+    console.log('📥 [Native Download] 开始下载:', url, fileName);
 
-    // 使用系统浏览器打开下载链接
-    // 系统会自动处理下载并保存到下载目录
-    await Browser.open({ url });
+    // 1. 获取文件数据
+    onProgress?.(10);
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+
+    onProgress?.(30);
+
+    // 2. 转换为 base64
+    const blob = await response.blob();
+    onProgress?.(60);
+
+    const base64 = await blobToBase64(blob);
+    onProgress?.(80);
+
+    // 3. 确定保存目录和文件名
+    // Android: 保存到 Documents/Voicica 目录
+    // iOS: 保存到 Documents 目录
+    const subDir = type === 'image' ? 'Voicica/Images' :
+                   type === 'video' ? 'Voicica/Videos' :
+                   type === 'audio' ? 'Voicica/Audio' : 'Voicica';
+
+    // 确保目录存在
+    try {
+      await Filesystem.mkdir({
+        path: subDir,
+        directory: Directory.Documents,
+        recursive: true,
+      });
+    } catch {
+      // 目录可能已存在，忽略错误
+    }
+
+    // 4. 写入文件
+    const result = await Filesystem.writeFile({
+      path: `${subDir}/${fileName}`,
+      data: base64,
+      directory: Directory.Documents,
+    });
+
+    onProgress?.(100);
+    console.log('✅ [Native Download] 下载完成:', result.uri);
 
     return {
       success: true,
-      filePath: 'browser',
+      filePath: result.uri,
     };
   } catch (error) {
     console.error('❌ [Native Download] 下载失败:', error);
@@ -72,6 +109,23 @@ async function downloadNative(
       error: error instanceof Error ? error.message : 'Download failed',
     };
   }
+}
+
+/**
+ * Blob 转 base64
+ */
+function blobToBase64(blob: Blob): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      const base64 = reader.result as string;
+      // 去掉 data:xxx;base64, 前缀
+      const base64Data = base64.split(',')[1];
+      resolve(base64Data);
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(blob);
+  });
 }
 
 /**
@@ -114,10 +168,10 @@ export async function downloadWithToast(
   const result = await downloadFile({ url, fileName, type });
 
   if (result.success) {
-    // 原生端用浏览器下载，Web 端直接下载
+    // 原生端保存到设备，Web 端在新窗口打开
     const msg = result.filePath === 'browser'
-      ? 'Download started in browser'
-      : 'Download completed';
+      ? 'Opened in new window'
+      : 'Saved to device';
     showToast({ text: msg, duration: 'short' });
     return true;
   } else {

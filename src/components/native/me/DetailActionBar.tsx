@@ -13,14 +13,20 @@ interface DetailActionBarProps {
   onRecreate?: () => void;
   /** 是否显示 Download 按钮 */
   showDownload?: boolean;
-  /** 文件 URL（用于下载和浏览器打开） */
+  /** 文件 URL（用于下载和浏览器打开）- 新 API */
   fileUrl?: string;
-  /** 下载文件名 */
+  /** 下载文件名 - 新 API */
   fileName?: string;
-  /** 文件类型 */
+  /** 文件类型 - 新 API */
   fileType?: 'audio' | 'video' | 'image';
   /** Download 按钮文字 */
   downloadText?: string;
+  /** @deprecated 旧 API - 直接下载回调（向后兼容） */
+  onDownload?: () => void;
+  /** @deprecated 旧 API - 是否禁用下载（向后兼容） */
+  downloadDisabled?: boolean;
+  /** @deprecated 旧 API - 是否正在下载（向后兼容） */
+  downloading?: boolean;
 }
 
 /**
@@ -36,19 +42,33 @@ export default function DetailActionBar({
   fileName = 'download',
   fileType = 'audio',
   downloadText = 'Download',
+  // 向后兼容的旧 API
+  onDownload,
+  downloadDisabled,
+  downloading: externalDownloading,
 }: DetailActionBarProps) {
   const [showActionSheet, setShowActionSheet] = useState(false);
-  const [downloading, setDownloading] = useState(false);
+  const [internalDownloading, setInternalDownloading] = useState(false);
+
+  // 使用新 API 还是旧 API
+  const useNewApi = !onDownload && fileUrl;
+  const downloading = useNewApi ? internalDownloading : (externalDownloading || false);
+  const isDisabled = useNewApi ? !fileUrl : (downloadDisabled || false);
 
   const handleDownloadClick = () => {
-    if (!fileUrl) return;
-    setShowActionSheet(true);
+    if (useNewApi) {
+      // 新 API: 显示 Action Sheet
+      setShowActionSheet(true);
+    } else if (onDownload) {
+      // 旧 API: 直接调用回调
+      onDownload();
+    }
   };
 
   const handleDownloadToDevice = async () => {
     if (!fileUrl) return;
     setShowActionSheet(false);
-    await handleDownloadWithState(fileUrl, fileName, setDownloading, fileType);
+    await handleDownloadWithState(fileUrl, fileName, setInternalDownloading, fileType);
   };
 
   const handleOpenInBrowser = async () => {
@@ -74,13 +94,13 @@ export default function DetailActionBar({
             Recreate
           </button>
         )}
-        {showDownload && fileUrl && (
+        {showDownload && (fileUrl || onDownload) && (
           <GradientButton
             icon={downloading ? undefined : Download}
             iconPosition="left"
             iconSize={15}
             onClick={handleDownloadClick}
-            disabled={!fileUrl || downloading}
+            disabled={isDisabled || downloading}
             className={`${showRecreate ? 'flex-[2]' : 'flex-1'} !w-auto`}
           >
             {downloading ? (

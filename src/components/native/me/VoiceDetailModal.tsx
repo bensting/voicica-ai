@@ -2,8 +2,6 @@
 
 import { useState, useRef, useEffect } from 'react';
 import type { TtsRecord } from '@/actions/tts';
-import { Share } from '@capacitor/share';
-import { createShareLink } from '@/actions/share';
 import DetailModalHeader from './DetailModalHeader';
 import DetailActionBar from './DetailActionBar';
 import DeleteConfirmDialog from '@/components/native/ui/DeleteConfirmDialog';
@@ -30,8 +28,6 @@ export default function VoiceDetailModal({
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(voice.duration || 0);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-  const [isSharing, setIsSharing] = useState(false);
-  const [shareUrl, setShareUrl] = useState<string | null>(null);
   const { hide, show } = useBottomNav();
 
   // 隐藏底部导航
@@ -39,15 +35,6 @@ export default function VoiceDetailModal({
     hide();
     return () => show();
   }, [hide, show]);
-
-  // 预先生成分享链接（用于"在浏览器打开"功能）
-  useEffect(() => {
-    if (voice.task_id) {
-      createShareLink('tts', voice.task_id)
-        .then((result) => setShareUrl(result.url))
-        .catch((err) => console.error('Failed to create share link:', err));
-    }
-  }, [voice.task_id]);
 
   // 使用关联的语音信息
   const voiceInfo = voice.voice;
@@ -104,42 +91,6 @@ export default function VoiceDetailModal({
     onClose();
   };
 
-  // 分享
-  const handleShare = async () => {
-    if (!voice.task_id) return;
-    setIsSharing(true);
-    try {
-      const result = await createShareLink('tts', voice.task_id);
-
-      // 检查是否支持分享
-      const canShare = await Share.canShare();
-      if (!canShare.value) {
-        // 回退到复制链接
-        await navigator.clipboard.writeText(result.url);
-        return;
-      }
-
-      // 使用 Capacitor Share 插件
-      await Share.share({
-        title: displayName,
-        text: `Check out this AI-generated voice: ${displayName}`,
-        url: result.url,
-        dialogTitle: 'Share Voice',
-      });
-    } catch (error) {
-      console.error('Share failed:', error);
-      // 回退到复制链接
-      try {
-        const result = await createShareLink('tts', voice.task_id);
-        await navigator.clipboard.writeText(result.url);
-      } catch (e) {
-        console.error('Fallback copy failed:', e);
-      }
-    } finally {
-      setIsSharing(false);
-    }
-  };
-
   const progress = duration > 0 ? (currentTime / duration) * 100 : 0;
 
   return (
@@ -157,11 +108,7 @@ export default function VoiceDetailModal({
       {/* 顶部导航 */}
       <DetailModalHeader
         onClose={onClose}
-        onShare={handleShare}
         onDelete={() => setShowDeleteDialog(true)}
-        isSharing={isSharing}
-        shareDisabled={!voice.task_id}
-        browserUrl={shareUrl || undefined}
       />
 
       {/* 可滚动内容区域 */}

@@ -37,7 +37,7 @@ export const imageModels: ImageModel[] = [
     icon: '/images/models/seedream.png',
     credits: 15,
     maxPromptLength: 3000,
-    supportsImageInput: false,
+    supportsImageInput: true,
     aspectRatios: ['16:9', '3:4', '1:1', '4:3', '9:16', '2:3', '3:2', '21:9'],
     qualities: [
       { id: 'basic', label: '2K' },

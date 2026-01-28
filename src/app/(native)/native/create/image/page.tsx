@@ -139,9 +139,22 @@ export default function NativeImagePage() {
   const [generatingProgress, setGeneratingProgress] = useState(0);
   const [taskId, setTaskId] = useState<string | null>(null);
 
-  // 输入状态 - 默认选中 Z-Image
+  // 输入状态 - 默认选中 Seedream 4.5 或从 localStorage 恢复
   const [prompt, setPrompt] = useState('');
-  const [selectedModel, setSelectedModel] = useState<ImageModel>(imageModels[0]);
+  const [selectedModel, setSelectedModel] = useState<ImageModel>(() => {
+    // 服务端渲染时使用默认模型
+    if (typeof window === 'undefined') {
+      return imageModels.find(m => m.id === DEFAULT_IMAGE_MODEL_ID) || imageModels[0];
+    }
+    // 客户端尝试从 localStorage 恢复
+    const savedModelId = localStorage.getItem(IMAGE_MODEL_STORAGE_KEY);
+    if (savedModelId) {
+      const savedModel = imageModels.find(m => m.id === savedModelId);
+      if (savedModel) return savedModel;
+    }
+    // 默认使用 Seedream 4.5
+    return imageModels.find(m => m.id === DEFAULT_IMAGE_MODEL_ID) || imageModels[0];
+  });
   const [guidanceImage, setGuidanceImage] = useState<File | null>(null);
   const [guidanceImageUrl, setGuidanceImageUrl] = useState<string | null>(null);
 
@@ -157,7 +170,7 @@ export default function NativeImagePage() {
     }
   }, [isGeneratePromptSheetOpen]);
 
-  // 当模型改变时，重置 quality 和 aspectRatio 到模型的第一个选项
+  // 当模型改变时，重置 quality 和 aspectRatio 到模型的第一个选项，并保存到 localStorage
   useEffect(() => {
     if (selectedModel.qualities.length > 0) {
       setQuality(selectedModel.qualities[0].id);
@@ -165,6 +178,8 @@ export default function NativeImagePage() {
     if (selectedModel.aspectRatios.length > 0) {
       setAspectRatio(selectedModel.aspectRatios[0]);
     }
+    // 保存选择到 localStorage
+    localStorage.setItem(IMAGE_MODEL_STORAGE_KEY, selectedModel.id);
   }, [selectedModel]);
 
   // 轮询任务状态
@@ -680,7 +695,10 @@ export default function NativeImagePage() {
                   <div className="flex-1 text-left">
                     <div className="flex items-center gap-2">
                       <p className="text-white font-medium">{model.name}</p>
-                      <span className="text-xs text-purple-400">{model.credits} credits</span>
+                      <span className="flex items-center gap-1 text-xs text-purple-400">
+                        <CreditsIcon className="w-3 h-3" />
+                        {model.credits} credits
+                      </span>
                     </div>
                     <p className="text-gray-400 text-sm">{model.description}</p>
                   </div>

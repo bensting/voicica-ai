@@ -82,18 +82,32 @@ async function downloadNative(
     }
     onProgress?.(80);
 
-    // 3. 确定保存目录和文件名
-    // Android: 保存到 Documents/Voicica 目录
-    // iOS: 保存到 Documents 目录
-    const subDir = type === 'image' ? 'Voicica/Images' :
-                   type === 'video' ? 'Voicica/Videos' :
-                   type === 'audio' ? 'Voicica/Audio' : 'Voicica';
+    // 3. 确定保存目录
+    // 图片和视频使用 Documents 目录（Android 会自动扫描）
+    // 音频使用 External 目录下的 Music 文件夹（Android 标准音乐目录）
+    const platform = Capacitor.getPlatform();
+    const isAndroid = platform === 'android';
+
+    let directory: typeof Directory.Documents | typeof Directory.External;
+    let subDir: string;
+
+    if (type === 'audio' && isAndroid) {
+      // Android: 保存到外部存储的 Music/Voicica 目录
+      directory = Directory.External;
+      subDir = 'Music/Voicica';
+    } else {
+      // iOS 或其他类型: 保存到 Documents/Voicica 目录
+      directory = Directory.Documents;
+      subDir = type === 'image' ? 'Voicica/Images' :
+               type === 'video' ? 'Voicica/Videos' :
+               type === 'audio' ? 'Voicica/Audio' : 'Voicica';
+    }
 
     // 确保目录存在
     try {
       await Filesystem.mkdir({
         path: subDir,
-        directory: Directory.Documents,
+        directory,
         recursive: true,
       });
     } catch {
@@ -104,7 +118,7 @@ async function downloadNative(
     const result = await Filesystem.writeFile({
       path: `${subDir}/${fileName}`,
       data: base64,
-      directory: Directory.Documents,
+      directory,
     });
 
     onProgress?.(100);
@@ -194,9 +208,14 @@ export async function downloadWithToast(
 
   if (result.success) {
     // 原生端保存到设备，Web 端在新窗口打开
-    const msg = result.filePath === 'browser'
-      ? 'Opened in new window'
-      : 'Saved to device';
+    let msg: string;
+    if (result.filePath === 'browser') {
+      msg = 'Opened in new window';
+    } else if (type === 'audio' && Capacitor.getPlatform() === 'android') {
+      msg = 'Saved to Music/Voicica';
+    } else {
+      msg = 'Saved to device';
+    }
     showToast({ text: msg, duration: 'short' });
     return true;
   } else {

@@ -120,15 +120,19 @@ export async function createImageTask(
         break;
     }
 
+    // callBackUrl 是 KIE API 必需的参数（任务完成后的回调地址）
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://voicica.ai';
+
     const kiePayload = {
       model: actualModelId,
       input,
+      callBackUrl: `${appUrl}/api/webhooks/kie-image`,
     };
 
     console.log('🖼️ [createImageTask] 调用 KIE API:', JSON.stringify(kiePayload, null, 2));
 
-    // 调用 KIE AI API
-    const response = await fetch(`${KIE_API_BASE}/generate`, {
+    // 调用 KIE AI API (使用 /jobs/createTask 端点)
+    const response = await fetch(`${KIE_API_BASE}/jobs/createTask`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

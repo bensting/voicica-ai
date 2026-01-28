@@ -76,73 +76,25 @@ async function downloadNative(
 
 /**
  * Web 平台下载
+ * 直接在新窗口打开，避免 CORS 问题
  */
 async function downloadWeb(
   url: string,
-  fileName: string,
-  onProgress?: (progress: number) => void
+  _fileName: string,
+  _onProgress?: (progress: number) => void
 ): Promise<DownloadResult> {
+  // Note: fileName and onProgress are unused because we open in new window
+  void _fileName;
+  void _onProgress;
   try {
-    console.log('📥 [Web Download] 开始下载:', url);
+    console.log('📥 [Web Download] 在新窗口打开:', url);
 
-    const response = await fetch(url);
+    // 直接在新窗口打开，用户可以右键保存
+    window.open(url, '_blank');
 
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}`);
-    }
-
-    // 获取文件大小用于进度计算
-    const contentLength = response.headers.get('content-length');
-    const total = contentLength ? parseInt(contentLength, 10) : 0;
-
-    // 读取响应流
-    const reader = response.body?.getReader();
-    if (!reader) {
-      throw new Error('No response body');
-    }
-
-    const chunks: Uint8Array[] = [];
-    let received = 0;
-
-    while (true) {
-      const { done, value } = await reader.read();
-      if (done) break;
-
-      chunks.push(value);
-      received += value.length;
-
-      if (onProgress && total > 0) {
-        onProgress(Math.round((received / total) * 100));
-      }
-    }
-
-    // 合并 chunks
-    const totalLength = chunks.reduce((acc, chunk) => acc + chunk.length, 0);
-    const mergedArray = new Uint8Array(totalLength);
-    let offset = 0;
-    for (const chunk of chunks) {
-      mergedArray.set(chunk, offset);
-      offset += chunk.length;
-    }
-    const blob = new Blob([mergedArray]);
-    const blobUrl = URL.createObjectURL(blob);
-
-    // 触发下载
-    const link = document.createElement('a');
-    link.href = blobUrl;
-    link.download = fileName;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-
-    // 释放 URL
-    URL.revokeObjectURL(blobUrl);
-
-    console.log('✅ [Web Download] 下载完成');
-
-    return { success: true };
+    return { success: true, filePath: 'browser' };
   } catch (error) {
-    console.error('❌ [Web Download] 下载失败:', error);
+    console.error('❌ [Web Download] 打开失败:', error);
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Download failed',

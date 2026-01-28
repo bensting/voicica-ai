@@ -206,8 +206,8 @@ export interface ImageTaskStatus {
  */
 export async function getImageTaskStatus(taskId: string): Promise<ImageTaskStatus> {
   try {
-    // 使用 GET /generate/record-info 端点查询任务状态
-    const response = await fetch(`${KIE_API_BASE}/generate/record-info?taskId=${taskId}`, {
+    // 使用 GET /jobs/recordInfo 端点查询任务状态
+    const response = await fetch(`${KIE_API_BASE}/jobs/recordInfo?taskId=${taskId}`, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${KIE_API_KEY}`,
@@ -215,21 +215,41 @@ export async function getImageTaskStatus(taskId: string): Promise<ImageTaskStatu
     });
 
     const result = await response.json();
+    console.log('🖼️ [getImageTaskStatus] KIE API 响应:', JSON.stringify(result, null, 2));
 
     if (result.code !== 200) {
       return { status: 'FAILURE', error: result.msg || 'Failed to get task status' };
     }
 
     const task = result.data;
-    const status = task.status?.toUpperCase() as ImageTaskStatus['status'];
+    // KIE API 返回 state: 'waiting' | 'success' | 'fail'
+    let status: ImageTaskStatus['status'] = 'PENDING';
+    if (task.state === 'success') {
+      status = 'SUCCESS';
+    } else if (task.state === 'fail') {
+      status = 'FAILURE';
+    } else if (task.state === 'waiting') {
+      status = 'PROCESSING';
+    }
+
+    // 解析结果 (resultJson 是 JSON 字符串)
+    let imageUrl: string | undefined;
+    if (task.resultJson) {
+      try {
+        const resultData = JSON.parse(task.resultJson);
+        imageUrl = resultData.image_url || resultData.resultUrls?.[0];
+      } catch {
+        console.error('🖼️ [getImageTaskStatus] 解析 resultJson 失败:', task.resultJson);
+      }
+    }
 
     // 更新数据库记录
-    if (status === 'SUCCESS' && task.output?.image_url) {
+    if (status === 'SUCCESS' && imageUrl) {
       await prisma.image_records.updateMany({
         where: { task_id: taskId },
         data: {
           status: 'SUCCESS',
-          image_url: task.output.image_url,
+          image_url: imageUrl,
           completed_at: new Date(),
         },
       });
@@ -238,16 +258,16 @@ export async function getImageTaskStatus(taskId: string): Promise<ImageTaskStatu
         where: { task_id: taskId },
         data: {
           status: 'FAILURE',
-          error: task.error || 'Generation failed',
+          error: task.failMsg || 'Generation failed',
         },
       });
     }
 
     return {
-      status: status || 'PENDING',
-      progress: task.progress,
-      imageUrl: task.output?.image_url,
-      error: task.error,
+      status,
+      progress: status === 'SUCCESS' ? 100 : (status === 'PROCESSING' ? 50 : 0),
+      imageUrl,
+      error: task.failMsg,
     };
   } catch (error) {
     console.error('❌ [getImageTaskStatus] Error:', error);

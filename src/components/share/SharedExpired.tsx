@@ -13,7 +13,7 @@ export default function SharedExpired() {
       <header className="flex-shrink-0 flex items-center justify-between px-4 py-3 border-b border-white/10">
         <Link href="/">
           <Image
-            src="/logo/voice-labs-logo-light.svg"
+            src="/logo/logo-full-transparent-light.png"
             alt="Voicica AI"
             width={120}
             height={32}
@@ -61,7 +61,7 @@ export default function SharedExpired() {
         <span className="text-gray-500 text-xs">Powered by</span>
         <Link href="/">
           <Image
-            src="/logo/voice-labs-logo-light.svg"
+            src="/logo/logo-full-transparent-light.png"
             alt="Voicica AI"
             width={80}
             height={20}

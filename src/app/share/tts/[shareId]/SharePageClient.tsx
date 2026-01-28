@@ -114,16 +114,16 @@ export default function SharePageClient({ record }: SharePageClientProps) {
       <div className="max-w-2xl mx-auto px-4 py-4 md:py-8">
         {/* Logo Header */}
         <div className="text-center mb-4">
-          <Link href="/" className="inline-block hover:opacity-80 transition-opacity">
+          <Link href="/" className="inline-flex items-center gap-2 hover:opacity-80 transition-opacity">
             <Image
-              src="/logo/voice-labs-logo-dark.svg"
+              src="/logo/logo-transparent.png"
               alt="Voicica AI"
-              width={160}
+              width={28}
               height={28}
               priority
-              className="h-7 w-auto"
-              style={{ width: 'auto' }}
+              className="h-7 w-7"
             />
+            <span className="text-gray-900 font-semibold text-lg">Voicica.AI</span>
           </Link>
         </div>
 

@@ -18,13 +18,16 @@ export default function FooterBrand() {
     <div className="space-y-4">
       {/* Brand Logo */}
       <div>
-        <Image
-          src="/logo/voice-labs-logo-light.svg"
-          alt="AI-Voice-Labs.com"
-          width={225}
-          height={40}
-          className="h-8 md:h-9 w-auto"
-        />
+        <div className="flex items-center gap-2">
+          <Image
+            src="/logo/logo-transparent.png"
+            alt="Voicica AI"
+            width={36}
+            height={36}
+            className="h-8 md:h-9 w-8 md:w-9"
+          />
+          <span className="text-white font-semibold text-xl">Voicica.AI</span>
+        </div>
         <p className="text-sm text-gray-400 mt-2">
           {t('footer.tagline')}
         </p>

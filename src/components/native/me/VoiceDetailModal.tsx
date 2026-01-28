@@ -2,11 +2,11 @@
 
 import { useState, useRef, useEffect } from 'react';
 import type { TtsRecord } from '@/actions/tts';
+import DetailModalHeader from './DetailModalHeader';
 import DetailActionBar from './DetailActionBar';
 import DeleteConfirmDialog from '@/components/native/ui/DeleteConfirmDialog';
 import { useBottomNav } from '@/contexts/BottomNavContext';
 import { formatTime } from './utils';
-import { handleDownloadWithState } from '@/lib/native-download';
 import ProviderIcon from '@/components/ui/icons/ProviderIcon';
 import { User, UserRound, Users } from 'lucide-react';
 
@@ -28,7 +28,6 @@ export default function VoiceDetailModal({
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(voice.duration || 0);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-  const [downloading, setDownloading] = useState(false);
   const { hide, show } = useBottomNav();
 
   // 隐藏底部导航
@@ -86,16 +85,6 @@ export default function VoiceDetailModal({
     setCurrentTime(percent * duration);
   };
 
-  const handleDownload = () => {
-    if (downloading) return;
-    handleDownloadWithState(
-      voice.audio_url,
-      `voicica_tts_${voice.task_id}.mp3`,
-      setDownloading,
-      'audio'
-    );
-  };
-
   const handleConfirmDelete = async () => {
     await onDelete(voice);
     setShowDeleteDialog(false);
@@ -117,28 +106,10 @@ export default function VoiceDetailModal({
       )}
 
       {/* 顶部导航 */}
-      <div
-        className="flex items-center justify-between px-4 pb-2"
-        style={{ paddingTop: 'calc(var(--safe-area-inset-top, 0px) + 12px)' }}
-      >
-        <button
-          onClick={onClose}
-          className="w-10 h-10 flex items-center justify-center bg-gray-800/50 rounded-full"
-        >
-          <svg className="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <path d="M15 18l-6-6 6-6" />
-          </svg>
-        </button>
-        <div className="flex items-center gap-2">
-          <button className="w-10 h-10 flex items-center justify-center">
-            <svg className="w-5 h-5 text-white" viewBox="0 0 24 24" fill="currentColor">
-              <circle cx="12" cy="6" r="2" />
-              <circle cx="12" cy="12" r="2" />
-              <circle cx="12" cy="18" r="2" />
-            </svg>
-          </button>
-        </div>
-      </div>
+      <DetailModalHeader
+        onClose={onClose}
+        onDelete={() => setShowDeleteDialog(true)}
+      />
 
       {/* 可滚动内容区域 */}
       <div className="flex-1 overflow-y-auto px-6 pb-4">
@@ -248,10 +219,9 @@ export default function VoiceDetailModal({
         <DetailActionBar
           showRecreate
           onRecreate={onRecreate}
-          showDownload
-          onDownload={handleDownload}
-          downloadDisabled={!voice.audio_url}
-          downloading={downloading}
+          fileUrl={voice.audio_url || undefined}
+          fileName={`voicica_tts_${voice.task_id}.mp3`}
+          fileType="audio"
         />
       </div>
 

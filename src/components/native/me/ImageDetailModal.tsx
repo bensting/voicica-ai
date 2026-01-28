@@ -1,8 +1,9 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
-import { X, MoreVertical, Trash2 } from 'lucide-react';
+import { useState, useEffect } from 'react';
 import type { ImageRecord } from '@/actions/image';
+import { createShareLink } from '@/actions/share';
+import DetailModalHeader from './DetailModalHeader';
 import DetailActionBar from './DetailActionBar';
 import DeleteConfirmDialog from '@/components/native/ui/DeleteConfirmDialog';
 import { useBottomNav } from '@/contexts/BottomNavContext';
@@ -37,9 +38,8 @@ export default function ImageDetailModal({
   onDelete,
 }: ImageDetailModalProps) {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-  const [showMenu, setShowMenu] = useState(false);
   const [downloading, setDownloading] = useState(false);
-  const menuRef = useRef<HTMLDivElement>(null);
+  const [shareUrl, setShareUrl] = useState<string | null>(null);
   const { hide, show } = useBottomNav();
 
   // 隐藏底部导航
@@ -48,21 +48,14 @@ export default function ImageDetailModal({
     return () => show();
   }, [hide, show]);
 
-  // 点击外部关闭菜单
+  // 预先生成分享链接（用于"在浏览器打开"功能）
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-        setShowMenu(false);
-      }
-    };
-
-    if (showMenu) {
-      document.addEventListener('mousedown', handleClickOutside);
+    if (image.task_id) {
+      createShareLink('image', image.task_id)
+        .then((result) => setShareUrl(result.url))
+        .catch((err) => console.error('Failed to create share link:', err));
     }
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [showMenu]);
+  }, [image.task_id]);
 
   const handleDownload = async () => {
     if (!image.image_url) return;
@@ -80,38 +73,11 @@ export default function ImageDetailModal({
   return (
     <div className="fixed inset-0 z-50 bg-[#0a0a1a] flex flex-col">
       {/* Header */}
-      <div
-        className="flex items-center justify-between px-4 h-14 flex-shrink-0"
-        style={{ paddingTop: 'var(--safe-area-inset-top, 0px)' }}
-      >
-        <button onClick={onClose} className="p-2 -ml-2 text-white">
-          <X size={24} />
-        </button>
-        <div className="relative" ref={menuRef}>
-          <button
-            onClick={() => setShowMenu(!showMenu)}
-            className="p-2 text-white"
-          >
-            <MoreVertical size={20} />
-          </button>
-
-          {/* Dropdown Menu */}
-          {showMenu && (
-            <div className="absolute right-0 top-full mt-1 w-40 bg-gray-800 rounded-xl shadow-lg overflow-hidden z-10">
-              <button
-                onClick={() => {
-                  setShowMenu(false);
-                  setShowDeleteDialog(true);
-                }}
-                className="w-full flex items-center gap-3 px-4 py-3 text-red-400 hover:bg-gray-700 transition-colors"
-              >
-                <Trash2 size={18} />
-                <span>Delete</span>
-              </button>
-            </div>
-          )}
-        </div>
-      </div>
+      <DetailModalHeader
+        onClose={onClose}
+        onDelete={() => setShowDeleteDialog(true)}
+        browserUrl={shareUrl || undefined}
+      />
 
       {/* Content */}
       <div className="flex-1 overflow-y-auto px-4 pb-32">

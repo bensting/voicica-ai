@@ -20,6 +20,7 @@ import {
   getMusicModelById,
   type MusicModel,
 } from '@/config/native/musicModels';
+import { adConfig } from '@/config/native/adConfig';
 import { createMusicTask, getMusicTaskStatus, getMusicRecordByTaskId, deleteMusicRecord, type MusicRecord } from '@/actions/music';
 import { sendLocalNotification } from '@/lib/notifications';
 import { checkCreditsBeforeGenerate } from '@/lib/credits-check';
@@ -427,7 +428,7 @@ export default function NativeMusicPage() {
     setGeneratingProgress(0);
   };
 
-  // 非订阅用户：生成开始 5 秒后自动弹出激励广告
+  // 非订阅用户：生成开始后自动弹出激励广告
   useEffect(() => {
     if (!isGeneratingModalOpen || generatingStatus !== 'generating' || isSubscribed || adWatched) {
       return;
@@ -443,7 +444,7 @@ export default function NativeMusicPage() {
       } catch (err) {
         console.error('[Music] Ad error:', err);
       }
-    }, 5000); // 5秒后自动弹出
+    }, adConfig.rewardedAdDelayMs);
 
     return () => clearTimeout(timer);
   }, [isGeneratingModalOpen, generatingStatus, isSubscribed, adWatched, showRewardedAd]);

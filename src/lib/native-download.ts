@@ -83,40 +83,17 @@ async function downloadNative(
     onProgress?.(80);
 
     // 3. 确定保存目录
-    // 图片和视频使用 Documents 目录（Android 会自动扫描）
-    // 音频使用 External 目录下的 Music 文件夹（Android 标准音乐目录）
+    // Android: 保存到 Download 根目录（用户熟悉，系统会扫描）
+    // iOS: 保存到 Documents 目录
     const platform = Capacitor.getPlatform();
     const isAndroid = platform === 'android';
 
-    let directory: typeof Directory.Documents | typeof Directory.External;
-    let subDir: string;
-
-    if (type === 'audio' && isAndroid) {
-      // Android: 保存到外部存储的 Music/Voicica 目录
-      directory = Directory.External;
-      subDir = 'Music/Voicica';
-    } else {
-      // iOS 或其他类型: 保存到 Documents/Voicica 目录
-      directory = Directory.Documents;
-      subDir = type === 'image' ? 'Voicica/Images' :
-               type === 'video' ? 'Voicica/Videos' :
-               type === 'audio' ? 'Voicica/Audio' : 'Voicica';
-    }
-
-    // 确保目录存在
-    try {
-      await Filesystem.mkdir({
-        path: subDir,
-        directory,
-        recursive: true,
-      });
-    } catch {
-      // 目录可能已存在，忽略错误
-    }
+    const directory = isAndroid ? Directory.External : Directory.Documents;
+    const filePath = isAndroid ? `Download/${fileName}` : fileName;
 
     // 4. 写入文件
     const result = await Filesystem.writeFile({
-      path: `${subDir}/${fileName}`,
+      path: filePath,
       data: base64,
       directory,
     });
@@ -211,8 +188,8 @@ export async function downloadWithToast(
     let msg: string;
     if (result.filePath === 'browser') {
       msg = 'Opened in new window';
-    } else if (type === 'audio' && Capacitor.getPlatform() === 'android') {
-      msg = 'Saved to Music/Voicica';
+    } else if (Capacitor.getPlatform() === 'android') {
+      msg = 'Saved to Downloads';
     } else {
       msg = 'Saved to device';
     }

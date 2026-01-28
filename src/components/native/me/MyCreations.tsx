@@ -12,6 +12,7 @@ import { getImageRecords, deleteImageRecord, type ImageRecord } from '@/actions/
 import { getVideoRecordByTaskId, deleteVideoRecord, type VideoRecord } from '@/actions/video';
 import { useMusicTaskPolling } from '@/hooks/useMusicTaskPolling';
 import { useVideoTaskPolling } from '@/hooks/useVideoTaskPolling';
+import { useImageTaskPolling } from '@/hooks/useImageTaskPolling';
 
 // 提取的组件
 import MusicDetailModal from './MusicDetailModal';
@@ -339,6 +340,27 @@ export default function MyCreations() {
             };
           }
           return video;
+        })
+      );
+    }, []),
+  });
+
+  // 使用 hook 轮询处理中的图片任务状态
+  useImageTaskPolling({
+    records: imageRecords,
+    enabled: activeTab === 'image',
+    onStatusUpdate: useCallback((taskId, status) => {
+      setImageRecords((prev) =>
+        prev.map((record) => {
+          if (record.task_id === taskId) {
+            return {
+              ...record,
+              status: status.status,
+              image_url: status.imageUrl || record.image_url,
+              error: status.error || record.error,
+            };
+          }
+          return record;
         })
       );
     }, []),

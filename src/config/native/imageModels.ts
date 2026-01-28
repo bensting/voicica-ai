@@ -16,31 +16,18 @@ export interface ImageModel {
 
 export const imageModels: ImageModel[] = [
   {
-    id: 'z-image',
-    name: 'Z-Image',
-    description: 'Fast and affordable',
-    icon: '/images/models/z-image.png',
-    credits: 1,
-    maxPromptLength: 1000,
-    supportsImageInput: false,
-    aspectRatios: ['16:9', '3:4', '1:1', '4:3', '9:16'],
+    id: 'nano-banana-pro',
+    name: 'Nano Banana - Pro',
+    description: 'With reasoning ability, most powerful',
+    icon: '/images/models/nano-banana.png',
+    credits: 25,
+    maxPromptLength: 10000,
+    supportsImageInput: true,
+    aspectRatios: ['16:9', '3:4', '1:1', '4:3', '9:16', '2:3', '3:2', '4:5', '5:4', '21:9'],
     qualities: [
       { id: '1K', label: '1K' },
       { id: '2K', label: '2K', isPro: true },
-    ],
-  },
-  {
-    id: 'flux-2',
-    name: 'Flux.2',
-    description: 'Balanced quality and speed',
-    icon: '/images/models/flux-2.png',
-    credits: 10,
-    maxPromptLength: 5000,
-    supportsImageInput: false,
-    aspectRatios: ['1:1', '4:3', '3:4', '16:9', '9:16', '3:2', '2:3'],
-    qualities: [
-      { id: '1K', label: '1K' },
-      { id: '2K', label: '2K', isPro: true },
+      { id: '4K', label: '4K', isPro: true },
     ],
   },
   {
@@ -58,21 +45,34 @@ export const imageModels: ImageModel[] = [
     ],
   },
   {
-    id: 'nano-banana-pro',
-    name: 'Nano Banana - Pro',
-    description: 'With reasoning ability, most powerful',
-    icon: '/images/models/nano-banana.png',
-    credits: 20,
-    maxPromptLength: 10000,
-    supportsImageInput: true,
-    aspectRatios: ['16:9', '3:4', '1:1', '4:3', '9:16', '2:3', '3:2', '4:5', '5:4', '21:9'],
+    id: 'flux-2',
+    name: 'Flux.2',
+    description: 'Balanced quality and speed',
+    icon: '/images/models/flux-2.png',
+    credits: 10,
+    maxPromptLength: 5000,
+    supportsImageInput: false,
+    aspectRatios: ['1:1', '4:3', '3:4', '16:9', '9:16', '3:2', '2:3'],
     qualities: [
       { id: '1K', label: '1K' },
       { id: '2K', label: '2K', isPro: true },
-      { id: '4K', label: '4K', isPro: true },
     ],
   },
+  {
+    id: 'z-image',
+    name: 'Z-Image',
+    description: 'Fast and affordable',
+    icon: '/images/models/z-image.png',
+    credits: 1,
+    maxPromptLength: 1000,
+    supportsImageInput: false,
+    aspectRatios: ['1:1', '4:3', '3:4', '16:9', '9:16'],
+    qualities: [], // Z-Image 没有 quality 选项
+  },
 ];
+
+// 默认模型 ID
+export const DEFAULT_IMAGE_MODEL_ID = 'seedream/4.5-text-to-image';
 
 /**
  * 获取模型配置

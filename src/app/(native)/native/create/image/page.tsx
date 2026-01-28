@@ -10,8 +10,10 @@ import CreditsIcon from '@/components/native/common/CreditsIcon';
 import CreditsInfoBar from '@/components/native/common/CreditsInfoBar';
 import LoginModal from '@/components/native/LoginModal';
 import { createImageTask, getImageTaskStatus } from '@/actions/image';
-import { imageModels, type ImageModel } from '@/config/native/imageModels';
+import { imageModels, type ImageModel, DEFAULT_IMAGE_MODEL_ID } from '@/config/native/imageModels';
 import { sendLocalNotification } from '@/lib/notifications';
+
+const IMAGE_MODEL_STORAGE_KEY = 'image_selected_model';
 
 // 图标组件
 const ChevronDownIcon = () => (
@@ -496,8 +498,12 @@ export default function NativeImagePage() {
               <span>{isPublic ? 'Public' : 'Private'}</span>
               <span>·</span>
               <span>{aspectRatio}</span>
-              <span>·</span>
-              <span>{getQualityLabel()}</span>
+              {selectedModel.qualities.length > 0 && (
+                <>
+                  <span>·</span>
+                  <span>{getQualityLabel()}</span>
+                </>
+              )}
             </div>
             <ChevronDownIcon />
           </button>
@@ -755,30 +761,32 @@ export default function NativeImagePage() {
                 </div>
               </div>
 
-              {/* Quality */}
-              <div>
-                <span className="text-white font-medium mb-3 block">Quality</span>
-                <div className="flex gap-2">
-                  {selectedModel.qualities.map((q) => (
-                    <button
-                      key={q.id}
-                      onClick={() => setQuality(q.id)}
-                      className={`flex-1 py-3 rounded-xl text-sm font-medium transition-colors relative ${
-                        quality === q.id
-                          ? 'bg-gray-600 text-white'
-                          : 'bg-gray-800/60 text-gray-400 hover:bg-gray-700/60'
-                      }`}
-                    >
-                      {q.label}
-                      {q.isPro && (
-                        <span className="absolute -top-1 -right-1 px-1.5 py-0.5 bg-yellow-500 text-yellow-900 text-[10px] font-bold rounded">
-                          Pro
-                        </span>
-                      )}
-                    </button>
-                  ))}
+              {/* Quality - 仅在模型有 quality 选项时显示 */}
+              {selectedModel.qualities.length > 0 && (
+                <div>
+                  <span className="text-white font-medium mb-3 block">Quality</span>
+                  <div className="flex gap-2">
+                    {selectedModel.qualities.map((q) => (
+                      <button
+                        key={q.id}
+                        onClick={() => setQuality(q.id)}
+                        className={`flex-1 py-3 rounded-xl text-sm font-medium transition-colors relative ${
+                          quality === q.id
+                            ? 'bg-gray-600 text-white'
+                            : 'bg-gray-800/60 text-gray-400 hover:bg-gray-700/60'
+                        }`}
+                      >
+                        {q.label}
+                        {q.isPro && (
+                          <span className="absolute -top-1 -right-1 px-1.5 py-0.5 bg-yellow-500 text-yellow-900 text-[10px] font-bold rounded">
+                            Pro
+                          </span>
+                        )}
+                      </button>
+                    ))}
+                  </div>
                 </div>
-              </div>
+              )}
 
               {/* Create Button */}
               <GradientButton

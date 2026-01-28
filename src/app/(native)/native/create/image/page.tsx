@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 import { useCredits } from '@/contexts/CreditsContext';
@@ -21,8 +21,8 @@ const ChevronDownIcon = () => (
 );
 
 const TrashIcon = () => (
-  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-    <path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6" />
+  <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+    <path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2m3 0v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6h14z" />
   </svg>
 );
 
@@ -32,12 +32,12 @@ const PlusIcon = () => (
   </svg>
 );
 
-const AssistantIcon = () => (
-  <div className="w-5 h-5 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
-    <svg className="w-3 h-3 text-white" viewBox="0 0 24 24" fill="currentColor">
-      <circle cx="12" cy="12" r="3" />
-    </svg>
-  </div>
+// 魔法棒图标
+const MagicWandIcon = ({ className = "w-3.5 h-3.5" }: { className?: string }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <path d="M15 4V2M15 16v-2M8 9h2M20 9h2M17.8 11.8L19 13M17.8 6.2L19 5M12.2 11.8L11 13M12.2 6.2L11 5" />
+    <path d="M3 21l9-9" strokeLinecap="round" />
+  </svg>
 );
 
 const InfoIcon = () => (
@@ -56,6 +56,24 @@ const BackIcon = () => (
 const CrownIcon = () => (
   <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
     <path d="M2.5 19h19v2h-19v-2zm19.57-9.36c-.21-.8-1.04-1.28-1.84-1.06l-4.63 1.22-3.15-5.14c-.45-.74-1.44-.96-2.19-.51-.27.16-.49.4-.62.68L6.5 9.8l-4.63-1.22c-.8-.22-1.63.26-1.84 1.06-.1.34-.04.72.14 1.03l4.85 8.13c.16.27.44.44.75.52.13.03.26.05.39.05h11.68c.13 0 .26-.02.39-.05.31-.08.59-.25.75-.52l4.85-8.13c.18-.31.24-.69.14-1.03z" />
+  </svg>
+);
+
+const CloseIcon = () => (
+  <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <path d="M18 6L6 18M6 6l12 12" />
+  </svg>
+);
+
+// Loading 图标
+const LoadingSpinner = () => (
+  <svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none">
+    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+    <path
+      className="opacity-75"
+      fill="currentColor"
+      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+    />
   </svg>
 );
 
@@ -98,8 +116,6 @@ const aspectRatios = [
   { id: '9:16', label: '9:16' },
 ];
 
-const MAX_PROMPT_LENGTH = 3000;
-
 /**
  * Native AI Image 页面
  */
@@ -107,13 +123,20 @@ export default function NativeImagePage() {
   const router = useRouter();
   const { user } = useFirebaseAuth();
   const { credits, refreshCredits } = useCredits();
+  const generateInputRef = useRef<HTMLTextAreaElement>(null);
 
   // UI 状态
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isModelSheetOpen, setIsModelSheetOpen] = useState(false);
   const [isParameterSheetOpen, setIsParameterSheetOpen] = useState(false);
   const [isGeneratingModalOpen, setIsGeneratingModalOpen] = useState(false);
+  const [isGeneratePromptSheetOpen, setIsGeneratePromptSheetOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Generate Prompt 状态
+  const [generateInput, setGenerateInput] = useState('');
+  const [isGeneratingPrompt, setIsGeneratingPrompt] = useState(false);
+  const [generatePromptError, setGeneratePromptError] = useState<string | null>(null);
 
   // 生成状态
   const [isGenerating, setIsGenerating] = useState(false);
@@ -122,7 +145,7 @@ export default function NativeImagePage() {
   const [generatingProgress, setGeneratingProgress] = useState(0);
   const [taskId, setTaskId] = useState<string | null>(null);
 
-  // 输入状态 - 默认选中 Seedream 4.5
+  // 输入状态 - 默认选中 Z-Image
   const [prompt, setPrompt] = useState('');
   const [selectedModel, setSelectedModel] = useState<ImageModel>(imageModels[0]);
   const [guidanceImage, setGuidanceImage] = useState<File | null>(null);
@@ -130,9 +153,15 @@ export default function NativeImagePage() {
 
   // 参数状态
   const [isPublic, setIsPublic] = useState(true);
-  const [imageCount, setImageCount] = useState(1);
   const [aspectRatio, setAspectRatio] = useState('16:9');
   const [quality, setQuality] = useState('standard'); // Z-Image default
+
+  // Focus input when generate prompt sheet opens
+  useEffect(() => {
+    if (isGeneratePromptSheetOpen && generateInputRef.current) {
+      setTimeout(() => generateInputRef.current?.focus(), 100);
+    }
+  }, [isGeneratePromptSheetOpen]);
 
   // 当模型改变时，重置 quality 到模型的第一个选项
   useEffect(() => {
@@ -210,8 +239,39 @@ export default function NativeImagePage() {
     setPrompt('');
   };
 
+  // 生成提示词
+  const handleGeneratePrompt = async () => {
+    if (!generateInput.trim() || isGeneratingPrompt) return;
+
+    setIsGeneratingPrompt(true);
+    setGeneratePromptError(null);
+
+    try {
+      const response = await fetch('/api/ai/generate-image-prompt', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt: generateInput.trim() }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        throw new Error(data.error || 'Failed to generate prompt');
+      }
+
+      // Set the generated prompt
+      setPrompt(data.prompt.slice(0, selectedModel.maxPromptLength));
+      // Close the sheet
+      setIsGeneratePromptSheetOpen(false);
+    } catch (err) {
+      setGeneratePromptError(err instanceof Error ? err.message : 'Failed to generate prompt');
+    } finally {
+      setIsGeneratingPrompt(false);
+    }
+  };
+
   // 计算预估积分
-  const estimatedCredits = prompt.trim() ? selectedModel.credits * imageCount : 0;
+  const estimatedCredits = prompt.trim() ? selectedModel.credits : 0;
 
   // 是否可以生成
   const canGenerate = prompt.trim().length > 0 && !isGenerating;
@@ -258,7 +318,6 @@ export default function NativeImagePage() {
         prompt,
         aspectRatio,
         quality,
-        imageCount,
         isPublic,
         guidanceImageUrl: uploadedImageUrl,
       });
@@ -340,10 +399,13 @@ export default function NativeImagePage() {
                   src={selectedModel.icon}
                   alt={selectedModel.name}
                   className="w-5 h-5 rounded"
+                  onError={(e) => {
+                    e.currentTarget.style.display = 'none';
+                    e.currentTarget.nextElementSibling?.classList.remove('hidden');
+                  }}
                 />
-              ) : (
-                <span className="text-lg">🖼️</span>
-              )}
+              ) : null}
+              <span className={selectedModel.icon ? 'hidden' : ''}>🖼️</span>
               <span className="text-white">{selectedModel.name}</span>
               <ChevronDownIcon />
             </button>
@@ -355,67 +417,76 @@ export default function NativeImagePage() {
               value={prompt}
               onChange={(e) => setPrompt(e.target.value.slice(0, selectedModel.maxPromptLength))}
               placeholder="Please enter the prompt for generation. For example: Under the sunlight, a breeze gently sways the flowers, with a cinematic feel."
-              className="w-full h-32 bg-transparent text-white placeholder-gray-500 text-sm resize-none focus:outline-none"
+              className="w-full h-32 bg-transparent text-white placeholder-gray-500 text-sm resize-none focus:outline-none leading-relaxed"
             />
-            <div className="flex items-center justify-between mt-2 pt-2 border-t border-gray-700">
-              <button className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-700/50 rounded-lg text-sm text-gray-300 hover:bg-gray-600/50 transition-colors">
-                <AssistantIcon />
-                <span>Assistant</span>
+
+            {/* Bottom Bar */}
+            <div className="flex items-center justify-between mt-3 pt-3 border-t border-gray-700/50">
+              {/* Generate Prompt Button */}
+              <button
+                onClick={() => setIsGeneratePromptSheetOpen(true)}
+                className="flex items-center gap-1.5 px-2.5 py-1 bg-gray-700/60 rounded-full text-xs text-gray-300 hover:bg-gray-600/60 transition-colors"
+              >
+                <MagicWandIcon />
+                <span>Generate Prompt</span>
               </button>
-              <div className="flex items-center gap-3">
-                <span className="text-gray-500 text-sm">
+
+              {/* Character Count & Clear */}
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-gray-500">
                   {prompt.length}/{selectedModel.maxPromptLength}
                 </span>
-                {prompt.length > 0 && (
-                  <button
-                    onClick={handleClearPrompt}
-                    className="p-1.5 text-gray-400 hover:text-red-400 transition-colors"
-                  >
-                    <TrashIcon />
-                  </button>
-                )}
+                <div className="w-px h-3.5 bg-gray-700" />
+                <button
+                  onClick={handleClearPrompt}
+                  className="text-gray-500 hover:text-gray-300 transition-colors"
+                >
+                  <TrashIcon />
+                </button>
               </div>
             </div>
           </div>
         </div>
 
         {/* Image Guidance Section */}
-        <div className="mb-4">
-          <div className="flex items-center gap-2 mb-2">
-            <span className="text-white font-medium">Image Guidance</span>
-            <span className="text-gray-500 text-sm">(optional)</span>
-            <InfoIcon />
-          </div>
-
-          {guidanceImageUrl ? (
-            <div className="relative w-32 h-32">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={guidanceImageUrl}
-                alt="Guidance"
-                className="w-full h-full object-cover rounded-xl"
-              />
-              <button
-                onClick={handleClearImage}
-                className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 rounded-full flex items-center justify-center text-white"
-              >
-                <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
-                  <path d="M18 6L6 18M6 6l12 12" />
-                </svg>
-              </button>
+        {selectedModel.supportsImageInput && (
+          <div className="mb-4">
+            <div className="flex items-center gap-2 mb-2">
+              <span className="text-white font-medium">Image Guidance</span>
+              <span className="text-gray-500 text-sm">(optional)</span>
+              <InfoIcon />
             </div>
-          ) : (
-            <label className="w-32 h-32 border-2 border-dashed border-gray-600 rounded-xl flex items-center justify-center cursor-pointer hover:border-purple-500 transition-colors text-gray-500">
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleImageUpload}
-                className="hidden"
-              />
-              <PlusIcon />
-            </label>
-          )}
-        </div>
+
+            {guidanceImageUrl ? (
+              <div className="relative w-32 h-32">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={guidanceImageUrl}
+                  alt="Guidance"
+                  className="w-full h-full object-cover rounded-xl"
+                />
+                <button
+                  onClick={handleClearImage}
+                  className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 rounded-full flex items-center justify-center text-white"
+                >
+                  <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+                    <path d="M18 6L6 18M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+            ) : (
+              <label className="w-32 h-32 border-2 border-dashed border-gray-600 rounded-xl flex items-center justify-center cursor-pointer hover:border-purple-500 transition-colors text-gray-500">
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageUpload}
+                  className="hidden"
+                />
+                <PlusIcon />
+              </label>
+            )}
+          </div>
+        )}
 
         {/* Parameters Trigger */}
         <div className="mb-4">
@@ -428,8 +499,6 @@ export default function NativeImagePage() {
           >
             <div className="flex items-center gap-4 text-sm text-gray-300">
               <span>{isPublic ? 'Public' : 'Private'}</span>
-              <span>·</span>
-              <span>{imageCount}</span>
               <span>·</span>
               <span>{aspectRatio}</span>
               <span>·</span>
@@ -481,6 +550,88 @@ export default function NativeImagePage() {
         onLoginSuccess={() => setIsLoginModalOpen(false)}
       />
 
+      {/* Generate Prompt Sheet */}
+      {isGeneratePromptSheetOpen && (
+        <div className="fixed inset-0 z-50 flex items-end justify-center">
+          {/* Backdrop */}
+          <div
+            className="absolute inset-0 bg-black/60"
+            onClick={() => !isGeneratingPrompt && setIsGeneratePromptSheetOpen(false)}
+          />
+
+          {/* Sheet */}
+          <div
+            className="relative w-full max-w-lg bg-[#1a1a2e] rounded-t-3xl animate-slide-up"
+            style={{ paddingBottom: 'var(--safe-area-inset-bottom, 16px)' }}
+          >
+            {/* Handle */}
+            <div className="flex justify-center pt-3 pb-2">
+              <div className="w-10 h-1 bg-gray-600 rounded-full" />
+            </div>
+
+            {/* Header */}
+            <div className="flex items-center justify-between px-4 pb-4">
+              <h3 className="text-lg font-semibold text-white">Generate Prompt</h3>
+              <button
+                onClick={() => !isGeneratingPrompt && setIsGeneratePromptSheetOpen(false)}
+                className="p-1 text-gray-400 hover:text-white transition-colors"
+                disabled={isGeneratingPrompt}
+              >
+                <CloseIcon />
+              </button>
+            </div>
+
+            {/* Content */}
+            <div className="px-4 pb-4">
+              <p className="text-sm text-gray-400 mb-3">
+                Describe what you want to create, and AI will generate a detailed prompt for you.
+              </p>
+
+              {/* Input */}
+              <textarea
+                ref={generateInputRef}
+                value={generateInput}
+                onChange={(e) => setGenerateInput(e.target.value.slice(0, 500))}
+                placeholder="e.g., A cute cat sitting on a rainbow"
+                className="w-full h-24 p-3 bg-gray-800/60 rounded-xl text-white placeholder-gray-500 resize-none focus:outline-none focus:ring-2 focus:ring-purple-500/50 text-sm"
+                disabled={isGeneratingPrompt}
+              />
+
+              {/* Character count */}
+              <div className="flex justify-end mt-1 mb-3">
+                <span className="text-xs text-gray-500">{generateInput.length}/500</span>
+              </div>
+
+              {/* Error */}
+              {generatePromptError && (
+                <div className="mb-3 p-2 bg-red-500/20 border border-red-500/40 rounded-lg text-red-400 text-sm text-center">
+                  {generatePromptError}
+                </div>
+              )}
+
+              {/* Generate Button */}
+              <button
+                onClick={handleGeneratePrompt}
+                disabled={!generateInput.trim() || isGeneratingPrompt}
+                className="w-full py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-medium rounded-xl hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              >
+                {isGeneratingPrompt ? (
+                  <>
+                    <LoadingSpinner />
+                    <span>Generating...</span>
+                  </>
+                ) : (
+                  <>
+                    <MagicWandIcon className="w-4 h-4" />
+                    <span>Generate</span>
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Model Selector Sheet */}
       {isModelSheetOpen && (
         <div className="fixed inset-0 z-50">
@@ -516,14 +667,20 @@ export default function NativeImagePage() {
                       src={model.icon}
                       alt={model.name}
                       className="w-12 h-12 rounded-xl object-cover"
+                      onError={(e) => {
+                        e.currentTarget.style.display = 'none';
+                        e.currentTarget.nextElementSibling?.classList.remove('hidden');
+                      }}
                     />
-                  ) : (
-                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-2xl">
-                      🖼️
-                    </div>
-                  )}
+                  ) : null}
+                  <div className={`w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-2xl ${model.icon ? 'hidden' : ''}`}>
+                    🖼️
+                  </div>
                   <div className="flex-1 text-left">
-                    <p className="text-white font-medium">{model.name}</p>
+                    <div className="flex items-center gap-2">
+                      <p className="text-white font-medium">{model.name}</p>
+                      <span className="text-xs text-purple-400">{model.credits} credits</span>
+                    </div>
                     <p className="text-gray-400 text-sm">{model.description}</p>
                   </div>
                 </button>
@@ -552,26 +709,6 @@ export default function NativeImagePage() {
             </h3>
 
             <div className="px-4 pb-6 space-y-6">
-              {/* Image Count */}
-              <div>
-                <span className="text-white font-medium mb-3 block">Image count</span>
-                <div className="flex gap-2">
-                  {[1, 2, 4].map((count) => (
-                    <button
-                      key={count}
-                      onClick={() => setImageCount(count)}
-                      className={`w-20 py-3 rounded-xl text-sm font-medium transition-colors ${
-                        imageCount === count
-                          ? 'bg-gray-600 text-white'
-                          : 'bg-gray-800/60 text-gray-400 hover:bg-gray-700/60'
-                      }`}
-                    >
-                      {count}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
               {/* Visibility */}
               <div>
                 <div className="flex items-center gap-2 mb-3">

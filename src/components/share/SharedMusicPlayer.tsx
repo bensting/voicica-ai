@@ -98,14 +98,15 @@ export default function SharedMusicPlayer({ music }: SharedMusicPlayerProps) {
 
       {/* Header */}
       <header className="flex-shrink-0 flex items-center justify-between px-4 py-2.5 border-b border-white/10">
-        <Link href="/">
+        <Link href="/" className="flex items-center gap-2">
           <Image
-            src="/logo/voice-labs-logo-light.svg"
+            src="/logo/logo-transparent.png"
             alt="Voicica AI"
-            width={120}
+            width={32}
             height={32}
-            className="h-8 w-auto"
+            className="h-8 w-8"
           />
+          <span className="text-white font-semibold text-lg">Voicica.AI</span>
         </Link>
         <Link
           href="/"
@@ -209,14 +210,15 @@ export default function SharedMusicPlayer({ music }: SharedMusicPlayerProps) {
       {/* Footer */}
       <footer className="flex-shrink-0 py-2.5 flex items-center justify-center gap-2 border-t border-white/10">
         <span className="text-gray-500 text-xs">Powered by</span>
-        <Link href="/">
+        <Link href="/" className="flex items-center gap-1.5 opacity-70 hover:opacity-100 transition-opacity">
           <Image
-            src="/logo/voice-labs-logo-light.svg"
+            src="/logo/logo-transparent.png"
             alt="Voicica AI"
-            width={80}
+            width={20}
             height={20}
-            className="h-5 w-auto opacity-70 hover:opacity-100 transition-opacity"
+            className="h-5 w-5"
           />
+          <span className="text-white text-sm font-medium">Voicica.AI</span>
         </Link>
       </footer>
     </div>

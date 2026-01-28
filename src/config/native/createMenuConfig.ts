@@ -4,10 +4,10 @@
  */
 
 /** 功能类别 */
-export type CreateMenuCategory = 'voiceover' | 'music' | 'video' | 'tools';
+export type CreateMenuCategory = 'voiceover' | 'music' | 'image' | 'video' | 'tools';
 
 /** 图标类型 */
-export type CreateMenuIcon = 'music' | 'cover' | 'voice' | 'dialogue' | 'video' | 'clone' | 'tiktok' | 'youtube';
+export type CreateMenuIcon = 'music' | 'cover' | 'voice' | 'dialogue' | 'video' | 'clone' | 'tiktok' | 'youtube' | 'image';
 
 /** 类别配置 */
 export interface CategoryConfig {
@@ -22,7 +22,8 @@ export const categoryConfigs: CategoryConfig[] = [
   { id: 'voiceover', title: 'VOICEOVER AI', order: 1, color: 'purple' },
   { id: 'music', title: 'MUSIC AI', order: 2, color: 'pink' },
   { id: 'video', title: 'VIDEO AI', order: 3, color: 'blue' },
-  { id: 'tools', title: 'OTHER TOOLS', order: 4, color: 'emerald' },
+  { id: 'image', title: 'IMAGE AI', order: 4, color: 'cyan' },
+  { id: 'tools', title: 'OTHER TOOLS', order: 5, color: 'emerald' },
 ];
 
 export interface CreateMenuItem {
@@ -103,6 +104,18 @@ export const createMenuItems: CreateMenuItem[] = [
     shortName: 'AI Cover',
     description: 'Create AI song covers with voice cloning',
     href: '/native/create/cover',
+    enabled: { development: true, production: true },
+  },
+
+  // ========== AI Image 类别 ==========
+  {
+    id: 'image',
+    icon: 'image',
+    category: 'image',
+    title: 'AI Image',
+    shortName: 'AI Image',
+    description: 'Generate images from text prompts',
+    href: '/native/create/image',
     enabled: { development: true, production: true },
   },
 

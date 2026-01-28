@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import CreatePageHeader from '@/components/native/common/CreatePageHeader';
 import PromptSection from '@/components/native/create/PromptSection';
@@ -9,9 +9,15 @@ import AdvancedOptions from '@/components/native/create/AdvancedOptions';
 import ParameterSettingsSheet from '@/components/native/create/ParameterSettingsSheet';
 import GradientButton from '@/components/native/common/GradientButton';
 import CreditsInfoBar from '@/components/native/common/CreditsInfoBar';
+import CreditsIcon from '@/components/native/common/CreditsIcon';
+import GeneratingModal, { GeneratingStatus } from '@/components/native/common/GeneratingModal';
+import VideoDetailModal from '@/components/native/me/VideoDetailModal';
+import LoginModal from '@/components/native/LoginModal';
 import { useCredits } from '@/contexts/CreditsContext';
 import { VideoModel, defaultVideoModel, getModelDefaults, calculateCredits } from '@/config/native/videoModels';
 import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
+import { getVideoRecordByTaskId, type VideoRecord } from '@/actions/video';
+import { checkCreditsBeforeGenerate } from '@/lib/credits-check';
 
 // 时钟图标
 const ClockIcon = () => (
@@ -63,8 +69,9 @@ const VIDEO_PROMPT_STORAGE_KEY = 'video_draft_prompt';
 
 export default function CreateVideoPage() {
   const router = useRouter();
-  const { token } = useFirebaseAuth();
+  const { user, token } = useFirebaseAuth();
   const { credits: userCredits } = useCredits();
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isParamsSheetOpen, setIsParamsSheetOpen] = useState(false);
   const [mode, setMode] = useState<ModeType>('generate');
   const [prompt, setPromptState] = useState('');
@@ -76,6 +83,16 @@ export default function CreateVideoPage() {
   const [generateAudio, setGenerateAudio] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Generating modal state
+  const [isGeneratingModalOpen, setIsGeneratingModalOpen] = useState(false);
+  const [generatingStatus, setGeneratingStatus] = useState<GeneratingStatus>('generating');
+  const [generatingProgress, setGeneratingProgress] = useState(0);
+  const [generatingError, setGeneratingError] = useState<string | null>(null);
+  const [, setCurrentTaskId] = useState<string | null>(null);
+  const [generatedVideo, setGeneratedVideo] = useState<VideoRecord | null>(null);
+  const pollingRef = useRef<NodeJS.Timeout | null>(null);
+
   const [params, setParams] = useState<VideoParams>(() => {
     const defaults = getModelDefaults(defaultVideoModel);
     return {
@@ -122,8 +139,93 @@ export default function CreateVideoPage() {
     setSelectedModel(model);
   };
 
+  // Polling for task status via API
+  const startPolling = useCallback((taskId: string) => {
+    if (pollingRef.current) {
+      clearInterval(pollingRef.current);
+    }
+
+    pollingRef.current = setInterval(async () => {
+      try {
+        // Use API endpoint instead of server action
+        const response = await fetch(`/api/v1/native/video/task/${taskId}`, {
+          headers: {
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          },
+        });
+
+        if (!response.ok) {
+          console.error('Polling API error:', response.status);
+          return;
+        }
+
+        const data = await response.json();
+        const task = data.task;
+
+        if (task.status === 'SUCCESS') {
+          // Stop polling
+          if (pollingRef.current) {
+            clearInterval(pollingRef.current);
+            pollingRef.current = null;
+          }
+
+          // Clear draft
+          localStorage.removeItem(VIDEO_PROMPT_STORAGE_KEY);
+
+          // Show loading state while fetching result
+          setGeneratingStatus('loading');
+
+          // Fetch the generated video record
+          const videoRecord = await getVideoRecordByTaskId(taskId);
+          if (videoRecord) {
+            setGeneratedVideo(videoRecord);
+            setIsGeneratingModalOpen(false);
+          } else {
+            setGeneratingStatus('success');
+          }
+        } else if (task.status === 'FAILURE') {
+          // Stop polling
+          if (pollingRef.current) {
+            clearInterval(pollingRef.current);
+            pollingRef.current = null;
+          }
+          setGeneratingStatus('error');
+          setGeneratingError(task.error_message || 'Video generation failed');
+        } else {
+          // Still processing
+          setGeneratingProgress(task.progress || 0);
+        }
+      } catch (err) {
+        console.error('Polling error:', err);
+      }
+    }, 3000);
+  }, [token]);
+
+  // Cleanup polling on unmount
+  useEffect(() => {
+    return () => {
+      if (pollingRef.current) {
+        clearInterval(pollingRef.current);
+      }
+    };
+  }, []);
+
   const handleCreateVideo = async () => {
     if (!prompt.trim() || isCreating) return;
+
+    // Check login first
+    if (!user) {
+      setIsLoginModalOpen(true);
+      return;
+    }
+
+    // Check credits before creating
+    const hasEnoughCredits = checkCreditsBeforeGenerate({
+      currentCredits: userCredits,
+      requiredCredits: requiredCredits,
+      onInsufficientCredits: () => router.push('/native/subscribe'),
+    });
+    if (!hasEnoughCredits) return;
 
     setIsCreating(true);
     setError(null);
@@ -172,20 +274,25 @@ export default function CreateVideoPage() {
 
       if (!response.ok) {
         if (response.status === 401) {
-          setError('Please login to create videos');
+          setIsLoginModalOpen(true);
           return;
         }
         if (response.status === 402) {
-          setError(`Insufficient credits. Need ${data.required}, have ${data.available}`);
+          // Already handled by checkCreditsBeforeGenerate, but as fallback
+          router.push('/native/subscribe');
           return;
         }
         throw new Error(data.error || 'Failed to create video');
       }
 
-      // 成功，清除草稿并跳转到任务详情页
-      localStorage.removeItem(VIDEO_PROMPT_STORAGE_KEY);
+      // Success - show generating modal and start polling
       console.log('Video task created:', data.taskId);
-      router.push(`/native/video/task/${data.taskId}`);
+      setCurrentTaskId(data.taskId);
+      setGeneratingStatus('generating');
+      setGeneratingProgress(0);
+      setGeneratingError(null);
+      setIsGeneratingModalOpen(true);
+      startPolling(data.taskId);
     } catch (err) {
       console.error('Create video error:', err);
       setError(err instanceof Error ? err.message : 'Failed to create video');
@@ -195,6 +302,44 @@ export default function CreateVideoPage() {
   };
 
   const requiredCredits = calculateCredits(selectedModel, params.quality, params.duration, generateAudio);
+
+  // Modal handlers
+  const handleCloseGeneratingModal = () => {
+    if (pollingRef.current) {
+      clearInterval(pollingRef.current);
+      pollingRef.current = null;
+    }
+    setIsGeneratingModalOpen(false);
+    setCurrentTaskId(null);
+    setGeneratingProgress(0);
+    setGeneratingError(null);
+  };
+
+  const handleCreateAnother = () => {
+    setIsGeneratingModalOpen(false);
+    setGeneratedVideo(null);
+    setPrompt('');
+  };
+
+  const handleTryAgain = () => {
+    setIsGeneratingModalOpen(false);
+    setGeneratingError(null);
+  };
+
+  const handleCloseVideoDetail = () => {
+    setGeneratedVideo(null);
+    setPrompt('');
+  };
+
+  const handleRecreate = () => {
+    setGeneratedVideo(null);
+    // Keep the prompt for recreation
+  };
+
+  const handleDeleteVideo = () => {
+    setGeneratedVideo(null);
+    setPrompt('');
+  };
 
   return (
     <div className="min-h-screen bg-[#0a0a1a] flex flex-col">
@@ -314,7 +459,15 @@ export default function CreateVideoPage() {
               <span>Creating...</span>
             </>
           ) : (
-            <span>Create</span>
+            <>
+              <span>Create</span>
+              {prompt.trim() && requiredCredits > 0 && (
+                <>
+                  <CreditsIcon className="w-3.5 h-3.5" />
+                  <span>{requiredCredits}</span>
+                </>
+              )}
+            </>
           )}
         </GradientButton>
       </div>
@@ -326,6 +479,36 @@ export default function CreateVideoPage() {
         model={selectedModel}
         params={params}
         onParamsChange={setParams}
+      />
+
+      {/* Generating Modal */}
+      <GeneratingModal
+        isOpen={isGeneratingModalOpen}
+        status={generatingStatus}
+        type="video"
+        progress={generatingProgress}
+        error={generatingError}
+        credits={userCredits}
+        onClose={handleCloseGeneratingModal}
+        onCreateAnother={handleCreateAnother}
+        onTryAgain={handleTryAgain}
+      />
+
+      {/* Video Detail Modal */}
+      {generatedVideo && (
+        <VideoDetailModal
+          video={generatedVideo}
+          onClose={handleCloseVideoDetail}
+          onRecreate={handleRecreate}
+          onDelete={handleDeleteVideo}
+        />
+      )}
+
+      {/* Login Modal */}
+      <LoginModal
+        isOpen={isLoginModalOpen}
+        onClose={() => setIsLoginModalOpen(false)}
+        onLoginSuccess={() => setIsLoginModalOpen(false)}
       />
     </div>
   );

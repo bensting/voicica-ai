@@ -19,8 +19,11 @@ import {
   getMusicModelById,
   type MusicModel,
 } from '@/config/native/musicModels';
-import { createMusicTask, getMusicTaskStatus } from '@/actions/music';
+import { createMusicTask, getMusicTaskStatus, getMusicRecordByTaskId, deleteMusicRecord, type MusicRecord } from '@/actions/music';
 import { sendLocalNotification } from '@/lib/notifications';
+import { checkCreditsBeforeGenerate } from '@/lib/credits-check';
+import MusicDetailModal from '@/components/native/me/MusicDetailModal';
+import GeneratingModal, { type GeneratingStatus } from '@/components/native/common/GeneratingModal';
 
 // localStorage keys
 const STORAGE_KEY = 'music_draft';
@@ -30,12 +33,6 @@ const LYRICS_PROMPT_KEY = 'music_lyrics_prompt';
 type MusicTab = 'simple' | 'custom';
 
 // 图标组件
-const BackIcon = () => (
-  <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-    <path d="M19 12H5M12 19l-7-7 7-7" />
-  </svg>
-);
-
 const ChevronDownIcon = () => (
   <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
     <path d="M6 9l6 6 6-6" />
@@ -103,12 +100,12 @@ export default function NativeMusicPage() {
   const [promptAssistantInput, setPromptAssistantInput] = useState('');
   const [isGeneratingPrompt, setIsGeneratingPrompt] = useState(false);
   const [isGeneratingModalOpen, setIsGeneratingModalOpen] = useState(false);
-  const [generatingStatus, setGeneratingStatus] = useState<'generating' | 'success' | 'error'>('generating');
+  const [generatingStatus, setGeneratingStatus] = useState<GeneratingStatus>('generating');
   const [generatingError, setGeneratingError] = useState<string | null>(null);
-  const [generatingErrorCode, setGeneratingErrorCode] = useState<string | null>(null);
   const [currentTaskId, setCurrentTaskId] = useState<string | null>(null);
   const [taskCreatedAt, setTaskCreatedAt] = useState<Date | null>(null);
   const [generatingProgress, setGeneratingProgress] = useState(0);
+  const [generatedMusic, setGeneratedMusic] = useState<MusicRecord | null>(null);
 
   const [activeTab, setActiveTab] = useState<MusicTab>('custom');
   const [prompt, setPrompt] = useState('');
@@ -345,6 +342,15 @@ export default function NativeMusicPage() {
       return;
     }
 
+    // 检查积分是否足够
+    const requiredCredits = selectedModel?.credits ?? 30;
+    const hasEnoughCredits = checkCreditsBeforeGenerate({
+      currentCredits: credits,
+      requiredCredits,
+      onInsufficientCredits: () => router.push('/native/subscribe'),
+    });
+    if (!hasEnoughCredits) return;
+
     // 打开生成中弹窗
     console.log('🎵 [handleGenerate] 打开生成中弹窗');
     setIsGeneratingModalOpen(true);
@@ -377,7 +383,6 @@ export default function NativeMusicPage() {
         console.log('🎵 [handleGenerate] 任务失败，显示错误');
         setGeneratingStatus('error');
         setGeneratingError(result.error || 'Failed to create music task');
-        setGeneratingErrorCode(result.errorCode || null);
         setIsGenerating(false);
         return;
       }
@@ -399,7 +404,6 @@ export default function NativeMusicPage() {
       console.error('🎵 [handleGenerate] 捕获错误:', err);
       setGeneratingStatus('error');
       setGeneratingError(err instanceof Error ? err.message : 'Failed to generate music');
-      setGeneratingErrorCode(null);
     } finally {
       setIsGenerating(false);
       console.log('🎵 [handleGenerate] 完成');
@@ -411,23 +415,9 @@ export default function NativeMusicPage() {
     setIsGeneratingModalOpen(false);
     setGeneratingStatus('generating');
     setGeneratingError(null);
-    setGeneratingErrorCode(null);
     setCurrentTaskId(null);
     setTaskCreatedAt(null);
     setGeneratingProgress(0);
-  };
-
-  // 跳转到订阅页面
-  const handleUpgrade = () => {
-    setIsGeneratingModalOpen(false);
-    router.push('/native/subscribe');
-  };
-
-  // 查看历史
-  const handleViewHistory = () => {
-    console.log('🎵 [handleViewHistory] 跳转到历史页面');
-    setIsGeneratingModalOpen(false);
-    router.push('/native/me?tab=music');
   };
 
   // Debug: 监控弹窗状态变化
@@ -465,11 +455,20 @@ export default function NativeMusicPage() {
 
         if (status.status === 'SUCCESS') {
           console.log('🎵 [Polling] 任务完成!');
-          setGeneratingStatus('success');
-          setCurrentTaskId(null);
-          setTaskCreatedAt(null);
+          setGeneratingStatus('loading'); // 先显示加载状态
           // 发送本地推送通知
           sendLocalNotification('music', 'success');
+          // 获取生成的音乐记录并显示详情
+          const musicRecord = await getMusicRecordByTaskId(currentTaskId);
+          if (musicRecord) {
+            setGeneratedMusic(musicRecord);
+            setIsGeneratingModalOpen(false); // 关闭生成中弹窗
+          } else {
+            // 如果获取失败，显示成功状态
+            setGeneratingStatus('success');
+          }
+          setCurrentTaskId(null);
+          setTaskCreatedAt(null);
         } else if (status.status === 'FAILURE') {
           console.log('🎵 [Polling] 任务失败:', status.error);
           setGeneratingStatus('error');
@@ -947,138 +946,21 @@ export default function NativeMusicPage() {
         </div>
       )}
 
-      {/* Generating Full Page */}
-      {isGeneratingModalOpen && (
-        <div
-          className="fixed inset-0 z-50 bg-[#0a0a1a] flex flex-col"
-          style={{ paddingTop: 'var(--safe-area-inset-top, 0px)' }}
-        >
-          {/* Header */}
-          <div className="flex items-center justify-between px-4 h-14">
-            <button
-              onClick={handleCloseGeneratingModal}
-              className="p-2 -ml-2 text-white"
-            >
-              <BackIcon />
-            </button>
-            <div className="flex items-center gap-3">
-              <div className="flex items-center gap-1 text-white">
-                <CreditsIcon className="w-4 h-4" />
-                <span className="text-sm font-medium">{credits}</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Content */}
-          <div className="flex-1 flex flex-col items-center justify-center px-8">
-            {generatingStatus === 'generating' && (
-              <>
-                {/* Animated Music Icon */}
-                <div className="relative w-20 h-20 mb-8">
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="w-16 h-16 rounded-2xl bg-gray-800 flex items-center justify-center">
-                      <svg className="w-8 h-8 text-gray-400 animate-bounce" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z" />
-                      </svg>
-                    </div>
-                  </div>
-                </div>
-                <h3 className="text-white font-semibold text-lg mb-2">Generating music...</h3>
-                {generatingProgress > 0 && (
-                  <p className="text-blue-400 text-sm mb-2">{generatingProgress}%</p>
-                )}
-                <p className="text-gray-400 text-sm mb-8">
-                  Estimated queue time: <span className="text-blue-400">3 minutes</span>
-                </p>
-                <button className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-full text-sm font-medium hover:opacity-90 transition-opacity">
-                  <CrownIcon className="w-4 h-4" />
-                  <span>Use fast channel</span>
-                </button>
-              </>
-            )}
-
-            {generatingStatus === 'success' && (
-              <>
-                {/* Success Icon */}
-                <div className="w-20 h-20 mb-8 rounded-full bg-green-500/20 flex items-center justify-center">
-                  <svg className="w-10 h-10 text-green-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <polyline points="20,6 9,17 4,12" />
-                  </svg>
-                </div>
-                <h3 className="text-white font-semibold text-lg mb-2">Music Created!</h3>
-                <p className="text-gray-400 text-sm mb-8">
-                  Your music has been generated successfully.
-                </p>
-                <div className="flex gap-3 w-full max-w-xs">
-                  <button
-                    onClick={handleCloseGeneratingModal}
-                    className="flex-1 py-3 bg-gray-700/50 text-white rounded-xl text-sm font-medium hover:bg-gray-600/50 transition-colors"
-                  >
-                    Create Another
-                  </button>
-                  <button
-                    onClick={handleViewHistory}
-                    className="flex-1 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl text-sm font-medium hover:opacity-90 transition-opacity"
-                  >
-                    View
-                  </button>
-                </div>
-              </>
-            )}
-
-            {generatingStatus === 'error' && (
-              <>
-                {/* Error Icon */}
-                <div className="w-20 h-20 mb-8 rounded-full bg-red-500/20 flex items-center justify-center">
-                  {generatingErrorCode === 'INSUFFICIENT_CREDITS' ? (
-                    <CreditsIcon className="w-10 h-10 text-red-400" />
-                  ) : (
-                    <svg className="w-10 h-10 text-red-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <circle cx="12" cy="12" r="10" />
-                      <path d="M15 9l-6 6M9 9l6 6" />
-                    </svg>
-                  )}
-                </div>
-                <h3 className="text-white font-semibold text-lg mb-2">
-                  {generatingErrorCode === 'INSUFFICIENT_CREDITS' ? 'Insufficient Credits' : 'Generation Failed'}
-                </h3>
-                <p className="text-red-400 text-sm mb-8 text-center px-4">
-                  {generatingErrorCode === 'INSUFFICIENT_CREDITS'
-                    ? 'You don\'t have enough credits. Upgrade to get more!'
-                    : (generatingError || 'Something went wrong. Please try again.')}
-                </p>
-                <div className="flex gap-3 w-full max-w-xs">
-                  <button
-                    onClick={handleCloseGeneratingModal}
-                    className="flex-1 py-3 bg-gray-700/50 text-white rounded-xl text-sm font-medium hover:bg-gray-600/50 transition-colors"
-                  >
-                    Close
-                  </button>
-                  {generatingErrorCode === 'INSUFFICIENT_CREDITS' ? (
-                    <button
-                      onClick={handleUpgrade}
-                      className="flex-1 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl text-sm font-medium hover:opacity-90 transition-opacity flex items-center justify-center gap-2"
-                    >
-                      <CrownIcon className="w-4 h-4" />
-                      Upgrade
-                    </button>
-                  ) : (
-                    <button
-                      onClick={() => {
-                        handleCloseGeneratingModal();
-                        void handleGenerate();
-                      }}
-                      className="flex-1 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl text-sm font-medium hover:opacity-90 transition-opacity"
-                    >
-                      Try Again
-                    </button>
-                  )}
-                </div>
-              </>
-            )}
-          </div>
-        </div>
-      )}
+      {/* Generating Modal */}
+      <GeneratingModal
+        isOpen={isGeneratingModalOpen}
+        status={generatingStatus}
+        type="music"
+        progress={generatingProgress}
+        error={generatingError}
+        credits={credits}
+        onClose={handleCloseGeneratingModal}
+        onCreateAnother={handleCloseGeneratingModal}
+        onTryAgain={() => {
+          handleCloseGeneratingModal();
+          void handleGenerate();
+        }}
+      />
 
       {/* Lyrics Assistant Sheet */}
       {/* Lyrics Assistant Modal */}
@@ -1125,6 +1007,34 @@ export default function NativeMusicPage() {
         onGenerate={() => void handleGeneratePrompt()}
         generateButtonText="Generate Prompt"
       />
+
+      {/* Music Detail Modal - 生成成功后显示 */}
+      {generatedMusic && (
+        <MusicDetailModal
+          music={generatedMusic}
+          onClose={() => setGeneratedMusic(null)}
+          onRecreate={(music) => {
+            // 使用生成的音乐参数重新创建
+            if (music.lyrics) {
+              setLyrics(music.lyrics);
+              setActiveTab('custom');
+            } else if (music.prompt) {
+              setPrompt(music.prompt);
+              setActiveTab('simple');
+            }
+            if (music.style) setStyle(music.style);
+            if (music.title) setTitle(music.title);
+            setIsInstrumental(music.is_instrumental);
+            setModel(music.model);
+            setGeneratedMusic(null);
+          }}
+          onDelete={async (music) => {
+            // 删除音乐记录
+            await deleteMusicRecord(music.id);
+            setGeneratedMusic(null);
+          }}
+        />
+      )}
 
     </div>
   );

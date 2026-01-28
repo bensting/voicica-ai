@@ -675,6 +675,65 @@ Expand this into a comprehensive prompt that an AI video generator can use to cr
 }
 
 /**
+ * 生成图片生成提示词
+ *
+ * @param prompt 用户的简短描述或想法
+ * @param maxLength 最大字符长度限制（默认 800）
+ * @returns 生成的完整图片提示词
+ */
+export async function generateImagePrompt(prompt: string, maxLength: number = 800): Promise<string> {
+  const systemPrompt = `You are an expert AI image prompt engineer. Create detailed, effective prompts for AI image generation systems like Stable Diffusion, Midjourney, and DALL-E.
+
+Guidelines:
+- Create a comprehensive image generation prompt that includes:
+  - Main subject description (what is the focus of the image)
+  - Setting/environment (location, background, context)
+  - Style and aesthetics (art style, artistic medium, visual approach)
+  - Lighting and atmosphere (natural light, dramatic, soft, golden hour, etc.)
+  - Color palette and mood (warm, cool, vibrant, muted, etc.)
+  - Composition hints (close-up, wide shot, centered, rule of thirds)
+  - Quality modifiers (highly detailed, professional, 8k, masterpiece, etc.)
+- IMPORTANT: Keep the prompt under ${maxLength} characters total
+- Detect the language of the user's input and write the prompt in the SAME language
+- Focus on visual elements that translate well to static images
+- Avoid including text or words to render in the image
+- Make it specific enough for AI to generate a coherent, beautiful image
+
+Always respond with valid JSON in this format:
+{
+  "prompt": "The complete image generation prompt (must be under ${maxLength} characters)..."
+}`;
+
+  const userPrompt = `Based on this idea, create a detailed image generation prompt:
+${prompt}
+
+Expand this into a comprehensive prompt that an AI image generator can use to create a stunning, high-quality image. Remember: the prompt MUST be under ${maxLength} characters.`;
+
+  const response = await openai.chat.completions.create({
+    model: 'gpt-4o-mini',
+    messages: [
+      { role: 'system', content: systemPrompt },
+      { role: 'user', content: userPrompt },
+    ],
+    temperature: 0.8,
+    max_tokens: 800,
+    response_format: { type: 'json_object' },
+  });
+
+  const content = response.choices[0]?.message?.content;
+  if (!content) {
+    throw new Error('No response from OpenAI');
+  }
+
+  try {
+    const parsed = JSON.parse(content);
+    return parsed.prompt || '';
+  } catch {
+    throw new Error('Failed to parse image prompt from OpenAI response');
+  }
+}
+
+/**
  * 为单个段落生成插图提示词
  *
  * @param storyTitle 故事标题

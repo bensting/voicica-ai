@@ -1,5 +1,7 @@
 package ai.voicica.app;
 
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -21,6 +23,9 @@ public class MainActivity extends BridgeActivity {
         registerPlugin(GooglePlayBillingPlugin.class);
 
         super.onCreate(savedInstanceState);
+
+        // 强制设置 window 背景为深色，防止 ActionMode 继承 splash 背景
+        getWindow().setBackgroundDrawable(new ColorDrawable(Color.parseColor("#0a0a1a")));
 
         // 设置自定义 User-Agent 用于平台识别
         WebView webView = getBridge().getWebView();

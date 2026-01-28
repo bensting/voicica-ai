@@ -434,6 +434,60 @@ export async function deleteVideoRecord(recordId: string): Promise<void> {
 }
 
 /**
+ * 根据 taskId 获取单条视频记录
+ */
+export async function getVideoRecordByTaskId(taskId: string): Promise<VideoRecord | null> {
+  try {
+    const unifiedUser = await getUserOrAnonymous();
+    const userId = unifiedUser.user_id;
+    if (!userId) {
+      return null;
+    }
+
+    const record = await prisma.video_records.findFirst({
+      where: {
+        task_id: taskId,
+        user_id: userId,
+      },
+    });
+
+    if (!record) {
+      return null;
+    }
+
+    return {
+      id: record.id,
+      user_id: record.user_id,
+      task_id: record.task_id,
+      task_type: record.task_type,
+      model: record.model,
+      prompt: record.prompt,
+      prompt_zh: record.prompt_zh,
+      negative_prompt: record.negative_prompt,
+      resolution: record.resolution,
+      duration: record.duration,
+      aspect_ratio: record.aspect_ratio,
+      seed: record.seed,
+      is_public: record.is_public,
+      credits_cost: record.credits_cost,
+      status: record.status,
+      progress: record.progress,
+      video_url: record.video_url,
+      thumbnail_url: record.thumbnail_url,
+      actual_duration: record.actual_duration,
+      format: record.format,
+      error_message: record.error_message,
+      created_at: record.created_at,
+      completed_at: record.completed_at,
+      share_id: record.share_id,
+    };
+  } catch (error) {
+    console.error('❌ [getVideoRecordByTaskId] Error:', error);
+    return null;
+  }
+}
+
+/**
  * 检查并处理超时的视频任务
  */
 export async function checkAndHandleStuckVideoTask(

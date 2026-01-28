@@ -8,18 +8,23 @@ import { getMusicRecords, deleteMusicRecord, type MusicRecord } from '@/actions/
 import { getTtsRecords, deleteTtsRecord, type TtsRecord } from '@/actions/tts';
 import { getCoverRecords, deleteCoverRecord, type CoverRecord } from '@/actions/cover';
 import { getDialogueRecords, deleteDialogueRecord, type DialogueRecord } from '@/actions/dialogue';
+import { getImageRecords, deleteImageRecord, type ImageRecord } from '@/actions/image';
+import { getVideoRecordByTaskId, deleteVideoRecord, type VideoRecord } from '@/actions/video';
 import { useMusicTaskPolling } from '@/hooks/useMusicTaskPolling';
 import { useVideoTaskPolling } from '@/hooks/useVideoTaskPolling';
+import { useImageTaskPolling } from '@/hooks/useImageTaskPolling';
 
 // 提取的组件
 import MusicDetailModal from './MusicDetailModal';
 import CoverDetailModal from './CoverDetailModal';
 import VoiceDetailModal from './VoiceDetailModal';
 import DialogueDetailModal from './DialogueDetailModal';
-import { MusicCard, CoverCard, VoiceCard, DialogueCard, VideoCard } from './cards';
+import ImageDetailModal from './ImageDetailModal';
+import VideoDetailModal from './VideoDetailModal';
+import { MusicCard, CoverCard, VoiceCard, DialogueCard, VideoCard, ImageCard } from './cards';
 import { formatDateLong } from './utils';
 
-type TabType = 'video' | 'music' | 'cover' | 'voices' | 'dialogues';
+type TabType = 'video' | 'image' | 'music' | 'cover' | 'voices' | 'dialogues';
 
 interface VideoItem {
   taskId: string;
@@ -43,6 +48,7 @@ const tabs: { id: TabType; label: string }[] = [
   { id: 'music', label: 'Music' },
   { id: 'cover', label: 'Cover' },
   { id: 'video', label: 'Video' },
+  { id: 'image', label: 'Image' },
 ];
 
 const emptyStateMessages: Record<TabType, { title: string; subtitle: string; createLink: string }> = {
@@ -50,6 +56,11 @@ const emptyStateMessages: Record<TabType, { title: string; subtitle: string; cre
     title: 'No content yet.',
     subtitle: 'Create your first AI video.',
     createLink: '/native/create/video',
+  },
+  image: {
+    title: 'No content yet.',
+    subtitle: 'Create your first AI image.',
+    createLink: '/native/create/image',
   },
   music: {
     title: 'No content yet.',
@@ -107,12 +118,13 @@ export default function MyCreations() {
 
   // 从 URL 参数获取初始 tab
   const tabFromUrl = searchParams.get('tab') as TabType | null;
-  const initialTab = tabFromUrl && ['voices', 'dialogues', 'music', 'cover', 'video'].includes(tabFromUrl)
+  const initialTab = tabFromUrl && ['voices', 'dialogues', 'music', 'cover', 'video', 'image'].includes(tabFromUrl)
     ? tabFromUrl
     : 'voices';
 
   const [activeTab, setActiveTab] = useState<TabType>(initialTab);
   const [videos, setVideos] = useState<VideoItem[]>([]);
+  const [imageRecords, setImageRecords] = useState<ImageRecord[]>([]);
   const [musicRecords, setMusicRecords] = useState<MusicRecord[]>([]);
   const [voiceRecords, setVoiceRecords] = useState<TtsRecord[]>([]);
   const [coverRecords, setCoverRecords] = useState<CoverRecord[]>([]);
@@ -123,6 +135,8 @@ export default function MyCreations() {
   const [selectedCover, setSelectedCover] = useState<CoverRecord | null>(null);
   const [selectedVoice, setSelectedVoice] = useState<TtsRecord | null>(null);
   const [selectedDialogue, setSelectedDialogue] = useState<DialogueRecord | null>(null);
+  const [selectedImage, setSelectedImage] = useState<ImageRecord | null>(null);
+  const [selectedVideo, setSelectedVideo] = useState<VideoRecord | null>(null);
 
   // 下拉刷新相关
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -236,10 +250,29 @@ export default function MyCreations() {
     }
   }, []);
 
+  // 获取 Image 列表
+  const fetchImages = useCallback(async (isRefresh = false) => {
+    try {
+      if (isRefresh) {
+        setRefreshing(true);
+      } else {
+        setLoading(true);
+      }
+
+      const records = await getImageRecords(50);
+      setImageRecords(records);
+    } catch (error) {
+      console.error('Failed to fetch image records:', error);
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    }
+  }, []);
+
   // 同步 URL 参数到 activeTab
   useEffect(() => {
     const tabParam = searchParams.get('tab') as TabType | null;
-    if (tabParam && ['voices', 'dialogues', 'music', 'cover', 'video'].includes(tabParam)) {
+    if (tabParam && ['voices', 'dialogues', 'music', 'cover', 'video', 'image'].includes(tabParam)) {
       setActiveTab(tabParam);
     }
   }, [searchParams]);
@@ -248,6 +281,8 @@ export default function MyCreations() {
   useEffect(() => {
     if (activeTab === 'video') {
       fetchVideos();
+    } else if (activeTab === 'image') {
+      fetchImages();
     } else if (activeTab === 'music') {
       fetchMusic();
     } else if (activeTab === 'voices') {
@@ -257,7 +292,7 @@ export default function MyCreations() {
     } else if (activeTab === 'dialogues') {
       fetchDialogues();
     }
-  }, [activeTab, fetchVideos, fetchMusic, fetchVoices, fetchCovers, fetchDialogues]);
+  }, [activeTab, fetchVideos, fetchImages, fetchMusic, fetchVoices, fetchCovers, fetchDialogues]);
 
   // 使用 hook 轮询处理中的音乐任务状态
   useMusicTaskPolling({
@@ -310,6 +345,27 @@ export default function MyCreations() {
     }, []),
   });
 
+  // 使用 hook 轮询处理中的图片任务状态
+  useImageTaskPolling({
+    records: imageRecords,
+    enabled: activeTab === 'image',
+    onStatusUpdate: useCallback((taskId, status) => {
+      setImageRecords((prev) =>
+        prev.map((record) => {
+          if (record.task_id === taskId) {
+            return {
+              ...record,
+              status: status.status,
+              image_url: status.imageUrl || record.image_url,
+              error: status.error || record.error,
+            };
+          }
+          return record;
+        })
+      );
+    }, []),
+  });
+
   // 下拉刷新触摸事件
   const handleTouchStart = (e: React.TouchEvent) => {
     if (scrollRef.current?.scrollTop === 0) {
@@ -330,6 +386,8 @@ export default function MyCreations() {
     if (pullDistance >= PULL_THRESHOLD && !refreshing) {
       if (activeTab === 'video') {
         await fetchVideos(true);
+      } else if (activeTab === 'image') {
+        await fetchImages(true);
       } else if (activeTab === 'music') {
         await fetchMusic(true);
       } else if (activeTab === 'voices') {
@@ -344,8 +402,28 @@ export default function MyCreations() {
     setIsPulling(false);
   };
 
-  const handleVideoClick = (video: VideoItem) => {
-    router.push(`/native/video/task/${video.taskId}`);
+  const handleVideoClick = async (video: VideoItem) => {
+    // Only completed videos can open detail modal
+    if (video.status === 'SUCCESS') {
+      const fullRecord = await getVideoRecordByTaskId(video.taskId);
+      if (fullRecord) {
+        setSelectedVideo(fullRecord);
+      }
+    }
+  };
+
+  const handleVideoRecreate = (video: VideoRecord) => {
+    // Navigate to create page with prompt
+    const params = new URLSearchParams();
+    if (video.prompt) params.set('prompt', video.prompt);
+    router.push(`/native/create/video?${params.toString()}`);
+    setSelectedVideo(null);
+  };
+
+  const handleVideoDelete = async (video: VideoRecord) => {
+    await deleteVideoRecord(String(video.id));
+    setVideos((prev) => prev.filter((v) => v.taskId !== video.task_id));
+    setSelectedVideo(null);
   };
 
   const handleMusicClick = (music: MusicRecord) => {
@@ -424,8 +502,29 @@ export default function MyCreations() {
     setDialogueRecords((prev) => prev.filter((d) => d.id !== dialogue.id));
   };
 
+  const handleImageClick = (image: ImageRecord) => {
+    // 只有完成的 image 才能打开详情
+    if (image.status === 'SUCCESS') {
+      setSelectedImage(image);
+    }
+  };
+
+  const handleImageRecreate = (image: ImageRecord) => {
+    // 跳转到创建页面，带上 prompt 参数
+    const params = new URLSearchParams();
+    if (image.prompt) params.set('prompt', image.prompt);
+    router.push(`/native/create/image?${params.toString()}`);
+    setSelectedImage(null);
+  };
+
+  const handleImageDelete = async (image: ImageRecord) => {
+    await deleteImageRecord(image.id);
+    setImageRecords((prev) => prev.filter((i) => i.id !== image.id));
+  };
+
   // 过滤掉失败的记录
   const filteredVideoRecords = videos.filter((v) => v.status !== 'FAILURE');
+  const filteredImageRecords = imageRecords.filter((i) => i.status !== 'FAILURE');
   const filteredMusicRecords = musicRecords.filter((m) => m.status !== 'FAILURE');
   const filteredVoiceRecords = voiceRecords.filter((v) => v.status !== 'FAILURE');
   const filteredCoverRecords = coverRecords.filter((c) => c.status !== 'FAILURE');
@@ -434,6 +533,8 @@ export default function MyCreations() {
   const emptyState = emptyStateMessages[activeTab];
   const isEmpty = activeTab === 'video'
     ? filteredVideoRecords.length === 0
+    : activeTab === 'image'
+    ? filteredImageRecords.length === 0
     : activeTab === 'music'
     ? filteredMusicRecords.length === 0
     : activeTab === 'voices'
@@ -453,6 +554,15 @@ export default function MyCreations() {
     groups[date].push(video);
     return groups;
   }, {} as Record<string, VideoItem[]>);
+
+  const groupedImageRecords = filteredImageRecords.reduce((groups, image) => {
+    const date = formatDateLong(image.created_at.toString());
+    if (!groups[date]) {
+      groups[date] = [];
+    }
+    groups[date].push(image);
+    return groups;
+  }, {} as Record<string, ImageRecord[]>);
 
   const groupedMusicRecords = filteredMusicRecords.reduce((groups, music) => {
     const date = formatDateLong(music.created_at.toString());
@@ -572,6 +682,44 @@ export default function MyCreations() {
                         key={video.taskId}
                         video={video}
                         onClick={() => handleVideoClick(video)}
+                      />
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )
+        ) : activeTab === 'image' ? (
+          loading && imageRecords.length === 0 ? (
+            // 加载中
+            <div className="flex justify-center py-8">
+              <div className="w-8 h-8 border-3 border-purple-500 border-t-transparent rounded-full animate-spin" />
+            </div>
+          ) : isEmpty ? (
+            // 空状态
+            <div className="flex flex-col items-center justify-center py-8">
+              <EmptyIllustration />
+              <p className="mt-3 text-gray-400 text-center">{emptyState.title}</p>
+              <p className="text-gray-500 text-sm text-center">{emptyState.subtitle}</p>
+              <Link
+                href={emptyState.createLink}
+                className="mt-4 px-8 py-3 bg-white/10 border border-white/20 rounded-full text-white font-medium hover:bg-white/20 transition-colors"
+              >
+                Go create
+              </Link>
+            </div>
+          ) : (
+            // 图片列表 - 按日期分组
+            <div className="space-y-4">
+              {Object.entries(groupedImageRecords).map(([date, records]) => (
+                <div key={date}>
+                  <h3 className="text-gray-500 text-sm mb-2">{date}</h3>
+                  <div className="space-y-1">
+                    {records.map((image) => (
+                      <ImageCard
+                        key={image.task_id}
+                        image={image}
+                        onClick={() => handleImageClick(image)}
                       />
                     ))}
                   </div>
@@ -784,6 +932,26 @@ export default function MyCreations() {
           onClose={() => setSelectedDialogue(null)}
           onRecreate={handleDialogueRecreate}
           onDelete={handleDialogueDelete}
+        />
+      )}
+
+      {/* Image 详情弹窗 */}
+      {selectedImage && (
+        <ImageDetailModal
+          image={selectedImage}
+          onClose={() => setSelectedImage(null)}
+          onRecreate={handleImageRecreate}
+          onDelete={handleImageDelete}
+        />
+      )}
+
+      {/* Video 详情弹窗 */}
+      {selectedVideo && (
+        <VideoDetailModal
+          video={selectedVideo}
+          onClose={() => setSelectedVideo(null)}
+          onRecreate={handleVideoRecreate}
+          onDelete={handleVideoDelete}
         />
       )}
     </div>

@@ -586,6 +586,41 @@ model share_links {
   @@index([expires_at], map: "ix_share_links_expires_at")
 }
 
+/// AI 图片生成记录
+model image_records {
+  id                Int       @id @default(autoincrement())
+  user_id           String    @db.VarChar(255)
+  task_id           String    @unique @db.VarChar(255)
+
+  // 生成参数
+  model             String    @db.VarChar(100)        // seedream/4.5-text-to-image, nano-banana-pro
+  prompt            String    @db.Text                // 用户输入的提示词
+  aspect_ratio      String    @db.VarChar(20)         // 1:1, 16:9, 9:16, etc.
+  quality           String    @db.VarChar(20)         // basic, high, 1K, 2K, 4K
+
+  // 状态
+  status            String    @db.VarChar(20)         // PENDING, PROCESSING, SUCCESS, FAILURE
+  progress          Int       @default(0)             // 0-100 进度
+
+  // 结果
+  image_url         String?                           // 生成的图片 URL
+  is_public         Boolean   @default(false)         // 是否公开
+
+  // 费用
+  credits_used      Int                               // 消耗积分
+
+  error             String?                           // 错误信息
+  completed_at      DateTime? @db.Timestamptz(6)
+  created_at        DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at        DateTime? @updatedAt @db.Timestamptz(6)
+
+  @@index([user_id], map: "ix_image_records_user_id")
+  @@index([user_id, created_at], map: "ix_image_records_user_created")
+  @@index([status], map: "ix_image_records_status")
+  @@index([user_id, status], map: "ix_image_records_user_status")
+  @@index([is_public], map: "ix_image_records_is_public")
+}
+
 /// 故事段落（一个故事多个段落）
 model story_paragraphs {
   id              String    @id @default(cuid())

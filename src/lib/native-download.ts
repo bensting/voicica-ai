@@ -4,7 +4,7 @@
  * 使用 Capacitor 原生能力下载文件到设备
  * 支持音频、视频、图片等文件类型
  */
-import { Capacitor } from '@capacitor/core';
+import { Capacitor, CapacitorHttp } from '@capacitor/core';
 
 export interface DownloadOptions {
   url: string;
@@ -42,6 +42,7 @@ export async function downloadFile(options: DownloadOptions): Promise<DownloadRe
 /**
  * 原生平台下载
  * 使用 Capacitor Filesystem 下载文件到设备存储
+ * 使用 CapacitorHttp 绕过 CORS 限制
  */
 async function downloadNative(
   url: string,
@@ -54,20 +55,31 @@ async function downloadNative(
 
     console.log('📥 [Native Download] 开始下载:', url, fileName);
 
-    // 1. 获取文件数据
+    // 1. 使用 CapacitorHttp 获取文件数据（绕过 CORS）
     onProgress?.(10);
-    const response = await fetch(url);
-    if (!response.ok) {
+    const response = await CapacitorHttp.get({
+      url,
+      responseType: 'arraybuffer',
+    });
+
+    if (response.status !== 200) {
       throw new Error(`HTTP ${response.status}`);
     }
 
-    onProgress?.(30);
+    onProgress?.(50);
 
     // 2. 转换为 base64
-    const blob = await response.blob();
-    onProgress?.(60);
-
-    const base64 = await blobToBase64(blob);
+    // CapacitorHttp 在原生端返回的 arraybuffer 实际上可能是 base64 字符串
+    let base64: string;
+    if (typeof response.data === 'string') {
+      // 原生端返回的已经是 base64 字符串
+      base64 = response.data;
+    } else if (response.data instanceof ArrayBuffer) {
+      // ArrayBuffer 需要转换为 base64
+      base64 = arrayBufferToBase64(response.data);
+    } else {
+      throw new Error('Unexpected response data type');
+    }
     onProgress?.(80);
 
     // 3. 确定保存目录和文件名
@@ -126,6 +138,19 @@ function blobToBase64(blob: Blob): Promise<string> {
     reader.onerror = reject;
     reader.readAsDataURL(blob);
   });
+}
+
+/**
+ * ArrayBuffer 转 base64
+ */
+function arrayBufferToBase64(buffer: ArrayBuffer): string {
+  let binary = '';
+  const bytes = new Uint8Array(buffer);
+  const len = bytes.byteLength;
+  for (let i = 0; i < len; i++) {
+    binary += String.fromCharCode(bytes[i]);
+  }
+  return btoa(binary);
 }
 
 /**

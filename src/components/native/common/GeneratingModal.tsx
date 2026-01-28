@@ -16,6 +16,10 @@ interface GeneratingModalProps {
   onClose: () => void;
   onCreateAnother: () => void;
   onTryAgain: () => void;
+  /** 是否显示看广告提示（非订阅用户） */
+  showAdPrompt?: boolean;
+  /** 广告是否已观看完成 */
+  adWatched?: boolean;
 }
 
 // 图标组件
@@ -74,6 +78,8 @@ export default function GeneratingModal({
   onClose,
   onCreateAnother,
   onTryAgain,
+  showAdPrompt = false,
+  adWatched = false,
 }: GeneratingModalProps) {
   if (!isOpen) return null;
 
@@ -114,10 +120,38 @@ export default function GeneratingModal({
             <p className="text-gray-400 text-sm mb-8">
               Estimated time: <span className="text-blue-400">{config.estimatedTime}</span>
             </p>
-            <button className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-full text-sm font-medium hover:opacity-90 transition-opacity">
-              <CrownIcon className="w-4 h-4" />
-              <span>Use fast channel</span>
-            </button>
+
+            {/* 非订阅用户的广告提示（可爱风格） */}
+            {showAdPrompt && !adWatched && (
+              <div className="mb-6 text-center">
+                <p className="text-gray-300 text-sm">
+                  Hey sweetie, don&apos;t just wait around~
+                </p>
+                <p className="text-gray-400 text-xs mt-1">
+                  A short ad is coming to keep you company
+                </p>
+              </div>
+            )}
+
+            {/* 广告已观看完成提示 */}
+            {showAdPrompt && adWatched && (
+              <div className="mb-6 text-center">
+                <p className="text-green-400 text-sm flex items-center justify-center gap-1">
+                  <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <polyline points="20,6 9,17 4,12" />
+                  </svg>
+                  Thanks for watching!
+                </p>
+              </div>
+            )}
+
+            {/* 订阅用户的快速通道按钮 */}
+            {!showAdPrompt && (
+              <button className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-full text-sm font-medium hover:opacity-90 transition-opacity">
+                <CrownIcon className="w-4 h-4" />
+                <span>Use fast channel</span>
+              </button>
+            )}
           </>
         )}
 

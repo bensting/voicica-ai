@@ -14,6 +14,8 @@ import GeneratingModal, { GeneratingStatus } from '@/components/native/common/Ge
 import VideoDetailModal from '@/components/native/me/VideoDetailModal';
 import LoginModal from '@/components/native/LoginModal';
 import { useCredits } from '@/contexts/CreditsContext';
+import { useSubscription } from '@/contexts/SubscriptionContext';
+import { useRewardedAd } from '@/hooks/useRewardedAd';
 import { VideoModel, defaultVideoModel, getModelDefaults, calculateCredits } from '@/config/native/videoModels';
 import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 import { getVideoRecordByTaskId, type VideoRecord } from '@/actions/video';
@@ -71,6 +73,12 @@ export default function CreateVideoPage() {
   const router = useRouter();
   const { user, token } = useFirebaseAuth();
   const { credits: userCredits } = useCredits();
+  const { isSubscribed } = useSubscription();
+  const { showRewardedAd } = useRewardedAd();
+
+  // 广告状态
+  const [adWatched, setAdWatched] = useState(false);
+
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isParamsSheetOpen, setIsParamsSheetOpen] = useState(false);
   const [mode, setMode] = useState<ModeType>('generate');
@@ -291,6 +299,8 @@ export default function CreateVideoPage() {
       setGeneratingStatus('generating');
       setGeneratingProgress(0);
       setGeneratingError(null);
+      // 重置广告状态
+      setAdWatched(false);
       setIsGeneratingModalOpen(true);
       startPolling(data.taskId);
     } catch (err) {
@@ -325,6 +335,27 @@ export default function CreateVideoPage() {
     setIsGeneratingModalOpen(false);
     setGeneratingError(null);
   };
+
+  // 非订阅用户：生成开始 5 秒后自动弹出激励广告
+  useEffect(() => {
+    if (!isGeneratingModalOpen || generatingStatus !== 'generating' || isSubscribed || adWatched) {
+      return;
+    }
+
+    const timer = setTimeout(async () => {
+      try {
+        console.log('[Video] Auto showing rewarded ad...');
+        const result = await showRewardedAd();
+        if (result.success) {
+          setAdWatched(true);
+        }
+      } catch (err) {
+        console.error('[Video] Ad error:', err);
+      }
+    }, 5000); // 5秒后自动弹出
+
+    return () => clearTimeout(timer);
+  }, [isGeneratingModalOpen, generatingStatus, isSubscribed, adWatched, showRewardedAd]);
 
   const handleCloseVideoDetail = () => {
     setGeneratedVideo(null);
@@ -492,6 +523,8 @@ export default function CreateVideoPage() {
         onClose={handleCloseGeneratingModal}
         onCreateAnother={handleCreateAnother}
         onTryAgain={handleTryAgain}
+        showAdPrompt={!isSubscribed}
+        adWatched={adWatched}
       />
 
       {/* Video Detail Modal */}

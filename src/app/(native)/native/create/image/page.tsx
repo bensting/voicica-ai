@@ -4,6 +4,8 @@ import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 import { useCredits } from '@/contexts/CreditsContext';
+import { useSubscription } from '@/contexts/SubscriptionContext';
+import { useRewardedAd } from '@/hooks/useRewardedAd';
 import CreatePageHeader from '@/components/native/common/CreatePageHeader';
 import GradientButton from '@/components/native/common/GradientButton';
 import CreditsIcon from '@/components/native/common/CreditsIcon';
@@ -109,6 +111,11 @@ export default function NativeImagePage() {
   const router = useRouter();
   const { user } = useFirebaseAuth();
   const { credits, refreshCredits } = useCredits();
+  const { isSubscribed } = useSubscription();
+  const { showRewardedAd } = useRewardedAd();
+
+  // 广告状态
+  const [adWatched, setAdWatched] = useState(false);
   const generateInputRef = useRef<HTMLTextAreaElement>(null);
 
   // UI 状态
@@ -341,6 +348,8 @@ export default function NativeImagePage() {
     setGeneratingProgress(10);
     setError(null);
     setIsGenerating(true);
+    // 重置广告状态
+    setAdWatched(false);
 
     try {
       // 如果有引导图片，先上传
@@ -400,6 +409,27 @@ export default function NativeImagePage() {
     setGeneratingError(null);
     setGeneratingProgress(0);
   };
+
+  // 非订阅用户：生成开始 5 秒后自动弹出激励广告
+  useEffect(() => {
+    if (!isGeneratingModalOpen || generatingStatus !== 'generating' || isSubscribed || adWatched) {
+      return;
+    }
+
+    const timer = setTimeout(async () => {
+      try {
+        console.log('[Image] Auto showing rewarded ad...');
+        const result = await showRewardedAd();
+        if (result.success) {
+          setAdWatched(true);
+        }
+      } catch (err) {
+        console.error('[Image] Ad error:', err);
+      }
+    }, 5000); // 5秒后自动弹出
+
+    return () => clearTimeout(timer);
+  }, [isGeneratingModalOpen, generatingStatus, isSubscribed, adWatched, showRewardedAd]);
 
   // 获取当前 quality 的显示标签
   const getQualityLabel = () => {
@@ -888,6 +918,8 @@ export default function NativeImagePage() {
           handleCloseGeneratingModal();
           void handleGenerate();
         }}
+        showAdPrompt={!isSubscribed}
+        adWatched={adWatched}
       />
     </div>
   );

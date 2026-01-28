@@ -9,7 +9,6 @@ import DetailActionBar from './DetailActionBar';
 import DeleteConfirmDialog from '@/components/native/ui/DeleteConfirmDialog';
 import { useBottomNav } from '@/contexts/BottomNavContext';
 import { formatTime, getModelDisplayName } from './utils';
-import { handleDownloadWithState } from '@/lib/native-download';
 
 interface MusicDetailModalProps {
   music: MusicRecord;
@@ -30,7 +29,6 @@ export default function MusicDetailModal({
   const [duration, setDuration] = useState(0);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [isSharing, setIsSharing] = useState(false);
-  const [downloading, setDownloading] = useState(false);
   const [shareUrl, setShareUrl] = useState<string | null>(null);
   const { hide, show } = useBottomNav();
 
@@ -106,16 +104,6 @@ export default function MusicDetailModal({
     const percent = x / rect.width;
     audioRef.current.currentTime = percent * duration;
     setCurrentTime(percent * duration);
-  };
-
-  const handleDownload = () => {
-    if (downloading) return;
-    handleDownloadWithState(
-      currentAudioUrl,
-      `voicica_music_${music.task_id}.mp3`,
-      setDownloading,
-      'audio'
-    );
   };
 
   const handleConfirmDelete = async () => {
@@ -343,12 +331,10 @@ export default function MusicDetailModal({
         </div>
 
         <DetailActionBar
-          showRecreate
           onRecreate={() => onRecreate(music)}
-          showDownload
-          onDownload={handleDownload}
-          downloadDisabled={!currentAudioUrl}
-          downloading={downloading}
+          fileUrl={currentAudioUrl || undefined}
+          fileName={`voicica_music_${music.task_id}_v${currentTrack}.mp3`}
+          fileType="audio"
         />
       </div>
 

@@ -7,7 +7,6 @@ import DetailModalHeader from './DetailModalHeader';
 import DetailActionBar from './DetailActionBar';
 import DeleteConfirmDialog from '@/components/native/ui/DeleteConfirmDialog';
 import { useBottomNav } from '@/contexts/BottomNavContext';
-import { handleDownloadWithState } from '@/lib/native-download';
 
 interface ImageDetailModalProps {
   image: ImageRecord;
@@ -38,7 +37,6 @@ export default function ImageDetailModal({
   onDelete,
 }: ImageDetailModalProps) {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-  const [downloading, setDownloading] = useState(false);
   const [shareUrl, setShareUrl] = useState<string | null>(null);
   const { hide, show } = useBottomNav();
 
@@ -56,13 +54,6 @@ export default function ImageDetailModal({
         .catch((err) => console.error('Failed to create share link:', err));
     }
   }, [image.task_id]);
-
-  const handleDownload = async () => {
-    if (!image.image_url) return;
-
-    const filename = `ai-image-${image.task_id}.png`;
-    await handleDownloadWithState(image.image_url, filename, setDownloading, 'image');
-  };
 
   const handleDeleteConfirm = () => {
     onDelete(image);
@@ -133,9 +124,9 @@ export default function ImageDetailModal({
       >
         <DetailActionBar
           onRecreate={() => onRecreate(image)}
-          onDownload={handleDownload}
-          downloading={downloading}
-          downloadDisabled={!image.image_url}
+          fileUrl={image.image_url || undefined}
+          fileName={`voicica_image_${image.task_id}.png`}
+          fileType="image"
         />
       </div>
 

@@ -1,10 +1,11 @@
 /**
  * Native Download Utility
  *
- * 使用 Capacitor 原生能力下载文件到设备
+ * 使用 Capacitor FileTransfer 插件下载文件到设备
  * 支持音频、视频、图片等文件类型
+ * 文件保存到 Documents 目录，可在文件管理器中查看
  */
-import { Capacitor, CapacitorHttp } from '@capacitor/core';
+import { Capacitor } from '@capacitor/core';
 
 export interface DownloadOptions {
   url: string;
@@ -24,86 +25,74 @@ export interface DownloadResult {
 /**
  * 下载文件到设备
  *
- * - 原生 App: 使用 Capacitor Filesystem 下载到本地存储
+ * - 原生 App: 使用 Capacitor FileTransfer 下载到 Documents 目录
  * - Web: 在新窗口打开
  */
 export async function downloadFile(options: DownloadOptions): Promise<DownloadResult> {
-  const { url, fileName, type, onProgress } = options;
+  const { url, fileName, onProgress } = options;
 
-  // 原生平台使用 Capacitor Filesystem
+  // 原生平台使用 Capacitor FileTransfer
   if (Capacitor.isNativePlatform()) {
-    return downloadNative(url, fileName, type, onProgress);
+    return downloadNative(url, fileName, onProgress);
   }
 
   // Web 平台在新窗口打开
-  return downloadWeb(url, fileName, onProgress);
+  return downloadWeb(url);
 }
 
 /**
  * 原生平台下载
- * 使用 Capacitor Filesystem 下载文件到设备存储
- * 使用 CapacitorHttp 绕过 CORS 限制
+ * 使用 @capacitor/file-transfer 下载文件（原生 HTTP，无 CORS 问题）
+ * 文件保存到 Documents 目录
  */
 async function downloadNative(
   url: string,
   fileName: string,
-  type?: 'audio' | 'video' | 'image' | 'other',
   onProgress?: (progress: number) => void
 ): Promise<DownloadResult> {
   try {
+    const { FileTransfer } = await import('@capacitor/file-transfer');
     const { Filesystem, Directory } = await import('@capacitor/filesystem');
 
     console.log('📥 [Native Download] 开始下载:', url, fileName);
 
-    // 1. 使用 CapacitorHttp 获取文件数据（绕过 CORS）
-    onProgress?.(10);
-    const response = await CapacitorHttp.get({
+    // 1. 获取目标文件的完整路径
+    const fileInfo = await Filesystem.getUri({
+      directory: Directory.Documents,
+      path: fileName,
+    });
+
+    console.log('📁 [Native Download] 目标路径:', fileInfo.uri);
+
+    // 2. 设置进度监听
+    let progressListener: { remove: () => Promise<void> } | null = null;
+    if (onProgress) {
+      progressListener = await FileTransfer.addListener('progress', (event) => {
+        if (event.contentLength > 0) {
+          const percent = Math.round((event.bytes / event.contentLength) * 100);
+          onProgress(percent);
+        }
+      });
+    }
+
+    // 3. 使用 FileTransfer 下载（原生 HTTP 请求，绕过 CORS）
+    const result = await FileTransfer.downloadFile({
       url,
-      responseType: 'arraybuffer',
+      path: fileInfo.uri,
+      progress: !!onProgress,
     });
 
-    if (response.status !== 200) {
-      throw new Error(`HTTP ${response.status}`);
+    // 4. 清理监听器
+    if (progressListener) {
+      await progressListener.remove();
     }
-
-    onProgress?.(50);
-
-    // 2. 转换为 base64
-    // CapacitorHttp 在原生端返回的 arraybuffer 实际上可能是 base64 字符串
-    let base64: string;
-    if (typeof response.data === 'string') {
-      // 原生端返回的已经是 base64 字符串
-      base64 = response.data;
-    } else if (response.data instanceof ArrayBuffer) {
-      // ArrayBuffer 需要转换为 base64
-      base64 = arrayBufferToBase64(response.data);
-    } else {
-      throw new Error('Unexpected response data type');
-    }
-    onProgress?.(80);
-
-    // 3. 确定保存目录
-    // Android: 保存到 Download 根目录（用户熟悉，系统会扫描）
-    // iOS: 保存到 Documents 目录
-    const platform = Capacitor.getPlatform();
-    const isAndroid = platform === 'android';
-
-    const directory = isAndroid ? Directory.External : Directory.Documents;
-    const filePath = isAndroid ? `Download/${fileName}` : fileName;
-
-    // 4. 写入文件
-    const result = await Filesystem.writeFile({
-      path: filePath,
-      data: base64,
-      directory,
-    });
 
     onProgress?.(100);
-    console.log('✅ [Native Download] 下载完成:', result.uri);
+    console.log('✅ [Native Download] 下载完成:', result.path);
 
     return {
       success: true,
-      filePath: result.uri,
+      filePath: result.path,
     };
   } catch (error) {
     console.error('❌ [Native Download] 下载失败:', error);
@@ -115,47 +104,10 @@ async function downloadNative(
 }
 
 /**
- * Blob 转 base64
- */
-function blobToBase64(blob: Blob): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      const base64 = reader.result as string;
-      // 去掉 data:xxx;base64, 前缀
-      const base64Data = base64.split(',')[1];
-      resolve(base64Data);
-    };
-    reader.onerror = reject;
-    reader.readAsDataURL(blob);
-  });
-}
-
-/**
- * ArrayBuffer 转 base64
- */
-function arrayBufferToBase64(buffer: ArrayBuffer): string {
-  let binary = '';
-  const bytes = new Uint8Array(buffer);
-  const len = bytes.byteLength;
-  for (let i = 0; i < len; i++) {
-    binary += String.fromCharCode(bytes[i]);
-  }
-  return btoa(binary);
-}
-
-/**
  * Web 平台下载
  * 直接在新窗口打开，避免 CORS 问题
  */
-async function downloadWeb(
-  url: string,
-  _fileName: string,
-  _onProgress?: (progress: number) => void
-): Promise<DownloadResult> {
-  // Note: fileName and onProgress are unused because we open in new window
-  void _fileName;
-  void _onProgress;
+async function downloadWeb(url: string): Promise<DownloadResult> {
   try {
     console.log('📥 [Web Download] 在新窗口打开:', url);
 
@@ -189,7 +141,7 @@ export async function downloadWithToast(
     if (result.filePath === 'browser') {
       msg = 'Opened in new window';
     } else if (Capacitor.getPlatform() === 'android') {
-      msg = 'Saved to Downloads';
+      msg = 'Saved to Documents';
     } else {
       msg = 'Saved to device';
     }

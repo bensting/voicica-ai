@@ -7,7 +7,6 @@ import DetailModalHeader from './DetailModalHeader';
 import DetailActionBar from './DetailActionBar';
 import DeleteConfirmDialog from '@/components/native/ui/DeleteConfirmDialog';
 import { useBottomNav } from '@/contexts/BottomNavContext';
-import { handleDownloadWithState } from '@/lib/native-download';
 
 interface VideoDetailModalProps {
   video: VideoRecord;
@@ -69,7 +68,6 @@ export default function VideoDetailModal({
 }: VideoDetailModalProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-  const [downloading, setDownloading] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [shareUrl, setShareUrl] = useState<string | null>(null);
   const { hide, show } = useBottomNav();
@@ -98,13 +96,6 @@ export default function VideoDetailModal({
       }
       setIsPlaying(!isPlaying);
     }
-  };
-
-  const handleDownload = async () => {
-    if (!video.video_url) return;
-
-    const filename = `ai-video-${video.task_id}.mp4`;
-    await handleDownloadWithState(video.video_url, filename, setDownloading, 'video');
   };
 
   const handleDeleteConfirm = () => {
@@ -196,9 +187,9 @@ export default function VideoDetailModal({
       >
         <DetailActionBar
           onRecreate={() => onRecreate(video)}
-          onDownload={handleDownload}
-          downloading={downloading}
-          downloadDisabled={!video.video_url}
+          fileUrl={video.video_url || undefined}
+          fileName={`voicica_video_${video.task_id}.mp4`}
+          fileType="video"
         />
       </div>
 

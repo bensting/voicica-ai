@@ -1,8 +1,17 @@
 'use server';
 
-import { getKieAIClient } from '@/lib/kie-ai';
-import { prisma } from '@/lib/prisma';
-import { verifyAuth } from '@/lib/auth';
+/**
+ * Image 模块 Server Actions
+ * 使用 KIE API 生成图片
+ */
+import prisma from '@/lib/prisma';
+import { getUserOrAnonymous } from '@/lib/auth-firebase';
+import { checkCredits } from '@/lib/credits';
+import { ProductType } from '@/config/productType';
+
+// KIE API 配置
+const KIE_API_BASE = 'https://api.kie.ai/api/v1';
+const KIE_API_KEY = process.env.KIE_API_KEY || '';
 
 /**
  * AI Image 模型配置
@@ -82,7 +91,7 @@ export const imageModels: ImageModel[] = [
  * 获取默认模型
  */
 export async function getDefaultModel(): Promise<ImageModel> {
-  return imageModels[0]; // Seedream 4.5
+  return imageModels[0]; // Z-Image
 }
 
 /**
@@ -122,12 +131,15 @@ export async function createImageTask(
 ): Promise<CreateImageTaskResult> {
   try {
     // 验证用户身份
-    const authResult = await verifyAuth();
-    if (!authResult.authenticated || !authResult.user) {
+    const { userId, isAnonymous } = await getUserOrAnonymous();
+    if (!userId) {
       return { success: false, error: 'Please login first' };
     }
 
-    const userId = authResult.user.id;
+    // 匿名用户不能使用此功能
+    if (isAnonymous) {
+      return { success: false, error: 'Please login to use AI Image' };
+    }
 
     // 获取模型配置
     const model = imageModels.find((m) => m.id === params.modelId);
@@ -136,17 +148,12 @@ export async function createImageTask(
     }
 
     // 检查积分
-    const user = await prisma.user.findUnique({
-      where: { id: userId },
-      select: { credits: true },
-    });
-
-    if (!user || user.credits < model.credits) {
+    const creditsCheck = await checkCredits(userId, model.credits, isAnonymous);
+    if (!creditsCheck.hasEnough) {
       return { success: false, error: 'Insufficient credits' };
     }
 
     // 构建请求参数
-    const client = getKieAIClient();
     let input: Record<string, unknown>;
 
     switch (params.modelId) {
@@ -193,22 +200,36 @@ export async function createImageTask(
         break;
     }
 
-    // 调用 KIE AI API
-    const response = await client.createTask({
+    const kiePayload = {
       model: params.modelId,
       input,
+    };
+
+    console.log('🖼️ [createImageTask] 调用 KIE API:', JSON.stringify(kiePayload, null, 2));
+
+    // 调用 KIE AI API
+    const response = await fetch(`${KIE_API_BASE}/generate`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${KIE_API_KEY}`,
+      },
+      body: JSON.stringify(kiePayload),
     });
 
-    if (response.code !== 200 || !response.data?.taskId) {
-      return { success: false, error: response.msg || 'Failed to create task' };
+    const result = await response.json();
+    console.log('🖼️ [createImageTask] KIE API 响应:', JSON.stringify(result, null, 2));
+
+    if (result.code !== 200 || !result.data?.taskId) {
+      return { success: false, error: result.msg || 'Failed to create task' };
     }
 
-    const taskId = response.data.taskId;
+    const taskId = result.data.taskId;
 
     // 扣除积分
     await prisma.$transaction([
-      prisma.user.update({
-        where: { id: userId },
+      prisma.users.update({
+        where: { user_id: userId },
         data: { credits: { decrement: model.credits } },
       }),
       prisma.credit_history.create({
@@ -216,7 +237,7 @@ export async function createImageTask(
           user_id: userId,
           amount: -model.credits,
           type: 'USAGE',
-          product_type: 'IMAGE',
+          product_type: ProductType.IMAGE,
           description: `AI Image generation (${model.name})`,
         },
       }),
@@ -262,14 +283,21 @@ export interface ImageTaskStatus {
  */
 export async function getImageTaskStatus(taskId: string): Promise<ImageTaskStatus> {
   try {
-    const client = getKieAIClient();
-    const response = await client.getTaskDetails(taskId);
+    // 使用 GET /generate/record-info 端点查询任务状态
+    const response = await fetch(`${KIE_API_BASE}/generate/record-info?taskId=${taskId}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${KIE_API_KEY}`,
+      },
+    });
 
-    if (response.code !== 200) {
-      return { status: 'FAILURE', error: response.msg || 'Failed to get task status' };
+    const result = await response.json();
+
+    if (result.code !== 200) {
+      return { status: 'FAILURE', error: result.msg || 'Failed to get task status' };
     }
 
-    const task = response.data;
+    const task = result.data;
     const status = task.status?.toUpperCase() as ImageTaskStatus['status'];
 
     // 更新数据库记录

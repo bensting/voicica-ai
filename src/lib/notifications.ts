@@ -9,7 +9,7 @@ import { LocalNotifications, ScheduleOptions } from '@capacitor/local-notificati
 /**
  * 通知类型
  */
-export type NotificationType = 'music' | 'cover' | 'voice';
+export type NotificationType = 'music' | 'cover' | 'voice' | 'image';
 
 /**
  * 通知配置
@@ -57,6 +57,18 @@ const notificationConfigs: Record<NotificationType, Record<'success' | 'failure'
       title: '❌ Voice Generation Failed',
       body: 'Something went wrong. Please try again.',
       navigateTo: '/native/create/voice',
+    },
+  },
+  image: {
+    success: {
+      title: '🖼️ Image Ready!',
+      body: 'Your AI image has been generated successfully.',
+      navigateTo: '/native/me?tab=image',
+    },
+    failure: {
+      title: '❌ Image Generation Failed',
+      body: 'Something went wrong. Please try again.',
+      navigateTo: '/native/create/image',
     },
   },
 };

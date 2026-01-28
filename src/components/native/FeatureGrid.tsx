@@ -106,6 +106,20 @@ const YoutubeIcon = () => (
   </svg>
 );
 
+const ImageIcon = () => (
+  <svg
+    className="w-6 h-6"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.5"
+  >
+    <rect x="3" y="3" width="18" height="18" rx="2" />
+    <circle cx="8.5" cy="8.5" r="1.5" fill="currentColor" stroke="none" />
+    <path d="M21 15l-5-5L5 21" />
+  </svg>
+);
+
 // 图标映射
 const iconMap: Record<CreateMenuIcon, React.FC> = {
   music: MusicIcon,
@@ -116,12 +130,14 @@ const iconMap: Record<CreateMenuIcon, React.FC> = {
   clone: CloneIcon,
   tiktok: TiktokIcon,
   youtube: YoutubeIcon,
+  image: ImageIcon,
 };
 
 // 颜色映射 - 图标颜色和背景渐变（按类别）
 const colorMap: Record<string, { icon: string; bg: string }> = {
   purple: { icon: 'text-purple-400', bg: 'bg-purple-500/20' },
   pink: { icon: 'text-pink-400', bg: 'bg-pink-500/20' },
+  cyan: { icon: 'text-cyan-400', bg: 'bg-cyan-500/20' },
   blue: { icon: 'text-blue-400', bg: 'bg-blue-500/20' },
   emerald: { icon: 'text-emerald-400', bg: 'bg-emerald-500/20' },
 };

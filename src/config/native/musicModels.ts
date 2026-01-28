@@ -17,21 +17,21 @@ export const musicModelsConfig: MusicModel[] = [
     id: 'music-5.0',
     name: 'Music - 5.0',
     description: 'The latest model with more delicate human vocals and better output sound quality.',
-    credits: 30,
+    credits: 25,
     isPremium: true,
   },
   {
     id: 'music-4.5-plus',
     name: 'Music - 4.5 Plus',
     description: 'The main generation model, featuring richer and fuller sound, songs up to 8 mins.',
-    credits: 30,
+    credits: 25,
     isPremium: true,
   },
   {
     id: 'music-4.5',
     name: 'Music - 4.5',
     description: 'Supports describing music styles in natural language, with songs up to 8 minutes.',
-    credits: 30,
+    credits: 25,
     isPremium: false,
   },
 ];
@@ -54,7 +54,7 @@ export function getMusicModelName(id: string): string {
 
 // 获取模型积分消耗
 export function getMusicModelCredits(id: string): number {
-  return getMusicModelById(id)?.credits || 30;
+  return getMusicModelById(id)?.credits || 25;
 }
 
 // 检查模型是否为 Premium

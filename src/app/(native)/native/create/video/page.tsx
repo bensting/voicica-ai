@@ -89,7 +89,7 @@ export default function CreateVideoPage() {
   const [generatingStatus, setGeneratingStatus] = useState<GeneratingStatus>('generating');
   const [generatingProgress, setGeneratingProgress] = useState(0);
   const [generatingError, setGeneratingError] = useState<string | null>(null);
-  const [currentTaskId, setCurrentTaskId] = useState<string | null>(null);
+  const [, setCurrentTaskId] = useState<string | null>(null);
   const [generatedVideo, setGeneratedVideo] = useState<VideoRecord | null>(null);
   const pollingRef = useRef<NodeJS.Timeout | null>(null);
 

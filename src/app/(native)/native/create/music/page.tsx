@@ -306,7 +306,7 @@ export default function NativeMusicPage() {
   })();
   const estimatedCredits = (() => {
     if (!hasInput) return 0;
-    return selectedModel?.credits ?? 30;
+    return selectedModel?.credits ?? 25;
   })();
 
   // 处理模型选择

@@ -17,6 +17,7 @@ import MusicDetailModal from './MusicDetailModal';
 import CoverDetailModal from './CoverDetailModal';
 import VoiceDetailModal from './VoiceDetailModal';
 import DialogueDetailModal from './DialogueDetailModal';
+import ImageDetailModal from './ImageDetailModal';
 import { MusicCard, CoverCard, VoiceCard, DialogueCard, VideoCard, ImageCard } from './cards';
 import { formatDateLong } from './utils';
 
@@ -131,6 +132,7 @@ export default function MyCreations() {
   const [selectedCover, setSelectedCover] = useState<CoverRecord | null>(null);
   const [selectedVoice, setSelectedVoice] = useState<TtsRecord | null>(null);
   const [selectedDialogue, setSelectedDialogue] = useState<DialogueRecord | null>(null);
+  const [selectedImage, setSelectedImage] = useState<ImageRecord | null>(null);
 
   // 下拉刷新相关
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -457,10 +459,17 @@ export default function MyCreations() {
 
   const handleImageClick = (image: ImageRecord) => {
     // 只有完成的 image 才能打开详情
-    if (image.status === 'SUCCESS' && image.image_url) {
-      // 在新窗口打开图片
-      window.open(image.image_url, '_blank');
+    if (image.status === 'SUCCESS') {
+      setSelectedImage(image);
     }
+  };
+
+  const handleImageRecreate = (image: ImageRecord) => {
+    // 跳转到创建页面，带上 prompt 参数
+    const params = new URLSearchParams();
+    if (image.prompt) params.set('prompt', image.prompt);
+    router.push(`/native/create/image?${params.toString()}`);
+    setSelectedImage(null);
   };
 
   const handleImageDelete = async (image: ImageRecord) => {
@@ -878,6 +887,16 @@ export default function MyCreations() {
           onClose={() => setSelectedDialogue(null)}
           onRecreate={handleDialogueRecreate}
           onDelete={handleDialogueDelete}
+        />
+      )}
+
+      {/* Image 详情弹窗 */}
+      {selectedImage && (
+        <ImageDetailModal
+          image={selectedImage}
+          onClose={() => setSelectedImage(null)}
+          onRecreate={handleImageRecreate}
+          onDelete={handleImageDelete}
         />
       )}
     </div>

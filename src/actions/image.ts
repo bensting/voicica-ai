@@ -22,7 +22,6 @@ export interface CreateImageTaskParams {
   prompt: string;
   aspectRatio: string;
   quality: string;
-  imageCount?: number;
   isPublic?: boolean;
   guidanceImageUrl?: string;
 }

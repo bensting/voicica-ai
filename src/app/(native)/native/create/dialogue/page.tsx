@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
@@ -45,14 +45,15 @@ interface Voice {
   display_name: string;
   gender: string;
   avatar_url: string;
+  voice_sample_url: Record<string, string>;
 }
 
 // 默认声音
 const DEFAULT_VOICES: Voice[] = [
-  { id: 'Liam', name: 'elevenlabs_dialogue:Liam', display_name: 'Liam', gender: 'male', avatar_url: '' },
-  { id: 'Jessica', name: 'elevenlabs_dialogue:Jessica', display_name: 'Jessica', gender: 'female', avatar_url: '' },
-  { id: 'Adam', name: 'elevenlabs_dialogue:Adam', display_name: 'Adam', gender: 'male', avatar_url: '' },
-  { id: 'Brian', name: 'elevenlabs_dialogue:Brian', display_name: 'Brian', gender: 'male', avatar_url: '' },
+  { id: 'Liam', name: 'elevenlabs_dialogue:Liam', display_name: 'Liam', gender: 'male', avatar_url: '', voice_sample_url: {} },
+  { id: 'Jessica', name: 'elevenlabs_dialogue:Jessica', display_name: 'Jessica', gender: 'female', avatar_url: '', voice_sample_url: {} },
+  { id: 'Adam', name: 'elevenlabs_dialogue:Adam', display_name: 'Adam', gender: 'male', avatar_url: '', voice_sample_url: {} },
+  { id: 'Brian', name: 'elevenlabs_dialogue:Brian', display_name: 'Brian', gender: 'male', avatar_url: '', voice_sample_url: {} },
 ];
 
 // 图标组件
@@ -76,6 +77,18 @@ const PlusIcon = () => (
 
 const PlayIcon = () => (
   <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+    <path d="M8 5v14l11-7z" />
+  </svg>
+);
+
+const StopIcon = () => (
+  <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor">
+    <rect x="6" y="6" width="12" height="12" rx="1" />
+  </svg>
+);
+
+const SmallPlayIcon = () => (
+  <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor">
     <path d="M8 5v14l11-7z" />
   </svg>
 );
@@ -118,6 +131,10 @@ export default function NativeDialoguePage() {
   const [taskCreatedAt, setTaskCreatedAt] = useState<Date | null>(null);
   const [generatedAudioUrl, setGeneratedAudioUrl] = useState<string | null>(null);
 
+  // 声音预览播放
+  const [playingVoiceId, setPlayingVoiceId] = useState<string | null>(null);
+  const previewAudioRef = useRef<HTMLAudioElement | null>(null);
+
   // 总字符限制
   const maxTotalCharacters = 5000;
   const totalCharacters = dialogues.reduce((sum, d) => sum + d.text.length, 0);
@@ -127,6 +144,58 @@ export default function NativeDialoguePage() {
     if (!voiceId) return 'Liam';
     return voiceId.charAt(0).toUpperCase() + voiceId.slice(1).toLowerCase();
   };
+
+  // 获取声音样本 URL
+  const getVoiceSampleUrl = (voice: Voice): string => {
+    const urls = voice.voice_sample_url;
+    if (!urls || typeof urls !== 'object') return '';
+    return urls['default'] || Object.values(urls)[0] || '';
+  };
+
+  // 播放/停止声音预览
+  const toggleVoicePreview = (e: React.MouseEvent, voice: Voice) => {
+    e.stopPropagation(); // 阻止触发选择声音
+
+    const sampleUrl = getVoiceSampleUrl(voice);
+    if (!sampleUrl) return;
+
+    // 如果点击的是正在播放的声音，停止播放
+    if (playingVoiceId === voice.id) {
+      previewAudioRef.current?.pause();
+      previewAudioRef.current = null;
+      setPlayingVoiceId(null);
+      return;
+    }
+
+    // 停止之前的播放
+    if (previewAudioRef.current) {
+      previewAudioRef.current.pause();
+      previewAudioRef.current = null;
+    }
+
+    // 开始新的播放
+    const audio = new Audio(sampleUrl);
+    audio.onended = () => {
+      setPlayingVoiceId(null);
+      previewAudioRef.current = null;
+    };
+    audio.onerror = () => {
+      setPlayingVoiceId(null);
+      previewAudioRef.current = null;
+    };
+    audio.play();
+    previewAudioRef.current = audio;
+    setPlayingVoiceId(voice.id);
+  };
+
+  // 关闭下拉时停止预览播放
+  useEffect(() => {
+    if (!activeVoiceSelector && previewAudioRef.current) {
+      previewAudioRef.current.pause();
+      previewAudioRef.current = null;
+      setPlayingVoiceId(null);
+    }
+  }, [activeVoiceSelector]);
 
   // 加载声音列表
   const loadVoices = useCallback(async () => {
@@ -409,18 +478,13 @@ export default function NativeDialoguePage() {
                 <label className="text-gray-400 text-xs mb-1.5 block">
                   voice <span className="text-red-400">*</span>
                 </label>
-                <div className="flex gap-2">
-                  <button
-                    onClick={() => setActiveVoiceSelector(activeVoiceSelector === dialogue.id ? null : dialogue.id)}
-                    className="flex-1 flex items-center justify-between bg-gray-900/60 text-white rounded-xl p-3 text-sm"
-                  >
-                    <span>{getVoiceName(dialogue.voice)}</span>
-                    <ChevronDownIcon />
-                  </button>
-                  <button className="w-10 h-10 flex items-center justify-center bg-gray-900/60 rounded-xl text-gray-400 hover:text-white transition-colors">
-                    <PlayIcon />
-                  </button>
-                </div>
+                <button
+                  onClick={() => setActiveVoiceSelector(activeVoiceSelector === dialogue.id ? null : dialogue.id)}
+                  className="w-full flex items-center justify-between bg-gray-900/60 text-white rounded-xl p-3 text-sm"
+                >
+                  <span>{getVoiceName(dialogue.voice)}</span>
+                  <ChevronDownIcon />
+                </button>
 
                 {/* Voice Options Dropdown */}
                 {activeVoiceSelector === dialogue.id && (
@@ -429,14 +493,16 @@ export default function NativeDialoguePage() {
                       <div className="px-3 py-4 text-center text-gray-500 text-sm">Loading voices...</div>
                     ) : (
                       voices.map((voice) => (
-                        <button
+                        <div
                           key={voice.id}
-                          onClick={() => updateDialogueVoice(dialogue.id, voice.id)}
-                          className={`w-full px-3 py-2.5 text-left flex items-center justify-between hover:bg-gray-800 transition-colors ${
+                          className={`w-full px-3 py-2.5 flex items-center justify-between hover:bg-gray-800 transition-colors ${
                             dialogue.voice === voice.id ? 'bg-purple-500/20' : ''
                           }`}
                         >
-                          <div className="flex items-center gap-2">
+                          <button
+                            onClick={() => updateDialogueVoice(dialogue.id, voice.id)}
+                            className="flex-1 flex items-center gap-2 text-left"
+                          >
                             {voice.avatar_url ? (
                               <Image src={voice.avatar_url} alt={voice.display_name} width={28} height={28} className="rounded-full" />
                             ) : (
@@ -444,17 +510,30 @@ export default function NativeDialoguePage() {
                                 <span className="text-gray-400 text-xs">{voice.gender === 'male' ? '♂' : '♀'}</span>
                               </div>
                             )}
-                            <div>
+                            <div className="flex-1">
                               <span className="text-white text-sm">{voice.display_name}</span>
                               <span className="text-gray-500 text-xs ml-2 capitalize">{voice.gender}</span>
                             </div>
-                          </div>
-                          {dialogue.voice === voice.id && (
-                            <svg className="w-4 h-4 text-purple-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                              <polyline points="20,6 9,17 4,12" />
-                            </svg>
+                            {dialogue.voice === voice.id && (
+                              <svg className="w-4 h-4 text-purple-400 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                <polyline points="20,6 9,17 4,12" />
+                              </svg>
+                            )}
+                          </button>
+                          {/* 播放预览按钮 */}
+                          {getVoiceSampleUrl(voice) && (
+                            <button
+                              onClick={(e) => toggleVoicePreview(e, voice)}
+                              className={`w-8 h-8 flex items-center justify-center rounded-full transition-colors ${
+                                playingVoiceId === voice.id
+                                  ? 'bg-purple-500 text-white'
+                                  : 'bg-gray-700 text-gray-400 hover:text-white hover:bg-gray-600'
+                              }`}
+                            >
+                              {playingVoiceId === voice.id ? <StopIcon /> : <SmallPlayIcon />}
+                            </button>
                           )}
-                        </button>
+                        </div>
                       ))
                     )}
                   </div>

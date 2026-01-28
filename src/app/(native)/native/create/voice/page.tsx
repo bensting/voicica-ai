@@ -4,10 +4,15 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 import { useCredits } from '@/contexts/CreditsContext';
+import { useSubscription } from '@/contexts/SubscriptionContext';
+import { useRewardedAd } from '@/hooks/useRewardedAd';
 import { useAudioSettings } from '@/contexts/AudioSettingsContext';
 import { AUDIO_SETTINGS_RANGE } from '@/types/audioSettings';
-import { createTtsTask } from '@/actions/tts';
+import { createTtsTask, getTtsTaskStatus, getTtsRecordByTaskId, deleteTtsRecord } from '@/actions/tts';
+import type { TtsRecord } from '@/actions/tts';
 import { detectPlatform } from '@/lib/platform';
+import { sendLocalNotification } from '@/lib/notifications';
+import { checkCreditsBeforeGenerate } from '@/lib/credits-check';
 import type { Voice } from '@/types/voice';
 import { calculateVoiceCost, type VoiceType } from '@/config/creditsCost';
 import CreatePageHeader from '@/components/native/common/CreatePageHeader';
@@ -16,7 +21,9 @@ import CreditsIcon from '@/components/native/common/CreditsIcon';
 import CreditsInfoBar from '@/components/native/common/CreditsInfoBar';
 import AssistantInput from '@/components/native/common/AssistantInput';
 import AssistantModal from '@/components/native/common/AssistantModal';
+import GeneratingModal, { type GeneratingStatus } from '@/components/native/common/GeneratingModal';
 import NativeVoiceSelectorSheet from '@/components/native/create/voice/VoiceSelectorSheet';
+import VoiceDetailModal from '@/components/native/me/VoiceDetailModal';
 import LoginModal from '@/components/native/LoginModal';
 
 // localStorage keys
@@ -93,7 +100,12 @@ export default function NativeTTSPage() {
   const router = useRouter();
   const { user } = useFirebaseAuth();
   const { credits } = useCredits();
+  const { isSubscribed } = useSubscription();
+  const { showRewardedAd } = useRewardedAd();
   const { settings, updateSettings } = useAudioSettings();
+
+  // 广告状态
+  const [adWatched, setAdWatched] = useState(false);
 
   const [isVoiceSelectorOpen, setIsVoiceSelectorOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
@@ -104,6 +116,15 @@ export default function NativeTTSPage() {
   const [selectedVoice, setSelectedVoice] = useState<Voice | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Generating modal states
+  const [isGeneratingModalOpen, setIsGeneratingModalOpen] = useState(false);
+  const [generatingStatus, setGeneratingStatus] = useState<GeneratingStatus>('generating');
+  const [generatingError, setGeneratingError] = useState<string | null>(null);
+  const [currentTaskId, setCurrentTaskId] = useState<string | null>(null);
+  const [taskCreatedAt, setTaskCreatedAt] = useState<Date | null>(null);
+  const [generatingProgress, setGeneratingProgress] = useState(0);
+  const [generatedVoice, setGeneratedVoice] = useState<TtsRecord | null>(null);
 
   // Text assistant modal states
   const [isTextAssistantOpen, setIsTextAssistantOpen] = useState(false);
@@ -191,6 +212,16 @@ export default function NativeTTSPage() {
   // 是否可以生成
   const canGenerate = text.trim().length > 0 && selectedVoice !== null && !isGenerating;
 
+  // 关闭生成弹窗并重置状态
+  const handleCloseGeneratingModal = () => {
+    setIsGeneratingModalOpen(false);
+    setGeneratingStatus('generating');
+    setGeneratingError(null);
+    setCurrentTaskId(null);
+    setTaskCreatedAt(null);
+    setGeneratingProgress(0);
+  };
+
   // 处理生成
   const handleGenerate = async () => {
     if (!canGenerate || !selectedVoice) return;
@@ -201,8 +232,21 @@ export default function NativeTTSPage() {
       return;
     }
 
-    setIsGenerating(true);
+    // 检查积分是否足够
+    const hasEnoughCredits = checkCreditsBeforeGenerate({
+      currentCredits: credits,
+      requiredCredits: estimatedCredits,
+      onInsufficientCredits: () => router.push('/native/subscribe'),
+    });
+    if (!hasEnoughCredits) return;
+
+    // 打开生成中弹窗
+    setIsGeneratingModalOpen(true);
+    setGeneratingStatus('generating');
+    setGeneratingError(null);
     setError(null);
+    setAdWatched(false);
+    setIsGenerating(true);
 
     try {
       const result = await createTtsTask({
@@ -216,20 +260,100 @@ export default function NativeTTSPage() {
       });
 
       if (result.status === 'FAILURE') {
-        // 处理错误
-        setError(result.error || 'Failed to create task');
+        setGeneratingStatus('error');
+        setGeneratingError(result.error || 'Failed to create task');
         setIsGenerating(false);
         return;
       }
 
-      // 成功，跳转到任务详情页
-      router.push(`/native/voice/task/${result.task_id}`);
+      // 任务创建成功，保存 task_id 用于轮询
+      setCurrentTaskId(result.task_id);
+      setTaskCreatedAt(new Date());
+      setGeneratingProgress(result.progress || 10);
+
+      // 清空草稿
+      setText('');
+      localStorage.removeItem(STORAGE_KEY_TEXT);
     } catch (err) {
       console.error('TTS task creation failed:', err);
-      setError(err instanceof Error ? err.message : 'Failed to create task');
+      setGeneratingStatus('error');
+      setGeneratingError(err instanceof Error ? err.message : 'Failed to create task');
+    } finally {
       setIsGenerating(false);
     }
   };
+
+  // 非订阅用户：生成开始 3 秒后自动弹出激励广告
+  useEffect(() => {
+    if (!isGeneratingModalOpen || generatingStatus !== 'generating' || isSubscribed || adWatched) {
+      return;
+    }
+
+    const timer = setTimeout(async () => {
+      try {
+        console.log('[TTS] Auto showing rewarded ad...');
+        const result = await showRewardedAd();
+        if (result.success) {
+          setAdWatched(true);
+        }
+      } catch (err) {
+        console.error('[TTS] Ad error:', err);
+      }
+    }, 3000); // 3秒后自动弹出
+
+    return () => clearTimeout(timer);
+  }, [isGeneratingModalOpen, generatingStatus, isSubscribed, adWatched, showRewardedAd]);
+
+  // 轮询任务状态
+  useEffect(() => {
+    if (!currentTaskId || generatingStatus !== 'generating') {
+      return;
+    }
+
+    const pollInterval = setInterval(async () => {
+      // 超时检查：任务创建超过 5 分钟后停止轮询
+      if (taskCreatedAt) {
+        const taskAgeMinutes = (Date.now() - taskCreatedAt.getTime()) / 1000 / 60;
+        if (taskAgeMinutes >= 5) {
+          setGeneratingStatus('error');
+          setGeneratingError('Generation timed out. Please check your history later.');
+          setCurrentTaskId(null);
+          setTaskCreatedAt(null);
+          return;
+        }
+      }
+
+      try {
+        const status = await getTtsTaskStatus(currentTaskId);
+        setGeneratingProgress(status.progress);
+
+        if (status.status === 'SUCCESS') {
+          setGeneratingStatus('loading');
+          sendLocalNotification('voice', 'success');
+          // 获取生成的语音记录并显示详情
+          const voiceRecord = await getTtsRecordByTaskId(currentTaskId);
+          if (voiceRecord) {
+            setGeneratedVoice(voiceRecord);
+            setIsGeneratingModalOpen(false);
+          } else {
+            setGeneratingStatus('success');
+          }
+          setCurrentTaskId(null);
+          setTaskCreatedAt(null);
+        } else if (status.status === 'FAILURE') {
+          setGeneratingStatus('error');
+          setGeneratingError(status.error || 'Generation failed');
+          setCurrentTaskId(null);
+          setTaskCreatedAt(null);
+          sendLocalNotification('voice', 'failure');
+        }
+      } catch (err) {
+        console.error('[TTS Polling] Error:', err);
+      }
+    }, 2000); // 每 2 秒查询一次
+
+    return () => clearInterval(pollInterval);
+  }, [currentTaskId, generatingStatus, taskCreatedAt]);
 
   // 获取音调标签
   const getPitchLabel = (value: number) => {
@@ -439,6 +563,43 @@ export default function NativeTTSPage() {
         onGenerate={() => void handleGenerateText()}
         generateButtonText="Generate Text"
       />
+
+      {/* Generating Modal */}
+      <GeneratingModal
+        isOpen={isGeneratingModalOpen}
+        status={generatingStatus}
+        type="voice"
+        progress={generatingProgress}
+        error={generatingError}
+        credits={credits}
+        onClose={handleCloseGeneratingModal}
+        onCreateAnother={handleCloseGeneratingModal}
+        onTryAgain={() => {
+          handleCloseGeneratingModal();
+          void handleGenerate();
+        }}
+        showAdPrompt={!isSubscribed}
+        adWatched={adWatched}
+      />
+
+      {/* Voice Detail Modal - 生成成功后显示 */}
+      {generatedVoice && (
+        <VoiceDetailModal
+          voice={generatedVoice}
+          onClose={() => setGeneratedVoice(null)}
+          onRecreate={() => {
+            // 使用生成的语音参数重新创建
+            if (generatedVoice.text) {
+              setText(generatedVoice.text);
+            }
+            setGeneratedVoice(null);
+          }}
+          onDelete={async (voice) => {
+            await deleteTtsRecord(String(voice.id));
+            setGeneratedVoice(null);
+          }}
+        />
+      )}
 
       {/* Audio Settings Modal */}
       {isSettingsOpen && (

@@ -67,10 +67,12 @@ export async function createImageTask(
 
     // 构建请求参数
     let input: Record<string, unknown>;
+    let actualModelId = params.modelId; // 实际调用的模型 ID（可能根据是否有图片输入而变化）
+    const hasImageInput = !!params.guidanceImageUrl;
 
     switch (params.modelId) {
       case 'z-image':
-        // Z-Image - 快速便宜，没有 quality 选项
+        // Z-Image - 快速便宜，没有 quality 选项，不支持图片输入
         input = {
           prompt: params.prompt,
           aspect_ratio: params.aspectRatio,
@@ -78,47 +80,48 @@ export async function createImageTask(
         break;
 
       case 'flux-2':
-        // Flux.2
+        // Flux.2 - 根据是否有图片输入使用不同模型
+        actualModelId = hasImageInput ? 'flux-2/flex-image-to-image' : 'flux-2/flex-text-to-image';
         input = {
           prompt: params.prompt,
           aspect_ratio: params.aspectRatio,
           resolution: params.quality, // '1K', '2K'
         };
+        if (hasImageInput) {
+          input.image_input = [params.guidanceImageUrl];
+        }
         break;
 
       case 'seedream/4.5-text-to-image':
-        // Seedream 4.5
+        // Seedream 4.5 - 根据是否有图片输入使用不同模型
+        actualModelId = hasImageInput ? 'seedream/4.5-edit' : 'seedream/4.5-text-to-image';
         input = {
           prompt: params.prompt,
           aspect_ratio: params.aspectRatio,
           quality: params.quality, // 'basic' (2K) or 'high' (4K)
         };
-
-        // 如果有引导图片
-        if (params.guidanceImageUrl) {
+        if (hasImageInput) {
           input.image_input = [params.guidanceImageUrl];
         }
         break;
 
       case 'nano-banana-pro':
       default:
-        // Nano Banana Pro
+        // Nano Banana Pro - 同一个模型支持图片输入
         input = {
           prompt: params.prompt,
           aspect_ratio: params.aspectRatio,
           resolution: params.quality, // '1K', '2K', '4K'
           output_format: 'png',
         };
-
-        // 如果有引导图片
-        if (params.guidanceImageUrl) {
+        if (hasImageInput) {
           input.image_input = [params.guidanceImageUrl];
         }
         break;
     }
 
     const kiePayload = {
-      model: params.modelId,
+      model: actualModelId,
       input,
     };
 

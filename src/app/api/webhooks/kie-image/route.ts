@@ -104,7 +104,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: false, error: payload.msg });
     }
 
-    const { taskId, state, resultJson, failMsg, costTime } = payload.data;
+    const { taskId, state, resultJson, failMsg } = payload.data;
 
     // 查找对应的记录
     const record = await prisma.image_records.findFirst({

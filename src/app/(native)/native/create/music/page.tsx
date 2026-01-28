@@ -19,8 +19,9 @@ import {
   getMusicModelById,
   type MusicModel,
 } from '@/config/native/musicModels';
-import { createMusicTask, getMusicTaskStatus } from '@/actions/music';
+import { createMusicTask, getMusicTaskStatus, getMusicRecordByTaskId, deleteMusicRecord, type MusicRecord } from '@/actions/music';
 import { sendLocalNotification } from '@/lib/notifications';
+import MusicDetailModal from '@/components/native/me/MusicDetailModal';
 
 // localStorage keys
 const STORAGE_KEY = 'music_draft';
@@ -103,12 +104,13 @@ export default function NativeMusicPage() {
   const [promptAssistantInput, setPromptAssistantInput] = useState('');
   const [isGeneratingPrompt, setIsGeneratingPrompt] = useState(false);
   const [isGeneratingModalOpen, setIsGeneratingModalOpen] = useState(false);
-  const [generatingStatus, setGeneratingStatus] = useState<'generating' | 'success' | 'error'>('generating');
+  const [generatingStatus, setGeneratingStatus] = useState<'generating' | 'loading' | 'success' | 'error'>('generating');
   const [generatingError, setGeneratingError] = useState<string | null>(null);
   const [generatingErrorCode, setGeneratingErrorCode] = useState<string | null>(null);
   const [currentTaskId, setCurrentTaskId] = useState<string | null>(null);
   const [taskCreatedAt, setTaskCreatedAt] = useState<Date | null>(null);
   const [generatingProgress, setGeneratingProgress] = useState(0);
+  const [generatedMusic, setGeneratedMusic] = useState<MusicRecord | null>(null);
 
   const [activeTab, setActiveTab] = useState<MusicTab>('custom');
   const [prompt, setPrompt] = useState('');
@@ -465,11 +467,20 @@ export default function NativeMusicPage() {
 
         if (status.status === 'SUCCESS') {
           console.log('🎵 [Polling] 任务完成!');
-          setGeneratingStatus('success');
-          setCurrentTaskId(null);
-          setTaskCreatedAt(null);
+          setGeneratingStatus('loading'); // 先显示加载状态
           // 发送本地推送通知
           sendLocalNotification('music', 'success');
+          // 获取生成的音乐记录并显示详情
+          const musicRecord = await getMusicRecordByTaskId(currentTaskId);
+          if (musicRecord) {
+            setGeneratedMusic(musicRecord);
+            setIsGeneratingModalOpen(false); // 关闭生成中弹窗
+          } else {
+            // 如果获取失败，显示成功状态
+            setGeneratingStatus('success');
+          }
+          setCurrentTaskId(null);
+          setTaskCreatedAt(null);
         } else if (status.status === 'FAILURE') {
           console.log('🎵 [Polling] 任务失败:', status.error);
           setGeneratingStatus('error');
@@ -997,6 +1008,20 @@ export default function NativeMusicPage() {
               </>
             )}
 
+            {generatingStatus === 'loading' && (
+              <>
+                {/* Success Icon */}
+                <div className="w-20 h-20 mb-8 rounded-full bg-green-500/20 flex items-center justify-center">
+                  <svg className="w-10 h-10 text-green-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <polyline points="20,6 9,17 4,12" />
+                  </svg>
+                </div>
+                <h3 className="text-white font-semibold text-lg mb-2">Music Created!</h3>
+                <p className="text-gray-400 text-sm mb-4">Loading your music...</p>
+                <div className="w-6 h-6 border-2 border-purple-500 border-t-transparent rounded-full animate-spin" />
+              </>
+            )}
+
             {generatingStatus === 'success' && (
               <>
                 {/* Success Icon */}
@@ -1125,6 +1150,34 @@ export default function NativeMusicPage() {
         onGenerate={() => void handleGeneratePrompt()}
         generateButtonText="Generate Prompt"
       />
+
+      {/* Music Detail Modal - 生成成功后显示 */}
+      {generatedMusic && (
+        <MusicDetailModal
+          music={generatedMusic}
+          onClose={() => setGeneratedMusic(null)}
+          onRecreate={(music) => {
+            // 使用生成的音乐参数重新创建
+            if (music.lyrics) {
+              setLyrics(music.lyrics);
+              setActiveTab('custom');
+            } else if (music.prompt) {
+              setPrompt(music.prompt);
+              setActiveTab('simple');
+            }
+            if (music.style) setStyle(music.style);
+            if (music.title) setTitle(music.title);
+            setIsInstrumental(music.is_instrumental);
+            setModel(music.model);
+            setGeneratedMusic(null);
+          }}
+          onDelete={async (music) => {
+            // 删除音乐记录
+            await deleteMusicRecord(music.id);
+            setGeneratedMusic(null);
+          }}
+        />
+      )}
 
     </div>
   );

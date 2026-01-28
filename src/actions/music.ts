@@ -691,6 +691,60 @@ export async function deleteMusicRecord(recordId: number): Promise<void> {
 }
 
 /**
+ * 根据 taskId 获取单条音乐记录
+ */
+export async function getMusicRecordByTaskId(taskId: string): Promise<MusicRecord | null> {
+  try {
+    const unifiedUser = await getUserOrAnonymous();
+    const userId = unifiedUser.user_id;
+    if (!userId) {
+      return null;
+    }
+
+    const record = await prisma.music_records.findFirst({
+      where: {
+        task_id: taskId,
+        user_id: userId,
+      },
+    });
+
+    if (!record) {
+      return null;
+    }
+
+    return {
+      id: record.id,
+      user_id: record.user_id,
+      task_id: record.task_id,
+      model: record.model,
+      prompt: record.prompt,
+      style: record.style,
+      title: record.title,
+      lyrics: record.lyrics,
+      is_instrumental: record.is_instrumental,
+      is_public: record.is_public,
+      credits_cost: record.credits_cost,
+      status: record.status,
+      progress: record.progress,
+      audio_url: record.audio_url,
+      audio_url_2: record.audio_url_2,
+      cover_url: record.cover_url,
+      cover_url_2: record.cover_url_2,
+      duration: record.duration,
+      duration_2: record.duration_2,
+      tags: record.tags,
+      error_message: record.error_message,
+      created_at: record.created_at,
+      completed_at: record.completed_at,
+      share_id: record.share_id,
+    };
+  } catch (error) {
+    console.error('❌ [getMusicRecordByTaskId] Error:', error);
+    return null;
+  }
+}
+
+/**
  * 公开音乐记录类型（用于 Explore 展示）
  */
 export interface PublicMusicRecord {

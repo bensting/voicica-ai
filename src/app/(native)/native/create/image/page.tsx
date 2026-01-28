@@ -136,7 +136,7 @@ export default function NativeImagePage() {
 
   // 生成状态
   const [isGenerating, setIsGenerating] = useState(false);
-  const [generatingStatus, setGeneratingStatus] = useState<'generating' | 'success' | 'error'>('generating');
+  const [generatingStatus, setGeneratingStatus] = useState<'generating' | 'success' | 'loading' | 'error'>('generating');
   const [generatingError, setGeneratingError] = useState<string | null>(null);
   const [generatingProgress, setGeneratingProgress] = useState(0);
   const [taskId, setTaskId] = useState<string | null>(null);
@@ -176,7 +176,10 @@ export default function NativeImagePage() {
     }
   }, [isGeneratePromptSheetOpen]);
 
-  // 当模型改变时，重置 quality 和 aspectRatio 到模型的第一个选项，并保存到 localStorage
+  // 用于追踪是否是初次加载
+  const isInitialMount = useRef(true);
+
+  // 当模型改变时，重置参数并清空 prompt
   useEffect(() => {
     if (selectedModel.qualities.length > 0) {
       setQuality(selectedModel.qualities[0].id);
@@ -186,6 +189,13 @@ export default function NativeImagePage() {
     }
     // 保存选择到 localStorage
     localStorage.setItem(IMAGE_MODEL_STORAGE_KEY, selectedModel.id);
+
+    // 切换模型时清空 prompt（初次加载除外）
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+    } else {
+      setPrompt('');
+    }
   }, [selectedModel]);
 
   // 保存 prompt 到 localStorage（防抖）
@@ -210,7 +220,7 @@ export default function NativeImagePage() {
         }
 
         if (status.status === 'SUCCESS') {
-          setGeneratingStatus('success');
+          setGeneratingStatus('loading'); // 先显示加载状态
           setIsGenerating(false);
           refreshCredits();
           sendLocalNotification('image', 'success');
@@ -219,6 +229,9 @@ export default function NativeImagePage() {
           if (imageRecord) {
             setGeneratedImage(imageRecord);
             setIsGeneratingModalOpen(false); // 关闭生成中弹窗
+          } else {
+            // 如果获取失败，显示成功状态
+            setGeneratingStatus('success');
           }
           setTaskId(null);
         } else if (status.status === 'FAILURE') {
@@ -911,6 +924,19 @@ export default function NativeImagePage() {
                   <CrownIcon />
                   <span>Use fast channel</span>
                 </button>
+              </>
+            )}
+
+            {generatingStatus === 'loading' && (
+              <>
+                <div className="w-20 h-20 mb-8 rounded-full bg-green-500/20 flex items-center justify-center">
+                  <svg className="w-10 h-10 text-green-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <polyline points="20,6 9,17 4,12" />
+                  </svg>
+                </div>
+                <h3 className="text-white font-semibold text-lg mb-2">Image Created!</h3>
+                <p className="text-gray-400 text-sm mb-4">Loading your image...</p>
+                <div className="w-6 h-6 border-2 border-purple-500 border-t-transparent rounded-full animate-spin" />
               </>
             )}
 

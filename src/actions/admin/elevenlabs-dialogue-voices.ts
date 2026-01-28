@@ -149,6 +149,7 @@ export async function getElevenlabsDialogueVoices(): Promise<
     display_name: string;
     gender: string;
     avatar_url: string;
+    voice_sample_url: Record<string, string>;
   }>
 > {
   const voices = await prisma.voices.findMany({
@@ -162,6 +163,7 @@ export async function getElevenlabsDialogueVoices(): Promise<
       display_name: true,
       gender: true,
       avatar_url: true,
+      voice_sample_url: true,
     },
     orderBy: [{ sort_order: 'asc' }, { display_name: 'asc' }],
   });
@@ -172,5 +174,6 @@ export async function getElevenlabsDialogueVoices(): Promise<
     display_name: v.display_name || '',
     gender: v.gender,
     avatar_url: v.avatar_url,
+    voice_sample_url: (v.voice_sample_url as Record<string, string>) || {},
   }));
 }

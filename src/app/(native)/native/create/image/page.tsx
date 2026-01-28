@@ -115,7 +115,6 @@ export default function NativeImagePage() {
   const { showRewardedAd } = useRewardedAd();
 
   // 广告状态
-  const [adPlaying, setAdPlaying] = useState(false);
   const [adWatched, setAdWatched] = useState(false);
   const generateInputRef = useRef<HTMLTextAreaElement>(null);
 
@@ -350,7 +349,6 @@ export default function NativeImagePage() {
     setError(null);
     setIsGenerating(true);
     // 重置广告状态
-    setAdPlaying(false);
     setAdWatched(false);
 
     try {
@@ -412,20 +410,26 @@ export default function NativeImagePage() {
     setGeneratingProgress(0);
   };
 
-  // 处理观看广告
-  const handleWatchAd = async () => {
-    setAdPlaying(true);
-    try {
-      const result = await showRewardedAd();
-      if (result.success) {
-        setAdWatched(true);
-      }
-    } catch (err) {
-      console.error('[Image] Ad error:', err);
-    } finally {
-      setAdPlaying(false);
+  // 非订阅用户：生成开始 5 秒后自动弹出激励广告
+  useEffect(() => {
+    if (!isGeneratingModalOpen || generatingStatus !== 'generating' || isSubscribed || adWatched) {
+      return;
     }
-  };
+
+    const timer = setTimeout(async () => {
+      try {
+        console.log('[Image] Auto showing rewarded ad...');
+        const result = await showRewardedAd();
+        if (result.success) {
+          setAdWatched(true);
+        }
+      } catch (err) {
+        console.error('[Image] Ad error:', err);
+      }
+    }, 5000); // 5秒后自动弹出
+
+    return () => clearTimeout(timer);
+  }, [isGeneratingModalOpen, generatingStatus, isSubscribed, adWatched, showRewardedAd]);
 
   // 获取当前 quality 的显示标签
   const getQualityLabel = () => {
@@ -915,9 +919,7 @@ export default function NativeImagePage() {
           void handleGenerate();
         }}
         showAdPrompt={!isSubscribed}
-        adPlaying={adPlaying}
         adWatched={adWatched}
-        onWatchAd={handleWatchAd}
       />
     </div>
   );

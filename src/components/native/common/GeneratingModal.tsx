@@ -18,12 +18,8 @@ interface GeneratingModalProps {
   onTryAgain: () => void;
   /** 是否显示看广告提示（非订阅用户） */
   showAdPrompt?: boolean;
-  /** 广告是否正在播放 */
-  adPlaying?: boolean;
   /** 广告是否已观看完成 */
   adWatched?: boolean;
-  /** 点击看广告的回调 */
-  onWatchAd?: () => void;
 }
 
 // 图标组件
@@ -83,9 +79,7 @@ export default function GeneratingModal({
   onCreateAnother,
   onTryAgain,
   showAdPrompt = false,
-  adPlaying = false,
   adWatched = false,
-  onWatchAd,
 }: GeneratingModalProps) {
   if (!isOpen) return null;
 
@@ -127,25 +121,15 @@ export default function GeneratingModal({
               Estimated time: <span className="text-blue-400">{config.estimatedTime}</span>
             </p>
 
-            {/* 非订阅用户的广告提示 */}
+            {/* 非订阅用户的广告提示（可爱风格） */}
             {showAdPrompt && !adWatched && (
               <div className="mb-6 text-center">
-                {adPlaying ? (
-                  <p className="text-gray-400 text-sm">Playing ad...</p>
-                ) : (
-                  <>
-                    <p className="text-gray-400 text-sm mb-3">Take a break and watch an ad while waiting</p>
-                    <button
-                      onClick={onWatchAd}
-                      className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-full text-sm font-medium hover:opacity-90 transition-opacity"
-                    >
-                      <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M8 5v14l11-7z" />
-                      </svg>
-                      <span>Watch Ad</span>
-                    </button>
-                  </>
-                )}
+                <p className="text-gray-300 text-sm">
+                  Hey sweetie, don&apos;t just wait around~
+                </p>
+                <p className="text-gray-400 text-xs mt-1">
+                  A short ad is coming to keep you company
+                </p>
               </div>
             )}
 

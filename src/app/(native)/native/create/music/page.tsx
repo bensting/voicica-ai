@@ -90,7 +90,6 @@ export default function NativeMusicPage() {
   const { showRewardedAd } = useRewardedAd();
 
   // 广告状态
-  const [adPlaying, setAdPlaying] = useState(false);
   const [adWatched, setAdWatched] = useState(false);
 
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
@@ -364,7 +363,6 @@ export default function NativeMusicPage() {
     setGeneratingError(null);
     setError(null);
     // 重置广告状态
-    setAdPlaying(false);
     setAdWatched(false);
 
     // Simple/Custom tab 处理
@@ -429,20 +427,26 @@ export default function NativeMusicPage() {
     setGeneratingProgress(0);
   };
 
-  // 处理观看广告
-  const handleWatchAd = async () => {
-    setAdPlaying(true);
-    try {
-      const result = await showRewardedAd();
-      if (result.success) {
-        setAdWatched(true);
-      }
-    } catch (err) {
-      console.error('[Music] Ad error:', err);
-    } finally {
-      setAdPlaying(false);
+  // 非订阅用户：生成开始 5 秒后自动弹出激励广告
+  useEffect(() => {
+    if (!isGeneratingModalOpen || generatingStatus !== 'generating' || isSubscribed || adWatched) {
+      return;
     }
-  };
+
+    const timer = setTimeout(async () => {
+      try {
+        console.log('[Music] Auto showing rewarded ad...');
+        const result = await showRewardedAd();
+        if (result.success) {
+          setAdWatched(true);
+        }
+      } catch (err) {
+        console.error('[Music] Ad error:', err);
+      }
+    }, 5000); // 5秒后自动弹出
+
+    return () => clearTimeout(timer);
+  }, [isGeneratingModalOpen, generatingStatus, isSubscribed, adWatched, showRewardedAd]);
 
   // Debug: 监控弹窗状态变化
   useEffect(() => {
@@ -985,9 +989,7 @@ export default function NativeMusicPage() {
           void handleGenerate();
         }}
         showAdPrompt={!isSubscribed}
-        adPlaying={adPlaying}
         adWatched={adWatched}
-        onWatchAd={handleWatchAd}
       />
 
       {/* Lyrics Assistant Sheet */}

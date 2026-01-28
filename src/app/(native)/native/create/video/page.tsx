@@ -77,7 +77,6 @@ export default function CreateVideoPage() {
   const { showRewardedAd } = useRewardedAd();
 
   // 广告状态
-  const [adPlaying, setAdPlaying] = useState(false);
   const [adWatched, setAdWatched] = useState(false);
 
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
@@ -301,7 +300,6 @@ export default function CreateVideoPage() {
       setGeneratingProgress(0);
       setGeneratingError(null);
       // 重置广告状态
-      setAdPlaying(false);
       setAdWatched(false);
       setIsGeneratingModalOpen(true);
       startPolling(data.taskId);
@@ -338,20 +336,26 @@ export default function CreateVideoPage() {
     setGeneratingError(null);
   };
 
-  // 处理观看广告
-  const handleWatchAd = async () => {
-    setAdPlaying(true);
-    try {
-      const result = await showRewardedAd();
-      if (result.success) {
-        setAdWatched(true);
-      }
-    } catch (err) {
-      console.error('[Video] Ad error:', err);
-    } finally {
-      setAdPlaying(false);
+  // 非订阅用户：生成开始 5 秒后自动弹出激励广告
+  useEffect(() => {
+    if (!isGeneratingModalOpen || generatingStatus !== 'generating' || isSubscribed || adWatched) {
+      return;
     }
-  };
+
+    const timer = setTimeout(async () => {
+      try {
+        console.log('[Video] Auto showing rewarded ad...');
+        const result = await showRewardedAd();
+        if (result.success) {
+          setAdWatched(true);
+        }
+      } catch (err) {
+        console.error('[Video] Ad error:', err);
+      }
+    }, 5000); // 5秒后自动弹出
+
+    return () => clearTimeout(timer);
+  }, [isGeneratingModalOpen, generatingStatus, isSubscribed, adWatched, showRewardedAd]);
 
   const handleCloseVideoDetail = () => {
     setGeneratedVideo(null);
@@ -520,9 +524,7 @@ export default function CreateVideoPage() {
         onCreateAnother={handleCreateAnother}
         onTryAgain={handleTryAgain}
         showAdPrompt={!isSubscribed}
-        adPlaying={adPlaying}
         adWatched={adWatched}
-        onWatchAd={handleWatchAd}
       />
 
       {/* Video Detail Modal */}

@@ -4,24 +4,12 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { getPublicMusicRecords, type PublicMusicRecord } from '@/actions/music';
 import MusicPlayerModal from './MusicPlayerModal';
+import VideoPlayerModal, { type PublicVideoData } from './VideoPlayerModal';
 import NativeVoiceSelectorSheet from './create/voice/VoiceSelectorSheet';
 import type { Voice } from '@/types/voice';
 
 // Tab 类型
 type TabType = 'voices' | 'music' | 'video';
-
-// 公开视频类型
-interface PublicVideo {
-  id: number;
-  taskId: string;
-  prompt: string;
-  aspectRatio: string;
-  videoUrl: string;
-  thumbnailUrl?: string;
-  viewCount: number;
-  user: string;
-  createdAt: string;
-}
 
 const tabs: { id: TabType; label: string }[] = [
   { id: 'voices', label: 'Voices' },
@@ -87,7 +75,7 @@ function MusicCard({ music, index, onClick }: { music: PublicMusicRecord; index:
 /**
  * 视频卡片组件
  */
-function ExploreVideoCard({ video, index, onClick }: { video: PublicVideo; index: number; onClick: () => void }) {
+function ExploreVideoCard({ video, index, onClick }: { video: PublicVideoData; index: number; onClick: () => void }) {
   const [frameLoaded, setFrameLoaded] = useState(false);
   const [frameError, setFrameError] = useState(false);
   const displayTitle = video.prompt?.substring(0, 30) || 'AI Video';
@@ -154,9 +142,10 @@ export default function ExploreSection() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<TabType>('music');
   const [musicList, setMusicList] = useState<PublicMusicRecord[]>([]);
-  const [videoList, setVideoList] = useState<PublicVideo[]>([]);
+  const [videoList, setVideoList] = useState<PublicVideoData[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [selectedMusic, setSelectedMusic] = useState<PublicMusicRecord | null>(null);
+  const [selectedVideo, setSelectedVideo] = useState<PublicVideoData | null>(null);
   const [isVoiceSelectorOpen, setIsVoiceSelectorOpen] = useState(false);
 
   // 处理声音选择，跳转到 TTS 页面
@@ -167,13 +156,23 @@ export default function ExploreSection() {
     router.push('/native/create/voice');
   };
 
-  // 处理 Recreate
-  const handleRecreate = (music: PublicMusicRecord) => {
+  // 处理 Music Recreate
+  const handleMusicRecreate = (music: PublicMusicRecord) => {
     const params = new URLSearchParams();
     if (music.prompt) params.set('prompt', music.prompt);
     if (music.model) params.set('model', music.model);
     router.push(`/native/create/music?${params.toString()}`);
     setSelectedMusic(null);
+  };
+
+  // 处理 Video Recreate
+  const handleVideoRecreate = (video: PublicVideoData) => {
+    const params = new URLSearchParams();
+    if (video.prompt) params.set('prompt', video.prompt);
+    if (video.model) params.set('model', video.model);
+    if (video.aspectRatio) params.set('aspectRatio', video.aspectRatio);
+    router.push(`/native/create/video?${params.toString()}`);
+    setSelectedVideo(null);
   };
 
   // 加载公开内容
@@ -304,7 +303,7 @@ export default function ExploreSection() {
                 key={video.id}
                 video={video}
                 index={index}
-                onClick={() => router.push(`/native/video/play/${video.taskId}?from=explore`)}
+                onClick={() => setSelectedVideo(video)}
               />
             ))}
           </div>
@@ -337,7 +336,16 @@ export default function ExploreSection() {
           onClose={() => setSelectedMusic(null)}
           taskId={selectedMusic.task_id}
           showRecreateOnly
-          onRecreate={() => handleRecreate(selectedMusic)}
+          onRecreate={() => handleMusicRecreate(selectedMusic)}
+        />
+      )}
+
+      {/* 视频播放器弹窗 */}
+      {selectedVideo && (
+        <VideoPlayerModal
+          video={selectedVideo}
+          onClose={() => setSelectedVideo(null)}
+          onRecreate={() => handleVideoRecreate(selectedVideo)}
         />
       )}
 

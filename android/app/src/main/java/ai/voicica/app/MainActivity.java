@@ -5,6 +5,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
+import androidx.activity.EdgeToEdge;
 import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
 import com.getcapacitor.BridgeActivity;
@@ -17,6 +18,10 @@ public class MainActivity extends BridgeActivity {
         // 强制设置主题，必须在 super.onCreate() 之前调用
         // 修复 Action Mode（文本选择）背景显示为 splash 的问题
         setTheme(R.style.AppTheme_NoActionBar);
+
+        // 启用无边框显示（向后兼容 Android 15 之前的版本）
+        // 必须在 super.onCreate() 之前调用
+        EdgeToEdge.enable(this);
 
         // 注册自定义插件
         registerPlugin(AppOpenAdPlugin.class);
@@ -36,14 +41,11 @@ public class MainActivity extends BridgeActivity {
         // 开启 WebView 调试（Chrome DevTools 远程调试）
         WebView.setWebContentsDebuggingEnabled(true);
 
-        // Enable edge-to-edge display
-        WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
-
-        // Make status bar icons light (for dark/purple background)
+        // 设置状态栏/导航栏图标颜色
         WindowInsetsControllerCompat controller = WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
         if (controller != null) {
             controller.setAppearanceLightStatusBars(false); // false = light icons (for dark bg)
-            controller.setAppearanceLightNavigationBars(true); // true = dark icons (for light bg)
+            controller.setAppearanceLightNavigationBars(false); // false = light icons (for dark bg)
         }
     }
 }

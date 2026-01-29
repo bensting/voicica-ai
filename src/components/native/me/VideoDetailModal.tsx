@@ -69,6 +69,7 @@ export default function VideoDetailModal({
   const videoRef = useRef<HTMLVideoElement>(null);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [isVideoReady, setIsVideoReady] = useState(false);
   const [shareUrl, setShareUrl] = useState<string | null>(null);
   const { hide, show } = useBottomNav();
 

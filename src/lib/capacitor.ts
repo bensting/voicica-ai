@@ -5,7 +5,6 @@
 import { Capacitor } from '@capacitor/core';
 import { App } from '@capacitor/app';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
-import { StatusBar, Style } from '@capacitor/status-bar';
 import { SplashScreen } from '@capacitor/splash-screen';
 
 /**
@@ -57,35 +56,6 @@ export const isAndroid = (): boolean => {
 export const hideSplashScreen = async (): Promise<void> => {
   if (isNativeApp()) {
     await SplashScreen.hide();
-  }
-};
-
-/**
- * 设置状态栏样式
- */
-export const setStatusBarStyle = async (style: 'light' | 'dark'): Promise<void> => {
-  if (isNativeApp()) {
-    await StatusBar.setStyle({
-      style: style === 'light' ? Style.Light : Style.Dark,
-    });
-  }
-};
-
-/**
- * 设置状态栏覆盖模式（让内容延伸到状态栏下方）
- */
-export const setStatusBarOverlay = async (overlay: boolean): Promise<void> => {
-  if (isNativeApp()) {
-    await StatusBar.setOverlaysWebView({ overlay });
-  }
-};
-
-/**
- * 设置状态栏背景颜色（仅 Android）
- */
-export const setStatusBarBackgroundColor = async (color: string): Promise<void> => {
-  if (isAndroid()) {
-    await StatusBar.setBackgroundColor({ color });
   }
 };
 
@@ -160,20 +130,12 @@ export const exitApp = (): void => {
 
 /**
  * 初始化 Capacitor（在 App 启动时调用）
+ * 注意：状态栏样式已在 MainActivity.java 中通过 WindowInsetsControllerCompat 设置
  */
 export const initCapacitor = async (): Promise<void> => {
   if (isNativeApp()) {
     // 隐藏启动画面
     await hideSplashScreen();
-
-    // 设置状态栏样式
-    await setStatusBarStyle('dark');
-
-    // Android: 设置状态栏为透明覆盖模式
-    if (isAndroid()) {
-      await setStatusBarOverlay(true);
-      await setStatusBarBackgroundColor('#00000000'); // 透明
-    }
 
     // 添加原生 App 标识类到 body
     document.body.classList.add('native-app');

@@ -1,8 +1,19 @@
 {
-  "version": "1.2.11",
-  "buildNumber": 32,
+  "version": "1.2.12",
+  "buildNumber": 33,
   "description": "原生应用版本（Android/iOS 应用壳）",
   "changelog": [
+    {
+      "version": "1.2.12",
+      "buildNumber": 33,
+      "date": "2026-01-29",
+      "changes": [
+        "新增 Report 举报功能（符合 Google Play AI Generated Content 政策）",
+        "Explore 页面 Music/Video 支持举报 AI 生成内容",
+        "新增 VideoPlayerModal 组件，视频改为弹窗播放",
+        "优化视频播放器加载占位符，显示品牌 Logo"
+      ]
+    },
     {
       "version": "1.2.11",
       "buildNumber": 32,

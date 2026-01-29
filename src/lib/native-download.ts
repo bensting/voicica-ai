@@ -231,7 +231,8 @@ async function saveVideoToGallery(
 }
 
 /**
- * 保存音乐到 Music/Voicica/ 目录
+ * 保存音乐到公共 Music/Voicica/ 目录
+ * 使用 ExternalStorage 访问公共存储（/storage/emulated/0/Music/）
  */
 async function saveToMusicFolder(
   url: string,
@@ -245,20 +246,20 @@ async function saveToMusicFolder(
     const musicPath = `Music/Voicica/${fileName}`;
     console.log('📥 [saveToMusicFolder] 开始下载:', url, '→', musicPath);
 
-    // 确保目录存在
+    // 确保目录存在（使用 ExternalStorage 访问公共存储）
     try {
       await Filesystem.mkdir({
         path: 'Music/Voicica',
-        directory: Directory.External,
+        directory: Directory.ExternalStorage,
         recursive: true,
       });
     } catch {
       // 目录可能已存在，忽略错误
     }
 
-    // 获取目标文件的完整路径
+    // 获取目标文件的完整路径（使用 ExternalStorage）
     const fileInfo = await Filesystem.getUri({
-      directory: Directory.External,
+      directory: Directory.ExternalStorage,
       path: musicPath,
     });
 

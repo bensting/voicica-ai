@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { Flag } from 'lucide-react';
 import { showToast } from '@/lib/native-toast';
+import { reportContent } from '@/actions/report';
 
 export type ReportReason =
   | 'copyright'
@@ -38,7 +39,7 @@ interface ReportModalProps {
 }
 
 /**
- * Report Modal - 内容举报弹窗
+ * Report Modal - 内容举报弹窗（底部弹出样式）
  * 用于举报 AI 生成的内容（符合 Google Play AI Generated Content 政策）
  */
 export default function ReportModal({
@@ -54,26 +55,28 @@ export default function ReportModal({
   if (!isOpen) return null;
 
   const handleConfirm = async () => {
-    if (!selectedReason) return;
+    if (!selectedReason || !contentId) return;
 
     setIsSubmitting(true);
     try {
-      // TODO: 发送举报请求到后端
-      // await reportContent({ contentType, contentId, reason: selectedReason });
-
-      // 模拟 API 调用
-      await new Promise((resolve) => setTimeout(resolve, 500));
-
-      console.log('Report submitted:', {
+      const result = await reportContent({
         contentType,
         contentId,
         reason: selectedReason,
       });
 
-      showToast({ text: 'Report submitted successfully', duration: 'short' });
-      onReportSuccess?.();
-      onClose();
-      setSelectedReason(null);
+      if (result.success) {
+        if (result.alreadyReported) {
+          showToast({ text: 'You have already reported this content', duration: 'short' });
+        } else {
+          showToast({ text: 'Report submitted successfully', duration: 'short' });
+        }
+        onReportSuccess?.();
+        onClose();
+        setSelectedReason(null);
+      } else {
+        showToast({ text: result.error || 'Failed to submit report', duration: 'long' });
+      }
     } catch (error) {
       console.error('Report failed:', error);
       showToast({ text: 'Failed to submit report', duration: 'long' });
@@ -95,73 +98,95 @@ export default function ReportModal({
         onClick={handleCancel}
       />
 
-      {/* Modal */}
-      <div className="fixed inset-x-4 top-1/2 -translate-y-1/2 z-[10001] bg-gray-900 rounded-2xl max-w-sm mx-auto overflow-hidden">
-        {/* Header */}
-        <div className="flex items-center gap-3 px-5 py-4 border-b border-gray-800">
-          <div className="w-10 h-10 flex items-center justify-center bg-red-500/20 rounded-full">
-            <Flag className="w-5 h-5 text-red-500" />
-          </div>
-          <div>
-            <h3 className="text-white font-semibold text-lg">Report Content</h3>
-            <p className="text-gray-400 text-sm">Why are you reporting this?</p>
-          </div>
-        </div>
+      {/* Bottom Sheet */}
+      <div
+        className="fixed bottom-0 left-0 right-0 z-[10001] bg-gray-900 rounded-t-2xl animate-slide-up"
+        style={{ paddingBottom: 'calc(var(--safe-area-inset-bottom, 0px) + 16px)' }}
+      >
+        <div className="p-4">
+          {/* Handle */}
+          <div className="w-10 h-1 bg-gray-600 rounded-full mx-auto mb-4" />
 
-        {/* Options */}
-        <div className="px-4 py-3 max-h-[300px] overflow-y-auto">
-          {REPORT_OPTIONS.map((option) => (
-            <button
-              key={option.value}
-              onClick={() => setSelectedReason(option.value)}
-              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl mb-2 transition-colors ${
-                selectedReason === option.value
-                  ? 'bg-red-500/20 border border-red-500'
-                  : 'bg-gray-800 border border-transparent hover:bg-gray-700'
-              }`}
-            >
-              <div
-                className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
+          {/* Header */}
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-10 h-10 flex items-center justify-center bg-red-500/20 rounded-full">
+              <Flag className="w-5 h-5 text-red-500" />
+            </div>
+            <div>
+              <h3 className="text-white font-semibold text-lg">Report Content</h3>
+              <p className="text-gray-400 text-sm">Why are you reporting this?</p>
+            </div>
+          </div>
+
+          {/* Options */}
+          <div className="space-y-2 mb-4">
+            {REPORT_OPTIONS.map((option) => (
+              <button
+                key={option.value}
+                onClick={() => setSelectedReason(option.value)}
+                className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-colors ${
                   selectedReason === option.value
-                    ? 'border-red-500 bg-red-500'
-                    : 'border-gray-500'
+                    ? 'bg-red-500/20 border border-red-500'
+                    : 'bg-gray-800 border border-transparent hover:bg-gray-700'
                 }`}
               >
-                {selectedReason === option.value && (
-                  <svg className="w-3 h-3 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
-                    <polyline points="20 6 9 17 4 12" />
-                  </svg>
-                )}
-              </div>
-              <span className="text-white text-sm">{option.label}</span>
-            </button>
-          ))}
-        </div>
+                <div
+                  className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
+                    selectedReason === option.value
+                      ? 'border-red-500 bg-red-500'
+                      : 'border-gray-500'
+                  }`}
+                >
+                  {selectedReason === option.value && (
+                    <svg className="w-3 h-3 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+                      <polyline points="20 6 9 17 4 12" />
+                    </svg>
+                  )}
+                </div>
+                <span className="text-white text-sm">{option.label}</span>
+              </button>
+            ))}
+          </div>
 
-        {/* Actions */}
-        <div className="flex gap-3 px-4 py-4 border-t border-gray-800">
-          <button
-            onClick={handleCancel}
-            className="flex-1 py-3 bg-gray-800 rounded-xl text-gray-300 font-medium hover:bg-gray-700 transition-colors"
-          >
-            Cancel
-          </button>
-          <button
-            onClick={handleConfirm}
-            disabled={!selectedReason || isSubmitting}
-            className="flex-1 py-3 bg-red-500 rounded-xl text-white font-medium hover:bg-red-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {isSubmitting ? (
-              <div className="flex items-center justify-center gap-2">
-                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                <span>Submitting...</span>
-              </div>
-            ) : (
-              'Confirm'
-            )}
-          </button>
+          {/* Actions */}
+          <div className="flex gap-3">
+            <button
+              onClick={handleCancel}
+              className="flex-1 py-3 bg-gray-800 rounded-xl text-gray-300 font-medium hover:bg-gray-700 transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleConfirm}
+              disabled={!selectedReason || isSubmitting}
+              className="flex-1 py-3 bg-red-500 rounded-xl text-white font-medium hover:bg-red-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isSubmitting ? (
+                <div className="flex items-center justify-center gap-2">
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  <span>Submitting...</span>
+                </div>
+              ) : (
+                'Confirm'
+              )}
+            </button>
+          </div>
         </div>
       </div>
+
+      <style jsx>{`
+        @keyframes slide-up {
+          from {
+            transform: translateY(100%);
+          }
+          to {
+            transform: translateY(0);
+          }
+        }
+        .animate-slide-up {
+          animation: slide-up 0.3s ease-out;
+        }
+      `}</style>
     </>
   );
 }

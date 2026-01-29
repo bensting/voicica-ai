@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { Share } from '@capacitor/share';
 import ReportModal from './common/ReportModal';
 
 interface PlayerModalHeaderProps {

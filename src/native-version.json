@@ -1,8 +1,19 @@
 {
-  "version": "1.2.10",
-  "buildNumber": 31,
+  "version": "1.2.11",
+  "buildNumber": 32,
   "description": "原生应用版本（Android/iOS 应用壳）",
   "changelog": [
+    {
+      "version": "1.2.11",
+      "buildNumber": 32,
+      "date": "2026-01-29",
+      "changes": [
+        "新增 @capacitor-community/media 插件支持保存到相册",
+        "图片/视频下载后直接保存到系统相册",
+        "AI 音乐下载保存到 Music/Voicica/ 目录",
+        "TTS 音频保持保存到 Documents 目录"
+      ]
+    },
     {
       "version": "1.2.10",
       "buildNumber": 31,

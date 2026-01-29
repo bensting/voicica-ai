@@ -1,8 +1,18 @@
 {
-  "version": "1.2.12",
-  "buildNumber": 33,
+  "version": "1.2.13",
+  "buildNumber": 34,
   "description": "原生应用版本（Android/iOS 应用壳）",
   "changelog": [
+    {
+      "version": "1.2.13",
+      "buildNumber": 34,
+      "date": "2026-01-29",
+      "changes": [
+        "移除 @capacitor/status-bar 插件，解决 Android 15 弃用 API 警告",
+        "使用 EdgeToEdge.enable() 实现无边框显示向后兼容",
+        "状态栏设置改为原生代码处理，提升兼容性"
+      ]
+    },
     {
       "version": "1.2.12",
       "buildNumber": 33,

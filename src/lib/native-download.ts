@@ -77,8 +77,16 @@ async function saveImageToGallery(
     try {
       const { Media } = await import('@capacitor-community/media');
 
+      // 确保路径格式正确（某些情况需要 file:// 前缀）
+      let photoPath = tempResult.filePath;
+      if (!photoPath.startsWith('file://') && !photoPath.startsWith('content://')) {
+        photoPath = `file://${photoPath}`;
+      }
+
+      console.log('📸 [saveImageToGallery] 保存路径:', photoPath);
+
       await Media.savePhoto({
-        path: tempResult.filePath,
+        path: photoPath,
       });
 
       console.log('✅ [saveImageToGallery] 已保存到相册');
@@ -91,9 +99,9 @@ async function saveImageToGallery(
         filePath: 'gallery',
         location: 'Photos',
       };
-    } catch {
-      // Media 插件不可用（老版本 App），fallback 到 Documents
-      console.log('⚠️ [saveImageToGallery] Media 插件不可用，fallback 到 Documents');
+    } catch (mediaError) {
+      // Media 插件调用失败，打印详细错误并 fallback 到 Documents
+      console.error('⚠️ [saveImageToGallery] Media 插件错误:', mediaError);
       return saveToDocuments(url, fileName, onProgress);
     }
   } catch (error) {
@@ -126,8 +134,16 @@ async function saveVideoToGallery(
     try {
       const { Media } = await import('@capacitor-community/media');
 
+      // 确保路径格式正确（某些情况需要 file:// 前缀）
+      let videoPath = tempResult.filePath;
+      if (!videoPath.startsWith('file://') && !videoPath.startsWith('content://')) {
+        videoPath = `file://${videoPath}`;
+      }
+
+      console.log('🎬 [saveVideoToGallery] 保存路径:', videoPath);
+
       await Media.saveVideo({
-        path: tempResult.filePath,
+        path: videoPath,
       });
 
       console.log('✅ [saveVideoToGallery] 已保存到相册');
@@ -140,9 +156,9 @@ async function saveVideoToGallery(
         filePath: 'gallery',
         location: 'Photos',
       };
-    } catch {
-      // Media 插件不可用（老版本 App），fallback 到 Documents
-      console.log('⚠️ [saveVideoToGallery] Media 插件不可用，fallback 到 Documents');
+    } catch (mediaError) {
+      // Media 插件调用失败，打印详细错误并 fallback 到 Documents
+      console.error('⚠️ [saveVideoToGallery] Media 插件错误:', mediaError);
       return saveToDocuments(url, fileName, onProgress);
     }
   } catch (error) {

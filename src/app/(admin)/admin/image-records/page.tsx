@@ -414,6 +414,7 @@ export default function ImageRecordsPage() {
                     </td>
                     <td className="px-4 py-3">
                       {record.imageUrl ? (
+                        // eslint-disable-next-line @next/next/no-img-element
                         <img
                           src={record.imageUrl}
                           alt="Preview"

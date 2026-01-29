@@ -91,7 +91,7 @@ async function saveImageToGallery(
         filePath: 'gallery',
         location: 'Photos',
       };
-    } catch (mediaError) {
+    } catch {
       // Media 插件不可用（老版本 App），fallback 到 Documents
       console.log('⚠️ [saveImageToGallery] Media 插件不可用，fallback 到 Documents');
       return saveToDocuments(url, fileName, onProgress);
@@ -140,7 +140,7 @@ async function saveVideoToGallery(
         filePath: 'gallery',
         location: 'Photos',
       };
-    } catch (mediaError) {
+    } catch {
       // Media 插件不可用（老版本 App），fallback 到 Documents
       console.log('⚠️ [saveVideoToGallery] Media 插件不可用，fallback 到 Documents');
       return saveToDocuments(url, fileName, onProgress);

@@ -28,6 +28,52 @@ export interface DownloadResult {
   error?: string;
 }
 
+/** 缓存相册 ID，避免重复查询 */
+let cachedAlbumId: string | null = null;
+
+/**
+ * 获取或创建 Voicica 相册
+ * @param albumName 相册名称
+ * @returns 相册 identifier
+ */
+async function getOrCreateAlbum(albumName: string): Promise<string> {
+  // 如果已缓存，直接返回
+  if (cachedAlbumId) {
+    return cachedAlbumId;
+  }
+
+  const { Media } = await import('@capacitor-community/media');
+
+  // 获取所有相册
+  const { albums } = await Media.getAlbums();
+  console.log('📚 [getOrCreateAlbum] 现有相册:', albums.map(a => a.name));
+
+  // 查找目标相册
+  const existingAlbum = albums.find(a => a.name === albumName);
+  if (existingAlbum) {
+    console.log('✅ [getOrCreateAlbum] 找到相册:', existingAlbum.name, existingAlbum.identifier);
+    cachedAlbumId = existingAlbum.identifier;
+    return existingAlbum.identifier;
+  }
+
+  // 创建新相册
+  console.log('📁 [getOrCreateAlbum] 创建新相册:', albumName);
+  await Media.createAlbum({ name: albumName });
+  console.log('✅ [getOrCreateAlbum] 相册创建成功');
+
+  // 重新获取相册列表以获取 identifier
+  const { albums: newAlbums } = await Media.getAlbums();
+  const newAlbum = newAlbums.find(a => a.name === albumName);
+  if (newAlbum) {
+    cachedAlbumId = newAlbum.identifier;
+    return newAlbum.identifier;
+  }
+
+  // 如果还是找不到，返回空字符串（某些 Android 版本可能不需要）
+  console.warn('⚠️ [getOrCreateAlbum] 无法获取相册 identifier');
+  return '';
+}
+
 /**
  * 下载文件到设备
  *
@@ -77,7 +123,7 @@ async function saveImageToGallery(
     try {
       const { Media } = await import('@capacitor-community/media');
 
-      // 确保路径格式正确（某些情况需要 file:// 前缀）
+      // 确保路径格式正确
       let photoPath = tempResult.filePath;
       if (!photoPath.startsWith('file://') && !photoPath.startsWith('content://')) {
         photoPath = `file://${photoPath}`;
@@ -85,8 +131,15 @@ async function saveImageToGallery(
 
       console.log('📸 [saveImageToGallery] 保存路径:', photoPath);
 
+      // 获取或创建 Voicica 相册
+      const albumName = 'Voicica';
+      const albumId = await getOrCreateAlbum(albumName);
+
+      console.log('📁 [saveImageToGallery] 相册ID:', albumId);
+
       await Media.savePhoto({
         path: photoPath,
+        albumIdentifier: albumId,
       });
 
       console.log('✅ [saveImageToGallery] 已保存到相册');
@@ -134,7 +187,7 @@ async function saveVideoToGallery(
     try {
       const { Media } = await import('@capacitor-community/media');
 
-      // 确保路径格式正确（某些情况需要 file:// 前缀）
+      // 确保路径格式正确
       let videoPath = tempResult.filePath;
       if (!videoPath.startsWith('file://') && !videoPath.startsWith('content://')) {
         videoPath = `file://${videoPath}`;
@@ -142,8 +195,15 @@ async function saveVideoToGallery(
 
       console.log('🎬 [saveVideoToGallery] 保存路径:', videoPath);
 
+      // 获取或创建 Voicica 相册
+      const albumName = 'Voicica';
+      const albumId = await getOrCreateAlbum(albumName);
+
+      console.log('📁 [saveVideoToGallery] 相册ID:', albumId);
+
       await Media.saveVideo({
         path: videoPath,
+        albumIdentifier: albumId,
       });
 
       console.log('✅ [saveVideoToGallery] 已保存到相册');

@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { Pencil, Download } from 'lucide-react';
 import { Browser } from '@capacitor/browser';
 import GradientButton from '@/components/native/common/GradientButton';
-import { handleDownloadWithState } from '@/lib/native-download';
+import { handleDownloadWithState, type FileType } from '@/lib/native-download';
 
 interface DetailActionBarProps {
   /** 是否显示 Recreate 按钮 */
@@ -17,8 +17,8 @@ interface DetailActionBarProps {
   fileUrl?: string;
   /** 下载文件名 - 新 API */
   fileName?: string;
-  /** 文件类型 - 新 API */
-  fileType?: 'audio' | 'video' | 'image';
+  /** 文件类型 - 决定保存位置：image/video→相册, music→Music目录, audio→Documents */
+  fileType?: FileType;
   /** Download 按钮文字 */
   downloadText?: string;
   /** @deprecated 旧 API - 直接下载回调（向后兼容） */
@@ -54,6 +54,19 @@ export default function DetailActionBar({
   const useNewApi = !onDownload && fileUrl;
   const downloading = useNewApi ? internalDownloading : (externalDownloading || false);
   const isDisabled = useNewApi ? !fileUrl : (downloadDisabled || false);
+
+  // 根据文件类型获取保存位置描述
+  const getSaveLocationText = () => {
+    switch (fileType) {
+      case 'image':
+      case 'video':
+        return 'Save to Photos';
+      case 'music':
+        return 'Save to Music folder';
+      default:
+        return 'Save to Documents folder';
+    }
+  };
 
   const handleDownloadClick = () => {
     if (useNewApi) {
@@ -159,7 +172,7 @@ export default function DetailActionBar({
                   </div>
                   <div className="flex-1 text-left">
                     <div className="text-white font-medium">Save to Device</div>
-                    <div className="text-gray-400 text-sm">Download to Documents folder</div>
+                    <div className="text-gray-400 text-sm">{getSaveLocationText()}</div>
                   </div>
                 </button>
 

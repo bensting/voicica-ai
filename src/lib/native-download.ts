@@ -1,17 +1,21 @@
 /**
  * Native Download Utility
  *
- * 使用 Capacitor FileTransfer 插件下载文件到设备
- * 支持音频、视频、图片等文件类型
- * 文件保存到 Documents 目录，可在文件管理器中查看
+ * 文件下载和保存策略：
+ * - 图片 (image) → 相册 (使用 @capacitor-community/media)
+ * - 视频 (video) → 相册 (使用 @capacitor-community/media)
+ * - 音乐 (music) → Music/Voicica/ 目录
+ * - 音频/TTS (audio) → Documents 目录
  */
 import { Capacitor } from '@capacitor/core';
+
+/** 文件类型，用于确定保存位置 */
+export type FileType = 'audio' | 'video' | 'image' | 'music' | 'other';
 
 export interface DownloadOptions {
   url: string;
   fileName: string;
-  /** 文件类型，用于确定保存位置 */
-  type?: 'audio' | 'video' | 'image' | 'other';
+  type?: FileType;
   /** 下载进度回调 */
   onProgress?: (progress: number) => void;
 }
@@ -19,33 +23,141 @@ export interface DownloadOptions {
 export interface DownloadResult {
   success: boolean;
   filePath?: string;
+  /** 保存位置描述，用于显示给用户 */
+  location?: string;
   error?: string;
 }
 
 /**
  * 下载文件到设备
  *
- * - 原生 App: 使用 Capacitor FileTransfer 下载到 Documents 目录
+ * - 原生 App: 根据文件类型保存到不同位置
  * - Web: 在新窗口打开
  */
 export async function downloadFile(options: DownloadOptions): Promise<DownloadResult> {
-  const { url, fileName, onProgress } = options;
-
-  // 原生平台使用 Capacitor FileTransfer
-  if (Capacitor.isNativePlatform()) {
-    return downloadNative(url, fileName, onProgress);
-  }
+  const { url, fileName, type = 'other', onProgress } = options;
 
   // Web 平台在新窗口打开
-  return downloadWeb(url);
+  if (!Capacitor.isNativePlatform()) {
+    return downloadWeb(url);
+  }
+
+  // 原生平台根据类型选择保存方式
+  switch (type) {
+    case 'image':
+      return saveImageToGallery(url, fileName, onProgress);
+    case 'video':
+      return saveVideoToGallery(url, fileName, onProgress);
+    case 'music':
+      return saveToMusicFolder(url, fileName, onProgress);
+    default:
+      // audio (TTS) 和 other 保存到 Documents
+      return saveToDocuments(url, fileName, onProgress);
+  }
 }
 
 /**
- * 原生平台下载
- * 使用 @capacitor/file-transfer 下载文件（原生 HTTP，无 CORS 问题）
- * 文件保存到 Documents 目录
+ * 保存图片到相册
+ * 使用 @capacitor-community/media 插件
+ * Fallback: 如果插件不可用（老版本 App），保存到 Documents
  */
-async function downloadNative(
+async function saveImageToGallery(
+  url: string,
+  fileName: string,
+  onProgress?: (progress: number) => void
+): Promise<DownloadResult> {
+  try {
+    // 先下载到临时目录
+    const tempResult = await downloadToCache(url, fileName, onProgress);
+    if (!tempResult.success || !tempResult.filePath) {
+      return tempResult;
+    }
+
+    // 尝试使用 Media 插件保存到相册
+    try {
+      const { Media } = await import('@capacitor-community/media');
+
+      await Media.savePhoto({
+        path: tempResult.filePath,
+      });
+
+      console.log('✅ [saveImageToGallery] 已保存到相册');
+
+      // 清理临时文件
+      await cleanupTempFile(tempResult.filePath);
+
+      return {
+        success: true,
+        filePath: 'gallery',
+        location: 'Photos',
+      };
+    } catch {
+      // Media 插件不可用（老版本 App），fallback 到 Documents
+      console.log('⚠️ [saveImageToGallery] Media 插件不可用，fallback 到 Documents');
+      return saveToDocuments(url, fileName, onProgress);
+    }
+  } catch (error) {
+    console.error('❌ [saveImageToGallery] 失败:', error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Save to gallery failed',
+    };
+  }
+}
+
+/**
+ * 保存视频到相册
+ * 使用 @capacitor-community/media 插件
+ * Fallback: 如果插件不可用（老版本 App），保存到 Documents
+ */
+async function saveVideoToGallery(
+  url: string,
+  fileName: string,
+  onProgress?: (progress: number) => void
+): Promise<DownloadResult> {
+  try {
+    // 先下载到临时目录
+    const tempResult = await downloadToCache(url, fileName, onProgress);
+    if (!tempResult.success || !tempResult.filePath) {
+      return tempResult;
+    }
+
+    // 尝试使用 Media 插件保存到相册
+    try {
+      const { Media } = await import('@capacitor-community/media');
+
+      await Media.saveVideo({
+        path: tempResult.filePath,
+      });
+
+      console.log('✅ [saveVideoToGallery] 已保存到相册');
+
+      // 清理临时文件
+      await cleanupTempFile(tempResult.filePath);
+
+      return {
+        success: true,
+        filePath: 'gallery',
+        location: 'Photos',
+      };
+    } catch {
+      // Media 插件不可用（老版本 App），fallback 到 Documents
+      console.log('⚠️ [saveVideoToGallery] Media 插件不可用，fallback 到 Documents');
+      return saveToDocuments(url, fileName, onProgress);
+    }
+  } catch (error) {
+    console.error('❌ [saveVideoToGallery] 失败:', error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Save to gallery failed',
+    };
+  }
+}
+
+/**
+ * 保存音乐到 Music/Voicica/ 目录
+ */
+async function saveToMusicFolder(
   url: string,
   fileName: string,
   onProgress?: (progress: number) => void
@@ -54,17 +166,29 @@ async function downloadNative(
     const { FileTransfer } = await import('@capacitor/file-transfer');
     const { Filesystem, Directory } = await import('@capacitor/filesystem');
 
-    console.log('📥 [Native Download] 开始下载:', url, fileName);
+    const musicPath = `Music/Voicica/${fileName}`;
+    console.log('📥 [saveToMusicFolder] 开始下载:', url, '→', musicPath);
 
-    // 1. 获取目标文件的完整路径
+    // 确保目录存在
+    try {
+      await Filesystem.mkdir({
+        path: 'Music/Voicica',
+        directory: Directory.External,
+        recursive: true,
+      });
+    } catch {
+      // 目录可能已存在，忽略错误
+    }
+
+    // 获取目标文件的完整路径
     const fileInfo = await Filesystem.getUri({
-      directory: Directory.Documents,
-      path: fileName,
+      directory: Directory.External,
+      path: musicPath,
     });
 
-    console.log('📁 [Native Download] 目标路径:', fileInfo.uri);
+    console.log('📁 [saveToMusicFolder] 目标路径:', fileInfo.uri);
 
-    // 2. 设置进度监听
+    // 设置进度监听
     let progressListener: { remove: () => Promise<void> } | null = null;
     if (onProgress) {
       progressListener = await FileTransfer.addListener('progress', (event) => {
@@ -75,31 +199,166 @@ async function downloadNative(
       });
     }
 
-    // 3. 使用 FileTransfer 下载（原生 HTTP 请求，绕过 CORS）
+    // 下载文件
     const result = await FileTransfer.downloadFile({
       url,
       path: fileInfo.uri,
       progress: !!onProgress,
     });
 
-    // 4. 清理监听器
+    // 清理监听器
     if (progressListener) {
       await progressListener.remove();
     }
 
     onProgress?.(100);
-    console.log('✅ [Native Download] 下载完成:', result.path);
+    console.log('✅ [saveToMusicFolder] 下载完成:', result.path);
+
+    return {
+      success: true,
+      filePath: result.path,
+      location: 'Music',
+    };
+  } catch (error) {
+    console.error('❌ [saveToMusicFolder] 失败:', error);
+    // Fallback 到 Documents
+    console.log('⚠️ [saveToMusicFolder] Fallback 到 Documents');
+    return saveToDocuments(url, fileName, onProgress);
+  }
+}
+
+/**
+ * 保存文件到 Documents 目录
+ * 用于 TTS 音频和其他文件
+ */
+async function saveToDocuments(
+  url: string,
+  fileName: string,
+  onProgress?: (progress: number) => void
+): Promise<DownloadResult> {
+  try {
+    const { FileTransfer } = await import('@capacitor/file-transfer');
+    const { Filesystem, Directory } = await import('@capacitor/filesystem');
+
+    console.log('📥 [saveToDocuments] 开始下载:', url, fileName);
+
+    // 获取目标文件的完整路径
+    const fileInfo = await Filesystem.getUri({
+      directory: Directory.Documents,
+      path: fileName,
+    });
+
+    console.log('📁 [saveToDocuments] 目标路径:', fileInfo.uri);
+
+    // 设置进度监听
+    let progressListener: { remove: () => Promise<void> } | null = null;
+    if (onProgress) {
+      progressListener = await FileTransfer.addListener('progress', (event) => {
+        if (event.contentLength > 0) {
+          const percent = Math.round((event.bytes / event.contentLength) * 100);
+          onProgress(percent);
+        }
+      });
+    }
+
+    // 下载文件
+    const result = await FileTransfer.downloadFile({
+      url,
+      path: fileInfo.uri,
+      progress: !!onProgress,
+    });
+
+    // 清理监听器
+    if (progressListener) {
+      await progressListener.remove();
+    }
+
+    onProgress?.(100);
+    console.log('✅ [saveToDocuments] 下载完成:', result.path);
+
+    return {
+      success: true,
+      filePath: result.path,
+      location: 'Documents',
+    };
+  } catch (error) {
+    console.error('❌ [saveToDocuments] 下载失败:', error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Download failed',
+    };
+  }
+}
+
+/**
+ * 下载文件到 Cache 目录（临时）
+ * 用于后续保存到相册
+ */
+async function downloadToCache(
+  url: string,
+  fileName: string,
+  onProgress?: (progress: number) => void
+): Promise<DownloadResult> {
+  try {
+    const { FileTransfer } = await import('@capacitor/file-transfer');
+    const { Filesystem, Directory } = await import('@capacitor/filesystem');
+
+    console.log('📥 [downloadToCache] 开始下载:', url);
+
+    // 获取临时文件路径
+    const fileInfo = await Filesystem.getUri({
+      directory: Directory.Cache,
+      path: fileName,
+    });
+
+    // 设置进度监听
+    let progressListener: { remove: () => Promise<void> } | null = null;
+    if (onProgress) {
+      progressListener = await FileTransfer.addListener('progress', (event) => {
+        if (event.contentLength > 0) {
+          const percent = Math.round((event.bytes / event.contentLength) * 100);
+          onProgress(percent);
+        }
+      });
+    }
+
+    // 下载文件
+    const result = await FileTransfer.downloadFile({
+      url,
+      path: fileInfo.uri,
+      progress: !!onProgress,
+    });
+
+    // 清理监听器
+    if (progressListener) {
+      await progressListener.remove();
+    }
+
+    console.log('✅ [downloadToCache] 下载完成:', result.path);
 
     return {
       success: true,
       filePath: result.path,
     };
   } catch (error) {
-    console.error('❌ [Native Download] 下载失败:', error);
+    console.error('❌ [downloadToCache] 下载失败:', error);
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Download failed',
     };
+  }
+}
+
+/**
+ * 清理临时文件
+ */
+async function cleanupTempFile(filePath: string): Promise<void> {
+  try {
+    const { Filesystem } = await import('@capacitor/filesystem');
+    await Filesystem.deleteFile({ path: filePath });
+    console.log('🗑️ [cleanupTempFile] 已清理临时文件:', filePath);
+  } catch {
+    // 忽略清理失败
   }
 }
 
@@ -110,11 +369,8 @@ async function downloadNative(
 async function downloadWeb(url: string): Promise<DownloadResult> {
   try {
     console.log('📥 [Web Download] 在新窗口打开:', url);
-
-    // 直接在新窗口打开，用户可以右键保存
     window.open(url, '_blank');
-
-    return { success: true, filePath: 'browser' };
+    return { success: true, filePath: 'browser', location: 'Browser' };
   } catch (error) {
     console.error('❌ [Web Download] 打开失败:', error);
     return {
@@ -130,20 +386,22 @@ async function downloadWeb(url: string): Promise<DownloadResult> {
 export async function downloadWithToast(
   url: string,
   fileName: string,
-  type: 'audio' | 'video' | 'image' = 'video'
+  type: FileType = 'other'
 ): Promise<boolean> {
   const { showToast } = await import('@/lib/native-toast');
   const result = await downloadFile({ url, fileName, type });
 
   if (result.success) {
-    // 原生端保存到设备，Web 端在新窗口打开
+    // 根据保存位置显示不同的提示
     let msg: string;
     if (result.filePath === 'browser') {
       msg = 'Opened in new window';
-    } else if (Capacitor.getPlatform() === 'android') {
-      msg = 'Saved to Documents';
+    } else if (result.location === 'Photos') {
+      msg = 'Saved to Photos';
+    } else if (result.location === 'Music') {
+      msg = 'Saved to Music';
     } else {
-      msg = 'Saved to device';
+      msg = 'Saved to Documents';
     }
     showToast({ text: msg, duration: 'short' });
     return true;
@@ -161,7 +419,7 @@ export async function handleDownloadWithState(
   url: string | undefined | null,
   fileName: string,
   setDownloading: (v: boolean) => void,
-  type: 'audio' | 'video' | 'image' = 'audio'
+  type: FileType = 'audio'
 ): Promise<void> {
   if (!url) return;
 

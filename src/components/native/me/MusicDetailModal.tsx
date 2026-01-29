@@ -334,7 +334,7 @@ export default function MusicDetailModal({
           onRecreate={() => onRecreate(music)}
           fileUrl={currentAudioUrl || undefined}
           fileName={`voicica_music_${music.task_id}_v${currentTrack}.mp3`}
-          fileType="audio"
+          fileType="music"
         />
       </div>
 

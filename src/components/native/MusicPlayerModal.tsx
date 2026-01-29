@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from 'react';
 import { useBottomNav } from '@/contexts/BottomNavContext';
 import { Share } from '@capacitor/share';
 import { createShareLink } from '@/actions/share';
+import PlayerModalHeader from './PlayerModalHeader';
 
 /**
  * 音乐播放数据接口
@@ -167,48 +168,14 @@ export default function MusicPlayerModal({
       )}
 
       {/* 顶部导航 */}
-      <div
-        className="flex items-center justify-between px-4 pb-2"
-        style={{ paddingTop: 'calc(var(--safe-area-inset-top, 0px) + 12px)' }}
-      >
-        <button
-          onClick={onClose}
-          className="w-10 h-10 flex items-center justify-center bg-gray-800/50 rounded-full"
-        >
-          <svg className="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <path d="M15 18l-6-6 6-6" />
-          </svg>
-        </button>
-        <div className="flex items-center gap-2">
-          {/* 分享按钮 */}
-          {taskId && (
-            <button
-              onClick={handleShare}
-              disabled={isSharing}
-              className="w-10 h-10 flex items-center justify-center disabled:opacity-50"
-            >
-              {isSharing ? (
-                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-              ) : (
-                <svg className="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <circle cx="18" cy="5" r="3" />
-                  <circle cx="6" cy="12" r="3" />
-                  <circle cx="18" cy="19" r="3" />
-                  <path d="M8.59 13.51l6.83 3.98M15.41 6.51l-6.82 3.98" />
-                </svg>
-              )}
-            </button>
-          )}
-          {/* 更多菜单 */}
-          <button className="w-10 h-10 flex items-center justify-center">
-            <svg className="w-5 h-5 text-white" viewBox="0 0 24 24" fill="currentColor">
-              <circle cx="12" cy="6" r="2" />
-              <circle cx="12" cy="12" r="2" />
-              <circle cx="12" cy="18" r="2" />
-            </svg>
-          </button>
-        </div>
-      </div>
+      <PlayerModalHeader
+        onClose={onClose}
+        onShare={taskId ? handleShare : undefined}
+        isSharing={isSharing}
+        shareDisabled={!taskId}
+        contentType="music"
+        contentId={taskId}
+      />
 
       {/* 可滚动内容区域 */}
       <div className="flex-1 overflow-y-auto px-6 pb-4">

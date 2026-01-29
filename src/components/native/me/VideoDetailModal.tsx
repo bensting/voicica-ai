@@ -69,7 +69,6 @@ export default function VideoDetailModal({
   const videoRef = useRef<HTMLVideoElement>(null);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [isVideoReady, setIsVideoReady] = useState(false);
   const [shareUrl, setShareUrl] = useState<string | null>(null);
   const { hide, show } = useBottomNav();
 
@@ -126,48 +125,54 @@ export default function VideoDetailModal({
         >
           {video.video_url ? (
             <>
-              {/* 视频未加载时的占位符 */}
-              {!isVideoReady && !isPlaying && (
-                <div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-purple-900/50 to-pink-900/50 z-10">
-                  <div className="text-2xl font-bold text-white/80 mb-3">Voicica</div>
-                  <div className="w-14 h-14 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
-                    <svg className="w-7 h-7 text-white ml-1" viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M8 5v14l11-7z" />
-                    </svg>
+              {/* 预览封面（未播放时显示） */}
+              {!isPlaying && (
+                <div className="absolute inset-0 z-10">
+                  {video.thumbnail_url ? (
+                    // 有缩略图：用 img 显示
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={video.thumbnail_url}
+                      alt="Video thumbnail"
+                      className="absolute inset-0 w-full h-full object-cover"
+                    />
+                  ) : (
+                    // 无缩略图：用 video#t=0.1 加载第一帧
+                    <video
+                      src={`${video.video_url}#t=0.1`}
+                      className="absolute inset-0 w-full h-full object-cover"
+                      muted
+                      playsInline
+                      preload="metadata"
+                    />
+                  )}
+                  {/* 播放按钮遮罩 */}
+                  <div className="absolute inset-0 flex items-center justify-center bg-black/30">
+                    <div className="w-16 h-16 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
+                      <svg className="w-8 h-8 text-white ml-1" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M8 5v14l11-7z" />
+                      </svg>
+                    </div>
                   </div>
                 </div>
               )}
               <video
                 ref={videoRef}
                 src={video.video_url}
-                poster={video.thumbnail_url || undefined}
                 className="absolute inset-0 w-full h-full object-cover"
                 playsInline
                 loop
                 preload="metadata"
-                onLoadedData={() => setIsVideoReady(true)}
                 onPlay={() => setIsPlaying(true)}
                 onPause={() => setIsPlaying(false)}
               />
-              {/* Play Button Overlay（视频已加载但未播放时显示） */}
-              {isVideoReady && !isPlaying && (
-                <div className="absolute inset-0 flex items-center justify-center bg-black/30">
-                  <div className="w-16 h-16 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
-                    <svg className="w-8 h-8 text-white ml-1" viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M8 5v14l11-7z" />
-                    </svg>
-                  </div>
-                </div>
-              )}
             </>
           ) : (
-            <div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-purple-900/50 to-pink-900/50">
-              <div className="text-2xl font-bold text-white/80 mb-3">Voicica</div>
-              <div className="w-14 h-14 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
-                <svg className="w-7 h-7 text-white ml-1" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M8 5v14l11-7z" />
-                </svg>
-              </div>
+            <div className="absolute inset-0 flex items-center justify-center bg-gray-700">
+              <svg className="w-16 h-16 text-gray-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                <rect x="2" y="4" width="20" height="16" rx="2" />
+                <path d="M10 9l5 3-5 3V9z" />
+              </svg>
             </div>
           )}
         </div>

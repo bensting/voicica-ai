@@ -63,7 +63,6 @@ export default function VideoPlayerModal({
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isSharing, setIsSharing] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [isVideoReady, setIsVideoReady] = useState(false);
   const { hideAll, showAll } = useBottomNav();
 
   // 隐藏顶部和底部导航栏
@@ -151,14 +150,34 @@ export default function VideoPlayerModal({
               <span className="text-white/60 text-sm font-medium tracking-wide">Voicica AI</span>
             </div>
 
-            {/* 视频未加载时的占位符 */}
-            {!isVideoReady && !isPlaying && (
-              <div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-purple-900/50 to-pink-900/50 z-10">
-                <div className="text-3xl font-bold text-white/80 mb-4">Voicica</div>
-                <div className="w-16 h-16 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
-                  <svg className="w-8 h-8 text-white ml-1" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M8 5v14l11-7z" />
-                  </svg>
+            {/* 预览封面（未播放时显示） */}
+            {!isPlaying && (
+              <div className="absolute inset-0 flex items-center justify-center z-10">
+                {video.thumbnailUrl ? (
+                  // 有缩略图：用 img 显示
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={video.thumbnailUrl}
+                    alt="Video thumbnail"
+                    className="max-w-full max-h-full object-contain"
+                  />
+                ) : (
+                  // 无缩略图：用 video#t=0.1 加载第一帧
+                  <video
+                    src={`${video.videoUrl}#t=0.1`}
+                    className="max-w-full max-h-full object-contain"
+                    muted
+                    playsInline
+                    preload="metadata"
+                  />
+                )}
+                {/* 播放按钮遮罩 */}
+                <div className="absolute inset-0 flex items-center justify-center bg-black/30 pointer-events-none">
+                  <div className="w-16 h-16 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
+                    <svg className="w-8 h-8 text-white ml-1" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M8 5v14l11-7z" />
+                    </svg>
+                  </div>
                 </div>
               </div>
             )}
@@ -166,26 +185,13 @@ export default function VideoPlayerModal({
             <video
               ref={videoRef}
               src={video.videoUrl}
-              poster={video.thumbnailUrl || undefined}
               className="max-w-full max-h-full object-contain"
               playsInline
               loop
               preload="metadata"
-              onLoadedData={() => setIsVideoReady(true)}
               onPlay={() => setIsPlaying(true)}
               onPause={() => setIsPlaying(false)}
             />
-
-            {/* 播放按钮遮罩（视频已加载但未播放时显示） */}
-            {isVideoReady && !isPlaying && (
-              <div className="absolute inset-0 flex items-center justify-center bg-black/30 pointer-events-none">
-                <div className="w-16 h-16 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
-                  <svg className="w-8 h-8 text-white ml-1" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M8 5v14l11-7z" />
-                  </svg>
-                </div>
-              </div>
-            )}
           </div>
         )}
       </div>

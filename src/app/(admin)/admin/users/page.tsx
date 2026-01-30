@@ -8,6 +8,7 @@ import {
   updateUserCredits,
   deleteAnonymousUser,
   cleanExpiredAnonymousUsers,
+  getUserCreditHistory,
 } from '@/actions/admin/users';
 
 interface RegisteredUser {
@@ -48,6 +49,15 @@ interface AnonymousUser {
   created_at: Date;
 }
 
+interface CreditHistoryRecord {
+  id: number;
+  amount: number;
+  description: string;
+  product_type: string | null;
+  task_id: string | null;
+  created_at: Date;
+}
+
 type TabType = 'registered' | 'anonymous';
 
 /**
@@ -81,6 +91,17 @@ export default function UsersManagementPage() {
     currentCredits: number;
     newCredits: number;
     reason: string;
+  } | null>(null);
+
+  // 积分历史模态框
+  const [creditHistory, setCreditHistory] = useState<{
+    userId: string;
+    userName: string | null;
+    records: CreditHistoryRecord[];
+    total: number;
+    page: number;
+    totalPages: number;
+    loading: boolean;
   } | null>(null);
 
   // 加载注册用户
@@ -132,6 +153,35 @@ export default function UsersManagementPage() {
       loadAnonymousUsers();
     }
   }, [activeTab, loadRegisteredUsers, loadAnonymousUsers]);
+
+  // 加载用户积分历史
+  const loadCreditHistory = async (userId: string, userName: string | null, page: number = 1) => {
+    setCreditHistory((prev) => prev ? { ...prev, loading: true } : {
+      userId,
+      userName,
+      records: [],
+      total: 0,
+      page: 1,
+      totalPages: 1,
+      loading: true,
+    });
+
+    try {
+      const result = await getUserCreditHistory({ userId, page, pageSize: 20 });
+      setCreditHistory({
+        userId,
+        userName,
+        records: result.records,
+        total: result.total,
+        page: result.page,
+        totalPages: result.totalPages,
+        loading: false,
+      });
+    } catch (error) {
+      console.error('加载积分历史失败:', error);
+      setCreditHistory(null);
+    }
+  };
 
   // 保存积分修改
   const handleSaveCredits = async () => {
@@ -398,19 +448,27 @@ export default function UsersManagementPage() {
                           {formatDate(user.created_at)}
                         </td>
                         <td className="px-4 py-3">
-                          <button
-                            onClick={() =>
-                              setEditingCredits({
-                                userId: user.user_id,
-                                currentCredits: user.credits,
-                                newCredits: user.credits,
-                                reason: '',
-                              })
-                            }
-                            className="text-sm text-blue-600 hover:text-blue-700"
-                          >
-                            调整积分
-                          </button>
+                          <div className="flex items-center gap-2">
+                            <button
+                              onClick={() => loadCreditHistory(user.user_id, user.name || user.email)}
+                              className="text-sm text-purple-600 hover:text-purple-700"
+                            >
+                              积分历史
+                            </button>
+                            <button
+                              onClick={() =>
+                                setEditingCredits({
+                                  userId: user.user_id,
+                                  currentCredits: user.credits,
+                                  newCredits: user.credits,
+                                  reason: '',
+                                })
+                              }
+                              className="text-sm text-blue-600 hover:text-blue-700"
+                            >
+                              调整积分
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     ))
@@ -671,6 +729,104 @@ export default function UsersManagementPage() {
                 保存
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* 积分历史模态框 */}
+      {creditHistory && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl shadow-xl w-full max-w-3xl m-4 max-h-[80vh] flex flex-col">
+            <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
+              <div>
+                <h2 className="text-lg font-semibold text-gray-900">积分历史</h2>
+                <p className="text-sm text-gray-500">{creditHistory.userName || creditHistory.userId}</p>
+              </div>
+              <button
+                onClick={() => setCreditHistory(null)}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            <div className="flex-1 overflow-auto">
+              {creditHistory.loading ? (
+                <div className="flex items-center justify-center py-12">
+                  <div className="w-6 h-6 border-2 border-purple-600 border-t-transparent rounded-full animate-spin" />
+                  <span className="ml-2 text-gray-500">加载中...</span>
+                </div>
+              ) : creditHistory.records.length === 0 ? (
+                <div className="text-center py-12 text-gray-500">暂无积分记录</div>
+              ) : (
+                <table className="w-full">
+                  <thead className="bg-gray-50 border-b border-gray-200 sticky top-0">
+                    <tr>
+                      <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">时间</th>
+                      <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">变动</th>
+                      <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">类型</th>
+                      <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">描述</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-200">
+                    {creditHistory.records.map((record) => (
+                      <tr key={record.id} className="hover:bg-gray-50">
+                        <td className="px-4 py-3 text-sm text-gray-600 whitespace-nowrap">
+                          {formatDate(record.created_at)}
+                        </td>
+                        <td className="px-4 py-3">
+                          <span
+                            className={`font-medium ${
+                              record.amount >= 0 ? 'text-green-600' : 'text-red-600'
+                            }`}
+                          >
+                            {record.amount >= 0 ? '+' : ''}
+                            {record.amount.toLocaleString()}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3">
+                          {record.product_type ? (
+                            <span className="inline-flex items-center px-2 py-0.5 text-xs font-medium rounded bg-gray-100 text-gray-700">
+                              {record.product_type}
+                            </span>
+                          ) : (
+                            <span className="text-xs text-gray-400">-</span>
+                          )}
+                        </td>
+                        <td className="px-4 py-3 text-sm text-gray-600 max-w-xs truncate" title={record.description}>
+                          {record.description}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
+            </div>
+            {/* 分页 */}
+            {creditHistory.totalPages > 1 && (
+              <div className="px-6 py-3 border-t border-gray-200 flex items-center justify-between">
+                <div className="text-sm text-gray-600">
+                  共 {creditHistory.total} 条记录，第 {creditHistory.page} / {creditHistory.totalPages} 页
+                </div>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => loadCreditHistory(creditHistory.userId, creditHistory.userName, creditHistory.page - 1)}
+                    disabled={creditHistory.page === 1 || creditHistory.loading}
+                    className="px-3 py-1.5 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    上一页
+                  </button>
+                  <button
+                    onClick={() => loadCreditHistory(creditHistory.userId, creditHistory.userName, creditHistory.page + 1)}
+                    disabled={creditHistory.page === creditHistory.totalPages || creditHistory.loading}
+                    className="px-3 py-1.5 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    下一页
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       )}

@@ -217,6 +217,8 @@ export async function verifyProductWithGooglePlay(
 ): Promise<ProductVerificationResult> {
   const packageName = process.env.GOOGLE_PLAY_PACKAGE_NAME || 'ai.voicica.app';
 
+  console.log(`[GooglePlayAPI] 验证一次性购买: packageName=${packageName}, productId=${productId}, token=${purchaseToken.substring(0, 30)}...`);
+
   try {
     const client = await getAndroidPublisherClient();
 
@@ -257,28 +259,51 @@ export async function verifyProductWithGooglePlay(
       acknowledged: purchase.acknowledgementState === 1,
     };
   } catch (error: unknown) {
-    console.error('[GooglePlayAPI] 一次性购买验证出错:', JSON.stringify(error, null, 2));
+    console.error('[GooglePlayAPI] 一次性购买验证出错');
+    console.error('[GooglePlayAPI] packageName:', packageName);
+    console.error('[GooglePlayAPI] productId:', productId);
+    console.error('[GooglePlayAPI] token:', purchaseToken.substring(0, 50));
 
-    if (error && typeof error === 'object' && 'code' in error) {
-      const apiError = error as { code: number; message?: string };
-      console.error('[GooglePlayAPI] API 错误码:', apiError.code);
-      console.error('[GooglePlayAPI] API 错误信息:', apiError.message);
+    // 尝试提取更详细的错误信息
+    let errorMessage = 'Verification failed';
+    let errorCode: number | undefined;
 
-      if (apiError.code === 400) {
-        return { valid: false, error: 'Invalid purchase token' };
-      }
-      if (apiError.code === 404) {
-        return { valid: false, error: 'Purchase not found' };
-      }
-      if (apiError.code === 401 || apiError.code === 403) {
-        return { valid: false, error: 'API authentication failed' };
+    if (error && typeof error === 'object') {
+      // googleapis 错误格式
+      if ('response' in error) {
+        const gError = error as { response?: { status?: number; data?: { error?: { message?: string } } } };
+        errorCode = gError.response?.status;
+        errorMessage = gError.response?.data?.error?.message || errorMessage;
+        console.error('[GooglePlayAPI] HTTP Status:', errorCode);
+        console.error('[GooglePlayAPI] Error message:', errorMessage);
+      } else if ('code' in error) {
+        const apiError = error as { code: number; message?: string };
+        errorCode = apiError.code;
+        errorMessage = apiError.message || errorMessage;
+        console.error('[GooglePlayAPI] API 错误码:', errorCode);
+        console.error('[GooglePlayAPI] API 错误信息:', errorMessage);
       }
     }
 
-    return {
-      valid: false,
-      error: error instanceof Error ? error.message : 'Verification failed',
-    };
+    if (error instanceof Error) {
+      console.error('[GooglePlayAPI] Error:', error.message);
+      if (!errorMessage || errorMessage === 'Verification failed') {
+        errorMessage = error.message;
+      }
+    }
+
+    // 根据错误码返回更友好的错误信息
+    if (errorCode === 400) {
+      return { valid: false, error: `Invalid request: ${errorMessage}` };
+    }
+    if (errorCode === 404) {
+      return { valid: false, error: `Purchase not found: ${errorMessage}` };
+    }
+    if (errorCode === 401 || errorCode === 403) {
+      return { valid: false, error: `API authentication failed: ${errorMessage}` };
+    }
+
+    return { valid: false, error: errorMessage };
   }
 }
 

@@ -10,6 +10,41 @@ import prisma from '@/lib/prisma';
 import { ProductType } from '@/config/productType';
 
 /**
+ * 清理 description 字符串，移除可能导致 Prisma 转义问题的字符
+ *
+ * Prisma 会将 \x 解释为十六进制转义序列，当用户输入包含 emoji 或其他
+ * 特殊字符时可能会导致 "unexpected end of hex escape" 错误
+ */
+function sanitizeDescription(description: string): string {
+  // 移除所有 emoji 和其他非 ASCII 可打印字符，只保留基本 ASCII
+  // 或者更宽松一些，保留常见的多语言字符但移除可能导致问题的控制字符
+  return description
+    // 移除可能导致转义问题的反斜杠序列
+    .replace(/\\/g, '/')
+    // 移除 emoji（Unicode surrogate pairs 和 emoji 范围）
+    .replace(/[\u{1F600}-\u{1F64F}]/gu, '') // Emoticons
+    .replace(/[\u{1F300}-\u{1F5FF}]/gu, '') // Misc Symbols and Pictographs
+    .replace(/[\u{1F680}-\u{1F6FF}]/gu, '') // Transport and Map
+    .replace(/[\u{1F1E0}-\u{1F1FF}]/gu, '') // Flags
+    .replace(/[\u{2600}-\u{26FF}]/gu, '')   // Misc symbols
+    .replace(/[\u{2700}-\u{27BF}]/gu, '')   // Dingbats
+    .replace(/[\u{FE00}-\u{FE0F}]/gu, '')   // Variation Selectors
+    .replace(/[\u{1F900}-\u{1F9FF}]/gu, '') // Supplemental Symbols
+    .replace(/[\u{1FA00}-\u{1FA6F}]/gu, '') // Chess Symbols
+    .replace(/[\u{1FA70}-\u{1FAFF}]/gu, '') // Symbols and Pictographs Extended-A
+    .replace(/[\u{231A}-\u{231B}]/gu, '')   // Watch, Hourglass
+    .replace(/[\u{23E9}-\u{23F3}]/gu, '')   // Various symbols
+    .replace(/[\u{23F8}-\u{23FA}]/gu, '')   // Various symbols
+    .replace(/[\u{25AA}-\u{25AB}]/gu, '')   // Squares
+    .replace(/[\u{25B6}]/gu, '')            // Play button
+    .replace(/[\u{25C0}]/gu, '')            // Reverse button
+    .replace(/[\u{25FB}-\u{25FE}]/gu, '')   // Squares
+    .replace(/[\u{200D}]/gu, '')            // Zero Width Joiner
+    .replace(/[\u{20E3}]/gu, '')            // Combining Enclosing Keycap
+    .trim();
+}
+
+/**
  * 检查积分结果
  */
 export interface CheckCreditsResult {
@@ -141,7 +176,7 @@ export async function deductCredits(
     data: {
       user_id: userId,
       amount: -amount,
-      description,
+      description: sanitizeDescription(description),
       product_type: productType,
       task_id: taskId,
     },
@@ -200,7 +235,7 @@ export async function addCredits(
     data: {
       user_id: userId,
       amount: amount,
-      description,
+      description: sanitizeDescription(description),
       product_type: productType,
       task_id: taskId,
     },
@@ -340,7 +375,7 @@ export async function deductCreditsAtomic(
       data: {
         user_id: userId,
         amount: -amount,
-        description,
+        description: sanitizeDescription(description),
         product_type: productType,
         task_id: taskId,
       },
@@ -397,7 +432,7 @@ export async function refundCredits(
       data: {
         user_id: userId,
         amount: breakdown.total,
-        description,
+        description: sanitizeDescription(description),
         product_type: productType,
         task_id: taskId,
       },
@@ -460,7 +495,7 @@ export async function refundCreditsSimple(
       data: {
         user_id: userId,
         amount: amount,
-        description,
+        description: sanitizeDescription(description),
         product_type: productType,
         task_id: taskId,
       },

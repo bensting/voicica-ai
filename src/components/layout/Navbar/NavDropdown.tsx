@@ -109,9 +109,9 @@ export default function NavDropdown({ dropdown, mobile = false, onLinkClick, lab
       onMouseEnter={() => setIsOpen(true)}
       onMouseLeave={() => setIsOpen(false)}
     >
-      <button className={`flex items-center gap-1 px-4 py-2 rounded-full transition-all duration-300 font-medium ${isOpen ? 'bg-pink-50 text-pink-600' : 'text-gray-700 hover:text-pink-500 hover:bg-white/50'
+      <button className={`flex items-center gap-1 px-4 py-2 rounded-full transition-all duration-300 font-medium whitespace-nowrap ${isOpen ? 'bg-pink-50 text-pink-600' : 'text-gray-700 hover:text-pink-500 hover:bg-white/50'
         }`}>
-        <span>{t(dropdown.labelKey)}</span>
+        <span className="whitespace-nowrap">{t(dropdown.labelKey)}</span>
         {labelIcon}
         <svg
           className={`w-4 h-4 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`}
@@ -126,31 +126,35 @@ export default function NavDropdown({ dropdown, mobile = false, onLinkClick, lab
       {/* Dropdown Card */}
       <div className={`absolute top-full left-0 pt-2 transition-all duration-300 transform origin-top-left ${isOpen ? 'opacity-100 scale-100 translate-y-0 visible' : 'opacity-0 scale-95 -translate-y-2 invisible'
         }`}>
-        <div className="rounded-2xl bg-white/90 backdrop-blur-xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-white/40 p-2 min-w-[280px] overflow-hidden">
+        {/* 粉色渐变边框容器 */}
+        <div className="rounded-2xl p-[2px] bg-gradient-to-r from-pink-400 to-rose-400 shadow-[0_8px_30px_rgb(0,0,0,0.1)]">
+          <div className="rounded-[14px] bg-white p-2 min-w-[220px] overflow-hidden">
           {dropdown.items
             .filter((item) => item.enabled !== false)
-            .map((item) => {
+            .map((item, index, arr) => {
               return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  onClick={handleLinkClick}
-                  className="group flex items-start gap-3 p-3 rounded-xl hover:bg-pink-50 transition-colors"
-                >
-                  {item.icon && (
-                    <div className="flex-shrink-0 w-10 h-10 bg-gradient-to-br from-pink-100 to-rose-50 rounded-lg flex items-center justify-center text-pink-500 group-hover:text-pink-600 group-hover:scale-110 transition-all duration-300">
-                      {renderIcon(item.icon, "w-5 h-5")}
-                    </div>
-                  )}
-                  <div>
-                    <div className="font-bold text-gray-800 group-hover:text-pink-600 transition-colors text-sm">{t(item.labelKey)}</div>
-                    {item.descriptionKey && (
-                      <div className="text-xs text-gray-500 group-hover:text-pink-400/80 mt-0.5 leading-relaxed">{t(item.descriptionKey)}</div>
+                <div key={item.href}>
+                  <Link
+                    href={item.href}
+                    onClick={handleLinkClick}
+                    className="group flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-pink-50 transition-colors"
+                  >
+                    {item.icon && (
+                      <div className="flex-shrink-0 w-9 h-9 bg-pink-50 rounded-lg flex items-center justify-center text-pink-500 group-hover:bg-pink-100 group-hover:text-pink-600 group-hover:scale-105 transition-all duration-200">
+                        {renderIcon(item.icon, "w-5 h-5")}
+                      </div>
                     )}
-                  </div>
-                </Link>
+                    <span className="font-medium text-gray-700 group-hover:text-pink-600 transition-colors text-sm whitespace-nowrap">
+                      {t(item.labelKey)}
+                    </span>
+                  </Link>
+                  {index < arr.length - 1 && (
+                    <div className="mx-3 border-b border-gray-100" />
+                  )}
+                </div>
               );
             })}
+          </div>
         </div>
       </div>
     </div>

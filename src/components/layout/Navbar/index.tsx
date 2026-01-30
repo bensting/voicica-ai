@@ -66,7 +66,7 @@ export default function Navbar() {
             <div className="flex items-center gap-2 md:gap-3">
               {/* Mobile: Show icons */}
               <div className="flex md:hidden items-center gap-2">
-                <LanguageSwitcher theme="dark" variant="compact" />
+                <LanguageSwitcher variant="pink-icon" />
                 <LoginButton />
               </div>
 

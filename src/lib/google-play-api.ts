@@ -187,6 +187,131 @@ export async function verifySubscriptionWithGooglePlay(
 }
 
 /**
+ * 一次性购买（INAPP）验证结果
+ */
+export interface ProductVerificationResult {
+  valid: boolean;
+  error?: string;
+  /** 购买状态: 0=已购买, 1=已取消, 2=待处理 */
+  purchaseState?: number;
+  /** 消费状态: 0=未消费, 1=已消费 */
+  consumptionState?: number;
+  /** 订单 ID */
+  orderId?: string;
+  /** 购买时间（毫秒） */
+  purchaseTimeMillis?: string;
+  /** 是否已确认 */
+  acknowledged?: boolean;
+}
+
+/**
+ * 验证 Google Play 一次性购买（INAPP 产品）
+ *
+ * @param productId 产品 ID（如 credit_pack_6000）
+ * @param purchaseToken 购买令牌
+ * @returns 验证结果
+ */
+export async function verifyProductWithGooglePlay(
+  productId: string,
+  purchaseToken: string
+): Promise<ProductVerificationResult> {
+  const packageName = process.env.GOOGLE_PLAY_PACKAGE_NAME || 'ai.voicica.app';
+
+  try {
+    const client = await getAndroidPublisherClient();
+
+    // 使用 purchases.products.get API 验证一次性购买
+    const response = await client.purchases.products.get({
+      packageName,
+      productId,
+      token: purchaseToken,
+    });
+
+    const purchase = response.data;
+
+    // 检查购买状态
+    // purchaseState: 0 = 已购买, 1 = 已取消, 2 = 待处理
+    const purchaseState = purchase.purchaseState;
+    if (purchaseState !== 0) {
+      console.log(`[GooglePlayAPI] 一次性购买状态无效: ${purchaseState}`);
+      return {
+        valid: false,
+        error: `Invalid purchase state: ${purchaseState}`,
+        purchaseState: purchaseState ?? undefined,
+      };
+    }
+
+    console.log(`[GooglePlayAPI] 一次性购买验证通过:`, {
+      orderId: purchase.orderId,
+      purchaseState: purchase.purchaseState,
+      consumptionState: purchase.consumptionState,
+      acknowledged: purchase.acknowledgementState === 1,
+    });
+
+    return {
+      valid: true,
+      purchaseState: purchase.purchaseState ?? undefined,
+      consumptionState: purchase.consumptionState ?? undefined,
+      orderId: purchase.orderId ?? undefined,
+      purchaseTimeMillis: purchase.purchaseTimeMillis ?? undefined,
+      acknowledged: purchase.acknowledgementState === 1,
+    };
+  } catch (error: unknown) {
+    console.error('[GooglePlayAPI] 一次性购买验证出错:', JSON.stringify(error, null, 2));
+
+    if (error && typeof error === 'object' && 'code' in error) {
+      const apiError = error as { code: number; message?: string };
+      console.error('[GooglePlayAPI] API 错误码:', apiError.code);
+      console.error('[GooglePlayAPI] API 错误信息:', apiError.message);
+
+      if (apiError.code === 400) {
+        return { valid: false, error: 'Invalid purchase token' };
+      }
+      if (apiError.code === 404) {
+        return { valid: false, error: 'Purchase not found' };
+      }
+      if (apiError.code === 401 || apiError.code === 403) {
+        return { valid: false, error: 'API authentication failed' };
+      }
+    }
+
+    return {
+      valid: false,
+      error: error instanceof Error ? error.message : 'Verification failed',
+    };
+  }
+}
+
+/**
+ * 确认一次性购买（INAPP 产品）
+ *
+ * @param productId 产品 ID
+ * @param purchaseToken 购买令牌
+ */
+export async function acknowledgeProduct(
+  productId: string,
+  purchaseToken: string
+): Promise<boolean> {
+  const packageName = process.env.GOOGLE_PLAY_PACKAGE_NAME || 'ai.voicica.app';
+
+  try {
+    const client = await getAndroidPublisherClient();
+
+    await client.purchases.products.acknowledge({
+      packageName,
+      productId,
+      token: purchaseToken,
+    });
+
+    console.log('[GooglePlayAPI] 一次性购买已确认');
+    return true;
+  } catch (error) {
+    console.error('[GooglePlayAPI] 确认一次性购买失败:', error);
+    return false;
+  }
+}
+
+/**
  * 确认订阅（可选，用于确认已处理）
  */
 export async function acknowledgeSubscription(

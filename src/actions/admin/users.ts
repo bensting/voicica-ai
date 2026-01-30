@@ -363,3 +363,54 @@ export async function cleanExpiredAnonymousUsers(): Promise<{ success: boolean; 
     };
   }
 }
+
+/**
+ * 获取用户积分历史
+ */
+export async function getUserCreditHistory(params: {
+  userId: string;
+  page?: number;
+  pageSize?: number;
+}): Promise<{
+  records: Array<{
+    id: number;
+    amount: number;
+    description: string;
+    product_type: string | null;
+    task_id: string | null;
+    created_at: Date;
+  }>;
+  total: number;
+  page: number;
+  pageSize: number;
+  totalPages: number;
+}> {
+  await verifyAdminWithoutDb();
+
+  const { userId, page = 1, pageSize = 20 } = params;
+
+  const [records, total] = await Promise.all([
+    prisma.credit_history.findMany({
+      where: { user_id: userId },
+      orderBy: { created_at: 'desc' },
+      skip: (page - 1) * pageSize,
+      take: pageSize,
+    }),
+    prisma.credit_history.count({ where: { user_id: userId } }),
+  ]);
+
+  return {
+    records: records.map((r) => ({
+      id: r.id,
+      amount: r.amount,
+      description: r.description,
+      product_type: r.product_type,
+      task_id: r.task_id,
+      created_at: r.created_at,
+    })),
+    total,
+    page,
+    pageSize,
+    totalPages: Math.ceil(total / pageSize),
+  };
+}

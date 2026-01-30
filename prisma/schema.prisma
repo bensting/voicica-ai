@@ -438,6 +438,8 @@ model music_records {
   progress          Int       @default(0)       // 0-100 进度
 
   // 生成结果（可能有多个音频）
+  external_track_id   String?   @db.VarChar(255)  // KIE 回调的第一首歌 id
+  external_track_id_2 String?   @db.VarChar(255)  // KIE 回调的第二首歌 id
   audio_url         String?                     // 主音频 URL
   audio_url_2       String?                     // 第二个音频 URL（Suno 一次生成两个）
   stream_url        String?                     // 流媒体 URL

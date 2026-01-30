@@ -52,8 +52,10 @@
       },
       "lyricsStep": {
         "title": "編輯你的歌詞",
+        "titleInitial": "創作你的歌詞",
         "titleGenerating": "AI 正在為你創作歌詞...",
         "subtitle": "不滿意？可以點擊重新生成",
+        "subtitleInitial": "讓 AI 根據你的選擇生成歌詞",
         "subtitleGenerating": "請稍候，這可能需要幾秒鐘",
         "basedOnSelection": "根據你的選擇生成歌詞：",
         "songTitleLabel": "歌曲標題",
@@ -80,7 +82,14 @@
         "characters": "字元",
         "regenerate": "重新生成歌詞",
         "tipTitle": "提示：",
-        "tipContent": "你可以直接編輯歌詞，或點擊「重新生成」讓 AI 創作新的版本"
+        "tipContent": "你可以直接編輯歌詞，或點擊「重新生成」讓 AI 創作新的版本",
+        "generateLyrics": "生成歌詞",
+        "generateLyricsDesc": "點擊讓 AI 根據你的選擇創作歌詞",
+        "promptModalTitle": "描述你的歌詞",
+        "promptModalSubtitle": "告訴 AI 你想要什麼樣的歌詞（可選）",
+        "promptPlaceholder": "例如：櫻花樹下的愛情故事，夕陽下的相遇...",
+        "generate": "生成",
+        "cancel": "取消"
       },
       "createPreview": {
         "creating": "正在創作中...",

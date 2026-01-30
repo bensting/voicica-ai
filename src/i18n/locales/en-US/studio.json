@@ -52,8 +52,10 @@
       },
       "lyricsStep": {
         "title": "Edit your lyrics",
+        "titleInitial": "Create your lyrics",
         "titleGenerating": "AI is writing lyrics for you...",
         "subtitle": "Not satisfied? Click regenerate",
+        "subtitleInitial": "Let AI generate lyrics based on your choices",
         "subtitleGenerating": "Please wait, this may take a few seconds",
         "basedOnSelection": "Generating lyrics based on your choices:",
         "songTitleLabel": "Song Title",
@@ -80,7 +82,14 @@
         "characters": "characters",
         "regenerate": "Regenerate Lyrics",
         "tipTitle": "Tip:",
-        "tipContent": "You can edit the lyrics directly, or click \"Regenerate\" to let AI create a new version"
+        "tipContent": "You can edit the lyrics directly, or click \"Regenerate\" to let AI create a new version",
+        "generateLyrics": "Generate Lyrics",
+        "generateLyricsDesc": "Click to let AI create lyrics based on your choices",
+        "promptModalTitle": "Describe Your Lyrics",
+        "promptModalSubtitle": "Tell AI what you want in your lyrics (optional)",
+        "promptPlaceholder": "e.g., A love story under cherry blossoms, meeting at sunset...",
+        "generate": "Generate",
+        "cancel": "Cancel"
       },
       "createPreview": {
         "creating": "Creating...",

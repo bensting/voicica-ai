@@ -5,7 +5,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useNativeBack } from '@/hooks/useNativeBack';
+import { useRouter } from 'next/navigation';
 import CreateSheet from '@/components/native/CreateSheet';
 
 interface CreatePageHeaderProps {
@@ -36,8 +36,11 @@ export default function CreatePageHeader({
   showCreateSheet = true,
   rightContent,
 }: CreatePageHeaderProps) {
-  const goBack = useNativeBack();
+  const router = useRouter();
   const [isCreateSheetOpen, setIsCreateSheetOpen] = useState(false);
+
+  // 所有 create 页面返回按钮都直接返回 native 首页
+  const goBack = () => router.push('/native');
 
   return (
     <>

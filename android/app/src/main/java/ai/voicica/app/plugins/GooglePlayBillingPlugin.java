@@ -138,6 +138,12 @@ public class GooglePlayBillingPlugin extends Plugin implements PurchasesUpdatedL
             return;
         }
 
+        // 根据产品 ID 判断类型：credit_pack_ 开头为一次性购买，其他为订阅
+        String productType = productId.startsWith("credit_pack_")
+            ? BillingClient.ProductType.INAPP
+            : BillingClient.ProductType.SUBS;
+        Log.d(TAG, "Purchase product: " + productId + ", type: " + productType);
+
         // 如果 BillingClient 没准备好，尝试重新连接
         if (!billingClient.isReady()) {
             Log.d(TAG, "Billing client not ready, reconnecting...");
@@ -147,7 +153,7 @@ public class GooglePlayBillingPlugin extends Plugin implements PurchasesUpdatedL
                     if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK) {
                         Log.d(TAG, "Billing client reconnected, proceeding with purchase");
                         // 连接成功，继续购买流程
-                        executePurchase(call, productId);
+                        executePurchase(call, productId, productType);
                     } else {
                         Log.e(TAG, "Billing client reconnection failed: " + billingResult.getDebugMessage());
                         JSObject result = new JSObject();
@@ -166,17 +172,17 @@ public class GooglePlayBillingPlugin extends Plugin implements PurchasesUpdatedL
             return;
         }
 
-        executePurchase(call, productId);
+        executePurchase(call, productId, productType);
     }
 
-    private void executePurchase(PluginCall call, String productId) {
+    private void executePurchase(PluginCall call, String productId, String productType) {
         pendingPurchaseCall = call;
 
         List<QueryProductDetailsParams.Product> productList = new ArrayList<>();
         productList.add(
             QueryProductDetailsParams.Product.newBuilder()
                 .setProductId(productId)
-                .setProductType(BillingClient.ProductType.SUBS)
+                .setProductType(productType)
                 .build()
         );
 
@@ -196,23 +202,34 @@ public class GooglePlayBillingPlugin extends Plugin implements PurchasesUpdatedL
                 }
 
                 ProductDetails productDetails = list.get(0);
-                List<ProductDetails.SubscriptionOfferDetails> offers = productDetails.getSubscriptionOfferDetails();
 
-                if (offers == null || offers.isEmpty()) {
-                    if (pendingPurchaseCall != null) {
-                        pendingPurchaseCall.reject("No subscription offers available");
-                        pendingPurchaseCall = null;
-                    }
-                    return;
-                }
-
+                // 根据产品类型处理不同的购买流程
                 List<BillingFlowParams.ProductDetailsParams> productDetailsParamsList = new ArrayList<>();
-                productDetailsParamsList.add(
-                    BillingFlowParams.ProductDetailsParams.newBuilder()
-                        .setProductDetails(productDetails)
-                        .setOfferToken(offers.get(0).getOfferToken())
-                        .build()
-                );
+
+                if (productType.equals(BillingClient.ProductType.SUBS)) {
+                    // 订阅产品：需要 offerToken
+                    List<ProductDetails.SubscriptionOfferDetails> offers = productDetails.getSubscriptionOfferDetails();
+                    if (offers == null || offers.isEmpty()) {
+                        if (pendingPurchaseCall != null) {
+                            pendingPurchaseCall.reject("No subscription offers available");
+                            pendingPurchaseCall = null;
+                        }
+                        return;
+                    }
+                    productDetailsParamsList.add(
+                        BillingFlowParams.ProductDetailsParams.newBuilder()
+                            .setProductDetails(productDetails)
+                            .setOfferToken(offers.get(0).getOfferToken())
+                            .build()
+                    );
+                } else {
+                    // 一次性购买（INAPP）：不需要 offerToken
+                    productDetailsParamsList.add(
+                        BillingFlowParams.ProductDetailsParams.newBuilder()
+                            .setProductDetails(productDetails)
+                            .build()
+                    );
+                }
 
                 BillingFlowParams billingFlowParams = BillingFlowParams.newBuilder()
                         .setProductDetailsParamsList(productDetailsParamsList)

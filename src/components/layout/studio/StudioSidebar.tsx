@@ -211,8 +211,8 @@ export default function StudioSidebar({ isOpen = false, onClose }: StudioSidebar
           ${isOpen ? 'translate-x-0' : '-translate-x-full'}
         `}
       >
-        {/* 粉色渐变背景 */}
-        <div className="absolute inset-0 bg-gradient-to-b from-pink-50 via-rose-50 to-pink-100" />
+        {/* 淡粉色背景 */}
+        <div className="absolute inset-0 bg-gradient-to-b from-white via-pink-50/30 to-rose-50/50" />
 
         {/* 内容容器 */}
         <div className="relative h-full flex flex-col" style={{ paddingTop: 'var(--safe-area-inset-top, 0px)', paddingBottom: 'var(--safe-area-inset-bottom, 0px)' }}>
@@ -260,8 +260,8 @@ export default function StudioSidebar({ isOpen = false, onClose }: StudioSidebar
       <nav
         className={`
           hidden lg:block fixed left-0 overflow-y-auto overflow-x-hidden
-          bg-gradient-to-b from-pink-50 via-rose-50 to-pink-100
-          border-r border-pink-100/50
+          bg-gradient-to-b from-white via-pink-50/40 to-rose-50/60
+          border-r border-pink-100/30
           top-[60px] h-[calc(100vh-60px)] z-20
           transition-all duration-300 ease-in-out
           ${isExpanded ? 'w-64' : 'w-16'}

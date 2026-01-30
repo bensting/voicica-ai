@@ -72,7 +72,7 @@ export default function Navbar() {
 
               {/* Desktop: Show full buttons */}
               <div className="hidden md:flex items-center gap-3">
-                <LanguageSwitcher theme="dark" variant="compact" />
+                <LanguageSwitcher variant="pink" />
                 <LoginButton />
               </div>
             </div>

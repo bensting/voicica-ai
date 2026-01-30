@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import {
   handleGooglePlayRenewal,
   handleGooglePlayCancellation,
+  handleGooglePlayReactivation,
 } from '@/actions/google-play';
 
 /**
@@ -126,14 +127,21 @@ export async function POST(request: NextRequest) {
         break;
 
       case NotificationType.SUBSCRIPTION_RENEWED:
-      case NotificationType.SUBSCRIPTION_RECOVERED:
-      case NotificationType.SUBSCRIPTION_RESTARTED:
-        // 续订/恢复
-        console.log('🔄 [GooglePlay Webhook] 订阅续订/恢复');
+        // 自动续费成功 - 需要添加积分
+        console.log('🔄 [GooglePlay Webhook] 订阅自动续费');
         await handleGooglePlayRenewal({
           purchaseToken,
           productId: subscriptionId,
           eventTime,
+        });
+        break;
+
+      case NotificationType.SUBSCRIPTION_RECOVERED:
+      case NotificationType.SUBSCRIPTION_RESTARTED:
+        // 从暂停恢复 / 取消后重新激活 - 不添加积分（客户端已处理或订阅期没变）
+        console.log('🔄 [GooglePlay Webhook] 订阅恢复/重新激活（不添加积分）');
+        await handleGooglePlayReactivation({
+          purchaseToken,
         });
         break;
 

@@ -250,7 +250,7 @@ export default function TTSSamples() {
   );
 
   return (
-    <section className="py-12 sm:py-16 px-3 sm:px-4 bg-gradient-to-b from-white via-pink-50/50 to-rose-50">
+    <section className="py-12 sm:py-16 px-3 sm:px-4 bg-gray-50 border-t border-gray-100">
       <div className="max-w-7xl mx-auto">
         {/* Section Header */}
         <div className="text-center mb-8 sm:mb-12">

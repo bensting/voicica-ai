@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Music, Mic2, Mic } from 'lucide-react';
+import { Music, Mic, Video, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useTTSDemo } from './hooks';
 import { TTSProductInfo, TTSDemoPanel } from './components';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -10,9 +10,9 @@ import { GradientButton } from '@/components/ui';
 
 // 产品标签配置
 const PRODUCT_TABS = [
-  { id: 'ai-music', label: 'AI Music', icon: Music },
-  { id: 'ai-cover', label: 'AI Cover', icon: Mic2 },
   { id: 'text-to-voice', label: 'Text to Voice', icon: Mic },
+  { id: 'ai-music', label: 'AI Music', icon: Music },
+  { id: 'ai-video', label: 'AI Video', icon: Video },
 ] as const;
 
 type ProductTab = typeof PRODUCT_TABS[number]['id'];
@@ -132,41 +132,42 @@ export default function TTSSamples() {
     </div>
   );
 
-  // 渲染 AI Cover 内容
-  const renderAICoverContent = () => (
+  // 渲染 AI Video 内容
+  const renderAIVideoContent = () => (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
       {/* 左侧：产品介绍 */}
       <div className="flex flex-col justify-center">
         <div className="flex items-center gap-3 mb-4">
           <div className="w-10 h-10 bg-gradient-to-br from-pink-400 to-rose-400 rounded-lg flex items-center justify-center">
-            <Mic2 className="w-5 h-5 text-white" />
+            <Video className="w-5 h-5 text-white" />
           </div>
-          <h3 className="text-lg font-bold text-gray-900">AI Cover Generator</h3>
+          <h3 className="text-lg font-bold text-gray-900">AI Video Generator</h3>
         </div>
 
         <h4 className="text-lg md:text-xl font-bold text-gray-900 mb-5 leading-snug">
-          Transform Any Song with{' '}
+          Create{' '}
           <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-rose-500">
-            AI Voices
-          </span>
+            Stunning Videos
+          </span>{' '}
+          from Text
         </h4>
 
         <ul className="space-y-3 mb-8 text-gray-600">
           <li className="flex items-start gap-2">
             <span className="text-pink-500 mt-1">•</span>
-            <span>Upload any song and change the voice</span>
+            <span>Transform text prompts into cinematic videos</span>
           </li>
           <li className="flex items-start gap-2">
             <span className="text-pink-500 mt-1">•</span>
-            <span>100+ AI voice models to choose from</span>
+            <span>Multiple video styles and resolutions</span>
           </li>
           <li className="flex items-start gap-2">
             <span className="text-pink-500 mt-1">•</span>
-            <span>Clone your own voice for personalized covers</span>
+            <span>High-quality 1080p output</span>
           </li>
           <li className="flex items-start gap-2">
             <span className="text-pink-500 mt-1">•</span>
-            <span>High-quality audio preservation</span>
+            <span>Perfect for social media content</span>
           </li>
         </ul>
 
@@ -174,9 +175,9 @@ export default function TTSSamples() {
           size="lg"
           variant="pink-rose"
           className="w-fit"
-          onClick={() => router.push('/studio/ai-cover')}
+          onClick={() => router.push('/studio/ai-video/text-to-video')}
         >
-          Create Cover Now
+          Create Video Now
         </GradientButton>
       </div>
 
@@ -184,14 +185,27 @@ export default function TTSSamples() {
       <div className="bg-gradient-to-br from-pink-50 to-rose-50 rounded-2xl p-6 border border-pink-200 flex items-center justify-center min-h-[300px]">
         <div className="text-center">
           <div className="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-pink-400 to-rose-400 rounded-full flex items-center justify-center">
-            <Mic2 className="w-10 h-10 text-white" />
+            <Video className="w-10 h-10 text-white" />
           </div>
-          <p className="text-gray-600 mb-4">Upload a song, select an AI voice</p>
-          <p className="text-gray-900 font-semibold">Get your personalized cover instantly</p>
+          <p className="text-gray-600 mb-4">Describe your vision in text</p>
+          <p className="text-gray-900 font-semibold">AI generates video in minutes</p>
         </div>
       </div>
     </div>
   );
+
+  // 切换到上一个/下一个产品
+  const goToPrevTab = () => {
+    const currentIndex = PRODUCT_TABS.findIndex(tab => tab.id === activeTab);
+    const prevIndex = currentIndex === 0 ? PRODUCT_TABS.length - 1 : currentIndex - 1;
+    setActiveTab(PRODUCT_TABS[prevIndex].id);
+  };
+
+  const goToNextTab = () => {
+    const currentIndex = PRODUCT_TABS.findIndex(tab => tab.id === activeTab);
+    const nextIndex = currentIndex === PRODUCT_TABS.length - 1 ? 0 : currentIndex + 1;
+    setActiveTab(PRODUCT_TABS[nextIndex].id);
+  };
 
   // 渲染 Text to Voice 内容
   const renderTTSContent = () => (
@@ -274,11 +288,30 @@ export default function TTSSamples() {
           </div>
         </div>
 
-        {/* Main Content Card */}
-        <div className="bg-white rounded-3xl p-4 sm:p-6 md:p-12 border border-pink-100 shadow-xl shadow-pink-100/50">
-          {activeTab === 'ai-music' && renderAIMusicContent()}
-          {activeTab === 'ai-cover' && renderAICoverContent()}
-          {activeTab === 'text-to-voice' && renderTTSContent()}
+        {/* Main Content Card with Arrows */}
+        <div className="relative flex items-center gap-4">
+          {/* 左箭头 */}
+          <button
+            onClick={goToPrevTab}
+            className="hidden md:flex flex-shrink-0 w-12 h-12 items-center justify-center rounded-full bg-white border border-pink-200 text-pink-400 hover:text-pink-600 hover:border-pink-300 hover:shadow-lg transition-all duration-200"
+          >
+            <ChevronLeft className="w-6 h-6" />
+          </button>
+
+          {/* 内容卡片 */}
+          <div className="flex-1 bg-white rounded-3xl p-4 sm:p-6 md:p-12 border border-pink-100 shadow-xl shadow-pink-100/50">
+            {activeTab === 'text-to-voice' && renderTTSContent()}
+            {activeTab === 'ai-music' && renderAIMusicContent()}
+            {activeTab === 'ai-video' && renderAIVideoContent()}
+          </div>
+
+          {/* 右箭头 */}
+          <button
+            onClick={goToNextTab}
+            className="hidden md:flex flex-shrink-0 w-12 h-12 items-center justify-center rounded-full bg-white border border-pink-200 text-pink-400 hover:text-pink-600 hover:border-pink-300 hover:shadow-lg transition-all duration-200"
+          >
+            <ChevronRight className="w-6 h-6" />
+          </button>
         </div>
       </div>
     </section>

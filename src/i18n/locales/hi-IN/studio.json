@@ -125,6 +125,13 @@
     "upgrade": "अपग्रेड करें",
     "dailyTasks": "रिवॉर्ड्स",
     "tts": "टेक्स्ट टू स्पीच",
+    "category": {
+      "voiceover": "वॉयसओवर AI",
+      "music": "संगीत AI",
+      "aiVideo": "वीडियो AI",
+      "story": "कहानी AI",
+      "tools": "मुफ्त टूल्स"
+    },
     "menu": {
       "home": "होम",
       "creationHub": "क्रिएशन हब",

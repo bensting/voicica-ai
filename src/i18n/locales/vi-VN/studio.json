@@ -125,6 +125,13 @@
     "upgrade": "Nâng cấp",
     "dailyTasks": "Phần thưởng",
     "tts": "Chuyển văn bản thành giọng nói",
+    "category": {
+      "voiceover": "Giọng nói AI",
+      "music": "Âm nhạc AI",
+      "aiVideo": "Video AI",
+      "story": "Câu chuyện AI",
+      "tools": "Công cụ miễn phí"
+    },
     "menu": {
       "home": "Trang chủ",
       "creationHub": "Trung tâm sáng tạo",

@@ -125,6 +125,13 @@
     "upgrade": "アップグレード",
     "dailyTasks": "報酬",
     "tts": "テキスト読み上げ",
+    "category": {
+      "voiceover": "ボイスオーバー AI",
+      "music": "ミュージック AI",
+      "aiVideo": "ビデオ AI",
+      "story": "ストーリー AI",
+      "tools": "無料ツール"
+    },
     "menu": {
       "home": "ホーム",
       "creationHub": "クリエイションハブ",

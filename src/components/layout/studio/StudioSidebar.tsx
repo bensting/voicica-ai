@@ -6,7 +6,8 @@ import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { X, ChevronRight } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { studioMenuCategories } from '@/config/studioMenu';
+import { studioMenuCategories, categoryOrder } from '@/config/studioMenu';
+import type { MenuCategory } from '@/config/studioMenu';
 
 interface StudioSidebarProps {
   /** 桌面端不需要，移动端需要控制打开/关闭 */
@@ -16,32 +17,75 @@ interface StudioSidebarProps {
 }
 
 /**
- * Studio 侧边栏组件（响应式）
- *
- * 桌面端（>= lg）：
- * - 固定侧边栏（悬停展开）
- * - 位置：左侧，top-[60px]
- *
- * 移动端（< lg）：
- * - 全屏菜单
- * - 需要 isOpen 和 onClose props
+ * Studio 侧边栏组件（响应式）- 少女粉风格
  */
 export default function StudioSidebar({ isOpen = false, onClose }: StudioSidebarProps) {
   const { t } = useLanguage();
   const pathname = usePathname();
   const [isExpanded, setIsExpanded] = useState(false);
 
-  // 渲染菜单内容（移动端和桌面端共用）
+  // 渲染分类区块（桌面端用）
+  const renderCategorySection = (categoryKey: MenuCategory, labelKey: string, withBorder?: boolean) => {
+    const items = studioMenuCategories[categoryKey];
+    if (items.length === 0) return null;
+
+    return (
+      <div className={`mb-4 ${withBorder ? 'border-t border-pink-100 pt-4' : ''}`}>
+        <div className={`px-4 py-2 ${isExpanded ? 'lg:block' : 'lg:hidden'}`}>
+          <span className="text-xs font-semibold text-pink-400 uppercase">
+            {t(labelKey)}
+          </span>
+        </div>
+        {items.map((item) => {
+          const isActive = pathname === item.href;
+          return (
+            <Link
+              key={item.id}
+              href={item.href}
+              onClick={onClose}
+              className={`
+                flex items-center gap-3 px-3 py-2.5 mx-2 rounded-xl transition-all duration-200
+                ${isActive
+                  ? 'bg-white/80 shadow-sm'
+                  : 'hover:bg-white'
+                }
+              `}
+            >
+              <div className={`
+                flex-shrink-0 w-9 h-9 rounded-lg flex items-center justify-center transition-all
+                ${isActive
+                  ? 'bg-gradient-to-br from-pink-400 to-rose-400 text-white shadow-sm'
+                  : 'bg-white/60 text-pink-500'
+                }
+              `}>
+                {item.icon}
+              </div>
+              <span
+                className={`
+                  text-sm font-medium whitespace-nowrap transition-all
+                  lg:transition-opacity lg:duration-300
+                  ${isExpanded ? 'lg:opacity-100' : 'lg:opacity-0 lg:w-0 lg:overflow-hidden'}
+                  ${isActive ? 'text-pink-600' : 'text-gray-600'}
+                `}
+              >
+                {t(item.labelKey)}
+              </span>
+              {/* 选中指示器 */}
+              {isActive && isExpanded && (
+                <div className="ml-auto w-1.5 h-6 bg-gradient-to-b from-pink-400 to-rose-400 rounded-full" />
+              )}
+            </Link>
+          );
+        })}
+      </div>
+    );
+  };
+
+  // 渲染菜单内容（桌面端用）
   const renderMenuContent = () => (
     <div className="py-4">
         {/* 主要功能 */}
-        <div className="mb-6">
-          {/* 移动端标题 */}
-          <div className="px-4 py-2 lg:hidden">
-            <span className="text-xs font-semibold text-gray-400 uppercase">
-              {t('studio.menu.home')}
-            </span>
-          </div>
+        <div className="mb-4">
           {studioMenuCategories.main.map((item) => {
             const isActive = pathname === item.href;
             return (
@@ -50,271 +94,53 @@ export default function StudioSidebar({ isOpen = false, onClose }: StudioSidebar
                 href={item.href}
                 onClick={onClose}
                 className={`
-                  flex items-center gap-3 px-4 py-3 transition-colors
+                  flex items-center gap-3 px-3 py-2.5 mx-2 rounded-xl transition-all duration-200
                   ${isActive
-                    ? 'bg-purple-50 text-purple-600 border-r-4 lg:border-r-2 border-purple-600'
-                    : 'text-gray-700 hover:bg-gray-50'
+                    ? 'bg-white/80 shadow-sm'
+                    : 'hover:bg-white'
                   }
                 `}
               >
-                <span className="flex-shrink-0">{item.icon}</span>
+                <div className={`
+                  flex-shrink-0 w-9 h-9 rounded-lg flex items-center justify-center transition-all
+                  ${isActive
+                    ? 'bg-gradient-to-br from-pink-400 to-rose-400 text-white shadow-sm'
+                    : 'bg-white/60 text-pink-500'
+                  }
+                `}>
+                  {item.icon}
+                </div>
                 <span
                   className={`
-                    text-sm font-medium whitespace-nowrap
+                    text-sm font-medium whitespace-nowrap transition-all
                     lg:transition-opacity lg:duration-300
-                    ${isExpanded ? 'lg:opacity-100' : 'lg:opacity-0 lg:w-0'}
+                    ${isExpanded ? 'lg:opacity-100' : 'lg:opacity-0 lg:w-0 lg:overflow-hidden'}
+                    ${isActive ? 'text-pink-600' : 'text-gray-600'}
                   `}
                 >
                   {t(item.labelKey)}
                 </span>
+                {isActive && isExpanded && (
+                  <div className="ml-auto w-1.5 h-6 bg-gradient-to-b from-pink-400 to-rose-400 rounded-full" />
+                )}
               </Link>
             );
           })}
         </div>
 
-        {/* AI Video */}
-        {studioMenuCategories.ai_video.length > 0 && (
-          <div className="mb-6">
-            {/* 桌面端展开时显示，移动端始终显示 */}
-            <div className={`px-4 py-2 ${isExpanded ? 'lg:block' : 'lg:hidden'}`}>
-              <span className="text-xs font-semibold text-gray-400 uppercase">
-                Video AI
-              </span>
-            </div>
-            {studioMenuCategories.ai_video.map((item) => {
-              const isActive = pathname === item.href;
-              return (
-                <Link
-                  key={item.id}
-                  href={item.href}
-                  onClick={onClose}
-                  className={`
-                    flex items-center gap-3 px-4 py-3 transition-colors
-                    ${isActive
-                      ? 'bg-purple-50 text-purple-600 border-r-4 lg:border-r-2 border-purple-600'
-                      : 'text-gray-700 hover:bg-gray-50'
-                    }
-                  `}
-                >
-                  <span className="flex-shrink-0">{item.icon}</span>
-                  <span
-                    className={`
-                      text-sm font-medium whitespace-nowrap
-                      lg:transition-opacity lg:duration-300
-                      ${isExpanded ? 'lg:opacity-100' : 'lg:opacity-0 lg:w-0'}
-                    `}
-                  >
-                    {t(item.labelKey)}
-                  </span>
-                </Link>
-              );
-            })}
+        {/* 按配置顺序渲染分类 */}
+        {categoryOrder.map((category) => (
+          <div key={category.key}>
+            {renderCategorySection(category.key, category.labelKey)}
           </div>
-        )}
+        ))}
 
-        {/* Voiceover AI */}
-        {studioMenuCategories.voiceover.length > 0 && (
-          <div className="mb-6">
-            {/* 桌面端展开时显示，移动端始终显示 */}
-            <div className={`px-4 py-2 ${isExpanded ? 'lg:block' : 'lg:hidden'}`}>
-              <span className="text-xs font-semibold text-gray-400 uppercase">
-                Voiceover AI
-              </span>
-            </div>
-            {studioMenuCategories.voiceover.map((item) => {
-              const isActive = pathname === item.href;
-              return (
-                <Link
-                  key={item.id}
-                  href={item.href}
-                  onClick={onClose}
-                  className={`
-                    flex items-center gap-3 px-4 py-3 transition-colors
-                    ${isActive
-                      ? 'bg-purple-50 text-purple-600 border-r-4 lg:border-r-2 border-purple-600'
-                      : 'text-gray-700 hover:bg-gray-50'
-                    }
-                  `}
-                >
-                  <span className="flex-shrink-0">{item.icon}</span>
-                  <span
-                    className={`
-                      text-sm font-medium whitespace-nowrap
-                      lg:transition-opacity lg:duration-300
-                      ${isExpanded ? 'lg:opacity-100' : 'lg:opacity-0 lg:w-0'}
-                    `}
-                  >
-                    {t(item.labelKey)}
-                  </span>
-                </Link>
-              );
-            })}
-          </div>
-        )}
-
-        {/* Music AI */}
-        {studioMenuCategories.music.length > 0 && (
-          <div className="mb-6">
-            {/* 桌面端展开时显示，移动端始终显示 */}
-            <div className={`px-4 py-2 ${isExpanded ? 'lg:block' : 'lg:hidden'}`}>
-              <span className="text-xs font-semibold text-gray-400 uppercase">
-                Music AI
-              </span>
-            </div>
-            {studioMenuCategories.music.map((item) => {
-              const isActive = pathname === item.href;
-              return (
-                <Link
-                  key={item.id}
-                  href={item.href}
-                  onClick={onClose}
-                  className={`
-                    flex items-center gap-3 px-4 py-3 transition-colors
-                    ${isActive
-                      ? 'bg-purple-50 text-purple-600 border-r-4 lg:border-r-2 border-purple-600'
-                      : 'text-gray-700 hover:bg-gray-50'
-                    }
-                  `}
-                >
-                  <span className="flex-shrink-0">{item.icon}</span>
-                  <span
-                    className={`
-                      text-sm font-medium whitespace-nowrap
-                      lg:transition-opacity lg:duration-300
-                      ${isExpanded ? 'lg:opacity-100' : 'lg:opacity-0 lg:w-0'}
-                    `}
-                  >
-                    {t(item.labelKey)}
-                  </span>
-                </Link>
-              );
-            })}
-          </div>
-        )}
-
-        {/* Story Maker AI */}
-        {studioMenuCategories.story.length > 0 && (
-          <div className="mb-6">
-            {/* 桌面端展开时显示，移动端始终显示 */}
-            <div className={`px-4 py-2 ${isExpanded ? 'lg:block' : 'lg:hidden'}`}>
-              <span className="text-xs font-semibold text-gray-400 uppercase">
-                Story Maker AI
-              </span>
-            </div>
-            {studioMenuCategories.story.map((item) => {
-              const isActive = pathname === item.href;
-              return (
-                <Link
-                  key={item.id}
-                  href={item.href}
-                  onClick={onClose}
-                  className={`
-                    flex items-center gap-3 px-4 py-3 transition-colors
-                    ${isActive
-                      ? 'bg-purple-50 text-purple-600 border-r-4 lg:border-r-2 border-purple-600'
-                      : 'text-gray-700 hover:bg-gray-50'
-                    }
-                  `}
-                >
-                  <span className="flex-shrink-0">{item.icon}</span>
-                  <span
-                    className={`
-                      text-sm font-medium whitespace-nowrap
-                      lg:transition-opacity lg:duration-300
-                      ${isExpanded ? 'lg:opacity-100' : 'lg:opacity-0 lg:w-0'}
-                    `}
-                  >
-                    {t(item.labelKey)}
-                  </span>
-                </Link>
-              );
-            })}
-          </div>
-        )}
-
-        {/* Tools (免费工具) */}
-        {studioMenuCategories.tools.length > 0 && (
-          <div className="mb-6">
-            {/* 桌面端展开时显示，移动端始终显示 */}
-            <div className={`px-4 py-2 ${isExpanded ? 'lg:block' : 'lg:hidden'}`}>
-              <span className="text-xs font-semibold text-gray-400 uppercase">
-                {t('studio.menu.tools')}
-              </span>
-            </div>
-            {studioMenuCategories.tools.map((item) => {
-              const isActive = pathname === item.href;
-              return (
-                <Link
-                  key={item.id}
-                  href={item.href}
-                  onClick={onClose}
-                  className={`
-                    flex items-center gap-3 px-4 py-3 transition-colors
-                    ${isActive
-                      ? 'bg-purple-50 text-purple-600 border-r-4 lg:border-r-2 border-purple-600'
-                      : 'text-gray-700 hover:bg-gray-50'
-                    }
-                  `}
-                >
-                  <span className="flex-shrink-0">{item.icon}</span>
-                  <span
-                    className={`
-                      text-sm font-medium whitespace-nowrap
-                      lg:transition-opacity lg:duration-300
-                      ${isExpanded ? 'lg:opacity-100' : 'lg:opacity-0 lg:w-0'}
-                    `}
-                  >
-                    {t(item.labelKey)}
-                  </span>
-                </Link>
-              );
-            })}
-          </div>
-        )}
-
-        {/* Account (我的账户) */}
-        {studioMenuCategories.account.length > 0 && (
-          <div className="mb-6 border-t border-gray-200 pt-4">
-            {/* 桌面端展开时显示，移动端始终显示 */}
-            <div className={`px-4 py-2 ${isExpanded ? 'lg:block' : 'lg:hidden'}`}>
-              <span className="text-xs font-semibold text-gray-400 uppercase">
-                {t('studio.menu.account')}
-              </span>
-            </div>
-            {studioMenuCategories.account.map((item) => {
-              const isActive = pathname === item.href;
-              return (
-                <Link
-                  key={item.id}
-                  href={item.href}
-                  onClick={onClose}
-                  className={`
-                    flex items-center gap-3 px-4 py-3 transition-colors
-                    ${isActive
-                      ? 'bg-purple-50 text-purple-600 border-r-4 lg:border-r-2 border-purple-600'
-                      : 'text-gray-700 hover:bg-gray-50'
-                    }
-                  `}
-                >
-                  <span className="flex-shrink-0">{item.icon}</span>
-                  <span
-                    className={`
-                      text-sm font-medium whitespace-nowrap
-                      lg:transition-opacity lg:duration-300
-                      ${isExpanded ? 'lg:opacity-100' : 'lg:opacity-0 lg:w-0'}
-                    `}
-                  >
-                    {t(item.labelKey)}
-                  </span>
-                </Link>
-              );
-            })}
-          </div>
-        )}
+        {/* Account (我的账户) - 始终在最后，带分隔线 */}
+        {renderCategorySection('account', 'studio.menu.account', true)}
       </div>
     );
 
-  // 渲染移动端菜单项（精致水平布局）
+  // 渲染移动端菜单项
   const renderMobileMenuItem = (item: { id: string; href: string; icon: React.ReactNode; labelKey: string }) => {
     const isActive = pathname === item.href;
     return (
@@ -325,25 +151,29 @@ export default function StudioSidebar({ isOpen = false, onClose }: StudioSidebar
         className={`
           flex items-center gap-3 px-3 py-3 transition-all rounded-xl
           ${isActive
-            ? 'bg-purple-100 text-purple-700'
-            : 'text-gray-700 hover:bg-gray-50 active:bg-gray-100'}
+            ? 'bg-pink-50'
+            : 'hover:bg-pink-50/50 active:bg-pink-100'}
         `}
       >
         {/* 图标容器 */}
         <div className={`
-          flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center
+          flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center transition-all
           ${isActive
-            ? 'bg-purple-600 text-white shadow-sm'
-            : 'bg-gray-100 text-gray-600'}
+            ? 'bg-gradient-to-br from-pink-400 to-rose-400 text-white shadow-sm'
+            : 'bg-pink-50 text-pink-500'}
         `}>
           {item.icon}
         </div>
         {/* 文字 */}
-        <span className={`flex-1 text-sm font-medium ${isActive ? 'text-purple-700' : 'text-gray-800'}`}>
+        <span className={`flex-1 text-sm font-medium ${isActive ? 'text-pink-600' : 'text-gray-700'}`}>
           {t(item.labelKey)}
         </span>
-        {/* 箭头 */}
-        <ChevronRight className={`w-4 h-4 flex-shrink-0 ${isActive ? 'text-purple-400' : 'text-gray-300'}`} />
+        {/* 选中指示器或箭头 */}
+        {isActive ? (
+          <div className="w-1.5 h-6 bg-gradient-to-b from-pink-400 to-rose-400 rounded-full" />
+        ) : (
+          <ChevronRight className="w-4 h-4 flex-shrink-0 text-gray-300" />
+        )}
       </Link>
     );
   };
@@ -353,16 +183,16 @@ export default function StudioSidebar({ isOpen = false, onClose }: StudioSidebar
     if (items.length === 0) return null;
     return (
       <div className="mb-5">
-        <h3 className="px-5 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">
+        <h3 className="px-5 py-2 text-xs font-semibold text-pink-400 uppercase tracking-wider">
           {title}
         </h3>
-        <div className="mx-4 bg-white rounded-2xl shadow-sm border border-gray-100 p-1.5">
+        <div className="mx-4 bg-white/80 backdrop-blur-sm rounded-2xl shadow-sm border border-pink-100/50 p-1.5">
           {items.map((item, index) => (
             <div key={item.id}>
               {renderMobileMenuItem(item)}
               {/* 添加分隔线（最后一项不加） */}
               {index < items.length - 1 && (
-                <div className="mx-3 border-b border-gray-100" />
+                <div className="mx-3 border-b border-pink-100/50" />
               )}
             </div>
           ))}
@@ -381,16 +211,16 @@ export default function StudioSidebar({ isOpen = false, onClose }: StudioSidebar
           ${isOpen ? 'translate-x-0' : '-translate-x-full'}
         `}
       >
-        {/* 背景 */}
-        <div className="absolute inset-0 bg-gray-50" />
+        {/* 淡粉色背景 */}
+        <div className="absolute inset-0 bg-gradient-to-b from-white via-pink-50/30 to-rose-50/50" />
 
         {/* 内容容器 */}
         <div className="relative h-full flex flex-col" style={{ paddingTop: 'var(--safe-area-inset-top, 0px)', paddingBottom: 'var(--safe-area-inset-bottom, 0px)' }}>
           {/* 头部：关闭按钮 + Logo */}
-          <div className="flex-shrink-0 flex items-center justify-between px-4 py-2.5 bg-white border-b border-gray-100">
+          <div className="flex-shrink-0 flex items-center justify-between px-4 py-2.5 bg-white/60 backdrop-blur-sm border-b border-pink-100/50">
             <button
               onClick={onClose}
-              className="w-9 h-9 flex items-center justify-center text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-xl transition-colors"
+              className="w-9 h-9 flex items-center justify-center text-pink-400 hover:text-pink-600 hover:bg-pink-50 rounded-xl transition-colors"
             >
               <X className="w-5 h-5" />
             </button>
@@ -409,23 +239,18 @@ export default function StudioSidebar({ isOpen = false, onClose }: StudioSidebar
           </div>
 
           {/* 滚动区域 */}
-          <div className="flex-1 overflow-y-auto pb-8">
+          <div className="flex-1 overflow-y-auto pb-8 pt-4">
             {/* HOME */}
             {renderMobileSection(t('studio.menu.home'), studioMenuCategories.main)}
 
-            {/* VOICEOVER AI */}
-            {renderMobileSection('VOICEOVER AI', studioMenuCategories.voiceover)}
+            {/* 按配置顺序渲染分类 */}
+            {categoryOrder.map((category) => (
+              <div key={category.key}>
+                {renderMobileSection(t(category.labelKey), studioMenuCategories[category.key])}
+              </div>
+            ))}
 
-            {/* MUSIC AI */}
-            {renderMobileSection('MUSIC AI', studioMenuCategories.music)}
-
-            {/* STORY MAKER AI */}
-            {renderMobileSection('STORY MAKER AI', studioMenuCategories.story)}
-
-            {/* FREE TOOLS */}
-            {renderMobileSection(t('studio.menu.tools'), studioMenuCategories.tools)}
-
-            {/* ACCOUNT */}
+            {/* ACCOUNT - 始终在最后 */}
             {renderMobileSection(t('studio.menu.account'), studioMenuCategories.account)}
           </div>
         </div>
@@ -434,7 +259,9 @@ export default function StudioSidebar({ isOpen = false, onClose }: StudioSidebar
       {/* ========== 桌面端侧边栏 ========== */}
       <nav
         className={`
-          hidden lg:block fixed left-0 bg-white border-r border-gray-200 overflow-y-auto
+          hidden lg:block fixed left-0 overflow-y-auto overflow-x-hidden
+          bg-gradient-to-b from-white via-pink-50/40 to-rose-50/60
+          border-r border-pink-100/30
           top-[60px] h-[calc(100vh-60px)] z-20
           transition-all duration-300 ease-in-out
           ${isExpanded ? 'w-64' : 'w-16'}

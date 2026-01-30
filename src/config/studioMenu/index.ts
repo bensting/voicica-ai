@@ -6,14 +6,26 @@
 
 import { studioMenuItems as devItems } from './menu.development';
 import { studioMenuItems as prodItems } from './menu.production';
-import type { StudioMenuItemConfig, StudioMenuCategories, MenuCategory } from './types';
+import type { StudioMenuItemConfig, StudioMenuCategories, MenuCategory, CategoryConfig, CategoryOrder } from './types';
 
 // 根据环境选择配置
 const isProduction = process.env.NODE_ENV === 'production';
 export const studioMenuItems: StudioMenuItemConfig[] = isProduction ? prodItems : devItems;
 
 // 导出类型
-export type { StudioMenuItemConfig, StudioMenuCategories, MenuCategory };
+export type { StudioMenuItemConfig, StudioMenuCategories, MenuCategory, CategoryConfig, CategoryOrder };
+
+/**
+ * 分类显示顺序配置（不包含 main 和 account）
+ * 首页导航和 Studio 侧边栏都使用此配置
+ */
+export const categoryOrder: CategoryOrder = [
+  { key: 'voiceover', labelKey: 'studio.category.voiceover', showInNav: true },
+  { key: 'music', labelKey: 'studio.category.music', showInNav: true },
+  { key: 'ai_video', labelKey: 'studio.category.aiVideo', showInNav: true },
+  { key: 'story', labelKey: 'studio.category.story', showInNav: true },
+  { key: 'tools', labelKey: 'studio.category.tools', showInNav: true },
+];
 
 /**
  * 按分类组织的菜单项（只包含启用的项）

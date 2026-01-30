@@ -53,12 +53,9 @@ export default function Navbar() {
             </div>
 
             {/* Center Section: Navigation Links (desktop only) */}
-            <div className="flex-1 flex justify-center">
-              {/* Desktop: Navigation Links */}
-              <div className="hidden md:flex">
-                <div className="px-6 py-2 bg-white/40 backdrop-blur-md rounded-full border border-white/30 shadow-sm">
-                  <NavLinks />
-                </div>
+            <div className="hidden md:flex flex-1 justify-center mx-4">
+              <div className="px-4 py-2 bg-white/40 backdrop-blur-md rounded-full border border-white/30 shadow-sm">
+                <NavLinks />
               </div>
             </div>
 
@@ -66,13 +63,13 @@ export default function Navbar() {
             <div className="flex items-center gap-2 md:gap-3">
               {/* Mobile: Show icons */}
               <div className="flex md:hidden items-center gap-2">
-                <LanguageSwitcher theme="dark" variant="compact" />
+                <LanguageSwitcher variant="pink-icon" />
                 <LoginButton />
               </div>
 
               {/* Desktop: Show full buttons */}
               <div className="hidden md:flex items-center gap-3">
-                <LanguageSwitcher theme="dark" variant="compact" />
+                <LanguageSwitcher variant="pink" />
                 <LoginButton />
               </div>
             </div>

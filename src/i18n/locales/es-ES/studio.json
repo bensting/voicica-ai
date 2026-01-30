@@ -125,6 +125,13 @@
     "upgrade": "Mejorar",
     "dailyTasks": "Recompensas",
     "tts": "Texto a voz",
+    "category": {
+      "voiceover": "Voz AI",
+      "music": "Música AI",
+      "aiVideo": "Video AI",
+      "story": "Historia AI",
+      "tools": "Herramientas Gratis"
+    },
     "menu": {
       "home": "Inicio",
       "creationHub": "Centro de creación",

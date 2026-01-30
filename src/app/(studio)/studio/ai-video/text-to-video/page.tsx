@@ -14,6 +14,7 @@ import {
   type VideoModel,
 } from '@/config/native/videoModels';
 import { createVideoTask, getVideoTaskStatus, type VideoTaskStatus } from '@/actions/video';
+import { type VideoResolution, type VideoDuration } from '@/config/creditsCost';
 
 // localStorage key
 const STORAGE_KEY = 'video_draft_v2';
@@ -197,8 +198,8 @@ export default function TextToVideoPage() {
 
       const result = await createVideoTask({
         prompt: prompt.trim(),
-        resolution: quality as '480p' | '720p' | '768p' | '1080p',
-        duration: durationNum as 5 | 8 | 10,
+        resolution: quality as VideoResolution,
+        duration: durationNum as VideoDuration,
         aspect_ratio: aspectRatio as '16:9' | '9:16',
         model: selectedModel?.apiModelId || model,
       });

@@ -8,6 +8,15 @@ interface DailyCount {
   count: number;
 }
 
+interface TaskStats {
+  total: number;
+  newInRange: number;
+  successCount: number;
+  failureCount: number;
+  processingCount: number;
+  daily: DailyCount[];
+}
+
 interface StatsData {
   users: {
     registered: {
@@ -21,6 +30,14 @@ interface StatsData {
       daily: DailyCount[];
     };
   };
+  tasks: {
+    tts: TaskStats;
+    music: TaskStats;
+    video: TaskStats;
+    image: TaskStats;
+    cover: TaskStats;
+    dialogue: TaskStats;
+  };
   ttsRecords: {
     total: number;
     newInRange: number;
@@ -30,6 +47,18 @@ interface StatsData {
   };
 }
 
+// 任务类型配置
+const TASK_TYPES = [
+  { key: 'tts', label: 'TTS', color: 'green', icon: '🎤' },
+  { key: 'music', label: 'Music', color: 'pink', icon: '🎵' },
+  { key: 'video', label: 'Video', color: 'blue', icon: '🎬' },
+  { key: 'image', label: 'Image', color: 'purple', icon: '🖼️' },
+  { key: 'cover', label: 'Cover', color: 'orange', icon: '🎙️' },
+  { key: 'dialogue', label: 'Dialogue', color: 'cyan', icon: '💬' },
+] as const;
+
+type TaskType = (typeof TASK_TYPES)[number]['key'];
+
 /**
  * 管理后台统计页面
  */
@@ -37,6 +66,8 @@ export default function AdminStatsPage() {
   const [timeRange, setTimeRange] = useState<TimeRange>('7days');
   const [stats, setStats] = useState<StatsData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [activeTaskTab, setActiveTaskTab] = useState<TaskType>('tts');
+  const [activeUserTab, setActiveUserTab] = useState<'registered' | 'anonymous'>('registered');
 
   const loadStats = useCallback(async () => {
     setLoading(true);
@@ -78,7 +109,7 @@ export default function AdminStatsPage() {
     color = 'purple',
   }: {
     data: DailyCount[];
-    color?: 'purple' | 'blue' | 'green';
+    color?: 'purple' | 'blue' | 'green' | 'pink' | 'orange' | 'cyan' | 'yellow';
   }) => {
     if (data.length === 0) {
       return <div className="text-sm text-gray-400 text-center py-4">暂无数据</div>;
@@ -89,6 +120,10 @@ export default function AdminStatsPage() {
       purple: 'bg-purple-500',
       blue: 'bg-blue-500',
       green: 'bg-green-500',
+      pink: 'bg-pink-500',
+      orange: 'bg-orange-500',
+      cyan: 'bg-cyan-500',
+      yellow: 'bg-yellow-500',
     };
 
     return (
@@ -146,187 +181,192 @@ export default function AdminStatsPage() {
         </div>
       ) : stats ? (
         <div className="space-y-6">
-          {/* 概览卡片 */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            {/* 注册用户 */}
-            <div className="bg-white rounded-xl border border-gray-200 p-5">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
-                  <svg
-                    className="w-5 h-5 text-purple-600"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                    />
-                  </svg>
-                </div>
-                <div>
-                  <div className="text-sm text-gray-500">注册用户</div>
-                  <div className="text-2xl font-bold text-gray-900">
+          {/* 用户统计卡片 - 带 Tab */}
+          <div className="bg-white rounded-xl border border-gray-200">
+            {/* Tab 头部 */}
+            <div className="border-b border-gray-200">
+              <div className="flex">
+                <button
+                  onClick={() => setActiveUserTab('registered')}
+                  className={`flex items-center gap-2 px-5 py-3 text-sm font-medium border-b-2 transition-colors ${
+                    activeUserTab === 'registered'
+                      ? 'border-purple-600 text-purple-600'
+                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  }`}
+                >
+                  <span>👤</span>
+                  <span>注册用户</span>
+                  <span className="text-xs bg-purple-100 text-purple-600 px-1.5 py-0.5 rounded-full">
                     {stats.users.registered.total.toLocaleString()}
-                  </div>
-                </div>
-              </div>
-              <div className="mt-3 pt-3 border-t border-gray-100">
-                <span className="text-green-600 text-sm font-medium">
-                  +{stats.users.registered.newInRange}
-                </span>
-                <span className="text-gray-500 text-sm ml-1">{getTimeRangeLabel(timeRange)}</span>
-              </div>
-            </div>
-
-            {/* 匿名用户 */}
-            <div className="bg-white rounded-xl border border-gray-200 p-5">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                  <svg
-                    className="w-5 h-5 text-blue-600"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"
-                    />
-                  </svg>
-                </div>
-                <div>
-                  <div className="text-sm text-gray-500">匿名用户</div>
-                  <div className="text-2xl font-bold text-gray-900">
-                    {stats.users.anonymous.total.toLocaleString()}
-                  </div>
-                </div>
-              </div>
-              <div className="mt-3 pt-3 border-t border-gray-100">
-                <span className="text-green-600 text-sm font-medium">
-                  +{stats.users.anonymous.newInRange}
-                </span>
-                <span className="text-gray-500 text-sm ml-1">{getTimeRangeLabel(timeRange)}</span>
-              </div>
-            </div>
-
-            {/* TTS 任务 */}
-            <div className="bg-white rounded-xl border border-gray-200 p-5">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-                  <svg
-                    className="w-5 h-5 text-green-600"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"
-                    />
-                  </svg>
-                </div>
-                <div>
-                  <div className="text-sm text-gray-500">TTS 任务</div>
-                  <div className="text-2xl font-bold text-gray-900">
-                    {stats.ttsRecords.total.toLocaleString()}
-                  </div>
-                </div>
-              </div>
-              <div className="mt-3 pt-3 border-t border-gray-100">
-                <span className="text-green-600 text-sm font-medium">
-                  +{stats.ttsRecords.newInRange}
-                </span>
-                <span className="text-gray-500 text-sm ml-1">{getTimeRangeLabel(timeRange)}</span>
-              </div>
-            </div>
-
-            {/* TTS 成功率 */}
-            <div className="bg-white rounded-xl border border-gray-200 p-5">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center">
-                  <svg
-                    className="w-5 h-5 text-yellow-600"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
-                    />
-                  </svg>
-                </div>
-                <div>
-                  <div className="text-sm text-gray-500">成功率</div>
-                  <div className="text-2xl font-bold text-gray-900">
-                    {stats.ttsRecords.newInRange > 0
-                      ? (
-                          (stats.ttsRecords.successCount / stats.ttsRecords.newInRange) *
-                          100
-                        ).toFixed(1)
-                      : '0'}
-                    %
-                  </div>
-                </div>
-              </div>
-              <div className="mt-3 pt-3 border-t border-gray-100">
-                <span className="text-green-600 text-sm">{stats.ttsRecords.successCount} 成功</span>
-                <span className="text-gray-400 mx-1">/</span>
-                <span className="text-red-600 text-sm">{stats.ttsRecords.failureCount} 失败</span>
-              </div>
-            </div>
-          </div>
-
-          {/* 趋势图 */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* 用户增长趋势 */}
-            <div className="bg-white rounded-xl border border-gray-200 p-5">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">用户增长趋势</h3>
-              <div className="space-y-6">
-                <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm text-gray-600">注册用户</span>
-                    <span className="text-sm font-medium text-purple-600">
-                      +{stats.users.registered.newInRange}
-                    </span>
-                  </div>
-                  <BarChart data={stats.users.registered.daily} color="purple" />
-                </div>
-                <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm text-gray-600">匿名用户</span>
-                    <span className="text-sm font-medium text-blue-600">
-                      +{stats.users.anonymous.newInRange}
-                    </span>
-                  </div>
-                  <BarChart data={stats.users.anonymous.daily} color="blue" />
-                </div>
-              </div>
-            </div>
-
-            {/* TTS 任务趋势 */}
-            <div className="bg-white rounded-xl border border-gray-200 p-5">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">TTS 任务趋势</h3>
-              <div>
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm text-gray-600">任务数量</span>
-                  <span className="text-sm font-medium text-green-600">
-                    +{stats.ttsRecords.newInRange}
                   </span>
-                </div>
-                <BarChart data={stats.ttsRecords.daily} color="green" />
+                </button>
+                <button
+                  onClick={() => setActiveUserTab('anonymous')}
+                  className={`flex items-center gap-2 px-5 py-3 text-sm font-medium border-b-2 transition-colors ${
+                    activeUserTab === 'anonymous'
+                      ? 'border-blue-600 text-blue-600'
+                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  }`}
+                >
+                  <span>👥</span>
+                  <span>匿名用户</span>
+                  <span className="text-xs bg-blue-100 text-blue-600 px-1.5 py-0.5 rounded-full">
+                    {stats.users.anonymous.total.toLocaleString()}
+                  </span>
+                </button>
               </div>
             </div>
+
+            {/* Tab 内容 */}
+            <div className="p-5">
+              {activeUserTab === 'registered' ? (
+                <>
+                  <div className="grid grid-cols-2 gap-4 mb-6">
+                    <div className="text-center p-4 bg-purple-50 rounded-lg">
+                      <div className="text-3xl font-bold text-purple-600">
+                        {stats.users.registered.total.toLocaleString()}
+                      </div>
+                      <div className="text-sm text-gray-500 mt-1">总用户数</div>
+                    </div>
+                    <div className="text-center p-4 bg-green-50 rounded-lg">
+                      <div className="text-3xl font-bold text-green-600">
+                        +{stats.users.registered.newInRange}
+                      </div>
+                      <div className="text-sm text-gray-500 mt-1">{getTimeRangeLabel(timeRange)}新增</div>
+                    </div>
+                  </div>
+                  <div>
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-sm text-gray-600">增长趋势</span>
+                      <span className="text-sm font-medium text-purple-600">
+                        +{stats.users.registered.newInRange}
+                      </span>
+                    </div>
+                    <BarChart data={stats.users.registered.daily} color="purple" />
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="grid grid-cols-2 gap-4 mb-6">
+                    <div className="text-center p-4 bg-blue-50 rounded-lg">
+                      <div className="text-3xl font-bold text-blue-600">
+                        {stats.users.anonymous.total.toLocaleString()}
+                      </div>
+                      <div className="text-sm text-gray-500 mt-1">总用户数</div>
+                    </div>
+                    <div className="text-center p-4 bg-green-50 rounded-lg">
+                      <div className="text-3xl font-bold text-green-600">
+                        +{stats.users.anonymous.newInRange}
+                      </div>
+                      <div className="text-sm text-gray-500 mt-1">{getTimeRangeLabel(timeRange)}新增</div>
+                    </div>
+                  </div>
+                  <div>
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-sm text-gray-600">访问趋势</span>
+                      <span className="text-sm font-medium text-blue-600">
+                        +{stats.users.anonymous.newInRange}
+                      </span>
+                    </div>
+                    <BarChart data={stats.users.anonymous.daily} color="blue" />
+                  </div>
+                </>
+              )}
+            </div>
           </div>
+
+          {/* 任务统计卡片 - 带 Tab */}
+          <div className="bg-white rounded-xl border border-gray-200">
+            {/* Tab 头部 */}
+            <div className="border-b border-gray-200">
+              <div className="flex overflow-x-auto">
+                {TASK_TYPES.map((type) => {
+                  const taskStats = stats.tasks[type.key];
+                  return (
+                    <button
+                      key={type.key}
+                      onClick={() => setActiveTaskTab(type.key)}
+                      className={`flex items-center gap-2 px-4 py-3 text-sm font-medium whitespace-nowrap border-b-2 transition-colors ${
+                        activeTaskTab === type.key
+                          ? 'border-purple-600 text-purple-600'
+                          : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                      }`}
+                    >
+                      <span>{type.icon}</span>
+                      <span>{type.label}</span>
+                      <span className="text-xs bg-gray-100 text-gray-600 px-1.5 py-0.5 rounded-full">
+                        {taskStats.total.toLocaleString()}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Tab 内容 */}
+            {TASK_TYPES.map((type) => {
+              const taskStats = stats.tasks[type.key];
+              const successRate =
+                taskStats.newInRange > 0
+                  ? ((taskStats.successCount / taskStats.newInRange) * 100).toFixed(1)
+                  : '0';
+
+              if (activeTaskTab !== type.key) return null;
+
+              return (
+                <div key={type.key} className="p-5">
+                  {/* 统计数字 */}
+                  <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
+                    <div className="text-center p-3 bg-gray-50 rounded-lg">
+                      <div className="text-2xl font-bold text-gray-900">
+                        {taskStats.total.toLocaleString()}
+                      </div>
+                      <div className="text-xs text-gray-500 mt-1">总任务数</div>
+                    </div>
+                    <div className="text-center p-3 bg-green-50 rounded-lg">
+                      <div className="text-2xl font-bold text-green-600">
+                        +{taskStats.newInRange}
+                      </div>
+                      <div className="text-xs text-gray-500 mt-1">{getTimeRangeLabel(timeRange)}</div>
+                    </div>
+                    <div className="text-center p-3 bg-emerald-50 rounded-lg">
+                      <div className="text-2xl font-bold text-emerald-600">
+                        {taskStats.successCount}
+                      </div>
+                      <div className="text-xs text-gray-500 mt-1">成功</div>
+                    </div>
+                    <div className="text-center p-3 bg-red-50 rounded-lg">
+                      <div className="text-2xl font-bold text-red-600">
+                        {taskStats.failureCount}
+                      </div>
+                      <div className="text-xs text-gray-500 mt-1">失败</div>
+                    </div>
+                    <div className="text-center p-3 bg-yellow-50 rounded-lg">
+                      <div className="text-2xl font-bold text-yellow-600">{successRate}%</div>
+                      <div className="text-xs text-gray-500 mt-1">成功率</div>
+                    </div>
+                  </div>
+
+                  {/* 趋势图 */}
+                  <div>
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-sm text-gray-600">任务趋势</span>
+                      {taskStats.processingCount > 0 && (
+                        <span className="text-xs text-orange-600 bg-orange-50 px-2 py-1 rounded">
+                          {taskStats.processingCount} 处理中
+                        </span>
+                      )}
+                    </div>
+                    <BarChart
+                      data={taskStats.daily}
+                      color={type.color as 'purple' | 'blue' | 'green' | 'pink' | 'orange' | 'cyan'}
+                    />
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
         </div>
       ) : (
         <div className="text-center py-20 text-gray-500">加载统计数据失败</div>

@@ -54,9 +54,9 @@ export default function LanguageSwitcher({
           className="flex items-center justify-center p-1 rounded-full hover:bg-pink-50/50 transition-all duration-200"
           aria-label="Switch language"
         >
-          {/* 粉色圆形图标背景 */}
-          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-pink-400 to-rose-400 flex items-center justify-center">
-            <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          {/* 淡粉背景 + 粉色图标 */}
+          <div className="w-8 h-8 rounded-full bg-pink-50 flex items-center justify-center">
+            <svg className="w-5 h-5 text-pink-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
           </div>
@@ -103,15 +103,15 @@ export default function LanguageSwitcher({
           className="flex items-center gap-2 px-2 py-1.5 rounded-full hover:bg-pink-50/50 transition-all duration-200"
           aria-label="Switch language"
         >
-          {/* 粉色圆形图标背景 */}
-          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-pink-400 to-rose-400 flex items-center justify-center">
-            <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          {/* 淡粉背景 + 粉色图标 */}
+          <div className="w-8 h-8 rounded-full bg-pink-50 flex items-center justify-center">
+            <svg className="w-5 h-5 text-pink-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
           </div>
           {/* 语言名称 */}
-          <span className="text-sm font-medium text-gray-700" suppressHydrationWarning>
-            {isReady ? currentLocale.name : ''}
+          <span className="text-sm font-medium text-gray-700 whitespace-nowrap" suppressHydrationWarning>
+            {isReady ? currentLocale.nativeName : ''}
           </span>
         </button>
 
@@ -148,9 +148,14 @@ export default function LanguageSwitcher({
   }
 
   // Theme-based styles for other variants
+  // For 'full' variant, don't use fixed dimensions; for compact, use circular button
   const buttonStyles = theme === 'dark'
-    ? 'text-pink-500 bg-pink-50 hover:bg-pink-100 rounded-full w-10 h-10 justify-center'
-    : 'text-white bg-white/20 hover:bg-white/30 rounded-full w-10 h-10 justify-center';
+    ? variant === 'full'
+      ? 'text-pink-500 hover:bg-pink-50 rounded-lg px-3 py-2'
+      : 'text-pink-500 bg-pink-50 hover:bg-pink-100 rounded-full w-10 h-10 justify-center'
+    : variant === 'full'
+      ? 'text-gray-300 hover:text-white hover:bg-white/10 rounded-lg px-3 py-2'
+      : 'text-white bg-white/20 hover:bg-white/30 rounded-full w-10 h-10 justify-center';
 
   return (
     <div className="relative" ref={dropdownRef}>

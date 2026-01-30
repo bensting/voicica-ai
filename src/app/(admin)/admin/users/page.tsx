@@ -17,11 +17,22 @@ interface RegisteredUser {
   name: string | null;
   photo_url: string | null;
   auth_provider: string | null;
+  platform: string | null;
   credits: number;
   total_credits_used: number;
   created_at: Date;
   has_active_subscription: boolean;
 }
+
+/**
+ * 平台标签配置
+ */
+const PLATFORM_CONFIG: Record<string, { label: string; icon: string; bg: string; text: string }> = {
+  web: { label: 'Web', icon: '🖥️', bg: 'bg-slate-100', text: 'text-slate-700' },
+  'mobile-web': { label: 'Mobile', icon: '📱', bg: 'bg-orange-100', text: 'text-orange-700' },
+  android: { label: 'Android', icon: '🤖', bg: 'bg-green-100', text: 'text-green-700' },
+  ios: { label: 'iOS', icon: '🍎', bg: 'bg-blue-100', text: 'text-blue-700' },
+};
 
 interface AnonymousUser {
   id: number;
@@ -53,6 +64,7 @@ export default function UsersManagementPage() {
   const [registeredLoading, setRegisteredLoading] = useState(false);
   const [registeredSearch, setRegisteredSearch] = useState('');
   const [subscriptionFilter, setSubscriptionFilter] = useState<'all' | 'active' | 'none'>('all');
+  const [platformFilter, setPlatformFilter] = useState<string>('');
 
   // 匿名用户状态
   const [anonymousUsers, setAnonymousUsers] = useState<AnonymousUser[]>([]);
@@ -80,6 +92,7 @@ export default function UsersManagementPage() {
         pageSize: 20,
         search: registeredSearch || undefined,
         hasSubscription: subscriptionFilter === 'all' ? undefined : subscriptionFilter === 'active',
+        platform: platformFilter || undefined,
       });
       setRegisteredUsers(result.users);
       setRegisteredTotal(result.total);
@@ -89,7 +102,7 @@ export default function UsersManagementPage() {
     } finally {
       setRegisteredLoading(false);
     }
-  }, [registeredPage, registeredSearch, subscriptionFilter]);
+  }, [registeredPage, registeredSearch, subscriptionFilter, platformFilter]);
 
   // 加载匿名用户
   const loadAnonymousUsers = useCallback(async () => {
@@ -252,6 +265,20 @@ export default function UsersManagementPage() {
                 <option value="active">有订阅</option>
                 <option value="none">无订阅</option>
               </select>
+              <select
+                value={platformFilter}
+                onChange={(e) => {
+                  setPlatformFilter(e.target.value);
+                  setRegisteredPage(1);
+                }}
+                className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              >
+                <option value="">所有平台</option>
+                <option value="web">🖥️ Web</option>
+                <option value="mobile-web">📱 Mobile Web</option>
+                <option value="android">🤖 Android</option>
+                <option value="ios">🍎 iOS</option>
+              </select>
             </div>
           </div>
 
@@ -266,6 +293,7 @@ export default function UsersManagementPage() {
                   <tr>
                     <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">用户</th>
                     <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">注册方式</th>
+                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">平台</th>
                     <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">积分</th>
                     <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">已用积分</th>
                     <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">订阅</th>
@@ -276,7 +304,7 @@ export default function UsersManagementPage() {
                 <tbody className="divide-y divide-gray-200">
                   {registeredLoading ? (
                     <tr>
-                      <td colSpan={7} className="px-4 py-8 text-center text-gray-500">
+                      <td colSpan={8} className="px-4 py-8 text-center text-gray-500">
                         <div className="flex items-center justify-center gap-2">
                           <div className="w-5 h-5 border-2 border-purple-600 border-t-transparent rounded-full animate-spin" />
                           加载中...
@@ -285,7 +313,7 @@ export default function UsersManagementPage() {
                     </tr>
                   ) : registeredUsers.length === 0 ? (
                     <tr>
-                      <td colSpan={7} className="px-4 py-8 text-center text-gray-500">
+                      <td colSpan={8} className="px-4 py-8 text-center text-gray-500">
                         没有找到用户
                       </td>
                     </tr>
@@ -334,6 +362,18 @@ export default function UsersManagementPage() {
                               <span className="text-xs text-gray-400">-</span>
                             );
                           })()}
+                        </td>
+                        <td className="px-4 py-3">
+                          {user.platform && PLATFORM_CONFIG[user.platform] ? (
+                            <span
+                              className={`inline-flex items-center gap-1 px-2 py-0.5 text-xs font-medium rounded ${PLATFORM_CONFIG[user.platform].bg} ${PLATFORM_CONFIG[user.platform].text}`}
+                            >
+                              <span>{PLATFORM_CONFIG[user.platform].icon}</span>
+                              {PLATFORM_CONFIG[user.platform].label}
+                            </span>
+                          ) : (
+                            <span className="text-xs text-gray-400">-</span>
+                          )}
                         </td>
                         <td className="px-4 py-3">
                           <span className="font-medium text-gray-900">

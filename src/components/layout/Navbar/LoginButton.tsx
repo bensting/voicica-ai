@@ -48,8 +48,8 @@ export default function LoginButton() {
         <div className="absolute top-0 left-0 right-0 h-1/2 bg-gradient-to-b from-white/20 to-transparent opacity-50 rounded-t-full" />
 
         {/* Content */}
-        <div className="relative flex items-center gap-2 text-white font-bold tracking-wide text-sm sm:text-base">
-          <svg className="w-5 h-5 drop-shadow-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div className="relative flex items-center gap-2 text-white font-bold tracking-wide text-sm sm:text-base whitespace-nowrap">
+          <svg className="w-5 h-5 flex-shrink-0 drop-shadow-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path
               strokeLinecap="round"
               strokeLinejoin="round"

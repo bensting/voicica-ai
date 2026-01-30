@@ -103,7 +103,9 @@
     },
     "products": {
       "title": "明星产品",
-      "tts": "AI 文字转语音",
+      "tts": "文字转语音",
+      "aiMusic": "AI 音乐",
+      "aiVideo": "AI 视频",
       "tiktokDownloader": "TikTok 下载器",
       "youtubeDownloader": "YouTube 下载器",
       "songCover": "AI 歌曲翻唱生成器",

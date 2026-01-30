@@ -14,6 +14,7 @@ export async function getAdminUserList(params: {
   pageSize?: number;
   search?: string;
   hasSubscription?: boolean | null;
+  platform?: string;
 }): Promise<{
   users: Array<{
     id: number;
@@ -22,6 +23,7 @@ export async function getAdminUserList(params: {
     name: string | null;
     photo_url: string | null;
     auth_provider: string | null;
+    platform: string | null;
     credits: number;
     total_credits_used: number;
     created_at: Date;
@@ -34,7 +36,7 @@ export async function getAdminUserList(params: {
 }> {
   await verifyAdminWithoutDb();
 
-  const { page = 1, pageSize = 20, search, hasSubscription } = params;
+  const { page = 1, pageSize = 20, search, hasSubscription, platform } = params;
   const now = new Date();
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -46,6 +48,10 @@ export async function getAdminUserList(params: {
       { name: { contains: search, mode: 'insensitive' } },
       { user_id: { contains: search, mode: 'insensitive' } },
     ];
+  }
+
+  if (platform) {
+    where.platform = platform;
   }
 
   const [users, total] = await Promise.all([
@@ -74,6 +80,7 @@ export async function getAdminUserList(params: {
     name: u.name,
     photo_url: u.photo_url,
     auth_provider: u.auth_provider,
+    platform: u.platform,
     credits: u.credits,
     total_credits_used: u.total_credits_used,
     created_at: u.created_at,

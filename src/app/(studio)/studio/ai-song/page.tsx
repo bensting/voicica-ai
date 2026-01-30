@@ -180,9 +180,6 @@ export default function AiSongPage() {
     }
 
     if (currentStep < STEPS.length - 1 && canProceed()) {
-      if (currentStep === 2) {
-        handleGenerateLyrics();
-      }
       setCurrentStep(currentStep + 1);
     }
   };
@@ -216,15 +213,18 @@ export default function AiSongPage() {
     return 'm';
   };
 
-  const handleGenerateLyrics = async () => {
+  const handleGenerateLyrics = async (customPrompt?: string) => {
     setIsGeneratingLyrics(true);
 
     const theme = getThemeText();
     const mood = getMoodText();
     const vocal = getVocalText();
 
-    // 使用翻译的提示词模板
-    const prompt = t('studio.aiSong.lyricsPrompt', { theme, mood, vocal });
+    // 使用翻译的提示词模板，如果有自定义提示词则添加
+    let prompt = t('studio.aiSong.lyricsPrompt', { theme, mood, vocal });
+    if (customPrompt && customPrompt.trim()) {
+      prompt += `\n\nAdditional requirements from user: ${customPrompt.trim()}`;
+    }
 
     try {
       const response = await fetch('/api/ai/generate-lyrics', {
@@ -497,18 +497,27 @@ export default function AiSongPage() {
           : MOOD_OPTIONS.find(opt => opt.id === selectedMood);
         const lyricsVocal = VOCAL_OPTIONS.find(opt => opt.id === selectedVocal);
 
+        // Determine title and subtitle based on state
+        const getLyricsTitle = () => {
+          if (isGeneratingLyrics) return t('studio.aiSong.lyricsStep.titleGenerating');
+          if (!lyrics) return t('studio.aiSong.lyricsStep.titleInitial');
+          return t('studio.aiSong.lyricsStep.title');
+        };
+
+        const getLyricsSubtitle = () => {
+          if (isGeneratingLyrics) return t('studio.aiSong.lyricsStep.subtitleGenerating');
+          if (!lyrics) return t('studio.aiSong.lyricsStep.subtitleInitial');
+          return t('studio.aiSong.lyricsStep.subtitle');
+        };
+
         return (
           <div className="space-y-6">
             <div className="text-center space-y-2">
               <h2 className="text-2xl lg:text-3xl font-bold text-gray-900">
-                {isGeneratingLyrics
-                  ? t('studio.aiSong.lyricsStep.titleGenerating')
-                  : t('studio.aiSong.lyricsStep.title')}
+                {getLyricsTitle()}
               </h2>
               <p className="text-gray-600">
-                {isGeneratingLyrics
-                  ? t('studio.aiSong.lyricsStep.subtitleGenerating')
-                  : t('studio.aiSong.lyricsStep.subtitle')}
+                {getLyricsSubtitle()}
               </p>
             </div>
 
@@ -527,27 +536,31 @@ export default function AiSongPage() {
               </div>
             </div>
 
-            <div className="space-y-2">
-              <label className="block text-sm font-medium text-gray-700">
-                {t('studio.aiSong.lyricsStep.songTitleLabel')}
-              </label>
-              <input
-                type="text"
-                value={songTitle}
-                onChange={(e) => setSongTitle(e.target.value)}
-                placeholder={isGeneratingLyrics
-                  ? t('studio.aiSong.lyricsStep.songTitleGenerating')
-                  : t('studio.aiSong.lyricsStep.songTitlePlaceholder')}
-                disabled={isGeneratingLyrics}
-                className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-pink-500 focus:ring-2 focus:ring-pink-200 transition-all disabled:bg-gray-50 disabled:text-gray-400"
-                maxLength={50}
-              />
-            </div>
+            {/* Only show song title input when lyrics exist or generating */}
+            {(lyrics || isGeneratingLyrics) && (
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-gray-700">
+                  {t('studio.aiSong.lyricsStep.songTitleLabel')}
+                </label>
+                <input
+                  type="text"
+                  value={songTitle}
+                  onChange={(e) => setSongTitle(e.target.value)}
+                  placeholder={isGeneratingLyrics
+                    ? t('studio.aiSong.lyricsStep.songTitleGenerating')
+                    : t('studio.aiSong.lyricsStep.songTitlePlaceholder')}
+                  disabled={isGeneratingLyrics}
+                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-pink-500 focus:ring-2 focus:ring-pink-200 transition-all disabled:bg-gray-50 disabled:text-gray-400"
+                  maxLength={50}
+                />
+              </div>
+            )}
 
             <LyricsEditor
               lyrics={lyrics}
               onLyricsChange={setLyrics}
-              onRegenerate={handleGenerateLyrics}
+              onRegenerate={() => handleGenerateLyrics()}
+              onGenerateWithPrompt={handleGenerateLyrics}
               isGenerating={isGeneratingLyrics}
             />
           </div>

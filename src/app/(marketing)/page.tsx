@@ -14,9 +14,6 @@ export default function Home() {
       {/* Hero Section */}
       <Hero />
 
-      {/* Ad: Hero 下方 - Native Banner */}
-      <AdsterraNativeBannerMarketing position="Below Hero" />
-
       {/* TTS Samples Section */}
       <TTSSamples />
 
@@ -28,6 +25,9 @@ export default function Home() {
 
       {/* FAQ Section */}
       <FAQ />
+
+      {/* Ad: 底部 - Native Banner */}
+      <AdsterraNativeBannerMarketing position="Bottom" />
 
       {/* Adsterra Social Bar - 固定底部广告 */}
       <AdsterraSocialBar />

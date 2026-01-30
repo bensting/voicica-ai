@@ -1,8 +1,18 @@
 {
-  "version": "1.2.13",
-  "buildNumber": 34,
+  "version": "1.2.14",
+  "buildNumber": 35,
   "description": "原生应用版本（Android/iOS 应用壳）",
   "changelog": [
+    {
+      "version": "1.2.14",
+      "buildNumber": 35,
+      "date": "2026-01-31",
+      "changes": [
+        "修复 Credit Pack 购买问题，支持 INAPP 一次性购买类型",
+        "修复虚假订阅漏洞，添加 Google Play API 服务端验证",
+        "优化 Google Play Billing 插件，根据产品 ID 自动判断购买类型"
+      ]
+    },
     {
       "version": "1.2.13",
       "buildNumber": 34,

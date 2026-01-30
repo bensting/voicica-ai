@@ -8,6 +8,7 @@ import LanguageSwitcher from '@/components/layout/Navbar/LanguageSwitcher';
 import UserMenu from '@/components/layout/Navbar/UserMenu';
 import LoginButton from '@/components/layout/Navbar/LoginButton';
 import Link from 'next/link';
+import { isDailyTasksEnabled } from '@/config/appConfig';
 
 interface StudioTopNavProps {
   /** 升级按钮回调（移动端和桌面端都显示） */
@@ -41,6 +42,7 @@ export default function StudioTopNav({
 }: StudioTopNavProps) {
   const { t } = useLanguage();
   const { user } = useFirebaseAuth();
+  const dailyTasksEnabled = isDailyTasksEnabled(false); // Studio Web 端
 
   const toggleMenu = () => {
     onMenuToggle?.(!isMenuOpen);
@@ -82,15 +84,17 @@ export default function StudioTopNav({
 
         {/* ========== 右侧按钮区域 ========== */}
         <div className="flex items-center gap-2 md:gap-3">
-          {/* Daily Tasks Button */}
-          <button
-            onClick={onDailyTasksClick}
-            className="flex items-center gap-1.5 px-2.5 py-1.5 md:px-4 md:py-2 bg-gradient-to-r from-pink-500 to-purple-500 text-white rounded-lg font-medium hover:from-pink-600 hover:to-purple-600 hover:shadow-lg transition-all"
-            aria-label="Daily Tasks"
-          >
-            <Gift className="w-4 h-4" />
-            <span className="text-xs md:text-sm hidden sm:inline">{t('studio.dailyTasks') || '福利'}</span>
-          </button>
+          {/* Daily Tasks Button - 仅在启用时显示 */}
+          {dailyTasksEnabled && (
+            <button
+              onClick={onDailyTasksClick}
+              className="flex items-center gap-1.5 px-2.5 py-1.5 md:px-4 md:py-2 bg-gradient-to-r from-pink-500 to-purple-500 text-white rounded-lg font-medium hover:from-pink-600 hover:to-purple-600 hover:shadow-lg transition-all"
+              aria-label="Daily Tasks"
+            >
+              <Gift className="w-4 h-4" />
+              <span className="text-xs md:text-sm hidden sm:inline">{t('studio.dailyTasks') || '福利'}</span>
+            </button>
+          )}
 
           {/* Upgrade Button */}
           <button

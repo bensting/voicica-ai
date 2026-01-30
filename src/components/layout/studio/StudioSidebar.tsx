@@ -118,9 +118,11 @@ export default function StudioSidebar({ isOpen = false, onClose }: StudioSidebar
         </div>
 
         {/* 按配置顺序渲染分类 */}
-        {categoryOrder.map((category) =>
-          renderCategorySection(category.key, category.labelKey)
-        )}
+        {categoryOrder.map((category) => (
+          <div key={category.key}>
+            {renderCategorySection(category.key, category.labelKey)}
+          </div>
+        ))}
 
         {/* Account (我的账户) - 始终在最后，带分隔线 */}
         {renderCategorySection('account', 'studio.menu.account', true)}
@@ -227,9 +229,11 @@ export default function StudioSidebar({ isOpen = false, onClose }: StudioSidebar
             {renderMobileSection(t('studio.menu.home'), studioMenuCategories.main)}
 
             {/* 按配置顺序渲染分类 */}
-            {categoryOrder.map((category) =>
-              renderMobileSection(t(category.labelKey), studioMenuCategories[category.key])
-            )}
+            {categoryOrder.map((category) => (
+              <div key={category.key}>
+                {renderMobileSection(t(category.labelKey), studioMenuCategories[category.key])}
+              </div>
+            ))}
 
             {/* ACCOUNT - 始终在最后 */}
             {renderMobileSection(t('studio.menu.account'), studioMenuCategories.account)}

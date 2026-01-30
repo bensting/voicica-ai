@@ -22,6 +22,7 @@ const MENU_GROUPS = [
       { href: '/admin/music-records', label: 'Music 记录', icon: '🎵' },
       { href: '/admin/video-records', label: 'Video 记录', icon: '🎬' },
       { href: '/admin/image-records', label: 'Image 记录', icon: '🖼️' },
+      { href: '/admin/dialogue-records', label: 'Dialogue 记录', icon: '💬' },
       { href: '/admin/voices', label: '语音管理', icon: '🔊' },
       { href: '/admin/rvc-models', label: 'RVC 模型', icon: '🎤' },
     ],

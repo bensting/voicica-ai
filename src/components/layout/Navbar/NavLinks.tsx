@@ -144,7 +144,7 @@ export default function NavLinks({ mobile = false, onLinkClick }: NavLinksProps 
               key={link.href}
               href={link.href}
               onClick={getClickHandler(link.type, link.sectionId, link.openInNewWindow, link.href)}
-              className="text-gray-700 hover:text-pink-500 transition-colors font-medium px-4 py-2 rounded-full hover:bg-white/50"
+              className="text-gray-700 hover:text-pink-500 transition-colors font-medium px-4 py-2 rounded-full hover:bg-white/50 whitespace-nowrap"
             >
               {t(link.labelKey)}
               {getLabelIcon(link.labelKey)}

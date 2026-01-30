@@ -25,7 +25,7 @@ export default function Hero() {
       <HeroBackground />
 
       {/* Content */}
-      <div className="relative z-10 flex-1 flex flex-col justify-center max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8 lg:py-16">
+      <div className="relative z-10 flex-1 flex flex-col justify-center max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-4 sm:pt-24 sm:pb-8 lg:pt-24 lg:pb-16">
         <div className="grid lg:grid-cols-2 gap-6 lg:gap-8 items-center">
           {/* Left Column: Text Content */}
           <div className="flex flex-col items-center lg:items-start text-center lg:text-left">

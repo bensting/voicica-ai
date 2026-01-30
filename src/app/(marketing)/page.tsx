@@ -6,6 +6,7 @@ import FAQ from '@/components/sections/faq';
 import CTA from '@/components/sections/CTA';
 import AdsterraNativeBannerMarketing from '@/components/ads/AdsterraNativeBannerMarketing';
 import AdsterraBanner from '@/components/ads/AdsterraBanner';
+import AdsterraSocialBar from '@/components/ads/AdsterraSocialBar';
 
 export default function Home() {
   return (
@@ -28,7 +29,8 @@ export default function Home() {
       {/* FAQ Section */}
       <FAQ />
 
-      {/* Social Bar 广告已在 layout.tsx 中通过 AdsterraSocialBar 组件加载 */}
+      {/* Adsterra Social Bar - 固定底部广告 */}
+      <AdsterraSocialBar />
     </div>
   );
 }

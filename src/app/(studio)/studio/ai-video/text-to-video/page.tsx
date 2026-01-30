@@ -6,7 +6,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { useStudio } from '@/contexts/StudioContext';
 import { useCredits } from '@/contexts/CreditsContext';
 import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
-import { Coins, Sparkles, ChevronDown, Upload, X, Info, Camera, Volume2 } from 'lucide-react';
+import { Coins, Sparkles, ChevronDown, Upload, X, Camera, Volume2 } from 'lucide-react';
 import {
   videoModels,
   defaultVideoModel,
@@ -54,6 +54,7 @@ export default function TextToVideoPage() {
   const [progress, setProgress] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [taskId, setTaskId] = useState<string | null>(null);
 
   // Refs
@@ -109,6 +110,7 @@ export default function TextToVideoPage() {
       setFixedLens(false);
       setGenerateAudio(false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [model]);
 
   // Calculate credits cost
@@ -320,6 +322,7 @@ export default function TextToVideoPage() {
               </div>
               {imagePreview ? (
                 <div className="relative">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src={imagePreview} alt="Reference" className="w-full aspect-video object-cover rounded-xl" />
                   <button
                     onClick={() => setImagePreview(null)}
@@ -548,6 +551,7 @@ export default function TextToVideoPage() {
                   </div>
                   {imagePreview ? (
                     <div className="relative">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img src={imagePreview} alt="Reference" className="w-full aspect-video object-cover rounded-xl" />
                       <button onClick={() => setImagePreview(null)} className="absolute top-2 right-2 p-1.5 bg-black/60 rounded-full text-white">
                         <X className="w-4 h-4" />

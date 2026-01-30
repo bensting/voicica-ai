@@ -75,3 +75,12 @@ export function getAppUpdateConfig(): AppUpdateConfig {
 export function getAnonymousUserConfig(): AnonymousUserConfig {
   return appConfig.anonymous_user;
 }
+
+/**
+ * 检查每日任务是否启用
+ * @param isNative 是否为原生应用
+ */
+export function isDailyTasksEnabled(isNative: boolean = false): boolean {
+  const config = getDailyTasksConfig(isNative);
+  return config.enabled;
+}

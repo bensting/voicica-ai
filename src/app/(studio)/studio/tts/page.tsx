@@ -10,6 +10,7 @@ import { useTTSGenerator } from '@/hooks/useTTSGenerator';
 import { TaskStatus } from '@/types/tts';
 import type { Voice } from '@/types/voice';
 import { calculateVoiceCost, type VoiceType } from '@/config/creditsCost';
+import { isDailyTasksEnabled } from '@/config/appConfig';
 import TextInput from '@/components/features/studio/tts/components/TextInput';
 import VoiceSelector from '@/components/features/studio/tts/components/VoiceSelector';
 import VoiceSelectButton from '@/components/features/studio/tts/components/VoiceSelectButton';
@@ -56,6 +57,7 @@ export default function StudioTTSPage() {
   const { locale, isReady: isLocaleReady, t } = useLanguage();
   const { user, loading: authLoading, isRegistering } = useFirebaseAuth();
   const { setTitle, openDailyTasks } = useStudio();
+  const dailyTasksEnabled = isDailyTasksEnabled(false); // Studio Web 端
   const { credits, permanentCredits, monthlyCredits, loading: creditsLoading, refreshCredits } = useCredits();
 
   const [isAudioModalOpen, setIsAudioModalOpen] = useState(false);
@@ -335,7 +337,7 @@ export default function StudioTTSPage() {
               monthlyCredits={monthlyCredits}
               creditsLoading={creditsLoading}
               onClear={handleClearText}
-              onDailyTasksClick={openDailyTasks}
+              onDailyTasksClick={dailyTasksEnabled ? openDailyTasks : undefined}
             />
           </div>
 
@@ -418,7 +420,7 @@ export default function StudioTTSPage() {
                   creditsLoading={creditsLoading}
                   onClear={handleClearText}
                   estimatedCredits={estimatedCredits}
-                  onDailyTasksClick={openDailyTasks}
+                  onDailyTasksClick={dailyTasksEnabled ? openDailyTasks : undefined}
                 />
               </div>
 

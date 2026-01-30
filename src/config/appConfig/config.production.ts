@@ -56,7 +56,7 @@ export const appConfig: AppConfig = {
     checkin_credits: 1,
     ad_reward_tiers: [1, 1, 1, 1, 1, 1],
     popup_interval_minutes: 30, // 生产环境每 30 分钟最多弹出一次
-    enabled: true,
+    enabled: false,
     // Native App 独立配置
     native: {
       checkin_credits: 1,

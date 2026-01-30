@@ -47,7 +47,7 @@ export default function StudioSidebar({ isOpen = false, onClose }: StudioSidebar
                 flex items-center gap-3 px-3 py-2.5 mx-2 rounded-xl transition-all duration-200
                 ${isActive
                   ? 'bg-white/80 shadow-sm'
-                  : 'hover:bg-white/40'
+                  : 'hover:bg-white'
                 }
               `}
             >
@@ -97,7 +97,7 @@ export default function StudioSidebar({ isOpen = false, onClose }: StudioSidebar
                   flex items-center gap-3 px-3 py-2.5 mx-2 rounded-xl transition-all duration-200
                   ${isActive
                     ? 'bg-white/80 shadow-sm'
-                    : 'hover:bg-white/40'
+                    : 'hover:bg-white'
                   }
                 `}
               >

@@ -5,7 +5,7 @@ import { useLanguage, locales } from '@/contexts/LanguageContext';
 
 interface LanguageSwitcherProps {
   theme?: 'light' | 'dark';
-  variant?: 'full' | 'compact';
+  variant?: 'full' | 'compact' | 'pink';
   showArrow?: boolean;
   /** 下拉菜单弹出方向 */
   dropdownPosition?: 'up' | 'down';
@@ -35,11 +35,6 @@ export default function LanguageSwitcher({
 
   const currentLocale = locales.find((l) => l.code === locale) || locales[0];
 
-  // Theme-based styles
-  const buttonStyles = theme === 'dark'
-    ? 'text-pink-500 bg-pink-50 hover:bg-pink-100 rounded-full w-10 h-10 justify-center'
-    : 'text-white bg-white/20 hover:bg-white/30 rounded-full w-10 h-10 justify-center';
-
   // 弹出层统一白色背景
   const dropdownStyles = 'bg-white/95 backdrop-blur-xl border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.12)] rounded-2xl overflow-hidden';
   const itemStyles = 'text-gray-600 hover:bg-pink-50 hover:text-pink-600';
@@ -49,6 +44,64 @@ export default function LanguageSwitcher({
   const positionStyles = dropdownPosition === 'up'
     ? 'bottom-full mb-3 left-1/2 -translate-x-1/2'
     : 'top-full mt-3 right-0';
+
+  // Pink variant - 新的粉色样式
+  if (variant === 'pink') {
+    return (
+      <div className="relative" ref={dropdownRef}>
+        <button
+          onClick={() => setIsOpen(!isOpen)}
+          className="flex items-center gap-2 px-2 py-1.5 rounded-full hover:bg-pink-50/50 transition-all duration-200"
+          aria-label="Switch language"
+        >
+          {/* 粉色圆形图标背景 */}
+          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-pink-400 to-rose-400 flex items-center justify-center">
+            <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          {/* 语言名称 */}
+          <span className="text-sm font-medium text-gray-700" suppressHydrationWarning>
+            {isReady ? currentLocale.name : ''}
+          </span>
+        </button>
+
+        {/* 下拉菜单 */}
+        <div className={`absolute w-40 py-1.5 z-50 transition-all duration-200 transform origin-top-right ${positionStyles} ${dropdownStyles} ${isOpen ? 'opacity-100 scale-100 visible' : 'opacity-0 scale-95 invisible'
+          }`}>
+          {locales.map((loc) => (
+            <button
+              key={loc.code}
+              onClick={() => {
+                setLocale(loc.code);
+                setIsOpen(false);
+              }}
+              className={`w-full text-left px-4 py-2.5 transition-colors text-sm ${locale === loc.code ? activeItemStyles : itemStyles
+                }`}
+            >
+              <div className="flex items-center justify-between">
+                <span>{loc.nativeName}</span>
+                {locale === loc.code && (
+                  <svg className="w-4 h-4 text-pink-500" fill="currentColor" viewBox="0 0 20 20">
+                    <path
+                      fillRule="evenodd"
+                      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                )}
+              </div>
+            </button>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  // Theme-based styles for other variants
+  const buttonStyles = theme === 'dark'
+    ? 'text-pink-500 bg-pink-50 hover:bg-pink-100 rounded-full w-10 h-10 justify-center'
+    : 'text-white bg-white/20 hover:bg-white/30 rounded-full w-10 h-10 justify-center';
 
   return (
     <div className="relative" ref={dropdownRef}>

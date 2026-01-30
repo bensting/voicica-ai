@@ -28,12 +28,18 @@ function generateDropdownsFromStudioMenu(): NavDropdown[] {
     // Skip empty categories
     if (items.length === 0) return;
 
-    const dropdownItems: NavDropdownItem[] = items.map((item) => ({
-      href: item.href,
-      labelKey: item.labelKey,
-      icon: item.icon,
-      enabled: item.enabled,
-    }));
+    // Filter items that should show in nav (showInNav !== false)
+    const dropdownItems: NavDropdownItem[] = items
+      .filter((item) => item.showInNav !== false)
+      .map((item) => ({
+        href: item.href,
+        labelKey: item.labelKey,
+        icon: item.icon,
+        enabled: item.enabled,
+      }));
+
+    // Skip if no items to show
+    if (dropdownItems.length === 0) return;
 
     dropdowns.push({
       id: category.key,

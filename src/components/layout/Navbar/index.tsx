@@ -53,12 +53,9 @@ export default function Navbar() {
             </div>
 
             {/* Center Section: Navigation Links (desktop only) */}
-            <div className="flex-1 flex justify-center">
-              {/* Desktop: Navigation Links */}
-              <div className="hidden md:flex">
-                <div className="px-6 py-2 bg-white/40 backdrop-blur-md rounded-full border border-white/30 shadow-sm">
-                  <NavLinks />
-                </div>
+            <div className="hidden md:flex flex-1 justify-center mx-4">
+              <div className="px-4 py-2 bg-white/40 backdrop-blur-md rounded-full border border-white/30 shadow-sm">
+                <NavLinks />
               </div>
             </div>
 

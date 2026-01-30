@@ -15,12 +15,6 @@ export const navigationConfig: NavigationConfig = {
       type: 'section',
       sectionId: 'pricing',
     },
-    {
-      href: '/#faq',
-      labelKey: 'nav.faq',
-      type: 'section',
-      sectionId: 'faq',
-    },
   ],
   dropdowns: [
     {

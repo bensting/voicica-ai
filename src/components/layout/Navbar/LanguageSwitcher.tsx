@@ -148,9 +148,14 @@ export default function LanguageSwitcher({
   }
 
   // Theme-based styles for other variants
+  // For 'full' variant, don't use fixed dimensions; for compact, use circular button
   const buttonStyles = theme === 'dark'
-    ? 'text-pink-500 bg-pink-50 hover:bg-pink-100 rounded-full w-10 h-10 justify-center'
-    : 'text-white bg-white/20 hover:bg-white/30 rounded-full w-10 h-10 justify-center';
+    ? variant === 'full'
+      ? 'text-pink-500 hover:bg-pink-50 rounded-lg px-3 py-2'
+      : 'text-pink-500 bg-pink-50 hover:bg-pink-100 rounded-full w-10 h-10 justify-center'
+    : variant === 'full'
+      ? 'text-gray-300 hover:text-white hover:bg-white/10 rounded-lg px-3 py-2'
+      : 'text-white bg-white/20 hover:bg-white/30 rounded-full w-10 h-10 justify-center';
 
   return (
     <div className="relative" ref={dropdownRef}>

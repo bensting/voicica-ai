@@ -109,7 +109,7 @@ export default function NavDropdown({ dropdown, mobile = false, onLinkClick, lab
       onMouseEnter={() => setIsOpen(true)}
       onMouseLeave={() => setIsOpen(false)}
     >
-      <button className={`flex items-center gap-1 px-4 py-2 rounded-full transition-all duration-300 font-medium whitespace-nowrap ${isOpen ? 'bg-pink-50 text-pink-600' : 'text-gray-700 hover:text-pink-500 hover:bg-white/50'
+      <button className={`flex items-center gap-1 px-3 py-2 rounded-full transition-all duration-300 font-medium whitespace-nowrap text-sm ${isOpen ? 'bg-pink-50 text-pink-600' : 'text-gray-700 hover:text-pink-500 hover:bg-white/50'
         }`}>
         <span className="whitespace-nowrap">{t(dropdown.labelKey)}</span>
         {labelIcon}

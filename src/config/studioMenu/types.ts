@@ -9,6 +9,7 @@ export interface StudioMenuItemConfig {
   icon: React.ReactNode;
   category?: MenuCategory;
   enabled?: boolean; // 是否启用，默认为 true
+  showInNav?: boolean; // 是否在首页导航菜单显示，默认为 true
 }
 
 export type MenuCategory = 'main' | 'ai_video' | 'voiceover' | 'story' | 'music' | 'tools' | 'account';

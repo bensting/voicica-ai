@@ -30,71 +30,21 @@ export default function StudioSidebar({ isOpen = false, onClose }: StudioSidebar
     if (items.length === 0) return null;
 
     return (
-      <div className={`mb-4 ${withBorder ? 'border-t border-pink-100 pt-4' : ''}`}>
-        <div className={`px-4 py-2 ${isExpanded ? 'lg:block' : 'lg:hidden'}`}>
+      <div className={`mb-2 ${withBorder ? 'border-t border-pink-100 pt-2' : ''}`}>
+        <div className={`px-4 py-1.5 ${isExpanded ? 'lg:block' : 'lg:hidden'}`}>
           <span className="text-xs font-semibold text-pink-400 uppercase">
             {t(labelKey)}
           </span>
         </div>
-        {items.map((item) => {
+        {items.map((item, index) => {
           const isActive = pathname === item.href;
           return (
-            <Link
-              key={item.id}
-              href={item.href}
-              onClick={onClose}
-              className={`
-                flex items-center gap-3 px-3 py-2.5 mx-2 rounded-xl transition-all duration-200
-                ${isActive
-                  ? 'bg-white/80 shadow-sm'
-                  : 'hover:bg-white'
-                }
-              `}
-            >
-              <div className={`
-                flex-shrink-0 w-9 h-9 rounded-lg flex items-center justify-center transition-all
-                ${isActive
-                  ? 'bg-gradient-to-br from-pink-400 to-rose-400 text-white shadow-sm'
-                  : 'bg-white/60 text-pink-500'
-                }
-              `}>
-                {item.icon}
-              </div>
-              <span
-                className={`
-                  text-sm font-medium whitespace-nowrap transition-all
-                  lg:transition-opacity lg:duration-300
-                  ${isExpanded ? 'lg:opacity-100' : 'lg:opacity-0 lg:w-0 lg:overflow-hidden'}
-                  ${isActive ? 'text-pink-600' : 'text-gray-600'}
-                `}
-              >
-                {t(item.labelKey)}
-              </span>
-              {/* 选中指示器 */}
-              {isActive && isExpanded && (
-                <div className="ml-auto w-1.5 h-6 bg-gradient-to-b from-pink-400 to-rose-400 rounded-full" />
-              )}
-            </Link>
-          );
-        })}
-      </div>
-    );
-  };
-
-  // 渲染菜单内容（桌面端用）
-  const renderMenuContent = () => (
-    <div className="py-4">
-        {/* 主要功能 */}
-        <div className="mb-4">
-          {studioMenuCategories.main.map((item) => {
-            const isActive = pathname === item.href;
-            return (
+            <div key={item.id}>
               <Link
-                key={item.id}
                 href={item.href}
                 onClick={onClose}
                 className={`
-                  flex items-center gap-3 px-3 py-2.5 mx-2 rounded-xl transition-all duration-200
+                  flex items-center gap-2.5 px-3 py-2 mx-2 rounded-lg transition-all duration-200
                   ${isActive
                     ? 'bg-white/80 shadow-sm'
                     : 'hover:bg-white'
@@ -102,7 +52,7 @@ export default function StudioSidebar({ isOpen = false, onClose }: StudioSidebar
                 `}
               >
                 <div className={`
-                  flex-shrink-0 w-9 h-9 rounded-lg flex items-center justify-center transition-all
+                  flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center transition-all
                   ${isActive
                     ? 'bg-gradient-to-br from-pink-400 to-rose-400 text-white shadow-sm'
                     : 'bg-white/60 text-pink-500'
@@ -120,10 +70,70 @@ export default function StudioSidebar({ isOpen = false, onClose }: StudioSidebar
                 >
                   {t(item.labelKey)}
                 </span>
+                {/* 选中指示器 */}
                 {isActive && isExpanded && (
-                  <div className="ml-auto w-1.5 h-6 bg-gradient-to-b from-pink-400 to-rose-400 rounded-full" />
+                  <div className="ml-auto w-1 h-5 bg-gradient-to-b from-pink-400 to-rose-400 rounded-full" />
                 )}
               </Link>
+              {/* 分隔线 */}
+              {index < items.length - 1 && (
+                <div className={`mx-4 border-b border-pink-100/50 ${isExpanded ? '' : 'lg:mx-3'}`} />
+              )}
+            </div>
+          );
+        })}
+      </div>
+    );
+  };
+
+  // 渲染菜单内容（桌面端用）
+  const renderMenuContent = () => (
+    <div className="py-4">
+        {/* 主要功能 */}
+        <div className="mb-2">
+          {studioMenuCategories.main.map((item, index) => {
+            const isActive = pathname === item.href;
+            return (
+              <div key={item.id}>
+                <Link
+                  href={item.href}
+                  onClick={onClose}
+                  className={`
+                    flex items-center gap-2.5 px-3 py-2 mx-2 rounded-lg transition-all duration-200
+                    ${isActive
+                      ? 'bg-white/80 shadow-sm'
+                      : 'hover:bg-white'
+                    }
+                  `}
+                >
+                  <div className={`
+                    flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center transition-all
+                    ${isActive
+                      ? 'bg-gradient-to-br from-pink-400 to-rose-400 text-white shadow-sm'
+                      : 'bg-white/60 text-pink-500'
+                    }
+                  `}>
+                    {item.icon}
+                  </div>
+                  <span
+                    className={`
+                      text-sm font-medium whitespace-nowrap transition-all
+                      lg:transition-opacity lg:duration-300
+                      ${isExpanded ? 'lg:opacity-100' : 'lg:opacity-0 lg:w-0 lg:overflow-hidden'}
+                      ${isActive ? 'text-pink-600' : 'text-gray-600'}
+                    `}
+                  >
+                    {t(item.labelKey)}
+                  </span>
+                  {isActive && isExpanded && (
+                    <div className="ml-auto w-1 h-5 bg-gradient-to-b from-pink-400 to-rose-400 rounded-full" />
+                  )}
+                </Link>
+                {/* 分隔线 */}
+                {index < studioMenuCategories.main.length - 1 && (
+                  <div className={`mx-4 border-b border-pink-100/50 ${isExpanded ? '' : 'lg:mx-3'}`} />
+                )}
+              </div>
             );
           })}
         </div>

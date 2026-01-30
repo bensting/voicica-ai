@@ -88,8 +88,8 @@ export const studioMenuItems: StudioMenuItemConfig[] = [
 
   // AI-Video
   {
-    id: 'text-to-video',
-    labelKey: 'studio.menu.textToVideo',
+    id: 'ai-video',
+    labelKey: 'studio.menu.aiVideo',
     href: '/studio/ai-video/text-to-video',
     category: 'ai_video',
     enabled: true,

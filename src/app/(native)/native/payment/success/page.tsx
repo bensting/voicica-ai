@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { verifyStripePayment } from '@/actions/payment';
 import type { StripeVerifyResponse } from '@/types/subscription';
 import { useCredits } from '@/contexts/CreditsContext';
+import { useSubscription } from '@/contexts/SubscriptionContext';
 
 type PaymentStatus = 'verifying' | 'success' | 'pending' | 'failed';
 
@@ -39,6 +40,7 @@ function PaymentSuccessContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { refreshCredits } = useCredits();
+  const { refreshSubscription } = useSubscription();
   const [status, setStatus] = useState<PaymentStatus>('verifying');
   const [paymentDetails, setPaymentDetails] = useState<PaymentDetails | null>(null);
   const [error, setError] = useState<string>('');
@@ -66,6 +68,7 @@ function PaymentSuccessContent() {
     if (response.success && response.payment_status === 'paid') {
       setStatus('success');
       refreshCredits();
+      refreshSubscription();
     } else if (response.payment_status === 'unpaid') {
       setStatus('pending');
       setError(response.message);
@@ -73,7 +76,7 @@ function PaymentSuccessContent() {
       setStatus('failed');
       setError(response.message || `Payment status: ${response.payment_status}`);
     }
-  }, [refreshCredits]);
+  }, [refreshCredits, refreshSubscription]);
 
   // 验证支付
   useEffect(() => {
@@ -94,8 +97,9 @@ function PaymentSuccessContent() {
               : 'Google Play purchase verified',
           });
           setStatus('success');
-          // 刷新积分
+          // 刷新积分和订阅状态
           refreshCredits();
+          refreshSubscription();
           return;
         }
 
@@ -121,7 +125,7 @@ function PaymentSuccessContent() {
     };
 
     doVerify();
-  }, [searchParams, refreshCredits, doVerifyPayment]);
+  }, [searchParams, refreshCredits, refreshSubscription, doVerifyPayment]);
 
   // 自动跳转倒计时
   useEffect(() => {

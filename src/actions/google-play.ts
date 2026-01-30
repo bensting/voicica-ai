@@ -193,6 +193,9 @@ export async function verifyGooglePlayPurchase(params: {
 /**
  * 处理 Google Play 续订通知
  * 由 RTDN Webhook 调用
+ *
+ * 注意：此函数只处理真正的续费（自动续费到下一个周期）
+ * 首次购买/重新订阅的积分由客户端 verifyGooglePlayPurchase 处理
  */
 export async function handleGooglePlayRenewal(params: {
   purchaseToken: string;
@@ -203,6 +206,21 @@ export async function handleGooglePlayRenewal(params: {
 
   try {
     console.log(`🔄 [GooglePlay] 处理续订: productId=${productId}`);
+
+    // ========== 第一步：调用 Google Play API 获取最新订单信息 ==========
+    const verification = await verifySubscriptionWithGooglePlay(purchaseToken);
+    if (!verification.valid) {
+      console.log(`⏭️ [GooglePlay] 订阅验证失败: ${verification.error}`);
+      return { success: false, error: verification.error };
+    }
+
+    const latestOrderId = verification.orderId;
+    if (!latestOrderId) {
+      console.log(`⏭️ [GooglePlay] 无法获取 orderId`);
+      return { success: false, error: 'Missing orderId' };
+    }
+
+    console.log(`📦 [GooglePlay] latestOrderId: ${latestOrderId}`);
 
     // 查找现有订阅
     const subscription = await prisma.user_subscriptions.findFirst({
@@ -215,6 +233,24 @@ export async function handleGooglePlayRenewal(params: {
     if (!subscription) {
       console.log(`⏭️ [GooglePlay] 未找到订阅: ${purchaseToken}`);
       return { success: false, error: 'Subscription not found' };
+    }
+
+    // ========== 去重检查：用 orderId 判断是否已处理过此次支付 ==========
+    // Google Play 的 orderId 格式：GPA.xxxx-xxxx-xxxx-xxxxx（首次）或 GPA.xxxx..0, GPA.xxxx..1（续订）
+    // 每次支付都有唯一的 orderId，用它来判断是否重复
+    const existingHistory = await prisma.subscription_history.findFirst({
+      where: {
+        subscription_id: subscription.id,
+        metadata: {
+          path: ['order_id'],
+          equals: latestOrderId,
+        },
+      },
+    });
+
+    if (existingHistory) {
+      console.log(`⏭️ [GooglePlay] orderId ${latestOrderId} 已处理过，跳过`);
+      return { success: true };
     }
 
     // 将 Google Play 产品 ID 转换为 Stripe 产品 ID
@@ -231,21 +267,29 @@ export async function handleGooglePlayRenewal(params: {
 
     const { plan, tier } = result;
     const oldStatus = subscription.status;
+    const now = new Date();
 
-    // 更新订阅日期
-    const newEndDate = new Date(subscription.end_date);
-    newEndDate.setDate(newEndDate.getDate() + plan.cycle_days);
+    // 使用 Google API 返回的 expiryTime 作为新的 end_date（Google 是权威来源）
+    let newEndDate: Date;
+    if (verification.expiryTime) {
+      newEndDate = new Date(verification.expiryTime);
+    } else {
+      // 备用方案：基于当前 end_date 计算
+      const currentEndDate = new Date(subscription.end_date);
+      newEndDate = new Date(currentEndDate);
+      newEndDate.setDate(newEndDate.getDate() + plan.cycle_days);
+    }
 
     await prisma.user_subscriptions.update({
       where: { id: subscription.id },
       data: {
         status: 'ACTIVE',
         end_date: newEndDate,
-        updated_at: new Date(),
+        updated_at: now,
       },
     });
 
-    // 给用户添加积分
+    // 给用户添加积分（真正的续费）
     await addCredits(
       subscription.user_id,
       tier.credits,
@@ -256,7 +300,7 @@ export async function handleGooglePlayRenewal(params: {
 
     console.log(`✅ [GooglePlay] 订阅已续订: ${subscription.id}, 积分: +${tier.credits}`);
 
-    // 记录历史
+    // 记录历史（包含 order_id 用于去重）
     await prisma.subscription_history.create({
       data: {
         subscription_id: subscription.id,
@@ -268,6 +312,7 @@ export async function handleGooglePlayRenewal(params: {
         stripe_event_type: 'google_play.renewal',
         credits_change: tier.credits,
         metadata: {
+          order_id: latestOrderId,
           new_end_date: newEndDate.toISOString(),
         },
       },
@@ -279,6 +324,95 @@ export async function handleGooglePlayRenewal(params: {
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Renewal failed',
+    };
+  }
+}
+
+/**
+ * 处理 Google Play 订阅恢复/重新激活
+ *
+ * 用于 SUBSCRIPTION_RECOVERED 和 SUBSCRIPTION_RESTARTED 通知
+ * 只更新订阅状态为 ACTIVE，不添加积分（积分已在客户端处理或订阅期没变）
+ */
+export async function handleGooglePlayReactivation(params: {
+  purchaseToken: string;
+}): Promise<{ success: boolean; error?: string }> {
+  const { purchaseToken } = params;
+
+  try {
+    console.log(`🔄 [GooglePlay] 处理订阅恢复/重新激活: ${purchaseToken.substring(0, 30)}...`);
+
+    // 调用 Google API 获取最新订阅信息
+    const verification = await verifySubscriptionWithGooglePlay(purchaseToken);
+    if (!verification.valid) {
+      console.log(`⏭️ [GooglePlay] 订阅验证失败: ${verification.error}`);
+      return { success: false, error: verification.error };
+    }
+
+    // 查找现有订阅
+    const subscription = await prisma.user_subscriptions.findFirst({
+      where: {
+        external_transaction_id: purchaseToken,
+        platform: 'google_play',
+      },
+    });
+
+    if (!subscription) {
+      console.log(`⏭️ [GooglePlay] 未找到订阅: ${purchaseToken}`);
+      return { success: false, error: 'Subscription not found' };
+    }
+
+    const oldStatus = subscription.status;
+    const now = new Date();
+
+    // 更新状态为 ACTIVE，并同步 Google 的 expiryTime
+    const updateData: {
+      status: string;
+      auto_renew: boolean;
+      updated_at: Date;
+      end_date?: Date;
+    } = {
+      status: 'ACTIVE',
+      auto_renew: verification.autoRenewing ?? true,
+      updated_at: now,
+    };
+
+    // 如果 Google 返回了 expiryTime，同步到 end_date
+    if (verification.expiryTime) {
+      updateData.end_date = new Date(verification.expiryTime);
+    }
+
+    await prisma.user_subscriptions.update({
+      where: { id: subscription.id },
+      data: updateData,
+    });
+
+    console.log(`✅ [GooglePlay] 订阅已恢复: ${subscription.id} (${oldStatus} -> ACTIVE，无积分变动)`);
+
+    // 记录历史（无积分变动）
+    await prisma.subscription_history.create({
+      data: {
+        subscription_id: subscription.id,
+        user_id: subscription.user_id,
+        event_type: 'REACTIVATED',
+        old_status: oldStatus,
+        new_status: 'ACTIVE',
+        stripe_event_id: `gp_reactivate_${Date.now()}`,
+        stripe_event_type: 'google_play.reactivation',
+        credits_change: 0,
+        metadata: {
+          order_id: verification.orderId,
+          expiry_time: verification.expiryTime,
+        },
+      },
+    });
+
+    return { success: true };
+  } catch (error) {
+    console.error('❌ [GooglePlay] 处理订阅恢复失败:', error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Reactivation failed',
     };
   }
 }

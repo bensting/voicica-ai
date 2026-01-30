@@ -6,7 +6,8 @@ import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { X, ChevronRight } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { studioMenuCategories } from '@/config/studioMenu';
+import { studioMenuCategories, categoryOrder } from '@/config/studioMenu';
+import type { MenuCategory } from '@/config/studioMenu';
 
 interface StudioSidebarProps {
   /** 桌面端不需要，移动端需要控制打开/关闭 */
@@ -30,6 +31,50 @@ export default function StudioSidebar({ isOpen = false, onClose }: StudioSidebar
   const { t } = useLanguage();
   const pathname = usePathname();
   const [isExpanded, setIsExpanded] = useState(false);
+
+  // 渲染分类区块（桌面端用）
+  const renderCategorySection = (categoryKey: MenuCategory, labelKey: string, withBorder?: boolean) => {
+    const items = studioMenuCategories[categoryKey];
+    if (items.length === 0) return null;
+
+    return (
+      <div className={`mb-6 ${withBorder ? 'border-t border-gray-200 pt-4' : ''}`}>
+        <div className={`px-4 py-2 ${isExpanded ? 'lg:block' : 'lg:hidden'}`}>
+          <span className="text-xs font-semibold text-gray-400 uppercase">
+            {t(labelKey)}
+          </span>
+        </div>
+        {items.map((item) => {
+          const isActive = pathname === item.href;
+          return (
+            <Link
+              key={item.id}
+              href={item.href}
+              onClick={onClose}
+              className={`
+                flex items-center gap-3 px-4 py-3 transition-colors
+                ${isActive
+                  ? 'bg-purple-50 text-purple-600 border-r-4 lg:border-r-2 border-purple-600'
+                  : 'text-gray-700 hover:bg-gray-50'
+                }
+              `}
+            >
+              <span className="flex-shrink-0">{item.icon}</span>
+              <span
+                className={`
+                  text-sm font-medium whitespace-nowrap
+                  lg:transition-opacity lg:duration-300
+                  ${isExpanded ? 'lg:opacity-100' : 'lg:opacity-0 lg:w-0'}
+                `}
+              >
+                {t(item.labelKey)}
+              </span>
+            </Link>
+          );
+        })}
+      </div>
+    );
+  };
 
   // 渲染菜单内容（移动端和桌面端共用）
   const renderMenuContent = () => (
@@ -72,245 +117,13 @@ export default function StudioSidebar({ isOpen = false, onClose }: StudioSidebar
           })}
         </div>
 
-        {/* AI Video */}
-        {studioMenuCategories.ai_video.length > 0 && (
-          <div className="mb-6">
-            {/* 桌面端展开时显示，移动端始终显示 */}
-            <div className={`px-4 py-2 ${isExpanded ? 'lg:block' : 'lg:hidden'}`}>
-              <span className="text-xs font-semibold text-gray-400 uppercase">
-                Video AI
-              </span>
-            </div>
-            {studioMenuCategories.ai_video.map((item) => {
-              const isActive = pathname === item.href;
-              return (
-                <Link
-                  key={item.id}
-                  href={item.href}
-                  onClick={onClose}
-                  className={`
-                    flex items-center gap-3 px-4 py-3 transition-colors
-                    ${isActive
-                      ? 'bg-purple-50 text-purple-600 border-r-4 lg:border-r-2 border-purple-600'
-                      : 'text-gray-700 hover:bg-gray-50'
-                    }
-                  `}
-                >
-                  <span className="flex-shrink-0">{item.icon}</span>
-                  <span
-                    className={`
-                      text-sm font-medium whitespace-nowrap
-                      lg:transition-opacity lg:duration-300
-                      ${isExpanded ? 'lg:opacity-100' : 'lg:opacity-0 lg:w-0'}
-                    `}
-                  >
-                    {t(item.labelKey)}
-                  </span>
-                </Link>
-              );
-            })}
-          </div>
+        {/* 按配置顺序渲染分类 */}
+        {categoryOrder.map((category) =>
+          renderCategorySection(category.key, category.labelKey)
         )}
 
-        {/* Voiceover AI */}
-        {studioMenuCategories.voiceover.length > 0 && (
-          <div className="mb-6">
-            {/* 桌面端展开时显示，移动端始终显示 */}
-            <div className={`px-4 py-2 ${isExpanded ? 'lg:block' : 'lg:hidden'}`}>
-              <span className="text-xs font-semibold text-gray-400 uppercase">
-                Voiceover AI
-              </span>
-            </div>
-            {studioMenuCategories.voiceover.map((item) => {
-              const isActive = pathname === item.href;
-              return (
-                <Link
-                  key={item.id}
-                  href={item.href}
-                  onClick={onClose}
-                  className={`
-                    flex items-center gap-3 px-4 py-3 transition-colors
-                    ${isActive
-                      ? 'bg-purple-50 text-purple-600 border-r-4 lg:border-r-2 border-purple-600'
-                      : 'text-gray-700 hover:bg-gray-50'
-                    }
-                  `}
-                >
-                  <span className="flex-shrink-0">{item.icon}</span>
-                  <span
-                    className={`
-                      text-sm font-medium whitespace-nowrap
-                      lg:transition-opacity lg:duration-300
-                      ${isExpanded ? 'lg:opacity-100' : 'lg:opacity-0 lg:w-0'}
-                    `}
-                  >
-                    {t(item.labelKey)}
-                  </span>
-                </Link>
-              );
-            })}
-          </div>
-        )}
-
-        {/* Music AI */}
-        {studioMenuCategories.music.length > 0 && (
-          <div className="mb-6">
-            {/* 桌面端展开时显示，移动端始终显示 */}
-            <div className={`px-4 py-2 ${isExpanded ? 'lg:block' : 'lg:hidden'}`}>
-              <span className="text-xs font-semibold text-gray-400 uppercase">
-                Music AI
-              </span>
-            </div>
-            {studioMenuCategories.music.map((item) => {
-              const isActive = pathname === item.href;
-              return (
-                <Link
-                  key={item.id}
-                  href={item.href}
-                  onClick={onClose}
-                  className={`
-                    flex items-center gap-3 px-4 py-3 transition-colors
-                    ${isActive
-                      ? 'bg-purple-50 text-purple-600 border-r-4 lg:border-r-2 border-purple-600'
-                      : 'text-gray-700 hover:bg-gray-50'
-                    }
-                  `}
-                >
-                  <span className="flex-shrink-0">{item.icon}</span>
-                  <span
-                    className={`
-                      text-sm font-medium whitespace-nowrap
-                      lg:transition-opacity lg:duration-300
-                      ${isExpanded ? 'lg:opacity-100' : 'lg:opacity-0 lg:w-0'}
-                    `}
-                  >
-                    {t(item.labelKey)}
-                  </span>
-                </Link>
-              );
-            })}
-          </div>
-        )}
-
-        {/* Story Maker AI */}
-        {studioMenuCategories.story.length > 0 && (
-          <div className="mb-6">
-            {/* 桌面端展开时显示，移动端始终显示 */}
-            <div className={`px-4 py-2 ${isExpanded ? 'lg:block' : 'lg:hidden'}`}>
-              <span className="text-xs font-semibold text-gray-400 uppercase">
-                Story Maker AI
-              </span>
-            </div>
-            {studioMenuCategories.story.map((item) => {
-              const isActive = pathname === item.href;
-              return (
-                <Link
-                  key={item.id}
-                  href={item.href}
-                  onClick={onClose}
-                  className={`
-                    flex items-center gap-3 px-4 py-3 transition-colors
-                    ${isActive
-                      ? 'bg-purple-50 text-purple-600 border-r-4 lg:border-r-2 border-purple-600'
-                      : 'text-gray-700 hover:bg-gray-50'
-                    }
-                  `}
-                >
-                  <span className="flex-shrink-0">{item.icon}</span>
-                  <span
-                    className={`
-                      text-sm font-medium whitespace-nowrap
-                      lg:transition-opacity lg:duration-300
-                      ${isExpanded ? 'lg:opacity-100' : 'lg:opacity-0 lg:w-0'}
-                    `}
-                  >
-                    {t(item.labelKey)}
-                  </span>
-                </Link>
-              );
-            })}
-          </div>
-        )}
-
-        {/* Tools (免费工具) */}
-        {studioMenuCategories.tools.length > 0 && (
-          <div className="mb-6">
-            {/* 桌面端展开时显示，移动端始终显示 */}
-            <div className={`px-4 py-2 ${isExpanded ? 'lg:block' : 'lg:hidden'}`}>
-              <span className="text-xs font-semibold text-gray-400 uppercase">
-                {t('studio.menu.tools')}
-              </span>
-            </div>
-            {studioMenuCategories.tools.map((item) => {
-              const isActive = pathname === item.href;
-              return (
-                <Link
-                  key={item.id}
-                  href={item.href}
-                  onClick={onClose}
-                  className={`
-                    flex items-center gap-3 px-4 py-3 transition-colors
-                    ${isActive
-                      ? 'bg-purple-50 text-purple-600 border-r-4 lg:border-r-2 border-purple-600'
-                      : 'text-gray-700 hover:bg-gray-50'
-                    }
-                  `}
-                >
-                  <span className="flex-shrink-0">{item.icon}</span>
-                  <span
-                    className={`
-                      text-sm font-medium whitespace-nowrap
-                      lg:transition-opacity lg:duration-300
-                      ${isExpanded ? 'lg:opacity-100' : 'lg:opacity-0 lg:w-0'}
-                    `}
-                  >
-                    {t(item.labelKey)}
-                  </span>
-                </Link>
-              );
-            })}
-          </div>
-        )}
-
-        {/* Account (我的账户) */}
-        {studioMenuCategories.account.length > 0 && (
-          <div className="mb-6 border-t border-gray-200 pt-4">
-            {/* 桌面端展开时显示，移动端始终显示 */}
-            <div className={`px-4 py-2 ${isExpanded ? 'lg:block' : 'lg:hidden'}`}>
-              <span className="text-xs font-semibold text-gray-400 uppercase">
-                {t('studio.menu.account')}
-              </span>
-            </div>
-            {studioMenuCategories.account.map((item) => {
-              const isActive = pathname === item.href;
-              return (
-                <Link
-                  key={item.id}
-                  href={item.href}
-                  onClick={onClose}
-                  className={`
-                    flex items-center gap-3 px-4 py-3 transition-colors
-                    ${isActive
-                      ? 'bg-purple-50 text-purple-600 border-r-4 lg:border-r-2 border-purple-600'
-                      : 'text-gray-700 hover:bg-gray-50'
-                    }
-                  `}
-                >
-                  <span className="flex-shrink-0">{item.icon}</span>
-                  <span
-                    className={`
-                      text-sm font-medium whitespace-nowrap
-                      lg:transition-opacity lg:duration-300
-                      ${isExpanded ? 'lg:opacity-100' : 'lg:opacity-0 lg:w-0'}
-                    `}
-                  >
-                    {t(item.labelKey)}
-                  </span>
-                </Link>
-              );
-            })}
-          </div>
-        )}
+        {/* Account (我的账户) - 始终在最后，带分隔线 */}
+        {renderCategorySection('account', 'studio.menu.account', true)}
       </div>
     );
 
@@ -413,19 +226,12 @@ export default function StudioSidebar({ isOpen = false, onClose }: StudioSidebar
             {/* HOME */}
             {renderMobileSection(t('studio.menu.home'), studioMenuCategories.main)}
 
-            {/* VOICEOVER AI */}
-            {renderMobileSection('VOICEOVER AI', studioMenuCategories.voiceover)}
+            {/* 按配置顺序渲染分类 */}
+            {categoryOrder.map((category) =>
+              renderMobileSection(t(category.labelKey), studioMenuCategories[category.key])
+            )}
 
-            {/* MUSIC AI */}
-            {renderMobileSection('MUSIC AI', studioMenuCategories.music)}
-
-            {/* STORY MAKER AI */}
-            {renderMobileSection('STORY MAKER AI', studioMenuCategories.story)}
-
-            {/* FREE TOOLS */}
-            {renderMobileSection(t('studio.menu.tools'), studioMenuCategories.tools)}
-
-            {/* ACCOUNT */}
+            {/* ACCOUNT - 始终在最后 */}
             {renderMobileSection(t('studio.menu.account'), studioMenuCategories.account)}
           </div>
         </div>

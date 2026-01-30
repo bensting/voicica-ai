@@ -125,6 +125,13 @@
     "upgrade": "အဆင့်မြှင့်",
     "dailyTasks": "ဆုလာဘ်များ",
     "tts": "စာသားမှအသံသို့",
+    "category": {
+      "voiceover": "အသံ AI",
+      "music": "ဂီတ AI",
+      "aiVideo": "ဗီဒီယို AI",
+      "story": "ပုံပြင် AI",
+      "tools": "အခမဲ့ ကိရိယာများ"
+    },
     "menu": {
       "home": "ပင်မ",
       "creationHub": "ဖန်တီးမှုဗဟို",

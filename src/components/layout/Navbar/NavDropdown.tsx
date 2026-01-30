@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, isValidElement } from 'react';
 import Link from 'next/link';
 import { NavDropdown as NavDropdownType } from '@/config/navigation/index';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -10,6 +10,18 @@ interface NavDropdownProps {
   mobile?: boolean;
   onLinkClick?: () => void;
   labelIcon?: React.ReactNode;
+}
+
+// Helper to render icon (supports both ComponentType and ReactNode)
+function renderIcon(icon: React.ComponentType<{ className?: string }> | React.ReactNode, className: string) {
+  if (!icon) return null;
+  // Check if it's a valid React element (ReactNode)
+  if (isValidElement(icon)) {
+    return icon;
+  }
+  // Otherwise treat as ComponentType
+  const Icon = icon as React.ComponentType<{ className?: string }>;
+  return <Icon className={className} />;
 }
 
 export default function NavDropdown({ dropdown, mobile = false, onLinkClick, labelIcon }: NavDropdownProps) {
@@ -63,7 +75,6 @@ export default function NavDropdown({ dropdown, mobile = false, onLinkClick, lab
             {dropdown.items
               .filter((item) => item.enabled !== false)
               .map((item) => {
-                const Icon = item.icon;
                 return (
                   <Link
                     key={item.href}
@@ -71,9 +82,9 @@ export default function NavDropdown({ dropdown, mobile = false, onLinkClick, lab
                     onClick={handleLinkClick}
                     className="flex items-center gap-3 p-3 rounded-xl text-gray-700 hover:bg-pink-50 hover:text-pink-600 transition-colors"
                   >
-                    {Icon && (
+                    {item.icon && (
                       <div className="flex-shrink-0 w-8 h-8 bg-white rounded-lg flex items-center justify-center shadow-sm text-pink-500">
-                        <Icon className="w-4 h-4" />
+                        {renderIcon(item.icon, "w-4 h-4")}
                       </div>
                     )}
                     <div className="flex-1 min-w-0">
@@ -119,7 +130,6 @@ export default function NavDropdown({ dropdown, mobile = false, onLinkClick, lab
           {dropdown.items
             .filter((item) => item.enabled !== false)
             .map((item) => {
-              const Icon = item.icon;
               return (
                 <Link
                   key={item.href}
@@ -127,9 +137,9 @@ export default function NavDropdown({ dropdown, mobile = false, onLinkClick, lab
                   onClick={handleLinkClick}
                   className="group flex items-start gap-3 p-3 rounded-xl hover:bg-pink-50 transition-colors"
                 >
-                  {Icon && (
+                  {item.icon && (
                     <div className="flex-shrink-0 w-10 h-10 bg-gradient-to-br from-pink-100 to-rose-50 rounded-lg flex items-center justify-center text-pink-500 group-hover:text-pink-600 group-hover:scale-110 transition-all duration-300">
-                      <Icon className="w-5 h-5" />
+                      {renderIcon(item.icon, "w-5 h-5")}
                     </div>
                   )}
                   <div>

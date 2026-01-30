@@ -125,6 +125,13 @@
     "upgrade": "升級",
     "dailyTasks": "福利",
     "tts": "文字轉語音",
+    "category": {
+      "voiceover": "語音 AI",
+      "music": "音樂 AI",
+      "aiVideo": "影片 AI",
+      "story": "故事 AI",
+      "tools": "免費工具"
+    },
     "menu": {
       "home": "首頁",
       "creationHub": "創作中心",

@@ -1,16 +1,56 @@
 /**
  * Navigation configuration entry point
  *
- * Automatically selects development or production config based on environment
+ * Generates navigation dropdowns from studioMenu configuration
  */
 
 import { navigationConfig as devConfig } from './nav.development';
 import { navigationConfig as prodConfig } from './nav.production';
+import { studioMenuCategories, categoryOrder } from '@/config/studioMenu';
 import type { NavLink, NavDropdown, NavDropdownItem, NavigationConfig } from './types';
 
-// Select config based on environment
+// Select base config based on environment
 const isProduction = process.env.NODE_ENV === 'production';
-export const navigationConfig: NavigationConfig = isProduction ? prodConfig : devConfig;
+const baseConfig: NavigationConfig = isProduction ? prodConfig : devConfig;
+
+/**
+ * Generate navigation dropdowns from studioMenu configuration
+ */
+function generateDropdownsFromStudioMenu(): NavDropdown[] {
+  const dropdowns: NavDropdown[] = [];
+
+  // Generate dropdowns for each category based on categoryOrder
+  categoryOrder.forEach((category) => {
+    // Skip if showInNav is explicitly false
+    if (category.showInNav === false) return;
+
+    const items = studioMenuCategories[category.key];
+    // Skip empty categories
+    if (items.length === 0) return;
+
+    const dropdownItems: NavDropdownItem[] = items.map((item) => ({
+      href: item.href,
+      labelKey: item.labelKey,
+      icon: item.icon,
+      enabled: item.enabled,
+    }));
+
+    dropdowns.push({
+      id: category.key,
+      labelKey: category.labelKey,
+      items: dropdownItems,
+      enabled: dropdownItems.some(item => item.enabled !== false),
+    });
+  });
+
+  return dropdowns;
+}
+
+// Generate the final navigation config with dropdowns from studioMenu
+export const navigationConfig: NavigationConfig = {
+  links: baseConfig.links,
+  dropdowns: generateDropdownsFromStudioMenu(),
+};
 
 // Export individual parts for convenience
 export const NAV_LINKS: NavLink[] = navigationConfig.links.filter(link => link.enabled !== false);

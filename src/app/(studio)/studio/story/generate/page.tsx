@@ -11,6 +11,7 @@ import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 import { getStoryIdeas, generateStory, saveStory } from '@/actions/story';
 import type { StoryIdea } from '@/lib/services/openai';
 import { calculateProductCreditsCost } from '@/config/creditsCost';
+import { isDailyTasksEnabled } from '@/config/appConfig';
 import { ProductType } from '@/config/productType';
 import CreditsBar from '@/components/ui/CreditsBar';
 import LoginModal from '@/components/features/auth/LoginModal';
@@ -33,6 +34,7 @@ export default function GenerateStoryPage() {
   const { setTitle, openDailyTasks } = useStudio();
   const { credits, permanentCredits, monthlyCredits, loading: creditsLoading, refreshCredits } = useCredits();
   const { user } = useFirebaseAuth();
+  const dailyTasksEnabled = isDailyTasksEnabled(false); // Studio Web 端
 
   // 步骤状态
   const [step, setStep] = useState<'input' | 'ideas'>('input');
@@ -228,7 +230,7 @@ export default function GenerateStoryPage() {
                     showClearButton={true}
                     onClear={() => setKeywords('')}
                     disabled={isLoadingIdeas}
-                    onDailyTasksClick={openDailyTasks}
+                    onDailyTasksClick={dailyTasksEnabled ? openDailyTasks : undefined}
                   />
                 </div>
               </div>
@@ -350,7 +352,7 @@ export default function GenerateStoryPage() {
                   showCharacterCount={false}
                   showClearButton={false}
                   disabled={isGeneratingStory}
-                  onDailyTasksClick={openDailyTasks}
+                  onDailyTasksClick={dailyTasksEnabled ? openDailyTasks : undefined}
                   variant="standalone"
                 />
               </div>
@@ -430,7 +432,7 @@ export default function GenerateStoryPage() {
                     showClearButton={true}
                     onClear={() => setKeywords('')}
                     disabled={isLoadingIdeas}
-                    onDailyTasksClick={openDailyTasks}
+                    onDailyTasksClick={dailyTasksEnabled ? openDailyTasks : undefined}
                   />
                 </div>
               </div>
@@ -548,7 +550,7 @@ export default function GenerateStoryPage() {
                   showCharacterCount={false}
                   showClearButton={false}
                   disabled={isGeneratingStory}
-                  onDailyTasksClick={openDailyTasks}
+                  onDailyTasksClick={dailyTasksEnabled ? openDailyTasks : undefined}
                   variant="standalone"
                 />
               </div>

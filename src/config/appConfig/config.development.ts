@@ -56,7 +56,7 @@ export const appConfig: AppConfig = {
     checkin_credits: 1,
     ad_reward_tiers: [1, 1, 1, 1, 1, 1],
     popup_interval_minutes: 5, // 开发环境 5 分钟，方便测试
-    enabled: true,
+    enabled: false,
     // Native App 独立配置
     native: {
       checkin_credits: 1,

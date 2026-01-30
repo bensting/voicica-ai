@@ -82,6 +82,7 @@ async function processTrackData(
   taskId: string,
   trackIndex: number
 ): Promise<{
+  track_id: string | null;
   audio_url: string | null;
   cover_url: string | null;
   stream_url: string | null;
@@ -101,6 +102,7 @@ async function processTrackData(
     : null;
 
   return {
+    track_id: track.id || null, // KIE 回调返回的歌曲 id
     audio_url: r2AudioUrl || track.audio_url, // 如果 R2 上传失败，保留原始 URL
     cover_url: r2CoverUrl || track.image_url || null,
     stream_url: track.stream_audio_url || null,
@@ -221,11 +223,13 @@ export async function POST(request: NextRequest) {
               status: 'SUCCESS',
               progress: 100,
               // 第一首歌
+              external_track_id: firstTrackData.track_id,
               audio_url: firstTrackData.audio_url,
               stream_url: firstTrackData.stream_url,
               cover_url: firstTrackData.cover_url,
               duration: firstTrackData.duration,
               // 第二首歌（如果有）
+              external_track_id_2: secondTrackData?.track_id || null,
               audio_url_2: secondTrackData?.audio_url || null,
               stream_url_2: secondTrackData?.stream_url || null,
               cover_url_2: secondTrackData?.cover_url || null,
@@ -237,7 +241,7 @@ export async function POST(request: NextRequest) {
               completed_at: new Date(),
             },
           });
-          console.log(`🎵 [KIE Callback] 所有歌曲处理完成: ${record.task_id}, 共 ${tracks.length} 首`);
+          console.log(`🎵 [KIE Callback] 所有歌曲处理完成: ${record.task_id}, 共 ${tracks.length} 首, track_ids: [${firstTrackData.track_id}, ${secondTrackData?.track_id || 'N/A'}]`);
         }
         break;
 

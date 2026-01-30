@@ -86,8 +86,8 @@ export default function AppDownloadButtons({
             </div>
           </div>
           {/* Coming Soon 文字 */}
-          <span className={`text-xs mt-1.5 ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>
-            iOS Coming Soon
+          <span className={`text-xs mt-1 ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>
+            coming soon
           </span>
         </div>
       </div>

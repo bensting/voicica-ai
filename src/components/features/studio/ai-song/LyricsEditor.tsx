@@ -1,12 +1,14 @@
 'use client';
 
-import { Sparkles } from 'lucide-react';
+import { useState } from 'react';
+import { Sparkles, X } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 interface LyricsEditorProps {
   lyrics: string;
   onLyricsChange: (lyrics: string) => void;
   onRegenerate: () => void;
+  onGenerateWithPrompt: (customPrompt: string) => void;
   isGenerating: boolean;
 }
 
@@ -19,9 +21,30 @@ export default function LyricsEditor({
   lyrics,
   onLyricsChange,
   onRegenerate,
+  onGenerateWithPrompt,
   isGenerating,
 }: LyricsEditorProps) {
   const { t } = useLanguage();
+  const [showPromptModal, setShowPromptModal] = useState(false);
+  const [customPrompt, setCustomPrompt] = useState('');
+
+  // Handle generate button click - open modal
+  const handleGenerateClick = () => {
+    setCustomPrompt('');
+    setShowPromptModal(true);
+  };
+
+  // Handle modal generate button click
+  const handleGenerate = () => {
+    setShowPromptModal(false);
+    onGenerateWithPrompt(customPrompt);
+  };
+
+  // Handle modal close
+  const handleCloseModal = () => {
+    setShowPromptModal(false);
+    setCustomPrompt('');
+  };
 
   if (isGenerating) {
     return (
@@ -31,6 +54,87 @@ export default function LyricsEditor({
           <p className="text-gray-600">{t('studio.aiSong.lyricsEditor.generating')}</p>
         </div>
       </div>
+    );
+  }
+
+  // Show generate button when no lyrics
+  if (!lyrics) {
+    return (
+      <>
+        <div className="flex flex-col items-center justify-center py-16 space-y-4">
+          <div className="w-16 h-16 bg-gradient-to-br from-pink-100 to-fuchsia-100 rounded-full flex items-center justify-center">
+            <Sparkles className="w-8 h-8 text-pink-500" />
+          </div>
+          <p className="text-gray-500 text-center">
+            {t('studio.aiSong.lyricsEditor.generateLyricsDesc')}
+          </p>
+          <button
+            type="button"
+            onClick={handleGenerateClick}
+            className="px-8 py-3 bg-gradient-to-r from-pink-500 to-fuchsia-500 text-white rounded-xl hover:from-pink-600 hover:to-fuchsia-600 transition-all font-semibold flex items-center gap-2 shadow-lg shadow-pink-200"
+          >
+            <Sparkles className="w-5 h-5" />
+            {t('studio.aiSong.lyricsEditor.generateLyrics')}
+          </button>
+        </div>
+
+        {/* Prompt Modal */}
+        {showPromptModal && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-2xl w-full max-w-md shadow-xl">
+              {/* Modal Header */}
+              <div className="flex items-center justify-between p-4 border-b border-gray-100">
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900">
+                    {t('studio.aiSong.lyricsEditor.promptModalTitle')}
+                  </h3>
+                  <p className="text-sm text-gray-500 mt-0.5">
+                    {t('studio.aiSong.lyricsEditor.promptModalSubtitle')}
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={handleCloseModal}
+                  className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                >
+                  <X className="w-5 h-5 text-gray-500" />
+                </button>
+              </div>
+
+              {/* Modal Body */}
+              <div className="p-4">
+                <textarea
+                  value={customPrompt}
+                  onChange={(e) => setCustomPrompt(e.target.value)}
+                  placeholder={t('studio.aiSong.lyricsEditor.promptPlaceholder')}
+                  className="w-full h-32 p-3 border-2 border-gray-200 rounded-xl focus:border-pink-500 focus:outline-none resize-none text-sm"
+                  maxLength={200}
+                />
+                <p className="text-xs text-gray-400 text-right mt-1">{customPrompt.length}/200</p>
+              </div>
+
+              {/* Modal Footer */}
+              <div className="flex gap-3 p-4 border-t border-gray-100">
+                <button
+                  type="button"
+                  onClick={handleCloseModal}
+                  className="flex-1 py-3 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition-colors font-medium"
+                >
+                  {t('studio.aiSong.lyricsEditor.cancel')}
+                </button>
+                <button
+                  type="button"
+                  onClick={handleGenerate}
+                  className="flex-1 py-3 bg-gradient-to-r from-pink-500 to-fuchsia-500 text-white rounded-xl hover:from-pink-600 hover:to-fuchsia-600 transition-all font-semibold flex items-center justify-center gap-2"
+                >
+                  <Sparkles className="w-5 h-5" />
+                  {t('studio.aiSong.lyricsEditor.generate')}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+      </>
     );
   }
 

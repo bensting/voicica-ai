@@ -103,7 +103,9 @@
     },
     "products": {
       "title": "Star Products",
-      "tts": "AI Text to Speech",
+      "tts": "Text to Voice",
+      "aiMusic": "AI Music",
+      "aiVideo": "AI Video",
       "tiktokDownloader": "TikTok Downloader",
       "youtubeDownloader": "YouTube Downloader",
       "songCover": "AI Song Cover Generator",

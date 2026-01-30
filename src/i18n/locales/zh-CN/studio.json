@@ -52,8 +52,10 @@
       },
       "lyricsStep": {
         "title": "编辑你的歌词",
+        "titleInitial": "创作你的歌词",
         "titleGenerating": "AI 正在为你创作歌词...",
         "subtitle": "不满意？可以点击重新生成",
+        "subtitleInitial": "让 AI 根据你的选择生成歌词",
         "subtitleGenerating": "请稍候，这可能需要几秒钟",
         "basedOnSelection": "根据你的选择生成歌词：",
         "songTitleLabel": "歌曲标题",
@@ -80,7 +82,14 @@
         "characters": "字符",
         "regenerate": "重新生成歌词",
         "tipTitle": "提示：",
-        "tipContent": "你可以直接编辑歌词，或点击「重新生成」让 AI 创作新的版本"
+        "tipContent": "你可以直接编辑歌词，或点击「重新生成」让 AI 创作新的版本",
+        "generateLyrics": "生成歌词",
+        "generateLyricsDesc": "点击让 AI 根据你的选择创作歌词",
+        "promptModalTitle": "描述你的歌词",
+        "promptModalSubtitle": "告诉 AI 你想要什么样的歌词（可选）",
+        "promptPlaceholder": "例如：樱花树下的爱情故事，夕阳下的相遇...",
+        "generate": "生成",
+        "cancel": "取消"
       },
       "createPreview": {
         "creating": "正在创作中...",

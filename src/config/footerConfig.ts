@@ -57,33 +57,13 @@ export const PRODUCTS_LINKS: FooterLink[] = [
     href: '/studio/tts',
   },
   {
-    labelKey: 'footer.products.tiktokDownloader',
-    href: '/studio/tools/tiktok-downloader',
+    labelKey: 'footer.products.aiMusic',
+    href: '/studio/ai-song',
   },
   {
-    labelKey: 'footer.products.youtubeDownloader',
-    href: '/studio/tools/youtube-downloader',
+    labelKey: 'footer.products.aiVideo',
+    href: '/studio/ai-video/text-to-video',
   },
-  // {
-  //   labelKey: 'footer.products.songCover',
-  //   href: '/studio/song-cover',
-  // },
-  // {
-  //   labelKey: 'footer.products.musicGenerator',
-  //   href: '/studio/music-generator',
-  // },
-  // {
-  //   labelKey: 'footer.products.voiceCloning',
-  //   href: '/studio/voice-cloning',
-  // },
-  // {
-  //   labelKey: 'footer.products.voiceChanger',
-  //   href: '/studio/voice-changer',
-  // },
-  // {
-  //   labelKey: 'footer.products.api',
-  //   href: '/api',
-  // },
 ];
 
 // All Footer Sections

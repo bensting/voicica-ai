@@ -174,6 +174,7 @@ model users {
   photo_url          String?              @db.VarChar(500)
   phone              String?              @db.VarChar(20)
   auth_provider      String?              @db.VarChar(50) // 注册方式: google, apple, password, facebook, x 等
+  platform           String?              @db.VarChar(20) // 注册平台: web, mobile-web, android, ios
   credits            Int                  // 永久积分（购买、注册赠送，永不过期）
   monthly_credits    Int                  @default(0) // 当月积分（每日任务，月初重置）
   monthly_credits_reset_at DateTime?      @db.Timestamptz(6) // 当月积分上次重置时间
@@ -185,6 +186,7 @@ model users {
 
   @@index([email], map: "idx_user_email")
   @@index([user_id], map: "idx_user_id")
+  @@index([platform], map: "idx_user_platform")
 }
 
 model voices {
@@ -438,6 +440,8 @@ model music_records {
   progress          Int       @default(0)       // 0-100 进度
 
   // 生成结果（可能有多个音频）
+  external_track_id   String?   @db.VarChar(255)  // KIE 回调的第一首歌 id
+  external_track_id_2 String?   @db.VarChar(255)  // KIE 回调的第二首歌 id
   audio_url         String?                     // 主音频 URL
   audio_url_2       String?                     // 第二个音频 URL（Suno 一次生成两个）
   stream_url        String?                     // 流媒体 URL

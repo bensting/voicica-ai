@@ -104,7 +104,7 @@ export const createMenuItems: CreateMenuItem[] = [
     shortName: 'AI Cover',
     description: 'Create AI song covers with voice cloning',
     href: '/native/create/cover',
-    enabled: { development: true, production: true },
+    enabled: { development: true, production: false },
   },
 
   // ========== AI Image 类别 ==========

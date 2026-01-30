@@ -8,6 +8,7 @@ import UpgradeModal from '@/components/features/pricing/UpgradeModal';
 import { StudioProvider, useStudio } from '@/contexts/StudioContext';
 import { useCredits } from '@/contexts/CreditsContext';
 import AdsterraSocialBar from '@/components/ads/AdsterraSocialBar';
+import { isDailyTasksEnabled } from '@/config/appConfig';
 
 // 动态导入每日任务弹窗
 const DailyTasksModal = dynamic(
@@ -24,6 +25,7 @@ function StudioLayoutContent({
   const [isUpgradeModalOpen, setIsUpgradeModalOpen] = useState(false);
   const [isDailyTasksModalOpen, setIsDailyTasksModalOpen] = useState(false);
   const { refreshCredits } = useCredits();
+  const dailyTasksEnabled = isDailyTasksEnabled(false); // Studio Web 端
 
   const handleUpgradeClick = () => {
     setIsUpgradeModalOpen(true);
@@ -31,10 +33,12 @@ function StudioLayoutContent({
 
   // 手动点击打开弹窗
   const handleDailyTasksClick = useCallback(() => {
+    // 如果每日任务未启用，不打开弹窗
+    if (!dailyTasksEnabled) return;
     // 如果弹窗已经打开，不重复打开
     if (isDailyTasksModalOpen) return;
     setIsDailyTasksModalOpen(true);
-  }, [isDailyTasksModalOpen]);
+  }, [isDailyTasksModalOpen, dailyTasksEnabled]);
 
   // 关闭弹窗
   const handleDailyTasksClose = useCallback(() => {
@@ -82,8 +86,8 @@ function StudioLayoutContent({
         />
       )}
 
-      {/* ========== Daily Tasks Modal ========== */}
-      {isDailyTasksModalOpen && (
+      {/* ========== Daily Tasks Modal - 仅在启用时渲染 ========== */}
+      {dailyTasksEnabled && isDailyTasksModalOpen && (
         <DailyTasksModal
           isOpen={isDailyTasksModalOpen}
           onClose={handleDailyTasksClose}

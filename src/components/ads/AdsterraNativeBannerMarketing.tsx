@@ -12,6 +12,7 @@ interface AdsterraNativeBannerMarketingProps {
  * Adsterra Native Banner 广告组件 (Marketing 页面专用)
  *
  * 显示 4 个卡片样式的原生广告
+ * PC端横向排列，移动端竖向排列
  */
 export default function AdsterraNativeBannerMarketing({
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -70,13 +71,47 @@ export default function AdsterraNativeBannerMarketing({
   return (
     <div className="w-full py-6">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Adsterra Native Banner 容器 - 给予足够宽度让广告横向排列 */}
+        {/* Adsterra Native Banner 容器 */}
+        {/* 使用 CSS Grid 强制 PC 端横向排列，移动端单列 */}
         <div
           ref={containerRef}
           id={config.containerId}
-          className="w-full"
+          className="w-full native-banner-grid"
         />
       </div>
+      {/*
+        CSS 用于覆盖 Adsterra 注入的广告布局
+        Adsterra 会在容器内注入多个广告卡片，默认可能是竖向排列
+        这里使用 CSS 强制在 PC 端横向排列
+      */}
+      <style jsx global>{`
+        /* Native Banner Grid Layout */
+        .native-banner-grid {
+          display: grid !important;
+          grid-template-columns: 1fr;
+          gap: 16px;
+        }
+
+        /* 平板端: 2 列 */
+        @media (min-width: 640px) {
+          .native-banner-grid {
+            grid-template-columns: repeat(2, 1fr);
+          }
+        }
+
+        /* PC 端: 4 列 */
+        @media (min-width: 1024px) {
+          .native-banner-grid {
+            grid-template-columns: repeat(4, 1fr);
+          }
+        }
+
+        /* Adsterra 注入的广告卡片样式 */
+        .native-banner-grid > * {
+          width: 100% !important;
+          max-width: 100% !important;
+        }
+      `}</style>
     </div>
   );
 }

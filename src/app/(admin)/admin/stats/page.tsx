@@ -126,23 +126,25 @@ export default function AdminStatsPage() {
       yellow: 'bg-yellow-500',
     };
 
+    const barHeight = 100; // 柱状图区域高度 px
+
     return (
-      <div className="flex items-end gap-1 h-32">
-        {data.map((item) => (
-          <div key={item.date} className="flex-1 flex flex-col items-center gap-1">
-            <div className="text-xs text-gray-500">{item.count}</div>
-            <div
-              className={`w-full ${colorClasses[color]} rounded-t transition-all`}
-              style={{
-                height: `${Math.max((item.count / maxCount) * 100, 4)}%`,
-                minHeight: item.count > 0 ? '4px' : '2px',
-              }}
-            />
-            <div className="text-xs text-gray-400 truncate w-full text-center">
-              {formatDateShort(item.date)}
+      <div className="flex items-end gap-1">
+        {data.map((item) => {
+          const heightPx = Math.max((item.count / maxCount) * barHeight, 4);
+          return (
+            <div key={item.date} className="flex-1 flex flex-col items-center gap-1">
+              <div className="text-xs text-gray-500">{item.count}</div>
+              <div
+                className={`w-full ${colorClasses[color]} rounded-t transition-all`}
+                style={{ height: `${heightPx}px` }}
+              />
+              <div className="text-xs text-gray-400 truncate w-full text-center">
+                {formatDateShort(item.date)}
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     );
   };

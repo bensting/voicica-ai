@@ -91,8 +91,8 @@ export default function NavLinks({ mobile = false, onLinkClick }: NavLinksProps 
 
   // Helper to add icons to specific nav items specific to the design
   const getLabelIcon = (key: string) => {
-    if (key === 'nav.studio') return <span className="ml-1 text-lg">✨</span>;
-    if (key === 'nav.freeTools') return <span className="ml-1 text-lg">🎁</span>;
+    // 可以根据分类添加特殊图标
+    if (key === 'studio.category.tools') return <span className="ml-1 text-lg">🎁</span>;
     return null;
   };
 

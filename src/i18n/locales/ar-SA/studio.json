@@ -125,6 +125,13 @@
     "upgrade": "ترقية",
     "dailyTasks": "المكافآت",
     "tts": "تحويل النص إلى كلام",
+    "category": {
+      "voiceover": "الصوت AI",
+      "music": "الموسيقى AI",
+      "aiVideo": "الفيديو AI",
+      "story": "القصة AI",
+      "tools": "أدوات مجانية"
+    },
     "menu": {
       "home": "الرئيسية",
       "creationHub": "مركز الإنشاء",

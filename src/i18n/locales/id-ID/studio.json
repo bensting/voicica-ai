@@ -125,6 +125,13 @@
     "upgrade": "Tingkatkan",
     "dailyTasks": "Hadiah",
     "tts": "Teks ke Suara",
+    "category": {
+      "voiceover": "Suara AI",
+      "music": "Musik AI",
+      "aiVideo": "Video AI",
+      "story": "Cerita AI",
+      "tools": "Alat Gratis"
+    },
     "menu": {
       "home": "Beranda",
       "creationHub": "Pusat Kreasi",

@@ -15,7 +15,7 @@ export interface NavDropdownItem {
   href: string;
   labelKey: string;
   descriptionKey?: string; // i18n key for description
-  icon?: React.ComponentType<{ className?: string }>;
+  icon?: React.ComponentType<{ className?: string }> | React.ReactNode;
   enabled?: boolean;
 }
 

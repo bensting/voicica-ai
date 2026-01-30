@@ -125,6 +125,13 @@
     "upgrade": "อัปเกรด",
     "dailyTasks": "รางวัล",
     "tts": "ข้อความเป็นเสียง",
+    "category": {
+      "voiceover": "เสียงพากย์ AI",
+      "music": "เพลง AI",
+      "aiVideo": "วิดีโอ AI",
+      "story": "เรื่องราว AI",
+      "tools": "เครื่องมือฟรี"
+    },
     "menu": {
       "home": "หน้าแรก",
       "creationHub": "ศูนย์สร้างสรรค์",

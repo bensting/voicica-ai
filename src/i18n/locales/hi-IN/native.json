@@ -110,6 +110,32 @@
       "error": "त्रुटि",
       "success": "सफलता",
       "learnMore": "और जानें"
+    },
+    "createVoice": {
+      "enterText": "अपना टेक्स्ट दर्ज करें",
+      "placeholder": "यहां टेक्स्ट टाइप या पेस्ट करें...",
+      "generateText": "टेक्स्ट बनाएं",
+      "selectVoice": "आवाज़ चुनें",
+      "audioSettings": "ऑडियो सेटिंग्स",
+      "speed": "गति",
+      "volume": "वॉल्यूम",
+      "pitch": "पिच",
+      "generate": "बनाएं",
+      "generating": "बना रहा है...",
+      "creditsRule": "क्रेडिट नियम",
+      "voiceGeneration": "वॉइस जनरेशन",
+      "charsPerCredit": "100 अक्षर = 1 क्रेडिट",
+      "textAssistant": "टेक्स्ट असिस्टेंट",
+      "textAssistantDesc": "आप जो कहना चाहते हैं उसका वर्णन करें और AI आपके लिए टेक्स्ट बनाएगा।",
+      "textAssistantPlaceholder": "उदाहरण: पॉडकास्ट स्वागत संदेश, उत्पाद परिचय, कहानी...",
+      "speedDesc": "बोलने की गति समायोजित करें",
+      "volumeDesc": "आउटपुट वॉल्यूम समायोजित करें",
+      "pitchDesc": "आवाज़ का स्वर समायोजित करें",
+      "pitchDeep": "गहरी",
+      "pitchDull": "मंद",
+      "pitchConsistent": "सामान्य",
+      "pitchBright": "उज्ज्वल",
+      "pitchCrisp": "स्पष्ट"
     }
   }
 }

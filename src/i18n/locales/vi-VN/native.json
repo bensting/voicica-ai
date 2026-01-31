@@ -110,6 +110,32 @@
       "error": "Lỗi",
       "success": "Thành công",
       "learnMore": "Tìm hiểu thêm"
+    },
+    "createVoice": {
+      "enterText": "Nhập văn bản",
+      "placeholder": "Nhập hoặc dán văn bản tại đây...",
+      "generateText": "Tạo văn bản",
+      "selectVoice": "Chọn giọng nói",
+      "audioSettings": "Cài đặt âm thanh",
+      "speed": "Tốc độ",
+      "volume": "Âm lượng",
+      "pitch": "Cao độ",
+      "generate": "Tạo",
+      "generating": "Đang tạo...",
+      "creditsRule": "Quy tắc credit",
+      "voiceGeneration": "Tạo giọng nói",
+      "charsPerCredit": "100 ký tự = 1 credit",
+      "textAssistant": "Trợ lý văn bản",
+      "textAssistantDesc": "Mô tả những gì bạn muốn nói và AI sẽ tạo văn bản cho bạn.",
+      "textAssistantPlaceholder": "Ví dụ: Lời chào podcast, giới thiệu sản phẩm, kể chuyện...",
+      "speedDesc": "Điều chỉnh tốc độ nói",
+      "volumeDesc": "Điều chỉnh mức âm lượng đầu ra",
+      "pitchDesc": "Điều chỉnh tông giọng",
+      "pitchDeep": "Trầm",
+      "pitchDull": "Đục",
+      "pitchConsistent": "Bình thường",
+      "pitchBright": "Sáng",
+      "pitchCrisp": "Trong trẻo"
     }
   }
 }

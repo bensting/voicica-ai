@@ -110,6 +110,32 @@
       "error": "錯誤",
       "success": "成功",
       "learnMore": "了解更多"
+    },
+    "createVoice": {
+      "enterText": "輸入文字",
+      "placeholder": "在此輸入或貼上文字...",
+      "generateText": "生成文字",
+      "selectVoice": "選擇語音",
+      "audioSettings": "音訊設定",
+      "speed": "語速",
+      "volume": "音量",
+      "pitch": "音調",
+      "generate": "生成",
+      "generating": "生成中...",
+      "creditsRule": "積分規則",
+      "voiceGeneration": "語音生成",
+      "charsPerCredit": "100字元 = 1積分",
+      "textAssistant": "文字助手",
+      "textAssistantDesc": "描述您想說的內容，AI 將為您生成文字。",
+      "textAssistantPlaceholder": "例如：播客歡迎詞、產品介紹、故事旁白...",
+      "speedDesc": "調整語音播放速度",
+      "volumeDesc": "調整輸出音量大小",
+      "pitchDesc": "調整聲音音調",
+      "pitchDeep": "低沉",
+      "pitchDull": "沉悶",
+      "pitchConsistent": "適中",
+      "pitchBright": "明亮",
+      "pitchCrisp": "清脆"
     }
   }
 }

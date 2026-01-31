@@ -110,6 +110,32 @@
       "error": "Error",
       "success": "Berhasil",
       "learnMore": "Pelajari lebih lanjut"
+    },
+    "createVoice": {
+      "enterText": "Masukkan teks",
+      "placeholder": "Ketik atau tempel teks di sini...",
+      "generateText": "Buat Teks",
+      "selectVoice": "Pilih suara",
+      "audioSettings": "Pengaturan Audio",
+      "speed": "Kecepatan",
+      "volume": "Volume",
+      "pitch": "Nada",
+      "generate": "Buat",
+      "generating": "Membuat...",
+      "creditsRule": "Aturan Kredit",
+      "voiceGeneration": "Pembuatan suara",
+      "charsPerCredit": "100 karakter = 1 kredit",
+      "textAssistant": "Asisten Teks",
+      "textAssistantDesc": "Jelaskan apa yang ingin Anda katakan dan AI akan membuat teksnya.",
+      "textAssistantPlaceholder": "Contoh: Sambutan podcast, pengenalan produk, narasi cerita...",
+      "speedDesc": "Sesuaikan kecepatan bicara",
+      "volumeDesc": "Sesuaikan tingkat volume output",
+      "pitchDesc": "Sesuaikan nada suara",
+      "pitchDeep": "Berat",
+      "pitchDull": "Suram",
+      "pitchConsistent": "Normal",
+      "pitchBright": "Cerah",
+      "pitchCrisp": "Jernih"
     }
   }
 }

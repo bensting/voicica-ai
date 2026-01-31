@@ -6,6 +6,7 @@ import {
   getCategoryConfig,
   CreateMenuIcon,
 } from '@/config/native/createMenuConfig';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 // 图标组件 (w-6 h-6 for FeatureGrid)
 const MusicIcon = () => (
@@ -147,7 +148,26 @@ const colorMap: Record<string, { icon: string; bg: string }> = {
  * 4 列统一网格 + 按类别彩色图标
  */
 export default function FeatureGrid() {
+  const { t } = useLanguage();
   const items = getAvailableMenuItems();
+
+  // 获取菜单项的翻译名称
+  const getItemName = (id: string, fallback: string): string => {
+    // 特殊处理 id 映射到翻译 key
+    const keyMap: Record<string, string> = {
+      'voice': 'voice',
+      'dialogue': 'dialogue',
+      'clone': 'clone',
+      'music': 'music',
+      'cover': 'cover',
+      'image': 'image',
+      'video': 'video',
+      'tiktok-downloader': 'tiktok',
+      'youtube-downloader': 'youtube',
+    };
+    const translationKey = keyMap[id] || id;
+    return t(`native.menu.items.${translationKey}.shortName`) || fallback;
+  };
 
   return (
     <div className="py-4 px-4">
@@ -166,7 +186,7 @@ export default function FeatureGrid() {
                 <IconComponent />
               </div>
               <span className="text-[10px] text-gray-300 font-medium text-center leading-tight px-1">
-                {feature.shortName}
+                {getItemName(feature.id, feature.shortName)}
               </span>
             </Link>
           );

@@ -110,6 +110,32 @@
       "error": "Error",
       "success": "Success",
       "learnMore": "Learn More"
+    },
+    "createVoice": {
+      "enterText": "Enter your text",
+      "placeholder": "Type or paste your text here...",
+      "generateText": "Generate Text",
+      "selectVoice": "Select a voice",
+      "audioSettings": "Audio Settings",
+      "speed": "Speed",
+      "volume": "Volume",
+      "pitch": "Pitch",
+      "generate": "Generate",
+      "generating": "Generating...",
+      "creditsRule": "Credits Rule",
+      "voiceGeneration": "Voice generation",
+      "charsPerCredit": "100 chars = 1 credit",
+      "textAssistant": "Text Assistant",
+      "textAssistantDesc": "Describe what you want to say and AI will generate the text for you.",
+      "textAssistantPlaceholder": "e.g., A welcome message for a podcast, a product introduction, a story narration...",
+      "speedDesc": "Adjust how fast the voice speaks",
+      "volumeDesc": "Adjust the output volume level",
+      "pitchDesc": "Adjust the voice tone",
+      "pitchDeep": "Deep",
+      "pitchDull": "Dull",
+      "pitchConsistent": "Consistent",
+      "pitchBright": "Bright",
+      "pitchCrisp": "Crisp"
     }
   }
 }

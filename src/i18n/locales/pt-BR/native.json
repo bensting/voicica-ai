@@ -110,6 +110,32 @@
       "error": "Erro",
       "success": "Sucesso",
       "learnMore": "Saiba mais"
+    },
+    "createVoice": {
+      "enterText": "Digite seu texto",
+      "placeholder": "Digite ou cole seu texto aqui...",
+      "generateText": "Gerar Texto",
+      "selectVoice": "Selecionar voz",
+      "audioSettings": "Configurações de Áudio",
+      "speed": "Velocidade",
+      "volume": "Volume",
+      "pitch": "Tom",
+      "generate": "Gerar",
+      "generating": "Gerando...",
+      "creditsRule": "Regra de Créditos",
+      "voiceGeneration": "Geração de voz",
+      "charsPerCredit": "100 caracteres = 1 crédito",
+      "textAssistant": "Assistente de Texto",
+      "textAssistantDesc": "Descreva o que você quer dizer e a IA gerará o texto para você.",
+      "textAssistantPlaceholder": "Ex: Mensagem de boas-vindas de podcast, introdução de produto, narração...",
+      "speedDesc": "Ajuste a velocidade da fala",
+      "volumeDesc": "Ajuste o nível de volume de saída",
+      "pitchDesc": "Ajuste o tom da voz",
+      "pitchDeep": "Grave",
+      "pitchDull": "Abafado",
+      "pitchConsistent": "Normal",
+      "pitchBright": "Brilhante",
+      "pitchCrisp": "Nítido"
     }
   }
 }

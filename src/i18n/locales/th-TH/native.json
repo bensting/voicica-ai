@@ -110,6 +110,32 @@
       "error": "ข้อผิดพลาด",
       "success": "สำเร็จ",
       "learnMore": "เรียนรู้เพิ่มเติม"
+    },
+    "createVoice": {
+      "enterText": "ป้อนข้อความ",
+      "placeholder": "พิมพ์หรือวางข้อความที่นี่...",
+      "generateText": "สร้างข้อความ",
+      "selectVoice": "เลือกเสียง",
+      "audioSettings": "ตั้งค่าเสียง",
+      "speed": "ความเร็ว",
+      "volume": "ระดับเสียง",
+      "pitch": "ระดับเสียงสูงต่ำ",
+      "generate": "สร้าง",
+      "generating": "กำลังสร้าง...",
+      "creditsRule": "กฎเครดิต",
+      "voiceGeneration": "สร้างเสียง",
+      "charsPerCredit": "100 ตัวอักษร = 1 เครดิต",
+      "textAssistant": "ผู้ช่วยข้อความ",
+      "textAssistantDesc": "อธิบายสิ่งที่คุณต้องการพูด AI จะสร้างข้อความให้คุณ",
+      "textAssistantPlaceholder": "เช่น ข้อความต้อนรับพอดแคสต์ แนะนำสินค้า เล่าเรื่อง...",
+      "speedDesc": "ปรับความเร็วในการพูด",
+      "volumeDesc": "ปรับระดับเสียงเอาต์พุต",
+      "pitchDesc": "ปรับโทนเสียง",
+      "pitchDeep": "ทุ้ม",
+      "pitchDull": "ทึบ",
+      "pitchConsistent": "ปกติ",
+      "pitchBright": "สดใส",
+      "pitchCrisp": "คมชัด"
     }
   }
 }

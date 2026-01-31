@@ -110,6 +110,32 @@
       "error": "エラー",
       "success": "成功",
       "learnMore": "もっと見る"
+    },
+    "createVoice": {
+      "enterText": "テキストを入力",
+      "placeholder": "テキストを入力または貼り付け...",
+      "generateText": "テキスト生成",
+      "selectVoice": "音声を選択",
+      "audioSettings": "オーディオ設定",
+      "speed": "速度",
+      "volume": "音量",
+      "pitch": "ピッチ",
+      "generate": "生成",
+      "generating": "生成中...",
+      "creditsRule": "クレジットルール",
+      "voiceGeneration": "音声生成",
+      "charsPerCredit": "100文字 = 1クレジット",
+      "textAssistant": "テキストアシスタント",
+      "textAssistantDesc": "言いたいことを説明すると、AIがテキストを生成します。",
+      "textAssistantPlaceholder": "例：ポッドキャストの挨拶、商品紹介、ナレーション...",
+      "speedDesc": "音声の再生速度を調整",
+      "volumeDesc": "出力音量を調整",
+      "pitchDesc": "声のトーンを調整",
+      "pitchDeep": "低い",
+      "pitchDull": "くぐもった",
+      "pitchConsistent": "標準",
+      "pitchBright": "明るい",
+      "pitchCrisp": "澄んだ"
     }
   }
 }

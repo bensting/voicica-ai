@@ -424,7 +424,7 @@ export default function VideoTaskPage() {
             onRecreate={handleRecreate}
             showDownload
             onDownload={handleDownload}
-            downloading={downloading}
+            downloading={downloading}   
           />
         )}
 

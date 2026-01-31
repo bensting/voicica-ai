@@ -703,9 +703,9 @@ export default function NativeTTSPage() {
               {activeSettingsTab === 'volume' && (
                 <div className="space-y-6">
                   <div>
-                    <h3 className="text-xl font-semibold text-white">Volume</h3>
+                    <h3 className="text-xl font-semibold text-white">{t('native.createVoice.volume')}</h3>
                     <p className="text-sm text-gray-400 mt-1">
-                      Adjust the output volume level
+                      {t('native.createVoice.volumeDesc')}
                     </p>
                   </div>
 
@@ -739,9 +739,9 @@ export default function NativeTTSPage() {
               {activeSettingsTab === 'pitch' && (
                 <div className="space-y-6">
                   <div>
-                    <h3 className="text-xl font-semibold text-white">Pitch</h3>
+                    <h3 className="text-xl font-semibold text-white">{t('native.createVoice.pitch')}</h3>
                     <p className="text-sm text-gray-400 mt-1">
-                      Adjust the voice tone
+                      {t('native.createVoice.pitchDesc')}
                     </p>
                   </div>
 
@@ -764,11 +764,11 @@ export default function NativeTTSPage() {
                       className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-purple-600"
                     />
                     <div className="flex justify-between text-xs text-gray-500 mt-2">
-                      <span>Deep</span>
-                      <span>Dull</span>
-                      <span>Consistent</span>
-                      <span>Bright</span>
-                      <span>Crisp</span>
+                      <span>{t('native.createVoice.pitchDeep')}</span>
+                      <span>{t('native.createVoice.pitchDull')}</span>
+                      <span>{t('native.createVoice.pitchConsistent')}</span>
+                      <span>{t('native.createVoice.pitchBright')}</span>
+                      <span>{t('native.createVoice.pitchCrisp')}</span>
                     </div>
                     <div className="text-center mt-2 text-sm font-medium text-purple-400">
                       {getPitchLabel(tempSettings.pitch)}
@@ -782,7 +782,7 @@ export default function NativeTTSPage() {
                 onClick={handleSaveSettings}
                 className="w-full mt-6 bg-purple-600 text-white py-4 rounded-xl font-medium hover:bg-purple-700 transition-colors"
               >
-                Save
+                {t('native.common.save')}
               </button>
             </div>
           </div>

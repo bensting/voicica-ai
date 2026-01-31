@@ -102,8 +102,6 @@ export default function NativeNavbar() {
                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 hover:bg-white/10 transition-all active:scale-95"
               >
                 <CrownIcon className="w-4 h-4 text-amber-400" />
-                <span className="text-white/20">|</span>
-                <CreditsIcon className="w-3.5 h-3.5 text-purple-400" />
                 <span className="text-white text-sm font-medium">{credits}</span>
               </button>
             ) : (

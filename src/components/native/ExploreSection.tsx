@@ -5,8 +5,7 @@ import { useRouter } from 'next/navigation';
 import { getPublicMusicRecords, type PublicMusicRecord } from '@/actions/music';
 import MusicPlayerModal from './MusicPlayerModal';
 import VideoPlayerModal, { type PublicVideoData } from './VideoPlayerModal';
-import NativeVoiceSelectorSheet from './create/voice/VoiceSelectorSheet';
-import type { Voice } from '@/types/voice';
+import VoicePlayerModal, { type PublicVoiceData } from './VoicePlayerModal';
 
 // Tab 类型
 type TabType = 'voices' | 'music' | 'video';
@@ -33,6 +32,38 @@ const gradients = [
   'from-indigo-600 to-purple-600',
   'from-rose-600 to-pink-600',
 ];
+
+/**
+ * 语音卡片组件
+ */
+function VoiceCard({ voice, index, onClick }: { voice: PublicVoiceData; index: number; onClick: () => void }) {
+  const displayText = voice.text.length > 30 ? voice.text.substring(0, 30) + '...' : voice.text;
+  const gradient = gradients[index % gradients.length];
+
+  return (
+    <div
+      onClick={onClick}
+      className="relative rounded-2xl overflow-hidden cursor-pointer active:scale-[0.98] transition-transform aspect-square"
+    >
+      {/* 渐变背景 */}
+      <div className={`absolute inset-0 bg-gradient-to-br ${gradient}`} />
+
+      {/* 语音图标 */}
+      <div className="absolute top-3 right-3 w-10 h-10 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
+        <svg className="w-5 h-5 text-white/80" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" />
+          <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
+        </svg>
+      </div>
+
+      {/* 底部信息 */}
+      <div className="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black/70 to-transparent">
+        <p className="text-white text-sm font-medium truncate">{displayText}</p>
+        <p className="text-white/60 text-xs truncate">{voice.voiceName}</p>
+      </div>
+    </div>
+  );
+}
 
 /**
  * 音乐卡片组件
@@ -140,20 +171,22 @@ function ExploreVideoCard({ video, index, onClick }: { video: PublicVideoData; i
  */
 export default function ExploreSection() {
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState<TabType>('music');
+  const [activeTab, setActiveTab] = useState<TabType>('voices');
+  const [voiceList, setVoiceList] = useState<PublicVoiceData[]>([]);
   const [musicList, setMusicList] = useState<PublicMusicRecord[]>([]);
   const [videoList, setVideoList] = useState<PublicVideoData[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [selectedVoice, setSelectedVoice] = useState<PublicVoiceData | null>(null);
   const [selectedMusic, setSelectedMusic] = useState<PublicMusicRecord | null>(null);
   const [selectedVideo, setSelectedVideo] = useState<PublicVideoData | null>(null);
-  const [isVoiceSelectorOpen, setIsVoiceSelectorOpen] = useState(false);
 
-  // 处理声音选择，跳转到 TTS 页面
-  const handleVoiceSelect = (voice: Voice) => {
-    // 保存选中的声音到 localStorage，TTS 页面会读取
-    localStorage.setItem('tts_draft_voice', JSON.stringify(voice));
-    // 先跳转页面，选择器会随着页面切换自动关闭
+  // 处理 Voice Recreate
+  const handleVoiceRecreate = (voice: PublicVoiceData) => {
+    // 保存文本和语音名称到 localStorage，TTS 页面会读取
+    localStorage.setItem('tts_draft_text', voice.text);
+    localStorage.setItem('tts_draft_voice_name', voice.voiceName);
     router.push('/native/create/voice');
+    setSelectedVoice(null);
   };
 
   // 处理 Music Recreate
@@ -177,7 +210,22 @@ export default function ExploreSection() {
 
   // 加载公开内容
   useEffect(() => {
-    if (activeTab === 'music') {
+    if (activeTab === 'voices') {
+      setIsLoading(true);
+      fetch('/api/v1/native/explore/voices?limit=20')
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.success) {
+            setVoiceList(data.voices || []);
+          }
+        })
+        .catch((err) => {
+          console.error('Failed to load public voices:', err);
+        })
+        .finally(() => {
+          setIsLoading(false);
+        });
+    } else if (activeTab === 'music') {
       setIsLoading(true);
       getPublicMusicRecords(20)
         .then((records) => {
@@ -217,13 +265,7 @@ export default function ExploreSection() {
         {tabs.map((tab) => (
           <button
             key={tab.id}
-            onClick={() => {
-              if (tab.id === 'voices') {
-                setIsVoiceSelectorOpen(true);
-              } else {
-                setActiveTab(tab.id);
-              }
-            }}
+            onClick={() => setActiveTab(tab.id)}
             className={`pb-3 text-sm font-medium transition-colors relative ${
               activeTab === tab.id
                 ? 'text-white'
@@ -239,7 +281,49 @@ export default function ExploreSection() {
       </div>
 
       {/* 内容区域 */}
-      {activeTab === 'music' ? (
+      {activeTab === 'voices' ? (
+        isLoading ? (
+          // 加载骨架屏 - 带渐变背景
+          <div className="grid grid-cols-2 gap-3">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <div
+                key={i}
+                className={`relative aspect-square rounded-2xl overflow-hidden bg-gradient-to-br ${gradients[i % gradients.length]}`}
+              >
+                {/* 语音图标占位 */}
+                <div className="absolute top-3 right-3 w-10 h-10 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
+                  <svg className="w-5 h-5 text-white/80" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" />
+                    <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
+                  </svg>
+                </div>
+                {/* 底部加载动画 */}
+                <div className="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black/70 to-transparent">
+                  <div className="h-4 w-24 bg-white/20 rounded animate-pulse mb-1" />
+                  <div className="h-3 w-16 bg-white/10 rounded animate-pulse" />
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : voiceList.length > 0 ? (
+          // 语音网格
+          <div className="grid grid-cols-2 gap-3">
+            {voiceList.map((voice, index) => (
+              <VoiceCard
+                key={voice.id}
+                voice={voice}
+                index={index}
+                onClick={() => setSelectedVoice(voice)}
+              />
+            ))}
+          </div>
+        ) : (
+          // 空状态
+          <div className="text-center py-12 text-gray-500">
+            No public voices yet
+          </div>
+        )
+      ) : activeTab === 'music' ? (
         isLoading ? (
           // 加载骨架屏 - 带渐变背景
           <div className="grid grid-cols-2 gap-3">
@@ -313,12 +397,7 @@ export default function ExploreSection() {
             No public videos yet
           </div>
         )
-      ) : (
-        // Voices Tab - 点击时打开选择器，这里不显示内容
-        <div className="text-center py-12 text-gray-500">
-          Click &quot;Voices&quot; to browse voices
-        </div>
-      )}
+      ) : null}
 
       {/* 音乐播放器弹窗 */}
       {selectedMusic && (
@@ -349,13 +428,14 @@ export default function ExploreSection() {
         />
       )}
 
-      {/* 声音选择器 */}
-      <NativeVoiceSelectorSheet
-        isOpen={isVoiceSelectorOpen}
-        onClose={() => setIsVoiceSelectorOpen(false)}
-        selectedVoice={null}
-        onSelect={handleVoiceSelect}
-      />
+      {/* 语音播放器弹窗 */}
+      {selectedVoice && (
+        <VoicePlayerModal
+          voice={selectedVoice}
+          onClose={() => setSelectedVoice(null)}
+          onRecreate={() => handleVoiceRecreate(selectedVoice)}
+        />
+      )}
     </div>
   );
 }

@@ -31,7 +31,7 @@ interface ReportModalProps {
   isOpen: boolean;
   onClose: () => void;
   /** 被举报的内容类型 */
-  contentType: 'music' | 'video' | 'image';
+  contentType: 'music' | 'video' | 'image' | 'tts';
   /** 内容 ID（用于后端记录） */
   contentId?: string;
   /** 举报成功回调 */

@@ -96,6 +96,10 @@ export default function LanguageSwitcher({
 
   // Native variant - 适用于 native app 深色主题
   if (variant === 'native') {
+    const nativeDropdownStyles = 'bg-slate-900/95 backdrop-blur-xl border border-white/10 shadow-[0_8px_30px_rgb(0,0,0,0.4)] rounded-2xl overflow-hidden';
+    const nativeItemStyles = 'text-white/70 hover:bg-white/10 hover:text-white';
+    const nativeActiveItemStyles = 'bg-purple-500/20 text-purple-400 font-medium';
+
     return (
       <div className="relative" ref={dropdownRef}>
         <button
@@ -108,8 +112,8 @@ export default function LanguageSwitcher({
           </svg>
         </button>
 
-        {/* 下拉菜单 */}
-        <div className={`absolute w-40 py-1.5 z-50 transition-all duration-200 transform origin-top-right ${positionStyles} ${dropdownStyles} ${isOpen ? 'opacity-100 scale-100 visible' : 'opacity-0 scale-95 invisible'
+        {/* 下拉菜单 - 深色主题 */}
+        <div className={`absolute w-40 py-1.5 z-50 transition-all duration-200 transform origin-top-right ${positionStyles} ${nativeDropdownStyles} ${isOpen ? 'opacity-100 scale-100 visible' : 'opacity-0 scale-95 invisible'
           }`}>
           {locales.map((loc) => (
             <button
@@ -118,13 +122,13 @@ export default function LanguageSwitcher({
                 setLocale(loc.code);
                 setIsOpen(false);
               }}
-              className={`w-full text-left px-4 py-2.5 transition-colors text-sm ${locale === loc.code ? activeItemStyles : itemStyles
+              className={`w-full text-left px-4 py-2.5 transition-colors text-sm ${locale === loc.code ? nativeActiveItemStyles : nativeItemStyles
                 }`}
             >
               <div className="flex items-center justify-between">
                 <span>{loc.nativeName}</span>
                 {locale === loc.code && (
-                  <svg className="w-4 h-4 text-pink-500" fill="currentColor" viewBox="0 0 20 20">
+                  <svg className="w-4 h-4 text-purple-400" fill="currentColor" viewBox="0 0 20 20">
                     <path
                       fillRule="evenodd"
                       d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"

@@ -108,7 +108,8 @@
       "retry": "Coba lagi",
       "loading": "Memuat...",
       "error": "Error",
-      "success": "Berhasil"
+      "success": "Berhasil",
+      "learnMore": "Pelajari lebih lanjut"
     }
   }
 }

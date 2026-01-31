@@ -108,7 +108,8 @@
       "retry": "Tentar novamente",
       "loading": "Carregando...",
       "error": "Erro",
-      "success": "Sucesso"
+      "success": "Sucesso",
+      "learnMore": "Saiba mais"
     }
   }
 }

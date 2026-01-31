@@ -107,6 +107,7 @@
     "@types/react-datepicker": "^6.2.0",
     "@types/react-dom": "^19",
     "@types/uuid": "^10.0.0",
+    "baseline-browser-mapping": "^2.9.19",
     "eslint": "^9",
     "eslint-config-next": "15.5.4",
     "googleapis": "^166.0.0",

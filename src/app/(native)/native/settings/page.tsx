@@ -2,6 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import nativeVersion from '@/native-version.json';
 
 // 返回图标
@@ -65,6 +66,7 @@ const ChevronIcon = () => (
 export default function SettingsPage() {
   const router = useRouter();
   const { user, signOut } = useFirebaseAuth();
+  const { t } = useLanguage();
   const isLoggedIn = !!user;
 
   const handleBack = () => {
@@ -92,7 +94,7 @@ export default function SettingsPage() {
 
   const handleCheckUpdate = () => {
     // 检查更新功能 - 暂不实现
-    alert('You are using the latest version!');
+    alert(t('native.settings.latestVersion'));
   };
 
   return (
@@ -109,7 +111,7 @@ export default function SettingsPage() {
           >
             <BackIcon />
           </button>
-          <h1 className="ml-2 text-lg font-semibold text-white">Settings</h1>
+          <h1 className="ml-2 text-lg font-semibold text-white">{t('native.settings.title')}</h1>
         </div>
       </header>
 
@@ -123,7 +125,7 @@ export default function SettingsPage() {
           >
             <div className="flex items-center gap-3">
               <ShareIcon />
-              <span className="text-white">Share VoicicaAI</span>
+              <span className="text-white">{t('native.settings.share')}</span>
             </div>
             <ChevronIcon />
           </button>
@@ -134,7 +136,7 @@ export default function SettingsPage() {
           >
             <div className="flex items-center gap-3">
               <UpdateIcon />
-              <span className="text-white">Check for updates</span>
+              <span className="text-white">{t('native.settings.checkUpdate')}</span>
             </div>
             <ChevronIcon />
           </button>
@@ -148,7 +150,7 @@ export default function SettingsPage() {
           >
             <div className="flex items-center gap-3">
               <PrivacyIcon />
-              <span className="text-white">Privacy policy</span>
+              <span className="text-white">{t('native.settings.privacy')}</span>
             </div>
             <ChevronIcon />
           </button>
@@ -159,7 +161,7 @@ export default function SettingsPage() {
           >
             <div className="flex items-center gap-3">
               <TermsIcon />
-              <span className="text-white">Terms of Service</span>
+              <span className="text-white">{t('native.settings.terms')}</span>
             </div>
             <ChevronIcon />
           </button>
@@ -174,7 +176,7 @@ export default function SettingsPage() {
             >
               <div className="flex items-center gap-3">
                 <LogoutIcon />
-                <span className="text-red-400">Log out</span>
+                <span className="text-red-400">{t('native.settings.logout')}</span>
               </div>
             </button>
           </div>

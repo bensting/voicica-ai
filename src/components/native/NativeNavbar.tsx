@@ -13,6 +13,7 @@ import NativeDailyTasksModal from './NativeDailyTasksModal';
 import CrownIcon from './common/CrownIcon';
 import CreditsIcon from './common/CreditsIcon';
 import LanguageSwitcher from '@/components/layout/Navbar/LanguageSwitcher';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 // 宝箱图标
 const TreasureIcon = () => (
@@ -34,6 +35,7 @@ export default function NativeNavbar() {
   const { credits, refreshCredits } = useCredits();
   const { isTopNavVisible } = useBottomNav();
   const { shouldShowPopup, status, config } = useDailyTasks();
+  const { t } = useLanguage();
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isDailyTasksOpen, setIsDailyTasksOpen] = useState(false);
   const [hasAutoShown, setHasAutoShown] = useState(false);
@@ -85,7 +87,7 @@ export default function NativeNavbar() {
               className="relative flex items-center gap-1 px-2 py-1 rounded-lg bg-gradient-to-r from-amber-500/20 to-orange-500/20 border border-amber-500/30 hover:from-amber-500/30 hover:to-orange-500/30 transition-all active:scale-95"
             >
               <TreasureIcon />
-              <span className="text-xs font-bold text-amber-400">FREE</span>
+              <span className="text-xs font-bold text-amber-400">{t('native.navbar.free')}</span>
               {/* 小红点提示 - 有未领取的奖励时显示 */}
               {hasUnclaimedRewards && (
                 <span className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full animate-pulse" />
@@ -110,7 +112,7 @@ export default function NativeNavbar() {
                 onClick={() => setIsLoginModalOpen(true)}
                 className="px-3 py-1.5 text-xs font-medium text-white rounded-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 transition-all"
               >
-                Login & Rewards
+                {t('native.navbar.loginRewards')}
               </button>
             )}
 

@@ -1,0 +1,114 @@
+{
+  "native": {
+    "navbar": {
+      "loginRewards": "เข้าสู่ระบบรับรางวัล",
+      "free": "ฟรี"
+    },
+    "bottomNav": {
+      "explore": "สำรวจ",
+      "me": "ฉัน"
+    },
+    "settings": {
+      "title": "การตั้งค่า",
+      "share": "แชร์ VoicicaAI",
+      "checkUpdate": "ตรวจสอบการอัปเดต",
+      "privacy": "นโยบายความเป็นส่วนตัว",
+      "terms": "ข้อกำหนดการใช้งาน",
+      "logout": "ออกจากระบบ",
+      "latestVersion": "คุณใช้เวอร์ชันล่าสุดแล้ว!"
+    },
+    "login": {
+      "welcomeTo": "ยินดีต้อนรับสู่",
+      "loginToReceive": "เข้าสู่ระบบเพื่อรับเครดิต",
+      "loginWithGoogle": "เข้าสู่ระบบด้วย Google",
+      "loginWithEmail": "เข้าสู่ระบบด้วยอีเมล",
+      "loggingIn": "กำลังเข้าสู่ระบบ...",
+      "signUp": "สมัครสมาชิก",
+      "agreement": "การเข้าสู่ระบบหรือสมัครสมาชิกถือว่าคุณยอมรับ",
+      "privacyPolicy": "นโยบายความเป็นส่วนตัว",
+      "and": "และ",
+      "termsOfUse": "ข้อกำหนดการใช้งาน"
+    },
+    "menu": {
+      "categories": {
+        "voiceover": "AI พากย์เสียง",
+        "music": "AI เพลง",
+        "video": "AI วิดีโอ",
+        "image": "AI รูปภาพ",
+        "tools": "เครื่องมืออื่นๆ"
+      },
+      "items": {
+        "voice": {
+          "title": "ข้อความเป็นเสียง",
+          "shortName": "ข้อความเป็นเสียง",
+          "description": "แปลงข้อความเป็นเสียงธรรมชาติ"
+        },
+        "dialogue": {
+          "title": "สร้างบทสนทนา",
+          "shortName": "สร้างบทสนทนา",
+          "description": "สร้างบทสนทนาหลายตัวละคร"
+        },
+        "clone": {
+          "title": "โคลนเสียง",
+          "shortName": "โคลนเสียง",
+          "description": "โคลนเสียงของคุณด้วย AI"
+        },
+        "music": {
+          "title": "AI เพลง",
+          "shortName": "AI เพลง",
+          "description": "แต่งเพลงจากคำอธิบายข้อความ"
+        },
+        "cover": {
+          "title": "AI คัฟเวอร์",
+          "shortName": "AI คัฟเวอร์",
+          "description": "สร้าง AI คัฟเวอร์ด้วยการโคลนเสียง"
+        },
+        "image": {
+          "title": "AI รูปภาพ",
+          "shortName": "AI รูปภาพ",
+          "description": "สร้างรูปภาพจากข้อความ"
+        },
+        "video": {
+          "title": "AI วิดีโอ",
+          "shortName": "AI วิดีโอ",
+          "description": "สร้างวิดีโอจากข้อความ"
+        },
+        "tiktok": {
+          "title": "ดาวน์โหลด TikTok",
+          "shortName": "ดาวน์โหลด TikTok",
+          "description": "ดาวน์โหลดวิดีโอ TikTok ไม่มีลายน้ำ"
+        },
+        "youtube": {
+          "title": "ดาวน์โหลด YouTube",
+          "shortName": "ดาวน์โหลด YouTube",
+          "description": "ดาวน์โหลดวิดีโอและเสียง YouTube"
+        }
+      }
+    },
+    "me": {
+      "myCreations": "ผลงานของฉัน",
+      "loginToView": "เข้าสู่ระบบเพื่อดูผลงาน",
+      "noCreations": "ยังไม่มีผลงาน",
+      "startCreating": "เริ่มสร้างสรรค์ผลงานสุดเจ๋ง!"
+    },
+    "explore": {
+      "title": "สำรวจ",
+      "trending": "กำลังฮิต",
+      "latest": "ล่าสุด",
+      "forYou": "สำหรับคุณ"
+    },
+    "common": {
+      "cancel": "ยกเลิก",
+      "confirm": "ยืนยัน",
+      "delete": "ลบ",
+      "save": "บันทึก",
+      "edit": "แก้ไข",
+      "share": "แชร์",
+      "download": "ดาวน์โหลด",
+      "retry": "ลองใหม่",
+      "loading": "กำลังโหลด...",
+      "error": "ข้อผิดพลาด",
+      "success": "สำเร็จ"
+    }
+  }
+}

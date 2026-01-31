@@ -1,0 +1,114 @@
+{
+  "native": {
+    "navbar": {
+      "loginRewards": "登录领积分",
+      "free": "免费"
+    },
+    "bottomNav": {
+      "explore": "发现",
+      "me": "我的"
+    },
+    "settings": {
+      "title": "设置",
+      "share": "分享 VoicicaAI",
+      "checkUpdate": "检查更新",
+      "privacy": "隐私政策",
+      "terms": "服务条款",
+      "logout": "退出登录",
+      "latestVersion": "已经是最新版本！"
+    },
+    "login": {
+      "welcomeTo": "欢迎使用",
+      "loginToReceive": "登录领取积分",
+      "loginWithGoogle": "使用 Google 登录",
+      "loginWithEmail": "使用邮箱登录",
+      "loggingIn": "登录中...",
+      "signUp": "注册",
+      "agreement": "登录或注册即表示您同意我们的",
+      "privacyPolicy": "隐私政策",
+      "and": "和",
+      "termsOfUse": "使用条款"
+    },
+    "menu": {
+      "categories": {
+        "voiceover": "AI 配音",
+        "music": "AI 音乐",
+        "video": "AI 视频",
+        "image": "AI 图像",
+        "tools": "其他工具"
+      },
+      "items": {
+        "voice": {
+          "title": "文字转语音",
+          "shortName": "文字转语音",
+          "description": "将文字转换为自然语音"
+        },
+        "dialogue": {
+          "title": "文字转对话",
+          "shortName": "文字转对话",
+          "description": "创建多角色对话"
+        },
+        "clone": {
+          "title": "声音克隆",
+          "shortName": "声音克隆",
+          "description": "用 AI 克隆您的声音"
+        },
+        "music": {
+          "title": "AI 音乐",
+          "shortName": "AI 音乐",
+          "description": "通过文字描述作曲"
+        },
+        "cover": {
+          "title": "AI 翻唱",
+          "shortName": "AI 翻唱",
+          "description": "用声音克隆创建 AI 翻唱"
+        },
+        "image": {
+          "title": "AI 图像",
+          "shortName": "AI 图像",
+          "description": "根据文字提示生成图像"
+        },
+        "video": {
+          "title": "AI 视频",
+          "shortName": "AI 视频",
+          "description": "根据文字提示生成视频"
+        },
+        "tiktok": {
+          "title": "TikTok 下载器",
+          "shortName": "TikTok 下载",
+          "description": "下载无水印的 TikTok 视频"
+        },
+        "youtube": {
+          "title": "YouTube 下载器",
+          "shortName": "YouTube 下载",
+          "description": "下载 YouTube 视频和音频"
+        }
+      }
+    },
+    "me": {
+      "myCreations": "我的作品",
+      "loginToView": "登录查看您的作品",
+      "noCreations": "暂无作品",
+      "startCreating": "开始创作精彩内容吧！"
+    },
+    "explore": {
+      "title": "发现",
+      "trending": "热门",
+      "latest": "最新",
+      "forYou": "为您推荐"
+    },
+    "common": {
+      "cancel": "取消",
+      "confirm": "确认",
+      "delete": "删除",
+      "save": "保存",
+      "edit": "编辑",
+      "share": "分享",
+      "download": "下载",
+      "retry": "重试",
+      "loading": "加载中...",
+      "error": "错误",
+      "success": "成功"
+    }
+  }
+}

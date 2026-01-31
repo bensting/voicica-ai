@@ -1,0 +1,114 @@
+{
+  "native": {
+    "navbar": {
+      "loginRewards": "登入領積分",
+      "free": "免費"
+    },
+    "bottomNav": {
+      "explore": "探索",
+      "me": "我的"
+    },
+    "settings": {
+      "title": "設定",
+      "share": "分享 VoicicaAI",
+      "checkUpdate": "檢查更新",
+      "privacy": "隱私政策",
+      "terms": "服務條款",
+      "logout": "登出",
+      "latestVersion": "已經是最新版本！"
+    },
+    "login": {
+      "welcomeTo": "歡迎使用",
+      "loginToReceive": "登入領取積分",
+      "loginWithGoogle": "使用 Google 登入",
+      "loginWithEmail": "使用電郵登入",
+      "loggingIn": "登入中...",
+      "signUp": "註冊",
+      "agreement": "登入或註冊即表示您同意我們的",
+      "privacyPolicy": "隱私政策",
+      "and": "和",
+      "termsOfUse": "使用條款"
+    },
+    "menu": {
+      "categories": {
+        "voiceover": "AI 配音",
+        "music": "AI 音樂",
+        "video": "AI 影片",
+        "image": "AI 圖像",
+        "tools": "其他工具"
+      },
+      "items": {
+        "voice": {
+          "title": "文字轉語音",
+          "shortName": "文字轉語音",
+          "description": "將文字轉換為自然語音"
+        },
+        "dialogue": {
+          "title": "文字轉對話",
+          "shortName": "文字轉對話",
+          "description": "創建多角色對話"
+        },
+        "clone": {
+          "title": "聲音克隆",
+          "shortName": "聲音克隆",
+          "description": "用 AI 克隆您的聲音"
+        },
+        "music": {
+          "title": "AI 音樂",
+          "shortName": "AI 音樂",
+          "description": "透過文字描述作曲"
+        },
+        "cover": {
+          "title": "AI 翻唱",
+          "shortName": "AI 翻唱",
+          "description": "用聲音克隆創建 AI 翻唱"
+        },
+        "image": {
+          "title": "AI 圖像",
+          "shortName": "AI 圖像",
+          "description": "根據文字提示生成圖像"
+        },
+        "video": {
+          "title": "AI 影片",
+          "shortName": "AI 影片",
+          "description": "根據文字提示生成影片"
+        },
+        "tiktok": {
+          "title": "TikTok 下載器",
+          "shortName": "TikTok 下載",
+          "description": "下載無浮水印的 TikTok 影片"
+        },
+        "youtube": {
+          "title": "YouTube 下載器",
+          "shortName": "YouTube 下載",
+          "description": "下載 YouTube 影片和音訊"
+        }
+      }
+    },
+    "me": {
+      "myCreations": "我的作品",
+      "loginToView": "登入查看您的作品",
+      "noCreations": "暫無作品",
+      "startCreating": "開始創作精彩內容吧！"
+    },
+    "explore": {
+      "title": "探索",
+      "trending": "熱門",
+      "latest": "最新",
+      "forYou": "為您推薦"
+    },
+    "common": {
+      "cancel": "取消",
+      "confirm": "確認",
+      "delete": "刪除",
+      "save": "儲存",
+      "edit": "編輯",
+      "share": "分享",
+      "download": "下載",
+      "retry": "重試",
+      "loading": "載入中...",
+      "error": "錯誤",
+      "success": "成功"
+    }
+  }
+}

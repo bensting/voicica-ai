@@ -1,0 +1,114 @@
+{
+  "native": {
+    "navbar": {
+      "loginRewards": "Masuk & Hadiah",
+      "free": "Gratis"
+    },
+    "bottomNav": {
+      "explore": "Jelajahi",
+      "me": "Saya"
+    },
+    "settings": {
+      "title": "Pengaturan",
+      "share": "Bagikan VoicicaAI",
+      "checkUpdate": "Periksa pembaruan",
+      "privacy": "Kebijakan privasi",
+      "terms": "Ketentuan layanan",
+      "logout": "Keluar",
+      "latestVersion": "Anda menggunakan versi terbaru!"
+    },
+    "login": {
+      "welcomeTo": "Selamat datang di",
+      "loginToReceive": "Masuk untuk menerima kredit",
+      "loginWithGoogle": "Masuk dengan Google",
+      "loginWithEmail": "Masuk dengan Email",
+      "loggingIn": "Sedang masuk...",
+      "signUp": "Daftar",
+      "agreement": "Masuk atau daftar berarti Anda menyetujui",
+      "privacyPolicy": "Kebijakan Privasi",
+      "and": "dan",
+      "termsOfUse": "Ketentuan Penggunaan"
+    },
+    "menu": {
+      "categories": {
+        "voiceover": "AI Suara",
+        "music": "AI Musik",
+        "video": "AI Video",
+        "image": "AI Gambar",
+        "tools": "Alat Lainnya"
+      },
+      "items": {
+        "voice": {
+          "title": "Teks ke Suara",
+          "shortName": "Teks ke Suara",
+          "description": "Ubah teks menjadi suara alami"
+        },
+        "dialogue": {
+          "title": "Buat Dialog",
+          "shortName": "Buat Dialog",
+          "description": "Buat dialog multi-karakter"
+        },
+        "clone": {
+          "title": "Kloning Suara",
+          "shortName": "Kloning Suara",
+          "description": "Kloning suara Anda dengan AI"
+        },
+        "music": {
+          "title": "AI Musik",
+          "shortName": "AI Musik",
+          "description": "Buat musik dari deskripsi teks"
+        },
+        "cover": {
+          "title": "AI Cover",
+          "shortName": "AI Cover",
+          "description": "Buat cover AI dengan kloning suara"
+        },
+        "image": {
+          "title": "AI Gambar",
+          "shortName": "AI Gambar",
+          "description": "Buat gambar dari teks"
+        },
+        "video": {
+          "title": "AI Video",
+          "shortName": "AI Video",
+          "description": "Buat video dari teks"
+        },
+        "tiktok": {
+          "title": "Unduh TikTok",
+          "shortName": "Unduh TikTok",
+          "description": "Unduh video TikTok tanpa watermark"
+        },
+        "youtube": {
+          "title": "Unduh YouTube",
+          "shortName": "Unduh YouTube",
+          "description": "Unduh video dan audio YouTube"
+        }
+      }
+    },
+    "me": {
+      "myCreations": "Karya Saya",
+      "loginToView": "Masuk untuk melihat karya Anda",
+      "noCreations": "Belum ada karya",
+      "startCreating": "Mulai membuat sesuatu yang menakjubkan!"
+    },
+    "explore": {
+      "title": "Jelajahi",
+      "trending": "Trending",
+      "latest": "Terbaru",
+      "forYou": "Untuk Anda"
+    },
+    "common": {
+      "cancel": "Batal",
+      "confirm": "Konfirmasi",
+      "delete": "Hapus",
+      "save": "Simpan",
+      "edit": "Edit",
+      "share": "Bagikan",
+      "download": "Unduh",
+      "retry": "Coba lagi",
+      "loading": "Memuat...",
+      "error": "Error",
+      "success": "Berhasil"
+    }
+  }
+}

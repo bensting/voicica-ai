@@ -1,0 +1,114 @@
+{
+  "native": {
+    "navbar": {
+      "loginRewards": "Iniciar sesión y recompensas",
+      "free": "Gratis"
+    },
+    "bottomNav": {
+      "explore": "Explorar",
+      "me": "Yo"
+    },
+    "settings": {
+      "title": "Configuración",
+      "share": "Compartir VoicicaAI",
+      "checkUpdate": "Buscar actualizaciones",
+      "privacy": "Política de privacidad",
+      "terms": "Términos de servicio",
+      "logout": "Cerrar sesión",
+      "latestVersion": "¡Estás usando la última versión!"
+    },
+    "login": {
+      "welcomeTo": "Bienvenido a",
+      "loginToReceive": "Inicia sesión para recibir créditos",
+      "loginWithGoogle": "Iniciar sesión con Google",
+      "loginWithEmail": "Iniciar sesión con Email",
+      "loggingIn": "Iniciando sesión...",
+      "signUp": "Registrarse",
+      "agreement": "Al iniciar sesión o registrarte, aceptas nuestros",
+      "privacyPolicy": "Política de Privacidad",
+      "and": "y",
+      "termsOfUse": "Términos de Uso"
+    },
+    "menu": {
+      "categories": {
+        "voiceover": "IA de Voz",
+        "music": "IA de Música",
+        "video": "IA de Video",
+        "image": "IA de Imagen",
+        "tools": "Otras Herramientas"
+      },
+      "items": {
+        "voice": {
+          "title": "Texto a Voz",
+          "shortName": "Texto a Voz",
+          "description": "Convierte texto en voz natural"
+        },
+        "dialogue": {
+          "title": "Crear Diálogo",
+          "shortName": "Crear Diálogo",
+          "description": "Crea diálogos con múltiples personajes"
+        },
+        "clone": {
+          "title": "Clonar Voz",
+          "shortName": "Clonar Voz",
+          "description": "Clona tu voz con IA"
+        },
+        "music": {
+          "title": "IA Música",
+          "shortName": "IA Música",
+          "description": "Compón música desde descripciones de texto"
+        },
+        "cover": {
+          "title": "IA Cover",
+          "shortName": "IA Cover",
+          "description": "Crea covers de IA con clonación de voz"
+        },
+        "image": {
+          "title": "IA Imagen",
+          "shortName": "IA Imagen",
+          "description": "Genera imágenes desde texto"
+        },
+        "video": {
+          "title": "IA Video",
+          "shortName": "IA Video",
+          "description": "Genera videos desde texto"
+        },
+        "tiktok": {
+          "title": "Descargar TikTok",
+          "shortName": "Descargar TikTok",
+          "description": "Descarga videos de TikTok sin marca de agua"
+        },
+        "youtube": {
+          "title": "Descargar YouTube",
+          "shortName": "Descargar YouTube",
+          "description": "Descarga videos y audio de YouTube"
+        }
+      }
+    },
+    "me": {
+      "myCreations": "Mis Creaciones",
+      "loginToView": "Inicia sesión para ver tus creaciones",
+      "noCreations": "Sin creaciones aún",
+      "startCreating": "¡Comienza a crear algo increíble!"
+    },
+    "explore": {
+      "title": "Explorar",
+      "trending": "Tendencias",
+      "latest": "Más recientes",
+      "forYou": "Para ti"
+    },
+    "common": {
+      "cancel": "Cancelar",
+      "confirm": "Confirmar",
+      "delete": "Eliminar",
+      "save": "Guardar",
+      "edit": "Editar",
+      "share": "Compartir",
+      "download": "Descargar",
+      "retry": "Reintentar",
+      "loading": "Cargando...",
+      "error": "Error",
+      "success": "Éxito"
+    }
+  }
+}

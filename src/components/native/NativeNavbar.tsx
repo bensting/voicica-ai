@@ -12,6 +12,7 @@ import LoginModal from './LoginModal';
 import NativeDailyTasksModal from './NativeDailyTasksModal';
 import CrownIcon from './common/CrownIcon';
 import CreditsIcon from './common/CreditsIcon';
+import LanguageSwitcher from '@/components/layout/Navbar/LanguageSwitcher';
 
 // 宝箱图标
 const TreasureIcon = () => (
@@ -93,26 +94,31 @@ export default function NativeNavbar() {
           </div>
 
           {/* 右侧区域 */}
-          {isLoggedIn ? (
-            /* 已登录：显示积分 */
-            <button
-              onClick={() => router.push('/native/subscribe')}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 hover:bg-white/10 transition-all active:scale-95"
-            >
-              <CrownIcon className="w-4 h-4 text-amber-400" />
-              <span className="text-white/20">|</span>
-              <CreditsIcon className="w-3.5 h-3.5 text-purple-400" />
-              <span className="text-white text-sm font-medium">{credits}</span>
-            </button>
-          ) : (
-            /* 未登录：显示登录按钮 */
-            <button
-              onClick={() => setIsLoginModalOpen(true)}
-              className="px-3 py-1.5 text-xs font-medium text-white rounded-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 transition-all"
-            >
-              Login & Rewards
-            </button>
-          )}
+          <div className="flex items-center gap-2">
+            {isLoggedIn ? (
+              /* 已登录：显示积分 */
+              <button
+                onClick={() => router.push('/native/subscribe')}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 hover:bg-white/10 transition-all active:scale-95"
+              >
+                <CrownIcon className="w-4 h-4 text-amber-400" />
+                <span className="text-white/20">|</span>
+                <CreditsIcon className="w-3.5 h-3.5 text-purple-400" />
+                <span className="text-white text-sm font-medium">{credits}</span>
+              </button>
+            ) : (
+              /* 未登录：显示登录按钮 */
+              <button
+                onClick={() => setIsLoginModalOpen(true)}
+                className="px-3 py-1.5 text-xs font-medium text-white rounded-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 transition-all"
+              >
+                Login & Rewards
+              </button>
+            )}
+
+            {/* 语言选择器 */}
+            <LanguageSwitcher variant="native" />
+          </div>
         </div>
       </header>
 

@@ -1,0 +1,114 @@
+{
+  "native": {
+    "navbar": {
+      "loginRewards": "ဝင်ရောက်ပြီး ဆုလာဘ်ယူပါ",
+      "free": "အခမဲ့"
+    },
+    "bottomNav": {
+      "explore": "ရှာဖွေရန်",
+      "me": "ကျွန်ုပ်"
+    },
+    "settings": {
+      "title": "ဆက်တင်များ",
+      "share": "VoicicaAI မျှဝေရန်",
+      "checkUpdate": "အပ်ဒိတ်စစ်ဆေးရန်",
+      "privacy": "ကိုယ်ရေးလုံခြုံမှု မူဝါဒ",
+      "terms": "ဝန်ဆောင်မှု စည်းမျဉ်းများ",
+      "logout": "ထွက်ရန်",
+      "latestVersion": "နောက်ဆုံးဗားရှင်း အသုံးပြုနေပါပြီ!"
+    },
+    "login": {
+      "welcomeTo": "မင်္ဂလာပါ",
+      "loginToReceive": "ဝင်ရောက်ပြီး ခရက်ဒစ်ရယူပါ",
+      "loginWithGoogle": "Google ဖြင့် ဝင်ရောက်ရန်",
+      "loginWithEmail": "အီးမေးလ်ဖြင့် ဝင်ရောက်ရန်",
+      "loggingIn": "ဝင်ရောက်နေသည်...",
+      "signUp": "အကောင့်ဖွင့်ရန်",
+      "agreement": "ဝင်ရောက်ခြင်း သို့မဟုတ် မှတ်ပုံတင်ခြင်းဖြင့် သင်သည် သဘောတူပါသည်",
+      "privacyPolicy": "ကိုယ်ရေးလုံခြုံမှု မူဝါဒ",
+      "and": "နှင့်",
+      "termsOfUse": "အသုံးပြုမှု စည်းကမ်းများ"
+    },
+    "menu": {
+      "categories": {
+        "voiceover": "AI အသံ",
+        "music": "AI ဂီတ",
+        "video": "AI ဗီဒီယို",
+        "image": "AI ပုံ",
+        "tools": "အခြား ကိရိယာများ"
+      },
+      "items": {
+        "voice": {
+          "title": "စာသားမှ အသံသို့",
+          "shortName": "စာသားမှ အသံ",
+          "description": "စာသားကို သဘာဝအသံသို့ ပြောင်းလဲရန်"
+        },
+        "dialogue": {
+          "title": "စကားပြောဖန်တီးရန်",
+          "shortName": "စကားပြော",
+          "description": "ဇာတ်ကောင်များစွာ စကားပြောဖန်တီးရန်"
+        },
+        "clone": {
+          "title": "အသံ ပုံတူ",
+          "shortName": "အသံ ပုံတူ",
+          "description": "AI ဖြင့် သင့်အသံကို ပုံတူကူးရန်"
+        },
+        "music": {
+          "title": "AI ဂီတ",
+          "shortName": "AI ဂီတ",
+          "description": "စာသားဖော်ပြချက်မှ ဂီတဖန်တီးရန်"
+        },
+        "cover": {
+          "title": "AI Cover",
+          "shortName": "AI Cover",
+          "description": "အသံပုံတူဖြင့် AI cover ဖန်တီးရန်"
+        },
+        "image": {
+          "title": "AI ပုံ",
+          "shortName": "AI ပုံ",
+          "description": "စာသားမှ ပုံများဖန်တီးရန်"
+        },
+        "video": {
+          "title": "AI ဗီဒီယို",
+          "shortName": "AI ဗီဒီယို",
+          "description": "စာသားမှ ဗီဒီယိုဖန်တီးရန်"
+        },
+        "tiktok": {
+          "title": "TikTok ဒေါင်းလုဒ်",
+          "shortName": "TikTok ဒေါင်းလုဒ်",
+          "description": "watermark မပါဘဲ TikTok ဒေါင်းရန်"
+        },
+        "youtube": {
+          "title": "YouTube ဒေါင်းလုဒ်",
+          "shortName": "YouTube ဒေါင်းလုဒ်",
+          "description": "YouTube ဗီဒီယိုနှင့် အသံဒေါင်းရန်"
+        }
+      }
+    },
+    "me": {
+      "myCreations": "ကျွန်ုပ်၏ ဖန်တီးမှုများ",
+      "loginToView": "ဝင်ရောက်ပြီး ဖန်တီးမှုများကြည့်ရန်",
+      "noCreations": "ဖန်တီးမှု မရှိသေးပါ",
+      "startCreating": "အံ့ဖွယ်တစ်ခုခု ဖန်တီးစပါ!"
+    },
+    "explore": {
+      "title": "ရှာဖွေရန်",
+      "trending": "ခေတ်စားနေသော",
+      "latest": "နောက်ဆုံး",
+      "forYou": "သင့်အတွက်"
+    },
+    "common": {
+      "cancel": "ပယ်ဖျက်ရန်",
+      "confirm": "အတည်ပြုရန်",
+      "delete": "ဖျက်ရန်",
+      "save": "သိမ်းရန်",
+      "edit": "တည်းဖြတ်ရန်",
+      "share": "မျှဝေရန်",
+      "download": "ဒေါင်းလုဒ်",
+      "retry": "ထပ်စမ်းရန်",
+      "loading": "လုပ်ဆောင်နေသည်...",
+      "error": "အမှား",
+      "success": "အောင်မြင်သည်"
+    }
+  }
+}

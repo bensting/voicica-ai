@@ -1,0 +1,114 @@
+{
+  "native": {
+    "navbar": {
+      "loginRewards": "ログインで報酬",
+      "free": "無料"
+    },
+    "bottomNav": {
+      "explore": "探索",
+      "me": "マイページ"
+    },
+    "settings": {
+      "title": "設定",
+      "share": "VoicicaAI をシェア",
+      "checkUpdate": "アップデートを確認",
+      "privacy": "プライバシーポリシー",
+      "terms": "利用規約",
+      "logout": "ログアウト",
+      "latestVersion": "最新バージョンです！"
+    },
+    "login": {
+      "welcomeTo": "ようこそ",
+      "loginToReceive": "ログインしてクレジットを獲得",
+      "loginWithGoogle": "Google でログイン",
+      "loginWithEmail": "メールでログイン",
+      "loggingIn": "ログイン中...",
+      "signUp": "新規登録",
+      "agreement": "ログインまたは登録することで、以下に同意したことになります",
+      "privacyPolicy": "プライバシーポリシー",
+      "and": "と",
+      "termsOfUse": "利用規約"
+    },
+    "menu": {
+      "categories": {
+        "voiceover": "AI ナレーション",
+        "music": "AI 音楽",
+        "video": "AI 動画",
+        "image": "AI 画像",
+        "tools": "その他のツール"
+      },
+      "items": {
+        "voice": {
+          "title": "テキスト読み上げ",
+          "shortName": "テキスト読み上げ",
+          "description": "テキストを自然な音声に変換"
+        },
+        "dialogue": {
+          "title": "対話生成",
+          "shortName": "対話生成",
+          "description": "複数キャラの対話を作成"
+        },
+        "clone": {
+          "title": "声のクローン",
+          "shortName": "声のクローン",
+          "description": "AIで声をクローン"
+        },
+        "music": {
+          "title": "AI 音楽",
+          "shortName": "AI 音楽",
+          "description": "テキストから音楽を作曲"
+        },
+        "cover": {
+          "title": "AI カバー",
+          "shortName": "AI カバー",
+          "description": "声クローンでAIカバーを作成"
+        },
+        "image": {
+          "title": "AI 画像",
+          "shortName": "AI 画像",
+          "description": "テキストから画像を生成"
+        },
+        "video": {
+          "title": "AI 動画",
+          "shortName": "AI 動画",
+          "description": "テキストから動画を生成"
+        },
+        "tiktok": {
+          "title": "TikTok ダウンローダー",
+          "shortName": "TikTok ダウンロード",
+          "description": "TikTok動画をダウンロード"
+        },
+        "youtube": {
+          "title": "YouTube ダウンローダー",
+          "shortName": "YouTube ダウンロード",
+          "description": "YouTube動画と音声をダウンロード"
+        }
+      }
+    },
+    "me": {
+      "myCreations": "マイ作品",
+      "loginToView": "ログインして作品を表示",
+      "noCreations": "作品がありません",
+      "startCreating": "素敵な作品を作りましょう！"
+    },
+    "explore": {
+      "title": "探索",
+      "trending": "トレンド",
+      "latest": "最新",
+      "forYou": "おすすめ"
+    },
+    "common": {
+      "cancel": "キャンセル",
+      "confirm": "確認",
+      "delete": "削除",
+      "save": "保存",
+      "edit": "編集",
+      "share": "シェア",
+      "download": "ダウンロード",
+      "retry": "再試行",
+      "loading": "読み込み中...",
+      "error": "エラー",
+      "success": "成功"
+    }
+  }
+}

@@ -1,0 +1,114 @@
+{
+  "native": {
+    "navbar": {
+      "loginRewards": "लॉगिन और पुरस्कार",
+      "free": "मुफ़्त"
+    },
+    "bottomNav": {
+      "explore": "एक्सप्लोर",
+      "me": "मैं"
+    },
+    "settings": {
+      "title": "सेटिंग्स",
+      "share": "VoicicaAI शेयर करें",
+      "checkUpdate": "अपडेट देखें",
+      "privacy": "गोपनीयता नीति",
+      "terms": "सेवा की शर्तें",
+      "logout": "लॉग आउट",
+      "latestVersion": "आप नवीनतम संस्करण उपयोग कर रहे हैं!"
+    },
+    "login": {
+      "welcomeTo": "आपका स्वागत है",
+      "loginToReceive": "क्रेडिट प्राप्त करने के लिए लॉगिन करें",
+      "loginWithGoogle": "Google से लॉगिन करें",
+      "loginWithEmail": "ईमेल से लॉगिन करें",
+      "loggingIn": "लॉगिन हो रहा है...",
+      "signUp": "साइन अप करें",
+      "agreement": "लॉगिन या पंजीकरण करके आप हमारी सहमति देते हैं",
+      "privacyPolicy": "गोपनीयता नीति",
+      "and": "और",
+      "termsOfUse": "उपयोग की शर्तें"
+    },
+    "menu": {
+      "categories": {
+        "voiceover": "AI आवाज़",
+        "music": "AI संगीत",
+        "video": "AI वीडियो",
+        "image": "AI छवि",
+        "tools": "अन्य टूल्स"
+      },
+      "items": {
+        "voice": {
+          "title": "टेक्स्ट टू वॉइस",
+          "shortName": "टेक्स्ट टू वॉइस",
+          "description": "टेक्स्ट को प्राकृतिक आवाज़ में बदलें"
+        },
+        "dialogue": {
+          "title": "डायलॉग बनाएं",
+          "shortName": "डायलॉग बनाएं",
+          "description": "मल्टी-कैरेक्टर डायलॉग बनाएं"
+        },
+        "clone": {
+          "title": "वॉइस क्लोन",
+          "shortName": "वॉइस क्लोन",
+          "description": "AI से अपनी आवाज़ क्लोन करें"
+        },
+        "music": {
+          "title": "AI संगीत",
+          "shortName": "AI संगीत",
+          "description": "टेक्स्ट विवरण से संगीत बनाएं"
+        },
+        "cover": {
+          "title": "AI कवर",
+          "shortName": "AI कवर",
+          "description": "वॉइस क्लोनिंग से AI कवर बनाएं"
+        },
+        "image": {
+          "title": "AI छवि",
+          "shortName": "AI छवि",
+          "description": "टेक्स्ट से छवियां बनाएं"
+        },
+        "video": {
+          "title": "AI वीडियो",
+          "shortName": "AI वीडियो",
+          "description": "टेक्स्ट से वीडियो बनाएं"
+        },
+        "tiktok": {
+          "title": "TikTok डाउनलोडर",
+          "shortName": "TikTok डाउनलोड",
+          "description": "बिना वॉटरमार्क TikTok वीडियो डाउनलोड करें"
+        },
+        "youtube": {
+          "title": "YouTube डाउनलोडर",
+          "shortName": "YouTube डाउनलोड",
+          "description": "YouTube वीडियो और ऑडियो डाउनलोड करें"
+        }
+      }
+    },
+    "me": {
+      "myCreations": "मेरी रचनाएं",
+      "loginToView": "अपनी रचनाएं देखने के लिए लॉगिन करें",
+      "noCreations": "अभी कोई रचना नहीं",
+      "startCreating": "कुछ अद्भुत बनाना शुरू करें!"
+    },
+    "explore": {
+      "title": "एक्सप्लोर",
+      "trending": "ट्रेंडिंग",
+      "latest": "नवीनतम",
+      "forYou": "आपके लिए"
+    },
+    "common": {
+      "cancel": "रद्द करें",
+      "confirm": "पुष्टि करें",
+      "delete": "हटाएं",
+      "save": "सहेजें",
+      "edit": "संपादित करें",
+      "share": "शेयर करें",
+      "download": "डाउनलोड",
+      "retry": "पुनः प्रयास करें",
+      "loading": "लोड हो रहा है...",
+      "error": "त्रुटि",
+      "success": "सफलता"
+    }
+  }
+}

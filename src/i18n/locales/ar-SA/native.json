@@ -1,0 +1,114 @@
+{
+  "native": {
+    "navbar": {
+      "loginRewards": "تسجيل الدخول والمكافآت",
+      "free": "مجاني"
+    },
+    "bottomNav": {
+      "explore": "استكشف",
+      "me": "أنا"
+    },
+    "settings": {
+      "title": "الإعدادات",
+      "share": "مشاركة VoicicaAI",
+      "checkUpdate": "التحقق من التحديثات",
+      "privacy": "سياسة الخصوصية",
+      "terms": "شروط الخدمة",
+      "logout": "تسجيل الخروج",
+      "latestVersion": "أنت تستخدم أحدث إصدار!"
+    },
+    "login": {
+      "welcomeTo": "مرحباً بك في",
+      "loginToReceive": "سجل الدخول للحصول على الرصيد",
+      "loginWithGoogle": "تسجيل الدخول بـ Google",
+      "loginWithEmail": "تسجيل الدخول بالبريد الإلكتروني",
+      "loggingIn": "جارٍ تسجيل الدخول...",
+      "signUp": "إنشاء حساب",
+      "agreement": "بتسجيل الدخول أو التسجيل، فإنك توافق على",
+      "privacyPolicy": "سياسة الخصوصية",
+      "and": "و",
+      "termsOfUse": "شروط الاستخدام"
+    },
+    "menu": {
+      "categories": {
+        "voiceover": "الصوت الذكي",
+        "music": "الموسيقى الذكية",
+        "video": "الفيديو الذكي",
+        "image": "الصور الذكية",
+        "tools": "أدوات أخرى"
+      },
+      "items": {
+        "voice": {
+          "title": "نص إلى صوت",
+          "shortName": "نص إلى صوت",
+          "description": "تحويل النص إلى كلام طبيعي"
+        },
+        "dialogue": {
+          "title": "إنشاء حوار",
+          "shortName": "إنشاء حوار",
+          "description": "إنشاء حوارات متعددة الشخصيات"
+        },
+        "clone": {
+          "title": "استنساخ الصوت",
+          "shortName": "استنساخ الصوت",
+          "description": "استنسخ صوتك بالذكاء الاصطناعي"
+        },
+        "music": {
+          "title": "موسيقى AI",
+          "shortName": "موسيقى AI",
+          "description": "أنشئ موسيقى من وصف نصي"
+        },
+        "cover": {
+          "title": "كوفر AI",
+          "shortName": "كوفر AI",
+          "description": "أنشئ كوفر AI باستنساخ الصوت"
+        },
+        "image": {
+          "title": "صور AI",
+          "shortName": "صور AI",
+          "description": "أنشئ صور من النص"
+        },
+        "video": {
+          "title": "فيديو AI",
+          "shortName": "فيديو AI",
+          "description": "أنشئ فيديو من النص"
+        },
+        "tiktok": {
+          "title": "تحميل TikTok",
+          "shortName": "تحميل TikTok",
+          "description": "تحميل فيديوهات TikTok بدون علامة مائية"
+        },
+        "youtube": {
+          "title": "تحميل YouTube",
+          "shortName": "تحميل YouTube",
+          "description": "تحميل فيديوهات وصوتيات YouTube"
+        }
+      }
+    },
+    "me": {
+      "myCreations": "إبداعاتي",
+      "loginToView": "سجل الدخول لعرض إبداعاتك",
+      "noCreations": "لا توجد إبداعات بعد",
+      "startCreating": "ابدأ في إنشاء شيء مذهل!"
+    },
+    "explore": {
+      "title": "استكشف",
+      "trending": "الرائج",
+      "latest": "الأحدث",
+      "forYou": "لك"
+    },
+    "common": {
+      "cancel": "إلغاء",
+      "confirm": "تأكيد",
+      "delete": "حذف",
+      "save": "حفظ",
+      "edit": "تعديل",
+      "share": "مشاركة",
+      "download": "تحميل",
+      "retry": "إعادة المحاولة",
+      "loading": "جارٍ التحميل...",
+      "error": "خطأ",
+      "success": "نجاح"
+    }
+  }
+}

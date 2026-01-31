@@ -1,0 +1,114 @@
+{
+  "native": {
+    "navbar": {
+      "loginRewards": "Đăng nhập nhận thưởng",
+      "free": "Miễn phí"
+    },
+    "bottomNav": {
+      "explore": "Khám phá",
+      "me": "Tôi"
+    },
+    "settings": {
+      "title": "Cài đặt",
+      "share": "Chia sẻ VoicicaAI",
+      "checkUpdate": "Kiểm tra cập nhật",
+      "privacy": "Chính sách bảo mật",
+      "terms": "Điều khoản dịch vụ",
+      "logout": "Đăng xuất",
+      "latestVersion": "Bạn đang dùng phiên bản mới nhất!"
+    },
+    "login": {
+      "welcomeTo": "Chào mừng đến với",
+      "loginToReceive": "Đăng nhập để nhận credits",
+      "loginWithGoogle": "Đăng nhập với Google",
+      "loginWithEmail": "Đăng nhập với Email",
+      "loggingIn": "Đang đăng nhập...",
+      "signUp": "Đăng ký",
+      "agreement": "Đăng nhập hoặc đăng ký đồng nghĩa bạn chấp nhận",
+      "privacyPolicy": "Chính sách bảo mật",
+      "and": "và",
+      "termsOfUse": "Điều khoản sử dụng"
+    },
+    "menu": {
+      "categories": {
+        "voiceover": "AI Giọng nói",
+        "music": "AI Âm nhạc",
+        "video": "AI Video",
+        "image": "AI Hình ảnh",
+        "tools": "Công cụ khác"
+      },
+      "items": {
+        "voice": {
+          "title": "Văn bản thành giọng nói",
+          "shortName": "Văn bản → Giọng",
+          "description": "Chuyển văn bản thành giọng nói tự nhiên"
+        },
+        "dialogue": {
+          "title": "Tạo hội thoại",
+          "shortName": "Tạo hội thoại",
+          "description": "Tạo hội thoại nhiều nhân vật"
+        },
+        "clone": {
+          "title": "Nhân bản giọng",
+          "shortName": "Nhân bản giọng",
+          "description": "Nhân bản giọng nói với AI"
+        },
+        "music": {
+          "title": "AI Âm nhạc",
+          "shortName": "AI Âm nhạc",
+          "description": "Sáng tác nhạc từ mô tả văn bản"
+        },
+        "cover": {
+          "title": "AI Cover",
+          "shortName": "AI Cover",
+          "description": "Tạo bản cover AI với nhân bản giọng"
+        },
+        "image": {
+          "title": "AI Hình ảnh",
+          "shortName": "AI Hình ảnh",
+          "description": "Tạo hình ảnh từ văn bản"
+        },
+        "video": {
+          "title": "AI Video",
+          "shortName": "AI Video",
+          "description": "Tạo video từ văn bản"
+        },
+        "tiktok": {
+          "title": "Tải TikTok",
+          "shortName": "Tải TikTok",
+          "description": "Tải video TikTok không watermark"
+        },
+        "youtube": {
+          "title": "Tải YouTube",
+          "shortName": "Tải YouTube",
+          "description": "Tải video và âm thanh YouTube"
+        }
+      }
+    },
+    "me": {
+      "myCreations": "Tác phẩm của tôi",
+      "loginToView": "Đăng nhập để xem tác phẩm",
+      "noCreations": "Chưa có tác phẩm",
+      "startCreating": "Bắt đầu sáng tạo ngay!"
+    },
+    "explore": {
+      "title": "Khám phá",
+      "trending": "Xu hướng",
+      "latest": "Mới nhất",
+      "forYou": "Dành cho bạn"
+    },
+    "common": {
+      "cancel": "Hủy",
+      "confirm": "Xác nhận",
+      "delete": "Xóa",
+      "save": "Lưu",
+      "edit": "Sửa",
+      "share": "Chia sẻ",
+      "download": "Tải xuống",
+      "retry": "Thử lại",
+      "loading": "Đang tải...",
+      "error": "Lỗi",
+      "success": "Thành công"
+    }
+  }
+}

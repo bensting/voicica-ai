@@ -1,0 +1,198 @@
+{
+  "native": {
+    "navbar": {
+      "loginRewards": "ログインで報酬",
+      "free": "無料"
+    },
+    "bottomNav": {
+      "explore": "探索",
+      "me": "マイページ"
+    },
+    "settings": {
+      "title": "設定",
+      "share": "VoicicaAI をシェア",
+      "checkUpdate": "アップデートを確認",
+      "privacy": "プライバシーポリシー",
+      "terms": "利用規約",
+      "logout": "ログアウト",
+      "latestVersion": "最新バージョンです！"
+    },
+    "login": {
+      "welcomeTo": "ようこそ",
+      "loginToReceive": "ログインしてクレジットを獲得",
+      "loginWithGoogle": "Google でログイン",
+      "loginWithEmail": "メールでログイン",
+      "loggingIn": "ログイン中...",
+      "signUp": "新規登録",
+      "agreement": "ログインまたは登録することで、以下に同意したことになります",
+      "privacyPolicy": "プライバシーポリシー",
+      "and": "と",
+      "termsOfUse": "利用規約"
+    },
+    "menu": {
+      "categories": {
+        "voiceover": "AI ナレーション",
+        "music": "AI 音楽",
+        "video": "AI 動画",
+        "image": "AI 画像",
+        "tools": "その他のツール"
+      },
+      "items": {
+        "voice": {
+          "title": "テキスト読み上げ",
+          "shortName": "テキスト読み上げ",
+          "description": "テキストを自然な音声に変換"
+        },
+        "dialogue": {
+          "title": "対話生成",
+          "shortName": "対話生成",
+          "description": "複数キャラの対話を作成"
+        },
+        "clone": {
+          "title": "声のクローン",
+          "shortName": "声のクローン",
+          "description": "AIで声をクローン"
+        },
+        "music": {
+          "title": "AI 音楽",
+          "shortName": "AI 音楽",
+          "description": "テキストから音楽を作曲"
+        },
+        "cover": {
+          "title": "AI カバー",
+          "shortName": "AI カバー",
+          "description": "声クローンでAIカバーを作成"
+        },
+        "image": {
+          "title": "AI 画像",
+          "shortName": "AI 画像",
+          "description": "テキストから画像を生成"
+        },
+        "video": {
+          "title": "AI 動画",
+          "shortName": "AI 動画",
+          "description": "テキストから動画を生成"
+        },
+        "tiktok": {
+          "title": "TikTok ダウンローダー",
+          "shortName": "TikTok ダウンロード",
+          "description": "TikTok動画をダウンロード"
+        },
+        "youtube": {
+          "title": "YouTube ダウンローダー",
+          "shortName": "YouTube ダウンロード",
+          "description": "YouTube動画と音声をダウンロード"
+        }
+      }
+    },
+    "me": {
+      "guest": "ゲスト",
+      "freeVersion": "無料版",
+      "myCreations": "マイ作品",
+      "loginToView": "ログインして作品を表示",
+      "noCreations": "作品がありません",
+      "startCreating": "素敵な作品を作りましょう！",
+      "goCreate": "作成する",
+      "pullToRefresh": "下にスワイプして更新",
+      "releaseToRefresh": "離して更新",
+      "tabs": {
+        "voices": "音声",
+        "dialogues": "対話",
+        "music": "音楽",
+        "cover": "カバー",
+        "video": "動画",
+        "image": "画像"
+      },
+      "emptyState": {
+        "noContent": "コンテンツがありません。",
+        "createFirstVoice": "最初の音声を作成してください。",
+        "createFirstDialogue": "最初のAI対話を作成してください。",
+        "createFirstMusic": "最初のAI音楽を作成してください。",
+        "createFirstCover": "最初のAIカバーを作成してください。",
+        "createFirstVideo": "最初のAI動画を作成してください。",
+        "createFirstImage": "最初のAI画像を作成してください。"
+      },
+      "stats": {
+        "plan": "プラン",
+        "credits": "クレジット"
+      },
+      "subscribe": {
+        "title": "Proにアップグレード",
+        "subtitle": "すべての機能に無制限アクセス",
+        "button": "今すぐ登録"
+      }
+    },
+    "explore": {
+      "title": "探索",
+      "trending": "トレンド",
+      "latest": "最新",
+      "forYou": "おすすめ"
+    },
+    "common": {
+      "cancel": "キャンセル",
+      "confirm": "確認",
+      "delete": "削除",
+      "save": "保存",
+      "edit": "編集",
+      "share": "シェア",
+      "download": "ダウンロード",
+      "retry": "再試行",
+      "loading": "読み込み中...",
+      "error": "エラー",
+      "success": "成功",
+      "learnMore": "もっと見る"
+    },
+    "subscribe": {
+      "tabs": {
+        "subscription": "サブスクリプション",
+        "credits": "クレジットパック"
+      },
+      "vipBonus": "VIPになる：全パック +20% クレジット",
+      "notSubscribed": "未登録",
+      "mostPopular": "最も人気",
+      "creditsPerPeriod": "{{credits}} クレジット / {{period}}",
+      "membershipBenefits": "メンバー特典",
+      "benefits": {
+        "creditsRefresh": "毎月 {{credits}} クレジット更新",
+        "fastChannel": "高速生成チャンネル",
+        "simultaneous": "同時生成",
+        "higherQuality": "より高品質"
+      },
+      "creditPackInfo": {
+        "validity": "クレジットパック有効期限：永久",
+        "terms": "サブスクリプション規約：確認時にアカウントに課金されます。現在の期間終了の24時間前までにキャンセルしない限り、元の価格で自動更新されます。アカウント設定でサブスクリプションと自動更新を管理できます。"
+      },
+      "termsOfUse": "利用規約",
+      "privacyPolicy": "プライバシーポリシー",
+      "subscribeNow": "今すぐ登録",
+      "buyNow": "今すぐ購入",
+      "processing": "処理中..."
+    },
+    "createVoice": {
+      "enterText": "テキストを入力",
+      "placeholder": "テキストを入力または貼り付け...",
+      "generateText": "テキスト生成",
+      "selectVoice": "音声を選択",
+      "audioSettings": "オーディオ設定",
+      "speed": "速度",
+      "volume": "音量",
+      "pitch": "ピッチ",
+      "generate": "生成",
+      "generating": "生成中...",
+      "creditsRule": "クレジットルール",
+      "voiceGeneration": "音声生成",
+      "charsPerCredit": "100文字 = 1クレジット",
+      "textAssistant": "テキストアシスタント",
+      "textAssistantDesc": "言いたいことを説明すると、AIがテキストを生成します。",
+      "textAssistantPlaceholder": "例：ポッドキャストの挨拶、商品紹介、ナレーション...",
+      "speedDesc": "音声の再生速度を調整",
+      "volumeDesc": "出力音量を調整",
+      "pitchDesc": "声のトーンを調整",
+      "pitchDeep": "低い",
+      "pitchDull": "くぐもった",
+      "pitchConsistent": "標準",
+      "pitchBright": "明るい",
+      "pitchCrisp": "澄んだ"
+    }
+  }
+}

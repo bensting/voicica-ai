@@ -13,7 +13,7 @@ interface PlayerModalHeaderProps {
   /** 禁用分享按钮 */
   shareDisabled?: boolean;
   /** 内容类型（用于举报） */
-  contentType: 'music' | 'video';
+  contentType: 'music' | 'video' | 'tts';
   /** 内容 ID（用于举报） */
   contentId?: string;
 }

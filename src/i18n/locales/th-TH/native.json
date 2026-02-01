@@ -1,0 +1,198 @@
+{
+  "native": {
+    "navbar": {
+      "loginRewards": "เข้าสู่ระบบรับรางวัล",
+      "free": "ฟรี"
+    },
+    "bottomNav": {
+      "explore": "สำรวจ",
+      "me": "ฉัน"
+    },
+    "settings": {
+      "title": "การตั้งค่า",
+      "share": "แชร์ VoicicaAI",
+      "checkUpdate": "ตรวจสอบการอัปเดต",
+      "privacy": "นโยบายความเป็นส่วนตัว",
+      "terms": "ข้อกำหนดการใช้งาน",
+      "logout": "ออกจากระบบ",
+      "latestVersion": "คุณใช้เวอร์ชันล่าสุดแล้ว!"
+    },
+    "login": {
+      "welcomeTo": "ยินดีต้อนรับสู่",
+      "loginToReceive": "เข้าสู่ระบบเพื่อรับเครดิต",
+      "loginWithGoogle": "เข้าสู่ระบบด้วย Google",
+      "loginWithEmail": "เข้าสู่ระบบด้วยอีเมล",
+      "loggingIn": "กำลังเข้าสู่ระบบ...",
+      "signUp": "สมัครสมาชิก",
+      "agreement": "การเข้าสู่ระบบหรือสมัครสมาชิกถือว่าคุณยอมรับ",
+      "privacyPolicy": "นโยบายความเป็นส่วนตัว",
+      "and": "และ",
+      "termsOfUse": "ข้อกำหนดการใช้งาน"
+    },
+    "menu": {
+      "categories": {
+        "voiceover": "AI พากย์เสียง",
+        "music": "AI เพลง",
+        "video": "AI วิดีโอ",
+        "image": "AI รูปภาพ",
+        "tools": "เครื่องมืออื่นๆ"
+      },
+      "items": {
+        "voice": {
+          "title": "ข้อความเป็นเสียง",
+          "shortName": "ข้อความเป็นเสียง",
+          "description": "แปลงข้อความเป็นเสียงธรรมชาติ"
+        },
+        "dialogue": {
+          "title": "สร้างบทสนทนา",
+          "shortName": "สร้างบทสนทนา",
+          "description": "สร้างบทสนทนาหลายตัวละคร"
+        },
+        "clone": {
+          "title": "โคลนเสียง",
+          "shortName": "โคลนเสียง",
+          "description": "โคลนเสียงของคุณด้วย AI"
+        },
+        "music": {
+          "title": "AI เพลง",
+          "shortName": "AI เพลง",
+          "description": "แต่งเพลงจากคำอธิบายข้อความ"
+        },
+        "cover": {
+          "title": "AI คัฟเวอร์",
+          "shortName": "AI คัฟเวอร์",
+          "description": "สร้าง AI คัฟเวอร์ด้วยการโคลนเสียง"
+        },
+        "image": {
+          "title": "AI รูปภาพ",
+          "shortName": "AI รูปภาพ",
+          "description": "สร้างรูปภาพจากข้อความ"
+        },
+        "video": {
+          "title": "AI วิดีโอ",
+          "shortName": "AI วิดีโอ",
+          "description": "สร้างวิดีโอจากข้อความ"
+        },
+        "tiktok": {
+          "title": "ดาวน์โหลด TikTok",
+          "shortName": "ดาวน์โหลด TikTok",
+          "description": "ดาวน์โหลดวิดีโอ TikTok ไม่มีลายน้ำ"
+        },
+        "youtube": {
+          "title": "ดาวน์โหลด YouTube",
+          "shortName": "ดาวน์โหลด YouTube",
+          "description": "ดาวน์โหลดวิดีโอและเสียง YouTube"
+        }
+      }
+    },
+    "me": {
+      "guest": "ผู้เยี่ยมชม",
+      "freeVersion": "เวอร์ชันฟรี",
+      "myCreations": "ผลงานของฉัน",
+      "loginToView": "เข้าสู่ระบบเพื่อดูผลงาน",
+      "noCreations": "ยังไม่มีผลงาน",
+      "startCreating": "เริ่มสร้างสรรค์ผลงานสุดเจ๋ง!",
+      "goCreate": "ไปสร้าง",
+      "pullToRefresh": "ดึงลงเพื่อรีเฟรช",
+      "releaseToRefresh": "ปล่อยเพื่อรีเฟรช",
+      "tabs": {
+        "voices": "เสียง",
+        "dialogues": "บทสนทนา",
+        "music": "เพลง",
+        "cover": "คัฟเวอร์",
+        "video": "วิดีโอ",
+        "image": "รูปภาพ"
+      },
+      "emptyState": {
+        "noContent": "ยังไม่มีเนื้อหา",
+        "createFirstVoice": "สร้างเสียงแรกของคุณ",
+        "createFirstDialogue": "สร้างบทสนทนา AI แรกของคุณ",
+        "createFirstMusic": "สร้างเพลง AI แรกของคุณ",
+        "createFirstCover": "สร้างคัฟเวอร์ AI แรกของคุณ",
+        "createFirstVideo": "สร้างวิดีโอ AI แรกของคุณ",
+        "createFirstImage": "สร้างรูปภาพ AI แรกของคุณ"
+      },
+      "stats": {
+        "plan": "แผน",
+        "credits": "เครดิต"
+      },
+      "subscribe": {
+        "title": "อัปเกรดเป็น Pro",
+        "subtitle": "เข้าถึงทุกฟีเจอร์ไม่จำกัด",
+        "button": "สมัครสมาชิกเลย"
+      }
+    },
+    "explore": {
+      "title": "สำรวจ",
+      "trending": "กำลังฮิต",
+      "latest": "ล่าสุด",
+      "forYou": "สำหรับคุณ"
+    },
+    "common": {
+      "cancel": "ยกเลิก",
+      "confirm": "ยืนยัน",
+      "delete": "ลบ",
+      "save": "บันทึก",
+      "edit": "แก้ไข",
+      "share": "แชร์",
+      "download": "ดาวน์โหลด",
+      "retry": "ลองใหม่",
+      "loading": "กำลังโหลด...",
+      "error": "ข้อผิดพลาด",
+      "success": "สำเร็จ",
+      "learnMore": "เรียนรู้เพิ่มเติม"
+    },
+    "subscribe": {
+      "tabs": {
+        "subscription": "สมัครสมาชิก",
+        "credits": "แพ็คเครดิต"
+      },
+      "vipBonus": "เป็น VIP: รับเครดิตเพิ่ม +20% ทุกแพ็ค",
+      "notSubscribed": "ยังไม่ได้สมัคร",
+      "mostPopular": "ยอดนิยม",
+      "creditsPerPeriod": "{{credits}} เครดิต / {{period}}",
+      "membershipBenefits": "สิทธิประโยชน์สมาชิก",
+      "benefits": {
+        "creditsRefresh": "รีเฟรช {{credits}} เครดิตทุกเดือน",
+        "fastChannel": "ช่องทางสร้างเร็ว",
+        "simultaneous": "สร้างพร้อมกันได้",
+        "higherQuality": "คุณภาพสูงกว่า"
+      },
+      "creditPackInfo": {
+        "validity": "ระยะเวลาใช้งานแพ็คเครดิต: ตลอดชีพ",
+        "terms": "เงื่อนไขการสมัคร: ชำระเงินเมื่อยืนยัน สมัครสมาชิกจะต่ออายุอัตโนมัติในราคาเดิม เว้นแต่ยกเลิกก่อนสิ้นสุดรอบอย่างน้อย 24 ชั่วโมง จัดการการสมัครและการต่ออายุอัตโนมัติในการตั้งค่าบัญชี"
+      },
+      "termsOfUse": "ข้อกำหนดการใช้งาน",
+      "privacyPolicy": "นโยบายความเป็นส่วนตัว",
+      "subscribeNow": "สมัครสมาชิกเลย",
+      "buyNow": "ซื้อเลย",
+      "processing": "กำลังดำเนินการ..."
+    },
+    "createVoice": {
+      "enterText": "ป้อนข้อความ",
+      "placeholder": "พิมพ์หรือวางข้อความที่นี่...",
+      "generateText": "สร้างข้อความ",
+      "selectVoice": "เลือกเสียง",
+      "audioSettings": "ตั้งค่าเสียง",
+      "speed": "ความเร็ว",
+      "volume": "ระดับเสียง",
+      "pitch": "ระดับเสียงสูงต่ำ",
+      "generate": "สร้าง",
+      "generating": "กำลังสร้าง...",
+      "creditsRule": "กฎเครดิต",
+      "voiceGeneration": "สร้างเสียง",
+      "charsPerCredit": "100 ตัวอักษร = 1 เครดิต",
+      "textAssistant": "ผู้ช่วยข้อความ",
+      "textAssistantDesc": "อธิบายสิ่งที่คุณต้องการพูด AI จะสร้างข้อความให้คุณ",
+      "textAssistantPlaceholder": "เช่น ข้อความต้อนรับพอดแคสต์ แนะนำสินค้า เล่าเรื่อง...",
+      "speedDesc": "ปรับความเร็วในการพูด",
+      "volumeDesc": "ปรับระดับเสียงเอาต์พุต",
+      "pitchDesc": "ปรับโทนเสียง",
+      "pitchDeep": "ทุ้ม",
+      "pitchDull": "ทึบ",
+      "pitchConsistent": "ปกติ",
+      "pitchBright": "สดใส",
+      "pitchCrisp": "คมชัด"
+    }
+  }
+}

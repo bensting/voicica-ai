@@ -32,7 +32,7 @@ interface ProfileHeaderProps {
  * 包含头像、用户名、设置按钮
  */
 export default function ProfileHeader({
-  userName = 'Guest',
+  userName,
   avatarUrl,
   isLoggedIn = false,
   onAvatarClick,

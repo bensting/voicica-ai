@@ -90,6 +90,7 @@ model tts_records {
   updated_at      DateTime? @updatedAt @db.Timestamptz(6)
   share_id        String?   @unique(map: "ix_tts_records_share_id") @db.VarChar(12)
   platform        String?   @db.VarChar(20) // web, mobile-web, android, ios
+  is_public       Boolean   @default(false) // 是否公开展示
 
   // 关联故事（可选）
   story_id        String?
@@ -102,6 +103,7 @@ model tts_records {
   @@index([user_id, status, created_at], map: "ix_tts_records_user_status_created")
   @@index([story_id], map: "ix_tts_records_story_id")
   @@index([platform], map: "ix_tts_records_platform")
+  @@index([is_public], map: "ix_tts_records_is_public")
 }
 
 model user_subscriptions {
@@ -623,6 +625,22 @@ model image_records {
   @@index([status], map: "ix_image_records_status")
   @@index([user_id, status], map: "ix_image_records_user_status")
   @@index([is_public], map: "ix_image_records_is_public")
+}
+
+/// Native App Banner 配置
+model native_banners {
+  id           Int       @id @default(autoincrement())
+  image_url    String                              // 背景图片 URL (3:1 比例)
+  link_url     String?                             // 点击跳转链接
+  titles       Json      @db.Json                  // 多语言标题 {"en-US": "...", "zh-CN": "..."}
+  subtitles    Json      @db.Json                  // 多语言副标题
+  button_texts Json?     @db.Json                  // 多语言按钮文字（可选）
+  sort_order   Int       @default(0)               // 排序（越小越靠前）
+  is_active    Boolean   @default(true)            // 是否启用
+  created_at   DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at   DateTime? @updatedAt @db.Timestamptz(6)
+
+  @@index([is_active, sort_order], map: "ix_native_banners_active_sort")
 }
 
 /// 故事段落（一个故事多个段落）

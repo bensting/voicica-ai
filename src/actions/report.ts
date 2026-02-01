@@ -12,7 +12,7 @@ export type ReportReason =
   | 'other';
 
 interface ReportContentParams {
-  contentType: 'music' | 'video' | 'image';
+  contentType: 'music' | 'video' | 'image' | 'tts';
   contentId: string;
   reason: ReportReason;
 }

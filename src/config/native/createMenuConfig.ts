@@ -94,7 +94,7 @@ export const createMenuItems: CreateMenuItem[] = [
     shortName: 'AI Music',
     description: 'Compose music from text descriptions',
     href: '/native/create/music',
-    enabled: { development: true, production: true },
+    enabled: { development: true, production: false },
   },
   {
     id: 'cover',
@@ -116,7 +116,7 @@ export const createMenuItems: CreateMenuItem[] = [
     shortName: 'AI Image',
     description: 'Generate images from text prompts',
     href: '/native/create/image',
-    enabled: { development: true, production: true },
+    enabled: { development: true, production: false },
   },
 
   // ========== AI Video 类别 ==========
@@ -128,7 +128,7 @@ export const createMenuItems: CreateMenuItem[] = [
     shortName: 'AI Video',
     description: 'Generate videos from text prompts',
     href: '/native/create/video',
-    enabled: { development: true, production: true },
+    enabled: { development: true, production: false },
   },
 
   // ========== AI Other Tools 类别 ==========

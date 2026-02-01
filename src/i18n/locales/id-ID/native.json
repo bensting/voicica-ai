@@ -1,0 +1,198 @@
+{
+  "native": {
+    "navbar": {
+      "loginRewards": "Masuk & Hadiah",
+      "free": "Gratis"
+    },
+    "bottomNav": {
+      "explore": "Jelajahi",
+      "me": "Saya"
+    },
+    "settings": {
+      "title": "Pengaturan",
+      "share": "Bagikan VoicicaAI",
+      "checkUpdate": "Periksa pembaruan",
+      "privacy": "Kebijakan privasi",
+      "terms": "Ketentuan layanan",
+      "logout": "Keluar",
+      "latestVersion": "Anda menggunakan versi terbaru!"
+    },
+    "login": {
+      "welcomeTo": "Selamat datang di",
+      "loginToReceive": "Masuk untuk menerima kredit",
+      "loginWithGoogle": "Masuk dengan Google",
+      "loginWithEmail": "Masuk dengan Email",
+      "loggingIn": "Sedang masuk...",
+      "signUp": "Daftar",
+      "agreement": "Masuk atau daftar berarti Anda menyetujui",
+      "privacyPolicy": "Kebijakan Privasi",
+      "and": "dan",
+      "termsOfUse": "Ketentuan Penggunaan"
+    },
+    "menu": {
+      "categories": {
+        "voiceover": "AI Suara",
+        "music": "AI Musik",
+        "video": "AI Video",
+        "image": "AI Gambar",
+        "tools": "Alat Lainnya"
+      },
+      "items": {
+        "voice": {
+          "title": "Teks ke Suara",
+          "shortName": "Teks ke Suara",
+          "description": "Ubah teks menjadi suara alami"
+        },
+        "dialogue": {
+          "title": "Buat Dialog",
+          "shortName": "Buat Dialog",
+          "description": "Buat dialog multi-karakter"
+        },
+        "clone": {
+          "title": "Kloning Suara",
+          "shortName": "Kloning Suara",
+          "description": "Kloning suara Anda dengan AI"
+        },
+        "music": {
+          "title": "AI Musik",
+          "shortName": "AI Musik",
+          "description": "Buat musik dari deskripsi teks"
+        },
+        "cover": {
+          "title": "AI Cover",
+          "shortName": "AI Cover",
+          "description": "Buat cover AI dengan kloning suara"
+        },
+        "image": {
+          "title": "AI Gambar",
+          "shortName": "AI Gambar",
+          "description": "Buat gambar dari teks"
+        },
+        "video": {
+          "title": "AI Video",
+          "shortName": "AI Video",
+          "description": "Buat video dari teks"
+        },
+        "tiktok": {
+          "title": "Unduh TikTok",
+          "shortName": "Unduh TikTok",
+          "description": "Unduh video TikTok tanpa watermark"
+        },
+        "youtube": {
+          "title": "Unduh YouTube",
+          "shortName": "Unduh YouTube",
+          "description": "Unduh video dan audio YouTube"
+        }
+      }
+    },
+    "me": {
+      "guest": "Tamu",
+      "freeVersion": "Versi gratis",
+      "myCreations": "Karya Saya",
+      "loginToView": "Masuk untuk melihat karya Anda",
+      "noCreations": "Belum ada karya",
+      "startCreating": "Mulai membuat sesuatu yang menakjubkan!",
+      "goCreate": "Buat sekarang",
+      "pullToRefresh": "Tarik untuk menyegarkan",
+      "releaseToRefresh": "Lepas untuk menyegarkan",
+      "tabs": {
+        "voices": "Suara",
+        "dialogues": "Dialog",
+        "music": "Musik",
+        "cover": "Cover",
+        "video": "Video",
+        "image": "Gambar"
+      },
+      "emptyState": {
+        "noContent": "Belum ada konten.",
+        "createFirstVoice": "Buat suara pertama Anda.",
+        "createFirstDialogue": "Buat dialog AI pertama Anda.",
+        "createFirstMusic": "Buat musik AI pertama Anda.",
+        "createFirstCover": "Buat cover AI pertama Anda.",
+        "createFirstVideo": "Buat video AI pertama Anda.",
+        "createFirstImage": "Buat gambar AI pertama Anda."
+      },
+      "stats": {
+        "plan": "Paket",
+        "credits": "Kredit"
+      },
+      "subscribe": {
+        "title": "Upgrade ke Pro",
+        "subtitle": "Dapatkan akses tak terbatas ke semua fitur",
+        "button": "Berlangganan Sekarang"
+      }
+    },
+    "explore": {
+      "title": "Jelajahi",
+      "trending": "Trending",
+      "latest": "Terbaru",
+      "forYou": "Untuk Anda"
+    },
+    "common": {
+      "cancel": "Batal",
+      "confirm": "Konfirmasi",
+      "delete": "Hapus",
+      "save": "Simpan",
+      "edit": "Edit",
+      "share": "Bagikan",
+      "download": "Unduh",
+      "retry": "Coba lagi",
+      "loading": "Memuat...",
+      "error": "Error",
+      "success": "Berhasil",
+      "learnMore": "Pelajari lebih lanjut"
+    },
+    "subscribe": {
+      "tabs": {
+        "subscription": "Langganan",
+        "credits": "Paket Kredit"
+      },
+      "vipBonus": "Jadi VIP: +20% kredit setiap paket",
+      "notSubscribed": "Belum Berlangganan",
+      "mostPopular": "Paling Populer",
+      "creditsPerPeriod": "{{credits}} kredit / {{period}}",
+      "membershipBenefits": "Keuntungan Anggota",
+      "benefits": {
+        "creditsRefresh": "{{credits}} kredit diperbarui setiap bulan",
+        "fastChannel": "Saluran Pembuatan Cepat",
+        "simultaneous": "Pembuatan Bersamaan",
+        "higherQuality": "Kualitas Lebih Tinggi"
+      },
+      "creditPackInfo": {
+        "validity": "Masa Berlaku Paket Kredit: Seumur Hidup",
+        "terms": "Ketentuan Langganan: Pembayaran dibebankan ke akun Anda saat konfirmasi. Langganan diperpanjang otomatis dengan harga asli, kecuali dibatalkan setidaknya 24 jam sebelum periode saat ini berakhir. Kelola langganan dan perpanjangan otomatis di Pengaturan Akun."
+      },
+      "termsOfUse": "Ketentuan Penggunaan",
+      "privacyPolicy": "Kebijakan Privasi",
+      "subscribeNow": "Berlangganan Sekarang",
+      "buyNow": "Beli Sekarang",
+      "processing": "Memproses..."
+    },
+    "createVoice": {
+      "enterText": "Masukkan teks",
+      "placeholder": "Ketik atau tempel teks di sini...",
+      "generateText": "Buat Teks",
+      "selectVoice": "Pilih suara",
+      "audioSettings": "Pengaturan Audio",
+      "speed": "Kecepatan",
+      "volume": "Volume",
+      "pitch": "Nada",
+      "generate": "Buat",
+      "generating": "Membuat...",
+      "creditsRule": "Aturan Kredit",
+      "voiceGeneration": "Pembuatan suara",
+      "charsPerCredit": "100 karakter = 1 kredit",
+      "textAssistant": "Asisten Teks",
+      "textAssistantDesc": "Jelaskan apa yang ingin Anda katakan dan AI akan membuat teksnya.",
+      "textAssistantPlaceholder": "Contoh: Sambutan podcast, pengenalan produk, narasi cerita...",
+      "speedDesc": "Sesuaikan kecepatan bicara",
+      "volumeDesc": "Sesuaikan tingkat volume output",
+      "pitchDesc": "Sesuaikan nada suara",
+      "pitchDeep": "Berat",
+      "pitchDull": "Suram",
+      "pitchConsistent": "Normal",
+      "pitchBright": "Cerah",
+      "pitchCrisp": "Jernih"
+    }
+  }
+}

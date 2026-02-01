@@ -1,0 +1,198 @@
+{
+  "native": {
+    "navbar": {
+      "loginRewards": "Login & Rewards",
+      "free": "FREE"
+    },
+    "bottomNav": {
+      "explore": "Explore",
+      "me": "Me"
+    },
+    "settings": {
+      "title": "Settings",
+      "share": "Share VoicicaAI",
+      "checkUpdate": "Check for updates",
+      "privacy": "Privacy policy",
+      "terms": "Terms of Service",
+      "logout": "Log out",
+      "latestVersion": "You are using the latest version!"
+    },
+    "login": {
+      "welcomeTo": "Welcome to",
+      "loginToReceive": "Log in to receive credits",
+      "loginWithGoogle": "Log in with Google",
+      "loginWithEmail": "Log in with Email",
+      "loggingIn": "Logging in...",
+      "signUp": "Sign up",
+      "agreement": "Log in or register to indicate that you agree to our",
+      "privacyPolicy": "Privacy Policy",
+      "and": "and",
+      "termsOfUse": "Terms of Use"
+    },
+    "menu": {
+      "categories": {
+        "voiceover": "VOICEOVER AI",
+        "music": "MUSIC AI",
+        "video": "VIDEO AI",
+        "image": "IMAGE AI",
+        "tools": "OTHER TOOLS"
+      },
+      "items": {
+        "voice": {
+          "title": "Text to Voice",
+          "shortName": "Text to Voice",
+          "description": "Convert text to natural speech"
+        },
+        "dialogue": {
+          "title": "Text to Dialogue",
+          "shortName": "Text to Dialogue",
+          "description": "Create multi-character dialogues"
+        },
+        "clone": {
+          "title": "Voice Clone",
+          "shortName": "Voice Clone",
+          "description": "Clone your voice with AI"
+        },
+        "music": {
+          "title": "AI Music",
+          "shortName": "AI Music",
+          "description": "Compose music from text descriptions"
+        },
+        "cover": {
+          "title": "AI Cover",
+          "shortName": "AI Cover",
+          "description": "Create AI song covers with voice cloning"
+        },
+        "image": {
+          "title": "AI Image",
+          "shortName": "AI Image",
+          "description": "Generate images from text prompts"
+        },
+        "video": {
+          "title": "AI Video",
+          "shortName": "AI Video",
+          "description": "Generate videos from text prompts"
+        },
+        "tiktok": {
+          "title": "TikTok Downloader",
+          "shortName": "TikTok Downloader",
+          "description": "Download TikTok videos without watermark"
+        },
+        "youtube": {
+          "title": "YouTube Downloader",
+          "shortName": "YouTube Downloader",
+          "description": "Download YouTube videos and audio"
+        }
+      }
+    },
+    "me": {
+      "guest": "Guest",
+      "freeVersion": "Free version",
+      "myCreations": "My Creations",
+      "loginToView": "Log in to view your creations",
+      "noCreations": "No creations yet",
+      "startCreating": "Start creating something amazing!",
+      "goCreate": "Go create",
+      "pullToRefresh": "Pull to refresh",
+      "releaseToRefresh": "Release to refresh",
+      "tabs": {
+        "voices": "Voices",
+        "dialogues": "Dialogues",
+        "music": "Music",
+        "cover": "Cover",
+        "video": "Video",
+        "image": "Image"
+      },
+      "emptyState": {
+        "noContent": "No content yet.",
+        "createFirstVoice": "Create your first voice.",
+        "createFirstDialogue": "Create your first AI dialogue.",
+        "createFirstMusic": "Create your first AI music.",
+        "createFirstCover": "Create your first AI cover.",
+        "createFirstVideo": "Create your first AI video.",
+        "createFirstImage": "Create your first AI image."
+      },
+      "stats": {
+        "plan": "Plan",
+        "credits": "Credits"
+      },
+      "subscribe": {
+        "title": "Upgrade to Pro",
+        "subtitle": "Get unlimited access to all features",
+        "button": "Subscribe Now"
+      }
+    },
+    "explore": {
+      "title": "Explore",
+      "trending": "Trending",
+      "latest": "Latest",
+      "forYou": "For You"
+    },
+    "common": {
+      "cancel": "Cancel",
+      "confirm": "Confirm",
+      "delete": "Delete",
+      "save": "Save",
+      "edit": "Edit",
+      "share": "Share",
+      "download": "Download",
+      "retry": "Retry",
+      "loading": "Loading...",
+      "error": "Error",
+      "success": "Success",
+      "learnMore": "Learn More"
+    },
+    "subscribe": {
+      "tabs": {
+        "subscription": "Subscription",
+        "credits": "Credit Packs"
+      },
+      "vipBonus": "Become VIP: +20% credits on every pack",
+      "notSubscribed": "Not Subscribed",
+      "mostPopular": "Most Popular",
+      "creditsPerPeriod": "{{credits}} credits / {{period}}",
+      "membershipBenefits": "Membership Benefits",
+      "benefits": {
+        "creditsRefresh": "{{credits}} credits refresh monthly",
+        "fastChannel": "Fast Generation Channel",
+        "simultaneous": "Simultaneous Generations",
+        "higherQuality": "Higher Quality"
+      },
+      "creditPackInfo": {
+        "validity": "Validity Period of the Credits Pack: Lifetime",
+        "terms": "Subscription Terms: Payment is charged to your account upon confirmation. Subscription auto-renews at the original price, unless canceled at least 24 hours before the current period ends. Manage your subscription and auto-renewal in Account Settings."
+      },
+      "termsOfUse": "Terms of Use",
+      "privacyPolicy": "Privacy Policy",
+      "subscribeNow": "Subscribe Now",
+      "buyNow": "Buy Now",
+      "processing": "Processing..."
+    },
+    "createVoice": {
+      "enterText": "Enter your text",
+      "placeholder": "Type or paste your text here...",
+      "generateText": "Generate Text",
+      "selectVoice": "Select a voice",
+      "audioSettings": "Audio Settings",
+      "speed": "Speed",
+      "volume": "Volume",
+      "pitch": "Pitch",
+      "generate": "Generate",
+      "generating": "Generating...",
+      "creditsRule": "Credits Rule",
+      "voiceGeneration": "Voice generation",
+      "charsPerCredit": "100 chars = 1 credit",
+      "textAssistant": "Text Assistant",
+      "textAssistantDesc": "Describe what you want to say and AI will generate the text for you.",
+      "textAssistantPlaceholder": "e.g., A welcome message for a podcast, a product introduction, a story narration...",
+      "speedDesc": "Adjust how fast the voice speaks",
+      "volumeDesc": "Adjust the output volume level",
+      "pitchDesc": "Adjust the voice tone",
+      "pitchDeep": "Deep",
+      "pitchDull": "Dull",
+      "pitchConsistent": "Consistent",
+      "pitchBright": "Bright",
+      "pitchCrisp": "Crisp"
+    }
+  }
+}

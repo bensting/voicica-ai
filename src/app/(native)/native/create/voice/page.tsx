@@ -7,6 +7,7 @@ import { useCredits } from '@/contexts/CreditsContext';
 import { useSubscription } from '@/contexts/SubscriptionContext';
 import { useRewardedAd } from '@/hooks/useRewardedAd';
 import { useAudioSettings } from '@/contexts/AudioSettingsContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { AUDIO_SETTINGS_RANGE } from '@/types/audioSettings';
 import { createTtsTask, getTtsTaskStatus, getTtsRecordByTaskId, deleteTtsRecord } from '@/actions/tts';
 import type { TtsRecord } from '@/actions/tts';
@@ -111,6 +112,7 @@ const CloseIcon = () => (
  */
 export default function NativeTTSPage() {
   const router = useRouter();
+  const { t } = useLanguage();
   const { user } = useFirebaseAuth();
   const { credits } = useCredits();
   const { isSubscribed } = useSubscription();
@@ -370,11 +372,11 @@ export default function NativeTTSPage() {
 
   // 获取音调标签
   const getPitchLabel = (value: number) => {
-    if (value <= 10) return 'Deep';
-    if (value <= 35) return 'Dull';
-    if (value <= 65) return 'Consistent';
-    if (value <= 90) return 'Bright';
-    return 'Crisp';
+    if (value <= 10) return t('native.createVoice.pitchDeep');
+    if (value <= 35) return t('native.createVoice.pitchDull');
+    if (value <= 65) return t('native.createVoice.pitchConsistent');
+    if (value <= 90) return t('native.createVoice.pitchBright');
+    return t('native.createVoice.pitchCrisp');
   };
 
   // 保存音频设置
@@ -417,7 +419,7 @@ export default function NativeTTSPage() {
   return (
     <div className="min-h-screen bg-[#0a0a1a] flex flex-col">
       {/* Header */}
-      <CreatePageHeader title="Text to Voice" />
+      <CreatePageHeader title={t('native.menu.items.voice.title')} />
 
       {/* Content */}
       <div
@@ -433,14 +435,14 @@ export default function NativeTTSPage() {
 
         {/* Text Input */}
         <AssistantInput
-          label="Enter your text"
-          placeholder="Type or paste your text here..."
+          label={t('native.createVoice.enterText')}
+          placeholder={t('native.createVoice.placeholder')}
           value={text}
           onChange={handleTextChange}
           maxLength={maxCharacters}
           multiline
           rows={8}
-          assistantButtonText="Generate Text"
+          assistantButtonText={t('native.createVoice.generateText')}
           onAssistantClick={() => setIsTextAssistantOpen(true)}
           disabled={isGenerating}
           className="flex-1 flex flex-col mb-3 min-h-0"
@@ -477,7 +479,7 @@ export default function NativeTTSPage() {
           )}
           <div className="flex-1 text-left">
             <div className="text-white text-sm font-medium">
-              {selectedVoice?.display_name || 'Select a voice'}
+              {selectedVoice?.display_name || t('native.createVoice.selectVoice')}
             </div>
             {selectedVoice && (
               <div className="flex items-center gap-1.5 text-gray-400 text-xs">
@@ -506,9 +508,9 @@ export default function NativeTTSPage() {
             <SettingsIcon />
           </div>
           <div className="flex-1 text-left">
-            <div className="text-white text-sm font-medium">Audio Settings</div>
+            <div className="text-white text-sm font-medium">{t('native.createVoice.audioSettings')}</div>
             <div className="text-gray-400 text-xs">
-              Speed {settings.speed}x · Volume {settings.volume}% · Pitch {settings.pitch}
+              {t('native.createVoice.speed')} {settings.speed}x · {t('native.createVoice.volume')} {settings.volume}% · {t('native.createVoice.pitch')} {settings.pitch}
             </div>
           </div>
           <ChevronIcon />
@@ -524,7 +526,7 @@ export default function NativeTTSPage() {
         {/* Credits Info Bar */}
         <CreditsInfoBar
           credits={credits}
-          creditRules={[{ name: 'Voice generation', description: '100 chars = 1 credit' }]}
+          creditRules={[{ name: t('native.createVoice.voiceGeneration'), description: t('native.createVoice.charsPerCredit') }]}
           className="mb-3"
         />
 
@@ -536,11 +538,11 @@ export default function NativeTTSPage() {
           {isGenerating ? (
             <>
               <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-              <span>Generating...</span>
+              <span>{t('native.createVoice.generating')}</span>
             </>
           ) : (
             <>
-              <span>Generate</span>
+              <span>{t('native.createVoice.generate')}</span>
               {estimatedCredits > 0 && (
                 <>
                   <CreditsIcon className="w-3.5 h-3.5" />
@@ -574,15 +576,15 @@ export default function NativeTTSPage() {
       <AssistantModal
         isOpen={isTextAssistantOpen}
         onClose={() => setIsTextAssistantOpen(false)}
-        title="Text Assistant"
-        description="Describe what you want to say and AI will generate the text for you."
-        placeholder="e.g., A welcome message for a podcast, a product introduction, a story narration..."
+        title={t('native.createVoice.textAssistant')}
+        description={t('native.createVoice.textAssistantDesc')}
+        placeholder={t('native.createVoice.textAssistantPlaceholder')}
         value={textPrompt}
         onChange={setTextPrompt}
         maxLength={500}
         isGenerating={isGeneratingText}
         onGenerate={() => void handleGenerateText()}
-        generateButtonText="Generate Text"
+        generateButtonText={t('native.createVoice.generateText')}
       />
 
       {/* Generating Modal */}
@@ -634,9 +636,9 @@ export default function NativeTTSPage() {
             <div className="flex items-center justify-between border-b border-gray-700/50 px-4 pt-4">
               <div className="flex space-x-2">
                 {[
-                  { id: 'speed' as const, icon: <SpeedIcon />, label: 'Speed' },
-                  { id: 'volume' as const, icon: <VolumeIcon />, label: 'Volume' },
-                  { id: 'pitch' as const, icon: <PitchIcon />, label: 'Pitch' },
+                  { id: 'speed' as const, icon: <SpeedIcon />, label: t('native.createVoice.speed') },
+                  { id: 'volume' as const, icon: <VolumeIcon />, label: t('native.createVoice.volume') },
+                  { id: 'pitch' as const, icon: <PitchIcon />, label: t('native.createVoice.pitch') },
                 ].map((tab) => (
                   <button
                     key={tab.id}
@@ -665,9 +667,9 @@ export default function NativeTTSPage() {
               {activeSettingsTab === 'speed' && (
                 <div className="space-y-6">
                   <div>
-                    <h3 className="text-xl font-semibold text-white">Speed</h3>
+                    <h3 className="text-xl font-semibold text-white">{t('native.createVoice.speed')}</h3>
                     <p className="text-sm text-gray-400 mt-1">
-                      Adjust how fast the voice speaks
+                      {t('native.createVoice.speedDesc')}
                     </p>
                   </div>
 
@@ -701,9 +703,9 @@ export default function NativeTTSPage() {
               {activeSettingsTab === 'volume' && (
                 <div className="space-y-6">
                   <div>
-                    <h3 className="text-xl font-semibold text-white">Volume</h3>
+                    <h3 className="text-xl font-semibold text-white">{t('native.createVoice.volume')}</h3>
                     <p className="text-sm text-gray-400 mt-1">
-                      Adjust the output volume level
+                      {t('native.createVoice.volumeDesc')}
                     </p>
                   </div>
 
@@ -737,9 +739,9 @@ export default function NativeTTSPage() {
               {activeSettingsTab === 'pitch' && (
                 <div className="space-y-6">
                   <div>
-                    <h3 className="text-xl font-semibold text-white">Pitch</h3>
+                    <h3 className="text-xl font-semibold text-white">{t('native.createVoice.pitch')}</h3>
                     <p className="text-sm text-gray-400 mt-1">
-                      Adjust the voice tone
+                      {t('native.createVoice.pitchDesc')}
                     </p>
                   </div>
 
@@ -762,11 +764,11 @@ export default function NativeTTSPage() {
                       className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-purple-600"
                     />
                     <div className="flex justify-between text-xs text-gray-500 mt-2">
-                      <span>Deep</span>
-                      <span>Dull</span>
-                      <span>Consistent</span>
-                      <span>Bright</span>
-                      <span>Crisp</span>
+                      <span>{t('native.createVoice.pitchDeep')}</span>
+                      <span>{t('native.createVoice.pitchDull')}</span>
+                      <span>{t('native.createVoice.pitchConsistent')}</span>
+                      <span>{t('native.createVoice.pitchBright')}</span>
+                      <span>{t('native.createVoice.pitchCrisp')}</span>
                     </div>
                     <div className="text-center mt-2 text-sm font-medium text-purple-400">
                       {getPitchLabel(tempSettings.pitch)}
@@ -780,7 +782,7 @@ export default function NativeTTSPage() {
                 onClick={handleSaveSettings}
                 className="w-full mt-6 bg-purple-600 text-white py-4 rounded-xl font-medium hover:bg-purple-700 transition-colors"
               >
-                Save
+                {t('native.common.save')}
               </button>
             </div>
           </div>

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
@@ -13,6 +13,13 @@ import { getVideoRecordByTaskId, deleteVideoRecord, type VideoRecord } from '@/a
 import { useMusicTaskPolling } from '@/hooks/useMusicTaskPolling';
 import { useVideoTaskPolling } from '@/hooks/useVideoTaskPolling';
 import { useImageTaskPolling } from '@/hooks/useImageTaskPolling';
+import {
+  getAvailableMyCreationsTabs,
+  getDefaultMyCreationsTab,
+  isValidMyCreationsTab,
+  type MyCreationsTabId,
+} from '@/config/native/myCreationsTabsConfig';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 // 提取的组件
 import MusicDetailModal from './MusicDetailModal';
@@ -23,8 +30,6 @@ import ImageDetailModal from './ImageDetailModal';
 import VideoDetailModal from './VideoDetailModal';
 import { MusicCard, CoverCard, VoiceCard, DialogueCard, VideoCard, ImageCard } from './cards';
 import { formatDateLong } from './utils';
-
-type TabType = 'video' | 'image' | 'music' | 'cover' | 'voices' | 'dialogues';
 
 interface VideoItem {
   taskId: string;
@@ -42,47 +47,6 @@ interface VideoItem {
   completedAt?: string;
 }
 
-const tabs: { id: TabType; label: string }[] = [
-  { id: 'voices', label: 'Voices' },
-  { id: 'dialogues', label: 'Dialogues' },
-  { id: 'music', label: 'Music' },
-  { id: 'cover', label: 'Cover' },
-  { id: 'video', label: 'Video' },
-  { id: 'image', label: 'Image' },
-];
-
-const emptyStateMessages: Record<TabType, { title: string; subtitle: string; createLink: string }> = {
-  video: {
-    title: 'No content yet.',
-    subtitle: 'Create your first AI video.',
-    createLink: '/native/create/video',
-  },
-  image: {
-    title: 'No content yet.',
-    subtitle: 'Create your first AI image.',
-    createLink: '/native/create/image',
-  },
-  music: {
-    title: 'No content yet.',
-    subtitle: 'Create your first AI music.',
-    createLink: '/native/create/music',
-  },
-  cover: {
-    title: 'No content yet.',
-    subtitle: 'Create your first AI cover.',
-    createLink: '/native/create/cover',
-  },
-  voices: {
-    title: 'No content yet.',
-    subtitle: 'Create your first voice.',
-    createLink: '/native/create/voice',
-  },
-  dialogues: {
-    title: 'No content yet.',
-    subtitle: 'Create your first AI dialogue.',
-    createLink: '/native/create/dialogue',
-  },
-};
 
 // 空状态插画
 const EmptyIllustration = () => (
@@ -115,14 +79,19 @@ export default function MyCreations() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { token } = useFirebaseAuth();
+  const { t } = useLanguage();
+
+  // 获取可用的标签配置
+  const availableTabs = useMemo(() => getAvailableMyCreationsTabs(), []);
+  const defaultTab = useMemo(() => getDefaultMyCreationsTab(), []);
 
   // 从 URL 参数获取初始 tab
-  const tabFromUrl = searchParams.get('tab') as TabType | null;
-  const initialTab = tabFromUrl && ['voices', 'dialogues', 'music', 'cover', 'video', 'image'].includes(tabFromUrl)
+  const tabFromUrl = searchParams.get('tab');
+  const initialTab = tabFromUrl && isValidMyCreationsTab(tabFromUrl)
     ? tabFromUrl
-    : 'voices';
+    : defaultTab;
 
-  const [activeTab, setActiveTab] = useState<TabType>(initialTab);
+  const [activeTab, setActiveTab] = useState<MyCreationsTabId>(initialTab);
   const [videos, setVideos] = useState<VideoItem[]>([]);
   const [imageRecords, setImageRecords] = useState<ImageRecord[]>([]);
   const [musicRecords, setMusicRecords] = useState<MusicRecord[]>([]);
@@ -271,8 +240,8 @@ export default function MyCreations() {
 
   // 同步 URL 参数到 activeTab
   useEffect(() => {
-    const tabParam = searchParams.get('tab') as TabType | null;
-    if (tabParam && ['voices', 'dialogues', 'music', 'cover', 'video', 'image'].includes(tabParam)) {
+    const tabParam = searchParams.get('tab');
+    if (tabParam && isValidMyCreationsTab(tabParam)) {
       setActiveTab(tabParam);
     }
   }, [searchParams]);
@@ -530,7 +499,31 @@ export default function MyCreations() {
   const filteredCoverRecords = coverRecords.filter((c) => c.status !== 'FAILURE');
   const filteredDialogueRecords = dialogueRecords.filter((d) => d.status !== 'FAILURE');
 
-  const emptyState = emptyStateMessages[activeTab];
+  // 获取当前 tab 的空状态配置（使用翻译）
+  const currentTabConfig = availableTabs.find((tab) => tab.id === activeTab);
+  const emptyStateSubtitleKey: Record<MyCreationsTabId, string> = {
+    voices: 'native.me.emptyState.createFirstVoice',
+    dialogues: 'native.me.emptyState.createFirstDialogue',
+    music: 'native.me.emptyState.createFirstMusic',
+    cover: 'native.me.emptyState.createFirstCover',
+    video: 'native.me.emptyState.createFirstVideo',
+    image: 'native.me.emptyState.createFirstImage',
+  };
+  const emptyState = {
+    title: t('native.me.emptyState.noContent'),
+    subtitle: t(emptyStateSubtitleKey[activeTab] || 'native.me.emptyState.createFirstVoice'),
+    createLink: currentTabConfig?.emptyState.createLink || '/native',
+  };
+
+  // Tab 标签翻译
+  const tabLabelKey: Record<MyCreationsTabId, string> = {
+    voices: 'native.me.tabs.voices',
+    dialogues: 'native.me.tabs.dialogues',
+    music: 'native.me.tabs.music',
+    cover: 'native.me.tabs.cover',
+    video: 'native.me.tabs.video',
+    image: 'native.me.tabs.image',
+  };
   const isEmpty = activeTab === 'video'
     ? filteredVideoRecords.length === 0
     : activeTab === 'image'
@@ -605,21 +598,21 @@ export default function MyCreations() {
       {/* 固定的标题和 Tabs */}
       <div className="flex-shrink-0 px-4 pt-4 bg-[#0a0a1a]">
         {/* 标题 */}
-        <h2 className="text-xl font-bold text-white mb-3">My Creations</h2>
+        <h2 className="text-xl font-bold text-white mb-3">{t('native.me.myCreations')}</h2>
 
         {/* Tabs */}
-        <div className="flex gap-4 border-b border-gray-800">
-          {tabs.map((tab) => (
+        <div className="flex gap-4 border-b border-gray-800 overflow-x-auto">
+          {availableTabs.map((tab) => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`pb-3 text-sm font-medium transition-colors relative ${
+              className={`pb-3 text-sm font-medium transition-colors relative whitespace-nowrap ${
                 activeTab === tab.id
                   ? 'text-white'
                   : 'text-gray-500 hover:text-gray-300'
               }`}
             >
-              {tab.label}
+              {t(tabLabelKey[tab.id])}
               {activeTab === tab.id && (
                 <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-white rounded-full" />
               )}
@@ -644,7 +637,7 @@ export default function MyCreations() {
               <div className="w-5 h-5 border-2 border-purple-500 border-t-transparent rounded-full animate-spin" />
             ) : (
               <div className={`text-gray-400 text-xs transition-opacity ${pullDistance >= PULL_THRESHOLD ? 'opacity-100' : 'opacity-50'}`}>
-                {pullDistance >= PULL_THRESHOLD ? 'Release to refresh' : 'Pull to refresh'}
+                {pullDistance >= PULL_THRESHOLD ? t('native.me.releaseToRefresh') : t('native.me.pullToRefresh')}
               </div>
             )}
           </div>
@@ -667,7 +660,7 @@ export default function MyCreations() {
                 href={emptyState.createLink}
                 className="mt-4 px-8 py-3 bg-white/10 border border-white/20 rounded-full text-white font-medium hover:bg-white/20 transition-colors"
               >
-                Go create
+                {t('native.me.goCreate')}
               </Link>
             </div>
           ) : (
@@ -705,7 +698,7 @@ export default function MyCreations() {
                 href={emptyState.createLink}
                 className="mt-4 px-8 py-3 bg-white/10 border border-white/20 rounded-full text-white font-medium hover:bg-white/20 transition-colors"
               >
-                Go create
+                {t('native.me.goCreate')}
               </Link>
             </div>
           ) : (
@@ -743,7 +736,7 @@ export default function MyCreations() {
                 href={emptyState.createLink}
                 className="mt-4 px-8 py-3 bg-white/10 border border-white/20 rounded-full text-white font-medium hover:bg-white/20 transition-colors"
               >
-                Go create
+                {t('native.me.goCreate')}
               </Link>
             </div>
           ) : (
@@ -781,7 +774,7 @@ export default function MyCreations() {
                 href={emptyState.createLink}
                 className="mt-4 px-8 py-3 bg-white/10 border border-white/20 rounded-full text-white font-medium hover:bg-white/20 transition-colors"
               >
-                Go create
+                {t('native.me.goCreate')}
               </Link>
             </div>
           ) : (
@@ -819,7 +812,7 @@ export default function MyCreations() {
                 href={emptyState.createLink}
                 className="mt-4 px-8 py-3 bg-white/10 border border-white/20 rounded-full text-white font-medium hover:bg-white/20 transition-colors"
               >
-                Go create
+                {t('native.me.goCreate')}
               </Link>
             </div>
           ) : (
@@ -857,7 +850,7 @@ export default function MyCreations() {
                 href={emptyState.createLink}
                 className="mt-4 px-8 py-3 bg-white/10 border border-white/20 rounded-full text-white font-medium hover:bg-white/20 transition-colors"
               >
-                Go create
+                {t('native.me.goCreate')}
               </Link>
             </div>
           ) : (

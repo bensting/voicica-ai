@@ -1,0 +1,198 @@
+{
+  "native": {
+    "navbar": {
+      "loginRewards": "Iniciar sesión y recompensas",
+      "free": "Gratis"
+    },
+    "bottomNav": {
+      "explore": "Explorar",
+      "me": "Yo"
+    },
+    "settings": {
+      "title": "Configuración",
+      "share": "Compartir VoicicaAI",
+      "checkUpdate": "Buscar actualizaciones",
+      "privacy": "Política de privacidad",
+      "terms": "Términos de servicio",
+      "logout": "Cerrar sesión",
+      "latestVersion": "¡Estás usando la última versión!"
+    },
+    "login": {
+      "welcomeTo": "Bienvenido a",
+      "loginToReceive": "Inicia sesión para recibir créditos",
+      "loginWithGoogle": "Iniciar sesión con Google",
+      "loginWithEmail": "Iniciar sesión con Email",
+      "loggingIn": "Iniciando sesión...",
+      "signUp": "Registrarse",
+      "agreement": "Al iniciar sesión o registrarte, aceptas nuestros",
+      "privacyPolicy": "Política de Privacidad",
+      "and": "y",
+      "termsOfUse": "Términos de Uso"
+    },
+    "menu": {
+      "categories": {
+        "voiceover": "IA de Voz",
+        "music": "IA de Música",
+        "video": "IA de Video",
+        "image": "IA de Imagen",
+        "tools": "Otras Herramientas"
+      },
+      "items": {
+        "voice": {
+          "title": "Texto a Voz",
+          "shortName": "Texto a Voz",
+          "description": "Convierte texto en voz natural"
+        },
+        "dialogue": {
+          "title": "Crear Diálogo",
+          "shortName": "Crear Diálogo",
+          "description": "Crea diálogos con múltiples personajes"
+        },
+        "clone": {
+          "title": "Clonar Voz",
+          "shortName": "Clonar Voz",
+          "description": "Clona tu voz con IA"
+        },
+        "music": {
+          "title": "IA Música",
+          "shortName": "IA Música",
+          "description": "Compón música desde descripciones de texto"
+        },
+        "cover": {
+          "title": "IA Cover",
+          "shortName": "IA Cover",
+          "description": "Crea covers de IA con clonación de voz"
+        },
+        "image": {
+          "title": "IA Imagen",
+          "shortName": "IA Imagen",
+          "description": "Genera imágenes desde texto"
+        },
+        "video": {
+          "title": "IA Video",
+          "shortName": "IA Video",
+          "description": "Genera videos desde texto"
+        },
+        "tiktok": {
+          "title": "Descargar TikTok",
+          "shortName": "Descargar TikTok",
+          "description": "Descarga videos de TikTok sin marca de agua"
+        },
+        "youtube": {
+          "title": "Descargar YouTube",
+          "shortName": "Descargar YouTube",
+          "description": "Descarga videos y audio de YouTube"
+        }
+      }
+    },
+    "me": {
+      "guest": "Invitado",
+      "freeVersion": "Versión gratuita",
+      "myCreations": "Mis Creaciones",
+      "loginToView": "Inicia sesión para ver tus creaciones",
+      "noCreations": "Sin creaciones aún",
+      "startCreating": "¡Comienza a crear algo increíble!",
+      "goCreate": "Ir a crear",
+      "pullToRefresh": "Desliza para actualizar",
+      "releaseToRefresh": "Suelta para actualizar",
+      "tabs": {
+        "voices": "Voces",
+        "dialogues": "Diálogos",
+        "music": "Música",
+        "cover": "Cover",
+        "video": "Video",
+        "image": "Imagen"
+      },
+      "emptyState": {
+        "noContent": "Sin contenido aún.",
+        "createFirstVoice": "Crea tu primera voz.",
+        "createFirstDialogue": "Crea tu primer diálogo con IA.",
+        "createFirstMusic": "Crea tu primera música con IA.",
+        "createFirstCover": "Crea tu primer cover con IA.",
+        "createFirstVideo": "Crea tu primer video con IA.",
+        "createFirstImage": "Crea tu primera imagen con IA."
+      },
+      "stats": {
+        "plan": "Plan",
+        "credits": "Créditos"
+      },
+      "subscribe": {
+        "title": "Actualizar a Pro",
+        "subtitle": "Obtén acceso ilimitado a todas las funciones",
+        "button": "Suscribirse Ahora"
+      }
+    },
+    "explore": {
+      "title": "Explorar",
+      "trending": "Tendencias",
+      "latest": "Más recientes",
+      "forYou": "Para ti"
+    },
+    "common": {
+      "cancel": "Cancelar",
+      "confirm": "Confirmar",
+      "delete": "Eliminar",
+      "save": "Guardar",
+      "edit": "Editar",
+      "share": "Compartir",
+      "download": "Descargar",
+      "retry": "Reintentar",
+      "loading": "Cargando...",
+      "error": "Error",
+      "success": "Éxito",
+      "learnMore": "Más información"
+    },
+    "subscribe": {
+      "tabs": {
+        "subscription": "Suscripción",
+        "credits": "Paquetes de Créditos"
+      },
+      "vipBonus": "Hazte VIP: +20% créditos en cada paquete",
+      "notSubscribed": "No Suscrito",
+      "mostPopular": "Más Popular",
+      "creditsPerPeriod": "{{credits}} créditos / {{period}}",
+      "membershipBenefits": "Beneficios de Membresía",
+      "benefits": {
+        "creditsRefresh": "{{credits}} créditos se renuevan mensualmente",
+        "fastChannel": "Canal de Generación Rápida",
+        "simultaneous": "Generaciones Simultáneas",
+        "higherQuality": "Mayor Calidad"
+      },
+      "creditPackInfo": {
+        "validity": "Período de Validez del Paquete de Créditos: De por vida",
+        "terms": "Términos de Suscripción: El pago se carga a tu cuenta al confirmar. La suscripción se renueva automáticamente al precio original, a menos que se cancele al menos 24 horas antes del final del período actual. Gestiona tu suscripción y renovación automática en Configuración de Cuenta."
+      },
+      "termsOfUse": "Términos de Uso",
+      "privacyPolicy": "Política de Privacidad",
+      "subscribeNow": "Suscribirse Ahora",
+      "buyNow": "Comprar Ahora",
+      "processing": "Procesando..."
+    },
+    "createVoice": {
+      "enterText": "Ingresa tu texto",
+      "placeholder": "Escribe o pega tu texto aquí...",
+      "generateText": "Generar Texto",
+      "selectVoice": "Seleccionar voz",
+      "audioSettings": "Configuración de Audio",
+      "speed": "Velocidad",
+      "volume": "Volumen",
+      "pitch": "Tono",
+      "generate": "Generar",
+      "generating": "Generando...",
+      "creditsRule": "Regla de Créditos",
+      "voiceGeneration": "Generación de voz",
+      "charsPerCredit": "100 caracteres = 1 crédito",
+      "textAssistant": "Asistente de Texto",
+      "textAssistantDesc": "Describe lo que quieres decir y la IA generará el texto por ti.",
+      "textAssistantPlaceholder": "Ej: Mensaje de bienvenida de podcast, introducción de producto, narración...",
+      "speedDesc": "Ajusta la velocidad del habla",
+      "volumeDesc": "Ajusta el nivel de volumen de salida",
+      "pitchDesc": "Ajusta el tono de voz",
+      "pitchDeep": "Grave",
+      "pitchDull": "Apagado",
+      "pitchConsistent": "Normal",
+      "pitchBright": "Brillante",
+      "pitchCrisp": "Nítido"
+    }
+  }
+}

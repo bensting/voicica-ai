@@ -1,20 +1,16 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { getPublicMusicRecords, type PublicMusicRecord } from '@/actions/music';
 import MusicPlayerModal from './MusicPlayerModal';
 import VideoPlayerModal, { type PublicVideoData } from './VideoPlayerModal';
 import VoicePlayerModal, { type PublicVoiceData } from './VoicePlayerModal';
-
-// Tab 类型
-type TabType = 'voices' | 'music' | 'video';
-
-const tabs: { id: TabType; label: string }[] = [
-  { id: 'voices', label: 'Voices' },
-  { id: 'music', label: 'Music' },
-  { id: 'video', label: 'Video' },
-];
+import {
+  getAvailableExploreTabs,
+  getDefaultExploreTab,
+  type ExploreTabId,
+} from '@/config/native/exploreTabsConfig';
 
 // 播放图标
 const PlayIcon = () => (
@@ -171,7 +167,9 @@ function ExploreVideoCard({ video, index, onClick }: { video: PublicVideoData; i
  */
 export default function ExploreSection() {
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState<TabType>('voices');
+  const availableTabs = useMemo(() => getAvailableExploreTabs(), []);
+  const defaultTab = useMemo(() => getDefaultExploreTab(), []);
+  const [activeTab, setActiveTab] = useState<ExploreTabId>(defaultTab);
   const [voiceList, setVoiceList] = useState<PublicVoiceData[]>([]);
   const [musicList, setMusicList] = useState<PublicMusicRecord[]>([]);
   const [videoList, setVideoList] = useState<PublicVideoData[]>([]);
@@ -179,6 +177,11 @@ export default function ExploreSection() {
   const [selectedVoice, setSelectedVoice] = useState<PublicVoiceData | null>(null);
   const [selectedMusic, setSelectedMusic] = useState<PublicMusicRecord | null>(null);
   const [selectedVideo, setSelectedVideo] = useState<PublicVideoData | null>(null);
+
+  // 如果没有可用的标签，不渲染
+  if (availableTabs.length === 0) {
+    return null;
+  }
 
   // 处理 Voice Recreate
   const handleVoiceRecreate = (voice: PublicVoiceData) => {
@@ -260,25 +263,27 @@ export default function ExploreSection() {
       {/* 标题 */}
       <h2 className="text-xl font-bold text-white mb-4">Explore</h2>
 
-      {/* Tabs */}
-      <div className="flex gap-6 mb-4 border-b border-gray-800">
-        {tabs.map((tab) => (
-          <button
-            key={tab.id}
-            onClick={() => setActiveTab(tab.id)}
-            className={`pb-3 text-sm font-medium transition-colors relative ${
-              activeTab === tab.id
-                ? 'text-white'
-                : 'text-gray-500 hover:text-gray-300'
-            }`}
-          >
-            {tab.label}
-            {activeTab === tab.id && (
-              <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-white rounded-full" />
-            )}
-          </button>
-        ))}
-      </div>
+      {/* Tabs - 只在有多个标签时显示 */}
+      {availableTabs.length > 1 && (
+        <div className="flex gap-6 mb-4 border-b border-gray-800">
+          {availableTabs.map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`pb-3 text-sm font-medium transition-colors relative ${
+                activeTab === tab.id
+                  ? 'text-white'
+                  : 'text-gray-500 hover:text-gray-300'
+              }`}
+            >
+              {tab.label}
+              {activeTab === tab.id && (
+                <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-white rounded-full" />
+              )}
+            </button>
+          ))}
+        </div>
+      )}
 
       {/* 内容区域 */}
       {activeTab === 'voices' ? (

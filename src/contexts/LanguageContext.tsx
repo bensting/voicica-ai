@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useState, useEffect, useMemo, ReactNode } from 'react';
 
-type Locale = 'en-US' | 'zh-CN' | 'zh-TW' | 'th-TH' | 'my-MM' | 'id-ID' | 'ja-JP' | 'vi-VN' | 'es-ES' | 'pt-BR' | 'hi-IN' | 'ar-SA';
+export type Locale = 'en-US' | 'zh-CN' | 'zh-TW' | 'th-TH' | 'my-MM' | 'id-ID' | 'ja-JP' | 'vi-VN' | 'es-ES' | 'pt-BR' | 'hi-IN' | 'ar-SA';
 
 interface LanguageContextType {
   locale: Locale;

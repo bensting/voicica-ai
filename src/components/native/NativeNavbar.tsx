@@ -10,9 +10,8 @@ import { useBottomNav } from '@/contexts/BottomNavContext';
 import { useDailyTasks } from '@/hooks/useDailyTasks';
 import LoginModal from './LoginModal';
 import NativeDailyTasksModal from './NativeDailyTasksModal';
+import LanguageSelectorSheet from './LanguageSelectorSheet';
 import CrownIcon from './common/CrownIcon';
-import CreditsIcon from './common/CreditsIcon';
-import LanguageSwitcher from '@/components/layout/Navbar/LanguageSwitcher';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 // 宝箱图标
@@ -38,6 +37,7 @@ export default function NativeNavbar() {
   const { t } = useLanguage();
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isDailyTasksOpen, setIsDailyTasksOpen] = useState(false);
+  const [isLanguageSelectorOpen, setIsLanguageSelectorOpen] = useState(false);
   const [hasAutoShown, setHasAutoShown] = useState(false);
 
   const isLoggedIn = !!user;
@@ -116,8 +116,16 @@ export default function NativeNavbar() {
               </button>
             )}
 
-            {/* 语言选择器 */}
-            <LanguageSwitcher variant="native" />
+            {/* 语言选择器按钮 */}
+            <button
+              onClick={() => setIsLanguageSelectorOpen(true)}
+              className="flex items-center justify-center w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 transition-all duration-200 active:scale-95"
+              aria-label="Switch language"
+            >
+              <svg className="w-4.5 h-4.5 text-white/80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </button>
           </div>
         </div>
       </header>
@@ -139,6 +147,12 @@ export default function NativeNavbar() {
         isOpen={isDailyTasksOpen}
         onClose={() => setIsDailyTasksOpen(false)}
         onCreditsUpdated={refreshCredits}
+      />
+
+      {/* 语言选择器弹窗 */}
+      <LanguageSelectorSheet
+        isOpen={isLanguageSelectorOpen}
+        onClose={() => setIsLanguageSelectorOpen(false)}
       />
     </>
   );

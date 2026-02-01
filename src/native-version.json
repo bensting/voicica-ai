@@ -1,8 +1,22 @@
 {
-  "version": "1.2.14",
-  "buildNumber": 35,
+  "version": "1.2.15",
+  "buildNumber": 36,
   "description": "原生应用版本（Android/iOS 应用壳）",
   "changelog": [
+    {
+      "version": "1.2.15",
+      "buildNumber": 36,
+      "date": "2026-02-01",
+      "changes": [
+        "修复每日任务在浏览器测试时显示 disabled 的问题",
+        "增强 Native 环境检测，支持 Capacitor 和 /native 路由双重判断",
+        "Explore 页面新增 Voices 标签，展示公开 TTS 作品",
+        "新增语言选择底部弹窗，优化移动端体验",
+        "新增浏览器语言自动检测，首次访问自动匹配语言",
+        "首页 Banner 添加 24 小时缓存，减少 API 请求",
+        "Me 页面和订阅页面国际化支持"
+      ]
+    },
     {
       "version": "1.2.14",
       "buildNumber": 35,

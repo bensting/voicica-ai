@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
@@ -13,6 +13,12 @@ import { getVideoRecordByTaskId, deleteVideoRecord, type VideoRecord } from '@/a
 import { useMusicTaskPolling } from '@/hooks/useMusicTaskPolling';
 import { useVideoTaskPolling } from '@/hooks/useVideoTaskPolling';
 import { useImageTaskPolling } from '@/hooks/useImageTaskPolling';
+import {
+  getAvailableMyCreationsTabs,
+  getDefaultMyCreationsTab,
+  isValidMyCreationsTab,
+  type MyCreationsTabId,
+} from '@/config/native/myCreationsTabsConfig';
 
 // 提取的组件
 import MusicDetailModal from './MusicDetailModal';
@@ -23,8 +29,6 @@ import ImageDetailModal from './ImageDetailModal';
 import VideoDetailModal from './VideoDetailModal';
 import { MusicCard, CoverCard, VoiceCard, DialogueCard, VideoCard, ImageCard } from './cards';
 import { formatDateLong } from './utils';
-
-type TabType = 'video' | 'image' | 'music' | 'cover' | 'voices' | 'dialogues';
 
 interface VideoItem {
   taskId: string;
@@ -42,47 +46,6 @@ interface VideoItem {
   completedAt?: string;
 }
 
-const tabs: { id: TabType; label: string }[] = [
-  { id: 'voices', label: 'Voices' },
-  { id: 'dialogues', label: 'Dialogues' },
-  { id: 'music', label: 'Music' },
-  { id: 'cover', label: 'Cover' },
-  { id: 'video', label: 'Video' },
-  { id: 'image', label: 'Image' },
-];
-
-const emptyStateMessages: Record<TabType, { title: string; subtitle: string; createLink: string }> = {
-  video: {
-    title: 'No content yet.',
-    subtitle: 'Create your first AI video.',
-    createLink: '/native/create/video',
-  },
-  image: {
-    title: 'No content yet.',
-    subtitle: 'Create your first AI image.',
-    createLink: '/native/create/image',
-  },
-  music: {
-    title: 'No content yet.',
-    subtitle: 'Create your first AI music.',
-    createLink: '/native/create/music',
-  },
-  cover: {
-    title: 'No content yet.',
-    subtitle: 'Create your first AI cover.',
-    createLink: '/native/create/cover',
-  },
-  voices: {
-    title: 'No content yet.',
-    subtitle: 'Create your first voice.',
-    createLink: '/native/create/voice',
-  },
-  dialogues: {
-    title: 'No content yet.',
-    subtitle: 'Create your first AI dialogue.',
-    createLink: '/native/create/dialogue',
-  },
-};
 
 // 空状态插画
 const EmptyIllustration = () => (
@@ -116,13 +79,17 @@ export default function MyCreations() {
   const searchParams = useSearchParams();
   const { token } = useFirebaseAuth();
 
-  // 从 URL 参数获取初始 tab
-  const tabFromUrl = searchParams.get('tab') as TabType | null;
-  const initialTab = tabFromUrl && ['voices', 'dialogues', 'music', 'cover', 'video', 'image'].includes(tabFromUrl)
-    ? tabFromUrl
-    : 'voices';
+  // 获取可用的标签配置
+  const availableTabs = useMemo(() => getAvailableMyCreationsTabs(), []);
+  const defaultTab = useMemo(() => getDefaultMyCreationsTab(), []);
 
-  const [activeTab, setActiveTab] = useState<TabType>(initialTab);
+  // 从 URL 参数获取初始 tab
+  const tabFromUrl = searchParams.get('tab');
+  const initialTab = tabFromUrl && isValidMyCreationsTab(tabFromUrl)
+    ? tabFromUrl
+    : defaultTab;
+
+  const [activeTab, setActiveTab] = useState<MyCreationsTabId>(initialTab);
   const [videos, setVideos] = useState<VideoItem[]>([]);
   const [imageRecords, setImageRecords] = useState<ImageRecord[]>([]);
   const [musicRecords, setMusicRecords] = useState<MusicRecord[]>([]);
@@ -271,8 +238,8 @@ export default function MyCreations() {
 
   // 同步 URL 参数到 activeTab
   useEffect(() => {
-    const tabParam = searchParams.get('tab') as TabType | null;
-    if (tabParam && ['voices', 'dialogues', 'music', 'cover', 'video', 'image'].includes(tabParam)) {
+    const tabParam = searchParams.get('tab');
+    if (tabParam && isValidMyCreationsTab(tabParam)) {
       setActiveTab(tabParam);
     }
   }, [searchParams]);
@@ -530,7 +497,13 @@ export default function MyCreations() {
   const filteredCoverRecords = coverRecords.filter((c) => c.status !== 'FAILURE');
   const filteredDialogueRecords = dialogueRecords.filter((d) => d.status !== 'FAILURE');
 
-  const emptyState = emptyStateMessages[activeTab];
+  // 获取当前 tab 的空状态配置
+  const currentTabConfig = availableTabs.find((tab) => tab.id === activeTab);
+  const emptyState = currentTabConfig?.emptyState || {
+    title: 'No content yet.',
+    subtitle: 'Create something new.',
+    createLink: '/native',
+  };
   const isEmpty = activeTab === 'video'
     ? filteredVideoRecords.length === 0
     : activeTab === 'image'
@@ -608,12 +581,12 @@ export default function MyCreations() {
         <h2 className="text-xl font-bold text-white mb-3">My Creations</h2>
 
         {/* Tabs */}
-        <div className="flex gap-4 border-b border-gray-800">
-          {tabs.map((tab) => (
+        <div className="flex gap-4 border-b border-gray-800 overflow-x-auto">
+          {availableTabs.map((tab) => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`pb-3 text-sm font-medium transition-colors relative ${
+              className={`pb-3 text-sm font-medium transition-colors relative whitespace-nowrap ${
                 activeTab === tab.id
                   ? 'text-white'
                   : 'text-gray-500 hover:text-gray-300'

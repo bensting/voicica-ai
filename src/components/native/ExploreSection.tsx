@@ -178,11 +178,6 @@ export default function ExploreSection() {
   const [selectedMusic, setSelectedMusic] = useState<PublicMusicRecord | null>(null);
   const [selectedVideo, setSelectedVideo] = useState<PublicVideoData | null>(null);
 
-  // 如果没有可用的标签，不渲染
-  if (availableTabs.length === 0) {
-    return null;
-  }
-
   // 处理 Voice Recreate
   const handleVoiceRecreate = (voice: PublicVoiceData) => {
     // 保存文本和语音名称到 localStorage，TTS 页面会读取
@@ -257,6 +252,11 @@ export default function ExploreSection() {
         });
     }
   }, [activeTab]);
+
+  // 如果没有可用的标签，不渲染
+  if (availableTabs.length === 0) {
+    return null;
+  }
 
   return (
     <div className="px-4 pb-24">

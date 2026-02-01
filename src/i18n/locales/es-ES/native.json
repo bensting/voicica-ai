@@ -86,10 +86,41 @@
       }
     },
     "me": {
+      "guest": "Invitado",
+      "freeVersion": "Versión gratuita",
       "myCreations": "Mis Creaciones",
       "loginToView": "Inicia sesión para ver tus creaciones",
       "noCreations": "Sin creaciones aún",
-      "startCreating": "¡Comienza a crear algo increíble!"
+      "startCreating": "¡Comienza a crear algo increíble!",
+      "goCreate": "Ir a crear",
+      "pullToRefresh": "Desliza para actualizar",
+      "releaseToRefresh": "Suelta para actualizar",
+      "tabs": {
+        "voices": "Voces",
+        "dialogues": "Diálogos",
+        "music": "Música",
+        "cover": "Cover",
+        "video": "Video",
+        "image": "Imagen"
+      },
+      "emptyState": {
+        "noContent": "Sin contenido aún.",
+        "createFirstVoice": "Crea tu primera voz.",
+        "createFirstDialogue": "Crea tu primer diálogo con IA.",
+        "createFirstMusic": "Crea tu primera música con IA.",
+        "createFirstCover": "Crea tu primer cover con IA.",
+        "createFirstVideo": "Crea tu primer video con IA.",
+        "createFirstImage": "Crea tu primera imagen con IA."
+      },
+      "stats": {
+        "plan": "Plan",
+        "credits": "Créditos"
+      },
+      "subscribe": {
+        "title": "Actualizar a Pro",
+        "subtitle": "Obtén acceso ilimitado a todas las funciones",
+        "button": "Suscribirse Ahora"
+      }
     },
     "explore": {
       "title": "Explorar",

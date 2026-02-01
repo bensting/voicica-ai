@@ -86,10 +86,41 @@
       }
     },
     "me": {
+      "guest": "अतिथि",
+      "freeVersion": "मुफ्त संस्करण",
       "myCreations": "मेरी रचनाएं",
       "loginToView": "अपनी रचनाएं देखने के लिए लॉगिन करें",
       "noCreations": "अभी कोई रचना नहीं",
-      "startCreating": "कुछ अद्भुत बनाना शुरू करें!"
+      "startCreating": "कुछ अद्भुत बनाना शुरू करें!",
+      "goCreate": "बनाने जाएं",
+      "pullToRefresh": "रीफ्रेश करने के लिए खींचें",
+      "releaseToRefresh": "रीफ्रेश करने के लिए छोड़ें",
+      "tabs": {
+        "voices": "आवाज़ें",
+        "dialogues": "संवाद",
+        "music": "संगीत",
+        "cover": "कवर",
+        "video": "वीडियो",
+        "image": "छवि"
+      },
+      "emptyState": {
+        "noContent": "अभी कोई सामग्री नहीं।",
+        "createFirstVoice": "अपनी पहली आवाज़ बनाएं।",
+        "createFirstDialogue": "अपना पहला AI संवाद बनाएं।",
+        "createFirstMusic": "अपना पहला AI संगीत बनाएं।",
+        "createFirstCover": "अपना पहला AI कवर बनाएं।",
+        "createFirstVideo": "अपना पहला AI वीडियो बनाएं।",
+        "createFirstImage": "अपनी पहली AI छवि बनाएं।"
+      },
+      "stats": {
+        "plan": "प्लान",
+        "credits": "क्रेडिट"
+      },
+      "subscribe": {
+        "title": "Pro में अपग्रेड करें",
+        "subtitle": "सभी सुविधाओं तक असीमित पहुंच पाएं",
+        "button": "अभी सब्सक्राइब करें"
+      }
     },
     "explore": {
       "title": "एक्सप्लोर",

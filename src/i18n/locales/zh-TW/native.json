@@ -86,10 +86,41 @@
       }
     },
     "me": {
+      "guest": "訪客",
+      "freeVersion": "免費版",
       "myCreations": "我的作品",
       "loginToView": "登入查看您的作品",
       "noCreations": "暫無作品",
-      "startCreating": "開始創作精彩內容吧！"
+      "startCreating": "開始創作精彩內容吧！",
+      "goCreate": "去創作",
+      "pullToRefresh": "下拉刷新",
+      "releaseToRefresh": "釋放刷新",
+      "tabs": {
+        "voices": "語音",
+        "dialogues": "對話",
+        "music": "音樂",
+        "cover": "翻唱",
+        "video": "影片",
+        "image": "圖像"
+      },
+      "emptyState": {
+        "noContent": "暫無內容",
+        "createFirstVoice": "創建您的第一個語音。",
+        "createFirstDialogue": "創建您的第一個 AI 對話。",
+        "createFirstMusic": "創建您的第一首 AI 音樂。",
+        "createFirstCover": "創建您的第一個 AI 翻唱。",
+        "createFirstVideo": "創建您的第一個 AI 影片。",
+        "createFirstImage": "創建您的第一張 AI 圖像。"
+      },
+      "stats": {
+        "plan": "方案",
+        "credits": "積分"
+      },
+      "subscribe": {
+        "title": "升級至 Pro",
+        "subtitle": "獲得所有功能的無限存取權",
+        "button": "立即訂閱"
+      }
     },
     "explore": {
       "title": "探索",

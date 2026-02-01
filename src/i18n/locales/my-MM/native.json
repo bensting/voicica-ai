@@ -86,10 +86,41 @@
       }
     },
     "me": {
+      "guest": "ဧည့်သည်",
+      "freeVersion": "အခမဲ့ဗားရှင်း",
       "myCreations": "ကျွန်ုပ်၏ ဖန်တီးမှုများ",
       "loginToView": "ဝင်ရောက်ပြီး ဖန်တီးမှုများကြည့်ရန်",
       "noCreations": "ဖန်တီးမှု မရှိသေးပါ",
-      "startCreating": "အံ့ဖွယ်တစ်ခုခု ဖန်တီးစပါ!"
+      "startCreating": "အံ့ဖွယ်တစ်ခုခု ဖန်တီးစပါ!",
+      "goCreate": "ဖန်တီးရန်သွားပါ",
+      "pullToRefresh": "ပြန်လည်ဆန်းသစ်ရန် ဆွဲချပါ",
+      "releaseToRefresh": "ပြန်လည်ဆန်းသစ်ရန် လွှတ်ပါ",
+      "tabs": {
+        "voices": "အသံများ",
+        "dialogues": "စကားပြောများ",
+        "music": "ဂီတ",
+        "cover": "Cover",
+        "video": "ဗီဒီယို",
+        "image": "ပုံ"
+      },
+      "emptyState": {
+        "noContent": "အကြောင်းအရာ မရှိသေးပါ။",
+        "createFirstVoice": "သင့်ပထမဆုံး အသံကို ဖန်တီးပါ။",
+        "createFirstDialogue": "သင့်ပထမဆုံး AI စကားပြောကို ဖန်တီးပါ။",
+        "createFirstMusic": "သင့်ပထမဆုံး AI ဂီတကို ဖန်တီးပါ။",
+        "createFirstCover": "သင့်ပထမဆုံး AI cover ကို ဖန်တီးပါ။",
+        "createFirstVideo": "သင့်ပထမဆုံး AI ဗီဒီယိုကို ဖန်တီးပါ။",
+        "createFirstImage": "သင့်ပထမဆုံး AI ပုံကို ဖန်တီးပါ။"
+      },
+      "stats": {
+        "plan": "အစီအစဉ်",
+        "credits": "ခရက်ဒစ်များ"
+      },
+      "subscribe": {
+        "title": "Pro သို့ အဆင့်မြှင့်ပါ",
+        "subtitle": "အင်္ဂါရပ်အားလုံးကို အကန့်အသတ်မရှိ အသုံးပြုပါ",
+        "button": "ယခုစာရင်းသွင်းပါ"
+      }
     },
     "explore": {
       "title": "ရှာဖွေရန်",

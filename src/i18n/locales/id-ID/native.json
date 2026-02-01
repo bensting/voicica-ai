@@ -86,10 +86,41 @@
       }
     },
     "me": {
+      "guest": "Tamu",
+      "freeVersion": "Versi gratis",
       "myCreations": "Karya Saya",
       "loginToView": "Masuk untuk melihat karya Anda",
       "noCreations": "Belum ada karya",
-      "startCreating": "Mulai membuat sesuatu yang menakjubkan!"
+      "startCreating": "Mulai membuat sesuatu yang menakjubkan!",
+      "goCreate": "Buat sekarang",
+      "pullToRefresh": "Tarik untuk menyegarkan",
+      "releaseToRefresh": "Lepas untuk menyegarkan",
+      "tabs": {
+        "voices": "Suara",
+        "dialogues": "Dialog",
+        "music": "Musik",
+        "cover": "Cover",
+        "video": "Video",
+        "image": "Gambar"
+      },
+      "emptyState": {
+        "noContent": "Belum ada konten.",
+        "createFirstVoice": "Buat suara pertama Anda.",
+        "createFirstDialogue": "Buat dialog AI pertama Anda.",
+        "createFirstMusic": "Buat musik AI pertama Anda.",
+        "createFirstCover": "Buat cover AI pertama Anda.",
+        "createFirstVideo": "Buat video AI pertama Anda.",
+        "createFirstImage": "Buat gambar AI pertama Anda."
+      },
+      "stats": {
+        "plan": "Paket",
+        "credits": "Kredit"
+      },
+      "subscribe": {
+        "title": "Upgrade ke Pro",
+        "subtitle": "Dapatkan akses tak terbatas ke semua fitur",
+        "button": "Berlangganan Sekarang"
+      }
     },
     "explore": {
       "title": "Jelajahi",

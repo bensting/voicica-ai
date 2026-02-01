@@ -86,10 +86,41 @@
       }
     },
     "me": {
+      "guest": "Khách",
+      "freeVersion": "Phiên bản miễn phí",
       "myCreations": "Tác phẩm của tôi",
       "loginToView": "Đăng nhập để xem tác phẩm",
       "noCreations": "Chưa có tác phẩm",
-      "startCreating": "Bắt đầu sáng tạo ngay!"
+      "startCreating": "Bắt đầu sáng tạo ngay!",
+      "goCreate": "Đi sáng tạo",
+      "pullToRefresh": "Kéo xuống để làm mới",
+      "releaseToRefresh": "Thả để làm mới",
+      "tabs": {
+        "voices": "Giọng nói",
+        "dialogues": "Hội thoại",
+        "music": "Âm nhạc",
+        "cover": "Cover",
+        "video": "Video",
+        "image": "Hình ảnh"
+      },
+      "emptyState": {
+        "noContent": "Chưa có nội dung.",
+        "createFirstVoice": "Tạo giọng nói đầu tiên của bạn.",
+        "createFirstDialogue": "Tạo hội thoại AI đầu tiên của bạn.",
+        "createFirstMusic": "Tạo bài nhạc AI đầu tiên của bạn.",
+        "createFirstCover": "Tạo bản cover AI đầu tiên của bạn.",
+        "createFirstVideo": "Tạo video AI đầu tiên của bạn.",
+        "createFirstImage": "Tạo hình ảnh AI đầu tiên của bạn."
+      },
+      "stats": {
+        "plan": "Gói",
+        "credits": "Credits"
+      },
+      "subscribe": {
+        "title": "Nâng cấp lên Pro",
+        "subtitle": "Truy cập không giới hạn tất cả tính năng",
+        "button": "Đăng ký ngay"
+      }
     },
     "explore": {
       "title": "Khám phá",

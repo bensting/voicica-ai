@@ -86,10 +86,41 @@
       }
     },
     "me": {
+      "guest": "ゲスト",
+      "freeVersion": "無料版",
       "myCreations": "マイ作品",
       "loginToView": "ログインして作品を表示",
       "noCreations": "作品がありません",
-      "startCreating": "素敵な作品を作りましょう！"
+      "startCreating": "素敵な作品を作りましょう！",
+      "goCreate": "作成する",
+      "pullToRefresh": "下にスワイプして更新",
+      "releaseToRefresh": "離して更新",
+      "tabs": {
+        "voices": "音声",
+        "dialogues": "対話",
+        "music": "音楽",
+        "cover": "カバー",
+        "video": "動画",
+        "image": "画像"
+      },
+      "emptyState": {
+        "noContent": "コンテンツがありません。",
+        "createFirstVoice": "最初の音声を作成してください。",
+        "createFirstDialogue": "最初のAI対話を作成してください。",
+        "createFirstMusic": "最初のAI音楽を作成してください。",
+        "createFirstCover": "最初のAIカバーを作成してください。",
+        "createFirstVideo": "最初のAI動画を作成してください。",
+        "createFirstImage": "最初のAI画像を作成してください。"
+      },
+      "stats": {
+        "plan": "プラン",
+        "credits": "クレジット"
+      },
+      "subscribe": {
+        "title": "Proにアップグレード",
+        "subtitle": "すべての機能に無制限アクセス",
+        "button": "今すぐ登録"
+      }
     },
     "explore": {
       "title": "探索",

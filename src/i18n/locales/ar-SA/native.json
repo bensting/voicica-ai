@@ -86,10 +86,41 @@
       }
     },
     "me": {
+      "guest": "زائر",
+      "freeVersion": "النسخة المجانية",
       "myCreations": "إبداعاتي",
       "loginToView": "سجل الدخول لعرض إبداعاتك",
       "noCreations": "لا توجد إبداعات بعد",
-      "startCreating": "ابدأ في إنشاء شيء مذهل!"
+      "startCreating": "ابدأ في إنشاء شيء مذهل!",
+      "goCreate": "ابدأ الإنشاء",
+      "pullToRefresh": "اسحب للتحديث",
+      "releaseToRefresh": "اترك للتحديث",
+      "tabs": {
+        "voices": "الأصوات",
+        "dialogues": "الحوارات",
+        "music": "الموسيقى",
+        "cover": "كوفر",
+        "video": "فيديو",
+        "image": "صورة"
+      },
+      "emptyState": {
+        "noContent": "لا يوجد محتوى بعد.",
+        "createFirstVoice": "أنشئ صوتك الأول.",
+        "createFirstDialogue": "أنشئ حوارك الأول بالذكاء الاصطناعي.",
+        "createFirstMusic": "أنشئ موسيقاك الأولى بالذكاء الاصطناعي.",
+        "createFirstCover": "أنشئ كوفرك الأول بالذكاء الاصطناعي.",
+        "createFirstVideo": "أنشئ فيديوك الأول بالذكاء الاصطناعي.",
+        "createFirstImage": "أنشئ صورتك الأولى بالذكاء الاصطناعي."
+      },
+      "stats": {
+        "plan": "الخطة",
+        "credits": "الرصيد"
+      },
+      "subscribe": {
+        "title": "الترقية إلى Pro",
+        "subtitle": "احصل على وصول غير محدود لجميع الميزات",
+        "button": "اشترك الآن"
+      }
     },
     "explore": {
       "title": "استكشف",

@@ -142,6 +142,32 @@
       "success": "Berhasil",
       "learnMore": "Pelajari lebih lanjut"
     },
+    "subscribe": {
+      "tabs": {
+        "subscription": "Langganan",
+        "credits": "Paket Kredit"
+      },
+      "vipBonus": "Jadi VIP: +20% kredit setiap paket",
+      "notSubscribed": "Belum Berlangganan",
+      "mostPopular": "Paling Populer",
+      "creditsPerPeriod": "{{credits}} kredit / {{period}}",
+      "membershipBenefits": "Keuntungan Anggota",
+      "benefits": {
+        "creditsRefresh": "{{credits}} kredit diperbarui setiap bulan",
+        "fastChannel": "Saluran Pembuatan Cepat",
+        "simultaneous": "Pembuatan Bersamaan",
+        "higherQuality": "Kualitas Lebih Tinggi"
+      },
+      "creditPackInfo": {
+        "validity": "Masa Berlaku Paket Kredit: Seumur Hidup",
+        "terms": "Ketentuan Langganan: Pembayaran dibebankan ke akun Anda saat konfirmasi. Langganan diperpanjang otomatis dengan harga asli, kecuali dibatalkan setidaknya 24 jam sebelum periode saat ini berakhir. Kelola langganan dan perpanjangan otomatis di Pengaturan Akun."
+      },
+      "termsOfUse": "Ketentuan Penggunaan",
+      "privacyPolicy": "Kebijakan Privasi",
+      "subscribeNow": "Berlangganan Sekarang",
+      "buyNow": "Beli Sekarang",
+      "processing": "Memproses..."
+    },
     "createVoice": {
       "enterText": "Masukkan teks",
       "placeholder": "Ketik atau tempel teks di sini...",

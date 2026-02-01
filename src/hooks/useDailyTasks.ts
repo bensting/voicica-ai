@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback, useRef } from 'react';
+import { usePathname } from 'next/navigation';
 import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 import {
   getDailyTasksStatus,
@@ -12,6 +13,18 @@ import {
 import { getDailyTasksConfig, type DailyTasksBaseConfig } from '@/config/appConfig';
 import { useRewardedAd } from './useRewardedAd';
 import { Capacitor } from '@capacitor/core';
+
+/**
+ * 检测是否为 Native 应用环境
+ * 1. Capacitor 原生平台检测
+ * 2. URL 路径是否以 /native 开头（用于浏览器中测试 native 路由）
+ */
+function useIsNativeApp(): boolean {
+  const pathname = usePathname();
+  const isCapacitorNative = Capacitor.isNativePlatform();
+  const isNativeRoute = pathname?.startsWith('/native');
+  return isCapacitorNative || isNativeRoute;
+}
 
 // 弹窗上次显示时间存储 key
 const POPUP_LAST_SHOWN_KEY = 'daily_tasks_popup_last_shown';
@@ -80,11 +93,17 @@ export function useDailyTasks(): UseDailyTasksReturn {
   const { user, loading: authLoading } = useFirebaseAuth();
   // 签到和观看视频都使用同一个激励视频广告，共享缓存，加载更快
   const { showRewardedAd, isReady: isAdReady } = useRewardedAd();
-  const isNative = Capacitor.isNativePlatform();
+  // 使用增强的 Native 检测（包括 Capacitor 和 /native 路由）
+  const isNative = useIsNativeApp();
   const [status, setStatus] = useState<DailyTasksStatus | null>(null);
   // 直接从客户端同步获取配置，无需 Server Action 网络请求
   // Native App 和 Studio Web 使用各自独立的配置
-  const [config] = useState<DailyTasksBaseConfig | null>(() => getDailyTasksConfig(isNative));
+  const [config, setConfig] = useState<DailyTasksBaseConfig | null>(null);
+
+  // 根据 isNative 更新配置
+  useEffect(() => {
+    setConfig(getDailyTasksConfig(isNative));
+  }, [isNative]);
   const [loading, setLoading] = useState(true);
   const [claiming, setClaiming] = useState(false);
   const [error, setError] = useState<string | null>(null);

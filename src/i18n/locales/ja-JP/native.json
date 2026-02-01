@@ -142,6 +142,32 @@
       "success": "成功",
       "learnMore": "もっと見る"
     },
+    "subscribe": {
+      "tabs": {
+        "subscription": "サブスクリプション",
+        "credits": "クレジットパック"
+      },
+      "vipBonus": "VIPになる：全パック +20% クレジット",
+      "notSubscribed": "未登録",
+      "mostPopular": "最も人気",
+      "creditsPerPeriod": "{{credits}} クレジット / {{period}}",
+      "membershipBenefits": "メンバー特典",
+      "benefits": {
+        "creditsRefresh": "毎月 {{credits}} クレジット更新",
+        "fastChannel": "高速生成チャンネル",
+        "simultaneous": "同時生成",
+        "higherQuality": "より高品質"
+      },
+      "creditPackInfo": {
+        "validity": "クレジットパック有効期限：永久",
+        "terms": "サブスクリプション規約：確認時にアカウントに課金されます。現在の期間終了の24時間前までにキャンセルしない限り、元の価格で自動更新されます。アカウント設定でサブスクリプションと自動更新を管理できます。"
+      },
+      "termsOfUse": "利用規約",
+      "privacyPolicy": "プライバシーポリシー",
+      "subscribeNow": "今すぐ登録",
+      "buyNow": "今すぐ購入",
+      "processing": "処理中..."
+    },
     "createVoice": {
       "enterText": "テキストを入力",
       "placeholder": "テキストを入力または貼り付け...",

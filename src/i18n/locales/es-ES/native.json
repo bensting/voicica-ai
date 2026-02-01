@@ -142,6 +142,32 @@
       "success": "Éxito",
       "learnMore": "Más información"
     },
+    "subscribe": {
+      "tabs": {
+        "subscription": "Suscripción",
+        "credits": "Paquetes de Créditos"
+      },
+      "vipBonus": "Hazte VIP: +20% créditos en cada paquete",
+      "notSubscribed": "No Suscrito",
+      "mostPopular": "Más Popular",
+      "creditsPerPeriod": "{{credits}} créditos / {{period}}",
+      "membershipBenefits": "Beneficios de Membresía",
+      "benefits": {
+        "creditsRefresh": "{{credits}} créditos se renuevan mensualmente",
+        "fastChannel": "Canal de Generación Rápida",
+        "simultaneous": "Generaciones Simultáneas",
+        "higherQuality": "Mayor Calidad"
+      },
+      "creditPackInfo": {
+        "validity": "Período de Validez del Paquete de Créditos: De por vida",
+        "terms": "Términos de Suscripción: El pago se carga a tu cuenta al confirmar. La suscripción se renueva automáticamente al precio original, a menos que se cancele al menos 24 horas antes del final del período actual. Gestiona tu suscripción y renovación automática en Configuración de Cuenta."
+      },
+      "termsOfUse": "Términos de Uso",
+      "privacyPolicy": "Política de Privacidad",
+      "subscribeNow": "Suscribirse Ahora",
+      "buyNow": "Comprar Ahora",
+      "processing": "Procesando..."
+    },
     "createVoice": {
       "enterText": "Ingresa tu texto",
       "placeholder": "Escribe o pega tu texto aquí...",

@@ -142,6 +142,32 @@
       "success": "نجاح",
       "learnMore": "اعرف المزيد"
     },
+    "subscribe": {
+      "tabs": {
+        "subscription": "الاشتراك",
+        "credits": "حزم الرصيد"
+      },
+      "vipBonus": "كن VIP: +20% رصيد على كل حزمة",
+      "notSubscribed": "غير مشترك",
+      "mostPopular": "الأكثر شعبية",
+      "creditsPerPeriod": "{{credits}} رصيد / {{period}}",
+      "membershipBenefits": "مزايا العضوية",
+      "benefits": {
+        "creditsRefresh": "تجديد {{credits}} رصيد شهرياً",
+        "fastChannel": "قناة إنشاء سريعة",
+        "simultaneous": "إنشاء متزامن",
+        "higherQuality": "جودة أعلى"
+      },
+      "creditPackInfo": {
+        "validity": "فترة صلاحية حزمة الرصيد: مدى الحياة",
+        "terms": "شروط الاشتراك: يتم خصم المبلغ من حسابك عند التأكيد. يتجدد الاشتراك تلقائياً بالسعر الأصلي، ما لم يتم الإلغاء قبل 24 ساعة على الأقل من نهاية الفترة الحالية. إدارة اشتراكك والتجديد التلقائي في إعدادات الحساب."
+      },
+      "termsOfUse": "شروط الاستخدام",
+      "privacyPolicy": "سياسة الخصوصية",
+      "subscribeNow": "اشترك الآن",
+      "buyNow": "اشترِ الآن",
+      "processing": "جارٍ المعالجة..."
+    },
     "createVoice": {
       "enterText": "أدخل النص",
       "placeholder": "اكتب أو الصق النص هنا...",

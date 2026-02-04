@@ -9,6 +9,8 @@ import GradientButton from '@/components/native/common/GradientButton';
 import CreditsIcon from '@/components/native/common/CreditsIcon';
 import CreditsInfoBar from '@/components/native/common/CreditsInfoBar';
 import LoginModal from '@/components/native/LoginModal';
+import InsufficientCreditsModal from '@/components/native/common/InsufficientCreditsModal';
+import NativeDailyTasksModal from '@/components/native/NativeDailyTasksModal';
 import {
   voiceCategories,
   formatUsesCount,
@@ -22,6 +24,7 @@ import {
   type RvcVoiceModel,
 } from '@/actions/cover';
 import { sendLocalNotification } from '@/lib/notifications';
+import { checkCreditsBeforeGenerate } from '@/lib/credits-check';
 
 // 图标组件
 const BackIcon = () => (
@@ -111,6 +114,9 @@ export default function NativeCoverPage() {
   const { credits } = useCredits();
 
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const [isInsufficientCreditsModalOpen, setIsInsufficientCreditsModalOpen] = useState(false);
+  const [isDailyTasksModalOpen, setIsDailyTasksModalOpen] = useState(false);
+  const [insufficientCreditsInfo, setInsufficientCreditsInfo] = useState<{ required: number; current: number } | null>(null);
   const [isGeneratingModalOpen, setIsGeneratingModalOpen] = useState(false);
   const [generatingStatus, setGeneratingStatus] = useState<'generating' | 'success' | 'error'>('generating');
   const [generatingError, setGeneratingError] = useState<string | null>(null);
@@ -314,6 +320,17 @@ export default function NativeCoverPage() {
       setIsLoginModalOpen(true);
       return;
     }
+
+    // 检查积分是否足够
+    const hasEnoughCredits = checkCreditsBeforeGenerate({
+      currentCredits: credits,
+      requiredCredits: COVER_CREDITS,
+      onInsufficientCredits: () => {
+        setInsufficientCreditsInfo({ required: COVER_CREDITS, current: credits });
+        setIsInsufficientCreditsModalOpen(true);
+      },
+    });
+    if (!hasEnoughCredits) return;
 
     // 打开生成中弹窗
     console.log('🎤 [handleGenerate] 打开生成中弹窗');
@@ -717,6 +734,24 @@ export default function NativeCoverPage() {
         isOpen={isLoginModalOpen}
         onClose={() => setIsLoginModalOpen(false)}
         onLoginSuccess={() => setIsLoginModalOpen(false)}
+      />
+
+      {/* Insufficient Credits Modal */}
+      <InsufficientCreditsModal
+        isOpen={isInsufficientCreditsModalOpen}
+        onClose={() => setIsInsufficientCreditsModalOpen(false)}
+        onGetFreeCredits={() => {
+          setIsInsufficientCreditsModalOpen(false);
+          setIsDailyTasksModalOpen(true);
+        }}
+        requiredCredits={insufficientCreditsInfo?.required}
+        currentCredits={insufficientCreditsInfo?.current}
+      />
+
+      {/* Daily Tasks Modal */}
+      <NativeDailyTasksModal
+        isOpen={isDailyTasksModalOpen}
+        onClose={() => setIsDailyTasksModalOpen(false)}
       />
 
       {/* Parameters Bottom Sheet */}

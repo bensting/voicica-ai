@@ -168,6 +168,15 @@
       "buyNow": "Comprar Agora",
       "processing": "Processando..."
     },
+    "insufficientCredits": {
+      "title": "Créditos Insuficientes",
+      "subtitle": "Você precisa de mais créditos para continuar",
+      "subtitleWithAmount": "Necessário: {{required}} créditos, Atual: {{current}} créditos",
+      "getFreeCredits": "Obter Créditos Grátis",
+      "getFreeCreditsDesc": "Assista anúncios para ganhar créditos grátis",
+      "subscribe": "Atualizar para Pro",
+      "subscribeDesc": "Obtenha créditos e recursos ilimitados"
+    },
     "createVoice": {
       "enterText": "Digite seu texto",
       "placeholder": "Digite ou cole seu texto aqui...",

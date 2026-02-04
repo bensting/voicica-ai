@@ -168,6 +168,15 @@
       "buyNow": "Mua ngay",
       "processing": "Đang xử lý..."
     },
+    "insufficientCredits": {
+      "title": "Không đủ credit",
+      "subtitle": "Bạn cần thêm credit để tiếp tục",
+      "subtitleWithAmount": "Cần: {{required}} credit, Hiện có: {{current}} credit",
+      "getFreeCredits": "Nhận credit miễn phí",
+      "getFreeCreditsDesc": "Xem quảng cáo để nhận credit miễn phí",
+      "subscribe": "Nâng cấp lên Pro",
+      "subscribeDesc": "Nhận credit và tính năng không giới hạn"
+    },
     "createVoice": {
       "enterText": "Nhập văn bản",
       "placeholder": "Nhập hoặc dán văn bản tại đây...",

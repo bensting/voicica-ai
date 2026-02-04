@@ -9,6 +9,7 @@ import { getUserOrAnonymous } from '@/lib/auth-firebase';
 import { checkCredits } from '@/lib/credits';
 import { ProductType } from '@/config/productType';
 import { getImageModelById } from '@/config/native/imageModels';
+import { moderateImagePrompt } from '@/lib/moderation';
 
 // KIE API 配置
 const KIE_API_BASE = 'https://api.kie.ai/api/v1';
@@ -63,6 +64,16 @@ export async function createImageTask(
     const creditsCheck = await checkCredits(user_id, model.credits, is_anonymous);
     if (!creditsCheck.hasEnough) {
       return { success: false, error: 'Insufficient credits' };
+    }
+
+    // 内容审核 - 检查提示词是否包含违规内容
+    const moderationResult = await moderateImagePrompt(params.prompt);
+    if (!moderationResult.passed) {
+      console.log(`🚫 [createImageTask] Content moderation failed for user ${user_id}`);
+      return {
+        success: false,
+        error: 'Your prompt contains content that violates our usage policy. Please modify your prompt and try again.',
+      };
     }
 
     // 构建请求参数

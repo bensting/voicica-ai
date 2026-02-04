@@ -27,6 +27,8 @@ import GeneratingModal, { type GeneratingStatus } from '@/components/native/comm
 import NativeVoiceSelectorSheet from '@/components/native/create/voice/VoiceSelectorSheet';
 import VoiceDetailModal from '@/components/native/me/VoiceDetailModal';
 import LoginModal from '@/components/native/LoginModal';
+import InsufficientCreditsModal from '@/components/native/common/InsufficientCreditsModal';
+import NativeDailyTasksModal from '@/components/native/NativeDailyTasksModal';
 import ProviderIcon from '@/components/ui/icons/ProviderIcon';
 import { User, UserRound, Users } from 'lucide-react';
 
@@ -127,6 +129,9 @@ export default function NativeTTSPage() {
   const [activeSettingsTab, setActiveSettingsTab] = useState<'speed' | 'volume' | 'pitch'>('speed');
   const [tempSettings, setTempSettings] = useState(settings);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const [isInsufficientCreditsModalOpen, setIsInsufficientCreditsModalOpen] = useState(false);
+  const [isDailyTasksModalOpen, setIsDailyTasksModalOpen] = useState(false);
+  const [insufficientCreditsInfo, setInsufficientCreditsInfo] = useState<{ required: number; current: number } | null>(null);
   const [text, setText] = useState('');
   const [selectedVoice, setSelectedVoice] = useState<Voice | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
@@ -251,7 +256,10 @@ export default function NativeTTSPage() {
     const hasEnoughCredits = checkCreditsBeforeGenerate({
       currentCredits: credits,
       requiredCredits: estimatedCredits,
-      onInsufficientCredits: () => router.push('/native/subscribe'),
+      onInsufficientCredits: () => {
+        setInsufficientCreditsInfo({ required: estimatedCredits, current: credits });
+        setIsInsufficientCreditsModalOpen(true);
+      },
     });
     if (!hasEnoughCredits) return;
 
@@ -570,6 +578,24 @@ export default function NativeTTSPage() {
         isOpen={isLoginModalOpen}
         onClose={() => setIsLoginModalOpen(false)}
         onLoginSuccess={() => setIsLoginModalOpen(false)}
+      />
+
+      {/* Insufficient Credits Modal */}
+      <InsufficientCreditsModal
+        isOpen={isInsufficientCreditsModalOpen}
+        onClose={() => setIsInsufficientCreditsModalOpen(false)}
+        onGetFreeCredits={() => {
+          setIsInsufficientCreditsModalOpen(false);
+          setIsDailyTasksModalOpen(true);
+        }}
+        requiredCredits={insufficientCreditsInfo?.required}
+        currentCredits={insufficientCreditsInfo?.current}
+      />
+
+      {/* Daily Tasks Modal */}
+      <NativeDailyTasksModal
+        isOpen={isDailyTasksModalOpen}
+        onClose={() => setIsDailyTasksModalOpen(false)}
       />
 
       {/* Text Assistant Modal */}

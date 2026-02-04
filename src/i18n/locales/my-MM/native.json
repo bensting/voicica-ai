@@ -168,6 +168,15 @@
       "buyNow": "ယခုဝယ်ပါ",
       "processing": "လုပ်ဆောင်နေသည်..."
     },
+    "insufficientCredits": {
+      "title": "ခရက်ဒစ် မလုံလောက်ပါ",
+      "subtitle": "ဆက်လက်ဆောင်ရွက်ရန် ခရက်ဒစ်ပိုလိုအပ်ပါသည်",
+      "subtitleWithAmount": "လိုအပ်သည်: {{required}} ခရက်ဒစ်၊ လက်ရှိ: {{current}} ခရက်ဒစ်",
+      "getFreeCredits": "အခမဲ့ခရက်ဒစ်ရယူပါ",
+      "getFreeCreditsDesc": "ကြော်ငြာကြည့်ပြီး အခမဲ့ခရက်ဒစ်ရယူပါ",
+      "subscribe": "Pro သို့ အဆင့်မြှင့်ပါ",
+      "subscribeDesc": "ခရက်ဒစ်နှင့် အင်္ဂါရပ်များ အကန့်အသတ်မရှိရယူပါ"
+    },
     "createVoice": {
       "enterText": "စာသားထည့်ပါ",
       "placeholder": "ဒီမှာ စာသားရိုက်ပါ သို့မဟုတ် ကူးထည့်ပါ...",

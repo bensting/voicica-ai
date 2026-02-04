@@ -14,6 +14,8 @@ import AssistantInput from '@/components/native/common/AssistantInput';
 import AssistantModal from '@/components/native/common/AssistantModal';
 import CrownIcon from '@/components/native/common/CrownIcon';
 import LoginModal from '@/components/native/LoginModal';
+import InsufficientCreditsModal from '@/components/native/common/InsufficientCreditsModal';
+import NativeDailyTasksModal from '@/components/native/NativeDailyTasksModal';
 import {
   musicModelsConfig,
   defaultMusicModelId,
@@ -94,6 +96,9 @@ export default function NativeMusicPage() {
   const [adWatched, setAdWatched] = useState(false);
 
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const [isInsufficientCreditsModalOpen, setIsInsufficientCreditsModalOpen] = useState(false);
+  const [isDailyTasksModalOpen, setIsDailyTasksModalOpen] = useState(false);
+  const [insufficientCreditsInfo, setInsufficientCreditsInfo] = useState<{ required: number; current: number } | null>(null);
   const [isModelSelectorOpen, setIsModelSelectorOpen] = useState(false);
   const [isParameterSheetOpen, setIsParameterSheetOpen] = useState(false);
   const [isLyricsAssistantOpen, setIsLyricsAssistantOpen] = useState(false);
@@ -353,7 +358,10 @@ export default function NativeMusicPage() {
     const hasEnoughCredits = checkCreditsBeforeGenerate({
       currentCredits: credits,
       requiredCredits,
-      onInsufficientCredits: () => router.push('/native/subscribe'),
+      onInsufficientCredits: () => {
+        setInsufficientCreditsInfo({ required: requiredCredits, current: credits });
+        setIsInsufficientCreditsModalOpen(true);
+      },
     });
     if (!hasEnoughCredits) return;
 
@@ -812,6 +820,24 @@ export default function NativeMusicPage() {
         isOpen={isLoginModalOpen}
         onClose={() => setIsLoginModalOpen(false)}
         onLoginSuccess={() => setIsLoginModalOpen(false)}
+      />
+
+      {/* Insufficient Credits Modal */}
+      <InsufficientCreditsModal
+        isOpen={isInsufficientCreditsModalOpen}
+        onClose={() => setIsInsufficientCreditsModalOpen(false)}
+        onGetFreeCredits={() => {
+          setIsInsufficientCreditsModalOpen(false);
+          setIsDailyTasksModalOpen(true);
+        }}
+        requiredCredits={insufficientCreditsInfo?.required}
+        currentCredits={insufficientCreditsInfo?.current}
+      />
+
+      {/* Daily Tasks Modal */}
+      <NativeDailyTasksModal
+        isOpen={isDailyTasksModalOpen}
+        onClose={() => setIsDailyTasksModalOpen(false)}
       />
 
       {/* Model Selector Sheet */}

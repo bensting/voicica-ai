@@ -202,6 +202,36 @@
       "pitchConsistent": "适中",
       "pitchBright": "明亮",
       "pitchCrisp": "清脆"
+    },
+    "createImage": {
+      "title": "AI 图像",
+      "prompt": "提示词",
+      "promptPlaceholder": "请输入生成提示词。例如：阳光下，微风轻轻吹动花朵，带有电影感。",
+      "generatePrompt": "生成提示词",
+      "generatePromptTitle": "生成提示词",
+      "generatePromptDesc": "描述您想创建的内容，AI 将为您生成详细的提示词。",
+      "generatePromptPlaceholder": "例如：一只可爱的猫咪坐在彩虹上",
+      "generate": "生成",
+      "generating": "生成中...",
+      "imageGuidance": "参考图片",
+      "optional": "（可选）",
+      "parameters": "参数",
+      "parameterSettings": "参数设置",
+      "visibility": "可见性",
+      "public": "公开",
+      "private": "私密",
+      "aspectRatio": "宽高比",
+      "quality": "质量",
+      "selectModel": "选择模型",
+      "credits": "积分",
+      "createImage": "创建图像",
+      "creating": "创建中...",
+      "imageGeneration": "图像生成",
+      "errorSelectImage": "请选择一个图片文件",
+      "errorImageSize": "图片大小必须小于 10MB",
+      "detailPrompt": "提示词",
+      "detailCreditsUsed": "消耗积分",
+      "deleteConfirmTitle": "删除此图片？"
     }
   }
 }

@@ -72,7 +72,7 @@ export const imageModels: ImageModel[] = [
 ];
 
 // 默认模型 ID
-export const DEFAULT_IMAGE_MODEL_ID = 'seedream/4.5-text-to-image';
+export const DEFAULT_IMAGE_MODEL_ID = 'z-image';
 
 /**
  * 获取模型配置

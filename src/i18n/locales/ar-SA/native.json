@@ -202,6 +202,36 @@
       "pitchConsistent": "عادي",
       "pitchBright": "مشرق",
       "pitchCrisp": "واضح"
+    },
+    "createImage": {
+      "title": "صور AI",
+      "prompt": "الوصف",
+      "promptPlaceholder": "يرجى إدخال وصف للإنشاء. مثال: تحت أشعة الشمس، نسيم لطيف يهز الزهور برفق، بإحساس سينمائي.",
+      "generatePrompt": "إنشاء وصف",
+      "generatePromptTitle": "إنشاء وصف",
+      "generatePromptDesc": "صف ما تريد إنشاءه، وسيقوم AI بإنشاء وصف مفصل لك.",
+      "generatePromptPlaceholder": "مثال: قطة لطيفة تجلس على قوس قزح",
+      "generate": "إنشاء",
+      "generating": "جارٍ الإنشاء...",
+      "imageGuidance": "صورة مرجعية",
+      "optional": "(اختياري)",
+      "parameters": "المعلمات",
+      "parameterSettings": "إعدادات المعلمات",
+      "visibility": "الرؤية",
+      "public": "عام",
+      "private": "خاص",
+      "aspectRatio": "نسبة العرض",
+      "quality": "الجودة",
+      "selectModel": "اختر النموذج",
+      "credits": "رصيد",
+      "createImage": "إنشاء صورة",
+      "creating": "جارٍ الإنشاء...",
+      "imageGeneration": "إنشاء الصور",
+      "errorSelectImage": "يرجى اختيار ملف صورة",
+      "errorImageSize": "حجم الصورة يجب أن يكون أقل من 10 ميجابايت",
+      "detailPrompt": "الوصف",
+      "detailCreditsUsed": "الرصيد المستخدم",
+      "deleteConfirmTitle": "حذف هذه الصورة؟"
     }
   }
 }

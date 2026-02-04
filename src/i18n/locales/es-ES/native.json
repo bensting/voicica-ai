@@ -202,6 +202,36 @@
       "pitchConsistent": "Normal",
       "pitchBright": "Brillante",
       "pitchCrisp": "Nítido"
+    },
+    "createImage": {
+      "title": "IA Imagen",
+      "prompt": "Prompt",
+      "promptPlaceholder": "Por favor, ingresa el prompt para generar. Ejemplo: Bajo la luz del sol, una brisa mueve suavemente las flores, con una sensación cinematográfica.",
+      "generatePrompt": "Generar Prompt",
+      "generatePromptTitle": "Generar Prompt",
+      "generatePromptDesc": "Describe lo que quieres crear, y la IA generará un prompt detallado para ti.",
+      "generatePromptPlaceholder": "Ej: Un lindo gato sentado en un arcoíris",
+      "generate": "Generar",
+      "generating": "Generando...",
+      "imageGuidance": "Imagen de Referencia",
+      "optional": "(opcional)",
+      "parameters": "Parámetros",
+      "parameterSettings": "Configuración de Parámetros",
+      "visibility": "Visibilidad",
+      "public": "Público",
+      "private": "Privado",
+      "aspectRatio": "Relación de Aspecto",
+      "quality": "Calidad",
+      "selectModel": "Seleccionar Modelo",
+      "credits": "créditos",
+      "createImage": "Crear Imagen",
+      "creating": "Creando...",
+      "imageGeneration": "Generación de imagen",
+      "errorSelectImage": "Por favor, selecciona un archivo de imagen",
+      "errorImageSize": "El tamaño de la imagen debe ser menor a 10MB",
+      "detailPrompt": "Prompt",
+      "detailCreditsUsed": "Créditos usados",
+      "deleteConfirmTitle": "¿Eliminar esta imagen?"
     }
   }
 }

@@ -202,6 +202,36 @@
       "pitchConsistent": "ปกติ",
       "pitchBright": "สดใส",
       "pitchCrisp": "คมชัด"
+    },
+    "createImage": {
+      "title": "AI รูปภาพ",
+      "prompt": "พรอมต์",
+      "promptPlaceholder": "กรุณาใส่พรอมต์สำหรับสร้าง เช่น: ใต้แสงแดด สายลมพัดดอกไม้เบาๆ บรรยากาศแบบภาพยนตร์",
+      "generatePrompt": "สร้างพรอมต์",
+      "generatePromptTitle": "สร้างพรอมต์",
+      "generatePromptDesc": "อธิบายสิ่งที่คุณต้องการสร้าง และ AI จะสร้างพรอมต์โดยละเอียดให้คุณ",
+      "generatePromptPlaceholder": "เช่น: แมวน่ารักนั่งบนสายรุ้ง",
+      "generate": "สร้าง",
+      "generating": "กำลังสร้าง...",
+      "imageGuidance": "รูปภาพอ้างอิง",
+      "optional": "(ไม่บังคับ)",
+      "parameters": "พารามิเตอร์",
+      "parameterSettings": "ตั้งค่าพารามิเตอร์",
+      "visibility": "การมองเห็น",
+      "public": "สาธารณะ",
+      "private": "ส่วนตัว",
+      "aspectRatio": "อัตราส่วนภาพ",
+      "quality": "คุณภาพ",
+      "selectModel": "เลือกโมเดล",
+      "credits": "เครดิต",
+      "createImage": "สร้างรูปภาพ",
+      "creating": "กำลังสร้าง...",
+      "imageGeneration": "การสร้างรูปภาพ",
+      "errorSelectImage": "กรุณาเลือกไฟล์รูปภาพ",
+      "errorImageSize": "ขนาดรูปภาพต้องน้อยกว่า 10MB",
+      "detailPrompt": "พรอมต์",
+      "detailCreditsUsed": "เครดิตที่ใช้",
+      "deleteConfirmTitle": "ลบรูปภาพนี้?"
     }
   }
 }

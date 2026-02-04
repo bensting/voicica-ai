@@ -202,6 +202,36 @@
       "pitchConsistent": "適中",
       "pitchBright": "明亮",
       "pitchCrisp": "清脆"
+    },
+    "createImage": {
+      "title": "AI 圖像",
+      "prompt": "提示詞",
+      "promptPlaceholder": "請輸入生成提示詞。例如：陽光下，微風輕輕吹動花朵，帶有電影感。",
+      "generatePrompt": "生成提示詞",
+      "generatePromptTitle": "生成提示詞",
+      "generatePromptDesc": "描述您想創建的內容，AI 將為您生成詳細的提示詞。",
+      "generatePromptPlaceholder": "例如：一隻可愛的貓咪坐在彩虹上",
+      "generate": "生成",
+      "generating": "生成中...",
+      "imageGuidance": "參考圖片",
+      "optional": "（可選）",
+      "parameters": "參數",
+      "parameterSettings": "參數設定",
+      "visibility": "可見性",
+      "public": "公開",
+      "private": "私密",
+      "aspectRatio": "寬高比",
+      "quality": "品質",
+      "selectModel": "選擇模型",
+      "credits": "積分",
+      "createImage": "創建圖像",
+      "creating": "創建中...",
+      "imageGeneration": "圖像生成",
+      "errorSelectImage": "請選擇一個圖片檔案",
+      "errorImageSize": "圖片大小必須小於 10MB",
+      "detailPrompt": "提示詞",
+      "detailCreditsUsed": "消耗積分",
+      "deleteConfirmTitle": "刪除此圖片？"
     }
   }
 }

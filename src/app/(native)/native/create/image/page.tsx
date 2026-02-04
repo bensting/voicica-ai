@@ -161,7 +161,7 @@ export default function NativeImagePage() {
       const savedModel = imageModels.find(m => m.id === savedModelId);
       if (savedModel) return savedModel;
     }
-    // 默认使用 Seedream 4.5
+    // 默认使用 Z-Image
     return imageModels.find(m => m.id === DEFAULT_IMAGE_MODEL_ID) || imageModels[0];
   });
   const [guidanceImage, setGuidanceImage] = useState<File | null>(null);

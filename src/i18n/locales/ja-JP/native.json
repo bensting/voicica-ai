@@ -168,6 +168,15 @@
       "buyNow": "今すぐ購入",
       "processing": "処理中..."
     },
+    "insufficientCredits": {
+      "title": "クレジット不足",
+      "subtitle": "続行するにはクレジットが必要です",
+      "subtitleWithAmount": "必要: {{required}} クレジット、現在: {{current}} クレジット",
+      "getFreeCredits": "無料クレジットを獲得",
+      "getFreeCreditsDesc": "広告を見て無料クレジットを獲得",
+      "subscribe": "Proにアップグレード",
+      "subscribeDesc": "無制限のクレジットと機能を獲得"
+    },
     "createVoice": {
       "enterText": "テキストを入力",
       "placeholder": "テキストを入力または貼り付け...",

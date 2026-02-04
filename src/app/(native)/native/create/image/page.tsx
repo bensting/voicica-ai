@@ -11,6 +11,8 @@ import GradientButton from '@/components/native/common/GradientButton';
 import CreditsIcon from '@/components/native/common/CreditsIcon';
 import CreditsInfoBar from '@/components/native/common/CreditsInfoBar';
 import LoginModal from '@/components/native/LoginModal';
+import InsufficientCreditsModal from '@/components/native/common/InsufficientCreditsModal';
+import NativeDailyTasksModal from '@/components/native/NativeDailyTasksModal';
 import { createImageTask, getImageTaskStatus, getImageRecordByTaskId, deleteImageRecord, type ImageRecord } from '@/actions/image';
 import { imageModels, type ImageModel, DEFAULT_IMAGE_MODEL_ID } from '@/config/native/imageModels';
 import { adConfig } from '@/config/native/adConfig';
@@ -121,6 +123,9 @@ export default function NativeImagePage() {
 
   // UI 状态
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const [isInsufficientCreditsModalOpen, setIsInsufficientCreditsModalOpen] = useState(false);
+  const [isDailyTasksModalOpen, setIsDailyTasksModalOpen] = useState(false);
+  const [insufficientCreditsInfo, setInsufficientCreditsInfo] = useState<{ required: number; current: number } | null>(null);
   const [isModelSheetOpen, setIsModelSheetOpen] = useState(false);
   const [isParameterSheetOpen, setIsParameterSheetOpen] = useState(false);
   const [isGeneratingModalOpen, setIsGeneratingModalOpen] = useState(false);
@@ -338,7 +343,10 @@ export default function NativeImagePage() {
     const hasEnoughCredits = checkCreditsBeforeGenerate({
       currentCredits: credits,
       requiredCredits: selectedModel.credits,
-      onInsufficientCredits: () => router.push('/native/subscribe'),
+      onInsufficientCredits: () => {
+        setInsufficientCreditsInfo({ required: selectedModel.credits, current: credits });
+        setIsInsufficientCreditsModalOpen(true);
+      },
     });
     if (!hasEnoughCredits) return;
 
@@ -626,6 +634,24 @@ export default function NativeImagePage() {
         isOpen={isLoginModalOpen}
         onClose={() => setIsLoginModalOpen(false)}
         onLoginSuccess={() => setIsLoginModalOpen(false)}
+      />
+
+      {/* Insufficient Credits Modal */}
+      <InsufficientCreditsModal
+        isOpen={isInsufficientCreditsModalOpen}
+        onClose={() => setIsInsufficientCreditsModalOpen(false)}
+        onGetFreeCredits={() => {
+          setIsInsufficientCreditsModalOpen(false);
+          setIsDailyTasksModalOpen(true);
+        }}
+        requiredCredits={insufficientCreditsInfo?.required}
+        currentCredits={insufficientCreditsInfo?.current}
+      />
+
+      {/* Daily Tasks Modal */}
+      <NativeDailyTasksModal
+        isOpen={isDailyTasksModalOpen}
+        onClose={() => setIsDailyTasksModalOpen(false)}
       />
 
       {/* Generate Prompt Sheet */}

@@ -11,6 +11,8 @@ import CreditsIcon from '@/components/native/common/CreditsIcon';
 import CreditsInfoBar from '@/components/native/common/CreditsInfoBar';
 import CrownIcon from '@/components/native/common/CrownIcon';
 import LoginModal from '@/components/native/LoginModal';
+import InsufficientCreditsModal from '@/components/native/common/InsufficientCreditsModal';
+import NativeDailyTasksModal from '@/components/native/NativeDailyTasksModal';
 import { calculateDialogueCost } from '@/config/creditsCost';
 import { getElevenlabsDialogueVoices } from '@/actions/admin/elevenlabs-dialogue-voices';
 import { createDialogueTask, getDialogueTaskStatus } from '@/actions/dialogue';
@@ -105,6 +107,9 @@ export default function NativeDialoguePage() {
   const { credits, refreshCredits } = useCredits();
 
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const [isInsufficientCreditsModalOpen, setIsInsufficientCreditsModalOpen] = useState(false);
+  const [isDailyTasksModalOpen, setIsDailyTasksModalOpen] = useState(false);
+  const [insufficientCreditsInfo, setInsufficientCreditsInfo] = useState<{ required: number; current: number } | null>(null);
   const [dialogues, setDialogues] = useState<DialogueSegment[]>([
     { id: '1', text: '', voice: 'Liam' },
   ]);
@@ -684,12 +689,13 @@ export default function NativeDialoguePage() {
                     <button
                       onClick={() => {
                         handleCloseGeneratingModal();
-                        router.push('/native/subscribe');
+                        setInsufficientCreditsInfo({ required: estimatedCredits, current: credits });
+                        setIsInsufficientCreditsModalOpen(true);
                       }}
                       className="flex-1 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl text-sm font-medium hover:opacity-90 transition-opacity flex items-center justify-center gap-2"
                     >
                       <CrownIcon className="w-4 h-4" />
-                      Upgrade
+                      Get Credits
                     </button>
                   ) : (
                     <button
@@ -714,6 +720,24 @@ export default function NativeDialoguePage() {
         isOpen={isLoginModalOpen}
         onClose={() => setIsLoginModalOpen(false)}
         onLoginSuccess={() => setIsLoginModalOpen(false)}
+      />
+
+      {/* Insufficient Credits Modal */}
+      <InsufficientCreditsModal
+        isOpen={isInsufficientCreditsModalOpen}
+        onClose={() => setIsInsufficientCreditsModalOpen(false)}
+        onGetFreeCredits={() => {
+          setIsInsufficientCreditsModalOpen(false);
+          setIsDailyTasksModalOpen(true);
+        }}
+        requiredCredits={insufficientCreditsInfo?.required}
+        currentCredits={insufficientCreditsInfo?.current}
+      />
+
+      {/* Daily Tasks Modal */}
+      <NativeDailyTasksModal
+        isOpen={isDailyTasksModalOpen}
+        onClose={() => setIsDailyTasksModalOpen(false)}
       />
     </div>
   );

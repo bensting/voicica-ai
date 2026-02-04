@@ -168,6 +168,15 @@
       "buyNow": "ซื้อเลย",
       "processing": "กำลังดำเนินการ..."
     },
+    "insufficientCredits": {
+      "title": "เครดิตไม่เพียงพอ",
+      "subtitle": "คุณต้องการเครดิตเพิ่มเติมเพื่อดำเนินการต่อ",
+      "subtitleWithAmount": "ต้องการ: {{required}} เครดิต, คงเหลือ: {{current}} เครดิต",
+      "getFreeCredits": "รับเครดิตฟรี",
+      "getFreeCreditsDesc": "ดูโฆษณาเพื่อรับเครดิตฟรี",
+      "subscribe": "อัปเกรดเป็น Pro",
+      "subscribeDesc": "รับเครดิตและฟีเจอร์ไม่จำกัด"
+    },
     "createVoice": {
       "enterText": "ป้อนข้อความ",
       "placeholder": "พิมพ์หรือวางข้อความที่นี่...",

@@ -168,6 +168,15 @@
       "buyNow": "اشترِ الآن",
       "processing": "جارٍ المعالجة..."
     },
+    "insufficientCredits": {
+      "title": "رصيد غير كافٍ",
+      "subtitle": "تحتاج إلى المزيد من الرصيد للمتابعة",
+      "subtitleWithAmount": "المطلوب: {{required}} رصيد، الحالي: {{current}} رصيد",
+      "getFreeCredits": "احصل على رصيد مجاني",
+      "getFreeCreditsDesc": "شاهد الإعلانات للحصول على رصيد مجاني",
+      "subscribe": "الترقية إلى Pro",
+      "subscribeDesc": "احصل على رصيد وميزات غير محدودة"
+    },
     "createVoice": {
       "enterText": "أدخل النص",
       "placeholder": "اكتب أو الصق النص هنا...",

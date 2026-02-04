@@ -2,12 +2,11 @@
  * Credits Check Utility
  * 在生成前检查积分是否足够
  */
-import { showToast } from './native-toast';
 
 interface CheckCreditsOptions {
   currentCredits: number;
   requiredCredits: number;
-  onInsufficientCredits: () => void; // 积分不足时的回调（通常是跳转订阅页）
+  onInsufficientCredits: () => void; // 积分不足时的回调（显示弹窗）
 }
 
 /**
@@ -20,12 +19,7 @@ export function checkCreditsBeforeGenerate({
   onInsufficientCredits,
 }: CheckCreditsOptions): boolean {
   if (currentCredits < requiredCredits) {
-    // 显示 Toast 提示
-    showToast({
-      text: 'Insufficient credits',
-      duration: 'short',
-    });
-    // 执行回调（跳转订阅页）
+    // 执行回调（显示积分不足弹窗）
     onInsufficientCredits();
     return false;
   }

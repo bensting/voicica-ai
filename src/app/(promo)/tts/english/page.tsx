@@ -6,7 +6,7 @@ import { useCallback } from 'react';
 // English language TTS landing page - Mobile-first single page design
 // Free AI Text to Speech Tool
 
-const PLAY_STORE_URL = 'https://play.google.com/store/apps/details?id=ai.voicica.app';
+const PLAY_STORE_URL = 'https://play.google.com/store/apps/details?id=ai.voicica.app&referrer=utm_source%3Dtts_english%26utm_medium%3Dweb%26utm_campaign%3Dlanding_page';
 const WEB_APP_URL = '/studio/tts';
 
 export default function EnglishTTSPage() {

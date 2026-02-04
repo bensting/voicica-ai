@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { useRouter } from 'next/navigation';
 import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 import { useCredits } from '@/contexts/CreditsContext';
 import { useSubscription } from '@/contexts/SubscriptionContext';
@@ -112,7 +111,6 @@ const AspectRatioIcon = ({ ratio }: { ratio: string }) => {
  * Native AI Image 页面
  */
 export default function NativeImagePage() {
-  const router = useRouter();
   const { user } = useFirebaseAuth();
   const { credits, refreshCredits } = useCredits();
   const { isSubscribed } = useSubscription();

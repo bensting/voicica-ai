@@ -168,7 +168,7 @@ export default function NativeImagePage() {
   const [guidanceImageUrl, setGuidanceImageUrl] = useState<string | null>(null);
 
   // 参数状态
-  const [isPublic, setIsPublic] = useState(true);
+  const [isPublic, setIsPublic] = useState(false);
   const [aspectRatio, setAspectRatio] = useState('16:9');
   const [quality, setQuality] = useState('standard'); // Z-Image default
 

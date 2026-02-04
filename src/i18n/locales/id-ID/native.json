@@ -168,6 +168,15 @@
       "buyNow": "Beli Sekarang",
       "processing": "Memproses..."
     },
+    "insufficientCredits": {
+      "title": "Kredit Tidak Cukup",
+      "subtitle": "Anda memerlukan lebih banyak kredit untuk melanjutkan",
+      "subtitleWithAmount": "Diperlukan: {{required}} kredit, Saat ini: {{current}} kredit",
+      "getFreeCredits": "Dapatkan Kredit Gratis",
+      "getFreeCreditsDesc": "Tonton iklan untuk mendapatkan kredit gratis",
+      "subscribe": "Upgrade ke Pro",
+      "subscribeDesc": "Dapatkan kredit dan fitur tak terbatas"
+    },
     "createVoice": {
       "enterText": "Masukkan teks",
       "placeholder": "Ketik atau tempel teks di sini...",

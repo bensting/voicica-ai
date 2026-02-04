@@ -168,6 +168,15 @@
       "buyNow": "立即购买",
       "processing": "处理中..."
     },
+    "insufficientCredits": {
+      "title": "积分不足",
+      "subtitle": "您需要更多积分才能继续",
+      "subtitleWithAmount": "需要：{{required}} 积分，当前：{{current}} 积分",
+      "getFreeCredits": "领取免费积分",
+      "getFreeCreditsDesc": "观看广告赚取免费积分",
+      "subscribe": "升级订阅",
+      "subscribeDesc": "获得无限积分和更多功能"
+    },
     "createVoice": {
       "enterText": "输入文字",
       "placeholder": "在此输入或粘贴文字...",

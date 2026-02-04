@@ -168,6 +168,15 @@
       "buyNow": "Buy Now",
       "processing": "Processing..."
     },
+    "insufficientCredits": {
+      "title": "Insufficient Credits",
+      "subtitle": "You need more credits to continue",
+      "subtitleWithAmount": "Required: {{required}} credits, Current: {{current}} credits",
+      "getFreeCredits": "Get Free Credits",
+      "getFreeCreditsDesc": "Watch ads to earn free credits",
+      "subscribe": "Upgrade to Pro",
+      "subscribeDesc": "Get unlimited credits & features"
+    },
     "createVoice": {
       "enterText": "Enter your text",
       "placeholder": "Type or paste your text here...",

@@ -202,6 +202,36 @@
       "pitchConsistent": "Bình thường",
       "pitchBright": "Sáng",
       "pitchCrisp": "Trong trẻo"
+    },
+    "createImage": {
+      "title": "AI Hình ảnh",
+      "prompt": "Prompt",
+      "promptPlaceholder": "Vui lòng nhập prompt để tạo. Ví dụ: Dưới ánh nắng, gió nhẹ lay động những bông hoa, với cảm giác điện ảnh.",
+      "generatePrompt": "Tạo Prompt",
+      "generatePromptTitle": "Tạo Prompt",
+      "generatePromptDesc": "Mô tả những gì bạn muốn tạo, và AI sẽ tạo prompt chi tiết cho bạn.",
+      "generatePromptPlaceholder": "Ví dụ: Một chú mèo dễ thương ngồi trên cầu vồng",
+      "generate": "Tạo",
+      "generating": "Đang tạo...",
+      "imageGuidance": "Ảnh tham khảo",
+      "optional": "(tùy chọn)",
+      "parameters": "Tham số",
+      "parameterSettings": "Cài đặt tham số",
+      "visibility": "Hiển thị",
+      "public": "Công khai",
+      "private": "Riêng tư",
+      "aspectRatio": "Tỷ lệ khung hình",
+      "quality": "Chất lượng",
+      "selectModel": "Chọn mô hình",
+      "credits": "credit",
+      "createImage": "Tạo hình ảnh",
+      "creating": "Đang tạo...",
+      "imageGeneration": "Tạo hình ảnh",
+      "errorSelectImage": "Vui lòng chọn một tệp hình ảnh",
+      "errorImageSize": "Kích thước hình ảnh phải nhỏ hơn 10MB",
+      "detailPrompt": "Prompt",
+      "detailCreditsUsed": "Credit đã dùng",
+      "deleteConfirmTitle": "Xóa hình ảnh này?"
     }
   }
 }

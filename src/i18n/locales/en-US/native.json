@@ -202,6 +202,36 @@
       "pitchConsistent": "Consistent",
       "pitchBright": "Bright",
       "pitchCrisp": "Crisp"
+    },
+    "createImage": {
+      "title": "AI Image",
+      "prompt": "Prompt",
+      "promptPlaceholder": "Please enter the prompt for generation. For example: Under the sunlight, a breeze gently sways the flowers, with a cinematic feel.",
+      "generatePrompt": "Generate Prompt",
+      "generatePromptTitle": "Generate Prompt",
+      "generatePromptDesc": "Describe what you want to create, and AI will generate a detailed prompt for you.",
+      "generatePromptPlaceholder": "e.g., A cute cat sitting on a rainbow",
+      "generate": "Generate",
+      "generating": "Generating...",
+      "imageGuidance": "Image Guidance",
+      "optional": "(optional)",
+      "parameters": "Parameters",
+      "parameterSettings": "Parameter Settings",
+      "visibility": "Visibility",
+      "public": "Public",
+      "private": "Private",
+      "aspectRatio": "Aspect Ratio",
+      "quality": "Quality",
+      "selectModel": "Select Model",
+      "credits": "credits",
+      "createImage": "Create Image",
+      "creating": "Creating...",
+      "imageGeneration": "Image generation",
+      "errorSelectImage": "Please select an image file",
+      "errorImageSize": "Image size must be less than 10MB",
+      "detailPrompt": "Prompt",
+      "detailCreditsUsed": "Credits used",
+      "deleteConfirmTitle": "Delete this image?"
     }
   }
 }

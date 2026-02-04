@@ -202,6 +202,36 @@
       "pitchConsistent": "Normal",
       "pitchBright": "Cerah",
       "pitchCrisp": "Jernih"
+    },
+    "createImage": {
+      "title": "AI Gambar",
+      "prompt": "Prompt",
+      "promptPlaceholder": "Silakan masukkan prompt untuk membuat. Contoh: Di bawah sinar matahari, angin sepoi-sepoi menggoyangkan bunga, dengan nuansa sinematik.",
+      "generatePrompt": "Buat Prompt",
+      "generatePromptTitle": "Buat Prompt",
+      "generatePromptDesc": "Jelaskan apa yang ingin Anda buat, dan AI akan membuat prompt detail untuk Anda.",
+      "generatePromptPlaceholder": "Contoh: Kucing lucu duduk di atas pelangi",
+      "generate": "Buat",
+      "generating": "Membuat...",
+      "imageGuidance": "Gambar Panduan",
+      "optional": "(opsional)",
+      "parameters": "Parameter",
+      "parameterSettings": "Pengaturan Parameter",
+      "visibility": "Visibilitas",
+      "public": "Publik",
+      "private": "Pribadi",
+      "aspectRatio": "Rasio Aspek",
+      "quality": "Kualitas",
+      "selectModel": "Pilih Model",
+      "credits": "kredit",
+      "createImage": "Buat Gambar",
+      "creating": "Membuat...",
+      "imageGeneration": "Pembuatan gambar",
+      "errorSelectImage": "Silakan pilih file gambar",
+      "errorImageSize": "Ukuran gambar harus kurang dari 10MB",
+      "detailPrompt": "Prompt",
+      "detailCreditsUsed": "Kredit terpakai",
+      "deleteConfirmTitle": "Hapus gambar ini?"
     }
   }
 }

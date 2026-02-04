@@ -202,6 +202,36 @@
       "pitchConsistent": "सामान्य",
       "pitchBright": "उज्ज्वल",
       "pitchCrisp": "स्पष्ट"
+    },
+    "createImage": {
+      "title": "AI छवि",
+      "prompt": "प्रॉम्प्ट",
+      "promptPlaceholder": "कृपया जनरेशन के लिए प्रॉम्प्ट दर्ज करें। उदाहरण: सूरज की रोशनी में, हवा धीरे से फूलों को हिलाती है, सिनेमाई अनुभव के साथ।",
+      "generatePrompt": "प्रॉम्प्ट बनाएं",
+      "generatePromptTitle": "प्रॉम्प्ट बनाएं",
+      "generatePromptDesc": "आप क्या बनाना चाहते हैं उसका वर्णन करें, और AI आपके लिए विस्तृत प्रॉम्प्ट बनाएगा।",
+      "generatePromptPlaceholder": "उदाहरण: इंद्रधनुष पर बैठी एक प्यारी बिल्ली",
+      "generate": "बनाएं",
+      "generating": "बना रहा है...",
+      "imageGuidance": "संदर्भ छवि",
+      "optional": "(वैकल्पिक)",
+      "parameters": "पैरामीटर",
+      "parameterSettings": "पैरामीटर सेटिंग्स",
+      "visibility": "दृश्यता",
+      "public": "सार्वजनिक",
+      "private": "निजी",
+      "aspectRatio": "पहलू अनुपात",
+      "quality": "गुणवत्ता",
+      "selectModel": "मॉडल चुनें",
+      "credits": "क्रेडिट",
+      "createImage": "छवि बनाएं",
+      "creating": "बना रहा है...",
+      "imageGeneration": "छवि जनरेशन",
+      "errorSelectImage": "कृपया एक छवि फ़ाइल चुनें",
+      "errorImageSize": "छवि का आकार 10MB से कम होना चाहिए",
+      "detailPrompt": "प्रॉम्प्ट",
+      "detailCreditsUsed": "उपयोग किए गए क्रेडिट",
+      "deleteConfirmTitle": "यह छवि हटाएं?"
     }
   }
 }

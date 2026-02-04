@@ -202,6 +202,36 @@
       "pitchConsistent": "ပုံမှန်",
       "pitchBright": "တောက်ပ",
       "pitchCrisp": "ကြည်လင်"
+    },
+    "createImage": {
+      "title": "AI ပုံ",
+      "prompt": "ပရွမ့်",
+      "promptPlaceholder": "ဖန်တီးရန် ပရွမ့်ထည့်ပါ။ ဥပမာ: နေရောင်အောက်တွင် လေညင်းက ပန်းများကို တဖြည်းဖြည်း လှုပ်ခတ်နေသည်၊ ရုပ်ရှင်ဆန်သော ခံစားချက်ဖြင့်။",
+      "generatePrompt": "ပရွမ့်ဖန်တီးရန်",
+      "generatePromptTitle": "ပရွမ့်ဖန်တီးရန်",
+      "generatePromptDesc": "သင်ဖန်တီးလိုသည်ကို ဖော်ပြပါ၊ AI က အသေးစိတ်ပရွမ့်ဖန်တီးပေးပါမည်။",
+      "generatePromptPlaceholder": "ဥပမာ: သက်တံ့ပေါ်တွင် ထိုင်နေသော ချစ်စရာကြောင်",
+      "generate": "ဖန်တီးရန်",
+      "generating": "ဖန်တီးနေသည်...",
+      "imageGuidance": "ရည်ညွှန်းပုံ",
+      "optional": "(ရွေးချယ်ခွင့်)",
+      "parameters": "ပါရာမီတာများ",
+      "parameterSettings": "ပါရာမီတာ ဆက်တင်များ",
+      "visibility": "မြင်နိုင်မှု",
+      "public": "အများပြည်သူ",
+      "private": "ကိုယ်ပိုင်",
+      "aspectRatio": "အချိုးအစား",
+      "quality": "အရည်အသွေး",
+      "selectModel": "မော်ဒယ်ရွေးပါ",
+      "credits": "ခရက်ဒစ်",
+      "createImage": "ပုံဖန်တီးရန်",
+      "creating": "ဖန်တီးနေသည်...",
+      "imageGeneration": "ပုံဖန်တီးခြင်း",
+      "errorSelectImage": "ပုံဖိုင်ရွေးချယ်ပါ",
+      "errorImageSize": "ပုံအရွယ်အစား 10MB အောက်ဖြစ်ရမည်",
+      "detailPrompt": "ပရွမ့်",
+      "detailCreditsUsed": "သုံးစွဲခဲ့သော ခရက်ဒစ်",
+      "deleteConfirmTitle": "ဤပုံကို ဖျက်မလား?"
     }
   }
 }

@@ -202,6 +202,36 @@
       "pitchConsistent": "標準",
       "pitchBright": "明るい",
       "pitchCrisp": "澄んだ"
+    },
+    "createImage": {
+      "title": "AI 画像",
+      "prompt": "プロンプト",
+      "promptPlaceholder": "生成用のプロンプトを入力してください。例：日差しの中、そよ風が優しく花を揺らす、映画のような雰囲気。",
+      "generatePrompt": "プロンプト生成",
+      "generatePromptTitle": "プロンプト生成",
+      "generatePromptDesc": "作成したいものを説明すると、AIが詳細なプロンプトを生成します。",
+      "generatePromptPlaceholder": "例：虹の上に座るかわいい猫",
+      "generate": "生成",
+      "generating": "生成中...",
+      "imageGuidance": "参照画像",
+      "optional": "（任意）",
+      "parameters": "パラメータ",
+      "parameterSettings": "パラメータ設定",
+      "visibility": "公開設定",
+      "public": "公開",
+      "private": "非公開",
+      "aspectRatio": "アスペクト比",
+      "quality": "品質",
+      "selectModel": "モデル選択",
+      "credits": "クレジット",
+      "createImage": "画像を作成",
+      "creating": "作成中...",
+      "imageGeneration": "画像生成",
+      "errorSelectImage": "画像ファイルを選択してください",
+      "errorImageSize": "画像サイズは10MB以下にしてください",
+      "detailPrompt": "プロンプト",
+      "detailCreditsUsed": "使用クレジット",
+      "deleteConfirmTitle": "この画像を削除しますか？"
     }
   }
 }

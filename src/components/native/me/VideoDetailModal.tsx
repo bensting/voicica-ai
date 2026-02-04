@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useRef } from 'react';
 import type { VideoRecord } from '@/actions/video';
-import { createShareLink } from '@/actions/share';
 import DetailModalHeader from './DetailModalHeader';
 import DetailActionBar from './DetailActionBar';
 import DeleteConfirmDialog from '@/components/native/ui/DeleteConfirmDialog';
@@ -69,7 +68,6 @@ export default function VideoDetailModal({
   const videoRef = useRef<HTMLVideoElement>(null);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [shareUrl, setShareUrl] = useState<string | null>(null);
   const { hide, show } = useBottomNav();
 
   // 隐藏底部导航
@@ -77,15 +75,6 @@ export default function VideoDetailModal({
     hide();
     return () => show();
   }, [hide, show]);
-
-  // 预先生成分享链接（用于"在浏览器打开"功能）
-  useEffect(() => {
-    if (video.task_id) {
-      createShareLink('video', video.task_id)
-        .then((result) => setShareUrl(result.url))
-        .catch((err) => console.error('Failed to create share link:', err));
-    }
-  }, [video.task_id]);
 
   const handlePlayPause = () => {
     if (videoRef.current) {
@@ -110,7 +99,8 @@ export default function VideoDetailModal({
       <DetailModalHeader
         onClose={onClose}
         onDelete={() => setShowDeleteDialog(true)}
-        browserUrl={shareUrl || undefined}
+        contentType="video"
+        contentId={video.task_id}
       />
 
       {/* Content */}

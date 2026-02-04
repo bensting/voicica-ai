@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 import { useCredits } from '@/contexts/CreditsContext';
 import { useSubscription } from '@/contexts/SubscriptionContext';
@@ -113,7 +112,6 @@ const CloseIcon = () => (
  * Native TTS 页面
  */
 export default function NativeTTSPage() {
-  const router = useRouter();
   const { t } = useLanguage();
   const { user } = useFirebaseAuth();
   const { credits } = useCredits();

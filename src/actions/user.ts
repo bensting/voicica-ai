@@ -85,8 +85,10 @@ const getCachedAnonymousUser = cache(async (userId: string) => {
  *
  * 需要认证，首次登录自动注册
  * 包含懒加载当月积分重置逻辑
+ *
+ * @param platform - 可选，用户注册时的平台 (web, mobile-web, android, ios)
  */
-export async function getCurrentUserProfile(): Promise<UserProfile> {
+export async function getCurrentUserProfile(platform?: string): Promise<UserProfile> {
   const authUser = await getCurrentUser();
 
   // 查找或创建用户
@@ -102,13 +104,14 @@ export async function getCurrentUserProfile(): Promise<UserProfile> {
         email: authUser.email || null,
         name: authUser.name || null,
         photo_url: authUser.picture || null,
+        platform: platform || null,
         credits: 0,
         monthly_credits: 0,
         monthly_credits_reset_at: new Date(),
         total_credits_used: 0,
       },
     });
-    console.log(`新用户注册: ${authUser.uid}`);
+    console.log(`新用户注册: ${authUser.uid}, 平台: ${platform || '未知'}`);
   } else {
     // 检查并重置当月积分（懒加载）
     const { wasReset } = await checkAndResetMonthlyCredits(authUser.uid);

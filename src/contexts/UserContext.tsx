@@ -1,8 +1,9 @@
 'use client';
 
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect, ReactNode, useRef } from 'react';
 import { useFirebaseAuth } from './FirebaseAuthContext';
 import { getCurrentUserProfile } from '@/actions/user';
+import { detectPlatform } from '@/lib/platform';
 import type { UserProfile } from '@/types/user';
 
 interface UserContextType {
@@ -29,6 +30,9 @@ export function UserProvider({ children }: { children: ReactNode }) {
   const [error, setError] = useState<string | null>(null);
   const { user, loading: authLoading, isRegistering } = useFirebaseAuth();
 
+  // 缓存检测到的平台，避免重复检测
+  const platformRef = useRef<string | null>(null);
+
   // 获取用户资料（带重试机制）
   const fetchProfile = async (retryCount = 0) => {
     if (!user) {
@@ -40,9 +44,15 @@ export function UserProvider({ children }: { children: ReactNode }) {
       setLoading(true);
       setError(null);
 
+      // 检测平台（仅首次检测）
+      if (platformRef.current === null) {
+        platformRef.current = detectPlatform();
+        console.log('📱 UserContext: 检测到平台:', platformRef.current);
+      }
+
       console.log('📡 UserContext: 调用 Server Action getCurrentUserProfile');
 
-      const userData = await getCurrentUserProfile();
+      const userData = await getCurrentUserProfile(platformRef.current);
 
       console.log('✅ UserContext: 用户数据获取成功', userData);
       setProfile(userData);

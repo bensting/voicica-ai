@@ -1,8 +1,21 @@
 {
-  "version": "1.2.15",
-  "buildNumber": 36,
+  "version": "1.2.16",
+  "buildNumber": 37,
   "description": "原生应用版本（Android/iOS 应用壳）",
   "changelog": [
+    {
+      "version": "1.2.16",
+      "buildNumber": 37,
+      "date": "2026-02-04",
+      "changes": [
+        "Create Image 页面添加国际化支持（12 种语言）",
+        "ImageDetailModal 添加国际化支持",
+        "内容审核加强：添加敏感词黑名单过滤",
+        "内容审核优化：降低 OpenAI Moderation API 阈值，更严格检测",
+        "Explore API 添加 CDN 缓存，优化 Vercel CPU 使用",
+        "Banner API 添加 5 分钟缓存"
+      ]
+    },
     {
       "version": "1.2.15",
       "buildNumber": 36,

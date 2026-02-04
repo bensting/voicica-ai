@@ -74,7 +74,7 @@ export async function GET(req: NextRequest) {
     });
     const userMap = new Map(users.map((u) => [u.user_id, u.email]));
 
-    return NextResponse.json({
+    const response = NextResponse.json({
       success: true,
       voices: voices.map((v) => ({
         id: v.id,
@@ -94,6 +94,11 @@ export async function GET(req: NextRequest) {
         totalPages: Math.ceil(total / limit),
       },
     });
+
+    // 添加缓存：60秒 CDN 缓存，10分钟 stale-while-revalidate
+    response.headers.set('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=600');
+
+    return response;
   } catch (error) {
     console.error('❌ [Explore] 获取公开语音列表失败:', error);
 

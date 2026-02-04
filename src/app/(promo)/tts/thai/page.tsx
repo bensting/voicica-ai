@@ -6,7 +6,7 @@ import { useCallback } from 'react';
 // Thai language TTS landing page - Mobile-first single page design
 // เครื่องมือแปลงข้อความเป็นเสียง AI ฟรี ภาษาไทย
 
-const PLAY_STORE_URL = 'https://play.google.com/store/apps/details?id=ai.voicica.app';
+const PLAY_STORE_URL = 'https://play.google.com/store/apps/details?id=ai.voicica.app&referrer=utm_source%3Dtts_thai%26utm_medium%3Dweb%26utm_campaign%3Dlanding_page';
 const WEB_APP_URL = '/studio/tts';
 
 export default function ThaiTTSPage() {

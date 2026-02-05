@@ -78,7 +78,6 @@
     "file-saver": "^2.0.5",
     "firebase": "^11.2.0",
     "firebase-admin": "^13.6.0",
-    "geoip-lite": "^1.4.10",
     "jszip": "^3.10.1",
     "lucide-react": "^0.546.0",
     "music-metadata": "^11.10.3",

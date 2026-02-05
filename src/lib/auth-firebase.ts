@@ -211,7 +211,7 @@ async function createOrGetAnonymousUser(
 
   if (anonUser) {
     // 更新最后使用时间
-    const formattedIp = await formatIpWithCountry(ipAddress, vercelCountry);
+    const formattedIp = formatIpWithCountry(ipAddress, vercelCountry);
     await prisma.anonymous_users.update({
       where: { user_id: anonymousUserId },
       data: {
@@ -234,7 +234,7 @@ async function createOrGetAnonymousUser(
     ? appConfig.credits.native.anonymous_user
     : appConfig.credits.anonymous_user;
 
-  const newFormattedIp = await formatIpWithCountry(ipAddress, vercelCountry);
+  const newFormattedIp = formatIpWithCountry(ipAddress, vercelCountry);
   anonUser = await prisma.anonymous_users.create({
     data: {
       user_id: anonymousUserId,

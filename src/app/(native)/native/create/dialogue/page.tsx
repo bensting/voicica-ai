@@ -1,8 +1,7 @@
 'use client';
 
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import Image from 'next/image';
 import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 import { useCredits } from '@/contexts/CreditsContext';
 import CreatePageHeader from '@/components/native/common/CreatePageHeader';
@@ -14,7 +13,6 @@ import LoginModal from '@/components/native/LoginModal';
 import InsufficientCreditsModal from '@/components/native/common/InsufficientCreditsModal';
 import NativeDailyTasksModal from '@/components/native/NativeDailyTasksModal';
 import { calculateDialogueCost } from '@/config/creditsCost';
-import { getElevenlabsDialogueVoices } from '@/actions/admin/elevenlabs-dialogue-voices';
 import { createDialogueTask, getDialogueTaskStatus } from '@/actions/dialogue';
 
 // localStorage key
@@ -30,7 +28,11 @@ interface DialogueSegment {
   voice: string;
 }
 
-import { DIALOGUE_LANGUAGES, getVoiceSampleUrl } from '@/config/native/dialogueConfig';
+import {
+  DIALOGUE_LANGUAGES,
+  DIALOGUE_ALL_VOICES,
+  getVoiceSampleUrl,
+} from '@/config/native/dialogueConfig';
 
 // 情绪标签
 const EMOTIONS = [
@@ -42,23 +44,15 @@ const EMOTIONS = [
   { tag: '[sad]', label: 'sad' },
 ];
 
-// 声音类型
+// 声音类型（直接使用配置）
 interface Voice {
   id: string;
   name: string;
-  display_name: string;
   gender: string;
-  avatar_url: string;
-  voice_sample_url: Record<string, string>;
 }
 
-// 默认声音（在数据库加载前使用）
-const DEFAULT_VOICES: Voice[] = [
-  { id: 'Liam', name: 'elevenlabs_dialogue:Liam', display_name: 'Liam', gender: 'male', avatar_url: '', voice_sample_url: { default: getVoiceSampleUrl('Liam') } },
-  { id: 'Jessica', name: 'elevenlabs_dialogue:Jessica', display_name: 'Jessica', gender: 'female', avatar_url: '', voice_sample_url: { default: getVoiceSampleUrl('Jessica') } },
-  { id: 'Brian', name: 'elevenlabs_dialogue:Brian', display_name: 'Brian', gender: 'male', avatar_url: '', voice_sample_url: { default: getVoiceSampleUrl('Brian') } },
-  { id: 'Rachel', name: 'elevenlabs_dialogue:Rachel', display_name: 'Rachel', gender: 'female', avatar_url: '', voice_sample_url: { default: getVoiceSampleUrl('Rachel') } },
-];
+// 从配置生成声音列表
+const VOICES: Voice[] = DIALOGUE_ALL_VOICES;
 
 // 图标组件
 const BackIcon = () => (
@@ -121,9 +115,8 @@ export default function NativeDialoguePage() {
   const [error, setError] = useState<string | null>(null);
   const [activeVoiceSelector, setActiveVoiceSelector] = useState<string | null>(null);
 
-  // 声音列表
-  const [voices, setVoices] = useState<Voice[]>(DEFAULT_VOICES);
-  const [loadingVoices, setLoadingVoices] = useState(true);
+  // 声音列表（直接使用配置）
+  const voices = VOICES;
 
   // 生成弹窗状态
   const [isGeneratingModalOpen, setIsGeneratingModalOpen] = useState(false);
@@ -138,6 +131,9 @@ export default function NativeDialoguePage() {
   const [playingVoiceId, setPlayingVoiceId] = useState<string | null>(null);
   const previewAudioRef = useRef<HTMLAudioElement | null>(null);
 
+  // textarea refs（用于在光标位置插入情绪标签）
+  const textareaRefs = useRef<Map<string, HTMLTextAreaElement>>(new Map());
+
   // 总字符限制
   const maxTotalCharacters = 5000;
   const totalCharacters = dialogues.reduce((sum, d) => sum + d.text.length, 0);
@@ -148,18 +144,11 @@ export default function NativeDialoguePage() {
     return voiceId.charAt(0).toUpperCase() + voiceId.slice(1).toLowerCase();
   };
 
-  // 获取声音样本 URL
-  const getVoiceSampleUrl = (voice: Voice): string => {
-    const urls = voice.voice_sample_url;
-    if (!urls || typeof urls !== 'object') return '';
-    return urls['default'] || Object.values(urls)[0] || '';
-  };
-
   // 播放/停止声音预览
   const toggleVoicePreview = (e: React.MouseEvent, voice: Voice) => {
     e.stopPropagation(); // 阻止触发选择声音
 
-    const sampleUrl = getVoiceSampleUrl(voice);
+    const sampleUrl = getVoiceSampleUrl(voice.id);
     if (!sampleUrl) return;
 
     // 如果点击的是正在播放的声音，停止播放
@@ -199,26 +188,6 @@ export default function NativeDialoguePage() {
       setPlayingVoiceId(null);
     }
   }, [activeVoiceSelector]);
-
-  // 加载声音列表
-  const loadVoices = useCallback(async () => {
-    setLoadingVoices(true);
-    try {
-      const result = await getElevenlabsDialogueVoices();
-      if (result.length > 0) {
-        setVoices(result);
-      }
-    } catch (err) {
-      console.error('加载声音列表失败:', err);
-    } finally {
-      setLoadingVoices(false);
-    }
-  }, []);
-
-  // 初始化加载声音
-  useEffect(() => {
-    loadVoices();
-  }, [loadVoices]);
 
   // 从 localStorage 加载
   useEffect(() => {
@@ -310,12 +279,30 @@ export default function NativeDialoguePage() {
     }
   };
 
-  // 插入情绪标签
+  // 插入情绪标签（在光标位置）
   const insertEmotion = (id: string, tag: string) => {
     const dialogue = dialogues.find(d => d.id === id);
     if (!dialogue) return;
-    const newText = tag + ' ' + dialogue.text;
-    updateDialogueText(id, newText);
+
+    const textarea = textareaRefs.current.get(id);
+    if (textarea) {
+      const start = textarea.selectionStart;
+      const end = textarea.selectionEnd;
+      const text = dialogue.text;
+      const newText = text.slice(0, start) + tag + ' ' + text.slice(end);
+      updateDialogueText(id, newText);
+
+      // 恢复光标位置到插入内容之后
+      setTimeout(() => {
+        const newCursorPos = start + tag.length + 1;
+        textarea.setSelectionRange(newCursorPos, newCursorPos);
+        textarea.focus();
+      }, 0);
+    } else {
+      // fallback: 插入到末尾
+      const newText = dialogue.text + tag + ' ';
+      updateDialogueText(id, newText);
+    }
   };
 
   // 更新对话语音
@@ -326,7 +313,7 @@ export default function NativeDialoguePage() {
 
   // 获取语音名称
   const getVoiceName = (voiceId: string) => {
-    return voices.find(v => v.id === voiceId)?.display_name || voiceId;
+    return voices.find(v => v.id === voiceId)?.name || voiceId;
   };
 
   // 预估积分消耗
@@ -504,6 +491,9 @@ export default function NativeDialoguePage() {
                   text <span className="text-red-400">*</span>
                 </label>
                 <textarea
+                  ref={(el) => {
+                    if (el) textareaRefs.current.set(dialogue.id, el);
+                  }}
                   value={dialogue.text}
                   onChange={(e) => updateDialogueText(dialogue.id, e.target.value)}
                   placeholder="Hey! Have you tried this?"
@@ -540,53 +530,43 @@ export default function NativeDialoguePage() {
                 {/* Voice Options Dropdown */}
                 {activeVoiceSelector === dialogue.id && (
                   <div className="mt-2 bg-gray-900 rounded-xl overflow-hidden border border-gray-700 max-h-60 overflow-y-auto">
-                    {loadingVoices ? (
-                      <div className="px-3 py-4 text-center text-gray-500 text-sm">Loading voices...</div>
-                    ) : (
-                      voices.map((voice) => (
-                        <div
-                          key={voice.id}
-                          className={`w-full px-3 py-2.5 flex items-center justify-between hover:bg-gray-800 transition-colors ${
-                            dialogue.voice === voice.id ? 'bg-purple-500/20' : ''
+                    {voices.map((voice) => (
+                      <div
+                        key={voice.id}
+                        className={`w-full px-3 py-2.5 flex items-center justify-between hover:bg-gray-800 transition-colors ${
+                          dialogue.voice === voice.id ? 'bg-purple-500/20' : ''
+                        }`}
+                      >
+                        <button
+                          onClick={() => updateDialogueVoice(dialogue.id, voice.id)}
+                          className="flex-1 flex items-center gap-2 text-left"
+                        >
+                          <div className="w-7 h-7 bg-gray-700 rounded-full flex items-center justify-center">
+                            <span className="text-gray-400 text-xs">{voice.gender === 'male' ? '♂' : '♀'}</span>
+                          </div>
+                          <div className="flex-1">
+                            <span className="text-white text-sm">{voice.name}</span>
+                            <span className="text-gray-500 text-xs ml-2 capitalize">{voice.gender}</span>
+                          </div>
+                          {dialogue.voice === voice.id && (
+                            <svg className="w-4 h-4 text-purple-400 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                              <polyline points="20,6 9,17 4,12" />
+                            </svg>
+                          )}
+                        </button>
+                        {/* 播放预览按钮 */}
+                        <button
+                          onClick={(e) => toggleVoicePreview(e, voice)}
+                          className={`w-8 h-8 flex items-center justify-center rounded-full transition-colors ${
+                            playingVoiceId === voice.id
+                              ? 'bg-purple-500 text-white'
+                              : 'bg-gray-700 text-gray-400 hover:text-white hover:bg-gray-600'
                           }`}
                         >
-                          <button
-                            onClick={() => updateDialogueVoice(dialogue.id, voice.id)}
-                            className="flex-1 flex items-center gap-2 text-left"
-                          >
-                            {voice.avatar_url ? (
-                              <Image src={voice.avatar_url} alt={voice.display_name} width={28} height={28} className="rounded-full" />
-                            ) : (
-                              <div className="w-7 h-7 bg-gray-700 rounded-full flex items-center justify-center">
-                                <span className="text-gray-400 text-xs">{voice.gender === 'male' ? '♂' : '♀'}</span>
-                              </div>
-                            )}
-                            <div className="flex-1">
-                              <span className="text-white text-sm">{voice.display_name}</span>
-                              <span className="text-gray-500 text-xs ml-2 capitalize">{voice.gender}</span>
-                            </div>
-                            {dialogue.voice === voice.id && (
-                              <svg className="w-4 h-4 text-purple-400 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                <polyline points="20,6 9,17 4,12" />
-                              </svg>
-                            )}
-                          </button>
-                          {/* 播放预览按钮 */}
-                          {getVoiceSampleUrl(voice) && (
-                            <button
-                              onClick={(e) => toggleVoicePreview(e, voice)}
-                              className={`w-8 h-8 flex items-center justify-center rounded-full transition-colors ${
-                                playingVoiceId === voice.id
-                                  ? 'bg-purple-500 text-white'
-                                  : 'bg-gray-700 text-gray-400 hover:text-white hover:bg-gray-600'
-                              }`}
-                            >
-                              {playingVoiceId === voice.id ? <StopIcon /> : <SmallPlayIcon />}
-                            </button>
-                          )}
-                        </div>
-                      ))
-                    )}
+                          {playingVoiceId === voice.id ? <StopIcon /> : <SmallPlayIcon />}
+                        </button>
+                      </div>
+                    ))}
                   </div>
                 )}
               </div>

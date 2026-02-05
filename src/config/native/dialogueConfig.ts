@@ -103,30 +103,29 @@ export interface DialogueVoice {
 }
 
 /**
- * 标准声音列表 (21个，可直接用名字传参)
+ * 标准声音列表 (20个，可直接用名字传参)
  */
 export const DIALOGUE_STANDARD_VOICES: DialogueVoice[] = [
-  { id: 'Rachel', name: 'Rachel', gender: 'female' },
-  { id: 'Aria', name: 'Aria', gender: 'female' },
+  { id: 'Adam', name: 'Adam', gender: 'male' },
+  { id: 'Alice', name: 'Alice', gender: 'female' },
+  { id: 'Bill', name: 'Bill', gender: 'male' },
+  { id: 'Brian', name: 'Brian', gender: 'male' },
+  { id: 'Callum', name: 'Callum', gender: 'male' },
+  { id: 'Charlie', name: 'Charlie', gender: 'male' },
+  { id: 'Chris', name: 'Chris', gender: 'male' },
+  { id: 'Daniel', name: 'Daniel', gender: 'male' },
+  { id: 'Eric', name: 'Eric', gender: 'male' },
+  { id: 'George', name: 'George', gender: 'male' },
+  { id: 'Harry', name: 'Harry', gender: 'male' },
+  { id: 'Jessica', name: 'Jessica', gender: 'female' },
+  { id: 'Laura', name: 'Laura', gender: 'female' },
+  { id: 'Liam', name: 'Liam', gender: 'male' },
+  { id: 'Lily', name: 'Lily', gender: 'female' },
+  { id: 'Matilda', name: 'Matilda', gender: 'female' },
+  { id: 'River', name: 'River', gender: 'male' },
   { id: 'Roger', name: 'Roger', gender: 'male' },
   { id: 'Sarah', name: 'Sarah', gender: 'female' },
-  { id: 'Laura', name: 'Laura', gender: 'female' },
-  { id: 'Charlie', name: 'Charlie', gender: 'male' },
-  { id: 'George', name: 'George', gender: 'male' },
-  { id: 'Callum', name: 'Callum', gender: 'male' },
-  { id: 'River', name: 'River', gender: 'male' },
-  { id: 'Liam', name: 'Liam', gender: 'male' },
-  { id: 'Charlotte', name: 'Charlotte', gender: 'female' },
-  { id: 'Alice', name: 'Alice', gender: 'female' },
-  { id: 'Matilda', name: 'Matilda', gender: 'female' },
   { id: 'Will', name: 'Will', gender: 'male' },
-  { id: 'Jessica', name: 'Jessica', gender: 'female' },
-  { id: 'Eric', name: 'Eric', gender: 'male' },
-  { id: 'Chris', name: 'Chris', gender: 'male' },
-  { id: 'Brian', name: 'Brian', gender: 'male' },
-  { id: 'Daniel', name: 'Daniel', gender: 'male' },
-  { id: 'Lily', name: 'Lily', gender: 'female' },
-  { id: 'Bill', name: 'Bill', gender: 'male' },
 ];
 
 /**
@@ -159,6 +158,7 @@ export const DIALOGUE_PREMIUM_VOICES: DialogueVoice[] = [
   { id: 'DGzg6RaUqxGRTHSBjfgF', name: 'Brock - Commanding and Loud Sergeant', gender: 'male' },
   { id: 'DGTOOUoGpoP6UZ9uSWfA', name: 'Célian - Documentary Narrator', gender: 'male' },
   { id: 'x70vRnQBMBu4FAYhjJbO', name: 'Nathan - Virtual Radio Host', gender: 'male' },
+  { id: 'Sm1seazb4gs7RSlUVw7c', name: 'Premium Voice', gender: 'male' },
   { id: 'P1bg08DkjqiVEzOn76yG', name: 'Viraj - Rich and Soft', gender: 'male' },
   { id: 'qDuRKMlYmrm8trt5QyBn', name: 'Taksh - Calm, Serious and Smooth', gender: 'male' },
   { id: 'kUUTqKQ05NMGulF08DDf', name: 'Guadeloupe Merryweather - Emotional', gender: 'female' },

@@ -50,7 +50,6 @@ export function useNativeBannerAd(): UseNativeBannerAdReturn {
   const [adData, setAdData] = useState<NativeAdData | null>(null);
   const [isInitialized, setIsInitialized] = useState(false);
   const listenerCleanupRef = useRef<(() => void) | null>(null);
-  const adInstanceId = useRef<string>('banner-' + Date.now());
 
   // 检测是否在原生环境
   const isNative = Capacitor.isNativePlatform();

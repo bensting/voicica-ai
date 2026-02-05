@@ -13,6 +13,7 @@ import { getVideoRecordByTaskId, deleteVideoRecord, type VideoRecord } from '@/a
 import { useMusicTaskPolling } from '@/hooks/useMusicTaskPolling';
 import { useVideoTaskPolling } from '@/hooks/useVideoTaskPolling';
 import { useImageTaskPolling } from '@/hooks/useImageTaskPolling';
+import { useDialogueTaskPolling } from '@/hooks/useDialogueTaskPolling';
 import {
   getAvailableMyCreationsTabs,
   getDefaultMyCreationsTab,
@@ -327,6 +328,27 @@ export default function MyCreations() {
               status: status.status,
               image_url: status.imageUrl || record.image_url,
               error: status.error || record.error,
+            };
+          }
+          return record;
+        })
+      );
+    }, []),
+  });
+
+  // 使用 hook 轮询处理中的 Dialogue 任务状态
+  useDialogueTaskPolling({
+    records: dialogueRecords,
+    enabled: activeTab === 'dialogues',
+    onStatusUpdate: useCallback((taskId, status) => {
+      setDialogueRecords((prev) =>
+        prev.map((record) => {
+          if (record.task_id === taskId) {
+            return {
+              ...record,
+              status: status.status,
+              progress: status.progress,
+              audio_url: status.audioUrl || record.audio_url,
             };
           }
           return record;

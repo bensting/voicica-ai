@@ -46,6 +46,24 @@ export interface LoadAdOptions {
 }
 
 /**
+ * 点击/展示/销毁选项
+ */
+export interface AdActionOptions {
+  /** 广告单元 ID（可选，不传则使用默认） */
+  adUnitId?: string;
+}
+
+/**
+ * 点击结果
+ */
+export interface RecordClickResult {
+  /** 是否成功 */
+  success: boolean;
+  /** 广告单元 ID */
+  adUnitId: string;
+}
+
+/**
  * Native Ad 插件接口
  */
 export interface NativeAdPlugin {
@@ -60,29 +78,29 @@ export interface NativeAdPlugin {
   loadAd(options: LoadAdOptions): Promise<NativeAdData>;
 
   /**
-   * 记录广告点击
+   * 记录广告点击（触发 AdMob SDK 处理点击跳转）
    */
-  recordClick(): Promise<void>;
+  recordClick(options?: AdActionOptions): Promise<RecordClickResult>;
 
   /**
    * 记录广告展示
    */
-  recordImpression(): Promise<void>;
+  recordImpression(options?: AdActionOptions): Promise<void>;
 
   /**
    * 销毁当前广告
    */
-  destroy(): Promise<void>;
+  destroy(options?: AdActionOptions): Promise<void>;
 
   /**
    * 检查广告是否已加载
    */
-  isAdLoaded(): Promise<{ loaded: boolean }>;
+  isAdLoaded(options?: AdActionOptions): Promise<{ loaded: boolean }>;
 
   /**
    * 获取当前广告数据
    */
-  getAdData(): Promise<NativeAdData>;
+  getAdData(options?: AdActionOptions): Promise<NativeAdData>;
 
   /**
    * 添加事件监听器

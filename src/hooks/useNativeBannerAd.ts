@@ -163,14 +163,20 @@ export function useNativeBannerAd(): UseNativeBannerAdReturn {
     }
   }, [isEnabled, getAdUnitId]);
 
-  // 记录点击
-  const recordClick = useCallback(() => {
+  // 记录点击（触发 AdMob SDK 处理点击跳转）
+  const recordClick = useCallback(async () => {
     if (!isNative) return;
 
-    NativeAd.recordClick().catch((err) => {
+    const adUnitId = getAdUnitId();
+    log('Recording click for:', adUnitId);
+
+    try {
+      const result = await NativeAd.recordClick({ adUnitId });
+      log('Click recorded successfully:', result);
+    } catch (err) {
       console.error('[NativeBannerAd] Failed to record click:', err);
-    });
-  }, [isNative]);
+    }
+  }, [isNative, getAdUnitId]);
 
   // 记录展示
   const recordImpression = useCallback(() => {

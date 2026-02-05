@@ -5,6 +5,9 @@ import { useRouter } from 'next/navigation';
 import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 import { useCredits } from '@/contexts/CreditsContext';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useSubscription } from '@/contexts/SubscriptionContext';
+import { useRewardedAd } from '@/hooks/useRewardedAd';
+import { adConfig } from '@/config/native/adConfig';
 import CreatePageHeader from '@/components/native/common/CreatePageHeader';
 import GradientButton from '@/components/native/common/GradientButton';
 import CreditsIcon from '@/components/native/common/CreditsIcon';
@@ -83,6 +86,11 @@ export default function NativeDialoguePage() {
   const { user } = useFirebaseAuth();
   const { credits, refreshCredits } = useCredits();
   const { t } = useLanguage();
+  const { isSubscribed } = useSubscription();
+  const { showRewardedAd } = useRewardedAd();
+
+  // 广告状态
+  const [adWatched, setAdWatched] = useState(false);
 
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isInsufficientCreditsModalOpen, setIsInsufficientCreditsModalOpen] = useState(false);
@@ -145,6 +153,27 @@ export default function NativeDialoguePage() {
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(dialogues));
   }, [dialogues]);
+
+  // 非订阅用户：生成开始后自动弹出激励广告
+  useEffect(() => {
+    if (!isGeneratingModalOpen || generatingStatus !== 'generating' || isSubscribed || adWatched) {
+      return;
+    }
+
+    const timer = setTimeout(async () => {
+      try {
+        console.log('[Dialogue] Auto showing rewarded ad...');
+        const result = await showRewardedAd();
+        if (result.success) {
+          setAdWatched(true);
+        }
+      } catch (err) {
+        console.error('[Dialogue] Ad error:', err);
+      }
+    }, adConfig.rewardedAdDelayMs);
+
+    return () => clearTimeout(timer);
+  }, [isGeneratingModalOpen, generatingStatus, isSubscribed, adWatched, showRewardedAd]);
 
   // 轮询任务状态
   useEffect(() => {
@@ -243,9 +272,13 @@ export default function NativeDialoguePage() {
     setDialogues(dialogues.map(d => d.id === id ? { ...d, voice } : d));
   };
 
-  // 获取语音名称
-  const getVoiceName = (voiceId: string) => {
-    return voices.find(v => v.id === voiceId)?.name || voiceId;
+  // 获取语音信息
+  const getVoiceInfo = (voiceId: string) => {
+    const voice = voices.find(v => v.id === voiceId);
+    return {
+      name: voice?.name || voiceId,
+      gender: voice?.gender || 'male',
+    };
   };
 
   // 预估积分消耗
@@ -285,6 +318,7 @@ export default function NativeDialoguePage() {
     setGeneratingError(null);
     setGeneratingProgress(0);
     setGeneratedAudioUrl(null);
+    setAdWatched(false);
     setIsGenerating(true);
     setError(null);
 
@@ -441,7 +475,12 @@ export default function NativeDialoguePage() {
                   onClick={() => setVoiceSheetDialogueId(dialogue.id)}
                   className="w-full flex items-center justify-between bg-gray-900/60 text-white rounded-xl p-3 text-sm"
                 >
-                  <span>{getVoiceName(dialogue.voice)}</span>
+                  <span className="flex items-center gap-2">
+                    <span className={getVoiceInfo(dialogue.voice).gender === 'male' ? 'text-blue-400' : 'text-pink-400'}>
+                      {getVoiceInfo(dialogue.voice).gender === 'male' ? '♂' : '♀'}
+                    </span>
+                    {getVoiceInfo(dialogue.voice).name}
+                  </span>
                   <ChevronDownIcon />
                 </button>
               </div>

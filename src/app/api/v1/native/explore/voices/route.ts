@@ -35,7 +35,7 @@ export async function GET(req: NextRequest) {
     const skip = (page - 1) * limit;
 
     // 查询公开且成功的 TTS 记录
-    const [voices, total] = await Promise.all([
+    const [ttsRecords, total] = await Promise.all([
       prisma.tts_records.findMany({
         where: {
           is_public: true,
@@ -67,26 +67,54 @@ export async function GET(req: NextRequest) {
     ]);
 
     // 获取用户邮箱（批量查询）
-    const userIds = [...new Set(voices.map((v) => v.user_id))];
+    const userIds = [...new Set(ttsRecords.map((v) => v.user_id))];
     const users = await prisma.users.findMany({
       where: { user_id: { in: userIds } },
       select: { user_id: true, email: true },
     });
     const userMap = new Map(users.map((u) => [u.user_id, u.email]));
 
+    // 获取 voice 详情（批量查询）
+    const voiceNames = [...new Set(ttsRecords.map((v) => v.voice_name))];
+    const voiceDetails = await prisma.voices.findMany({
+      where: { name: { in: voiceNames } },
+      select: {
+        name: true,
+        display_name: true,
+        avatar_url: true,
+        gender: true,
+        provider: true,
+        locale: true,
+        country: true,
+      },
+    });
+    const voiceMap = new Map(voiceDetails.map((v) => [v.name, v]));
+
     const response = NextResponse.json({
       success: true,
-      voices: voices.map((v) => ({
-        id: v.id,
-        taskId: v.task_id,
-        text: v.text,
-        voiceName: v.voice_name,
-        language: v.language,
-        duration: v.duration,
-        audioUrl: v.audio_url,
-        user: maskEmail(userMap.get(v.user_id) || null),
-        createdAt: v.created_at?.toISOString(),
-      })),
+      voices: ttsRecords.map((v) => {
+        const voice = voiceMap.get(v.voice_name);
+        return {
+          id: v.id,
+          taskId: v.task_id,
+          text: v.text,
+          voiceName: v.voice_name,
+          language: v.language,
+          duration: v.duration,
+          audioUrl: v.audio_url,
+          user: maskEmail(userMap.get(v.user_id) || null),
+          createdAt: v.created_at?.toISOString(),
+          // Voice details
+          voice: voice ? {
+            displayName: voice.display_name,
+            avatarUrl: voice.avatar_url,
+            gender: voice.gender,
+            provider: voice.provider,
+            locale: voice.locale,
+            country: voice.country,
+          } : null,
+        };
+      }),
       pagination: {
         page,
         limit,
@@ -95,8 +123,9 @@ export async function GET(req: NextRequest) {
       },
     });
 
-    // 添加缓存：60秒 CDN 缓存，10分钟 stale-while-revalidate
-    response.headers.set('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=600');
+    // 添加缓存：10分钟 CDN 缓存，1小时 stale-while-revalidate
+    // 由于 voices 数据不常变化，使用较长的缓存时间
+    response.headers.set('Cache-Control', 'public, s-maxage=600, stale-while-revalidate=3600');
 
     return response;
   } catch (error) {

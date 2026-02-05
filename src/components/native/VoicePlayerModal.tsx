@@ -5,6 +5,21 @@ import { useBottomNav } from '@/contexts/BottomNavContext';
 import { Share } from '@capacitor/share';
 import { createShareLink } from '@/actions/share';
 import PlayerModalHeader from './PlayerModalHeader';
+import ProviderIcon from '@/components/ui/icons/ProviderIcon';
+import { getCountryFlag } from '@/utils/countryFlags';
+import { User, UserRound } from 'lucide-react';
+
+/**
+ * Voice 详情接口
+ */
+export interface VoiceDetails {
+  displayName: string | null;
+  avatarUrl: string;
+  gender: string;
+  provider: string;
+  locale: string;
+  country: string;
+}
 
 /**
  * 公开语音数据接口（用于 Explore 展示）
@@ -19,6 +34,7 @@ export interface PublicVoiceData {
   audioUrl: string | null;
   user: string;
   createdAt: string;
+  voice: VoiceDetails | null;
 }
 
 interface VoicePlayerModalProps {
@@ -149,27 +165,50 @@ export default function VoicePlayerModal({
 
       {/* 可滚动内容区域 */}
       <div className="flex-1 overflow-y-auto px-6 pb-4">
-        {/* 语音图标 */}
+        {/* 头像 */}
         <div className="flex justify-center mb-6">
-          <div className="relative w-48 h-48 rounded-full overflow-hidden shadow-2xl bg-gradient-to-br from-cyan-600 to-purple-600 flex items-center justify-center">
-            <svg className="w-20 h-20 text-white/80" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-              <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" />
-              <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
-              <line x1="12" y1="19" x2="12" y2="23" />
-              <line x1="8" y1="23" x2="16" y2="23" />
-            </svg>
-            {/* AI 标签 */}
-            <div className="absolute top-4 right-4 px-2 py-0.5 bg-cyan-500 rounded text-white text-xs font-medium">
-              AI
-            </div>
+          <div className="relative w-32 h-32 rounded-full overflow-hidden shadow-2xl">
+            {voice.voice?.avatarUrl ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={voice.voice.avatarUrl}
+                alt={voice.voice.displayName || voice.voiceName}
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <div className="w-full h-full bg-gradient-to-br from-cyan-600 to-purple-600 flex items-center justify-center">
+                <svg className="w-12 h-12 text-white/80" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                  <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" />
+                  <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
+                  <line x1="12" y1="19" x2="12" y2="23" />
+                  <line x1="8" y1="23" x2="16" y2="23" />
+                </svg>
+              </div>
+            )}
           </div>
         </div>
 
-        {/* 语音名称和语言 */}
-        <div className="text-center mb-4">
-          <h2 className="text-lg font-semibold text-white">{voice.voiceName}</h2>
-          {voice.language && (
-            <span className="text-gray-400 text-sm">{voice.language}</span>
+        {/* 语音名称 */}
+        <div className="text-center mb-1">
+          <h2 className="text-xl font-semibold text-white">
+            {voice.voice?.displayName || voice.voiceName}
+          </h2>
+        </div>
+
+        {/* 图标行：国家 · 性别 · 供应商 */}
+        <div className="flex items-center justify-center gap-2 mb-4">
+          {voice.voice?.country && (
+            <span className="text-base">{getCountryFlag(voice.voice.country)}</span>
+          )}
+          {voice.voice?.gender && (
+            voice.voice.gender === 'male' ? (
+              <User className="w-4 h-4 text-blue-400" />
+            ) : voice.voice.gender === 'female' ? (
+              <UserRound className="w-4 h-4 text-pink-400" />
+            ) : null
+          )}
+          {voice.voice?.provider && (
+            <ProviderIcon provider={voice.voice.provider.toLowerCase()} className="w-4 h-4" />
           )}
         </div>
 

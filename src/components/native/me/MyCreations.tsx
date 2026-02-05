@@ -341,19 +341,25 @@ export default function MyCreations() {
     records: dialogueRecords,
     enabled: activeTab === 'dialogues',
     onStatusUpdate: useCallback((taskId, status) => {
-      setDialogueRecords((prev) =>
-        prev.map((record) => {
+      setDialogueRecords((prev) => {
+        const updatedRecords = prev.map((record) => {
           if (record.task_id === taskId) {
-            return {
+            const updatedRecord = {
               ...record,
               status: status.status,
               progress: status.progress,
               audio_url: status.audioUrl || record.audio_url,
             };
+            // 如果任务刚完成，弹出详情弹窗
+            if (status.status === 'SUCCESS' && record.status !== 'SUCCESS') {
+              setTimeout(() => setSelectedDialogue(updatedRecord), 0);
+            }
+            return updatedRecord;
           }
           return record;
-        })
-      );
+        });
+        return updatedRecords;
+      });
     }, []),
   });
 

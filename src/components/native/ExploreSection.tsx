@@ -37,7 +37,6 @@ const gradients = [
  * 显示头像、性别图标、国家旗帜、供应商图标
  */
 function VoiceCard({ voice, index, onClick }: { voice: PublicVoiceData; index: number; onClick: () => void }) {
-  const displayText = voice.text.length > 30 ? voice.text.substring(0, 30) + '...' : voice.text;
   const gradient = gradients[index % gradients.length];
   const voiceDetails = voice.voice;
   const displayName = voiceDetails?.displayName || voice.voiceName;
@@ -98,7 +97,7 @@ function VoiceCard({ voice, index, onClick }: { voice: PublicVoiceData; index: n
       </div>
 
       {/* 文本内容 */}
-      <p className="text-gray-400 text-[11px] leading-relaxed line-clamp-2">{displayText}</p>
+      <p className="text-gray-400 text-[11px] truncate">{voice.text}</p>
     </div>
   );
 }
@@ -345,8 +344,7 @@ export default function ExploreSection() {
                   </div>
                   <div className="w-7 h-7 rounded-full bg-white/10" />
                 </div>
-                <div className="h-2.5 w-full bg-gray-700/30 rounded animate-pulse mb-1" />
-                <div className="h-2.5 w-3/4 bg-gray-700/30 rounded animate-pulse" />
+                <div className="h-2.5 w-full bg-gray-700/30 rounded animate-pulse" />
               </div>
             ))}
           </div>

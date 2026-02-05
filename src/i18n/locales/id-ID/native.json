@@ -232,6 +232,50 @@
       "detailPrompt": "Prompt",
       "detailCreditsUsed": "Kredit terpakai",
       "deleteConfirmTitle": "Hapus gambar ini?"
+    },
+    "createDialogue": {
+      "title": "Teks ke Dialog",
+      "language": "Bahasa",
+      "selectLanguage": "Pilih bahasa dialog",
+      "searchLanguage": "Cari bahasa...",
+      "voice": "Suara",
+      "selectVoice": "Pilih suara untuk dialog ini",
+      "searchVoice": "Cari suara...",
+      "text": "Teks",
+      "textPlaceholder": "Hei! Sudah coba ini?",
+      "dialogue": "Dialog",
+      "addDialogue": "Tambah Dialog",
+      "remove": "Hapus",
+      "totalCharacters": "Total: {{current}} / {{max}} karakter",
+      "generate": "Buat Dialog",
+      "generating": "Membuat...",
+      "generatingDialogue": "Membuat dialog...",
+      "estimatedTime": "Perkiraan waktu: 1-2 menit",
+      "dialogueCreated": "Dialog Dibuat!",
+      "dialogueCreatedDesc": "Dialog Anda berhasil dibuat.",
+      "createAnother": "Buat Lagi",
+      "viewHistory": "Lihat Riwayat",
+      "generationFailed": "Pembuatan Gagal",
+      "insufficientCredits": "Kredit Tidak Cukup",
+      "insufficientCreditsDesc": "Kredit Anda tidak cukup. Upgrade untuk mendapatkan lebih banyak!",
+      "getCredits": "Dapatkan Kredit",
+      "tryAgain": "Coba Lagi",
+      "close": "Tutup",
+      "creditsRule": "100 karakter = 3 kredit",
+      "emotions": {
+        "excitedly": "bersemangat",
+        "whispers": "berbisik",
+        "laughs": "tertawa",
+        "sarcastic": "sarkastis",
+        "sighs": "menghela napas",
+        "sad": "sedih",
+        "angry": "marah"
+      },
+      "genderFilter": {
+        "all": "Semua",
+        "male": "Pria",
+        "female": "Wanita"
+      }
     }
   }
 }

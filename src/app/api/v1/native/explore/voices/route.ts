@@ -123,8 +123,9 @@ export async function GET(req: NextRequest) {
       },
     });
 
-    // 添加缓存：60秒 CDN 缓存，10分钟 stale-while-revalidate
-    response.headers.set('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=600');
+    // 添加缓存：10分钟 CDN 缓存，1小时 stale-while-revalidate
+    // 由于 voices 数据不常变化，使用较长的缓存时间
+    response.headers.set('Cache-Control', 'public, s-maxage=600, stale-while-revalidate=3600');
 
     return response;
   } catch (error) {

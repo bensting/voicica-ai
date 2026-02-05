@@ -100,7 +100,7 @@ export default function NativeAdCard({ index = 0 }: NativeAdCardProps) {
       </div>
 
       {/* 广告内容区域 */}
-      <AdContent adData={adData} gradient={gradient} />
+      <AdContent adData={adData} />
 
       {/* 星级评分 */}
       {adData.starRating && adData.starRating > 0 && (
@@ -156,7 +156,7 @@ function AdIcon({ adData, gradient }: { adData: NativeAdData; gradient: string }
 /**
  * 广告内容区域
  */
-function AdContent({ adData, gradient }: { adData: NativeAdData; gradient: string }) {
+function AdContent({ adData }: { adData: NativeAdData }) {
   // 如果有图片，显示图片
   if (adData.imageUrl) {
     return (

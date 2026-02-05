@@ -66,7 +66,7 @@ export default function AdsterraBanner() {
 
   return (
     <div className="px-4">
-      {/* 隐藏多余广告的样式 */}
+      {/* 广告样式覆盖 */}
       <style>{`
         #${ADSTERRA_CONFIG.containerId} > div {
           display: block !important;
@@ -75,13 +75,22 @@ export default function AdsterraBanner() {
         #${ADSTERRA_CONFIG.containerId} > div > div:not(:first-child) {
           display: none !important;
         }
+        /* 缩小字体 */
+        #${ADSTERRA_CONFIG.containerId} *,
+        #${ADSTERRA_CONFIG.containerId} a,
+        #${ADSTERRA_CONFIG.containerId} span,
+        #${ADSTERRA_CONFIG.containerId} div,
+        #${ADSTERRA_CONFIG.containerId} p {
+          font-size: 10px !important;
+          line-height: 1.3 !important;
+        }
       `}</style>
       <div
         ref={containerRef}
-        className="relative overflow-hidden rounded-2xl"
+        className="relative overflow-hidden rounded-2xl p-[3px] bg-gradient-to-r from-purple-500 via-pink-500 to-purple-500"
       >
-        {/* Adsterra 广告容器 - 只显示1个广告 */}
-        <div id={ADSTERRA_CONFIG.containerId}></div>
+        {/* Adsterra 广告容器 */}
+        <div id={ADSTERRA_CONFIG.containerId} className="rounded-xl overflow-hidden bg-gray-900"></div>
 
         {/* 加载占位 */}
         {!loaded && (

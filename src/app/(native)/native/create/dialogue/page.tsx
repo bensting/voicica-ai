@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 import { useCredits } from '@/contexts/CreditsContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import CreatePageHeader from '@/components/native/common/CreatePageHeader';
 import GradientButton from '@/components/native/common/GradientButton';
 import CreditsIcon from '@/components/native/common/CreditsIcon';
@@ -81,6 +82,7 @@ export default function NativeDialoguePage() {
   const router = useRouter();
   const { user } = useFirebaseAuth();
   const { credits, refreshCredits } = useCredits();
+  const { t } = useLanguage();
 
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isInsufficientCreditsModalOpen, setIsInsufficientCreditsModalOpen] = useState(false);
@@ -328,7 +330,7 @@ export default function NativeDialoguePage() {
   return (
     <div className="min-h-screen bg-[#0a0a1a] flex flex-col">
       {/* Header */}
-      <CreatePageHeader title="Text to Dialogue" />
+      <CreatePageHeader title={t('native.createDialogue.title')} />
 
       {/* Scrollable Content */}
       <div
@@ -346,7 +348,7 @@ export default function NativeDialoguePage() {
 
         {/* Language Selector */}
         <div className="mb-4">
-          <label className="text-gray-400 text-xs mb-1.5 block">Language</label>
+          <label className="text-gray-400 text-xs mb-1.5 block">{t('native.createDialogue.language')}</label>
           <button
             onClick={() => setIsLanguageSheetOpen(true)}
             className="w-full flex items-center justify-between bg-gray-800/60 text-white rounded-xl p-3 text-sm"
@@ -365,7 +367,7 @@ export default function NativeDialoguePage() {
         {/* Total Characters */}
         <div className="mb-3">
           <span className="text-gray-400 text-xs">
-            Total: {totalCharacters} / {maxTotalCharacters} characters
+            {t('native.createDialogue.totalCharacters', { current: totalCharacters, max: maxTotalCharacters })}
           </span>
         </div>
 
@@ -375,13 +377,13 @@ export default function NativeDialoguePage() {
             <div key={dialogue.id} className="bg-gray-800/60 rounded-2xl p-4">
               {/* Header */}
               <div className="flex items-center justify-between mb-3">
-                <span className="text-white font-medium text-sm">Dialogue {index + 1}</span>
+                <span className="text-white font-medium text-sm">{t('native.createDialogue.dialogue')} {index + 1}</span>
                 {dialogues.length > 1 && (
                   <button
                     onClick={() => removeDialogue(dialogue.id)}
                     className="px-3 py-1 text-gray-400 text-xs border border-gray-600 rounded-full hover:text-red-400 hover:border-red-400 transition-colors"
                   >
-                    Remove
+                    {t('native.createDialogue.remove')}
                   </button>
                 )}
               </div>
@@ -389,7 +391,7 @@ export default function NativeDialoguePage() {
               {/* Text Input */}
               <div className="mb-3">
                 <label className="text-gray-400 text-xs mb-1.5 block">
-                  text <span className="text-red-400">*</span>
+                  {t('native.createDialogue.text')} <span className="text-red-400">*</span>
                 </label>
                 <div className="relative">
                   <textarea
@@ -398,7 +400,7 @@ export default function NativeDialoguePage() {
                     }}
                     value={dialogue.text}
                     onChange={(e) => updateDialogueText(dialogue.id, e.target.value)}
-                    placeholder="Hey! Have you tried this?"
+                    placeholder={t('native.createDialogue.textPlaceholder')}
                     className="w-full h-24 bg-gray-900/60 text-white placeholder-gray-600 rounded-xl p-3 pr-8 resize-none focus:outline-none focus:ring-1 focus:ring-purple-500 text-sm"
                     disabled={isGenerating}
                   />
@@ -424,7 +426,7 @@ export default function NativeDialoguePage() {
                       disabled={isGenerating}
                       className="px-2 py-1 bg-gray-700/50 text-gray-400 text-xs rounded hover:bg-gray-600/50 hover:text-gray-300 transition-colors disabled:opacity-50"
                     >
-                      {emotion.label}
+                      {t(`native.createDialogue.emotions.${emotion.label}`)}
                     </button>
                   ))}
                 </div>
@@ -433,7 +435,7 @@ export default function NativeDialoguePage() {
               {/* Voice Selector */}
               <div>
                 <label className="text-gray-400 text-xs mb-1.5 block">
-                  voice <span className="text-red-400">*</span>
+                  {t('native.createDialogue.voice')} <span className="text-red-400">*</span>
                 </label>
                 <button
                   onClick={() => setVoiceSheetDialogueId(dialogue.id)}
@@ -454,7 +456,7 @@ export default function NativeDialoguePage() {
           className="w-full py-3 border-2 border-dashed border-gray-700 rounded-2xl text-gray-400 flex items-center justify-center gap-2 hover:border-gray-600 hover:text-gray-300 transition-colors disabled:opacity-50"
         >
           <PlusIcon />
-          <span>Add Dialogue</span>
+          <span>{t('native.createDialogue.addDialogue')}</span>
         </button>
       </div>
 
@@ -465,7 +467,7 @@ export default function NativeDialoguePage() {
       >
         <CreditsInfoBar
           credits={credits}
-          creditRules={[{ name: 'Dialogue generation', description: '100 chars = 3 credits' }]}
+          creditRules={[{ name: t('native.createDialogue.dialogue'), description: t('native.createDialogue.creditsRule') }]}
           className="mb-3"
         />
 
@@ -473,11 +475,11 @@ export default function NativeDialoguePage() {
           {isGenerating ? (
             <>
               <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-              <span>Generating...</span>
+              <span>{t('native.createDialogue.generating')}</span>
             </>
           ) : (
             <>
-              <span>Generate Dialogue</span>
+              <span>{t('native.createDialogue.generate')}</span>
               {estimatedCredits > 0 && totalCharacters > 0 && (
                 <>
                   <CreditsIcon className="w-3.5 h-3.5" />
@@ -517,12 +519,12 @@ export default function NativeDialoguePage() {
                     </div>
                   </div>
                 </div>
-                <h3 className="text-white font-semibold text-lg mb-2">Generating dialogue...</h3>
+                <h3 className="text-white font-semibold text-lg mb-2">{t('native.createDialogue.generatingDialogue')}</h3>
                 {generatingProgress > 0 && (
                   <p className="text-blue-400 text-sm mb-2">{generatingProgress}%</p>
                 )}
                 <p className="text-gray-400 text-sm mb-8">
-                  Estimated time: <span className="text-blue-400">1-2 minutes</span>
+                  {t('native.createDialogue.estimatedTime')}
                 </p>
               </>
             )}
@@ -534,8 +536,8 @@ export default function NativeDialoguePage() {
                     <polyline points="20,6 9,17 4,12" />
                   </svg>
                 </div>
-                <h3 className="text-white font-semibold text-lg mb-2">Dialogue Created!</h3>
-                <p className="text-gray-400 text-sm mb-4">Your dialogue has been generated successfully.</p>
+                <h3 className="text-white font-semibold text-lg mb-2">{t('native.createDialogue.dialogueCreated')}</h3>
+                <p className="text-gray-400 text-sm mb-4">{t('native.createDialogue.dialogueCreatedDesc')}</p>
 
                 {/* Audio Player */}
                 {generatedAudioUrl && (
@@ -551,13 +553,13 @@ export default function NativeDialoguePage() {
                     onClick={handleCloseGeneratingModal}
                     className="flex-1 py-3 bg-gray-700/50 text-white rounded-xl text-sm font-medium hover:bg-gray-600/50 transition-colors"
                   >
-                    Create Another
+                    {t('native.createDialogue.createAnother')}
                   </button>
                   <button
                     onClick={handleViewHistory}
                     className="flex-1 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl text-sm font-medium hover:opacity-90 transition-opacity"
                   >
-                    View History
+                    {t('native.createDialogue.viewHistory')}
                   </button>
                 </div>
               </>
@@ -576,19 +578,19 @@ export default function NativeDialoguePage() {
                   )}
                 </div>
                 <h3 className="text-white font-semibold text-lg mb-2">
-                  {generatingError?.includes('Insufficient credits') ? 'Insufficient Credits' : 'Generation Failed'}
+                  {generatingError?.includes('Insufficient credits') ? t('native.createDialogue.insufficientCredits') : t('native.createDialogue.generationFailed')}
                 </h3>
                 <p className="text-red-400 text-sm mb-8 text-center px-4">
                   {generatingError?.includes('Insufficient credits')
-                    ? 'You don\'t have enough credits. Upgrade to get more!'
-                    : (generatingError || 'Something went wrong. Please try again.')}
+                    ? t('native.createDialogue.insufficientCreditsDesc')
+                    : (generatingError || t('native.createDialogue.generationFailed'))}
                 </p>
                 <div className="flex gap-3 w-full max-w-xs">
                   <button
                     onClick={handleCloseGeneratingModal}
                     className="flex-1 py-3 bg-gray-700/50 text-white rounded-xl text-sm font-medium hover:bg-gray-600/50 transition-colors"
                   >
-                    Close
+                    {t('native.createDialogue.close')}
                   </button>
                   {generatingError?.includes('Insufficient credits') ? (
                     <button
@@ -600,7 +602,7 @@ export default function NativeDialoguePage() {
                       className="flex-1 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl text-sm font-medium hover:opacity-90 transition-opacity flex items-center justify-center gap-2"
                     >
                       <CrownIcon className="w-4 h-4" />
-                      Get Credits
+                      {t('native.createDialogue.getCredits')}
                     </button>
                   ) : (
                     <button
@@ -610,7 +612,7 @@ export default function NativeDialoguePage() {
                       }}
                       className="flex-1 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl text-sm font-medium hover:opacity-90 transition-opacity"
                     >
-                      Try Again
+                      {t('native.createDialogue.tryAgain')}
                     </button>
                   )}
                 </div>

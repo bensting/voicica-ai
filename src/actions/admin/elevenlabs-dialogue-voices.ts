@@ -36,7 +36,7 @@ export async function getElevenlabsDialogueStats(): Promise<{
   });
 
   return {
-    total: ELEVENLABS_DIALOGUE_VOICES.length,
+    total: DIALOGUE_ALL_VOICES.length,
     dbCount,
     activeCount,
   };
@@ -62,7 +62,7 @@ export async function syncElevenlabsDialogueVoices(): Promise<SyncResult> {
     let inserted = 0;
     let updated = 0;
 
-    for (const voice of ELEVENLABS_DIALOGUE_VOICES) {
+    for (const voice of DIALOGUE_ALL_VOICES) {
       const voiceName = `elevenlabs_dialogue:${voice.id}`;
 
       // 使用 DiceBear 生成头像

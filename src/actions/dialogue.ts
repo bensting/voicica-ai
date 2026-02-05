@@ -141,13 +141,19 @@ export async function createDialogueTask(
   });
 
   // 调用 kie.ai API
+  const inputParams: Record<string, unknown> = {
+    dialogue: request.dialogue,
+    stability: request.stability ?? 0.5,
+  };
+
+  // 只有当指定了具体语言代码时才传递（不传时 API 会自动检测）
+  if (request.language_code && request.language_code !== 'auto') {
+    inputParams.language_code = request.language_code;
+  }
+
   const apiBody: Record<string, unknown> = {
     model: 'elevenlabs/text-to-dialogue-v3',
-    input: {
-      dialogue: request.dialogue,
-      stability: request.stability ?? 0.5,
-      language_code: request.language_code || 'auto',
-    },
+    input: inputParams,
   };
 
   // 添加回调 URL（如果有）

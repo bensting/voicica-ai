@@ -1,10 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Pencil, Download } from 'lucide-react';
 import { Browser } from '@capacitor/browser';
 import GradientButton from '@/components/native/common/GradientButton';
 import { handleDownloadWithState, type FileType } from '@/lib/native-download';
+import { useInterstitialAd } from '@/hooks/useInterstitialAd';
+import { useSubscription } from '@/contexts/SubscriptionContext';
 
 interface DetailActionBarProps {
   /** 是否显示 Recreate 按钮 */
@@ -21,6 +23,8 @@ interface DetailActionBarProps {
   fileType?: FileType;
   /** Download 按钮文字 */
   downloadText?: string;
+  /** 是否在弹出下载选项后显示插页式广告 */
+  showInterstitialOnDownload?: boolean;
   /** @deprecated 旧 API - 直接下载回调（向后兼容） */
   onDownload?: () => void;
   /** @deprecated 旧 API - 是否禁用下载（向后兼容） */
@@ -42,6 +46,7 @@ export default function DetailActionBar({
   fileName = 'download',
   fileType = 'audio',
   downloadText = 'Download',
+  showInterstitialOnDownload = true,
   // 向后兼容的旧 API
   onDownload,
   downloadDisabled,
@@ -49,11 +54,37 @@ export default function DetailActionBar({
 }: DetailActionBarProps) {
   const [showActionSheet, setShowActionSheet] = useState(false);
   const [internalDownloading, setInternalDownloading] = useState(false);
+  const hasShownAdRef = useRef(false);
+
+  // 插页式广告 hook
+  const { showInterstitialAd, isNative } = useInterstitialAd();
+
+  // 订阅状态（订阅用户不显示广告）
+  const { isSubscribed } = useSubscription();
 
   // 使用新 API 还是旧 API
   const useNewApi = !onDownload && fileUrl;
   const downloading = useNewApi ? internalDownloading : (externalDownloading || false);
   const isDisabled = useNewApi ? !fileUrl : (downloadDisabled || false);
+
+  // 当 action sheet 打开时显示插页式广告（仅非订阅用户）
+  useEffect(() => {
+    if (showActionSheet && showInterstitialOnDownload && isNative && !isSubscribed && !hasShownAdRef.current) {
+      hasShownAdRef.current = true;
+      // 延迟 300ms 让 action sheet 动画完成后再显示广告
+      const timer = setTimeout(() => {
+        showInterstitialAd();
+      }, 300);
+      return () => clearTimeout(timer);
+    }
+  }, [showActionSheet, showInterstitialOnDownload, isNative, isSubscribed, showInterstitialAd]);
+
+  // action sheet 关闭时重置广告标记
+  useEffect(() => {
+    if (!showActionSheet) {
+      hasShownAdRef.current = false;
+    }
+  }, [showActionSheet]);
 
   // 根据文件类型获取保存位置描述
   const getSaveLocationText = () => {

@@ -1,28 +1,28 @@
 'use client';
 
 /**
- * 原生广告 Hook
+ * 首页横幅原生广告 Hook
  *
- * 用于在 Feed 流中显示原生广告
+ * 用于在首页顶部显示横幅样式的原生广告
  * 使用自定义 Capacitor 插件加载 AdMob 原生高级广告
  */
 
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { Capacitor } from '@capacitor/core';
-import { admobConfig, isNativeAdEnabled, getNativeAdPosition } from '@/config/ads';
+import { admobConfig, isAdMobNativeBannerEnabled } from '@/config/ads';
 import { NativeAd, type NativeAdData } from '@/plugins/native-ad';
 
 export type { NativeAdData };
 
-export type NativeAdStatus = 'idle' | 'loading' | 'loaded' | 'error' | 'clicked';
+export type NativeBannerAdStatus = 'idle' | 'loading' | 'loaded' | 'error' | 'clicked';
 
-// 调试日志开关
+// 调试日志
 const DEBUG = true;
-const log = (...args: unknown[]) => DEBUG && console.log('[useNativeAd]', ...args);
+const log = (...args: unknown[]) => DEBUG && console.log('[useNativeBannerAd]', ...args);
 
-interface UseNativeAdReturn {
+interface UseNativeBannerAdReturn {
   /** 当前状态 */
-  status: NativeAdStatus;
+  status: NativeBannerAdStatus;
   /** 是否在原生环境中 */
   isNative: boolean;
   /** 是否启用 */
@@ -31,8 +31,6 @@ interface UseNativeAdReturn {
   error: string | null;
   /** 广告数据 */
   adData: NativeAdData | null;
-  /** 广告在列表中的位置 */
-  position: number;
   /** 加载广告 */
   loadAd: () => Promise<void>;
   /** 记录广告点击 */
@@ -44,44 +42,31 @@ interface UseNativeAdReturn {
 }
 
 /**
- * 原生广告 Hook
- *
- * 使用方式：
- * ```tsx
- * const { isEnabled, adData, position, loadAd, recordClick } = useNativeAd();
- *
- * useEffect(() => {
- *   if (isEnabled) loadAd();
- * }, [isEnabled, loadAd]);
- *
- * // 在列表的 position 位置插入广告卡片
- * ```
+ * 首页横幅原生广告 Hook
  */
-export function useNativeAd(): UseNativeAdReturn {
-  const [status, setStatus] = useState<NativeAdStatus>('idle');
+export function useNativeBannerAd(): UseNativeBannerAdReturn {
+  const [status, setStatus] = useState<NativeBannerAdStatus>('idle');
   const [error, setError] = useState<string | null>(null);
   const [adData, setAdData] = useState<NativeAdData | null>(null);
   const [isInitialized, setIsInitialized] = useState(false);
   const listenerCleanupRef = useRef<(() => void) | null>(null);
+  const adInstanceId = useRef<string>('banner-' + Date.now());
 
   // 检测是否在原生环境
   const isNative = Capacitor.isNativePlatform();
 
   // 是否启用
-  const isEnabled = isNativeAdEnabled() && isNative;
+  const isEnabled = isAdMobNativeBannerEnabled() && isNative;
 
-  // 广告位置
-  const position = getNativeAdPosition();
-
-  log('Hook state:', { isNative, isEnabled, isInitialized, status, position });
+  log('Hook state:', { isNative, isEnabled, isInitialized, status });
 
   // 获取当前平台的广告单元 ID
   const getAdUnitId = useCallback(() => {
     const platform = Capacitor.getPlatform();
     if (platform === 'android') {
-      return admobConfig.native.android;
+      return admobConfig.nativeBanner.android;
     } else if (platform === 'ios') {
-      return admobConfig.native.ios;
+      return admobConfig.nativeBanner.ios;
     }
     return '';
   }, []);
@@ -90,15 +75,15 @@ export function useNativeAd(): UseNativeAdReturn {
   useEffect(() => {
     if (!isNative || isInitialized) return;
 
-    log('Initializing NativeAd plugin...');
+    log('Initializing NativeAd plugin for banner...');
 
     const setupListeners = async () => {
       try {
-        // 初始化
+        // 初始化（可能已被其他组件初始化）
         await NativeAd.initialize();
-        log('NativeAd plugin initialized');
+        log('NativeAd plugin initialized for banner');
 
-        // 设置监听器
+        // 设置监听器（使用唯一 ID 区分）
         const loadedListener = await NativeAd.addListener('adLoaded', (data) => {
           log('Ad loaded via listener:', data);
           setAdData(data);
@@ -128,7 +113,6 @@ export function useNativeAd(): UseNativeAdReturn {
           impressionListener.remove();
         };
 
-        // 使用 state 触发重新渲染，这样自动加载 effect 才会运行
         setIsInitialized(true);
       } catch (err) {
         log('Failed to initialize:', err);
@@ -165,11 +149,10 @@ export function useNativeAd(): UseNativeAdReturn {
       setStatus('loading');
       setError(null);
 
-      log('Loading ad with unit ID:', adUnitId);
+      log('Loading banner ad with unit ID:', adUnitId);
       const data = await NativeAd.loadAd({ adUnitId });
       log('loadAd returned:', data);
 
-      // 数据会通过监听器设置，这里只是备用
       if (data) {
         setAdData(data);
         setStatus('loaded');
@@ -186,7 +169,7 @@ export function useNativeAd(): UseNativeAdReturn {
     if (!isNative) return;
 
     NativeAd.recordClick().catch((err) => {
-      console.error('[NativeAd] Failed to record click:', err);
+      console.error('[NativeBannerAd] Failed to record click:', err);
     });
   }, [isNative]);
 
@@ -195,7 +178,7 @@ export function useNativeAd(): UseNativeAdReturn {
     if (!isNative) return;
 
     NativeAd.recordImpression().catch((err) => {
-      console.error('[NativeAd] Failed to record impression:', err);
+      console.error('[NativeBannerAd] Failed to record impression:', err);
     });
   }, [isNative]);
 
@@ -204,7 +187,7 @@ export function useNativeAd(): UseNativeAdReturn {
     if (!isNative) return;
 
     NativeAd.destroy().catch((err) => {
-      console.error('[NativeAd] Failed to destroy:', err);
+      console.error('[NativeBannerAd] Failed to destroy:', err);
     });
 
     setAdData(null);
@@ -216,10 +199,9 @@ export function useNativeAd(): UseNativeAdReturn {
     log('Auto-load check:', { isEnabled, status, isInitialized });
     if (isEnabled && status === 'idle' && isInitialized) {
       log('Starting auto-load...');
-      // 延迟加载，等待初始化完成
       const timer = setTimeout(() => {
         loadAd();
-      }, 500);
+      }, 300);
       return () => clearTimeout(timer);
     }
   }, [isEnabled, status, isInitialized, loadAd]);
@@ -240,7 +222,6 @@ export function useNativeAd(): UseNativeAdReturn {
     isEnabled,
     error,
     adData,
-    position,
     loadAd,
     recordClick,
     recordImpression,

@@ -232,6 +232,50 @@
       "detailPrompt": "Prompt",
       "detailCreditsUsed": "Credit đã dùng",
       "deleteConfirmTitle": "Xóa hình ảnh này?"
+    },
+    "createDialogue": {
+      "title": "Văn bản thành Hội thoại",
+      "language": "Ngôn ngữ",
+      "selectLanguage": "Chọn ngôn ngữ hội thoại",
+      "searchLanguage": "Tìm ngôn ngữ...",
+      "voice": "Giọng nói",
+      "selectVoice": "Chọn giọng nói cho hội thoại này",
+      "searchVoice": "Tìm giọng nói...",
+      "text": "Văn bản",
+      "textPlaceholder": "Này! Bạn đã thử chưa?",
+      "dialogue": "Hội thoại",
+      "addDialogue": "Thêm Hội thoại",
+      "remove": "Xóa",
+      "totalCharacters": "Tổng: {{current}} / {{max}} ký tự",
+      "generate": "Tạo Hội thoại",
+      "generating": "Đang tạo...",
+      "generatingDialogue": "Đang tạo hội thoại...",
+      "estimatedTime": "Thời gian ước tính: 1-2 phút",
+      "dialogueCreated": "Đã Tạo Hội thoại!",
+      "dialogueCreatedDesc": "Hội thoại của bạn đã được tạo thành công.",
+      "createAnother": "Tạo Thêm",
+      "viewHistory": "Xem Lịch sử",
+      "generationFailed": "Tạo Thất bại",
+      "insufficientCredits": "Không Đủ Credit",
+      "insufficientCreditsDesc": "Bạn không có đủ credit. Nâng cấp để nhận thêm!",
+      "getCredits": "Nhận Credit",
+      "tryAgain": "Thử Lại",
+      "close": "Đóng",
+      "creditsRule": "100 ký tự = 3 credit",
+      "emotions": {
+        "excitedly": "hào hứng",
+        "whispers": "thì thầm",
+        "laughs": "cười",
+        "sarcastic": "mỉa mai",
+        "sighs": "thở dài",
+        "sad": "buồn",
+        "angry": "tức giận"
+      },
+      "genderFilter": {
+        "all": "Tất cả",
+        "male": "Nam",
+        "female": "Nữ"
+      }
     }
   }
 }

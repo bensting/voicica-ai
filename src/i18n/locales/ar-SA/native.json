@@ -231,7 +231,51 @@
       "errorImageSize": "حجم الصورة يجب أن يكون أقل من 10 ميجابايت",
       "detailPrompt": "الوصف",
       "detailCreditsUsed": "الرصيد المستخدم",
-      "deleteConfirmTitle": "حذف هذه الصورة؟"
+      "deleteConfirmTitle": "حذف هذه الصورة?"
+    },
+    "createDialogue": {
+      "title": "نص إلى حوار",
+      "language": "اللغة",
+      "selectLanguage": "اختر لغة الحوار",
+      "searchLanguage": "البحث عن لغة...",
+      "voice": "الصوت",
+      "selectVoice": "اختر صوتاً لهذا الحوار",
+      "searchVoice": "البحث عن صوت...",
+      "text": "النص",
+      "textPlaceholder": "مرحباً! هل جربت هذا؟",
+      "dialogue": "الحوار",
+      "addDialogue": "إضافة حوار",
+      "remove": "إزالة",
+      "totalCharacters": "المجموع: {{current}} / {{max}} حرف",
+      "generate": "إنشاء الحوار",
+      "generating": "جارٍ الإنشاء...",
+      "generatingDialogue": "جارٍ إنشاء الحوار...",
+      "estimatedTime": "الوقت المقدر: 1-2 دقيقة",
+      "dialogueCreated": "تم إنشاء الحوار!",
+      "dialogueCreatedDesc": "تم إنشاء حوارك بنجاح.",
+      "createAnother": "إنشاء آخر",
+      "viewHistory": "عرض السجل",
+      "generationFailed": "فشل الإنشاء",
+      "insufficientCredits": "رصيد غير كافٍ",
+      "insufficientCreditsDesc": "ليس لديك رصيد كافٍ. قم بالترقية للحصول على المزيد!",
+      "getCredits": "الحصول على رصيد",
+      "tryAgain": "حاول مرة أخرى",
+      "close": "إغلاق",
+      "creditsRule": "100 حرف = 3 رصيد",
+      "emotions": {
+        "excitedly": "بحماس",
+        "whispers": "يهمس",
+        "laughs": "يضحك",
+        "sarcastic": "ساخر",
+        "sighs": "يتنهد",
+        "sad": "حزين",
+        "angry": "غاضب"
+      },
+      "genderFilter": {
+        "all": "الكل",
+        "male": "ذكر",
+        "female": "أنثى"
+      }
     }
   }
 }

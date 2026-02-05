@@ -232,6 +232,50 @@
       "detailPrompt": "プロンプト",
       "detailCreditsUsed": "使用クレジット",
       "deleteConfirmTitle": "この画像を削除しますか？"
+    },
+    "createDialogue": {
+      "title": "テキストから対話",
+      "language": "言語",
+      "selectLanguage": "対話の言語を選択",
+      "searchLanguage": "言語を検索...",
+      "voice": "声",
+      "selectVoice": "この対話の声を選択",
+      "searchVoice": "声を検索...",
+      "text": "テキスト",
+      "textPlaceholder": "ねえ！これ試した？",
+      "dialogue": "対話",
+      "addDialogue": "対話を追加",
+      "remove": "削除",
+      "totalCharacters": "合計: {{current}} / {{max}} 文字",
+      "generate": "対話を生成",
+      "generating": "生成中...",
+      "generatingDialogue": "対話を生成中...",
+      "estimatedTime": "予想時間: 1-2分",
+      "dialogueCreated": "対話が作成されました！",
+      "dialogueCreatedDesc": "対話が正常に生成されました。",
+      "createAnother": "別の対話を作成",
+      "viewHistory": "履歴を見る",
+      "generationFailed": "生成に失敗しました",
+      "insufficientCredits": "クレジット不足",
+      "insufficientCreditsDesc": "クレジットが足りません。アップグレードして獲得！",
+      "getCredits": "クレジットを取得",
+      "tryAgain": "再試行",
+      "close": "閉じる",
+      "creditsRule": "100文字 = 3クレジット",
+      "emotions": {
+        "excitedly": "興奮して",
+        "whispers": "ささやき",
+        "laughs": "笑い",
+        "sarcastic": "皮肉",
+        "sighs": "ため息",
+        "sad": "悲しそうに",
+        "angry": "怒って"
+      },
+      "genderFilter": {
+        "all": "すべて",
+        "male": "男性",
+        "female": "女性"
+      }
     }
   }
 }

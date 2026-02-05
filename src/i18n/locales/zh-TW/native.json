@@ -232,6 +232,50 @@
       "detailPrompt": "提示詞",
       "detailCreditsUsed": "消耗積分",
       "deleteConfirmTitle": "刪除此圖片？"
+    },
+    "createDialogue": {
+      "title": "文字轉對話",
+      "language": "語言",
+      "selectLanguage": "選擇對話語言",
+      "searchLanguage": "搜尋語言...",
+      "voice": "聲音",
+      "selectVoice": "選擇對話聲音",
+      "searchVoice": "搜尋聲音...",
+      "text": "文字",
+      "textPlaceholder": "嘿！你試過這個嗎？",
+      "dialogue": "對話",
+      "addDialogue": "新增對話",
+      "remove": "刪除",
+      "totalCharacters": "共計：{{current}} / {{max}} 字元",
+      "generate": "生成對話",
+      "generating": "生成中...",
+      "generatingDialogue": "正在生成對話...",
+      "estimatedTime": "預計時間：1-2分鐘",
+      "dialogueCreated": "對話建立成功！",
+      "dialogueCreatedDesc": "您的對話已成功生成。",
+      "createAnother": "繼續建立",
+      "viewHistory": "查看歷史",
+      "generationFailed": "生成失敗",
+      "insufficientCredits": "積分不足",
+      "insufficientCreditsDesc": "您的積分不足，升級以獲取更多！",
+      "getCredits": "獲取積分",
+      "tryAgain": "重試",
+      "close": "關閉",
+      "creditsRule": "100字元 = 3積分",
+      "emotions": {
+        "excitedly": "興奮地",
+        "whispers": "低語",
+        "laughs": "笑",
+        "sarcastic": "諷刺",
+        "sighs": "嘆氣",
+        "sad": "悲傷",
+        "angry": "憤怒"
+      },
+      "genderFilter": {
+        "all": "全部",
+        "male": "男性",
+        "female": "女性"
+      }
     }
   }
 }

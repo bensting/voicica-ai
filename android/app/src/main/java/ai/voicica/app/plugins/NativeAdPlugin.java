@@ -2,6 +2,8 @@ package ai.voicica.app.plugins;
 
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
 
@@ -18,6 +20,7 @@ import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.ads.VideoOptions;
 import com.google.android.gms.ads.nativead.NativeAd;
 import com.google.android.gms.ads.nativead.NativeAdOptions;
+import com.google.android.gms.ads.nativead.NativeAdView;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -37,6 +40,10 @@ public class NativeAdPlugin extends Plugin {
 
     // 存储多个广告实例，key 为 adUnitId
     private Map<String, NativeAd> nativeAds = new HashMap<>();
+    // 存储 NativeAdView 用于处理点击
+    private Map<String, NativeAdView> nativeAdViews = new HashMap<>();
+    // 存储点击视图
+    private Map<String, View> clickableViews = new HashMap<>();
     // 正在加载的广告 ID
     private Set<String> loadingAds = new HashSet<>();
     private boolean isInitialized = false;
@@ -111,6 +118,9 @@ public class NativeAdPlugin extends Plugin {
                         loadingAds.remove(adUnitId);
                         Log.d(TAG, "Native Ad loaded successfully for: " + adUnitId);
 
+                        // 创建隐藏的 NativeAdView 用于处理点击
+                        setupNativeAdView(adUnitId, nativeAd);
+
                         // 将广告数据转换为 JSON 返回给 JS
                         JSObject adData = convertNativeAdToJson(nativeAd);
                         adData.put("adUnitId", adUnitId);
@@ -174,23 +184,50 @@ public class NativeAdPlugin extends Plugin {
 
     /**
      * 记录广告点击（手动触发）
+     * 通过模拟 NativeAdView 中的点击来触发 AdMob SDK 处理
      */
     @PluginMethod
     public void recordClick(PluginCall call) {
         String adUnitId = call.getString("adUnitId");
 
-        if (adUnitId == null || !nativeAds.containsKey(adUnitId)) {
-            // 如果没有指定 adUnitId，尝试使用任何可用的广告
-            if (nativeAds.isEmpty()) {
+        // 如果没有指定 adUnitId，尝试使用第一个可用的
+        if (adUnitId == null || adUnitId.isEmpty()) {
+            if (!nativeAds.isEmpty()) {
+                adUnitId = nativeAds.keySet().iterator().next();
+            } else {
                 call.reject("No ad loaded");
                 return;
             }
         }
 
-        // 原生广告的点击由 AdMob SDK 自动处理
-        // 这个方法只是通知 JS 层点击已记录
-        Log.d(TAG, "Click recorded for: " + adUnitId);
-        call.resolve();
+        if (!nativeAds.containsKey(adUnitId)) {
+            call.reject("No ad loaded for: " + adUnitId);
+            return;
+        }
+
+        final String finalAdUnitId = adUnitId;
+
+        getActivity().runOnUiThread(() -> {
+            try {
+                View clickableView = clickableViews.get(finalAdUnitId);
+                if (clickableView != null) {
+                    // 触发点击事件，AdMob SDK 会自动处理跳转
+                    Log.d(TAG, "Triggering performClick for: " + finalAdUnitId);
+                    clickableView.performClick();
+
+                    JSObject result = new JSObject();
+                    result.put("success", true);
+                    result.put("adUnitId", finalAdUnitId);
+                    call.resolve(result);
+                } else {
+                    Log.e(TAG, "No clickable view found for: " + finalAdUnitId);
+                    call.reject("No clickable view available");
+                }
+            } catch (Exception e) {
+                Log.e(TAG, "Error triggering click: " + e.getMessage());
+                call.reject("Error triggering click: " + e.getMessage());
+            }
+        });
     }
 
     /**
@@ -271,6 +308,65 @@ public class NativeAdPlugin extends Plugin {
     }
 
     /**
+     * 设置 NativeAdView 用于处理点击
+     * 创建一个隐藏的 NativeAdView，将广告注册到其中
+     * 这样当调用 performClick 时，AdMob SDK 会正确处理点击跳转
+     */
+    private void setupNativeAdView(String adUnitId, NativeAd nativeAd) {
+        try {
+            // 清理之前的视图
+            cleanupAdView(adUnitId);
+
+            // 创建 NativeAdView
+            NativeAdView nativeAdView = new NativeAdView(getContext());
+            nativeAdView.setLayoutParams(new FrameLayout.LayoutParams(1, 1));
+
+            // 创建一个可点击的视图
+            View clickableView = new View(getContext());
+            clickableView.setLayoutParams(new FrameLayout.LayoutParams(1, 1));
+            nativeAdView.addView(clickableView);
+
+            // 注册点击视图（整个广告可点击）
+            nativeAdView.setCallToActionView(clickableView);
+
+            // 将广告绑定到 NativeAdView
+            nativeAdView.setNativeAd(nativeAd);
+
+            // 将 NativeAdView 添加到根视图（隐藏）
+            ViewGroup rootView = (ViewGroup) getActivity().getWindow().getDecorView().getRootView();
+            rootView.addView(nativeAdView);
+            nativeAdView.setVisibility(View.INVISIBLE);
+
+            // 保存引用
+            nativeAdViews.put(adUnitId, nativeAdView);
+            clickableViews.put(adUnitId, clickableView);
+
+            Log.d(TAG, "NativeAdView setup completed for: " + adUnitId);
+        } catch (Exception e) {
+            Log.e(TAG, "Error setting up NativeAdView: " + e.getMessage());
+        }
+    }
+
+    /**
+     * 清理广告视图
+     */
+    private void cleanupAdView(String adUnitId) {
+        try {
+            NativeAdView adView = nativeAdViews.remove(adUnitId);
+            if (adView != null) {
+                ViewGroup parent = (ViewGroup) adView.getParent();
+                if (parent != null) {
+                    parent.removeView(adView);
+                }
+                adView.destroy();
+            }
+            clickableViews.remove(adUnitId);
+        } catch (Exception e) {
+            Log.e(TAG, "Error cleaning up ad view: " + e.getMessage());
+        }
+    }
+
+    /**
      * 将原生广告转换为 JSON 对象
      */
     private JSObject convertNativeAdToJson(NativeAd nativeAd) {
@@ -340,6 +436,9 @@ public class NativeAdPlugin extends Plugin {
      * 销毁指定广告
      */
     private void destroyAd(String adUnitId) {
+        // 清理 AdView
+        cleanupAdView(adUnitId);
+
         NativeAd ad = nativeAds.remove(adUnitId);
         if (ad != null) {
             ad.destroy();
@@ -352,11 +451,18 @@ public class NativeAdPlugin extends Plugin {
      * 销毁所有广告
      */
     private void destroyAllAds() {
+        // 清理所有 AdView
+        for (String adUnitId : nativeAdViews.keySet()) {
+            cleanupAdView(adUnitId);
+        }
+
         for (Map.Entry<String, NativeAd> entry : nativeAds.entrySet()) {
             entry.getValue().destroy();
             Log.d(TAG, "Native Ad destroyed for: " + entry.getKey());
         }
         nativeAds.clear();
+        nativeAdViews.clear();
+        clickableViews.clear();
         loadingAds.clear();
     }
 

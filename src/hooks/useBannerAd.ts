@@ -74,22 +74,22 @@ export function useBannerAd(): UseBannerAdReturn {
       setStatus('loading');
       isInitializedRef.current = true;
 
-      const { AdMob, BannerAdSize, BannerAdPosition } = await import(
+      const { AdMob, BannerAdSize, BannerAdPosition, BannerAdPluginEvents } = await import(
         '@capacitor-community/admob'
       );
 
       // 监听 Banner 事件
-      await AdMob.addListener('bannerAdSizeChanged', (info) => {
+      await AdMob.addListener(BannerAdPluginEvents.SizeChanged, (info: { width: number; height: number }) => {
         log('Size changed:', info);
         setBannerHeight(info.height || 50);
       });
 
-      await AdMob.addListener('bannerAdLoaded', () => {
+      await AdMob.addListener(BannerAdPluginEvents.Loaded, () => {
         log('Banner loaded');
         setStatus('shown');
       });
 
-      await AdMob.addListener('bannerAdFailedToLoad', (error) => {
+      await AdMob.addListener(BannerAdPluginEvents.FailedToLoad, (error: { code: number; message: string }) => {
         log('Banner failed to load:', error);
         setStatus('error');
         isInitializedRef.current = false;

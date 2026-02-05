@@ -1,9 +1,29 @@
 /**
  * ElevenLabs Dialogue 配置
  *
- * 包含支持的语言和声音列表
+ * 包含支持的语言、情绪标签和声音列表
  * 数据来源: kie.ai text-to-dialogue-v3 API
  */
+
+// ==================== 情绪标签配置 ====================
+
+export interface DialogueEmotion {
+  tag: string;
+  label: string;
+}
+
+/**
+ * 情绪标签列表
+ */
+export const DIALOGUE_EMOTIONS: DialogueEmotion[] = [
+  { tag: '[excitedly]', label: 'excitedly' },
+  { tag: '[whispers]', label: 'whispers' },
+  { tag: '[laughs]', label: 'laughs' },
+  { tag: '[sarcastic]', label: 'sarcastic' },
+  { tag: '[sighs]', label: 'sighs' },
+  { tag: '[sad]', label: 'sad' },
+  { tag: '[angry]', label: 'angry' },
+];
 
 // ==================== 语言配置 ====================
 

@@ -11,5 +11,5 @@ export const moderationConfig = {
    * true: 启用审核，违规内容将被拦截
    * false: 禁用审核，所有内容都允许通过
    */
-  enableContentModeration: true,
+  enableContentModeration: false,
 };

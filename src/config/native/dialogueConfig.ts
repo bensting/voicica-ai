@@ -280,5 +280,5 @@ export const DIALOGUE_ALL_VOICES: DialogueVoice[] = [
  * 获取声音的样例音频 URL
  */
 export function getVoiceSampleUrl(voiceId: string): string {
-  return `https://static.aiquickdraw.com/elevenlabs/voice/${voiceId}.mp3`;
+  return `https://static.aiquickdraw.com/elevenlabs/voice/${voiceId.toLowerCase()}.mp3`;
 }

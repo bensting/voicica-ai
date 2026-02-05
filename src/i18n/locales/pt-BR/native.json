@@ -232,6 +232,50 @@
       "detailPrompt": "Prompt",
       "detailCreditsUsed": "Créditos usados",
       "deleteConfirmTitle": "Excluir esta imagem?"
+    },
+    "createDialogue": {
+      "title": "Texto para Diálogo",
+      "language": "Idioma",
+      "selectLanguage": "Selecionar idioma do diálogo",
+      "searchLanguage": "Buscar idioma...",
+      "voice": "Voz",
+      "selectVoice": "Selecionar voz para este diálogo",
+      "searchVoice": "Buscar voz...",
+      "text": "Texto",
+      "textPlaceholder": "Ei! Você já experimentou isso?",
+      "dialogue": "Diálogo",
+      "addDialogue": "Adicionar Diálogo",
+      "remove": "Remover",
+      "totalCharacters": "Total: {{current}} / {{max}} caracteres",
+      "generate": "Gerar Diálogo",
+      "generating": "Gerando...",
+      "generatingDialogue": "Gerando diálogo...",
+      "estimatedTime": "Tempo estimado: 1-2 minutos",
+      "dialogueCreated": "Diálogo Criado!",
+      "dialogueCreatedDesc": "Seu diálogo foi gerado com sucesso.",
+      "createAnother": "Criar Outro",
+      "viewHistory": "Ver Histórico",
+      "generationFailed": "Geração Falhou",
+      "insufficientCredits": "Créditos Insuficientes",
+      "insufficientCreditsDesc": "Você não tem créditos suficientes. Atualize para obter mais!",
+      "getCredits": "Obter Créditos",
+      "tryAgain": "Tentar Novamente",
+      "close": "Fechar",
+      "creditsRule": "100 caracteres = 3 créditos",
+      "emotions": {
+        "excitedly": "empolgado",
+        "whispers": "sussurra",
+        "laughs": "ri",
+        "sarcastic": "sarcástico",
+        "sighs": "suspira",
+        "sad": "triste",
+        "angry": "irritado"
+      },
+      "genderFilter": {
+        "all": "Todos",
+        "male": "Masculino",
+        "female": "Feminino"
+      }
     }
   }
 }

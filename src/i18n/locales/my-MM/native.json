@@ -232,6 +232,50 @@
       "detailPrompt": "ပရွမ့်",
       "detailCreditsUsed": "သုံးစွဲခဲ့သော ခရက်ဒစ်",
       "deleteConfirmTitle": "ဤပုံကို ဖျက်မလား?"
+    },
+    "createDialogue": {
+      "title": "စာသားမှ စကားပြောသို့",
+      "language": "ဘာသာစကား",
+      "selectLanguage": "စကားပြောဘာသာစကား ရွေးချယ်ပါ",
+      "searchLanguage": "ဘာသာစကား ရှာရန်...",
+      "voice": "အသံ",
+      "selectVoice": "ဤစကားပြောအတွက် အသံရွေးချယ်ပါ",
+      "searchVoice": "အသံ ရှာရန်...",
+      "text": "စာသား",
+      "textPlaceholder": "ဟေ့! ဒါစမ်းကြည့်ပြီးပြီလား?",
+      "dialogue": "စကားပြော",
+      "addDialogue": "စကားပြော ထည့်ရန်",
+      "remove": "ဖယ်ရှားရန်",
+      "totalCharacters": "စုစုပေါင်း: {{current}} / {{max}} စာလုံး",
+      "generate": "စကားပြော ဖန်တီးရန်",
+      "generating": "ဖန်တီးနေသည်...",
+      "generatingDialogue": "စကားပြော ဖန်တီးနေသည်...",
+      "estimatedTime": "ခန့်မှန်းအချိန်: ၁-၂ မိနစ်",
+      "dialogueCreated": "စကားပြော ဖန်တီးပြီးပါပြီ!",
+      "dialogueCreatedDesc": "သင့်စကားပြောကို အောင်မြင်စွာ ဖန်တီးပြီးပါပြီ။",
+      "createAnother": "နောက်တစ်ခု ဖန်တီးရန်",
+      "viewHistory": "မှတ်တမ်း ကြည့်ရန်",
+      "generationFailed": "ဖန်တီးခြင်း မအောင်မြင်ပါ",
+      "insufficientCredits": "ခရက်ဒစ် မလုံလောက်ပါ",
+      "insufficientCreditsDesc": "ခရက်ဒစ် မလုံလောက်ပါ။ ပိုရရန် အဆင့်မြှင့်ပါ!",
+      "getCredits": "ခရက်ဒစ် ရယူရန်",
+      "tryAgain": "ထပ်စမ်းရန်",
+      "close": "ပိတ်ရန်",
+      "creditsRule": "စာလုံး ၁၀၀ = ခရက်ဒစ် ၃",
+      "emotions": {
+        "excitedly": "စိတ်လှုပ်ရှားစွာ",
+        "whispers": "တိုးတိုး",
+        "laughs": "ရယ်",
+        "sarcastic": "လှေသံနဲ့",
+        "sighs": "သက်ပြင်းချ",
+        "sad": "ဝမ်းနည်း",
+        "angry": "ဒေါသထွက်"
+      },
+      "genderFilter": {
+        "all": "အားလုံး",
+        "male": "အမျိုးသား",
+        "female": "အမျိုးသမီး"
+      }
     }
   }
 }

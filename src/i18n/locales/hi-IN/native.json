@@ -232,6 +232,50 @@
       "detailPrompt": "प्रॉम्प्ट",
       "detailCreditsUsed": "उपयोग किए गए क्रेडिट",
       "deleteConfirmTitle": "यह छवि हटाएं?"
+    },
+    "createDialogue": {
+      "title": "टेक्स्ट से संवाद",
+      "language": "भाषा",
+      "selectLanguage": "संवाद भाषा चुनें",
+      "searchLanguage": "भाषा खोजें...",
+      "voice": "आवाज़",
+      "selectVoice": "इस संवाद के लिए आवाज़ चुनें",
+      "searchVoice": "आवाज़ खोजें...",
+      "text": "टेक्स्ट",
+      "textPlaceholder": "अरे! क्या आपने यह आज़माया?",
+      "dialogue": "संवाद",
+      "addDialogue": "संवाद जोड़ें",
+      "remove": "हटाएं",
+      "totalCharacters": "कुल: {{current}} / {{max}} अक्षर",
+      "generate": "संवाद बनाएं",
+      "generating": "बना रहा है...",
+      "generatingDialogue": "संवाद बना रहा है...",
+      "estimatedTime": "अनुमानित समय: 1-2 मिनट",
+      "dialogueCreated": "संवाद बन गया!",
+      "dialogueCreatedDesc": "आपका संवाद सफलतापूर्वक बनाया गया।",
+      "createAnother": "एक और बनाएं",
+      "viewHistory": "इतिहास देखें",
+      "generationFailed": "बनाना विफल",
+      "insufficientCredits": "अपर्याप्त क्रेडिट",
+      "insufficientCreditsDesc": "आपके पास पर्याप्त क्रेडिट नहीं है। अधिक पाने के लिए अपग्रेड करें!",
+      "getCredits": "क्रेडिट प्राप्त करें",
+      "tryAgain": "पुनः प्रयास करें",
+      "close": "बंद करें",
+      "creditsRule": "100 अक्षर = 3 क्रेडिट",
+      "emotions": {
+        "excitedly": "उत्साहित होकर",
+        "whispers": "फुसफुसाते हुए",
+        "laughs": "हंसते हुए",
+        "sarcastic": "व्यंग्यात्मक",
+        "sighs": "आह भरते हुए",
+        "sad": "उदास",
+        "angry": "गुस्से में"
+      },
+      "genderFilter": {
+        "all": "सभी",
+        "male": "पुरुष",
+        "female": "महिला"
+      }
     }
   }
 }

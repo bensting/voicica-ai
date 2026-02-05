@@ -232,6 +232,50 @@
       "detailPrompt": "พรอมต์",
       "detailCreditsUsed": "เครดิตที่ใช้",
       "deleteConfirmTitle": "ลบรูปภาพนี้?"
+    },
+    "createDialogue": {
+      "title": "ข้อความเป็นบทสนทนา",
+      "language": "ภาษา",
+      "selectLanguage": "เลือกภาษาของบทสนทนา",
+      "searchLanguage": "ค้นหาภาษา...",
+      "voice": "เสียง",
+      "selectVoice": "เลือกเสียงสำหรับบทสนทนานี้",
+      "searchVoice": "ค้นหาเสียง...",
+      "text": "ข้อความ",
+      "textPlaceholder": "เฮ้! คุณลองแล้วหรือยัง?",
+      "dialogue": "บทสนทนา",
+      "addDialogue": "เพิ่มบทสนทนา",
+      "remove": "ลบ",
+      "totalCharacters": "รวม: {{current}} / {{max}} ตัวอักษร",
+      "generate": "สร้างบทสนทนา",
+      "generating": "กำลังสร้าง...",
+      "generatingDialogue": "กำลังสร้างบทสนทนา...",
+      "estimatedTime": "เวลาโดยประมาณ: 1-2 นาที",
+      "dialogueCreated": "สร้างบทสนทนาแล้ว!",
+      "dialogueCreatedDesc": "บทสนทนาของคุณถูกสร้างเรียบร้อยแล้ว",
+      "createAnother": "สร้างอีก",
+      "viewHistory": "ดูประวัติ",
+      "generationFailed": "สร้างไม่สำเร็จ",
+      "insufficientCredits": "เครดิตไม่เพียงพอ",
+      "insufficientCreditsDesc": "เครดิตไม่เพียงพอ อัปเกรดเพื่อรับเพิ่มเติม!",
+      "getCredits": "รับเครดิต",
+      "tryAgain": "ลองใหม่",
+      "close": "ปิด",
+      "creditsRule": "100 ตัวอักษร = 3 เครดิต",
+      "emotions": {
+        "excitedly": "ตื่นเต้น",
+        "whispers": "กระซิบ",
+        "laughs": "หัวเราะ",
+        "sarcastic": "ประชด",
+        "sighs": "ถอนหายใจ",
+        "sad": "เศร้า",
+        "angry": "โกรธ"
+      },
+      "genderFilter": {
+        "all": "ทั้งหมด",
+        "male": "ชาย",
+        "female": "หญิง"
+      }
     }
   }
 }

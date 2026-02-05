@@ -10,6 +10,7 @@ import {
   cleanExpiredAnonymousUsers,
   getUserCreditHistory,
 } from '@/actions/admin/users';
+import IpLocation from '@/components/admin/IpLocation';
 
 interface RegisteredUser {
   id: number;
@@ -572,7 +573,7 @@ export default function UsersManagementPage() {
                   <tr>
                     <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">用户ID</th>
                     <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">设备指纹</th>
-                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">IP</th>
+                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">位置</th>
                     <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">平台</th>
                     <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">积分</th>
                     <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">已用</th>
@@ -611,7 +612,7 @@ export default function UsersManagementPage() {
                           </span>
                         </td>
                         <td className="px-4 py-3">
-                          <span className="text-sm text-gray-600">{user.ip_address || '-'}</span>
+                          <IpLocation ip={user.ip_address} />
                         </td>
                         <td className="px-4 py-3">
                           {user.platform && PLATFORM_CONFIG[user.platform] ? (

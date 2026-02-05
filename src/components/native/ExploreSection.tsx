@@ -247,9 +247,11 @@ export default function ExploreSection() {
     setSelectedVideo(null);
   };
 
-  // 加载公开内容
+  // 加载公开内容（已加载过的数据会被缓存，切换 Tab 时不重复请求）
   useEffect(() => {
     if (activeTab === 'voices') {
+      // 如果已有数据，不重复加载
+      if (voiceList.length > 0) return;
       setIsLoading(true);
       fetch('/api/v1/native/explore/voices?limit=20')
         .then((res) => res.json())
@@ -265,6 +267,8 @@ export default function ExploreSection() {
           setIsLoading(false);
         });
     } else if (activeTab === 'music') {
+      // 如果已有数据，不重复加载
+      if (musicList.length > 0) return;
       setIsLoading(true);
       getPublicMusicRecords(20)
         .then((records) => {
@@ -277,6 +281,8 @@ export default function ExploreSection() {
           setIsLoading(false);
         });
     } else if (activeTab === 'video') {
+      // 如果已有数据，不重复加载
+      if (videoList.length > 0) return;
       setIsLoading(true);
       fetch('/api/v1/native/explore/videos?limit=20')
         .then((res) => res.json())
@@ -292,6 +298,7 @@ export default function ExploreSection() {
           setIsLoading(false);
         });
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeTab]);
 
   // 如果没有可用的标签，不渲染

@@ -3,125 +3,116 @@
 /**
  * IP 地理位置显示组件
  *
- * 使用 ipapi.co 免费服务获取 IP 地理位置（HTTPS，免费 1000 次/天）
+ * 解析 ip|country_code 格式的 IP 字段
+ * 显示国旗和国家名称
  */
-
-import { useState } from 'react';
 
 interface IpLocationProps {
   ip: string | null;
 }
 
-interface LocationData {
-  country: string;
-  countryCode: string;
-  city: string;
-  region: string;
-}
-
-// 缓存 IP 位置信息，避免重复请求
-const locationCache = new Map<string, LocationData | null>();
+// 国家代码到国家名的映射
+const countryNames: Record<string, string> = {
+  CN: 'China',
+  US: 'United States',
+  JP: 'Japan',
+  KR: 'South Korea',
+  TW: 'Taiwan',
+  HK: 'Hong Kong',
+  SG: 'Singapore',
+  MY: 'Malaysia',
+  TH: 'Thailand',
+  VN: 'Vietnam',
+  ID: 'Indonesia',
+  PH: 'Philippines',
+  IN: 'India',
+  AU: 'Australia',
+  NZ: 'New Zealand',
+  GB: 'United Kingdom',
+  DE: 'Germany',
+  FR: 'France',
+  IT: 'Italy',
+  ES: 'Spain',
+  NL: 'Netherlands',
+  BE: 'Belgium',
+  CH: 'Switzerland',
+  AT: 'Austria',
+  SE: 'Sweden',
+  NO: 'Norway',
+  DK: 'Denmark',
+  FI: 'Finland',
+  PL: 'Poland',
+  RU: 'Russia',
+  UA: 'Ukraine',
+  CA: 'Canada',
+  MX: 'Mexico',
+  BR: 'Brazil',
+  AR: 'Argentina',
+  CL: 'Chile',
+  CO: 'Colombia',
+  PE: 'Peru',
+  ZA: 'South Africa',
+  EG: 'Egypt',
+  NG: 'Nigeria',
+  KE: 'Kenya',
+  AE: 'UAE',
+  SA: 'Saudi Arabia',
+  IL: 'Israel',
+  TR: 'Turkey',
+  IR: 'Iran',
+  PK: 'Pakistan',
+  BD: 'Bangladesh',
+};
 
 // 国家代码转旗帜 emoji
-const getFlagEmoji = (countryCode: string) => {
+function getFlagEmoji(countryCode: string): string {
+  if (!countryCode || countryCode.length !== 2) return '🌍';
   const codePoints = countryCode
     .toUpperCase()
     .split('')
     .map((char) => 127397 + char.charCodeAt(0));
   return String.fromCodePoint(...codePoints);
-};
+}
+
+// 解析 ip|country_code 格式
+function parseIpField(ipField: string | null): {
+  ip: string | null;
+  countryCode: string | null;
+} {
+  if (!ipField) {
+    return { ip: null, countryCode: null };
+  }
+
+  const parts = ipField.split('|');
+  return {
+    ip: parts[0] || null,
+    countryCode: parts[1] || null,
+  };
+}
 
 export default function IpLocation({ ip }: IpLocationProps) {
-  const [location, setLocation] = useState<LocationData | null>(() => {
-    // 初始化时检查缓存
-    if (ip && locationCache.has(ip)) {
-      return locationCache.get(ip) || null;
-    }
-    return null;
-  });
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(false);
-  const [fetched, setFetched] = useState(() => {
-    // 如果缓存中有数据，标记为已获取
-    return ip ? locationCache.has(ip) : false;
-  });
-
   if (!ip) {
     return <span className="text-xs text-gray-400">-</span>;
   }
 
-  // 点击获取位置
-  const handleFetch = async () => {
-    if (loading || fetched) return;
+  const { ip: ipAddress, countryCode } = parseIpField(ip);
 
-    setLoading(true);
-    setError(false);
+  if (countryCode) {
+    const countryName = countryNames[countryCode] || countryCode;
+    const title = `${ipAddress}\n${countryName}`;
 
-    try {
-      // 使用 ipapi.co 免费服务（HTTPS，限制：1000 请求/天）
-      const response = await fetch(`https://ipapi.co/${ip}/json/`);
-      const data = await response.json();
-
-      if (!data.error) {
-        const locationData: LocationData = {
-          country: data.country_name || '',
-          countryCode: data.country_code || '',
-          city: data.city || '',
-          region: data.region || '',
-        };
-        locationCache.set(ip, locationData);
-        setLocation(locationData);
-      } else {
-        locationCache.set(ip, null);
-        setError(true);
-      }
-    } catch {
-      setError(true);
-    } finally {
-      setLoading(false);
-      setFetched(true);
-    }
-  };
-
-  if (loading) {
     return (
-      <div className="flex items-center gap-1">
-        <div className="w-3 h-3 border border-gray-300 border-t-transparent rounded-full animate-spin" />
-        <span className="text-xs text-gray-400">查询中...</span>
+      <div className="flex items-center gap-1.5" title={title}>
+        <span className="text-base">{getFlagEmoji(countryCode)}</span>
+        <span className="text-sm text-gray-700">{countryName}</span>
       </div>
     );
   }
 
-  if (fetched && (error || !location)) {
-    return (
-      <span className="text-xs text-gray-500" title={ip}>
-        {ip}
-      </span>
-    );
-  }
-
-  if (location) {
-    return (
-      <div
-        className="flex items-center gap-1.5"
-        title={`${ip}\n${location.city}, ${location.region}, ${location.country}`}
-      >
-        <span className="text-base">{getFlagEmoji(location.countryCode)}</span>
-        <span className="text-sm text-gray-700">
-          {location.city || location.region || location.country}
-        </span>
-      </div>
-    );
-  }
-
-  // 未获取时显示点击查询按钮
+  // 没有国家代码，只显示 IP
   return (
-    <button
-      onClick={handleFetch}
-      className="text-xs text-purple-600 hover:text-purple-700 hover:underline"
-      title={`点击查询 ${ip} 的位置`}
-    >
-      查询位置
-    </button>
+    <span className="text-xs text-gray-500" title={ipAddress || ip}>
+      {ipAddress || ip}
+    </span>
   );
 }

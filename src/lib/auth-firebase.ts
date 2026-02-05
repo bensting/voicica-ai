@@ -11,6 +11,7 @@ import crypto from 'crypto';
 import { v4 as uuidv4 } from 'uuid';
 import { appConfig } from '@/config/appConfig';
 import { ProductType } from '@/config/productType';
+import { formatIpWithCountry } from './geoip';
 
 export interface AuthUser {
   uid: string;
@@ -189,13 +190,15 @@ export async function getOptionalUser(): Promise<AuthUser | null> {
  * 基于设备指纹创建或返回现有匿名用户
  * @param isNative 是否来自 Native App（用于区分积分配置）
  * @param platform 访问平台 (web, mobile-web, android, ios)
+ * @param vercelCountry Vercel 提供的国家代码（从 x-vercel-ip-country header 获取）
  */
 async function createOrGetAnonymousUser(
   deviceFingerprint: string,
   ipAddress?: string,
   userAgent?: string,
   isNative: boolean = false,
-  platform?: string
+  platform?: string,
+  vercelCountry?: string
 ): Promise<{ user_id: string; credits: number }> {
   // 生成匿名用户 ID
   const hash = crypto.createHash('sha256').update(deviceFingerprint).digest('hex').substring(0, 16);
@@ -208,11 +211,12 @@ async function createOrGetAnonymousUser(
 
   if (anonUser) {
     // 更新最后使用时间
+    const formattedIp = await formatIpWithCountry(ipAddress, vercelCountry);
     await prisma.anonymous_users.update({
       where: { user_id: anonymousUserId },
       data: {
         last_used_at: new Date(),
-        ip_address: ipAddress || anonUser.ip_address,
+        ip_address: formattedIp || anonUser.ip_address,
         user_agent: userAgent || anonUser.user_agent,
       },
     });
@@ -230,11 +234,12 @@ async function createOrGetAnonymousUser(
     ? appConfig.credits.native.anonymous_user
     : appConfig.credits.anonymous_user;
 
+  const newFormattedIp = await formatIpWithCountry(ipAddress, vercelCountry);
   anonUser = await prisma.anonymous_users.create({
     data: {
       user_id: anonymousUserId,
       device_fingerprint: deviceFingerprint,
-      ip_address: ipAddress,
+      ip_address: newFormattedIp,
       user_agent: userAgent,
       platform: platform || null,
       credits: initialCredits,
@@ -300,6 +305,8 @@ export async function getUserOrAnonymous(): Promise<UnifiedUser> {
     const ipAddress = headersList.get('x-forwarded-for')?.split(',')[0] || undefined;
     const userAgent = headersList.get('user-agent') || undefined;
     const platform = headersList.get('x-platform') || undefined;
+    // Vercel 自动提供的地理位置 header（生产环境）
+    const vercelCountry = headersList.get('x-vercel-ip-country') || undefined;
 
     // 检测是否来自 Native App
     // 方式1: 检查 x-client-type header
@@ -308,9 +315,9 @@ export async function getUserOrAnonymous(): Promise<UnifiedUser> {
     const invokePath = headersList.get('x-invoke-path') || '';
     const isNative = clientType === 'native' || invokePath.includes('/native/');
 
-    console.log('🔍 [getUserOrAnonymous] isNative:', isNative, 'clientType:', clientType, 'invokePath:', invokePath, 'platform:', platform);
+    console.log('🔍 [getUserOrAnonymous] isNative:', isNative, 'clientType:', clientType, 'invokePath:', invokePath, 'platform:', platform, 'vercelCountry:', vercelCountry);
 
-    const anonUser = await createOrGetAnonymousUser(fingerprint, ipAddress, userAgent, isNative, platform);
+    const anonUser = await createOrGetAnonymousUser(fingerprint, ipAddress, userAgent, isNative, platform, vercelCountry);
 
     console.log('⚠️ [getUserOrAnonymous] 已降级到匿名用户:', anonUser.user_id);
 

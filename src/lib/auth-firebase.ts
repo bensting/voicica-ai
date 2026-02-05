@@ -11,6 +11,7 @@ import crypto from 'crypto';
 import { v4 as uuidv4 } from 'uuid';
 import { appConfig } from '@/config/appConfig';
 import { ProductType } from '@/config/productType';
+import { formatIpWithCountry } from './geoip';
 
 export interface AuthUser {
   uid: string;
@@ -212,7 +213,7 @@ async function createOrGetAnonymousUser(
       where: { user_id: anonymousUserId },
       data: {
         last_used_at: new Date(),
-        ip_address: ipAddress || anonUser.ip_address,
+        ip_address: formatIpWithCountry(ipAddress) || anonUser.ip_address,
         user_agent: userAgent || anonUser.user_agent,
       },
     });
@@ -234,7 +235,7 @@ async function createOrGetAnonymousUser(
     data: {
       user_id: anonymousUserId,
       device_fingerprint: deviceFingerprint,
-      ip_address: ipAddress,
+      ip_address: formatIpWithCountry(ipAddress),
       user_agent: userAgent,
       platform: platform || null,
       credits: initialCredits,

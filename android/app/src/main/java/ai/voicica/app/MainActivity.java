@@ -11,6 +11,7 @@ import androidx.core.view.WindowInsetsControllerCompat;
 import com.getcapacitor.BridgeActivity;
 import ai.voicica.app.plugins.AppOpenAdPlugin;
 import ai.voicica.app.plugins.GooglePlayBillingPlugin;
+import ai.voicica.app.plugins.NativeAdPlugin;
 
 public class MainActivity extends BridgeActivity {
     @Override
@@ -26,6 +27,7 @@ public class MainActivity extends BridgeActivity {
         // 注册自定义插件
         registerPlugin(AppOpenAdPlugin.class);
         registerPlugin(GooglePlayBillingPlugin.class);
+        registerPlugin(NativeAdPlugin.class);
 
         super.onCreate(savedInstanceState);
 

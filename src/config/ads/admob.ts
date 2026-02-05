@@ -31,6 +31,22 @@ export interface AdMobConfig {
     /** 是否启用开屏广告 */
     enabled: boolean;
   };
+  /** 原生广告单元（信息流中显示） */
+  native: {
+    android: string;
+    ios: string;
+    /** 是否启用原生广告 */
+    enabled: boolean;
+    /** 在列表中的位置（从0开始） */
+    position: number;
+  };
+  /** 首页横幅原生广告单元 */
+  nativeBanner: {
+    android: string;
+    ios: string;
+    /** 是否启用 */
+    enabled: boolean;
+  };
   /** 是否启用 */
   enabled: boolean;
   /** 是否使用测试广告（上架前测试用） */
@@ -67,6 +83,16 @@ export const TEST_AD_IDS = {
     android: 'ca-app-pub-3940256099942544/6300978111',
     ios: 'ca-app-pub-3940256099942544/2934735716',
   },
+  /** 原生高级广告测试 ID */
+  native: {
+    android: 'ca-app-pub-3940256099942544/2247696110',
+    ios: 'ca-app-pub-3940256099942544/3986624511',
+  },
+  /** 首页横幅原生广告测试 ID（使用同一个测试 ID） */
+  nativeBanner: {
+    android: 'ca-app-pub-3940256099942544/2247696110',
+    ios: 'ca-app-pub-3940256099942544/3986624511',
+  },
 };
 
 /**
@@ -94,6 +120,16 @@ const REAL_AD_IDS = {
     android: 'ca-app-pub-5946279989031789/6006343368',
     ios: '', // iOS 开屏广告（待创建）
   },
+  /** 原生高级广告（信息流用） */
+  native: {
+    android: 'ca-app-pub-5946279989031789/4551912389',
+    ios: '', // iOS 原生广告（待创建）
+  },
+  /** 首页横幅原生广告 */
+  nativeBanner: {
+    android: 'ca-app-pub-5946279989031789/8140735812',
+    ios: '', // iOS 原生广告（待创建）
+  },
 };
 
 /**
@@ -109,6 +145,15 @@ const devConfig: AdMobConfig = {
     ...TEST_AD_IDS.appOpen,
     intervalMinutes: 1, // 开发环境 1 分钟，方便测试
     enabled: false, // 关闭开屏广告
+  },
+  native: {
+    ...TEST_AD_IDS.native,
+    enabled: false, // 暂时禁用，等新 APK 审核通过后启用
+    position: 2, // 在第3个位置显示（索引从0开始）
+  },
+  nativeBanner: {
+    ...TEST_AD_IDS.nativeBanner,
+    enabled: true, // 开发环境启用首页横幅原生广告
   },
   enabled: true, // 开发环境启用，使用测试广告
   useTestAds: true,
@@ -131,6 +176,15 @@ const prodConfig: AdMobConfig = {
     intervalMinutes: 15, // 生产环境 15 分钟
     enabled: true, // 启用开屏广告
   },
+  native: {
+    ...REAL_AD_IDS.native,
+    enabled: false, // 暂时禁用，等新 APK 审核通过后启用
+    position: 2, // 在第3个位置显示（索引从0开始）
+  },
+  nativeBanner: {
+    ...REAL_AD_IDS.nativeBanner,
+    enabled: true, // 启用首页横幅原生广告
+  },
   enabled: true,
   useTestAds: false, // 使用真实广告
 };
@@ -152,6 +206,15 @@ export const admobConfig: AdMobConfig = baseConfig.useTestAds
         ...TEST_AD_IDS.appOpen,
         intervalMinutes: baseConfig.appOpen.intervalMinutes,
         enabled: baseConfig.appOpen.enabled,
+      },
+      native: {
+        ...TEST_AD_IDS.native,
+        enabled: baseConfig.native.enabled,
+        position: baseConfig.native.position,
+      },
+      nativeBanner: {
+        ...TEST_AD_IDS.nativeBanner,
+        enabled: baseConfig.nativeBanner.enabled,
       },
     }
   : baseConfig;
@@ -196,4 +259,39 @@ export function isAdMobEnabled(): boolean {
  */
 export function isAppOpenAdEnabled(): boolean {
   return admobConfig.enabled && admobConfig.appOpen.enabled;
+}
+
+/**
+ * 获取原生广告单元 ID
+ */
+export function getNativeAdUnitId(platform: 'android' | 'ios'): string {
+  return admobConfig.native[platform];
+}
+
+/**
+ * 检查原生广告是否启用
+ */
+export function isNativeAdEnabled(): boolean {
+  return admobConfig.enabled && admobConfig.native.enabled;
+}
+
+/**
+ * 获取原生广告在列表中的位置
+ */
+export function getNativeAdPosition(): number {
+  return admobConfig.native.position;
+}
+
+/**
+ * 检查首页横幅原生广告是否启用
+ */
+export function isAdMobNativeBannerEnabled(): boolean {
+  return admobConfig.enabled && admobConfig.nativeBanner.enabled;
+}
+
+/**
+ * 获取首页横幅原生广告单元 ID
+ */
+export function getNativeBannerAdUnitId(platform: 'android' | 'ios'): string {
+  return admobConfig.nativeBanner[platform];
 }

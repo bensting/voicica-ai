@@ -1,8 +1,19 @@
 {
-  "version": "1.2.16",
-  "buildNumber": 37,
+  "version": "1.2.17",
+  "buildNumber": 38,
   "description": "原生应用版本（Android/iOS 应用壳）",
   "changelog": [
+    {
+      "version": "1.2.17",
+      "buildNumber": 38,
+      "date": "2026-02-05",
+      "changes": [
+        "新增首页横幅原生广告（AdMob Native Advanced Ad）",
+        "NativeAdPlugin 支持多广告实例，可同时加载多个广告",
+        "广告加载失败时自动回退显示推广 Banner",
+        "新增 useNativeBannerAd Hook 管理首页横幅广告"
+      ]
+    },
     {
       "version": "1.2.16",
       "buildNumber": 37,

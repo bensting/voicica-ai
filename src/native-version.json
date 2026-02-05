@@ -1,8 +1,18 @@
 {
-  "version": "1.2.18",
-  "buildNumber": 39,
+  "version": "1.2.19",
+  "buildNumber": 40,
   "description": "原生应用版本（Android/iOS 应用壳）",
   "changelog": [
+    {
+      "version": "1.2.19",
+      "buildNumber": 40,
+      "date": "2026-02-05",
+      "changes": [
+        "Dialogue 生成成功后显示 DialogueDetailModal",
+        "与 Music/Voice 页面行为保持一致",
+        "新增 getDialogueRecordByTaskId 函数"
+      ]
+    },
     {
       "version": "1.2.18",
       "buildNumber": 39,

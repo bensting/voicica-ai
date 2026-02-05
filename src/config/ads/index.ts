@@ -37,6 +37,8 @@ export {
   getNativeAdPosition,
   isAdMobNativeBannerEnabled,
   getNativeBannerAdUnitId,
+  isBannerAdEnabled,
+  getBannerAdUnitId,
   type AdMobConfig,
 } from './admob';
 

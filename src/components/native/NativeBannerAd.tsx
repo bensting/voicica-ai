@@ -1,27 +1,71 @@
 'use client';
 
 /**
- * 首页横幅原生广告组件
+ * 首页横幅广告组件
  *
- * 在 Native 首页顶部显示横幅样式的原生广告
- * 使用自定义 Capacitor 插件显示 AdMob 原生高级广告
- * 加载失败时回退到 BannerCarousel
+ * 支持两种广告类型：
+ * 1. Banner 广告 - 固定在屏幕顶部，点击正常工作
+ * 2. 原生广告 - 在内容中显示，但点击不工作
+ *
+ * 优先使用 Banner 广告，如果禁用则使用原生广告，都禁用则显示 BannerCarousel
  */
 
 import { useEffect } from 'react';
 import { useNativeBannerAd, type NativeAdData } from '@/hooks/useNativeBannerAd';
+import { useBannerAd } from '@/hooks/useBannerAd';
+import { isBannerAdEnabled, isAdMobNativeBannerEnabled } from '@/config/ads';
 import BannerCarousel from './BannerCarousel';
 
 /**
- * 首页横幅原生广告
- *
- * 特点：
- * - 横幅样式，与原 BannerCarousel 位置一致
- * - 明确标注 "Ad" 标识
- * - 订阅用户不显示广告，显示 BannerCarousel
- * - 广告加载失败时回退到 BannerCarousel
+ * 首页横幅广告
  */
 export default function NativeBannerAd() {
+  const bannerAdEnabled = isBannerAdEnabled();
+  const nativeBannerEnabled = isAdMobNativeBannerEnabled();
+
+  // 如果 Banner 广告启用，使用 Banner 广告
+  if (bannerAdEnabled) {
+    return <BannerAdContent />;
+  }
+
+  // 如果原生广告启用，使用原生广告
+  if (nativeBannerEnabled) {
+    return <NativeAdContent />;
+  }
+
+  // 都禁用，显示 BannerCarousel
+  return <BannerCarousel />;
+}
+
+/**
+ * Banner 广告内容（固定在顶部）
+ */
+function BannerAdContent() {
+  const { isEnabled, status } = useBannerAd();
+
+  // 未启用时显示 BannerCarousel
+  if (!isEnabled) {
+    return <BannerCarousel />;
+  }
+
+  // Banner 广告是固定在屏幕顶部的覆盖层
+  // 这里只需要返回 BannerCarousel 作为内容区域的填充
+  // 实际的 Banner 由 AdMob SDK 在原生层渲染
+
+  // 加载中或加载失败时显示 BannerCarousel
+  if (status === 'loading' || status === 'idle' || status === 'error') {
+    return <BannerCarousel />;
+  }
+
+  // Banner 显示成功后，返回 BannerCarousel（因为 Banner 是覆盖层，不占用内容空间）
+  // 或者可以返回一个占位 div
+  return <BannerCarousel />;
+}
+
+/**
+ * 原生广告内容（在页面内容中）
+ */
+function NativeAdContent() {
   const { isEnabled, adData, status, recordClick, recordImpression } = useNativeBannerAd();
 
   // 记录广告展示
@@ -31,7 +75,7 @@ export default function NativeBannerAd() {
     }
   }, [status, adData, recordImpression]);
 
-  // 未启用时（非原生平台或订阅用户）显示 BannerCarousel
+  // 未启用时显示 BannerCarousel
   if (!isEnabled) {
     return <BannerCarousel />;
   }

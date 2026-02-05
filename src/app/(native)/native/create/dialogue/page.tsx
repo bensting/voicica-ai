@@ -19,7 +19,8 @@ import NativeDailyTasksModal from '@/components/native/NativeDailyTasksModal';
 import DialogueLanguageSheet from '@/components/native/create/dialogue/DialogueLanguageSheet';
 import DialogueVoiceSheet from '@/components/native/create/dialogue/DialogueVoiceSheet';
 import { calculateDialogueCost } from '@/config/creditsCost';
-import { createDialogueTask, getDialogueTaskStatus } from '@/actions/dialogue';
+import { createDialogueTask, getDialogueTaskStatus, getDialogueRecordByTaskId, deleteDialogueRecord, type DialogueRecord } from '@/actions/dialogue';
+import DialogueDetailModal from '@/components/native/me/DialogueDetailModal';
 
 // localStorage key
 const STORAGE_KEY = 'dialogue_draft';
@@ -116,6 +117,7 @@ export default function NativeDialoguePage() {
   const [currentTaskId, setCurrentTaskId] = useState<string | null>(null);
   const [taskCreatedAt, setTaskCreatedAt] = useState<Date | null>(null);
   const [generatedAudioUrl, setGeneratedAudioUrl] = useState<string | null>(null);
+  const [generatedDialogue, setGeneratedDialogue] = useState<DialogueRecord | null>(null);
 
   // textarea refs（用于在光标位置插入情绪标签）
   const textareaRefs = useRef<Map<string, HTMLTextAreaElement>>(new Map());
@@ -199,8 +201,16 @@ export default function NativeDialoguePage() {
         setGeneratingProgress(status.progress);
 
         if (status.status === 'SUCCESS' && status.audioUrl) {
-          setGeneratingStatus('success');
-          setGeneratedAudioUrl(status.audioUrl);
+          // 获取生成的记录并显示详情
+          const dialogueRecord = await getDialogueRecordByTaskId(currentTaskId);
+          if (dialogueRecord) {
+            setGeneratedDialogue(dialogueRecord);
+            setIsGeneratingModalOpen(false);
+          } else {
+            // 如果获取失败，显示成功状态
+            setGeneratingStatus('success');
+            setGeneratedAudioUrl(status.audioUrl);
+          }
           setCurrentTaskId(null);
           setTaskCreatedAt(null);
           refreshCredits();
@@ -705,6 +715,34 @@ export default function NativeDialoguePage() {
           }
         }}
       />
+
+      {/* Dialogue Detail Modal - 生成成功后显示 */}
+      {generatedDialogue && (
+        <DialogueDetailModal
+          dialogue={generatedDialogue}
+          onClose={() => setGeneratedDialogue(null)}
+          onRecreate={() => {
+            // 使用生成的对话参数重新创建
+            try {
+              const dialogueItems = JSON.parse(generatedDialogue.dialogue_json);
+              if (Array.isArray(dialogueItems) && dialogueItems.length > 0) {
+                setDialogues(dialogueItems.map((item: { text: string; voice: string }, index: number) => ({
+                  id: (index + 1).toString(),
+                  text: item.text,
+                  voice: item.voice,
+                })));
+              }
+            } catch {
+              // ignore parse error
+            }
+            setGeneratedDialogue(null);
+          }}
+          onDelete={async (dialogue) => {
+            await deleteDialogueRecord(dialogue.id);
+            setGeneratedDialogue(null);
+          }}
+        />
+      )}
     </div>
   );
 }

@@ -393,6 +393,34 @@ export interface DialogueRecord {
 }
 
 /**
+ * 根据 task_id 获取单条 Dialogue 记录
+ */
+export async function getDialogueRecordByTaskId(taskId: string): Promise<DialogueRecord | null> {
+  const { user_id: userId } = await getUserOrAnonymous();
+
+  const record = await prisma.dialogue_records.findFirst({
+    where: {
+      task_id: taskId,
+      user_id: userId,
+    },
+    select: {
+      id: true,
+      task_id: true,
+      status: true,
+      progress: true,
+      audio_url: true,
+      dialogue_json: true,
+      total_characters: true,
+      credits_cost: true,
+      duration: true,
+      created_at: true,
+    },
+  });
+
+  return record;
+}
+
+/**
  * 获取用户的 Dialogue 历史记录
  */
 export async function getDialogueHistory(limit: number = 20): Promise<Array<{

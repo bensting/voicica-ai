@@ -148,7 +148,7 @@ const devConfig: AdMobConfig = {
   },
   native: {
     ...TEST_AD_IDS.native,
-    enabled: true, // 信息流原生广告
+    enabled: false, // 暂时禁用，等新 APK 审核通过后启用
     position: 2, // 在第3个位置显示（索引从0开始）
   },
   nativeBanner: {
@@ -178,7 +178,7 @@ const prodConfig: AdMobConfig = {
   },
   native: {
     ...REAL_AD_IDS.native,
-    enabled: true, // 信息流原生广告
+    enabled: false, // 暂时禁用，等新 APK 审核通过后启用
     position: 2, // 在第3个位置显示（索引从0开始）
   },
   nativeBanner: {

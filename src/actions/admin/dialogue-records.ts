@@ -17,6 +17,7 @@ interface DialogueRecordsQuery {
   search?: string;
   startDate?: string;
   endDate?: string;
+  isPublic?: boolean;
 }
 
 /**
@@ -37,6 +38,7 @@ export interface DialogueRecordItem {
   errorMessage: string | null;
   createdAt: string;
   completedAt: string | null;
+  isPublic: boolean;
 }
 
 /**
@@ -53,6 +55,7 @@ export async function getDialogueRecords(query: DialogueRecordsQuery = {}) {
     search,
     startDate,
     endDate,
+    isPublic,
   } = query;
 
   // 构建查询条件
@@ -86,6 +89,10 @@ export async function getDialogueRecords(query: DialogueRecordsQuery = {}) {
     }
   }
 
+  if (isPublic !== undefined) {
+    where.is_public = isPublic;
+  }
+
   const [total, records] = await Promise.all([
     prisma.dialogue_records.count({ where }),
     prisma.dialogue_records.findMany({
@@ -111,6 +118,7 @@ export async function getDialogueRecords(query: DialogueRecordsQuery = {}) {
     errorMessage: record.error_message,
     createdAt: record.created_at.toISOString(),
     completedAt: record.completed_at?.toISOString() || null,
+    isPublic: record.is_public,
   }));
 
   return {
@@ -207,6 +215,54 @@ export async function deleteDialogueRecords(ids: number[]) {
     return {
       success: false,
       message: error instanceof Error ? error.message : '删除失败',
+    };
+  }
+}
+
+/**
+ * 更新 Dialogue 记录公开状态
+ */
+export async function updateDialogueRecordPublic(id: number, isPublic: boolean) {
+  await verifyAdminWithoutDb();
+
+  try {
+    await prisma.dialogue_records.update({
+      where: { id },
+      data: { is_public: isPublic },
+    });
+
+    return { success: true, message: isPublic ? '已设为公开' : '已设为私有' };
+  } catch (error) {
+    console.error('更新 Dialogue 记录公开状态失败:', error);
+    return {
+      success: false,
+      message: error instanceof Error ? error.message : '更新失败',
+    };
+  }
+}
+
+/**
+ * 批量更新 Dialogue 记录公开状态
+ */
+export async function updateDialogueRecordsPublic(ids: number[], isPublic: boolean) {
+  await verifyAdminWithoutDb();
+
+  try {
+    const result = await prisma.dialogue_records.updateMany({
+      where: { id: { in: ids } },
+      data: { is_public: isPublic },
+    });
+
+    return {
+      success: true,
+      message: `成功更新 ${result.count} 条记录`,
+      updated: result.count,
+    };
+  } catch (error) {
+    console.error('批量更新 Dialogue 记录公开状态失败:', error);
+    return {
+      success: false,
+      message: error instanceof Error ? error.message : '更新失败',
     };
   }
 }

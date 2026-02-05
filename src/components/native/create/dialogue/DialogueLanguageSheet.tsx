@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { DIALOGUE_LANGUAGES } from '@/config/native/dialogueConfig';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface DialogueLanguageSheetProps {
   isOpen: boolean;
@@ -27,6 +28,7 @@ export default function DialogueLanguageSheet({
   selectedCode,
   onSelect,
 }: DialogueLanguageSheetProps) {
+  const { t } = useLanguage();
   const [searchQuery, setSearchQuery] = useState('');
 
   if (!isOpen) return null;
@@ -79,8 +81,8 @@ export default function DialogueLanguageSheet({
               </svg>
             </div>
             <div>
-              <h3 className="text-white font-semibold text-lg">Language</h3>
-              <p className="text-gray-400 text-sm">Select dialogue language</p>
+              <h3 className="text-white font-semibold text-lg">{t('native.createDialogue.language')}</h3>
+              <p className="text-gray-400 text-sm">{t('native.createDialogue.selectLanguage')}</p>
             </div>
           </div>
 
@@ -90,7 +92,7 @@ export default function DialogueLanguageSheet({
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search language..."
+              placeholder={t('native.createDialogue.searchLanguage')}
               className="w-full pl-10 pr-4 py-2.5 bg-gray-800 text-white placeholder-gray-500 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
             />
             <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">

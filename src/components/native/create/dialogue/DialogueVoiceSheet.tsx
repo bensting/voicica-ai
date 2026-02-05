@@ -2,6 +2,7 @@
 
 import { useState, useRef } from 'react';
 import { DIALOGUE_ALL_VOICES, getVoiceSampleUrl } from '@/config/native/dialogueConfig';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface DialogueVoiceSheetProps {
   isOpen: boolean;
@@ -41,6 +42,7 @@ export default function DialogueVoiceSheet({
   selectedVoiceId,
   onSelect,
 }: DialogueVoiceSheetProps) {
+  const { t } = useLanguage();
   const [searchQuery, setSearchQuery] = useState('');
   const [genderFilter, setGenderFilter] = useState<'all' | 'male' | 'female'>('all');
   const [playingVoiceId, setPlayingVoiceId] = useState<string | null>(null);
@@ -148,8 +150,8 @@ export default function DialogueVoiceSheet({
               </svg>
             </div>
             <div>
-              <h3 className="text-white font-semibold text-lg">Voice</h3>
-              <p className="text-gray-400 text-sm">Select a voice for this dialogue</p>
+              <h3 className="text-white font-semibold text-lg">{t('native.createDialogue.voice')}</h3>
+              <p className="text-gray-400 text-sm">{t('native.createDialogue.selectVoice')}</p>
             </div>
           </div>
 
@@ -159,7 +161,7 @@ export default function DialogueVoiceSheet({
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search voice..."
+              placeholder={t('native.createDialogue.searchVoice')}
               className="w-full pl-10 pr-4 py-2.5 bg-gray-800 text-white placeholder-gray-500 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
             />
             <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">
@@ -179,7 +181,7 @@ export default function DialogueVoiceSheet({
                     : 'bg-gray-800 text-gray-400 hover:text-white'
                 }`}
               >
-                {gender === 'all' ? 'All' : gender === 'male' ? '♂ Male' : '♀ Female'}
+                {gender === 'all' ? t('native.createDialogue.genderFilter.all') : gender === 'male' ? `♂ ${t('native.createDialogue.genderFilter.male')}` : `♀ ${t('native.createDialogue.genderFilter.female')}`}
               </button>
             ))}
           </div>

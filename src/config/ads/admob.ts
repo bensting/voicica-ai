@@ -169,7 +169,7 @@ const devConfig: AdMobConfig = {
   },
   banner: {
     ...TEST_AD_IDS.banner,
-    enabled: true, // 启用 Banner 广告（首页顶部）
+    enabled: false, // 禁用 Banner 广告（显示有问题）
   },
   enabled: true, // 开发环境启用，使用测试广告
   useTestAds: true,
@@ -203,7 +203,7 @@ const prodConfig: AdMobConfig = {
   },
   banner: {
     ...REAL_AD_IDS.banner,
-    enabled: true, // 启用 Banner 广告（首页顶部）
+    enabled: false, // 禁用 Banner 广告（显示有问题）
   },
   enabled: true,
   useTestAds: false, // 使用真实广告

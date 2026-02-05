@@ -47,6 +47,13 @@ export interface AdMobConfig {
     /** 是否启用 */
     enabled: boolean;
   };
+  /** Banner 广告单元（首页顶部） */
+  banner: {
+    android: string;
+    ios: string;
+    /** 是否启用 */
+    enabled: boolean;
+  };
   /** 是否启用 */
   enabled: boolean;
   /** 是否使用测试广告（上架前测试用） */
@@ -130,6 +137,11 @@ const REAL_AD_IDS = {
     android: 'ca-app-pub-5946279989031789/8140735812',
     ios: '', // iOS 原生广告（待创建）
   },
+  /** Banner 广告（首页顶部） */
+  banner: {
+    android: 'ca-app-pub-5946279989031789/3490946305',
+    ios: '', // iOS Banner 广告（待创建）
+  },
 };
 
 /**
@@ -153,7 +165,11 @@ const devConfig: AdMobConfig = {
   },
   nativeBanner: {
     ...TEST_AD_IDS.nativeBanner,
-    enabled: true, // 开发环境启用首页横幅原生广告
+    enabled: false, // 禁用原生广告（点击不工作）
+  },
+  banner: {
+    ...TEST_AD_IDS.banner,
+    enabled: true, // 启用 Banner 广告（首页顶部）
   },
   enabled: true, // 开发环境启用，使用测试广告
   useTestAds: true,
@@ -183,7 +199,11 @@ const prodConfig: AdMobConfig = {
   },
   nativeBanner: {
     ...REAL_AD_IDS.nativeBanner,
-    enabled: true, // 启用首页横幅原生广告
+    enabled: false, // 禁用原生广告（点击不工作）
+  },
+  banner: {
+    ...REAL_AD_IDS.banner,
+    enabled: true, // 启用 Banner 广告（首页顶部）
   },
   enabled: true,
   useTestAds: false, // 使用真实广告
@@ -215,6 +235,10 @@ export const admobConfig: AdMobConfig = baseConfig.useTestAds
       nativeBanner: {
         ...TEST_AD_IDS.nativeBanner,
         enabled: baseConfig.nativeBanner.enabled,
+      },
+      banner: {
+        ...TEST_AD_IDS.banner,
+        enabled: baseConfig.banner.enabled,
       },
     }
   : baseConfig;
@@ -294,4 +318,18 @@ export function isAdMobNativeBannerEnabled(): boolean {
  */
 export function getNativeBannerAdUnitId(platform: 'android' | 'ios'): string {
   return admobConfig.nativeBanner[platform];
+}
+
+/**
+ * 检查 Banner 广告是否启用
+ */
+export function isBannerAdEnabled(): boolean {
+  return admobConfig.enabled && admobConfig.banner.enabled;
+}
+
+/**
+ * 获取 Banner 广告单元 ID
+ */
+export function getBannerAdUnitId(platform: 'android' | 'ios'): string {
+  return admobConfig.banner[platform];
 }

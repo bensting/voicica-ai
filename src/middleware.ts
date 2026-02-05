@@ -62,6 +62,7 @@ export function middleware(request: NextRequest) {
   // ========== 认证处理 ==========
   const firebaseToken = request.cookies.get('firebase-token')?.value;
   const deviceFingerprint = request.cookies.get('device-fingerprint')?.value;
+  const platform = request.cookies.get('platform')?.value;
 
   // 创建新的 headers 对象
   const requestHeaders = new Headers(request.headers);
@@ -75,6 +76,10 @@ export function middleware(request: NextRequest) {
 
   if (deviceFingerprint) {
     requestHeaders.set('x-device-fingerprint', deviceFingerprint);
+  }
+
+  if (platform) {
+    requestHeaders.set('x-platform', platform);
   }
 
   // 创建响应

@@ -232,6 +232,50 @@
       "detailPrompt": "提示词",
       "detailCreditsUsed": "消耗积分",
       "deleteConfirmTitle": "删除此图片？"
+    },
+    "createDialogue": {
+      "title": "文字转对话",
+      "language": "语言",
+      "selectLanguage": "选择对话语言",
+      "searchLanguage": "搜索语言...",
+      "voice": "声音",
+      "selectVoice": "选择对话声音",
+      "searchVoice": "搜索声音...",
+      "text": "文本",
+      "textPlaceholder": "嘿！你试过这个吗？",
+      "dialogue": "对话",
+      "addDialogue": "添加对话",
+      "remove": "删除",
+      "totalCharacters": "共计：{{current}} / {{max}} 字符",
+      "generate": "生成对话",
+      "generating": "生成中...",
+      "generatingDialogue": "正在生成对话...",
+      "estimatedTime": "预计时间：1-2分钟",
+      "dialogueCreated": "对话创建成功！",
+      "dialogueCreatedDesc": "您的对话已成功生成。",
+      "createAnother": "继续创建",
+      "viewHistory": "查看历史",
+      "generationFailed": "生成失败",
+      "insufficientCredits": "积分不足",
+      "insufficientCreditsDesc": "您的积分不足，升级以获取更多！",
+      "getCredits": "获取积分",
+      "tryAgain": "重试",
+      "close": "关闭",
+      "creditsRule": "100字符 = 3积分",
+      "emotions": {
+        "excitedly": "兴奋地",
+        "whispers": "低语",
+        "laughs": "笑",
+        "sarcastic": "讽刺",
+        "sighs": "叹气",
+        "sad": "悲伤",
+        "angry": "愤怒"
+      },
+      "genderFilter": {
+        "all": "全部",
+        "male": "男性",
+        "female": "女性"
+      }
     }
   }
 }

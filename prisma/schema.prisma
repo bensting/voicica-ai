@@ -13,6 +13,7 @@ model anonymous_users {
   device_fingerprint   String    @unique(map: "uq_anonymous_users_device_fingerprint") @db.VarChar(255)
   ip_address           String?   @db.VarChar(50)
   user_agent           String?
+  platform             String?   @db.VarChar(20) // 访问平台: web, mobile-web, android, ios
   credits              Int
   total_credits_used   Int
   expires_at           DateTime? @db.Timestamptz(6)
@@ -28,6 +29,7 @@ model anonymous_users {
   @@index([expires_at], map: "idx_anonymous_users_expires_at")
   @@index([last_used_at], map: "idx_anonymous_users_last_used_at")
   @@index([user_id], map: "idx_anonymous_users_user_id")
+  @@index([platform], map: "idx_anonymous_users_platform")
 }
 
 model credit_history {

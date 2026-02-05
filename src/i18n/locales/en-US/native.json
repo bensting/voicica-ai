@@ -232,6 +232,50 @@
       "detailPrompt": "Prompt",
       "detailCreditsUsed": "Credits used",
       "deleteConfirmTitle": "Delete this image?"
+    },
+    "createDialogue": {
+      "title": "Text to Dialogue",
+      "language": "Language",
+      "selectLanguage": "Select dialogue language",
+      "searchLanguage": "Search language...",
+      "voice": "Voice",
+      "selectVoice": "Select a voice for this dialogue",
+      "searchVoice": "Search voice...",
+      "text": "Text",
+      "textPlaceholder": "Hey! Have you tried this?",
+      "dialogue": "Dialogue",
+      "addDialogue": "Add Dialogue",
+      "remove": "Remove",
+      "totalCharacters": "Total: {{current}} / {{max}} characters",
+      "generate": "Generate Dialogue",
+      "generating": "Generating...",
+      "generatingDialogue": "Generating dialogue...",
+      "estimatedTime": "Estimated time: 1-2 minutes",
+      "dialogueCreated": "Dialogue Created!",
+      "dialogueCreatedDesc": "Your dialogue has been generated successfully.",
+      "createAnother": "Create Another",
+      "viewHistory": "View History",
+      "generationFailed": "Generation Failed",
+      "insufficientCredits": "Insufficient Credits",
+      "insufficientCreditsDesc": "You don't have enough credits. Upgrade to get more!",
+      "getCredits": "Get Credits",
+      "tryAgain": "Try Again",
+      "close": "Close",
+      "creditsRule": "100 chars = 3 credits",
+      "emotions": {
+        "excitedly": "excitedly",
+        "whispers": "whispers",
+        "laughs": "laughs",
+        "sarcastic": "sarcastic",
+        "sighs": "sighs",
+        "sad": "sad",
+        "angry": "angry"
+      },
+      "genderFilter": {
+        "all": "All",
+        "male": "Male",
+        "female": "Female"
+      }
     }
   }
 }

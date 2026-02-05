@@ -12,6 +12,8 @@ import CrownIcon from '@/components/native/common/CrownIcon';
 import LoginModal from '@/components/native/LoginModal';
 import InsufficientCreditsModal from '@/components/native/common/InsufficientCreditsModal';
 import NativeDailyTasksModal from '@/components/native/NativeDailyTasksModal';
+import DialogueLanguageSheet from '@/components/native/create/dialogue/DialogueLanguageSheet';
+import DialogueVoiceSheet from '@/components/native/create/dialogue/DialogueVoiceSheet';
 import { calculateDialogueCost } from '@/config/creditsCost';
 import { createDialogueTask, getDialogueTaskStatus } from '@/actions/dialogue';
 
@@ -32,7 +34,6 @@ import {
   DIALOGUE_LANGUAGES,
   DIALOGUE_EMOTIONS,
   DIALOGUE_ALL_VOICES,
-  getVoiceSampleUrl,
 } from '@/config/native/dialogueConfig';
 
 // 声音类型（直接使用配置）
@@ -64,18 +65,6 @@ const PlusIcon = () => (
   </svg>
 );
 
-const StopIcon = () => (
-  <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor">
-    <rect x="6" y="6" width="12" height="12" rx="1" />
-  </svg>
-);
-
-const SmallPlayIcon = () => (
-  <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor">
-    <path d="M8 5v14l11-7z" />
-  </svg>
-);
-
 const DialogueIcon = () => (
   <svg className="w-8 h-8 text-gray-400" viewBox="0 0 24 24" fill="currentColor">
     <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/>
@@ -101,10 +90,10 @@ export default function NativeDialoguePage() {
     { id: '1', text: '', voice: 'Liam' },
   ]);
   const [languageCode, setLanguageCode] = useState('auto');
-  const [isLanguageSelectorOpen, setIsLanguageSelectorOpen] = useState(false);
+  const [isLanguageSheetOpen, setIsLanguageSheetOpen] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [activeVoiceSelector, setActiveVoiceSelector] = useState<string | null>(null);
+  const [voiceSheetDialogueId, setVoiceSheetDialogueId] = useState<string | null>(null);
 
   // 声音列表（直接使用配置）
   const voices = VOICES;
@@ -118,10 +107,6 @@ export default function NativeDialoguePage() {
   const [taskCreatedAt, setTaskCreatedAt] = useState<Date | null>(null);
   const [generatedAudioUrl, setGeneratedAudioUrl] = useState<string | null>(null);
 
-  // 声音预览播放
-  const [playingVoiceId, setPlayingVoiceId] = useState<string | null>(null);
-  const previewAudioRef = useRef<HTMLAudioElement | null>(null);
-
   // textarea refs（用于在光标位置插入情绪标签）
   const textareaRefs = useRef<Map<string, HTMLTextAreaElement>>(new Map());
 
@@ -131,54 +116,9 @@ export default function NativeDialoguePage() {
 
   // 修正 voice ID 大小写
   const fixVoiceCase = (voiceId: string): string => {
-    if (!voiceId) return 'Liam';
+    if (!voiceId) return 'Adam';
     return voiceId.charAt(0).toUpperCase() + voiceId.slice(1).toLowerCase();
   };
-
-  // 播放/停止声音预览
-  const toggleVoicePreview = (e: React.MouseEvent, voice: Voice) => {
-    e.stopPropagation(); // 阻止触发选择声音
-
-    const sampleUrl = getVoiceSampleUrl(voice.id);
-    if (!sampleUrl) return;
-
-    // 如果点击的是正在播放的声音，停止播放
-    if (playingVoiceId === voice.id) {
-      previewAudioRef.current?.pause();
-      previewAudioRef.current = null;
-      setPlayingVoiceId(null);
-      return;
-    }
-
-    // 停止之前的播放
-    if (previewAudioRef.current) {
-      previewAudioRef.current.pause();
-      previewAudioRef.current = null;
-    }
-
-    // 开始新的播放
-    const audio = new Audio(sampleUrl);
-    audio.onended = () => {
-      setPlayingVoiceId(null);
-      previewAudioRef.current = null;
-    };
-    audio.onerror = () => {
-      setPlayingVoiceId(null);
-      previewAudioRef.current = null;
-    };
-    audio.play();
-    previewAudioRef.current = audio;
-    setPlayingVoiceId(voice.id);
-  };
-
-  // 关闭下拉时停止预览播放
-  useEffect(() => {
-    if (!activeVoiceSelector && previewAudioRef.current) {
-      previewAudioRef.current.pause();
-      previewAudioRef.current = null;
-      setPlayingVoiceId(null);
-    }
-  }, [activeVoiceSelector]);
 
   // 从 localStorage 加载
   useEffect(() => {
@@ -299,7 +239,6 @@ export default function NativeDialoguePage() {
   // 更新对话语音
   const updateDialogueVoice = (id: string, voice: string) => {
     setDialogues(dialogues.map(d => d.id === id ? { ...d, voice } : d));
-    setActiveVoiceSelector(null);
   };
 
   // 获取语音名称
@@ -409,7 +348,7 @@ export default function NativeDialoguePage() {
         <div className="mb-4">
           <label className="text-gray-400 text-xs mb-1.5 block">Language</label>
           <button
-            onClick={() => setIsLanguageSelectorOpen(!isLanguageSelectorOpen)}
+            onClick={() => setIsLanguageSheetOpen(true)}
             className="w-full flex items-center justify-between bg-gray-800/60 text-white rounded-xl p-3 text-sm"
           >
             <span>
@@ -421,35 +360,6 @@ export default function NativeDialoguePage() {
             </span>
             <ChevronDownIcon />
           </button>
-
-          {isLanguageSelectorOpen && (
-            <div className="mt-2 bg-gray-900 rounded-xl overflow-hidden border border-gray-700 max-h-60 overflow-y-auto">
-              {DIALOGUE_LANGUAGES.map((lang) => (
-                <button
-                  key={lang.code}
-                  onClick={() => {
-                    setLanguageCode(lang.code);
-                    setIsLanguageSelectorOpen(false);
-                  }}
-                  className={`w-full px-3 py-2.5 flex items-center justify-between hover:bg-gray-800 transition-colors text-left ${
-                    languageCode === lang.code ? 'bg-purple-500/20' : ''
-                  }`}
-                >
-                  <div className="flex flex-col">
-                    <span className="text-white text-sm">{lang.name}</span>
-                    {lang.name !== lang.nativeName && (
-                      <span className="text-gray-500 text-xs">{lang.nativeName}</span>
-                    )}
-                  </div>
-                  {languageCode === lang.code && (
-                    <svg className="w-4 h-4 text-purple-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <polyline points="20,6 9,17 4,12" />
-                    </svg>
-                  )}
-                </button>
-              ))}
-            </div>
-          )}
         </div>
 
         {/* Total Characters */}
@@ -526,55 +436,12 @@ export default function NativeDialoguePage() {
                   voice <span className="text-red-400">*</span>
                 </label>
                 <button
-                  onClick={() => setActiveVoiceSelector(activeVoiceSelector === dialogue.id ? null : dialogue.id)}
+                  onClick={() => setVoiceSheetDialogueId(dialogue.id)}
                   className="w-full flex items-center justify-between bg-gray-900/60 text-white rounded-xl p-3 text-sm"
                 >
                   <span>{getVoiceName(dialogue.voice)}</span>
                   <ChevronDownIcon />
                 </button>
-
-                {/* Voice Options Dropdown */}
-                {activeVoiceSelector === dialogue.id && (
-                  <div className="mt-2 bg-gray-900 rounded-xl overflow-hidden border border-gray-700 max-h-60 overflow-y-auto">
-                    {voices.map((voice) => (
-                      <div
-                        key={voice.id}
-                        className={`w-full px-3 py-2.5 flex items-center justify-between hover:bg-gray-800 transition-colors ${
-                          dialogue.voice === voice.id ? 'bg-purple-500/20' : ''
-                        }`}
-                      >
-                        <button
-                          onClick={() => updateDialogueVoice(dialogue.id, voice.id)}
-                          className="flex-1 flex items-center gap-2 text-left"
-                        >
-                          <div className="w-7 h-7 bg-gray-700 rounded-full flex items-center justify-center">
-                            <span className="text-gray-400 text-xs">{voice.gender === 'male' ? '♂' : '♀'}</span>
-                          </div>
-                          <div className="flex-1">
-                            <span className="text-white text-sm">{voice.name}</span>
-                            <span className="text-gray-500 text-xs ml-2 capitalize">{voice.gender}</span>
-                          </div>
-                          {dialogue.voice === voice.id && (
-                            <svg className="w-4 h-4 text-purple-400 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                              <polyline points="20,6 9,17 4,12" />
-                            </svg>
-                          )}
-                        </button>
-                        {/* 播放预览按钮 */}
-                        <button
-                          onClick={(e) => toggleVoicePreview(e, voice)}
-                          className={`w-8 h-8 flex items-center justify-center rounded-full transition-colors ${
-                            playingVoiceId === voice.id
-                              ? 'bg-purple-500 text-white'
-                              : 'bg-gray-700 text-gray-400 hover:text-white hover:bg-gray-600'
-                          }`}
-                        >
-                          {playingVoiceId === voice.id ? <StopIcon /> : <SmallPlayIcon />}
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                )}
               </div>
             </div>
           ))}
@@ -776,6 +643,26 @@ export default function NativeDialoguePage() {
       <NativeDailyTasksModal
         isOpen={isDailyTasksModalOpen}
         onClose={() => setIsDailyTasksModalOpen(false)}
+      />
+
+      {/* Language Selector Sheet */}
+      <DialogueLanguageSheet
+        isOpen={isLanguageSheetOpen}
+        onClose={() => setIsLanguageSheetOpen(false)}
+        selectedCode={languageCode}
+        onSelect={setLanguageCode}
+      />
+
+      {/* Voice Selector Sheet */}
+      <DialogueVoiceSheet
+        isOpen={voiceSheetDialogueId !== null}
+        onClose={() => setVoiceSheetDialogueId(null)}
+        selectedVoiceId={voiceSheetDialogueId ? dialogues.find(d => d.id === voiceSheetDialogueId)?.voice || 'Adam' : 'Adam'}
+        onSelect={(voiceId) => {
+          if (voiceSheetDialogueId) {
+            updateDialogueVoice(voiceSheetDialogueId, voiceId);
+          }
+        }}
       />
     </div>
   );

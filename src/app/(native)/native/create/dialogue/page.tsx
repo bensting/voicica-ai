@@ -30,19 +30,10 @@ interface DialogueSegment {
 
 import {
   DIALOGUE_LANGUAGES,
+  DIALOGUE_EMOTIONS,
   DIALOGUE_ALL_VOICES,
   getVoiceSampleUrl,
 } from '@/config/native/dialogueConfig';
-
-// 情绪标签
-const EMOTIONS = [
-  { tag: '[excitedly]', label: 'excitedly' },
-  { tag: '[whispers]', label: 'whispers' },
-  { tag: '[laughs]', label: 'laughs' },
-  { tag: '[sarcastic]', label: 'sarcastic' },
-  { tag: '[sighs]', label: 'sighs' },
-  { tag: '[sad]', label: 'sad' },
-];
 
 // 声音类型（直接使用配置）
 interface Voice {
@@ -490,18 +481,33 @@ export default function NativeDialoguePage() {
                 <label className="text-gray-400 text-xs mb-1.5 block">
                   text <span className="text-red-400">*</span>
                 </label>
-                <textarea
-                  ref={(el) => {
-                    if (el) textareaRefs.current.set(dialogue.id, el);
-                  }}
-                  value={dialogue.text}
-                  onChange={(e) => updateDialogueText(dialogue.id, e.target.value)}
-                  placeholder="Hey! Have you tried this?"
-                  className="w-full h-24 bg-gray-900/60 text-white placeholder-gray-600 rounded-xl p-3 resize-none focus:outline-none focus:ring-1 focus:ring-purple-500 text-sm"
-                  disabled={isGenerating}
-                />
+                <div className="relative">
+                  <textarea
+                    ref={(el) => {
+                      if (el) textareaRefs.current.set(dialogue.id, el);
+                    }}
+                    value={dialogue.text}
+                    onChange={(e) => updateDialogueText(dialogue.id, e.target.value)}
+                    placeholder="Hey! Have you tried this?"
+                    className="w-full h-24 bg-gray-900/60 text-white placeholder-gray-600 rounded-xl p-3 pr-8 resize-none focus:outline-none focus:ring-1 focus:ring-purple-500 text-sm"
+                    disabled={isGenerating}
+                  />
+                  {dialogue.text && (
+                    <button
+                      onClick={() => updateDialogueText(dialogue.id, '')}
+                      disabled={isGenerating}
+                      className="absolute right-2 bottom-2 p-1 text-gray-500 hover:text-gray-300 transition-colors disabled:opacity-50"
+                      title="Clear"
+                    >
+                      <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <circle cx="12" cy="12" r="10" />
+                        <path d="M15 9l-6 6M9 9l6 6" />
+                      </svg>
+                    </button>
+                  )}
+                </div>
                 <div className="flex flex-wrap gap-1.5 mt-2">
-                  {EMOTIONS.map((emotion) => (
+                  {DIALOGUE_EMOTIONS.map((emotion) => (
                     <button
                       key={emotion.tag}
                       onClick={() => insertEmotion(dialogue.id, emotion.tag)}

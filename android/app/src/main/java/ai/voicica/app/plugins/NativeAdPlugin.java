@@ -19,19 +19,26 @@ import com.google.android.gms.ads.VideoOptions;
 import com.google.android.gms.ads.nativead.NativeAd;
 import com.google.android.gms.ads.nativead.NativeAdOptions;
 
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
 /**
  * Native Advanced Ad Plugin
  *
  * 提供 Google AdMob 原生高级广告功能
- * 用于在信息流中展示原生广告
+ * 支持多个广告实例（通过 adUnitId 区分）
  */
 @CapacitorPlugin(name = "NativeAd")
 public class NativeAdPlugin extends Plugin {
 
     private static final String TAG = "NativeAdPlugin";
 
-    private NativeAd currentNativeAd = null;
-    private boolean isLoading = false;
+    // 存储多个广告实例，key 为 adUnitId
+    private Map<String, NativeAd> nativeAds = new HashMap<>();
+    // 正在加载的广告 ID
+    private Set<String> loadingAds = new HashSet<>();
     private boolean isInitialized = false;
 
     /**
@@ -61,6 +68,7 @@ public class NativeAdPlugin extends Plugin {
 
     /**
      * 加载原生广告
+     * 支持多个广告实例，通过 adUnitId 区分
      */
     @PluginMethod
     public void loadAd(PluginCall call) {
@@ -71,16 +79,17 @@ public class NativeAdPlugin extends Plugin {
             return;
         }
 
-        if (isLoading) {
-            Log.d(TAG, "Ad already loading");
+        // 检查该广告是否正在加载
+        if (loadingAds.contains(adUnitId)) {
+            Log.d(TAG, "Ad already loading for: " + adUnitId);
             call.reject("Ad already loading");
             return;
         }
 
-        // 销毁之前的广告
-        destroyCurrentAd();
+        // 销毁该广告单元之前的广告（如果有）
+        destroyAd(adUnitId);
 
-        isLoading = true;
+        loadingAds.add(adUnitId);
 
         getActivity().runOnUiThread(() -> {
             // 视频选项
@@ -98,50 +107,60 @@ public class NativeAdPlugin extends Plugin {
             // 创建广告加载器
             AdLoader adLoader = new AdLoader.Builder(getContext(), adUnitId)
                     .forNativeAd(nativeAd -> {
-                        currentNativeAd = nativeAd;
-                        isLoading = false;
-                        Log.d(TAG, "Native Ad loaded successfully");
+                        nativeAds.put(adUnitId, nativeAd);
+                        loadingAds.remove(adUnitId);
+                        Log.d(TAG, "Native Ad loaded successfully for: " + adUnitId);
 
                         // 将广告数据转换为 JSON 返回给 JS
                         JSObject adData = convertNativeAdToJson(nativeAd);
+                        adData.put("adUnitId", adUnitId);
                         notifyListeners("adLoaded", adData);
                         call.resolve(adData);
                     })
                     .withAdListener(new AdListener() {
                         @Override
                         public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
-                            isLoading = false;
-                            Log.e(TAG, "Native Ad failed to load: " + loadAdError.getMessage());
+                            loadingAds.remove(adUnitId);
+                            Log.e(TAG, "Native Ad failed to load for " + adUnitId + ": " + loadAdError.getMessage());
 
                             JSObject error = new JSObject();
                             error.put("code", loadAdError.getCode());
                             error.put("message", loadAdError.getMessage());
+                            error.put("adUnitId", adUnitId);
                             notifyListeners("adFailedToLoad", error);
                             call.reject("Failed to load ad: " + loadAdError.getMessage());
                         }
 
                         @Override
                         public void onAdClicked() {
-                            Log.d(TAG, "Native Ad clicked");
-                            notifyListeners("adClicked", new JSObject());
+                            Log.d(TAG, "Native Ad clicked: " + adUnitId);
+                            JSObject event = new JSObject();
+                            event.put("adUnitId", adUnitId);
+                            notifyListeners("adClicked", event);
                         }
 
                         @Override
                         public void onAdImpression() {
-                            Log.d(TAG, "Native Ad impression");
-                            notifyListeners("adImpression", new JSObject());
+                            Log.d(TAG, "Native Ad impression: " + adUnitId);
+                            JSObject event = new JSObject();
+                            event.put("adUnitId", adUnitId);
+                            notifyListeners("adImpression", event);
                         }
 
                         @Override
                         public void onAdOpened() {
-                            Log.d(TAG, "Native Ad opened");
-                            notifyListeners("adOpened", new JSObject());
+                            Log.d(TAG, "Native Ad opened: " + adUnitId);
+                            JSObject event = new JSObject();
+                            event.put("adUnitId", adUnitId);
+                            notifyListeners("adOpened", event);
                         }
 
                         @Override
                         public void onAdClosed() {
-                            Log.d(TAG, "Native Ad closed");
-                            notifyListeners("adClosed", new JSObject());
+                            Log.d(TAG, "Native Ad closed: " + adUnitId);
+                            JSObject event = new JSObject();
+                            event.put("adUnitId", adUnitId);
+                            notifyListeners("adClosed", event);
                         }
                     })
                     .withNativeAdOptions(adOptions)
@@ -158,14 +177,19 @@ public class NativeAdPlugin extends Plugin {
      */
     @PluginMethod
     public void recordClick(PluginCall call) {
-        if (currentNativeAd == null) {
-            call.reject("No ad loaded");
-            return;
+        String adUnitId = call.getString("adUnitId");
+
+        if (adUnitId == null || !nativeAds.containsKey(adUnitId)) {
+            // 如果没有指定 adUnitId，尝试使用任何可用的广告
+            if (nativeAds.isEmpty()) {
+                call.reject("No ad loaded");
+                return;
+            }
         }
 
         // 原生广告的点击由 AdMob SDK 自动处理
         // 这个方法只是通知 JS 层点击已记录
-        Log.d(TAG, "Click recorded");
+        Log.d(TAG, "Click recorded for: " + adUnitId);
         call.resolve();
     }
 
@@ -174,22 +198,34 @@ public class NativeAdPlugin extends Plugin {
      */
     @PluginMethod
     public void recordImpression(PluginCall call) {
-        if (currentNativeAd == null) {
-            call.reject("No ad loaded");
-            return;
+        String adUnitId = call.getString("adUnitId");
+
+        if (adUnitId == null || !nativeAds.containsKey(adUnitId)) {
+            if (nativeAds.isEmpty()) {
+                call.reject("No ad loaded");
+                return;
+            }
         }
 
         // 原生广告的展示由 AdMob SDK 自动处理
-        Log.d(TAG, "Impression recorded");
+        Log.d(TAG, "Impression recorded for: " + adUnitId);
         call.resolve();
     }
 
     /**
-     * 销毁当前广告
+     * 销毁指定广告或所有广告
      */
     @PluginMethod
     public void destroy(PluginCall call) {
-        destroyCurrentAd();
+        String adUnitId = call.getString("adUnitId");
+
+        if (adUnitId != null && !adUnitId.isEmpty()) {
+            // 销毁指定的广告
+            destroyAd(adUnitId);
+        } else {
+            // 销毁所有广告
+            destroyAllAds();
+        }
         call.resolve();
     }
 
@@ -198,22 +234,39 @@ public class NativeAdPlugin extends Plugin {
      */
     @PluginMethod
     public void isAdLoaded(PluginCall call) {
+        String adUnitId = call.getString("adUnitId");
+
         JSObject result = new JSObject();
-        result.put("loaded", currentNativeAd != null);
+        if (adUnitId != null && !adUnitId.isEmpty()) {
+            result.put("loaded", nativeAds.containsKey(adUnitId));
+        } else {
+            result.put("loaded", !nativeAds.isEmpty());
+        }
         call.resolve(result);
     }
 
     /**
-     * 获取当前广告数据
+     * 获取广告数据
      */
     @PluginMethod
     public void getAdData(PluginCall call) {
-        if (currentNativeAd == null) {
+        String adUnitId = call.getString("adUnitId");
+
+        NativeAd ad = null;
+        if (adUnitId != null && !adUnitId.isEmpty()) {
+            ad = nativeAds.get(adUnitId);
+        } else if (!nativeAds.isEmpty()) {
+            // 如果没有指定，返回第一个
+            ad = nativeAds.values().iterator().next();
+        }
+
+        if (ad == null) {
             call.reject("No ad loaded");
             return;
         }
 
-        JSObject adData = convertNativeAdToJson(currentNativeAd);
+        JSObject adData = convertNativeAdToJson(ad);
+        adData.put("adUnitId", adUnitId);
         call.resolve(adData);
     }
 
@@ -284,19 +337,32 @@ public class NativeAdPlugin extends Plugin {
     }
 
     /**
-     * 销毁当前广告
+     * 销毁指定广告
      */
-    private void destroyCurrentAd() {
-        if (currentNativeAd != null) {
-            currentNativeAd.destroy();
-            currentNativeAd = null;
-            Log.d(TAG, "Native Ad destroyed");
+    private void destroyAd(String adUnitId) {
+        NativeAd ad = nativeAds.remove(adUnitId);
+        if (ad != null) {
+            ad.destroy();
+            Log.d(TAG, "Native Ad destroyed for: " + adUnitId);
         }
+        loadingAds.remove(adUnitId);
+    }
+
+    /**
+     * 销毁所有广告
+     */
+    private void destroyAllAds() {
+        for (Map.Entry<String, NativeAd> entry : nativeAds.entrySet()) {
+            entry.getValue().destroy();
+            Log.d(TAG, "Native Ad destroyed for: " + entry.getKey());
+        }
+        nativeAds.clear();
+        loadingAds.clear();
     }
 
     @Override
     protected void handleOnDestroy() {
         super.handleOnDestroy();
-        destroyCurrentAd();
+        destroyAllAds();
     }
 }

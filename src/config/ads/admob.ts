@@ -40,6 +40,13 @@ export interface AdMobConfig {
     /** 在列表中的位置（从0开始） */
     position: number;
   };
+  /** 首页横幅原生广告单元 */
+  nativeBanner: {
+    android: string;
+    ios: string;
+    /** 是否启用 */
+    enabled: boolean;
+  };
   /** 是否启用 */
   enabled: boolean;
   /** 是否使用测试广告（上架前测试用） */
@@ -81,6 +88,11 @@ export const TEST_AD_IDS = {
     android: 'ca-app-pub-3940256099942544/2247696110',
     ios: 'ca-app-pub-3940256099942544/3986624511',
   },
+  /** 首页横幅原生广告测试 ID（使用同一个测试 ID） */
+  nativeBanner: {
+    android: 'ca-app-pub-3940256099942544/2247696110',
+    ios: 'ca-app-pub-3940256099942544/3986624511',
+  },
 };
 
 /**
@@ -113,6 +125,11 @@ const REAL_AD_IDS = {
     android: 'ca-app-pub-5946279989031789/4551912389',
     ios: '', // iOS 原生广告（待创建）
   },
+  /** 首页横幅原生广告 */
+  nativeBanner: {
+    android: 'ca-app-pub-5946279989031789/8140735812',
+    ios: '', // iOS 原生广告（待创建）
+  },
 };
 
 /**
@@ -131,8 +148,12 @@ const devConfig: AdMobConfig = {
   },
   native: {
     ...TEST_AD_IDS.native,
-    enabled: true, // 开发环境启用原生广告测试
+    enabled: true, // 信息流原生广告
     position: 2, // 在第3个位置显示（索引从0开始）
+  },
+  nativeBanner: {
+    ...TEST_AD_IDS.nativeBanner,
+    enabled: true, // 开发环境启用首页横幅原生广告
   },
   enabled: true, // 开发环境启用，使用测试广告
   useTestAds: true,
@@ -157,8 +178,12 @@ const prodConfig: AdMobConfig = {
   },
   native: {
     ...REAL_AD_IDS.native,
-    enabled: true, // 启用原生广告
+    enabled: true, // 信息流原生广告
     position: 2, // 在第3个位置显示（索引从0开始）
+  },
+  nativeBanner: {
+    ...REAL_AD_IDS.nativeBanner,
+    enabled: true, // 启用首页横幅原生广告
   },
   enabled: true,
   useTestAds: false, // 使用真实广告
@@ -186,6 +211,10 @@ export const admobConfig: AdMobConfig = baseConfig.useTestAds
         ...TEST_AD_IDS.native,
         enabled: baseConfig.native.enabled,
         position: baseConfig.native.position,
+      },
+      nativeBanner: {
+        ...TEST_AD_IDS.nativeBanner,
+        enabled: baseConfig.nativeBanner.enabled,
       },
     }
   : baseConfig;
@@ -251,4 +280,18 @@ export function isNativeAdEnabled(): boolean {
  */
 export function getNativeAdPosition(): number {
   return admobConfig.native.position;
+}
+
+/**
+ * 检查首页横幅原生广告是否启用
+ */
+export function isAdMobNativeBannerEnabled(): boolean {
+  return admobConfig.enabled && admobConfig.nativeBanner.enabled;
+}
+
+/**
+ * 获取首页横幅原生广告单元 ID
+ */
+export function getNativeBannerAdUnitId(platform: 'android' | 'ios'): string {
+  return admobConfig.nativeBanner[platform];
 }

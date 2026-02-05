@@ -165,7 +165,7 @@ const devConfig: AdMobConfig = {
   },
   nativeBanner: {
     ...TEST_AD_IDS.nativeBanner,
-    enabled: true, // 启用原生广告（测试点击功能）
+    enabled: false, // 禁用 AdMob 原生广告，改用 Adsterra
   },
   banner: {
     ...TEST_AD_IDS.banner,
@@ -199,7 +199,7 @@ const prodConfig: AdMobConfig = {
   },
   nativeBanner: {
     ...REAL_AD_IDS.nativeBanner,
-    enabled: true, // 启用原生广告（测试点击功能）
+    enabled: false, // 禁用 AdMob 原生广告，改用 Adsterra
   },
   banner: {
     ...REAL_AD_IDS.banner,

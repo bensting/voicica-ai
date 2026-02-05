@@ -496,10 +496,13 @@ model dialogue_records {
   created_at        DateTime  @default(now()) @db.Timestamptz(6)
   updated_at        DateTime? @updatedAt @db.Timestamptz(6)
 
+  is_public         Boolean   @default(false) // 是否公开展示
+
   @@index([user_id], map: "ix_dialogue_records_user_id")
   @@index([user_id, created_at], map: "ix_dialogue_records_user_created")
   @@index([status], map: "ix_dialogue_records_status")
   @@index([external_task_id], map: "ix_dialogue_records_external_task_id")
+  @@index([is_public], map: "ix_dialogue_records_is_public")
 }
 
 /// RVC 声音模型（用于 AI Cover 功能）

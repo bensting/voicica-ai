@@ -1,7 +1,7 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 
 // 服务器 URL 配置
-const serverUrl = process.env.CAPACITOR_SERVER_URL || 'https://www.voicica.ai/studio';
+const serverUrl = process.env.CAPACITOR_SERVER_URL || 'https://www.voicica.ai/native';
 
 // 根据 URL 确定允许导航的域名
 const getAllowedDomains = (url: string): string[] => {

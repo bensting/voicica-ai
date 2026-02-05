@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { getPublicMusicRecords, type PublicMusicRecord } from '@/actions/music';
 import MusicPlayerModal from './MusicPlayerModal';
@@ -14,6 +14,9 @@ import {
 import ProviderIcon from '@/components/ui/icons/ProviderIcon';
 import { getCountryFlag } from '@/utils/countryFlags';
 import { User, UserRound } from 'lucide-react';
+import NativeAdCard from './NativeAdCard';
+import { useSubscription } from '@/contexts/SubscriptionContext';
+import { isNativeAdEnabled, getNativeAdPosition } from '@/config/ads';
 
 // 播放图标
 const PlayIcon = () => (
@@ -219,6 +222,13 @@ export default function ExploreSection() {
   const [selectedMusic, setSelectedMusic] = useState<PublicMusicRecord | null>(null);
   const [selectedVideo, setSelectedVideo] = useState<PublicVideoData | null>(null);
 
+  // 订阅状态（订阅用户不显示广告）
+  const { isSubscribed } = useSubscription();
+
+  // 原生广告配置
+  const showNativeAd = isNativeAdEnabled() && !isSubscribed;
+  const nativeAdPosition = getNativeAdPosition();
+
   // 处理 Voice Recreate
   const handleVoiceRecreate = (voice: PublicVoiceData) => {
     // 保存文本和语音名称到 localStorage，TTS 页面会读取
@@ -356,16 +366,30 @@ export default function ExploreSection() {
             ))}
           </div>
         ) : voiceList.length > 0 ? (
-          // 语音网格 - 2列布局
+          // 语音网格 - 2列布局（包含原生广告）
           <div className="grid grid-cols-2 gap-2.5">
-            {voiceList.map((voice, index) => (
-              <VoiceCard
-                key={voice.id}
-                voice={voice}
-                index={index}
-                onClick={() => setSelectedVoice(voice)}
-              />
-            ))}
+            {voiceList.map((voice, index) => {
+              // 计算实际位置（考虑广告插入）
+              const actualIndex = showNativeAd && index >= nativeAdPosition ? index + 1 : index;
+
+              return (
+                <React.Fragment key={voice.id}>
+                  {/* 在指定位置插入原生广告 */}
+                  {showNativeAd && index === nativeAdPosition && (
+                    <NativeAdCard index={nativeAdPosition} />
+                  )}
+                  <VoiceCard
+                    voice={voice}
+                    index={actualIndex}
+                    onClick={() => setSelectedVoice(voice)}
+                  />
+                </React.Fragment>
+              );
+            })}
+            {/* 如果广告位置在列表末尾 */}
+            {showNativeAd && nativeAdPosition >= voiceList.length && (
+              <NativeAdCard index={nativeAdPosition} />
+            )}
           </div>
         ) : (
           // 空状态

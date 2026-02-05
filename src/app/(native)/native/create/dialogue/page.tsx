@@ -30,6 +30,8 @@ interface DialogueSegment {
   voice: string;
 }
 
+import { DIALOGUE_LANGUAGES, getVoiceSampleUrl } from '@/config/native/dialogueConfig';
+
 // 情绪标签
 const EMOTIONS = [
   { tag: '[excitedly]', label: 'excitedly' },
@@ -50,12 +52,12 @@ interface Voice {
   voice_sample_url: Record<string, string>;
 }
 
-// 默认声音
+// 默认声音（在数据库加载前使用）
 const DEFAULT_VOICES: Voice[] = [
-  { id: 'Liam', name: 'elevenlabs_dialogue:Liam', display_name: 'Liam', gender: 'male', avatar_url: '', voice_sample_url: {} },
-  { id: 'Jessica', name: 'elevenlabs_dialogue:Jessica', display_name: 'Jessica', gender: 'female', avatar_url: '', voice_sample_url: {} },
-  { id: 'Adam', name: 'elevenlabs_dialogue:Adam', display_name: 'Adam', gender: 'male', avatar_url: '', voice_sample_url: {} },
-  { id: 'Brian', name: 'elevenlabs_dialogue:Brian', display_name: 'Brian', gender: 'male', avatar_url: '', voice_sample_url: {} },
+  { id: 'Liam', name: 'elevenlabs_dialogue:Liam', display_name: 'Liam', gender: 'male', avatar_url: '', voice_sample_url: { default: getVoiceSampleUrl('Liam') } },
+  { id: 'Jessica', name: 'elevenlabs_dialogue:Jessica', display_name: 'Jessica', gender: 'female', avatar_url: '', voice_sample_url: { default: getVoiceSampleUrl('Jessica') } },
+  { id: 'Brian', name: 'elevenlabs_dialogue:Brian', display_name: 'Brian', gender: 'male', avatar_url: '', voice_sample_url: { default: getVoiceSampleUrl('Brian') } },
+  { id: 'Rachel', name: 'elevenlabs_dialogue:Rachel', display_name: 'Rachel', gender: 'female', avatar_url: '', voice_sample_url: { default: getVoiceSampleUrl('Rachel') } },
 ];
 
 // 图标组件
@@ -113,6 +115,8 @@ export default function NativeDialoguePage() {
   const [dialogues, setDialogues] = useState<DialogueSegment[]>([
     { id: '1', text: '', voice: 'Liam' },
   ]);
+  const [languageCode, setLanguageCode] = useState('auto');
+  const [isLanguageSelectorOpen, setIsLanguageSelectorOpen] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [activeVoiceSelector, setActiveVoiceSelector] = useState<string | null>(null);
@@ -385,6 +389,7 @@ export default function NativeDialoguePage() {
       const result = await createDialogueTask({
         dialogue: dialogueData,
         stability: 0.5,
+        language_code: languageCode,
       });
 
       setCurrentTaskId(result.task_id);
@@ -421,6 +426,53 @@ export default function NativeDialoguePage() {
             <p className="text-red-400 text-sm">{error}</p>
           </div>
         )}
+
+        {/* Language Selector */}
+        <div className="mb-4">
+          <label className="text-gray-400 text-xs mb-1.5 block">Language</label>
+          <button
+            onClick={() => setIsLanguageSelectorOpen(!isLanguageSelectorOpen)}
+            className="w-full flex items-center justify-between bg-gray-800/60 text-white rounded-xl p-3 text-sm"
+          >
+            <span>
+              {(() => {
+                const lang = DIALOGUE_LANGUAGES.find(l => l.code === languageCode);
+                if (!lang) return 'Auto';
+                return lang.name === lang.nativeName ? lang.name : `${lang.name} (${lang.nativeName})`;
+              })()}
+            </span>
+            <ChevronDownIcon />
+          </button>
+
+          {isLanguageSelectorOpen && (
+            <div className="mt-2 bg-gray-900 rounded-xl overflow-hidden border border-gray-700 max-h-60 overflow-y-auto">
+              {DIALOGUE_LANGUAGES.map((lang) => (
+                <button
+                  key={lang.code}
+                  onClick={() => {
+                    setLanguageCode(lang.code);
+                    setIsLanguageSelectorOpen(false);
+                  }}
+                  className={`w-full px-3 py-2.5 flex items-center justify-between hover:bg-gray-800 transition-colors text-left ${
+                    languageCode === lang.code ? 'bg-purple-500/20' : ''
+                  }`}
+                >
+                  <div className="flex flex-col">
+                    <span className="text-white text-sm">{lang.name}</span>
+                    {lang.name !== lang.nativeName && (
+                      <span className="text-gray-500 text-xs">{lang.nativeName}</span>
+                    )}
+                  </div>
+                  {languageCode === lang.code && (
+                    <svg className="w-4 h-4 text-purple-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <polyline points="20,6 9,17 4,12" />
+                    </svg>
+                  )}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
 
         {/* Total Characters */}
         <div className="mb-3">

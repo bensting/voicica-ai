@@ -188,12 +188,14 @@ export async function getOptionalUser(): Promise<AuthUser | null> {
  *
  * 基于设备指纹创建或返回现有匿名用户
  * @param isNative 是否来自 Native App（用于区分积分配置）
+ * @param platform 访问平台 (web, mobile-web, android, ios)
  */
 async function createOrGetAnonymousUser(
   deviceFingerprint: string,
   ipAddress?: string,
   userAgent?: string,
-  isNative: boolean = false
+  isNative: boolean = false,
+  platform?: string
 ): Promise<{ user_id: string; credits: number }> {
   // 生成匿名用户 ID
   const hash = crypto.createHash('sha256').update(deviceFingerprint).digest('hex').substring(0, 16);
@@ -234,6 +236,7 @@ async function createOrGetAnonymousUser(
       device_fingerprint: deviceFingerprint,
       ip_address: ipAddress,
       user_agent: userAgent,
+      platform: platform || null,
       credits: initialCredits,
       total_credits_used: 0,
       is_anonymous: true,
@@ -296,6 +299,7 @@ export async function getUserOrAnonymous(): Promise<UnifiedUser> {
   if (fingerprint) {
     const ipAddress = headersList.get('x-forwarded-for')?.split(',')[0] || undefined;
     const userAgent = headersList.get('user-agent') || undefined;
+    const platform = headersList.get('x-platform') || undefined;
 
     // 检测是否来自 Native App
     // 方式1: 检查 x-client-type header
@@ -304,9 +308,9 @@ export async function getUserOrAnonymous(): Promise<UnifiedUser> {
     const invokePath = headersList.get('x-invoke-path') || '';
     const isNative = clientType === 'native' || invokePath.includes('/native/');
 
-    console.log('🔍 [getUserOrAnonymous] isNative:', isNative, 'clientType:', clientType, 'invokePath:', invokePath);
+    console.log('🔍 [getUserOrAnonymous] isNative:', isNative, 'clientType:', clientType, 'invokePath:', invokePath, 'platform:', platform);
 
-    const anonUser = await createOrGetAnonymousUser(fingerprint, ipAddress, userAgent, isNative);
+    const anonUser = await createOrGetAnonymousUser(fingerprint, ipAddress, userAgent, isNative, platform);
 
     console.log('⚠️ [getUserOrAnonymous] 已降级到匿名用户:', anonUser.user_id);
 

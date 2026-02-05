@@ -19,6 +19,7 @@ interface DialogueRequest {
     voice: string; // voice ID like 'Adam', 'Brian', etc.
   }>;
   stability?: number; // 0-1, default 0.5
+  language_code?: string; // 语言代码，如 'en', 'zh', 'auto' 等
 }
 
 /**
@@ -145,6 +146,7 @@ export async function createDialogueTask(
     input: {
       dialogue: request.dialogue,
       stability: request.stability ?? 0.5,
+      language_code: request.language_code || 'auto',
     },
   };
 

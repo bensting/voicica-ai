@@ -127,29 +127,6 @@ export default function VoiceFilters({
             </div>
           )}
 
-          {/* Celebrity filter */}
-          <button
-            onClick={() => onRoleChange(selectedRole === 'Celebrity' ? 'all' : 'Celebrity')}
-            className={`px-4 py-2 text-xs font-medium rounded-full transition-colors ${
-              selectedRole === 'Celebrity'
-                ? 'bg-purple-100 text-purple-700 border border-purple-200'
-                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-            }`}
-          >
-            {t('voiceFilters.celebrity')}
-          </button>
-
-          {/* Professional filter */}
-          <button
-            onClick={() => onRoleChange(selectedRole === 'Professional' ? 'all' : 'Professional')}
-            className={`px-4 py-2 text-xs font-medium rounded-full transition-colors ${
-              selectedRole === 'Professional'
-                ? 'bg-purple-100 text-purple-700 border border-purple-200'
-                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-            }`}
-          >
-            {t('voiceFilters.professional')}
-          </button>
         </div>
 
         {/* Right: Used Only query button */}

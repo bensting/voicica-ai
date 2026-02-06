@@ -54,7 +54,7 @@ export const myCreationsTabsConfig: MyCreationsTabConfig[] = [
       subtitle: 'Create your first AI music.',
       createLink: '/native/create/music',
     },
-    enabled: { development: true, production: false },
+    enabled: { development: true, production: true },
   },
   {
     id: 'cover',

@@ -51,7 +51,7 @@ export const HOME_SHOWCASE_CONFIG = {
   },
 
   // Play Store 链接
-  playStoreUrl: 'https://play.google.com/store/apps/details?id=com.voicica.app',
+  playStoreUrl: 'https://play.google.com/store/apps/details?id=ai.voicica.app',
 
   // Trust 指示器文案
   trustText: 'Trusted by 1M+ creators',

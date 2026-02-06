@@ -19,8 +19,8 @@ interface VoiceFiltersProps {
 export default function VoiceFilters({
   selectedGender,
   onGenderChange,
-  selectedRole,
-  onRoleChange,
+  selectedRole: _selectedRole,
+  onRoleChange: _onRoleChange,
   usedOnly,
   onUsedOnlyChange,
   selectedProvider = 'all',

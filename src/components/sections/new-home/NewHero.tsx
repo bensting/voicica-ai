@@ -1,20 +1,20 @@
 'use client';
 
 import Image from 'next/image';
-import { useDeviceDetect } from '@/hooks/useDeviceDetect';
 import { HOME_SHOWCASE_CONFIG } from '@/config/homeShowcase';
 import PhoneMockup from './PhoneMockup';
 import ArtShowcase from './ArtShowcase';
 import AudioShowcase from './AudioShowcase';
 
 export default function NewHero() {
-  const { isAndroid } = useDeviceDetect();
   const { backgroundImage, avatars, playStoreUrl, trustText } =
     HOME_SHOWCASE_CONFIG;
 
   const handleCTAClick = () => {
+    // 直接检测 Android，避免 state 延迟问题
+    const isAndroid = /android/i.test(navigator.userAgent);
     if (isAndroid) {
-      window.open(playStoreUrl, '_blank');
+      window.location.href = playStoreUrl;
     } else {
       window.location.href = '/studio/tts';
     }

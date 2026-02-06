@@ -9,6 +9,7 @@ export default function ArtShowcase() {
   const [lightboxImage, setLightboxImage] = useState<{
     src: string;
     alt: string;
+    prompt?: string;
   } | null>(null);
 
   const { artworks } = HOME_SHOWCASE_CONFIG;
@@ -21,7 +22,7 @@ export default function ArtShowcase() {
           <button
             key={artwork.id}
             onClick={() =>
-              setLightboxImage({ src: artwork.src, alt: artwork.alt })
+              setLightboxImage({ src: artwork.src, alt: artwork.alt, prompt: artwork.prompt })
             }
             className="group relative h-14 w-14 overflow-hidden rounded-full border-2 border-purple-500/50 transition-all hover:scale-110 hover:border-purple-400"
           >
@@ -43,6 +44,7 @@ export default function ArtShowcase() {
         <ImageLightbox
           src={lightboxImage.src}
           alt={lightboxImage.alt}
+          prompt={lightboxImage.prompt}
           isOpen={!!lightboxImage}
           onClose={() => setLightboxImage(null)}
         />

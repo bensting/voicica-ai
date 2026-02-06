@@ -68,24 +68,15 @@ export default function NewHero() {
               {/* Top Section */}
               <div>
                 {/* Header Logo */}
-                <div className="mb-6 flex items-center gap-2">
-                  <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-purple-500 to-cyan-500">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-4 w-4 text-white"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"
-                      />
-                    </svg>
-                  </div>
-                  <span className="text-lg font-bold text-white">VoicicaAI</span>
+                <div className="mb-6 flex items-center gap-1.5">
+                  <Image
+                    src="/logo/logo-transparent-256.webp"
+                    alt="VoicicaAI"
+                    width={24}
+                    height={24}
+                    className="h-6 w-6"
+                  />
+                  <span className="text-sm font-semibold text-white">VoicicaAI</span>
                 </div>
 
                 {/* Main Title */}

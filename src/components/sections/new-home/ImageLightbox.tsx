@@ -6,6 +6,7 @@ import Image from 'next/image';
 interface ImageLightboxProps {
   src: string;
   alt: string;
+  prompt?: string;
   isOpen: boolean;
   onClose: () => void;
 }
@@ -13,6 +14,7 @@ interface ImageLightboxProps {
 export default function ImageLightbox({
   src,
   alt,
+  prompt,
   isOpen,
   onClose,
 }: ImageLightboxProps) {
@@ -68,7 +70,7 @@ export default function ImageLightbox({
 
       {/* Image container */}
       <div
-        className="relative max-h-[90vh] max-w-[90vw]"
+        className="flex flex-col items-center gap-4"
         onClick={(e) => e.stopPropagation()}
       >
         <Image
@@ -76,9 +78,33 @@ export default function ImageLightbox({
           alt={alt}
           width={1200}
           height={800}
-          className="max-h-[90vh] w-auto rounded-lg object-contain"
+          className="max-h-[75vh] w-auto rounded-lg object-contain"
           priority
         />
+
+        {/* Prompt display */}
+        {prompt && (
+          <div className="max-w-2xl rounded-lg bg-white/10 px-4 py-3 backdrop-blur-sm">
+            <div className="mb-1 flex items-center gap-2 text-xs text-gray-400">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-4 w-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"
+                />
+              </svg>
+              Prompt
+            </div>
+            <p className="text-sm text-white line-clamp-3">{prompt}</p>
+          </div>
+        )}
       </div>
     </div>
   );

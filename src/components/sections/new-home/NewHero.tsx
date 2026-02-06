@@ -68,15 +68,15 @@ export default function NewHero() {
               {/* Top Section */}
               <div>
                 {/* Header Logo */}
-                <div className="mb-6 flex items-center gap-1.5">
+                <div className="mb-6 flex items-center gap-1">
                   <Image
                     src="/logo/logo-transparent-256.webp"
                     alt="VoicicaAI"
-                    width={24}
-                    height={24}
-                    className="h-6 w-6"
+                    width={32}
+                    height={32}
+                    className="h-8 w-8"
                   />
-                  <span className="text-sm font-semibold text-white">VoicicaAI</span>
+                  <span className="text-xs font-semibold text-white">VoicicaAI</span>
                 </div>
 
                 {/* Main Title */}

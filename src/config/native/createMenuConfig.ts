@@ -94,7 +94,7 @@ export const createMenuItems: CreateMenuItem[] = [
     shortName: 'AI Music',
     description: 'Compose music from text descriptions',
     href: '/native/create/music',
-    enabled: { development: true, production: false },
+    enabled: { development: true, production: true },
   },
   {
     id: 'cover',

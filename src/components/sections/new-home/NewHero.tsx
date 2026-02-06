@@ -64,91 +64,97 @@ export default function NewHero() {
             </div>
 
             {/* Phone Content */}
-            <div className="relative flex flex-col px-5 pb-8 pt-10">
-              {/* Header Logo */}
-              <div className="mb-6 flex items-center gap-2">
-                <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-purple-500 to-cyan-500">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-4 w-4 text-white"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"
-                    />
-                  </svg>
-                </div>
-                <span className="text-lg font-bold text-white">VoicicaAI</span>
-              </div>
-
-              {/* Main Title */}
-              <h1 className="mb-2 text-center text-2xl font-bold leading-tight text-white sm:text-3xl">
-                Turn Your Ideas
-                <br />
-                Into Voice & Art
-              </h1>
-
-              {/* Subtitle - single line, centered */}
-              <p className="mb-6 whitespace-nowrap text-center text-xs text-gray-300 sm:text-sm">
-                3200+ AI Voices. Professional AI Art. 100% Free
-              </p>
-
-              {/* Preview Showcase Section */}
-              <div className="mb-6 mt-20">
-                <h2 className="mb-3 text-sm font-semibold text-white">
-                  Preview Showcase
-                </h2>
-
-                <div className="flex gap-3">
-                  {/* Left: AI Art avatars */}
-                  <div className="flex-shrink-0">
-                    <ArtShowcase />
-                  </div>
-
-                  {/* Right: Audio cards */}
-                  <div className="min-w-0 flex-1">
-                    <AudioShowcase />
-                  </div>
-                </div>
-              </div>
-
-              {/* CTA Button */}
-              <button
-                onClick={handleCTAClick}
-                className="group relative mb-4 w-full overflow-hidden rounded-full bg-gradient-to-r from-purple-600 via-cyan-500 to-purple-600 p-[2px]"
-              >
-                <div className="relative flex items-center justify-center rounded-full bg-gray-900/80 px-6 py-3 backdrop-blur-sm transition-colors group-hover:bg-gray-900/60">
-                  <span className="text-sm font-semibold text-white">
-                    [ Start Creating Now ]
-                  </span>
-                </div>
-              </button>
-
-              {/* Trust Indicator */}
-              <div className="flex items-center justify-center gap-2">
-                {/* Avatar stack */}
-                <div className="flex -space-x-1.5">
-                  {avatars.map((avatar, index) => (
-                    <div
-                      key={index}
-                      className="relative h-6 w-6 overflow-hidden rounded-full border-2 border-gray-900"
+            <div className="relative flex h-full min-h-[580px] sm:min-h-[640px] flex-col justify-between px-5 pb-6 pt-10">
+              {/* Top Section */}
+              <div>
+                {/* Header Logo */}
+                <div className="mb-6 flex items-center gap-2">
+                  <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-purple-500 to-cyan-500">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-4 w-4 text-white"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
                     >
-                      <Image
-                        src={avatar}
-                        alt={`User ${index + 1}`}
-                        fill
-                        className="object-cover"
-                        sizes="24px"
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"
                       />
-                    </div>
-                  ))}
+                    </svg>
+                  </div>
+                  <span className="text-lg font-bold text-white">VoicicaAI</span>
                 </div>
-                <p className="text-xs text-gray-400">{trustText}</p>
+
+                {/* Main Title */}
+                <h1 className="mb-2 text-center text-2xl font-bold leading-tight text-white sm:text-3xl">
+                  Turn Your Ideas
+                  <br />
+                  Into Voice & Art
+                </h1>
+
+                {/* Subtitle - single line, centered */}
+                <p className="whitespace-nowrap text-center text-xs text-gray-300 sm:text-sm">
+                  3200+ AI Voices. Professional AI Art. 100% Free
+                </p>
+              </div>
+
+              {/* Bottom Section */}
+              <div>
+                {/* Preview Showcase Section */}
+                <div className="mb-4">
+                  <h2 className="mb-3 text-sm font-semibold text-white">
+                    Preview Showcase
+                  </h2>
+
+                  <div className="flex gap-3">
+                    {/* Left: AI Art avatars */}
+                    <div className="flex-shrink-0">
+                      <ArtShowcase />
+                    </div>
+
+                    {/* Right: Audio cards */}
+                    <div className="min-w-0 flex-1">
+                      <AudioShowcase />
+                    </div>
+                  </div>
+                </div>
+
+                {/* CTA Button */}
+                <button
+                  onClick={handleCTAClick}
+                  className="group relative mb-4 w-full overflow-hidden rounded-full bg-gradient-to-r from-purple-600 via-cyan-500 to-purple-600 p-[2px]"
+                >
+                  <div className="relative flex items-center justify-center rounded-full bg-gray-900/80 px-6 py-3 backdrop-blur-sm transition-colors group-hover:bg-gray-900/60">
+                    <span className="text-sm font-semibold text-white">
+                      [ Start Creating Now ]
+                    </span>
+                  </div>
+                </button>
+
+                {/* Trust Indicator */}
+                <div className="flex items-center justify-center gap-2">
+                  {/* Avatar stack */}
+                  <div className="flex -space-x-1.5">
+                    {avatars.map((avatar, index) => (
+                      <div
+                        key={index}
+                        className="relative h-6 w-6 overflow-hidden rounded-full border-2 border-gray-900"
+                      >
+                        <Image
+                          src={avatar}
+                          alt={`User ${index + 1}`}
+                          fill
+                          className="object-cover"
+                          sizes="24px"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                  <p className="text-xs text-gray-400">{trustText}</p>
+                </div>
               </div>
             </div>
           </div>

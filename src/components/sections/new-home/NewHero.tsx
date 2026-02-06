@@ -87,14 +87,14 @@ export default function NewHero() {
               </div>
 
               {/* Main Title */}
-              <h1 className="mb-2 text-2xl font-bold leading-tight text-white sm:text-3xl">
+              <h1 className="mb-2 text-center text-2xl font-bold leading-tight text-white sm:text-3xl">
                 Turn Your Ideas
                 <br />
                 Into Voice & Art
               </h1>
 
-              {/* Subtitle */}
-              <p className="mb-6 text-xs text-gray-300 sm:text-sm">
+              {/* Subtitle - single line, centered */}
+              <p className="mb-6 whitespace-nowrap text-center text-xs text-gray-300 sm:text-sm">
                 3200+ AI Voices. Professional AI Art. 100% Free
               </p>
 

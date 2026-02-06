@@ -232,6 +232,7 @@ export default function VoiceSelectorBottomSheet({
         selectedLocale={selectedLanguage}
         availableLocales={availableLanguages}
         onSelect={handleLanguageSelect}
+        showAllOption={false}
       />
     </>
   );

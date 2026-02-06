@@ -256,7 +256,7 @@ export default function VoiceSelector({
         onSelect={handleSelectLanguage}
         title={t('voiceFilters.selectLanguage')}
         searchPlaceholder={t('voiceFilters.searchLanguages')}
-        showAllOption={true}
+        showAllOption={false}
       />
     </>
   );

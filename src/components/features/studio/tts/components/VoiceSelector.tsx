@@ -49,6 +49,8 @@ export default function VoiceSelector({
     setSelectedGender,
     selectedRole,
     setSelectedRole,
+    selectedProvider,
+    setSelectedProvider,
     usedOnly,
     setUsedOnly,
     playingVoiceId,
@@ -212,6 +214,8 @@ export default function VoiceSelector({
           onGenderChange={setSelectedGender}
           selectedRole={selectedRole}
           onRoleChange={setSelectedRole}
+          selectedProvider={selectedProvider}
+          onProviderChange={setSelectedProvider}
           usedOnly={usedOnly}
           onUsedOnlyChange={setUsedOnly}
         />

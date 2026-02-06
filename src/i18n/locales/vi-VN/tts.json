@@ -123,7 +123,8 @@
     "noVoicesFound": "Không tìm thấy giọng nói",
     "loadMoreVoices": "Tải thêm giọng nói",
     "searchLanguages": "Tìm kiếm ngôn ngữ...",
-    "allVoicesLoaded": "Đã tải tất cả giọng nói ({{total}} tổng cộng)"
+    "allVoicesLoaded": "Đã tải tất cả giọng nói ({{total}} tổng cộng)",
+    "provider": "Nhà cung cấp"
   },
   "voices": {
     "tags": {

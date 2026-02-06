@@ -123,7 +123,8 @@
     "noVoicesFound": "Nenhuma voz encontrada",
     "loadMoreVoices": "Carregar mais vozes",
     "searchLanguages": "Pesquisar idiomas...",
-    "allVoicesLoaded": "Todas as vozes carregadas ({{total}} no total)"
+    "allVoicesLoaded": "Todas as vozes carregadas ({{total}} no total)",
+    "provider": "Provedor"
   },
   "voices": {
     "tags": {

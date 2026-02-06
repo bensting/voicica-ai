@@ -123,7 +123,8 @@
     "noVoicesFound": "कोई आवाज़ नहीं मिली",
     "loadMoreVoices": "और आवाज़ें लोड करें",
     "searchLanguages": "भाषाएं खोजें...",
-    "allVoicesLoaded": "सभी आवाज़ें लोड हो गईं (कुल {{total}})"
+    "allVoicesLoaded": "सभी आवाज़ें लोड हो गईं (कुल {{total}})",
+    "provider": "प्रदाता"
   },
   "voices": {
     "tags": {

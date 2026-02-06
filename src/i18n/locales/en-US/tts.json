@@ -123,7 +123,8 @@
     "noVoicesFound": "No voices found",
     "loadMoreVoices": "Load More Voices",
     "searchLanguages": "Search languages...",
-    "allVoicesLoaded": "All voices loaded ({{total}} total)"
+    "allVoicesLoaded": "All voices loaded ({{total}} total)",
+    "provider": "Provider"
   },
   "voices": {
     "tags": {

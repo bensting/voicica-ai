@@ -123,7 +123,8 @@
     "noVoicesFound": "音声が見つかりません",
     "loadMoreVoices": "もっと読み込む",
     "searchLanguages": "言語を検索...",
-    "allVoicesLoaded": "すべての音声を読み込みました（合計{{total}}件）"
+    "allVoicesLoaded": "すべての音声を読み込みました（合計{{total}}件）",
+    "provider": "プロバイダー"
   },
   "voices": {
     "tags": {

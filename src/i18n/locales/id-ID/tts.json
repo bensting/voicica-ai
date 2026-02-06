@@ -123,7 +123,8 @@
     "noVoicesFound": "Suara tidak ditemukan",
     "loadMoreVoices": "Muat Lebih Banyak Suara",
     "searchLanguages": "Cari bahasa...",
-    "allVoicesLoaded": "Semua suara dimuat (total {{total}})"
+    "allVoicesLoaded": "Semua suara dimuat (total {{total}})",
+    "provider": "Penyedia"
   },
   "voices": {
     "tags": {

@@ -4,6 +4,7 @@ import type { Voice } from '@/types/voice';
 import { getVoiceSampleUrl } from '@/types/voice';
 import type { LocaleOption } from '@/types/config';
 import { getAllLocaleOptions } from '@/utils/localeMapper';
+import { isTTSProvider } from '@/config/ttsVoiceFilters';
 
 interface UseVoicesProps {
   locale: string;
@@ -201,8 +202,17 @@ export function useVoices({ locale, authLoading }: UseVoicesProps): UseVoicesRet
     }
 
     // Provider filter (case-insensitive)
-    if (selectedProvider !== 'all' && voice.provider.toLowerCase() !== selectedProvider.toLowerCase()) {
-      return false;
+    // Always filter within allowed providers (Microsoft, Google)
+    if (selectedProvider === 'all') {
+      // When "All" is selected, only show voices from allowed providers
+      if (!isTTSProvider(voice.provider)) {
+        return false;
+      }
+    } else {
+      // When specific provider is selected, match that provider
+      if (voice.provider.toLowerCase() !== selectedProvider.toLowerCase()) {
+        return false;
+      }
     }
 
     // Used only filter

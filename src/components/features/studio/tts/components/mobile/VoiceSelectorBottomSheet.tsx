@@ -75,6 +75,8 @@ export default function VoiceSelectorBottomSheet({
     setSelectedGender,
     selectedRole,
     setSelectedRole,
+    selectedProvider,
+    setSelectedProvider,
     usedOnly,
     setUsedOnly,
     playingVoiceId,
@@ -180,6 +182,8 @@ export default function VoiceSelectorBottomSheet({
               onGenderChange={setSelectedGender}
               selectedRole={selectedRole}
               onRoleChange={setSelectedRole}
+              selectedProvider={selectedProvider}
+              onProviderChange={setSelectedProvider}
               usedOnly={usedOnly}
               onUsedOnlyChange={setUsedOnly}
             />
@@ -228,6 +232,7 @@ export default function VoiceSelectorBottomSheet({
         selectedLocale={selectedLanguage}
         availableLocales={availableLanguages}
         onSelect={handleLanguageSelect}
+        showAllOption={false}
       />
     </>
   );

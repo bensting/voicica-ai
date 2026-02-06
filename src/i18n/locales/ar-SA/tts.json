@@ -123,7 +123,8 @@
     "noVoicesFound": "لم يتم العثور على أصوات",
     "loadMoreVoices": "تحميل المزيد من الأصوات",
     "searchLanguages": "البحث عن اللغات...",
-    "allVoicesLoaded": "تم تحميل جميع الأصوات ({{total}} إجمالي)"
+    "allVoicesLoaded": "تم تحميل جميع الأصوات ({{total}} إجمالي)",
+    "provider": "المزود"
   },
   "voices": {
     "tags": {

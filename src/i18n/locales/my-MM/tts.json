@@ -123,7 +123,8 @@
     "noVoicesFound": "အသံမတွေ့ပါ",
     "loadMoreVoices": "အသံများပိုထည့်",
     "searchLanguages": "ဘာသာစကားရှာ...",
-    "allVoicesLoaded": "အသံအားလုံးထည့်ပြီး (စုစုပေါင်း {{total}})"
+    "allVoicesLoaded": "အသံအားလုံးထည့်ပြီး (စုစုပေါင်း {{total}})",
+    "provider": "ဝန်ဆောင်မှုပေးသူ"
   },
   "voices": {
     "tags": {

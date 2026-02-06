@@ -68,6 +68,11 @@ const nextConfig: NextConfig = {
         hostname: 'public-platform.r2.fish.audio',
         pathname: '/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'cdn.voicica.ai',
+        pathname: '/**',
+      },
     ],
     // 允许 SVG 图片（用于 DiceBear 头像）
     dangerouslyAllowSVG: true,

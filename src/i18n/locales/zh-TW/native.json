@@ -1,0 +1,281 @@
+{
+  "native": {
+    "navbar": {
+      "loginRewards": "登入領積分",
+      "free": "免費"
+    },
+    "bottomNav": {
+      "explore": "探索",
+      "me": "我的"
+    },
+    "settings": {
+      "title": "設定",
+      "share": "分享 VoicicaAI",
+      "checkUpdate": "檢查更新",
+      "privacy": "隱私政策",
+      "terms": "服務條款",
+      "logout": "登出",
+      "latestVersion": "已經是最新版本！"
+    },
+    "login": {
+      "welcomeTo": "歡迎使用",
+      "loginToReceive": "登入領取積分",
+      "loginWithGoogle": "使用 Google 登入",
+      "loginWithEmail": "使用電郵登入",
+      "loggingIn": "登入中...",
+      "signUp": "註冊",
+      "agreement": "登入或註冊即表示您同意我們的",
+      "privacyPolicy": "隱私政策",
+      "and": "和",
+      "termsOfUse": "使用條款"
+    },
+    "menu": {
+      "categories": {
+        "voiceover": "AI 配音",
+        "music": "AI 音樂",
+        "video": "AI 影片",
+        "image": "AI 圖像",
+        "tools": "其他工具"
+      },
+      "items": {
+        "voice": {
+          "title": "文字轉語音",
+          "shortName": "文字轉語音",
+          "description": "將文字轉換為自然語音"
+        },
+        "dialogue": {
+          "title": "文字轉對話",
+          "shortName": "文字轉對話",
+          "description": "創建多角色對話"
+        },
+        "clone": {
+          "title": "聲音克隆",
+          "shortName": "聲音克隆",
+          "description": "用 AI 克隆您的聲音"
+        },
+        "music": {
+          "title": "AI 音樂",
+          "shortName": "AI 音樂",
+          "description": "透過文字描述作曲"
+        },
+        "cover": {
+          "title": "AI 翻唱",
+          "shortName": "AI 翻唱",
+          "description": "用聲音克隆創建 AI 翻唱"
+        },
+        "image": {
+          "title": "AI 圖像",
+          "shortName": "AI 圖像",
+          "description": "根據文字提示生成圖像"
+        },
+        "video": {
+          "title": "AI 影片",
+          "shortName": "AI 影片",
+          "description": "根據文字提示生成影片"
+        },
+        "tiktok": {
+          "title": "TikTok 下載器",
+          "shortName": "TikTok 下載",
+          "description": "下載無浮水印的 TikTok 影片"
+        },
+        "youtube": {
+          "title": "YouTube 下載器",
+          "shortName": "YouTube 下載",
+          "description": "下載 YouTube 影片和音訊"
+        }
+      }
+    },
+    "me": {
+      "guest": "訪客",
+      "freeVersion": "免費版",
+      "myCreations": "我的作品",
+      "loginToView": "登入查看您的作品",
+      "noCreations": "暫無作品",
+      "startCreating": "開始創作精彩內容吧！",
+      "goCreate": "去創作",
+      "pullToRefresh": "下拉刷新",
+      "releaseToRefresh": "釋放刷新",
+      "tabs": {
+        "voices": "語音",
+        "dialogues": "對話",
+        "music": "音樂",
+        "cover": "翻唱",
+        "video": "影片",
+        "image": "圖像"
+      },
+      "emptyState": {
+        "noContent": "暫無內容",
+        "createFirstVoice": "創建您的第一個語音。",
+        "createFirstDialogue": "創建您的第一個 AI 對話。",
+        "createFirstMusic": "創建您的第一首 AI 音樂。",
+        "createFirstCover": "創建您的第一個 AI 翻唱。",
+        "createFirstVideo": "創建您的第一個 AI 影片。",
+        "createFirstImage": "創建您的第一張 AI 圖像。"
+      },
+      "stats": {
+        "plan": "方案",
+        "credits": "積分"
+      },
+      "subscribe": {
+        "title": "升級至 Pro",
+        "subtitle": "獲得所有功能的無限存取權",
+        "button": "立即訂閱"
+      }
+    },
+    "explore": {
+      "title": "探索",
+      "trending": "熱門",
+      "latest": "最新",
+      "forYou": "為您推薦"
+    },
+    "common": {
+      "cancel": "取消",
+      "confirm": "確認",
+      "delete": "刪除",
+      "save": "儲存",
+      "edit": "編輯",
+      "share": "分享",
+      "download": "下載",
+      "retry": "重試",
+      "loading": "載入中...",
+      "error": "錯誤",
+      "success": "成功",
+      "learnMore": "了解更多"
+    },
+    "subscribe": {
+      "tabs": {
+        "subscription": "訂閱",
+        "credits": "積分包"
+      },
+      "vipBonus": "成為 VIP：每個積分包 +20% 積分",
+      "notSubscribed": "未訂閱",
+      "mostPopular": "最受歡迎",
+      "creditsPerPeriod": "{{credits}} 積分 / {{period}}",
+      "membershipBenefits": "會員權益",
+      "benefits": {
+        "creditsRefresh": "每月刷新 {{credits}} 積分",
+        "fastChannel": "快速生成通道",
+        "simultaneous": "同時生成",
+        "higherQuality": "更高品質"
+      },
+      "creditPackInfo": {
+        "validity": "積分包有效期：永久",
+        "terms": "訂閱條款：確認後將從您的帳戶扣款。除非在當前週期結束前至少 24 小時取消，否則訂閱將以原價自動續訂。請在帳戶設定中管理您的訂閱和自動續訂。"
+      },
+      "termsOfUse": "使用條款",
+      "privacyPolicy": "隱私政策",
+      "subscribeNow": "立即訂閱",
+      "buyNow": "立即購買",
+      "processing": "處理中..."
+    },
+    "insufficientCredits": {
+      "title": "積分不足",
+      "subtitle": "您需要更多積分才能繼續",
+      "subtitleWithAmount": "需要：{{required}} 積分，當前：{{current}} 積分",
+      "getFreeCredits": "領取免費積分",
+      "getFreeCreditsDesc": "觀看廣告賺取免費積分",
+      "subscribe": "升級訂閱",
+      "subscribeDesc": "獲得無限積分和更多功能"
+    },
+    "createVoice": {
+      "enterText": "輸入文字",
+      "placeholder": "在此輸入或貼上文字...",
+      "generateText": "生成文字",
+      "selectVoice": "選擇語音",
+      "audioSettings": "音訊設定",
+      "speed": "語速",
+      "volume": "音量",
+      "pitch": "音調",
+      "generate": "生成",
+      "generating": "生成中...",
+      "creditsRule": "積分規則",
+      "voiceGeneration": "語音生成",
+      "charsPerCredit": "100字元 = 1積分",
+      "textAssistant": "文字助手",
+      "textAssistantDesc": "描述您想說的內容，AI 將為您生成文字。",
+      "textAssistantPlaceholder": "例如：播客歡迎詞、產品介紹、故事旁白...",
+      "speedDesc": "調整語音播放速度",
+      "volumeDesc": "調整輸出音量大小",
+      "pitchDesc": "調整聲音音調",
+      "pitchDeep": "低沉",
+      "pitchDull": "沉悶",
+      "pitchConsistent": "適中",
+      "pitchBright": "明亮",
+      "pitchCrisp": "清脆"
+    },
+    "createImage": {
+      "title": "AI 圖像",
+      "prompt": "提示詞",
+      "promptPlaceholder": "請輸入生成提示詞。例如：陽光下，微風輕輕吹動花朵，帶有電影感。",
+      "generatePrompt": "生成提示詞",
+      "generatePromptTitle": "生成提示詞",
+      "generatePromptDesc": "描述您想創建的內容，AI 將為您生成詳細的提示詞。",
+      "generatePromptPlaceholder": "例如：一隻可愛的貓咪坐在彩虹上",
+      "generate": "生成",
+      "generating": "生成中...",
+      "imageGuidance": "參考圖片",
+      "optional": "（可選）",
+      "parameters": "參數",
+      "parameterSettings": "參數設定",
+      "visibility": "可見性",
+      "public": "公開",
+      "private": "私密",
+      "aspectRatio": "寬高比",
+      "quality": "品質",
+      "selectModel": "選擇模型",
+      "credits": "積分",
+      "createImage": "創建圖像",
+      "creating": "創建中...",
+      "imageGeneration": "圖像生成",
+      "errorSelectImage": "請選擇一個圖片檔案",
+      "errorImageSize": "圖片大小必須小於 10MB",
+      "detailPrompt": "提示詞",
+      "detailCreditsUsed": "消耗積分",
+      "deleteConfirmTitle": "刪除此圖片？"
+    },
+    "createDialogue": {
+      "title": "文字轉對話",
+      "language": "語言",
+      "selectLanguage": "選擇對話語言",
+      "searchLanguage": "搜尋語言...",
+      "voice": "聲音",
+      "selectVoice": "選擇對話聲音",
+      "searchVoice": "搜尋聲音...",
+      "text": "文字",
+      "textPlaceholder": "嘿！你試過這個嗎？",
+      "dialogue": "對話",
+      "addDialogue": "新增對話",
+      "remove": "刪除",
+      "totalCharacters": "共計：{{current}} / {{max}} 字元",
+      "generate": "生成對話",
+      "generating": "生成中...",
+      "generatingDialogue": "正在生成對話...",
+      "estimatedTime": "預計時間：1-2分鐘",
+      "dialogueCreated": "對話建立成功！",
+      "dialogueCreatedDesc": "您的對話已成功生成。",
+      "createAnother": "繼續建立",
+      "viewHistory": "查看歷史",
+      "generationFailed": "生成失敗",
+      "insufficientCredits": "積分不足",
+      "insufficientCreditsDesc": "您的積分不足，升級以獲取更多！",
+      "getCredits": "獲取積分",
+      "tryAgain": "重試",
+      "close": "關閉",
+      "creditsRule": "100字元 = 3積分",
+      "emotions": {
+        "excitedly": "興奮地",
+        "whispers": "低語",
+        "laughs": "笑",
+        "sarcastic": "諷刺",
+        "sighs": "嘆氣",
+        "sad": "悲傷",
+        "angry": "憤怒"
+      },
+      "genderFilter": {
+        "all": "全部",
+        "male": "男性",
+        "female": "女性"
+      }
+    }
+  }
+}

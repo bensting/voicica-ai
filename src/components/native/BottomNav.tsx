@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import CreateSheet from './CreateSheet';
 import { useBottomNav } from '@/contexts/BottomNavContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 // 首页图标
 const HomeIcon = ({ active }: { active: boolean }) => (
@@ -56,6 +57,7 @@ export default function BottomNav() {
   const pathname = usePathname();
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const { isVisible } = useBottomNav();
+  const { t } = useLanguage();
 
   const isExploreActive = pathname === '/native' || pathname.startsWith('/native/explore');
   const isMeActive = pathname.startsWith('/native/me');
@@ -81,7 +83,7 @@ export default function BottomNav() {
               className={`text-xs mt-1 ${isExploreActive ? 'text-white font-medium' : 'text-slate-500'
                 }`}
             >
-              Explore
+              {t('native.bottomNav.explore')}
             </span>
           </Link>
 
@@ -108,7 +110,7 @@ export default function BottomNav() {
               className={`text-xs mt-1 ${isMeActive ? 'text-white' : 'text-gray-500'
                 }`}
             >
-              Me
+              {t('native.bottomNav.me')}
             </span>
           </Link>
         </div>

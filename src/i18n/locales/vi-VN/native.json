@@ -1,0 +1,281 @@
+{
+  "native": {
+    "navbar": {
+      "loginRewards": "Đăng nhập nhận thưởng",
+      "free": "Miễn phí"
+    },
+    "bottomNav": {
+      "explore": "Khám phá",
+      "me": "Tôi"
+    },
+    "settings": {
+      "title": "Cài đặt",
+      "share": "Chia sẻ VoicicaAI",
+      "checkUpdate": "Kiểm tra cập nhật",
+      "privacy": "Chính sách bảo mật",
+      "terms": "Điều khoản dịch vụ",
+      "logout": "Đăng xuất",
+      "latestVersion": "Bạn đang dùng phiên bản mới nhất!"
+    },
+    "login": {
+      "welcomeTo": "Chào mừng đến với",
+      "loginToReceive": "Đăng nhập để nhận credits",
+      "loginWithGoogle": "Đăng nhập với Google",
+      "loginWithEmail": "Đăng nhập với Email",
+      "loggingIn": "Đang đăng nhập...",
+      "signUp": "Đăng ký",
+      "agreement": "Đăng nhập hoặc đăng ký đồng nghĩa bạn chấp nhận",
+      "privacyPolicy": "Chính sách bảo mật",
+      "and": "và",
+      "termsOfUse": "Điều khoản sử dụng"
+    },
+    "menu": {
+      "categories": {
+        "voiceover": "AI Giọng nói",
+        "music": "AI Âm nhạc",
+        "video": "AI Video",
+        "image": "AI Hình ảnh",
+        "tools": "Công cụ khác"
+      },
+      "items": {
+        "voice": {
+          "title": "Văn bản thành giọng nói",
+          "shortName": "Văn bản → Giọng",
+          "description": "Chuyển văn bản thành giọng nói tự nhiên"
+        },
+        "dialogue": {
+          "title": "Tạo hội thoại",
+          "shortName": "Tạo hội thoại",
+          "description": "Tạo hội thoại nhiều nhân vật"
+        },
+        "clone": {
+          "title": "Nhân bản giọng",
+          "shortName": "Nhân bản giọng",
+          "description": "Nhân bản giọng nói với AI"
+        },
+        "music": {
+          "title": "AI Âm nhạc",
+          "shortName": "AI Âm nhạc",
+          "description": "Sáng tác nhạc từ mô tả văn bản"
+        },
+        "cover": {
+          "title": "AI Cover",
+          "shortName": "AI Cover",
+          "description": "Tạo bản cover AI với nhân bản giọng"
+        },
+        "image": {
+          "title": "AI Hình ảnh",
+          "shortName": "AI Hình ảnh",
+          "description": "Tạo hình ảnh từ văn bản"
+        },
+        "video": {
+          "title": "AI Video",
+          "shortName": "AI Video",
+          "description": "Tạo video từ văn bản"
+        },
+        "tiktok": {
+          "title": "Tải TikTok",
+          "shortName": "Tải TikTok",
+          "description": "Tải video TikTok không watermark"
+        },
+        "youtube": {
+          "title": "Tải YouTube",
+          "shortName": "Tải YouTube",
+          "description": "Tải video và âm thanh YouTube"
+        }
+      }
+    },
+    "me": {
+      "guest": "Khách",
+      "freeVersion": "Phiên bản miễn phí",
+      "myCreations": "Tác phẩm của tôi",
+      "loginToView": "Đăng nhập để xem tác phẩm",
+      "noCreations": "Chưa có tác phẩm",
+      "startCreating": "Bắt đầu sáng tạo ngay!",
+      "goCreate": "Đi sáng tạo",
+      "pullToRefresh": "Kéo xuống để làm mới",
+      "releaseToRefresh": "Thả để làm mới",
+      "tabs": {
+        "voices": "Giọng nói",
+        "dialogues": "Hội thoại",
+        "music": "Âm nhạc",
+        "cover": "Cover",
+        "video": "Video",
+        "image": "Hình ảnh"
+      },
+      "emptyState": {
+        "noContent": "Chưa có nội dung.",
+        "createFirstVoice": "Tạo giọng nói đầu tiên của bạn.",
+        "createFirstDialogue": "Tạo hội thoại AI đầu tiên của bạn.",
+        "createFirstMusic": "Tạo bài nhạc AI đầu tiên của bạn.",
+        "createFirstCover": "Tạo bản cover AI đầu tiên của bạn.",
+        "createFirstVideo": "Tạo video AI đầu tiên của bạn.",
+        "createFirstImage": "Tạo hình ảnh AI đầu tiên của bạn."
+      },
+      "stats": {
+        "plan": "Gói",
+        "credits": "Credits"
+      },
+      "subscribe": {
+        "title": "Nâng cấp lên Pro",
+        "subtitle": "Truy cập không giới hạn tất cả tính năng",
+        "button": "Đăng ký ngay"
+      }
+    },
+    "explore": {
+      "title": "Khám phá",
+      "trending": "Xu hướng",
+      "latest": "Mới nhất",
+      "forYou": "Dành cho bạn"
+    },
+    "common": {
+      "cancel": "Hủy",
+      "confirm": "Xác nhận",
+      "delete": "Xóa",
+      "save": "Lưu",
+      "edit": "Sửa",
+      "share": "Chia sẻ",
+      "download": "Tải xuống",
+      "retry": "Thử lại",
+      "loading": "Đang tải...",
+      "error": "Lỗi",
+      "success": "Thành công",
+      "learnMore": "Tìm hiểu thêm"
+    },
+    "subscribe": {
+      "tabs": {
+        "subscription": "Đăng ký",
+        "credits": "Gói Credit"
+      },
+      "vipBonus": "Trở thành VIP: +20% credit mỗi gói",
+      "notSubscribed": "Chưa đăng ký",
+      "mostPopular": "Phổ biến nhất",
+      "creditsPerPeriod": "{{credits}} credit / {{period}}",
+      "membershipBenefits": "Quyền lợi thành viên",
+      "benefits": {
+        "creditsRefresh": "Làm mới {{credits}} credit mỗi tháng",
+        "fastChannel": "Kênh tạo nhanh",
+        "simultaneous": "Tạo đồng thời",
+        "higherQuality": "Chất lượng cao hơn"
+      },
+      "creditPackInfo": {
+        "validity": "Thời hạn gói Credit: Vĩnh viễn",
+        "terms": "Điều khoản đăng ký: Thanh toán được tính vào tài khoản khi xác nhận. Đăng ký tự động gia hạn với giá gốc, trừ khi hủy trước ít nhất 24 giờ khi kết thúc chu kỳ hiện tại. Quản lý đăng ký và tự động gia hạn trong Cài đặt tài khoản."
+      },
+      "termsOfUse": "Điều khoản sử dụng",
+      "privacyPolicy": "Chính sách bảo mật",
+      "subscribeNow": "Đăng ký ngay",
+      "buyNow": "Mua ngay",
+      "processing": "Đang xử lý..."
+    },
+    "insufficientCredits": {
+      "title": "Không đủ credit",
+      "subtitle": "Bạn cần thêm credit để tiếp tục",
+      "subtitleWithAmount": "Cần: {{required}} credit, Hiện có: {{current}} credit",
+      "getFreeCredits": "Nhận credit miễn phí",
+      "getFreeCreditsDesc": "Xem quảng cáo để nhận credit miễn phí",
+      "subscribe": "Nâng cấp lên Pro",
+      "subscribeDesc": "Nhận credit và tính năng không giới hạn"
+    },
+    "createVoice": {
+      "enterText": "Nhập văn bản",
+      "placeholder": "Nhập hoặc dán văn bản tại đây...",
+      "generateText": "Tạo văn bản",
+      "selectVoice": "Chọn giọng nói",
+      "audioSettings": "Cài đặt âm thanh",
+      "speed": "Tốc độ",
+      "volume": "Âm lượng",
+      "pitch": "Cao độ",
+      "generate": "Tạo",
+      "generating": "Đang tạo...",
+      "creditsRule": "Quy tắc credit",
+      "voiceGeneration": "Tạo giọng nói",
+      "charsPerCredit": "100 ký tự = 1 credit",
+      "textAssistant": "Trợ lý văn bản",
+      "textAssistantDesc": "Mô tả những gì bạn muốn nói và AI sẽ tạo văn bản cho bạn.",
+      "textAssistantPlaceholder": "Ví dụ: Lời chào podcast, giới thiệu sản phẩm, kể chuyện...",
+      "speedDesc": "Điều chỉnh tốc độ nói",
+      "volumeDesc": "Điều chỉnh mức âm lượng đầu ra",
+      "pitchDesc": "Điều chỉnh tông giọng",
+      "pitchDeep": "Trầm",
+      "pitchDull": "Đục",
+      "pitchConsistent": "Bình thường",
+      "pitchBright": "Sáng",
+      "pitchCrisp": "Trong trẻo"
+    },
+    "createImage": {
+      "title": "AI Hình ảnh",
+      "prompt": "Prompt",
+      "promptPlaceholder": "Vui lòng nhập prompt để tạo. Ví dụ: Dưới ánh nắng, gió nhẹ lay động những bông hoa, với cảm giác điện ảnh.",
+      "generatePrompt": "Tạo Prompt",
+      "generatePromptTitle": "Tạo Prompt",
+      "generatePromptDesc": "Mô tả những gì bạn muốn tạo, và AI sẽ tạo prompt chi tiết cho bạn.",
+      "generatePromptPlaceholder": "Ví dụ: Một chú mèo dễ thương ngồi trên cầu vồng",
+      "generate": "Tạo",
+      "generating": "Đang tạo...",
+      "imageGuidance": "Ảnh tham khảo",
+      "optional": "(tùy chọn)",
+      "parameters": "Tham số",
+      "parameterSettings": "Cài đặt tham số",
+      "visibility": "Hiển thị",
+      "public": "Công khai",
+      "private": "Riêng tư",
+      "aspectRatio": "Tỷ lệ khung hình",
+      "quality": "Chất lượng",
+      "selectModel": "Chọn mô hình",
+      "credits": "credit",
+      "createImage": "Tạo hình ảnh",
+      "creating": "Đang tạo...",
+      "imageGeneration": "Tạo hình ảnh",
+      "errorSelectImage": "Vui lòng chọn một tệp hình ảnh",
+      "errorImageSize": "Kích thước hình ảnh phải nhỏ hơn 10MB",
+      "detailPrompt": "Prompt",
+      "detailCreditsUsed": "Credit đã dùng",
+      "deleteConfirmTitle": "Xóa hình ảnh này?"
+    },
+    "createDialogue": {
+      "title": "Văn bản thành Hội thoại",
+      "language": "Ngôn ngữ",
+      "selectLanguage": "Chọn ngôn ngữ hội thoại",
+      "searchLanguage": "Tìm ngôn ngữ...",
+      "voice": "Giọng nói",
+      "selectVoice": "Chọn giọng nói cho hội thoại này",
+      "searchVoice": "Tìm giọng nói...",
+      "text": "Văn bản",
+      "textPlaceholder": "Này! Bạn đã thử chưa?",
+      "dialogue": "Hội thoại",
+      "addDialogue": "Thêm Hội thoại",
+      "remove": "Xóa",
+      "totalCharacters": "Tổng: {{current}} / {{max}} ký tự",
+      "generate": "Tạo Hội thoại",
+      "generating": "Đang tạo...",
+      "generatingDialogue": "Đang tạo hội thoại...",
+      "estimatedTime": "Thời gian ước tính: 1-2 phút",
+      "dialogueCreated": "Đã Tạo Hội thoại!",
+      "dialogueCreatedDesc": "Hội thoại của bạn đã được tạo thành công.",
+      "createAnother": "Tạo Thêm",
+      "viewHistory": "Xem Lịch sử",
+      "generationFailed": "Tạo Thất bại",
+      "insufficientCredits": "Không Đủ Credit",
+      "insufficientCreditsDesc": "Bạn không có đủ credit. Nâng cấp để nhận thêm!",
+      "getCredits": "Nhận Credit",
+      "tryAgain": "Thử Lại",
+      "close": "Đóng",
+      "creditsRule": "100 ký tự = 3 credit",
+      "emotions": {
+        "excitedly": "hào hứng",
+        "whispers": "thì thầm",
+        "laughs": "cười",
+        "sarcastic": "mỉa mai",
+        "sighs": "thở dài",
+        "sad": "buồn",
+        "angry": "tức giận"
+      },
+      "genderFilter": {
+        "all": "Tất cả",
+        "male": "Nam",
+        "female": "Nữ"
+      }
+    }
+  }
+}

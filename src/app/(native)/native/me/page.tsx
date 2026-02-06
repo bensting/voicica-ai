@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 import { useCredits } from '@/contexts/CreditsContext';
 import { useSubscription } from '@/contexts/SubscriptionContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import ProfileHeader from '@/components/native/me/ProfileHeader';
 import UserStatsBar from '@/components/native/me/UserStatsBar';
 import SubscribeCard from '@/components/native/me/SubscribeCard';
@@ -21,22 +22,24 @@ export default function MePage() {
   const { user, loading } = useFirebaseAuth();
   const { credits } = useCredits();
   const { isSubscribed, activeSubscription } = useSubscription();
+  const { t, locale } = useLanguage();
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   // 使用 ref 跟踪是否已经显示过登录框，防止重复弹出
   const hasShownRef = useRef(false);
 
   const isLoggedIn = !!user;
-  const userName = user?.displayName || user?.email?.split('@')[0] || 'Guest';
+  const guestName = t('native.me.guest');
+  const userName = user?.displayName || user?.email?.split('@')[0] || guestName;
   const avatarUrl = user?.photoURL || undefined;
 
   // 获取计划名称
   const getPlanDisplayName = () => {
     if (!isSubscribed || !activeSubscription) {
-      return 'Free version';
+      return t('native.me.freeVersion');
     }
     // 尝试从 display_name 获取（多语言支持）
     if (activeSubscription.display_name) {
-      return activeSubscription.display_name['en'] || activeSubscription.display_name['zh-CN'] || 'Pro';
+      return activeSubscription.display_name[locale] || activeSubscription.display_name['en'] || 'Pro';
     }
     // 从 product_type 推断计划名称
     if (activeSubscription.product_type) {

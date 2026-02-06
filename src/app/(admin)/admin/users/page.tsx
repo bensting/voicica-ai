@@ -10,6 +10,7 @@ import {
   cleanExpiredAnonymousUsers,
   getUserCreditHistory,
 } from '@/actions/admin/users';
+import IpLocation from '@/components/admin/IpLocation';
 
 interface RegisteredUser {
   id: number;
@@ -40,6 +41,7 @@ interface AnonymousUser {
   user_id: string;
   device_fingerprint: string;
   ip_address: string | null;
+  platform: string | null;
   credits: number;
   total_credits_used: number;
   is_anonymous: boolean;
@@ -84,6 +86,7 @@ export default function UsersManagementPage() {
   const [anonymousLoading, setAnonymousLoading] = useState(false);
   const [anonymousSearch, setAnonymousSearch] = useState('');
   const [convertedFilter, setConvertedFilter] = useState<'all' | 'converted' | 'not_converted'>('all');
+  const [anonymousPlatformFilter, setAnonymousPlatformFilter] = useState<string>('');
 
   // 积分编辑模态框
   const [editingCredits, setEditingCredits] = useState<{
@@ -134,6 +137,7 @@ export default function UsersManagementPage() {
         pageSize: 20,
         search: anonymousSearch || undefined,
         isConverted: convertedFilter === 'all' ? undefined : convertedFilter === 'converted',
+        platform: anonymousPlatformFilter || undefined,
       });
       setAnonymousUsers(result.users);
       setAnonymousTotal(result.total);
@@ -143,7 +147,7 @@ export default function UsersManagementPage() {
     } finally {
       setAnonymousLoading(false);
     }
-  }, [anonymousPage, anonymousSearch, convertedFilter]);
+  }, [anonymousPage, anonymousSearch, convertedFilter, anonymousPlatformFilter]);
 
   // 加载数据
   useEffect(() => {
@@ -535,6 +539,20 @@ export default function UsersManagementPage() {
                 <option value="converted">已转化</option>
                 <option value="not_converted">未转化</option>
               </select>
+              <select
+                value={anonymousPlatformFilter}
+                onChange={(e) => {
+                  setAnonymousPlatformFilter(e.target.value);
+                  setAnonymousPage(1);
+                }}
+                className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              >
+                <option value="">所有平台</option>
+                <option value="web">🖥️ Web</option>
+                <option value="mobile-web">📱 Mobile Web</option>
+                <option value="android">🤖 Android</option>
+                <option value="ios">🍎 iOS</option>
+              </select>
               <button
                 onClick={handleCleanExpired}
                 className="px-4 py-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-colors"
@@ -555,7 +573,8 @@ export default function UsersManagementPage() {
                   <tr>
                     <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">用户ID</th>
                     <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">设备指纹</th>
-                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">IP</th>
+                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">位置</th>
+                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">平台</th>
                     <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">积分</th>
                     <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">已用</th>
                     <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">状态</th>
@@ -566,7 +585,7 @@ export default function UsersManagementPage() {
                 <tbody className="divide-y divide-gray-200">
                   {anonymousLoading ? (
                     <tr>
-                      <td colSpan={8} className="px-4 py-8 text-center text-gray-500">
+                      <td colSpan={9} className="px-4 py-8 text-center text-gray-500">
                         <div className="flex items-center justify-center gap-2">
                           <div className="w-5 h-5 border-2 border-purple-600 border-t-transparent rounded-full animate-spin" />
                           加载中...
@@ -575,7 +594,7 @@ export default function UsersManagementPage() {
                     </tr>
                   ) : anonymousUsers.length === 0 ? (
                     <tr>
-                      <td colSpan={8} className="px-4 py-8 text-center text-gray-500">
+                      <td colSpan={9} className="px-4 py-8 text-center text-gray-500">
                         没有找到匿名用户
                       </td>
                     </tr>
@@ -593,7 +612,19 @@ export default function UsersManagementPage() {
                           </span>
                         </td>
                         <td className="px-4 py-3">
-                          <span className="text-sm text-gray-600">{user.ip_address || '-'}</span>
+                          <IpLocation ip={user.ip_address} />
+                        </td>
+                        <td className="px-4 py-3">
+                          {user.platform && PLATFORM_CONFIG[user.platform] ? (
+                            <span
+                              className={`inline-flex items-center gap-1 px-2 py-0.5 text-xs font-medium rounded ${PLATFORM_CONFIG[user.platform].bg} ${PLATFORM_CONFIG[user.platform].text}`}
+                            >
+                              <span>{PLATFORM_CONFIG[user.platform].icon}</span>
+                              {PLATFORM_CONFIG[user.platform].label}
+                            </span>
+                          ) : (
+                            <span className="text-xs text-gray-400">-</span>
+                          )}
                         </td>
                         <td className="px-4 py-3">
                           <span className="font-medium text-gray-900">{user.credits}</span>

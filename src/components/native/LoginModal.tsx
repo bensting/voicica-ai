@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import EmailLoginForm from './auth/EmailLoginForm';
 import RegisterForm from './auth/RegisterForm';
 import ForgotPasswordForm from './auth/ForgotPasswordForm';
@@ -50,6 +51,7 @@ const GoogleIcon = () => (
  */
 export default function LoginModal({ isOpen, onClose, onLoginSuccess }: LoginModalProps) {
   const { signInWithGoogle } = useFirebaseAuth();
+  const { t } = useLanguage();
   const [view, setView] = useState<ViewType>('main');
   const [isLoading, setIsLoading] = useState(false);
 
@@ -170,7 +172,7 @@ export default function LoginModal({ isOpen, onClose, onLoginSuccess }: LoginMod
           className="flex flex-col items-center"
           style={{ paddingTop: 'calc(28px + var(--safe-area-inset-top, 0px))' }}
         >
-          <p className="text-gray-300 text-lg mb-2">Welcome to</p>
+          <p className="text-gray-300 text-lg mb-2">{t('native.login.welcomeTo')}</p>
           <h1 className="text-4xl font-bold">
             <span className="text-white">Voicica</span>
             <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
@@ -186,7 +188,7 @@ export default function LoginModal({ isOpen, onClose, onLoginSuccess }: LoginMod
         <div className="w-full max-w-sm pb-8">
           {/* 提示文字 */}
           <p className="text-white text-lg font-medium mb-6 text-center">
-            Log in to receive credits
+            {t('native.login.loginToReceive')}
           </p>
 
           {/* 登录按钮 */}
@@ -198,7 +200,7 @@ export default function LoginModal({ isOpen, onClose, onLoginSuccess }: LoginMod
               className="w-full flex items-center justify-center gap-3 py-4 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 text-white font-medium hover:from-purple-600 hover:to-pink-600 disabled:opacity-50 transition-all"
             >
               <GoogleIcon />
-              {isLoading ? 'Logging in...' : 'Log in with Google'}
+              {isLoading ? t('native.login.loggingIn') : t('native.login.loginWithGoogle')}
             </button>
 
             {/* Email 登录 */}
@@ -206,7 +208,7 @@ export default function LoginModal({ isOpen, onClose, onLoginSuccess }: LoginMod
               onClick={handleEmailLogin}
               className="w-full flex items-center justify-center gap-3 py-4 rounded-full border border-gray-600 text-white font-medium hover:bg-gray-800/50 transition-colors"
             >
-              Log in with Email
+              {t('native.login.loginWithEmail')}
             </button>
 
             {/* Sign up */}
@@ -214,7 +216,7 @@ export default function LoginModal({ isOpen, onClose, onLoginSuccess }: LoginMod
               onClick={handleSignUp}
               className="w-full py-3 text-white font-medium hover:text-purple-400 transition-colors"
             >
-              Sign up
+              {t('native.login.signUp')}
             </button>
           </div>
 
@@ -223,13 +225,13 @@ export default function LoginModal({ isOpen, onClose, onLoginSuccess }: LoginMod
             className="mt-6 text-center text-sm text-gray-500"
             style={{ paddingBottom: 'var(--safe-area-inset-bottom, 0px)' }}
           >
-            Log in or register to indicate that you agree to our{' '}
+            {t('native.login.agreement')}{' '}
             <Link href="/privacy" className="text-purple-400 hover:underline">
-              Privacy Policy
+              {t('native.login.privacyPolicy')}
             </Link>{' '}
-            and{' '}
+            {t('native.login.and')}{' '}
             <Link href="/terms" className="text-purple-400 hover:underline">
-              Terms of Use
+              {t('native.login.termsOfUse')}
             </Link>
             .
           </p>

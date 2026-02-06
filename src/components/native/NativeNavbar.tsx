@@ -10,8 +10,9 @@ import { useBottomNav } from '@/contexts/BottomNavContext';
 import { useDailyTasks } from '@/hooks/useDailyTasks';
 import LoginModal from './LoginModal';
 import NativeDailyTasksModal from './NativeDailyTasksModal';
+import LanguageSelectorSheet from './LanguageSelectorSheet';
 import CrownIcon from './common/CrownIcon';
-import CreditsIcon from './common/CreditsIcon';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 // 宝箱图标
 const TreasureIcon = () => (
@@ -33,8 +34,10 @@ export default function NativeNavbar() {
   const { credits, refreshCredits } = useCredits();
   const { isTopNavVisible } = useBottomNav();
   const { shouldShowPopup, status, config } = useDailyTasks();
+  const { t } = useLanguage();
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isDailyTasksOpen, setIsDailyTasksOpen] = useState(false);
+  const [isLanguageSelectorOpen, setIsLanguageSelectorOpen] = useState(false);
   const [hasAutoShown, setHasAutoShown] = useState(false);
 
   const isLoggedIn = !!user;
@@ -84,7 +87,7 @@ export default function NativeNavbar() {
               className="relative flex items-center gap-1 px-2 py-1 rounded-lg bg-gradient-to-r from-amber-500/20 to-orange-500/20 border border-amber-500/30 hover:from-amber-500/30 hover:to-orange-500/30 transition-all active:scale-95"
             >
               <TreasureIcon />
-              <span className="text-xs font-bold text-amber-400">FREE</span>
+              <span className="text-xs font-bold text-amber-400">{t('native.navbar.free')}</span>
               {/* 小红点提示 - 有未领取的奖励时显示 */}
               {hasUnclaimedRewards && (
                 <span className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full animate-pulse" />
@@ -93,26 +96,37 @@ export default function NativeNavbar() {
           </div>
 
           {/* 右侧区域 */}
-          {isLoggedIn ? (
-            /* 已登录：显示积分 */
+          <div className="flex items-center gap-2">
+            {isLoggedIn ? (
+              /* 已登录：显示积分 */
+              <button
+                onClick={() => router.push('/native/subscribe')}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 hover:bg-white/10 transition-all active:scale-95"
+              >
+                <CrownIcon className="w-4 h-4 text-amber-400" />
+                <span className="text-white text-sm font-medium">{credits}</span>
+              </button>
+            ) : (
+              /* 未登录：显示登录按钮 */
+              <button
+                onClick={() => setIsLoginModalOpen(true)}
+                className="px-3 py-1.5 text-xs font-medium text-white rounded-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 transition-all"
+              >
+                {t('native.navbar.loginRewards')}
+              </button>
+            )}
+
+            {/* 语言选择器按钮 */}
             <button
-              onClick={() => router.push('/native/subscribe')}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 hover:bg-white/10 transition-all active:scale-95"
+              onClick={() => setIsLanguageSelectorOpen(true)}
+              className="flex items-center justify-center w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 transition-all duration-200 active:scale-95"
+              aria-label="Switch language"
             >
-              <CrownIcon className="w-4 h-4 text-amber-400" />
-              <span className="text-white/20">|</span>
-              <CreditsIcon className="w-3.5 h-3.5 text-purple-400" />
-              <span className="text-white text-sm font-medium">{credits}</span>
+              <svg className="w-4.5 h-4.5 text-white/80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
             </button>
-          ) : (
-            /* 未登录：显示登录按钮 */
-            <button
-              onClick={() => setIsLoginModalOpen(true)}
-              className="px-3 py-1.5 text-xs font-medium text-white rounded-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 transition-all"
-            >
-              Login & Rewards
-            </button>
-          )}
+          </div>
         </div>
       </header>
 
@@ -133,6 +147,12 @@ export default function NativeNavbar() {
         isOpen={isDailyTasksOpen}
         onClose={() => setIsDailyTasksOpen(false)}
         onCreditsUpdated={refreshCredits}
+      />
+
+      {/* 语言选择器弹窗 */}
+      <LanguageSelectorSheet
+        isOpen={isLanguageSelectorOpen}
+        onClose={() => setIsLanguageSelectorOpen(false)}
       />
     </>
   );

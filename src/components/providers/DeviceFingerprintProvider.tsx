@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { getDeviceFingerprint } from '@/lib/utils/fingerprint';
+import { detectPlatform } from '@/lib/platform';
 
 interface DeviceFingerprintContextType {
   deviceFingerprint: string | null;
@@ -47,6 +48,20 @@ export default function DeviceFingerprintProvider({ children }: { children?: Rea
           .join('; ');
 
         document.cookie = cookieOptions;
+
+        // 同时设置平台 cookie
+        const platform = detectPlatform();
+        const platformCookieOptions = [
+          `platform=${platform}`,
+          'path=/',
+          'max-age=31536000', // 1 year
+          'SameSite=Lax',
+          isProduction ? 'Secure' : '',
+        ]
+          .filter(Boolean)
+          .join('; ');
+
+        document.cookie = platformCookieOptions;
 
         // 设置到 state 供 Context 使用
         setDeviceFingerprint(fingerprint);

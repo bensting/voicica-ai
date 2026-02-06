@@ -2,11 +2,11 @@
 
 import { useState, useEffect } from 'react';
 import type { ImageRecord } from '@/actions/image';
-import { createShareLink } from '@/actions/share';
 import DetailModalHeader from './DetailModalHeader';
 import DetailActionBar from './DetailActionBar';
 import DeleteConfirmDialog from '@/components/native/ui/DeleteConfirmDialog';
 import { useBottomNav } from '@/contexts/BottomNavContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface ImageDetailModalProps {
   image: ImageRecord;
@@ -37,23 +37,14 @@ export default function ImageDetailModal({
   onDelete,
 }: ImageDetailModalProps) {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-  const [shareUrl, setShareUrl] = useState<string | null>(null);
   const { hide, show } = useBottomNav();
+  const { t } = useLanguage();
 
   // 隐藏底部导航
   useEffect(() => {
     hide();
     return () => show();
   }, [hide, show]);
-
-  // 预先生成分享链接（用于"在浏览器打开"功能）
-  useEffect(() => {
-    if (image.task_id) {
-      createShareLink('image', image.task_id)
-        .then((result) => setShareUrl(result.url))
-        .catch((err) => console.error('Failed to create share link:', err));
-    }
-  }, [image.task_id]);
 
   const handleDeleteConfirm = () => {
     onDelete(image);
@@ -67,7 +58,8 @@ export default function ImageDetailModal({
       <DetailModalHeader
         onClose={onClose}
         onDelete={() => setShowDeleteDialog(true)}
-        browserUrl={shareUrl || undefined}
+        contentType="image"
+        contentId={image.task_id}
       />
 
       {/* Content */}
@@ -105,13 +97,13 @@ export default function ImageDetailModal({
 
           {/* Prompt */}
           <div>
-            <h3 className="text-sm font-medium text-gray-400 mb-2">Prompt</h3>
+            <h3 className="text-sm font-medium text-gray-400 mb-2">{t('native.createImage.detailPrompt')}</h3>
             <p className="text-white text-sm leading-relaxed">{image.prompt}</p>
           </div>
 
           {/* Credits Used */}
           <div className="flex items-center justify-between text-sm">
-            <span className="text-gray-400">Credits used</span>
+            <span className="text-gray-400">{t('native.createImage.detailCreditsUsed')}</span>
             <span className="text-white">{image.credits_used}</span>
           </div>
         </div>
@@ -135,7 +127,7 @@ export default function ImageDetailModal({
         isOpen={showDeleteDialog}
         onCancel={() => setShowDeleteDialog(false)}
         onConfirm={handleDeleteConfirm}
-        title="Delete this image?"
+        title={t('native.createImage.deleteConfirmTitle')}
       />
     </div>
   );

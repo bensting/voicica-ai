@@ -5,6 +5,7 @@
  */
 import prisma from '@/lib/prisma';
 import { verifyAdminWithoutDb } from '@/lib/auth-admin';
+import { DIALOGUE_ALL_VOICES, getVoiceSampleUrl } from '@/config/native/dialogueConfig';
 
 /**
  * 同步结果
@@ -14,35 +15,7 @@ interface SyncResult {
   message: string;
   inserted?: number;
   updated?: number;
-  skipped?: number;
 }
-
-/**
- * ElevenLabs Dialogue 可用的声音列表
- * 这些是 kie.ai text-to-dialogue-v3 API 支持的声音
- */
-const ELEVENLABS_DIALOGUE_VOICES = [
-  { id: 'Adam', name: 'Adam', gender: 'male' },
-  { id: 'Alice', name: 'Alice', gender: 'female' },
-  { id: 'Bill', name: 'Bill', gender: 'male' },
-  { id: 'Brian', name: 'Brian', gender: 'male' },
-  { id: 'Callum', name: 'Callum', gender: 'male' },
-  { id: 'Charlie', name: 'Charlie', gender: 'male' },
-  { id: 'Chris', name: 'Chris', gender: 'male' },
-  { id: 'Daniel', name: 'Daniel', gender: 'male' },
-  { id: 'Eric', name: 'Eric', gender: 'male' },
-  { id: 'George', name: 'George', gender: 'male' },
-  { id: 'Harry', name: 'Harry', gender: 'male' },
-  { id: 'Jessica', name: 'Jessica', gender: 'female' },
-  { id: 'Laura', name: 'Laura', gender: 'female' },
-  { id: 'Liam', name: 'Liam', gender: 'male' },
-  { id: 'Lily', name: 'Lily', gender: 'female' },
-  { id: 'Matilda', name: 'Matilda', gender: 'female' },
-  { id: 'River', name: 'River', gender: 'male' },
-  { id: 'Roger', name: 'Roger', gender: 'male' },
-  { id: 'Sarah', name: 'Sarah', gender: 'female' },
-  { id: 'Will', name: 'Will', gender: 'male' },
-];
 
 /**
  * 获取 ElevenLabs Dialogue 声音统计
@@ -63,7 +36,7 @@ export async function getElevenlabsDialogueStats(): Promise<{
   });
 
   return {
-    total: ELEVENLABS_DIALOGUE_VOICES.length,
+    total: DIALOGUE_ALL_VOICES.length,
     dbCount,
     activeCount,
   };
@@ -71,6 +44,7 @@ export async function getElevenlabsDialogueStats(): Promise<{
 
 /**
  * 同步 ElevenLabs Dialogue 声音到数据库
+ * 存在的更新，不存在的新增
  */
 export async function syncElevenlabsDialogueVoices(): Promise<SyncResult> {
   await verifyAdminWithoutDb();
@@ -81,54 +55,70 @@ export async function syncElevenlabsDialogueVoices(): Promise<SyncResult> {
     // 获取已存在的声音
     const existingVoices = await prisma.voices.findMany({
       where: { provider: 'elevenlabs_dialogue' },
-      select: { name: true },
+      select: { id: true, name: true },
     });
-    const existingNames = new Set(existingVoices.map((v) => v.name));
+    const existingMap = new Map(existingVoices.map((v) => [v.name, v.id]));
 
     let inserted = 0;
-    let skipped = 0;
+    let updated = 0;
 
-    for (const voice of ELEVENLABS_DIALOGUE_VOICES) {
+    for (const voice of DIALOGUE_ALL_VOICES) {
       const voiceName = `elevenlabs_dialogue:${voice.id}`;
-
-      if (existingNames.has(voiceName)) {
-        skipped++;
-        continue;
-      }
 
       // 使用 DiceBear 生成头像
       const avatarUrl = `https://api.dicebear.com/7.x/personas/svg?seed=${encodeURIComponent(voice.id)}&backgroundColor=b6e3f4,c0aede,d1d4f9,ffd5dc,ffdfbf`;
 
-      await prisma.voices.create({
-        data: {
-          name: voiceName,
-          display_name: voice.name,
-          provider: 'elevenlabs_dialogue',
-          locale: 'en-US',
-          country: 'US',
-          role: 'standard',
-          gender: voice.gender,
-          avatar_url: avatarUrl,
-          voice_sample_url: {},
-          voice_sample_text: '',
-          tags: ['dialogue', 'elevenlabs'],
-          style_list: ['default'],
-          is_active: true,
-          sort_order: 0,
-        },
-      });
+      // 样例声音地址（使用配置文件中的函数）
+      const voiceSampleUrl = {
+        default: getVoiceSampleUrl(voice.id),
+      };
 
-      inserted++;
-      console.log(`✅ 同步成功: ${voice.name}`);
+      if (existingMap.has(voiceName)) {
+        // 更新已存在的声音
+        await prisma.voices.update({
+          where: { id: existingMap.get(voiceName) },
+          data: {
+            display_name: voice.name,
+            gender: voice.gender,
+            avatar_url: avatarUrl,
+            voice_sample_url: voiceSampleUrl,
+            tags: ['dialogue', 'elevenlabs'],
+          },
+        });
+        updated++;
+        console.log(`🔄 更新: ${voice.name}`);
+      } else {
+        // 新增声音
+        await prisma.voices.create({
+          data: {
+            name: voiceName,
+            display_name: voice.name,
+            provider: 'elevenlabs_dialogue',
+            locale: 'en-US',
+            country: 'US',
+            role: 'standard',
+            gender: voice.gender,
+            avatar_url: avatarUrl,
+            voice_sample_url: voiceSampleUrl,
+            voice_sample_text: '',
+            tags: ['dialogue', 'elevenlabs'],
+            style_list: ['default'],
+            is_active: true,
+            sort_order: 0,
+          },
+        });
+        inserted++;
+        console.log(`✅ 新增: ${voice.name}`);
+      }
     }
 
-    console.log(`✅ 同步完成: 插入 ${inserted} 条，跳过 ${skipped} 条`);
+    console.log(`✅ 同步完成: 新增 ${inserted} 条，更新 ${updated} 条`);
 
     return {
       success: true,
-      message: `同步完成: 插入 ${inserted} 条，跳过 ${skipped} 条`,
+      message: `同步完成: 新增 ${inserted} 条，更新 ${updated} 条`,
       inserted,
-      skipped,
+      updated,
     };
   } catch (error) {
     console.error('同步 ElevenLabs Dialogue 声音失败:', error);

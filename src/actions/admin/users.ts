@@ -111,12 +111,14 @@ export async function getAdminAnonymousUserList(params: {
   pageSize?: number;
   search?: string;
   isConverted?: boolean | null;
+  platform?: string;
 }): Promise<{
   users: Array<{
     id: number;
     user_id: string;
     device_fingerprint: string;
     ip_address: string | null;
+    platform: string | null;
     credits: number;
     total_credits_used: number;
     is_anonymous: boolean;
@@ -132,7 +134,7 @@ export async function getAdminAnonymousUserList(params: {
 }> {
   await verifyAdminWithoutDb();
 
-  const { page = 1, pageSize = 20, search, isConverted } = params;
+  const { page = 1, pageSize = 20, search, isConverted, platform } = params;
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const where: any = {};
@@ -151,6 +153,10 @@ export async function getAdminAnonymousUserList(params: {
     where.converted_to_user_id = null;
   }
 
+  if (platform) {
+    where.platform = platform;
+  }
+
   const [users, total] = await Promise.all([
     prisma.anonymous_users.findMany({
       where,
@@ -167,6 +173,7 @@ export async function getAdminAnonymousUserList(params: {
       user_id: u.user_id,
       device_fingerprint: u.device_fingerprint,
       ip_address: u.ip_address,
+      platform: u.platform,
       credits: u.credits,
       total_credits_used: u.total_credits_used,
       is_anonymous: u.is_anonymous,

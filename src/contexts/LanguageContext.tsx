@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useState, useEffect, useMemo, ReactNode } from 'react';
 
-type Locale = 'en-US' | 'zh-CN' | 'zh-TW' | 'th-TH' | 'my-MM' | 'id-ID' | 'ja-JP' | 'vi-VN' | 'es-ES' | 'pt-BR' | 'hi-IN' | 'ar-SA';
+export type Locale = 'en-US' | 'zh-CN' | 'zh-TW' | 'th-TH' | 'my-MM' | 'id-ID' | 'ja-JP' | 'vi-VN' | 'es-ES' | 'pt-BR' | 'hi-IN' | 'ar-SA';
 
 interface LanguageContextType {
   locale: Locale;
@@ -22,9 +22,10 @@ const DEFAULT_LOCALE: Locale = 'en-US';
 /**
  * 从 cookie 读取语言设置
  * 可在客户端调用，读取 middleware 设置的 locale cookie
+ * 返回 null 表示没有设置过语言
  */
-function getLocaleFromCookie(): Locale {
-  if (typeof document === 'undefined') return DEFAULT_LOCALE;
+function getLocaleFromCookie(): Locale | null {
+  if (typeof document === 'undefined') return null;
 
   const match = document.cookie.match(/(?:^|; )locale=([^;]*)/);
   const locale = match?.[1] as Locale | undefined;
@@ -33,7 +34,74 @@ function getLocaleFromCookie(): Locale {
     return locale;
   }
 
+  return null;
+}
+
+/**
+ * 检测浏览器/设备语言偏好
+ * 支持精确匹配和语言族匹配
+ */
+function detectBrowserLocale(): Locale {
+  if (typeof navigator === 'undefined') return DEFAULT_LOCALE;
+
+  // 获取浏览器语言列表（按优先级排序）
+  const browserLanguages = navigator.languages?.length
+    ? navigator.languages
+    : [navigator.language];
+
+  for (const browserLang of browserLanguages) {
+    // 标准化语言代码 (zh-Hans -> zh-CN, zh-Hant -> zh-TW)
+    const normalizedLang = browserLang.toLowerCase();
+
+    // 1. 精确匹配 (如 zh-CN, en-US)
+    const exactMatch = SUPPORTED_LOCALES.find(
+      (loc) => loc.toLowerCase() === normalizedLang
+    );
+    if (exactMatch) return exactMatch;
+
+    // 2. 处理中文变体
+    if (normalizedLang.startsWith('zh')) {
+      // 简体中文: zh-hans, zh-cn, zh-sg
+      if (
+        normalizedLang.includes('hans') ||
+        normalizedLang.includes('cn') ||
+        normalizedLang.includes('sg')
+      ) {
+        return 'zh-CN';
+      }
+      // 繁体中文: zh-hant, zh-tw, zh-hk, zh-mo
+      if (
+        normalizedLang.includes('hant') ||
+        normalizedLang.includes('tw') ||
+        normalizedLang.includes('hk') ||
+        normalizedLang.includes('mo')
+      ) {
+        return 'zh-TW';
+      }
+      // 默认中文使用简体
+      return 'zh-CN';
+    }
+
+    // 3. 语言族匹配 (如 en -> en-US, ja -> ja-JP)
+    const langPrefix = normalizedLang.split('-')[0];
+    const prefixMatch = SUPPORTED_LOCALES.find(
+      (loc) => loc.toLowerCase().startsWith(langPrefix + '-')
+    );
+    if (prefixMatch) return prefixMatch;
+  }
+
   return DEFAULT_LOCALE;
+}
+
+/**
+ * 获取初始语言
+ * 优先级: cookie > 浏览器语言 > 默认语言
+ */
+function getInitialLocale(): Locale {
+  const cookieLocale = getLocaleFromCookie();
+  if (cookieLocale) return cookieLocale;
+
+  return detectBrowserLocale();
 }
 
 /**
@@ -58,11 +126,12 @@ export function LanguageProvider({ children, initialLocale }: LanguageProviderPr
   const [messages, setMessages] = useState<Record<string, MessageValue>>({});
   const [isReady, setIsReady] = useState(false);
 
-  // 如果没有传入 initialLocale，挂载后从 cookie 读取（兼容旧用法）
+  // 如果没有传入 initialLocale，挂载后自动检测语言
+  // 优先级: cookie > 浏览器语言 > 默认语言
   useEffect(() => {
     if (!initialLocale) {
-      const cookieLocale = getLocaleFromCookie();
-      setLocaleState(cookieLocale);
+      const detectedLocale = getInitialLocale();
+      setLocaleState(detectedLocale);
     }
   }, [initialLocale]);
 
@@ -97,6 +166,7 @@ export function LanguageProvider({ children, initialLocale }: LanguageProviderPr
           dailyTasksModule,
           appDownloadModule,
           storyModule,
+          nativeModule,
         ] = await Promise.all([
           import(`@/i18n/locales/${locale}/common.json`),
           import(`@/i18n/locales/${locale}/auth.json`),
@@ -119,6 +189,7 @@ export function LanguageProvider({ children, initialLocale }: LanguageProviderPr
           import(`@/i18n/locales/${locale}/daily-tasks.json`),
           import(`@/i18n/locales/${locale}/app-download.json`),
           import(`@/i18n/locales/${locale}/story.json`),
+          import(`@/i18n/locales/${locale}/native.json`),
         ]);
 
         // 合并所有模块的消息
@@ -144,6 +215,7 @@ export function LanguageProvider({ children, initialLocale }: LanguageProviderPr
           ...dailyTasksModule.default,
           ...appDownloadModule.default,
           ...storyModule.default,
+          ...nativeModule.default,
         });
 
         // 语言文件加载完成后，标记为已就绪

@@ -1,8 +1,67 @@
 {
-  "version": "1.2.14",
-  "buildNumber": 35,
+  "version": "1.2.19",
+  "buildNumber": 40,
   "description": "原生应用版本（Android/iOS 应用壳）",
   "changelog": [
+    {
+      "version": "1.2.19",
+      "buildNumber": 40,
+      "date": "2026-02-05",
+      "changes": [
+        "Dialogue 生成成功后显示 DialogueDetailModal",
+        "与 Music/Voice 页面行为保持一致",
+        "新增 getDialogueRecordByTaskId 函数"
+      ]
+    },
+    {
+      "version": "1.2.18",
+      "buildNumber": 39,
+      "date": "2026-02-05",
+      "changes": [
+        "修复原生广告点击无响应问题",
+        "NativeAdPlugin 新增隐藏 NativeAdView 处理点击跳转",
+        "使用 performClick() 触发 AdMob SDK 处理广告点击",
+        "禁用 Banner 广告，启用原生广告"
+      ]
+    },
+    {
+      "version": "1.2.17",
+      "buildNumber": 38,
+      "date": "2026-02-05",
+      "changes": [
+        "新增首页横幅原生广告（AdMob Native Advanced Ad）",
+        "NativeAdPlugin 支持多广告实例，可同时加载多个广告",
+        "广告加载失败时自动回退显示推广 Banner",
+        "新增 useNativeBannerAd Hook 管理首页横幅广告"
+      ]
+    },
+    {
+      "version": "1.2.16",
+      "buildNumber": 37,
+      "date": "2026-02-04",
+      "changes": [
+        "Create Image 页面添加国际化支持（12 种语言）",
+        "ImageDetailModal 添加国际化支持",
+        "内容审核加强：添加敏感词黑名单过滤",
+        "内容审核优化：降低 OpenAI Moderation API 阈值，更严格检测",
+        "Explore API 添加 CDN 缓存，优化 Vercel CPU 使用",
+        "Banner API 添加 5 分钟缓存"
+      ]
+    },
+    {
+      "version": "1.2.15",
+      "buildNumber": 36,
+      "date": "2026-02-01",
+      "changes": [
+        "修复每日任务在浏览器测试时显示 disabled 的问题",
+        "增强 Native 环境检测，支持 Capacitor 和 /native 路由双重判断",
+        "Explore 页面新增 Voices 标签，展示公开 TTS 作品",
+        "新增语言选择底部弹窗，优化移动端体验",
+        "新增浏览器语言自动检测，首次访问自动匹配语言",
+        "首页 Banner 添加 24 小时缓存，减少 API 请求",
+        "Me 页面和订阅页面国际化支持"
+      ]
+    },
     {
       "version": "1.2.14",
       "buildNumber": 35,

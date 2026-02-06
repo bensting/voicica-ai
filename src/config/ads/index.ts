@@ -32,6 +32,13 @@ export {
   getInterstitialAdUnitId,
   getInterstitialRewardedAdUnitId,
   isAdMobEnabled,
+  getNativeAdUnitId,
+  isNativeAdEnabled,
+  getNativeAdPosition,
+  isAdMobNativeBannerEnabled,
+  getNativeBannerAdUnitId,
+  isBannerAdEnabled,
+  getBannerAdUnitId,
   type AdMobConfig,
 } from './admob';
 

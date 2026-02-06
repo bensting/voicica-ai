@@ -1,0 +1,281 @@
+{
+  "native": {
+    "navbar": {
+      "loginRewards": "تسجيل الدخول والمكافآت",
+      "free": "مجاني"
+    },
+    "bottomNav": {
+      "explore": "استكشف",
+      "me": "أنا"
+    },
+    "settings": {
+      "title": "الإعدادات",
+      "share": "مشاركة VoicicaAI",
+      "checkUpdate": "التحقق من التحديثات",
+      "privacy": "سياسة الخصوصية",
+      "terms": "شروط الخدمة",
+      "logout": "تسجيل الخروج",
+      "latestVersion": "أنت تستخدم أحدث إصدار!"
+    },
+    "login": {
+      "welcomeTo": "مرحباً بك في",
+      "loginToReceive": "سجل الدخول للحصول على الرصيد",
+      "loginWithGoogle": "تسجيل الدخول بـ Google",
+      "loginWithEmail": "تسجيل الدخول بالبريد الإلكتروني",
+      "loggingIn": "جارٍ تسجيل الدخول...",
+      "signUp": "إنشاء حساب",
+      "agreement": "بتسجيل الدخول أو التسجيل، فإنك توافق على",
+      "privacyPolicy": "سياسة الخصوصية",
+      "and": "و",
+      "termsOfUse": "شروط الاستخدام"
+    },
+    "menu": {
+      "categories": {
+        "voiceover": "الصوت الذكي",
+        "music": "الموسيقى الذكية",
+        "video": "الفيديو الذكي",
+        "image": "الصور الذكية",
+        "tools": "أدوات أخرى"
+      },
+      "items": {
+        "voice": {
+          "title": "نص إلى صوت",
+          "shortName": "نص إلى صوت",
+          "description": "تحويل النص إلى كلام طبيعي"
+        },
+        "dialogue": {
+          "title": "إنشاء حوار",
+          "shortName": "إنشاء حوار",
+          "description": "إنشاء حوارات متعددة الشخصيات"
+        },
+        "clone": {
+          "title": "استنساخ الصوت",
+          "shortName": "استنساخ الصوت",
+          "description": "استنسخ صوتك بالذكاء الاصطناعي"
+        },
+        "music": {
+          "title": "موسيقى AI",
+          "shortName": "موسيقى AI",
+          "description": "أنشئ موسيقى من وصف نصي"
+        },
+        "cover": {
+          "title": "كوفر AI",
+          "shortName": "كوفر AI",
+          "description": "أنشئ كوفر AI باستنساخ الصوت"
+        },
+        "image": {
+          "title": "صور AI",
+          "shortName": "صور AI",
+          "description": "أنشئ صور من النص"
+        },
+        "video": {
+          "title": "فيديو AI",
+          "shortName": "فيديو AI",
+          "description": "أنشئ فيديو من النص"
+        },
+        "tiktok": {
+          "title": "تحميل TikTok",
+          "shortName": "تحميل TikTok",
+          "description": "تحميل فيديوهات TikTok بدون علامة مائية"
+        },
+        "youtube": {
+          "title": "تحميل YouTube",
+          "shortName": "تحميل YouTube",
+          "description": "تحميل فيديوهات وصوتيات YouTube"
+        }
+      }
+    },
+    "me": {
+      "guest": "زائر",
+      "freeVersion": "النسخة المجانية",
+      "myCreations": "إبداعاتي",
+      "loginToView": "سجل الدخول لعرض إبداعاتك",
+      "noCreations": "لا توجد إبداعات بعد",
+      "startCreating": "ابدأ في إنشاء شيء مذهل!",
+      "goCreate": "ابدأ الإنشاء",
+      "pullToRefresh": "اسحب للتحديث",
+      "releaseToRefresh": "اترك للتحديث",
+      "tabs": {
+        "voices": "الأصوات",
+        "dialogues": "الحوارات",
+        "music": "الموسيقى",
+        "cover": "كوفر",
+        "video": "فيديو",
+        "image": "صورة"
+      },
+      "emptyState": {
+        "noContent": "لا يوجد محتوى بعد.",
+        "createFirstVoice": "أنشئ صوتك الأول.",
+        "createFirstDialogue": "أنشئ حوارك الأول بالذكاء الاصطناعي.",
+        "createFirstMusic": "أنشئ موسيقاك الأولى بالذكاء الاصطناعي.",
+        "createFirstCover": "أنشئ كوفرك الأول بالذكاء الاصطناعي.",
+        "createFirstVideo": "أنشئ فيديوك الأول بالذكاء الاصطناعي.",
+        "createFirstImage": "أنشئ صورتك الأولى بالذكاء الاصطناعي."
+      },
+      "stats": {
+        "plan": "الخطة",
+        "credits": "الرصيد"
+      },
+      "subscribe": {
+        "title": "الترقية إلى Pro",
+        "subtitle": "احصل على وصول غير محدود لجميع الميزات",
+        "button": "اشترك الآن"
+      }
+    },
+    "explore": {
+      "title": "استكشف",
+      "trending": "الرائج",
+      "latest": "الأحدث",
+      "forYou": "لك"
+    },
+    "common": {
+      "cancel": "إلغاء",
+      "confirm": "تأكيد",
+      "delete": "حذف",
+      "save": "حفظ",
+      "edit": "تعديل",
+      "share": "مشاركة",
+      "download": "تحميل",
+      "retry": "إعادة المحاولة",
+      "loading": "جارٍ التحميل...",
+      "error": "خطأ",
+      "success": "نجاح",
+      "learnMore": "اعرف المزيد"
+    },
+    "subscribe": {
+      "tabs": {
+        "subscription": "الاشتراك",
+        "credits": "حزم الرصيد"
+      },
+      "vipBonus": "كن VIP: +20% رصيد على كل حزمة",
+      "notSubscribed": "غير مشترك",
+      "mostPopular": "الأكثر شعبية",
+      "creditsPerPeriod": "{{credits}} رصيد / {{period}}",
+      "membershipBenefits": "مزايا العضوية",
+      "benefits": {
+        "creditsRefresh": "تجديد {{credits}} رصيد شهرياً",
+        "fastChannel": "قناة إنشاء سريعة",
+        "simultaneous": "إنشاء متزامن",
+        "higherQuality": "جودة أعلى"
+      },
+      "creditPackInfo": {
+        "validity": "فترة صلاحية حزمة الرصيد: مدى الحياة",
+        "terms": "شروط الاشتراك: يتم خصم المبلغ من حسابك عند التأكيد. يتجدد الاشتراك تلقائياً بالسعر الأصلي، ما لم يتم الإلغاء قبل 24 ساعة على الأقل من نهاية الفترة الحالية. إدارة اشتراكك والتجديد التلقائي في إعدادات الحساب."
+      },
+      "termsOfUse": "شروط الاستخدام",
+      "privacyPolicy": "سياسة الخصوصية",
+      "subscribeNow": "اشترك الآن",
+      "buyNow": "اشترِ الآن",
+      "processing": "جارٍ المعالجة..."
+    },
+    "insufficientCredits": {
+      "title": "رصيد غير كافٍ",
+      "subtitle": "تحتاج إلى المزيد من الرصيد للمتابعة",
+      "subtitleWithAmount": "المطلوب: {{required}} رصيد، الحالي: {{current}} رصيد",
+      "getFreeCredits": "احصل على رصيد مجاني",
+      "getFreeCreditsDesc": "شاهد الإعلانات للحصول على رصيد مجاني",
+      "subscribe": "الترقية إلى Pro",
+      "subscribeDesc": "احصل على رصيد وميزات غير محدودة"
+    },
+    "createVoice": {
+      "enterText": "أدخل النص",
+      "placeholder": "اكتب أو الصق النص هنا...",
+      "generateText": "إنشاء نص",
+      "selectVoice": "اختر صوت",
+      "audioSettings": "إعدادات الصوت",
+      "speed": "السرعة",
+      "volume": "مستوى الصوت",
+      "pitch": "النبرة",
+      "generate": "إنشاء",
+      "generating": "جارٍ الإنشاء...",
+      "creditsRule": "قاعدة الرصيد",
+      "voiceGeneration": "توليد الصوت",
+      "charsPerCredit": "100 حرف = 1 رصيد",
+      "textAssistant": "مساعد النص",
+      "textAssistantDesc": "صف ما تريد قوله وسيقوم الذكاء الاصطناعي بإنشاء النص لك.",
+      "textAssistantPlaceholder": "مثال: رسالة ترحيب بودكاست، تقديم منتج، سرد قصة...",
+      "speedDesc": "ضبط سرعة الكلام",
+      "volumeDesc": "ضبط مستوى الصوت",
+      "pitchDesc": "ضبط نبرة الصوت",
+      "pitchDeep": "عميق",
+      "pitchDull": "خافت",
+      "pitchConsistent": "عادي",
+      "pitchBright": "مشرق",
+      "pitchCrisp": "واضح"
+    },
+    "createImage": {
+      "title": "صور AI",
+      "prompt": "الوصف",
+      "promptPlaceholder": "يرجى إدخال وصف للإنشاء. مثال: تحت أشعة الشمس، نسيم لطيف يهز الزهور برفق، بإحساس سينمائي.",
+      "generatePrompt": "إنشاء وصف",
+      "generatePromptTitle": "إنشاء وصف",
+      "generatePromptDesc": "صف ما تريد إنشاءه، وسيقوم AI بإنشاء وصف مفصل لك.",
+      "generatePromptPlaceholder": "مثال: قطة لطيفة تجلس على قوس قزح",
+      "generate": "إنشاء",
+      "generating": "جارٍ الإنشاء...",
+      "imageGuidance": "صورة مرجعية",
+      "optional": "(اختياري)",
+      "parameters": "المعلمات",
+      "parameterSettings": "إعدادات المعلمات",
+      "visibility": "الرؤية",
+      "public": "عام",
+      "private": "خاص",
+      "aspectRatio": "نسبة العرض",
+      "quality": "الجودة",
+      "selectModel": "اختر النموذج",
+      "credits": "رصيد",
+      "createImage": "إنشاء صورة",
+      "creating": "جارٍ الإنشاء...",
+      "imageGeneration": "إنشاء الصور",
+      "errorSelectImage": "يرجى اختيار ملف صورة",
+      "errorImageSize": "حجم الصورة يجب أن يكون أقل من 10 ميجابايت",
+      "detailPrompt": "الوصف",
+      "detailCreditsUsed": "الرصيد المستخدم",
+      "deleteConfirmTitle": "حذف هذه الصورة?"
+    },
+    "createDialogue": {
+      "title": "نص إلى حوار",
+      "language": "اللغة",
+      "selectLanguage": "اختر لغة الحوار",
+      "searchLanguage": "البحث عن لغة...",
+      "voice": "الصوت",
+      "selectVoice": "اختر صوتاً لهذا الحوار",
+      "searchVoice": "البحث عن صوت...",
+      "text": "النص",
+      "textPlaceholder": "مرحباً! هل جربت هذا؟",
+      "dialogue": "الحوار",
+      "addDialogue": "إضافة حوار",
+      "remove": "إزالة",
+      "totalCharacters": "المجموع: {{current}} / {{max}} حرف",
+      "generate": "إنشاء الحوار",
+      "generating": "جارٍ الإنشاء...",
+      "generatingDialogue": "جارٍ إنشاء الحوار...",
+      "estimatedTime": "الوقت المقدر: 1-2 دقيقة",
+      "dialogueCreated": "تم إنشاء الحوار!",
+      "dialogueCreatedDesc": "تم إنشاء حوارك بنجاح.",
+      "createAnother": "إنشاء آخر",
+      "viewHistory": "عرض السجل",
+      "generationFailed": "فشل الإنشاء",
+      "insufficientCredits": "رصيد غير كافٍ",
+      "insufficientCreditsDesc": "ليس لديك رصيد كافٍ. قم بالترقية للحصول على المزيد!",
+      "getCredits": "الحصول على رصيد",
+      "tryAgain": "حاول مرة أخرى",
+      "close": "إغلاق",
+      "creditsRule": "100 حرف = 3 رصيد",
+      "emotions": {
+        "excitedly": "بحماس",
+        "whispers": "يهمس",
+        "laughs": "يضحك",
+        "sarcastic": "ساخر",
+        "sighs": "يتنهد",
+        "sad": "حزين",
+        "angry": "غاضب"
+      },
+      "genderFilter": {
+        "all": "الكل",
+        "male": "ذكر",
+        "female": "أنثى"
+      }
+    }
+  }
+}

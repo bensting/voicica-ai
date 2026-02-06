@@ -13,6 +13,8 @@ import CreditsIcon from '@/components/native/common/CreditsIcon';
 import GeneratingModal, { GeneratingStatus } from '@/components/native/common/GeneratingModal';
 import VideoDetailModal from '@/components/native/me/VideoDetailModal';
 import LoginModal from '@/components/native/LoginModal';
+import InsufficientCreditsModal from '@/components/native/common/InsufficientCreditsModal';
+import NativeDailyTasksModal from '@/components/native/NativeDailyTasksModal';
 import { useCredits } from '@/contexts/CreditsContext';
 import { useSubscription } from '@/contexts/SubscriptionContext';
 import { useRewardedAd } from '@/hooks/useRewardedAd';
@@ -81,6 +83,9 @@ export default function CreateVideoPage() {
   const [adWatched, setAdWatched] = useState(false);
 
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const [isInsufficientCreditsModalOpen, setIsInsufficientCreditsModalOpen] = useState(false);
+  const [isDailyTasksModalOpen, setIsDailyTasksModalOpen] = useState(false);
+  const [insufficientCreditsInfo, setInsufficientCreditsInfo] = useState<{ required: number; current: number } | null>(null);
   const [isParamsSheetOpen, setIsParamsSheetOpen] = useState(false);
   const [mode, setMode] = useState<ModeType>('generate');
   const [prompt, setPromptState] = useState('');
@@ -232,7 +237,10 @@ export default function CreateVideoPage() {
     const hasEnoughCredits = checkCreditsBeforeGenerate({
       currentCredits: userCredits,
       requiredCredits: requiredCredits,
-      onInsufficientCredits: () => router.push('/native/subscribe'),
+      onInsufficientCredits: () => {
+        setInsufficientCreditsInfo({ required: requiredCredits, current: userCredits });
+        setIsInsufficientCreditsModalOpen(true);
+      },
     });
     if (!hasEnoughCredits) return;
 
@@ -543,6 +551,24 @@ export default function CreateVideoPage() {
         isOpen={isLoginModalOpen}
         onClose={() => setIsLoginModalOpen(false)}
         onLoginSuccess={() => setIsLoginModalOpen(false)}
+      />
+
+      {/* Insufficient Credits Modal */}
+      <InsufficientCreditsModal
+        isOpen={isInsufficientCreditsModalOpen}
+        onClose={() => setIsInsufficientCreditsModalOpen(false)}
+        onGetFreeCredits={() => {
+          setIsInsufficientCreditsModalOpen(false);
+          setIsDailyTasksModalOpen(true);
+        }}
+        requiredCredits={insufficientCreditsInfo?.required}
+        currentCredits={insufficientCreditsInfo?.current}
+      />
+
+      {/* Daily Tasks Modal */}
+      <NativeDailyTasksModal
+        isOpen={isDailyTasksModalOpen}
+        onClose={() => setIsDailyTasksModalOpen(false)}
       />
     </div>
   );

@@ -1,0 +1,281 @@
+{
+  "native": {
+    "navbar": {
+      "loginRewards": "ဝင်ရောက်ပြီး ဆုလာဘ်ယူပါ",
+      "free": "အခမဲ့"
+    },
+    "bottomNav": {
+      "explore": "ရှာဖွေရန်",
+      "me": "ကျွန်ုပ်"
+    },
+    "settings": {
+      "title": "ဆက်တင်များ",
+      "share": "VoicicaAI မျှဝေရန်",
+      "checkUpdate": "အပ်ဒိတ်စစ်ဆေးရန်",
+      "privacy": "ကိုယ်ရေးလုံခြုံမှု မူဝါဒ",
+      "terms": "ဝန်ဆောင်မှု စည်းမျဉ်းများ",
+      "logout": "ထွက်ရန်",
+      "latestVersion": "နောက်ဆုံးဗားရှင်း အသုံးပြုနေပါပြီ!"
+    },
+    "login": {
+      "welcomeTo": "မင်္ဂလာပါ",
+      "loginToReceive": "ဝင်ရောက်ပြီး ခရက်ဒစ်ရယူပါ",
+      "loginWithGoogle": "Google ဖြင့် ဝင်ရောက်ရန်",
+      "loginWithEmail": "အီးမေးလ်ဖြင့် ဝင်ရောက်ရန်",
+      "loggingIn": "ဝင်ရောက်နေသည်...",
+      "signUp": "အကောင့်ဖွင့်ရန်",
+      "agreement": "ဝင်ရောက်ခြင်း သို့မဟုတ် မှတ်ပုံတင်ခြင်းဖြင့် သင်သည် သဘောတူပါသည်",
+      "privacyPolicy": "ကိုယ်ရေးလုံခြုံမှု မူဝါဒ",
+      "and": "နှင့်",
+      "termsOfUse": "အသုံးပြုမှု စည်းကမ်းများ"
+    },
+    "menu": {
+      "categories": {
+        "voiceover": "AI အသံ",
+        "music": "AI ဂီတ",
+        "video": "AI ဗီဒီယို",
+        "image": "AI ပုံ",
+        "tools": "အခြား ကိရိယာများ"
+      },
+      "items": {
+        "voice": {
+          "title": "စာသားမှ အသံသို့",
+          "shortName": "စာသားမှ အသံ",
+          "description": "စာသားကို သဘာဝအသံသို့ ပြောင်းလဲရန်"
+        },
+        "dialogue": {
+          "title": "စကားပြောဖန်တီးရန်",
+          "shortName": "စကားပြော",
+          "description": "ဇာတ်ကောင်များစွာ စကားပြောဖန်တီးရန်"
+        },
+        "clone": {
+          "title": "အသံ ပုံတူ",
+          "shortName": "အသံ ပုံတူ",
+          "description": "AI ဖြင့် သင့်အသံကို ပုံတူကူးရန်"
+        },
+        "music": {
+          "title": "AI ဂီတ",
+          "shortName": "AI ဂီတ",
+          "description": "စာသားဖော်ပြချက်မှ ဂီတဖန်တီးရန်"
+        },
+        "cover": {
+          "title": "AI Cover",
+          "shortName": "AI Cover",
+          "description": "အသံပုံတူဖြင့် AI cover ဖန်တီးရန်"
+        },
+        "image": {
+          "title": "AI ပုံ",
+          "shortName": "AI ပုံ",
+          "description": "စာသားမှ ပုံများဖန်တီးရန်"
+        },
+        "video": {
+          "title": "AI ဗီဒီယို",
+          "shortName": "AI ဗီဒီယို",
+          "description": "စာသားမှ ဗီဒီယိုဖန်တီးရန်"
+        },
+        "tiktok": {
+          "title": "TikTok ဒေါင်းလုဒ်",
+          "shortName": "TikTok ဒေါင်းလုဒ်",
+          "description": "watermark မပါဘဲ TikTok ဒေါင်းရန်"
+        },
+        "youtube": {
+          "title": "YouTube ဒေါင်းလုဒ်",
+          "shortName": "YouTube ဒေါင်းလုဒ်",
+          "description": "YouTube ဗီဒီယိုနှင့် အသံဒေါင်းရန်"
+        }
+      }
+    },
+    "me": {
+      "guest": "ဧည့်သည်",
+      "freeVersion": "အခမဲ့ဗားရှင်း",
+      "myCreations": "ကျွန်ုပ်၏ ဖန်တီးမှုများ",
+      "loginToView": "ဝင်ရောက်ပြီး ဖန်တီးမှုများကြည့်ရန်",
+      "noCreations": "ဖန်တီးမှု မရှိသေးပါ",
+      "startCreating": "အံ့ဖွယ်တစ်ခုခု ဖန်တီးစပါ!",
+      "goCreate": "ဖန်တီးရန်သွားပါ",
+      "pullToRefresh": "ပြန်လည်ဆန်းသစ်ရန် ဆွဲချပါ",
+      "releaseToRefresh": "ပြန်လည်ဆန်းသစ်ရန် လွှတ်ပါ",
+      "tabs": {
+        "voices": "အသံများ",
+        "dialogues": "စကားပြောများ",
+        "music": "ဂီတ",
+        "cover": "Cover",
+        "video": "ဗီဒီယို",
+        "image": "ပုံ"
+      },
+      "emptyState": {
+        "noContent": "အကြောင်းအရာ မရှိသေးပါ။",
+        "createFirstVoice": "သင့်ပထမဆုံး အသံကို ဖန်တီးပါ။",
+        "createFirstDialogue": "သင့်ပထမဆုံး AI စကားပြောကို ဖန်တီးပါ။",
+        "createFirstMusic": "သင့်ပထမဆုံး AI ဂီတကို ဖန်တီးပါ။",
+        "createFirstCover": "သင့်ပထမဆုံး AI cover ကို ဖန်တီးပါ။",
+        "createFirstVideo": "သင့်ပထမဆုံး AI ဗီဒီယိုကို ဖန်တီးပါ။",
+        "createFirstImage": "သင့်ပထမဆုံး AI ပုံကို ဖန်တီးပါ။"
+      },
+      "stats": {
+        "plan": "အစီအစဉ်",
+        "credits": "ခရက်ဒစ်များ"
+      },
+      "subscribe": {
+        "title": "Pro သို့ အဆင့်မြှင့်ပါ",
+        "subtitle": "အင်္ဂါရပ်အားလုံးကို အကန့်အသတ်မရှိ အသုံးပြုပါ",
+        "button": "ယခုစာရင်းသွင်းပါ"
+      }
+    },
+    "explore": {
+      "title": "ရှာဖွေရန်",
+      "trending": "ခေတ်စားနေသော",
+      "latest": "နောက်ဆုံး",
+      "forYou": "သင့်အတွက်"
+    },
+    "common": {
+      "cancel": "ပယ်ဖျက်ရန်",
+      "confirm": "အတည်ပြုရန်",
+      "delete": "ဖျက်ရန်",
+      "save": "သိမ်းရန်",
+      "edit": "တည်းဖြတ်ရန်",
+      "share": "မျှဝေရန်",
+      "download": "ဒေါင်းလုဒ်",
+      "retry": "ထပ်စမ်းရန်",
+      "loading": "လုပ်ဆောင်နေသည်...",
+      "error": "အမှား",
+      "success": "အောင်မြင်သည်",
+      "learnMore": "ပိုမိုလေ့လာရန်"
+    },
+    "subscribe": {
+      "tabs": {
+        "subscription": "စာရင်းသွင်းမှု",
+        "credits": "ခရက်ဒစ်အထုပ်များ"
+      },
+      "vipBonus": "VIP ဖြစ်လာပါ: အထုပ်တိုင်း +20% ခရက်ဒစ်",
+      "notSubscribed": "စာရင်းမသွင်းရသေးပါ",
+      "mostPopular": "အရေပန်းအများဆုံး",
+      "creditsPerPeriod": "{{credits}} ခရက်ဒစ် / {{period}}",
+      "membershipBenefits": "အသင်းဝင်အကျိုးခံစားခွင့်များ",
+      "benefits": {
+        "creditsRefresh": "လစဉ် {{credits}} ခရက်ဒစ် ပြန်လည်ဖြည့်တင်း",
+        "fastChannel": "မြန်ဆန်သောဖန်တီးမှုလမ်းကြောင်း",
+        "simultaneous": "တစ်ပြိုင်နက်ဖန်တီးခြင်း",
+        "higherQuality": "ပိုမိုမြင့်မားသောအရည်အသွေး"
+      },
+      "creditPackInfo": {
+        "validity": "ခရက်ဒစ်အထုပ် သက်တမ်း: အသက်တာတစ်လျှောက်",
+        "terms": "စာရင်းသွင်းမှုစည်းမျဉ်းများ: အတည်ပြုချိန်တွင် သင့်အကောင့်မှ ငွေကောက်ခံပါမည်။ လက်ရှိကာလမကုန်ဆုံးမီ အနည်းဆုံး ၂၄ နာရီအလိုတွင် ပယ်ဖျက်ခြင်းမပြုပါက မူလစျေးနှုန်းဖြင့် အလိုအလျောက်သက်တမ်းတိုးပါမည်။ အကောင့်ဆက်တင်များတွင် သင်၏စာရင်းသွင်းမှုနှင့် အလိုအလျောက်သက်တမ်းတိုးခြင်းကို စီမံပါ။"
+      },
+      "termsOfUse": "အသုံးပြုမှုစည်းကမ်းများ",
+      "privacyPolicy": "ကိုယ်ရေးလုံခြုံမှု မူဝါဒ",
+      "subscribeNow": "ယခုစာရင်းသွင်းပါ",
+      "buyNow": "ယခုဝယ်ပါ",
+      "processing": "လုပ်ဆောင်နေသည်..."
+    },
+    "insufficientCredits": {
+      "title": "ခရက်ဒစ် မလုံလောက်ပါ",
+      "subtitle": "ဆက်လက်ဆောင်ရွက်ရန် ခရက်ဒစ်ပိုလိုအပ်ပါသည်",
+      "subtitleWithAmount": "လိုအပ်သည်: {{required}} ခရက်ဒစ်၊ လက်ရှိ: {{current}} ခရက်ဒစ်",
+      "getFreeCredits": "အခမဲ့ခရက်ဒစ်ရယူပါ",
+      "getFreeCreditsDesc": "ကြော်ငြာကြည့်ပြီး အခမဲ့ခရက်ဒစ်ရယူပါ",
+      "subscribe": "Pro သို့ အဆင့်မြှင့်ပါ",
+      "subscribeDesc": "ခရက်ဒစ်နှင့် အင်္ဂါရပ်များ အကန့်အသတ်မရှိရယူပါ"
+    },
+    "createVoice": {
+      "enterText": "စာသားထည့်ပါ",
+      "placeholder": "ဒီမှာ စာသားရိုက်ပါ သို့မဟုတ် ကူးထည့်ပါ...",
+      "generateText": "စာသားဖန်တီးရန်",
+      "selectVoice": "အသံရွေးချယ်ပါ",
+      "audioSettings": "အသံဆက်တင်များ",
+      "speed": "အမြန်နှုန်း",
+      "volume": "အသံ",
+      "pitch": "အသံအနိမ့်အမြင့်",
+      "generate": "ဖန်တီးရန်",
+      "generating": "ဖန်တီးနေသည်...",
+      "creditsRule": "ခရက်ဒစ်စည်းမျဉ်း",
+      "voiceGeneration": "အသံဖန်တီးခြင်း",
+      "charsPerCredit": "စာလုံး ၁၀၀ = ခရက်ဒစ် ၁",
+      "textAssistant": "စာသားအကူအညီ",
+      "textAssistantDesc": "သင်ပြောချင်တာကို ဖော်ပြပါ၊ AI က စာသားဖန်တီးပေးပါမည်။",
+      "textAssistantPlaceholder": "ဥပမာ: ပေါ့ဒ်ကက်စ်ကြိုဆိုစကား၊ ကုန်ပစ္စည်းမိတ်ဆက်၊ ဇာတ်လမ်းပြောပြခြင်း...",
+      "speedDesc": "စကားပြောအမြန်နှုန်းချိန်ညှိရန်",
+      "volumeDesc": "အထွက်အသံချိန်ညှိရန်",
+      "pitchDesc": "အသံတိုင်းချိန်ညှိရန်",
+      "pitchDeep": "နိမ့်",
+      "pitchDull": "မှုန်",
+      "pitchConsistent": "ပုံမှန်",
+      "pitchBright": "တောက်ပ",
+      "pitchCrisp": "ကြည်လင်"
+    },
+    "createImage": {
+      "title": "AI ပုံ",
+      "prompt": "ပရွမ့်",
+      "promptPlaceholder": "ဖန်တီးရန် ပရွမ့်ထည့်ပါ။ ဥပမာ: နေရောင်အောက်တွင် လေညင်းက ပန်းများကို တဖြည်းဖြည်း လှုပ်ခတ်နေသည်၊ ရုပ်ရှင်ဆန်သော ခံစားချက်ဖြင့်။",
+      "generatePrompt": "ပရွမ့်ဖန်တီးရန်",
+      "generatePromptTitle": "ပရွမ့်ဖန်တီးရန်",
+      "generatePromptDesc": "သင်ဖန်တီးလိုသည်ကို ဖော်ပြပါ၊ AI က အသေးစိတ်ပရွမ့်ဖန်တီးပေးပါမည်။",
+      "generatePromptPlaceholder": "ဥပမာ: သက်တံ့ပေါ်တွင် ထိုင်နေသော ချစ်စရာကြောင်",
+      "generate": "ဖန်တီးရန်",
+      "generating": "ဖန်တီးနေသည်...",
+      "imageGuidance": "ရည်ညွှန်းပုံ",
+      "optional": "(ရွေးချယ်ခွင့်)",
+      "parameters": "ပါရာမီတာများ",
+      "parameterSettings": "ပါရာမီတာ ဆက်တင်များ",
+      "visibility": "မြင်နိုင်မှု",
+      "public": "အများပြည်သူ",
+      "private": "ကိုယ်ပိုင်",
+      "aspectRatio": "အချိုးအစား",
+      "quality": "အရည်အသွေး",
+      "selectModel": "မော်ဒယ်ရွေးပါ",
+      "credits": "ခရက်ဒစ်",
+      "createImage": "ပုံဖန်တီးရန်",
+      "creating": "ဖန်တီးနေသည်...",
+      "imageGeneration": "ပုံဖန်တီးခြင်း",
+      "errorSelectImage": "ပုံဖိုင်ရွေးချယ်ပါ",
+      "errorImageSize": "ပုံအရွယ်အစား 10MB အောက်ဖြစ်ရမည်",
+      "detailPrompt": "ပရွမ့်",
+      "detailCreditsUsed": "သုံးစွဲခဲ့သော ခရက်ဒစ်",
+      "deleteConfirmTitle": "ဤပုံကို ဖျက်မလား?"
+    },
+    "createDialogue": {
+      "title": "စာသားမှ စကားပြောသို့",
+      "language": "ဘာသာစကား",
+      "selectLanguage": "စကားပြောဘာသာစကား ရွေးချယ်ပါ",
+      "searchLanguage": "ဘာသာစကား ရှာရန်...",
+      "voice": "အသံ",
+      "selectVoice": "ဤစကားပြောအတွက် အသံရွေးချယ်ပါ",
+      "searchVoice": "အသံ ရှာရန်...",
+      "text": "စာသား",
+      "textPlaceholder": "ဟေ့! ဒါစမ်းကြည့်ပြီးပြီလား?",
+      "dialogue": "စကားပြော",
+      "addDialogue": "စကားပြော ထည့်ရန်",
+      "remove": "ဖယ်ရှားရန်",
+      "totalCharacters": "စုစုပေါင်း: {{current}} / {{max}} စာလုံး",
+      "generate": "စကားပြော ဖန်တီးရန်",
+      "generating": "ဖန်တီးနေသည်...",
+      "generatingDialogue": "စကားပြော ဖန်တီးနေသည်...",
+      "estimatedTime": "ခန့်မှန်းအချိန်: ၁-၂ မိနစ်",
+      "dialogueCreated": "စကားပြော ဖန်တီးပြီးပါပြီ!",
+      "dialogueCreatedDesc": "သင့်စကားပြောကို အောင်မြင်စွာ ဖန်တီးပြီးပါပြီ။",
+      "createAnother": "နောက်တစ်ခု ဖန်တီးရန်",
+      "viewHistory": "မှတ်တမ်း ကြည့်ရန်",
+      "generationFailed": "ဖန်တီးခြင်း မအောင်မြင်ပါ",
+      "insufficientCredits": "ခရက်ဒစ် မလုံလောက်ပါ",
+      "insufficientCreditsDesc": "ခရက်ဒစ် မလုံလောက်ပါ။ ပိုရရန် အဆင့်မြှင့်ပါ!",
+      "getCredits": "ခရက်ဒစ် ရယူရန်",
+      "tryAgain": "ထပ်စမ်းရန်",
+      "close": "ပိတ်ရန်",
+      "creditsRule": "စာလုံး ၁၀၀ = ခရက်ဒစ် ၃",
+      "emotions": {
+        "excitedly": "စိတ်လှုပ်ရှားစွာ",
+        "whispers": "တိုးတိုး",
+        "laughs": "ရယ်",
+        "sarcastic": "လှေသံနဲ့",
+        "sighs": "သက်ပြင်းချ",
+        "sad": "ဝမ်းနည်း",
+        "angry": "ဒေါသထွက်"
+      },
+      "genderFilter": {
+        "all": "အားလုံး",
+        "male": "အမျိုးသား",
+        "female": "အမျိုးသမီး"
+      }
+    }
+  }
+}

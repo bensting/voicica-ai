@@ -18,6 +18,7 @@ interface TtsRecordsQuery {
   startDate?: string;
   endDate?: string;
   platform?: string;
+  isPublic?: boolean;
 }
 
 /**
@@ -44,6 +45,7 @@ export interface TtsRecordItem {
   errorMessage: string | null;
   shareId: string | null;
   platform: string | null;
+  isPublic: boolean;
   createdAt: string;
   completedAt: string | null;
 }
@@ -63,6 +65,7 @@ export async function getTtsRecords(query: TtsRecordsQuery = {}) {
     startDate,
     endDate,
     platform,
+    isPublic,
   } = query;
 
   // 构建查询条件
@@ -101,6 +104,10 @@ export async function getTtsRecords(query: TtsRecordsQuery = {}) {
     where.platform = platform;
   }
 
+  if (isPublic !== undefined) {
+    where.is_public = isPublic;
+  }
+
   const [total, records] = await Promise.all([
     prisma.tts_records.count({ where }),
     prisma.tts_records.findMany({
@@ -132,6 +139,7 @@ export async function getTtsRecords(query: TtsRecordsQuery = {}) {
     errorMessage: record.error_message,
     shareId: record.share_id,
     platform: record.platform,
+    isPublic: record.is_public,
     createdAt: record.created_at.toISOString(),
     completedAt: record.completed_at?.toISOString() || null,
   }));
@@ -272,4 +280,52 @@ export async function getTtsRecordDetail(id: number) {
     updatedAt: record.updated_at?.toISOString() || null,
     completedAt: record.completed_at?.toISOString() || null,
   };
+}
+
+/**
+ * 更新 TTS 记录的公开状态
+ */
+export async function updateTtsRecordPublic(id: number, isPublic: boolean) {
+  await verifyAdminWithoutDb();
+
+  try {
+    await prisma.tts_records.update({
+      where: { id },
+      data: { is_public: isPublic },
+    });
+
+    return { success: true, message: isPublic ? '已设为公开' : '已设为私有' };
+  } catch (error) {
+    console.error('更新 TTS 记录公开状态失败:', error);
+    return {
+      success: false,
+      message: error instanceof Error ? error.message : '更新失败',
+    };
+  }
+}
+
+/**
+ * 批量更新 TTS 记录的公开状态
+ */
+export async function updateTtsRecordsPublic(ids: number[], isPublic: boolean) {
+  await verifyAdminWithoutDb();
+
+  try {
+    const result = await prisma.tts_records.updateMany({
+      where: { id: { in: ids } },
+      data: { is_public: isPublic },
+    });
+
+    return {
+      success: true,
+      message: `成功更新 ${result.count} 条记录`,
+      updated: result.count,
+    };
+  } catch (error) {
+    console.error('批量更新 TTS 记录公开状态失败:', error);
+    return {
+      success: false,
+      message: error instanceof Error ? error.message : '更新失败',
+    };
+  }
 }

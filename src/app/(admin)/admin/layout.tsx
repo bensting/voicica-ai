@@ -36,6 +36,12 @@ const MENU_GROUPS = [
     ],
   },
   {
+    title: '配置',
+    items: [
+      { href: '/admin/native-banners', label: 'Native Banner', icon: '🖼️' },
+    ],
+  },
+  {
     title: '系统',
     items: [
       { href: '/admin/app-releases', label: 'App 版本', icon: '📱' },

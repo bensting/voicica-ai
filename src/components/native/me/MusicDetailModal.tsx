@@ -29,7 +29,6 @@ export default function MusicDetailModal({
   const [duration, setDuration] = useState(0);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [isSharing, setIsSharing] = useState(false);
-  const [shareUrl, setShareUrl] = useState<string | null>(null);
   const { hide, show } = useBottomNav();
 
   // 隐藏底部导航
@@ -37,15 +36,6 @@ export default function MusicDetailModal({
     hide();
     return () => show();
   }, [hide, show]);
-
-  // 预先生成分享链接（用于"在浏览器打开"功能）
-  useEffect(() => {
-    if (music.task_id) {
-      createShareLink('music', music.task_id)
-        .then((result) => setShareUrl(result.url))
-        .catch((err) => console.error('Failed to create share link:', err));
-    }
-  }, [music.task_id]);
 
   // 双版本切换
   const [currentTrack, setCurrentTrack] = useState<1 | 2>(1);
@@ -175,7 +165,8 @@ export default function MusicDetailModal({
         onDelete={() => setShowDeleteDialog(true)}
         isSharing={isSharing}
         shareDisabled={!music.task_id}
-        browserUrl={shareUrl || undefined}
+        contentType="music"
+        contentId={music.task_id}
       />
 
       {/* 可滚动内容区域 */}

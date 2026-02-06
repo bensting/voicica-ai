@@ -1,8 +1,8 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { Share2, Trash2, ExternalLink } from 'lucide-react';
-import { Browser } from '@capacitor/browser';
+import { Share2, Trash2, Flag } from 'lucide-react';
+import ReportModal from '@/components/native/common/ReportModal';
 
 interface DetailModalHeaderProps {
   /** 关闭回调 */
@@ -15,8 +15,10 @@ interface DetailModalHeaderProps {
   isSharing?: boolean;
   /** 禁用分享按钮 */
   shareDisabled?: boolean;
-  /** 在浏览器打开的 URL */
-  browserUrl?: string;
+  /** 内容类型（用于举报） */
+  contentType?: 'music' | 'video' | 'image' | 'tts';
+  /** 内容 ID（用于举报） */
+  contentId?: string;
 }
 
 /**
@@ -29,9 +31,11 @@ export default function DetailModalHeader({
   onDelete,
   isSharing = false,
   shareDisabled = false,
-  browserUrl,
+  contentType,
+  contentId,
 }: DetailModalHeaderProps) {
   const [showMenu, setShowMenu] = useState(false);
+  const [showReportModal, setShowReportModal] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
   // 点击外部关闭菜单
@@ -50,19 +54,6 @@ export default function DetailModalHeader({
     };
   }, [showMenu]);
 
-  // 在浏览器打开
-  const handleOpenInBrowser = async () => {
-    if (!browserUrl) return;
-    setShowMenu(false);
-    try {
-      await Browser.open({ url: browserUrl });
-    } catch (error) {
-      console.error('Failed to open browser:', error);
-      // 回退到 window.open
-      window.open(browserUrl, '_blank');
-    }
-  };
-
   // 删除
   const handleDelete = () => {
     setShowMenu(false);
@@ -70,11 +61,12 @@ export default function DetailModalHeader({
   };
 
   return (
-    <div
-      className="flex items-center justify-between px-4 pb-2"
-      style={{ paddingTop: 'calc(var(--safe-area-inset-top, 0px) + 12px)' }}
-    >
-      {/* 返回按钮 */}
+    <>
+      <div
+        className="flex items-center justify-between px-4 pb-2"
+        style={{ paddingTop: 'calc(var(--safe-area-inset-top, 0px) + 12px)' }}
+      >
+        {/* 返回按钮 */}
       <button
         onClick={onClose}
         className="w-10 h-10 flex items-center justify-center bg-gray-800/50 rounded-full"
@@ -117,14 +109,17 @@ export default function DetailModalHeader({
           {/* 下拉菜单 */}
           {showMenu && (
             <div className="absolute right-0 top-full mt-1 w-48 bg-gray-800 rounded-xl shadow-lg overflow-hidden z-10">
-              {/* 在浏览器打开 */}
-              {browserUrl && (
+              {/* 举报 */}
+              {contentType && contentId && (
                 <button
-                  onClick={handleOpenInBrowser}
+                  onClick={() => {
+                    setShowMenu(false);
+                    setShowReportModal(true);
+                  }}
                   className="w-full flex items-center gap-3 px-4 py-3 text-white hover:bg-gray-700 transition-colors"
                 >
-                  <ExternalLink size={18} />
-                  <span>Open in Browser</span>
+                  <Flag size={18} />
+                  <span>Report</span>
                 </button>
               )}
 
@@ -143,5 +138,16 @@ export default function DetailModalHeader({
         </div>
       </div>
     </div>
+
+      {/* Report Modal */}
+      {contentType && contentId && (
+        <ReportModal
+          isOpen={showReportModal}
+          onClose={() => setShowReportModal(false)}
+          contentType={contentType}
+          contentId={contentId}
+        />
+      )}
+    </>
   );
 }

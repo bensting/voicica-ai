@@ -15,6 +15,7 @@ import type { UserSubscription } from '@/types/subscription';
 import LoginModal from '@/components/native/LoginModal';
 import CreditsIcon from '@/components/native/common/CreditsIcon';
 import GradientButton from '@/components/native/common/GradientButton';
+import { useLanguage } from '@/contexts/LanguageContext';
 import {
   subscriptionPlans,
   creditPacks,
@@ -57,6 +58,7 @@ export default function NativeSubscribePage() {
   const { user, loading: authLoading } = useFirebaseAuth();
   const { credits } = useCredits();
   const { purchase: googlePlayPurchase, shouldUseGooglePlay, isLoading: gpLoading } = useGooglePlayBilling();
+  const { t } = useLanguage();
 
   const [activeTab, setActiveTab] = useState<TabType>('subscription');
   const [activeSubscription, setActiveSubscription] = useState<UserSubscription | null>(null);
@@ -223,7 +225,7 @@ export default function NativeSubscribePage() {
           <span className="text-4xl font-bold text-white">{credits}</span>
         </div>
         <p className="text-gray-500 text-sm">
-          {activeSubscription ? 'Become VIP: +20% credits on every pack' : 'Not Subscribed'}
+          {activeSubscription ? t('native.subscribe.vipBonus') : t('native.subscribe.notSubscribed')}
         </p>
       </div>
 
@@ -238,7 +240,7 @@ export default function NativeSubscribePage() {
                 : 'text-gray-500 border-transparent'
             }`}
           >
-            Subscription
+            {t('native.subscribe.tabs.subscription')}
           </button>
           <button
             onClick={() => setActiveTab('credits')}
@@ -248,7 +250,7 @@ export default function NativeSubscribePage() {
                 : 'text-gray-500 border-transparent'
             }`}
           >
-            Credit Packs
+            {t('native.subscribe.tabs.credits')}
           </button>
         </div>
       </div>
@@ -281,7 +283,7 @@ export default function NativeSubscribePage() {
                       {/* Popular badge */}
                       {plan.isPopular && (
                         <span className="absolute -top-2 right-4 bg-gradient-to-r from-orange-500 to-pink-500 text-white text-[10px] font-bold px-2 py-0.5 rounded">
-                          Most Popular
+                          {t('native.subscribe.mostPopular')}
                         </span>
                       )}
 
@@ -311,15 +313,14 @@ export default function NativeSubscribePage() {
             <div className="bg-gray-800/40 rounded-2xl p-4">
               <div className="flex items-center gap-2 mb-4">
                 <CrownIcon />
-                <span className="text-white font-semibold">Membership Benefits</span>
+                <span className="text-white font-semibold">{t('native.subscribe.membershipBenefits')}</span>
               </div>
               <div className="space-y-3">
                 {[
-                  `${formatCredits(selectedPlan?.credits || 0)} credits refresh monthly`,
-                  'Fast Generation Channel',
-                  'Simultaneous Generations',
-                  'Higher Quality',
-                  'Watermark-free Downloads',
+                  t('native.subscribe.benefits.creditsRefresh', { credits: formatCredits(selectedPlan?.credits || 0) }),
+                  t('native.subscribe.benefits.fastChannel'),
+                  t('native.subscribe.benefits.simultaneous'),
+                  t('native.subscribe.benefits.higherQuality'),
                 ].map((text, index) => (
                   <div key={index} className="flex items-center gap-3">
                     <span className="text-green-400 flex-shrink-0">
@@ -363,20 +364,17 @@ export default function NativeSubscribePage() {
 
             {/* Credit pack description */}
             <div className="text-center text-gray-500 text-xs space-y-2 mt-8">
-              <p>Validity Period of the Credits Pack: Lifetime</p>
+              <p>{t('native.subscribe.creditPackInfo.validity')}</p>
               <p className="text-[10px] leading-relaxed px-4">
-                Subscription Terms: Payment is charged to your account upon confirmation.
-                Subscription auto-renews at the original price, unless canceled at least
-                24 hours before the current period ends. Manage your subscription and
-                auto-renewal in Account Settings.
+                {t('native.subscribe.creditPackInfo.terms')}
               </p>
               <div className="flex items-center justify-center gap-2 pt-2">
                 <Link href="/terms" className="text-purple-400 hover:underline">
-                  Terms of Use
+                  {t('native.subscribe.termsOfUse')}
                 </Link>
                 <span className="text-gray-600">|</span>
                 <Link href="/privacy" className="text-purple-400 hover:underline">
-                  Privacy Policy
+                  {t('native.subscribe.privacyPolicy')}
                 </Link>
               </div>
             </div>
@@ -400,10 +398,10 @@ export default function NativeSubscribePage() {
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                 </svg>
-                Processing...
+                {t('native.subscribe.processing')}
               </>
             ) : (
-              <>Subscribe Now - ${selectedPlan.price.toFixed(2)}/{getBillingPeriodText(selectedPlan.billingPeriod)}</>
+              <>{t('native.subscribe.subscribeNow')} - ${selectedPlan.price.toFixed(2)}/{getBillingPeriodText(selectedPlan.billingPeriod)}</>
             )}
           </GradientButton>
         )}
@@ -419,10 +417,10 @@ export default function NativeSubscribePage() {
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                 </svg>
-                Processing...
+                {t('native.subscribe.processing')}
               </>
             ) : (
-              <>Buy Now - ${selectedCreditPack.price.toFixed(2)}</>
+              <>{t('native.subscribe.buyNow')} - ${selectedCreditPack.price.toFixed(2)}</>
             )}
           </GradientButton>
         )}

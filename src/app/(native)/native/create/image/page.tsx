@@ -1,16 +1,18 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { useRouter } from 'next/navigation';
 import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 import { useCredits } from '@/contexts/CreditsContext';
 import { useSubscription } from '@/contexts/SubscriptionContext';
 import { useRewardedAd } from '@/hooks/useRewardedAd';
+import { useLanguage } from '@/contexts/LanguageContext';
 import CreatePageHeader from '@/components/native/common/CreatePageHeader';
 import GradientButton from '@/components/native/common/GradientButton';
 import CreditsIcon from '@/components/native/common/CreditsIcon';
 import CreditsInfoBar from '@/components/native/common/CreditsInfoBar';
 import LoginModal from '@/components/native/LoginModal';
+import InsufficientCreditsModal from '@/components/native/common/InsufficientCreditsModal';
+import NativeDailyTasksModal from '@/components/native/NativeDailyTasksModal';
 import { createImageTask, getImageTaskStatus, getImageRecordByTaskId, deleteImageRecord, type ImageRecord } from '@/actions/image';
 import { imageModels, type ImageModel, DEFAULT_IMAGE_MODEL_ID } from '@/config/native/imageModels';
 import { adConfig } from '@/config/native/adConfig';
@@ -109,11 +111,11 @@ const AspectRatioIcon = ({ ratio }: { ratio: string }) => {
  * Native AI Image 页面
  */
 export default function NativeImagePage() {
-  const router = useRouter();
   const { user } = useFirebaseAuth();
   const { credits, refreshCredits } = useCredits();
   const { isSubscribed } = useSubscription();
   const { showRewardedAd } = useRewardedAd();
+  const { t } = useLanguage();
 
   // 广告状态
   const [adWatched, setAdWatched] = useState(false);
@@ -121,6 +123,9 @@ export default function NativeImagePage() {
 
   // UI 状态
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const [isInsufficientCreditsModalOpen, setIsInsufficientCreditsModalOpen] = useState(false);
+  const [isDailyTasksModalOpen, setIsDailyTasksModalOpen] = useState(false);
+  const [insufficientCreditsInfo, setInsufficientCreditsInfo] = useState<{ required: number; current: number } | null>(null);
   const [isModelSheetOpen, setIsModelSheetOpen] = useState(false);
   const [isParameterSheetOpen, setIsParameterSheetOpen] = useState(false);
   const [isGeneratingModalOpen, setIsGeneratingModalOpen] = useState(false);
@@ -156,14 +161,14 @@ export default function NativeImagePage() {
       const savedModel = imageModels.find(m => m.id === savedModelId);
       if (savedModel) return savedModel;
     }
-    // 默认使用 Seedream 4.5
+    // 默认使用 Z-Image
     return imageModels.find(m => m.id === DEFAULT_IMAGE_MODEL_ID) || imageModels[0];
   });
   const [guidanceImage, setGuidanceImage] = useState<File | null>(null);
   const [guidanceImageUrl, setGuidanceImageUrl] = useState<string | null>(null);
 
   // 参数状态
-  const [isPublic, setIsPublic] = useState(true);
+  const [isPublic, setIsPublic] = useState(false);
   const [aspectRatio, setAspectRatio] = useState('16:9');
   const [quality, setQuality] = useState('standard'); // Z-Image default
 
@@ -253,12 +258,12 @@ export default function NativeImagePage() {
     if (!file) return;
 
     if (!file.type.startsWith('image/')) {
-      setError('Please select an image file');
+      setError(t('native.createImage.errorSelectImage'));
       return;
     }
 
     if (file.size > 10 * 1024 * 1024) {
-      setError('Image size must be less than 10MB');
+      setError(t('native.createImage.errorImageSize'));
       return;
     }
 
@@ -338,7 +343,10 @@ export default function NativeImagePage() {
     const hasEnoughCredits = checkCreditsBeforeGenerate({
       currentCredits: credits,
       requiredCredits: selectedModel.credits,
-      onInsufficientCredits: () => router.push('/native/subscribe'),
+      onInsufficientCredits: () => {
+        setInsufficientCreditsInfo({ required: selectedModel.credits, current: credits });
+        setIsInsufficientCreditsModalOpen(true);
+      },
     });
     if (!hasEnoughCredits) return;
 
@@ -441,7 +449,7 @@ export default function NativeImagePage() {
   return (
     <div className="min-h-screen bg-[#0a0a1a] flex flex-col">
       {/* Header */}
-      <CreatePageHeader title="AI Image" />
+      <CreatePageHeader title={t('native.createImage.title')} />
 
       {/* Content Area */}
       <div
@@ -460,7 +468,7 @@ export default function NativeImagePage() {
         {/* Prompt Section */}
         <div className="mb-4">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-white font-medium">Prompt</span>
+            <span className="text-white font-medium">{t('native.createImage.prompt')}</span>
             {/* Model Selector Trigger */}
             <button
               onClick={() => setIsModelSheetOpen(true)}
@@ -490,7 +498,7 @@ export default function NativeImagePage() {
             <textarea
               value={prompt}
               onChange={(e) => setPrompt(e.target.value.slice(0, selectedModel.maxPromptLength))}
-              placeholder="Please enter the prompt for generation. For example: Under the sunlight, a breeze gently sways the flowers, with a cinematic feel."
+              placeholder={t('native.createImage.promptPlaceholder')}
               className="w-full h-32 bg-transparent text-white placeholder-gray-500 text-sm resize-none focus:outline-none leading-relaxed"
             />
 
@@ -502,7 +510,7 @@ export default function NativeImagePage() {
                 className="flex items-center gap-1.5 px-2.5 py-1 bg-gray-700/60 rounded-full text-xs text-gray-300 hover:bg-gray-600/60 transition-colors"
               >
                 <MagicWandIcon />
-                <span>Generate Prompt</span>
+                <span>{t('native.createImage.generatePrompt')}</span>
               </button>
 
               {/* Character Count & Clear */}
@@ -526,8 +534,8 @@ export default function NativeImagePage() {
         {selectedModel.supportsImageInput && (
           <div className="mb-4">
             <div className="flex items-center gap-2 mb-2">
-              <span className="text-white font-medium">Image Guidance</span>
-              <span className="text-gray-500 text-sm">(optional)</span>
+              <span className="text-white font-medium">{t('native.createImage.imageGuidance')}</span>
+              <span className="text-gray-500 text-sm">{t('native.createImage.optional')}</span>
               <InfoIcon />
             </div>
 
@@ -565,14 +573,14 @@ export default function NativeImagePage() {
         {/* Parameters Trigger */}
         <div className="mb-4">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-white font-medium">Parameters</span>
+            <span className="text-white font-medium">{t('native.createImage.parameters')}</span>
           </div>
           <button
             onClick={() => setIsParameterSheetOpen(true)}
             className="w-full flex items-center justify-between p-3 bg-gray-800/60 rounded-xl"
           >
             <div className="flex items-center gap-4 text-sm text-gray-300">
-              <span>{isPublic ? 'Public' : 'Private'}</span>
+              <span>{isPublic ? t('native.createImage.public') : t('native.createImage.private')}</span>
               <span>·</span>
               <span>{aspectRatio}</span>
               {selectedModel.qualities.length > 0 && (
@@ -594,7 +602,7 @@ export default function NativeImagePage() {
       >
         <CreditsInfoBar
           credits={credits}
-          creditRules={[{ name: 'Image generation', credits: selectedModel.credits }]}
+          creditRules={[{ name: t('native.createImage.imageGeneration'), credits: selectedModel.credits }]}
           className="mb-3"
         />
 
@@ -605,11 +613,11 @@ export default function NativeImagePage() {
           {isGenerating ? (
             <>
               <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-              <span>Creating...</span>
+              <span>{t('native.createImage.creating')}</span>
             </>
           ) : (
             <>
-              <span>Create Image</span>
+              <span>{t('native.createImage.createImage')}</span>
               {estimatedCredits > 0 && (
                 <>
                   <CreditsIcon className="w-3.5 h-3.5" />
@@ -626,6 +634,24 @@ export default function NativeImagePage() {
         isOpen={isLoginModalOpen}
         onClose={() => setIsLoginModalOpen(false)}
         onLoginSuccess={() => setIsLoginModalOpen(false)}
+      />
+
+      {/* Insufficient Credits Modal */}
+      <InsufficientCreditsModal
+        isOpen={isInsufficientCreditsModalOpen}
+        onClose={() => setIsInsufficientCreditsModalOpen(false)}
+        onGetFreeCredits={() => {
+          setIsInsufficientCreditsModalOpen(false);
+          setIsDailyTasksModalOpen(true);
+        }}
+        requiredCredits={insufficientCreditsInfo?.required}
+        currentCredits={insufficientCreditsInfo?.current}
+      />
+
+      {/* Daily Tasks Modal */}
+      <NativeDailyTasksModal
+        isOpen={isDailyTasksModalOpen}
+        onClose={() => setIsDailyTasksModalOpen(false)}
       />
 
       {/* Generate Prompt Sheet */}
@@ -649,7 +675,7 @@ export default function NativeImagePage() {
 
             {/* Header */}
             <div className="flex items-center justify-between px-4 pb-4">
-              <h3 className="text-lg font-semibold text-white">Generate Prompt</h3>
+              <h3 className="text-lg font-semibold text-white">{t('native.createImage.generatePromptTitle')}</h3>
               <button
                 onClick={() => !isGeneratingPrompt && setIsGeneratePromptSheetOpen(false)}
                 className="p-1 text-gray-400 hover:text-white transition-colors"
@@ -662,7 +688,7 @@ export default function NativeImagePage() {
             {/* Content */}
             <div className="px-4 pb-4">
               <p className="text-sm text-gray-400 mb-3">
-                Describe what you want to create, and AI will generate a detailed prompt for you.
+                {t('native.createImage.generatePromptDesc')}
               </p>
 
               {/* Input */}
@@ -670,7 +696,7 @@ export default function NativeImagePage() {
                 ref={generateInputRef}
                 value={generateInput}
                 onChange={(e) => setGenerateInput(e.target.value.slice(0, 500))}
-                placeholder="e.g., A cute cat sitting on a rainbow"
+                placeholder={t('native.createImage.generatePromptPlaceholder')}
                 className="w-full h-24 p-3 bg-gray-800/60 rounded-xl text-white placeholder-gray-500 resize-none focus:outline-none focus:ring-2 focus:ring-purple-500/50 text-sm"
                 disabled={isGeneratingPrompt}
               />
@@ -696,12 +722,12 @@ export default function NativeImagePage() {
                 {isGeneratingPrompt ? (
                   <>
                     <LoadingSpinner />
-                    <span>Generating...</span>
+                    <span>{t('native.createImage.generating')}</span>
                   </>
                 ) : (
                   <>
                     <MagicWandIcon className="w-4 h-4" />
-                    <span>Generate</span>
+                    <span>{t('native.createImage.generate')}</span>
                   </>
                 )}
               </button>
@@ -724,7 +750,7 @@ export default function NativeImagePage() {
             <div className="flex justify-center pt-3 pb-2">
               <div className="w-10 h-1 bg-gray-600 rounded-full" />
             </div>
-            <h3 className="text-white font-semibold text-lg text-center mb-4">Select Model</h3>
+            <h3 className="text-white font-semibold text-lg text-center mb-4">{t('native.createImage.selectModel')}</h3>
             <div className="px-4 pb-6 space-y-3">
               {imageModels.map((model) => (
                 <button
@@ -759,7 +785,7 @@ export default function NativeImagePage() {
                       <p className="text-white font-medium">{model.name}</p>
                       <span className="flex items-center gap-1 text-xs text-purple-400">
                         <CreditsIcon className="w-3 h-3" />
-                        {model.credits} credits
+                        {model.credits} {t('native.createImage.credits')}
                       </span>
                     </div>
                     <p className="text-gray-400 text-sm">{model.description}</p>
@@ -786,14 +812,14 @@ export default function NativeImagePage() {
               <div className="w-10 h-1 bg-gray-600 rounded-full" />
             </div>
             <h3 className="text-white font-semibold text-lg text-center mb-6 sticky top-6 bg-[#1a1a2e]">
-              Parameter Settings
+              {t('native.createImage.parameterSettings')}
             </h3>
 
             <div className="px-4 pb-6 space-y-6">
               {/* Visibility */}
               <div>
                 <div className="flex items-center gap-2 mb-3">
-                  <span className="text-white font-medium">Visibility</span>
+                  <span className="text-white font-medium">{t('native.createImage.visibility')}</span>
                   <InfoIcon />
                 </div>
                 <div className="flex gap-2">
@@ -805,7 +831,7 @@ export default function NativeImagePage() {
                         : 'bg-gray-800/60 text-gray-400 hover:bg-gray-700/60'
                     }`}
                   >
-                    Public
+                    {t('native.createImage.public')}
                   </button>
                   <button
                     onClick={() => setIsPublic(false)}
@@ -815,14 +841,14 @@ export default function NativeImagePage() {
                         : 'bg-gray-800/60 text-gray-400 hover:bg-gray-700/60'
                     }`}
                   >
-                    Private
+                    {t('native.createImage.private')}
                   </button>
                 </div>
               </div>
 
               {/* Aspect Ratio */}
               <div>
-                <span className="text-white font-medium mb-3 block">Aspect Ratio</span>
+                <span className="text-white font-medium mb-3 block">{t('native.createImage.aspectRatio')}</span>
                 <div className="grid grid-cols-3 gap-2">
                   {selectedModel.aspectRatios.map((ratio) => (
                     <button
@@ -844,7 +870,7 @@ export default function NativeImagePage() {
               {/* Quality - 仅在模型有 quality 选项时显示 */}
               {selectedModel.qualities.length > 0 && (
                 <div>
-                  <span className="text-white font-medium mb-3 block">Quality</span>
+                  <span className="text-white font-medium mb-3 block">{t('native.createImage.quality')}</span>
                   <div className="flex gap-2">
                     {selectedModel.qualities.map((q) => (
                       <button
@@ -876,7 +902,7 @@ export default function NativeImagePage() {
                 }}
                 disabled={!canGenerate}
               >
-                Create Image
+                {t('native.createImage.createImage')}
               </GradientButton>
             </div>
           </div>

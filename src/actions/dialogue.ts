@@ -19,6 +19,7 @@ interface DialogueRequest {
     voice: string; // voice ID like 'Adam', 'Brian', etc.
   }>;
   stability?: number; // 0-1, default 0.5
+  language_code?: string; // 语言代码，如 'en', 'zh', 'auto' 等
 }
 
 /**
@@ -140,12 +141,19 @@ export async function createDialogueTask(
   });
 
   // 调用 kie.ai API
+  const inputParams: Record<string, unknown> = {
+    dialogue: request.dialogue,
+    stability: request.stability ?? 0.5,
+  };
+
+  // 只有当指定了具体语言代码时才传递（不传时 API 会自动检测）
+  if (request.language_code && request.language_code !== 'auto') {
+    inputParams.language_code = request.language_code;
+  }
+
   const apiBody: Record<string, unknown> = {
     model: 'elevenlabs/text-to-dialogue-v3',
-    input: {
-      dialogue: request.dialogue,
-      stability: request.stability ?? 0.5,
-    },
+    input: inputParams,
   };
 
   // 添加回调 URL（如果有）
@@ -382,6 +390,34 @@ export interface DialogueRecord {
   credits_cost: number;
   duration: number | null;
   created_at: Date;
+}
+
+/**
+ * 根据 task_id 获取单条 Dialogue 记录
+ */
+export async function getDialogueRecordByTaskId(taskId: string): Promise<DialogueRecord | null> {
+  const { user_id: userId } = await getUserOrAnonymous();
+
+  const record = await prisma.dialogue_records.findFirst({
+    where: {
+      task_id: taskId,
+      user_id: userId,
+    },
+    select: {
+      id: true,
+      task_id: true,
+      status: true,
+      progress: true,
+      audio_url: true,
+      dialogue_json: true,
+      total_characters: true,
+      credits_cost: true,
+      duration: true,
+      created_at: true,
+    },
+  });
+
+  return record;
 }
 
 /**

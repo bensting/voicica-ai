@@ -3,7 +3,7 @@
 
 export const HOME_SHOWCASE_CONFIG = {
   // 背景图
-  backgroundImage: '/images/home/hero-bg.jpg',
+  backgroundImage: '/images/home/hero-bg.png',
 
   // 左侧 AI Art 样图
   artworks: [

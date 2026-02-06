@@ -22,19 +22,28 @@ export default function NewHero() {
 
   return (
     <section className="relative min-h-screen overflow-hidden bg-gray-950">
-      {/* Outer Background - Tech circuit pattern */}
-      <div className="absolute inset-0">
-        {/* Dark gradient base */}
-        <div className="absolute inset-0 bg-gradient-to-b from-gray-900 via-gray-950 to-black" />
-        {/* Decorative gradient orbs */}
-        <div className="absolute -left-32 top-1/3 h-96 w-96 rounded-full bg-purple-600/20 blur-[120px]" />
-        <div className="absolute -right-32 top-1/2 h-96 w-96 rounded-full bg-cyan-600/20 blur-[120px]" />
-        <div className="absolute bottom-0 left-1/2 h-64 w-64 -translate-x-1/2 rounded-full bg-pink-600/10 blur-[100px]" />
-      </div>
+      {/* Outer Background - Dark base */}
+      <div className="absolute inset-0 bg-gradient-to-b from-gray-900 via-gray-950 to-black" />
 
       {/* Content */}
       <div className="relative flex min-h-screen items-center justify-center px-4 py-12">
-        <PhoneMockup>
+        {/* Background container - square, slightly larger than phone */}
+        <div className="relative">
+          {/* Square background image behind phone - 1:1 ratio, slightly larger */}
+          <div className="absolute left-1/2 top-1/2 z-0 -translate-x-1/2 -translate-y-1/2 h-[580px] w-[580px] sm:h-[720px] sm:w-[720px] lg:h-[820px] lg:w-[820px] overflow-hidden rounded-3xl">
+            <Image
+              src={backgroundImage}
+              alt=""
+              fill
+              className="object-cover object-top blur-[6px]"
+              priority
+            />
+            {/* Slight dark overlay for depth */}
+            <div className="absolute inset-0 bg-black/10" />
+          </div>
+
+          <div className="relative z-10">
+          <PhoneMockup>
           {/* Phone Screen Content */}
           <div className="relative flex h-full flex-col">
             {/* Phone Background Image */}
@@ -140,6 +149,8 @@ export default function NewHero() {
             </div>
           </div>
         </PhoneMockup>
+          </div>
+        </div>
       </div>
     </section>
   );

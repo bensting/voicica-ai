@@ -123,7 +123,8 @@
     "noVoicesFound": "ไม่พบเสียง",
     "loadMoreVoices": "โหลดเพิ่ม",
     "searchLanguages": "ค้นหาภาษา...",
-    "allVoicesLoaded": "โหลดเสียงทั้งหมดแล้ว ({{total}} รายการ)"
+    "allVoicesLoaded": "โหลดเสียงทั้งหมดแล้ว ({{total}} รายการ)",
+    "provider": "ผู้ให้บริการ"
   },
   "voices": {
     "tags": {

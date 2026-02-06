@@ -123,7 +123,8 @@
     "noVoicesFound": "未找到語音",
     "loadMoreVoices": "載入更多語音",
     "searchLanguages": "搜尋語言...",
-    "allVoicesLoaded": "已載入全部語音（共 {{total}} 個）"
+    "allVoicesLoaded": "已載入全部語音（共 {{total}} 個）",
+    "provider": "供應商"
   },
   "voices": {
     "tags": {

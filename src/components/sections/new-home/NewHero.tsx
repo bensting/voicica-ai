@@ -49,8 +49,8 @@ export default function NewHero() {
             <div className="absolute -inset-3 rounded-[3.5rem] bg-white/20 blur-xl" />
           <PhoneMockup>
           {/* Phone Screen Content */}
-          <div className="relative flex h-full flex-col">
-            {/* Phone Background Image */}
+          <div className="relative min-h-[580px] sm:min-h-[640px]">
+            {/* Phone Background Image - fills entire screen */}
             <div className="absolute inset-0">
               <Image
                 src={backgroundImage}
@@ -99,7 +99,7 @@ export default function NewHero() {
               </p>
 
               {/* Preview Showcase Section */}
-              <div className="mb-6">
+              <div className="mb-6 mt-20">
                 <h2 className="mb-3 text-sm font-semibold text-white">
                   Preview Showcase
                 </h2>

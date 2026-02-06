@@ -8,7 +8,7 @@ export default function PhoneMockup({ children }: PhoneMockupProps) {
   return (
     <div className="relative mx-auto w-[320px] sm:w-[360px]">
       {/* Phone outer frame */}
-      <div className="relative rounded-[3rem] bg-gradient-to-b from-gray-200 via-white to-gray-300 p-3 shadow-2xl shadow-black/50">
+      <div className="relative rounded-[3rem] bg-gradient-to-b from-gray-200 via-white to-gray-300 px-2 pt-2 pb-2 shadow-2xl shadow-black/50">
         {/* Phone inner bezel */}
         <div className="relative overflow-hidden rounded-[2.5rem]">
           {/* Notch */}
@@ -20,7 +20,7 @@ export default function PhoneMockup({ children }: PhoneMockupProps) {
           </div>
 
           {/* Screen content */}
-          <div className="relative min-h-[580px] sm:min-h-[640px]">{children}</div>
+          <div className="relative">{children}</div>
         </div>
       </div>
 

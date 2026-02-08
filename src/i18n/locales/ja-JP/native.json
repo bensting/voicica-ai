@@ -73,15 +73,10 @@
           "shortName": "AI 動画",
           "description": "テキストから動画を生成"
         },
-        "tiktok": {
-          "title": "TikTok ダウンローダー",
-          "shortName": "TikTok ダウンロード",
-          "description": "TikTok動画をダウンロード"
-        },
-        "youtube": {
-          "title": "YouTube ダウンローダー",
-          "shortName": "YouTube ダウンロード",
-          "description": "YouTube動画と音声をダウンロード"
+        "videoDownloader": {
+          "title": "動画ダウンローダー",
+          "shortName": "動画ダウンロード",
+          "description": "TikTokとYouTubeの動画をダウンロード"
         }
       }
     },

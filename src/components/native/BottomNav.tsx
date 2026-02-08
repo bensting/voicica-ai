@@ -69,7 +69,7 @@ export default function BottomNav() {
     <>
       {/* 底部导航 */}
       <nav
-        className="fixed bottom-0 left-0 right-0 z-50 bg-slate-950/80 backdrop-blur-xl border-t border-white/5"
+        className="fixed bottom-0 left-0 right-0 z-50 bg-slate-950/80 backdrop-blur-xl border-t border-white/5 lg:static lg:shrink-0"
         style={{ paddingBottom: 'var(--safe-area-inset-bottom, 0px)' }}
       >
         <div className="flex items-center justify-around h-16">

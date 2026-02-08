@@ -1,4 +1,32 @@
 {
+  "videoDownloader": {
+    "title": "वीडियो डाउनलोडर",
+    "subtitle": "TikTok और YouTube वीडियो मुफ्त डाउनलोड करें",
+    "urlLabel": "वीडियो URL",
+    "urlPlaceholder": "TikTok या YouTube वीडियो लिंक पेस्ट करें...",
+    "parseButton": "पार्स करें",
+    "parsing": "पार्स हो रहा है",
+    "doNotClose": "कृपया इस पेज को बंद न करें",
+    "downloadButton": "डाउनलोड करें",
+    "downloading": "डाउनलोड हो रहा है...",
+    "selectQuality": "क्वालिटी चुनें",
+    "untitled": "बिना शीर्षक वीडियो",
+    "detected": "पहचाना गया",
+    "emptyTitle": "वीडियो डाउनलोड करें",
+    "emptyDescription": "डाउनलोड शुरू करने के लिए ऊपर TikTok या YouTube वीडियो URL पेस्ट करें।",
+    "tabs": {
+      "videoWithAudio": "वीडियो",
+      "videoOnly": "केवल वीडियो",
+      "audioOnly": "केवल ऑडियो"
+    },
+    "errors": {
+      "emptyUrl": "कृपया वीडियो URL दर्ज करें",
+      "invalidUrl": "असमर्थित URL। कृपया एक वैध TikTok या YouTube वीडियो लिंक दर्ज करें।",
+      "parseFailed": "वीडियो पार्स करने में विफल। कृपया URL जांचें और पुनः प्रयास करें।",
+      "insufficientCredits": "अपर्याप्त क्रेडिट। आवश्यक: {{required}}, वर्तमान: {{current}}",
+      "unknownError": "एक अप्रत्याशित त्रुटि हुई। कृपया बाद में पुनः प्रयास करें।"
+    }
+  },
   "tiktokDownloader": {
     "title": "TikTok वीडियो डाउनलोडर",
     "subtitle": "बिना वॉटरमार्क के TikTok वीडियो मुफ्त डाउनलोड करें",

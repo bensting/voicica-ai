@@ -1,4 +1,32 @@
 {
+  "videoDownloader": {
+    "title": "Video Downloader",
+    "subtitle": "Download TikTok & YouTube videos for free",
+    "urlLabel": "Video URL",
+    "urlPlaceholder": "Paste TikTok or YouTube video link...",
+    "parseButton": "Parse",
+    "parsing": "Parsing",
+    "doNotClose": "Please do not close this page",
+    "downloadButton": "Download",
+    "downloading": "Downloading...",
+    "selectQuality": "Select Quality",
+    "untitled": "Untitled Video",
+    "detected": "detected",
+    "emptyTitle": "Download Videos",
+    "emptyDescription": "Paste a TikTok or YouTube video URL above to start downloading.",
+    "tabs": {
+      "videoWithAudio": "Video",
+      "videoOnly": "Video Only",
+      "audioOnly": "Audio"
+    },
+    "errors": {
+      "emptyUrl": "Please enter a video URL",
+      "invalidUrl": "Unsupported URL. Please enter a valid TikTok or YouTube video link.",
+      "parseFailed": "Failed to parse video. Please check the URL and try again.",
+      "insufficientCredits": "Insufficient credits. Required: {{required}}, Current: {{current}}",
+      "unknownError": "An unexpected error occurred. Please try again later."
+    }
+  },
   "tiktokDownloader": {
     "title": "TikTok Video Downloader",
     "subtitle": "Download TikTok videos without watermark for free",

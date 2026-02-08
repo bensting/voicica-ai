@@ -73,15 +73,10 @@
           "shortName": "AI ဗီဒီယို",
           "description": "စာသားမှ ဗီဒီယိုဖန်တီးရန်"
         },
-        "tiktok": {
-          "title": "TikTok ဒေါင်းလုဒ်",
-          "shortName": "TikTok ဒေါင်းလုဒ်",
-          "description": "watermark မပါဘဲ TikTok ဒေါင်းရန်"
-        },
-        "youtube": {
-          "title": "YouTube ဒေါင်းလုဒ်",
-          "shortName": "YouTube ဒေါင်းလုဒ်",
-          "description": "YouTube ဗီဒီယိုနှင့် အသံဒေါင်းရန်"
+        "videoDownloader": {
+          "title": "ဗီဒီယိုဒေါင်းလုဒ်",
+          "shortName": "ဗီဒီယိုဒေါင်းလုဒ်",
+          "description": "TikTok နှင့် YouTube ဗီဒီယိုများ ဒေါင်းလုဒ်"
         }
       }
     },

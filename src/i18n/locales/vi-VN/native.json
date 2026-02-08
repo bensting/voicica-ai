@@ -73,15 +73,10 @@
           "shortName": "AI Video",
           "description": "Tạo video từ văn bản"
         },
-        "tiktok": {
-          "title": "Tải TikTok",
-          "shortName": "Tải TikTok",
-          "description": "Tải video TikTok không watermark"
-        },
-        "youtube": {
-          "title": "Tải YouTube",
-          "shortName": "Tải YouTube",
-          "description": "Tải video và âm thanh YouTube"
+        "videoDownloader": {
+          "title": "Tải Video",
+          "shortName": "Tải Video",
+          "description": "Tải video TikTok & YouTube"
         }
       }
     },

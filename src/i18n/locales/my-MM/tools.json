@@ -1,4 +1,32 @@
 {
+  "videoDownloader": {
+    "title": "ဗီဒီယိုဒေါင်းလုဒ်",
+    "subtitle": "TikTok နှင့် YouTube ဗီဒီယိုများကို အခမဲ့ဒေါင်းလုဒ်လုပ်ပါ",
+    "urlLabel": "ဗီဒီယို URL",
+    "urlPlaceholder": "TikTok သို့မဟုတ် YouTube ဗီဒီယိုလင့်ခ်ကို ကူးထည့်ပါ...",
+    "parseButton": "ခွဲခြမ်း",
+    "parsing": "ခွဲခြမ်းနေသည်",
+    "doNotClose": "ဤစာမျက်နှာကို မပိတ်ပါနှင့်",
+    "downloadButton": "ဒေါင်းလုဒ်",
+    "downloading": "ဒေါင်းလုဒ်လုပ်နေသည်...",
+    "selectQuality": "အရည်အသွေးရွေးချယ်ပါ",
+    "untitled": "ခေါင်းစဉ်မရှိဗီဒီယို",
+    "detected": "တွေ့ရှိပြီး",
+    "emptyTitle": "ဗီဒီယိုဒေါင်းလုဒ်",
+    "emptyDescription": "TikTok သို့မဟုတ် YouTube ဗီဒီယို URL ကို အထက်တွင်ကူးထည့်၍ ဒေါင်းလုဒ်စတင်ပါ။",
+    "tabs": {
+      "videoWithAudio": "ဗီဒီယို",
+      "videoOnly": "ဗီဒီယိုသာ",
+      "audioOnly": "အသံသာ"
+    },
+    "errors": {
+      "emptyUrl": "ဗီဒီယို URL ထည့်ပါ",
+      "invalidUrl": "ပံ့ပိုးမထားသော URL။ TikTok သို့မဟုတ် YouTube ဗီဒီယိုလင့်ခ် မှန်ကန်စွာထည့်ပါ။",
+      "parseFailed": "ဗီဒီယိုခွဲခြမ်းမှု မအောင်မြင်ပါ။ URL ကိုစစ်ဆေးပြီး ထပ်စမ်းပါ။",
+      "insufficientCredits": "ခရက်ဒစ်မလုံလောက်ပါ။ လိုအပ်: {{required}}၊ လက်ရှိ: {{current}}",
+      "unknownError": "မျှော်လင့်မထားသောအမှားဖြစ်ပါသည်။ နောက်မှထပ်စမ်းပါ။"
+    }
+  },
   "tiktokDownloader": {
     "title": "TikTok ဗီဒီယိုဒေါင်းလုဒ်",
     "subtitle": "TikTok ဗီဒီယိုများကို ရေစာမပါအခမဲ့ဒေါင်းလုဒ်လုပ်ပါ",

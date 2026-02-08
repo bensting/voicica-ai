@@ -1,4 +1,32 @@
 {
+  "videoDownloader": {
+    "title": "Descargador de Vídeos",
+    "subtitle": "Descarga vídeos de TikTok y YouTube gratis",
+    "urlLabel": "URL del vídeo",
+    "urlPlaceholder": "Pega el enlace de TikTok o YouTube...",
+    "parseButton": "Analizar",
+    "parsing": "Analizando",
+    "doNotClose": "Por favor, no cierres esta página",
+    "downloadButton": "Descargar",
+    "downloading": "Descargando...",
+    "selectQuality": "Seleccionar calidad",
+    "untitled": "Vídeo sin título",
+    "detected": "detectado",
+    "emptyTitle": "Descargar vídeos",
+    "emptyDescription": "Pega una URL de TikTok o YouTube arriba para comenzar a descargar.",
+    "tabs": {
+      "videoWithAudio": "Vídeo",
+      "videoOnly": "Solo vídeo",
+      "audioOnly": "Solo audio"
+    },
+    "errors": {
+      "emptyUrl": "Por favor, introduce una URL de vídeo",
+      "invalidUrl": "URL no compatible. Por favor, introduce un enlace de TikTok o YouTube válido.",
+      "parseFailed": "Error al analizar el vídeo. Por favor, verifica la URL e inténtalo de nuevo.",
+      "insufficientCredits": "Créditos insuficientes. Necesarios: {{required}}, Actuales: {{current}}",
+      "unknownError": "Ocurrió un error inesperado. Por favor, inténtalo de nuevo más tarde."
+    }
+  },
   "tiktokDownloader": {
     "title": "Descargador de vídeos de TikTok",
     "subtitle": "Descarga vídeos de TikTok sin marca de agua gratis",

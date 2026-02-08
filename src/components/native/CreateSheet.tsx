@@ -60,15 +60,11 @@ const CloneIcon = () => (
   </svg>
 );
 
-const TiktokIcon = () => (
-  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
-    <path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-5.2 1.74 2.89 2.89 0 012.31-4.64 2.93 2.93 0 01.88.13V9.4a6.84 6.84 0 00-1-.05A6.33 6.33 0 005 20.1a6.34 6.34 0 0010.86-4.43v-7a8.16 8.16 0 004.77 1.52v-3.4a4.85 4.85 0 01-1-.1z" />
-  </svg>
-);
-
-const YoutubeIcon = () => (
-  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
-    <path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
+const VideoDownloadIcon = () => (
+  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+    <rect x="2" y="3" width="20" height="14" rx="2" />
+    <polygon points="10,6 16,10 10,14" fill="currentColor" stroke="none" />
+    <path d="M12 17v4m-3 0h6" strokeLinecap="round" />
   </svg>
 );
 
@@ -101,8 +97,7 @@ const iconMap: Record<CreateMenuIcon, React.FC> = {
   dialogue: DialogueIcon,
   video: VideoIcon,
   clone: CloneIcon,
-  tiktok: TiktokIcon,
-  youtube: YoutubeIcon,
+  'video-download': VideoDownloadIcon,
   image: ImageIcon,
 };
 
@@ -131,13 +126,13 @@ export default function CreateSheet({ isOpen, onClose }: CreateSheetProps) {
     <>
       {/* 背景遮罩 */}
       <div
-        className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm"
+        className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm lg:absolute"
         onClick={onClose}
       />
 
       {/* 菜单内容 */}
       <div
-        className="fixed left-0 right-0 z-50 bg-gray-900 rounded-t-3xl animate-slide-up"
+        className="fixed left-0 right-0 z-50 bg-gray-900 rounded-t-3xl animate-slide-up lg:absolute"
         style={{
           bottom: 'calc(64px + var(--safe-area-inset-bottom, 0px))',
         }}

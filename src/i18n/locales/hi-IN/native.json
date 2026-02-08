@@ -73,15 +73,10 @@
           "shortName": "AI वीडियो",
           "description": "टेक्स्ट से वीडियो बनाएं"
         },
-        "tiktok": {
-          "title": "TikTok डाउनलोडर",
-          "shortName": "TikTok डाउनलोड",
-          "description": "बिना वॉटरमार्क TikTok वीडियो डाउनलोड करें"
-        },
-        "youtube": {
-          "title": "YouTube डाउनलोडर",
-          "shortName": "YouTube डाउनलोड",
-          "description": "YouTube वीडियो और ऑडियो डाउनलोड करें"
+        "videoDownloader": {
+          "title": "वीडियो डाउनलोडर",
+          "shortName": "वीडियो डाउनलोड",
+          "description": "TikTok और YouTube वीडियो डाउनलोड करें"
         }
       }
     },

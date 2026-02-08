@@ -73,15 +73,10 @@
           "shortName": "AI Video",
           "description": "Generate videos from text prompts"
         },
-        "tiktok": {
-          "title": "TikTok Downloader",
-          "shortName": "TikTok Downloader",
-          "description": "Download TikTok videos without watermark"
-        },
-        "youtube": {
-          "title": "YouTube Downloader",
-          "shortName": "YouTube Downloader",
-          "description": "Download YouTube videos and audio"
+        "videoDownloader": {
+          "title": "Video Downloader",
+          "shortName": "Video Download",
+          "description": "Download TikTok & YouTube videos"
         }
       }
     },

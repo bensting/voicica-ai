@@ -9,10 +9,10 @@ import { BottomNavProvider } from '@/contexts/BottomNavContext';
 import { initNotifications, registerNotificationClickListener } from '@/lib/notifications';
 
 // 不显示顶部导航的路径
-const hideNavbarPaths = ['/native/me', '/native/settings', '/native/create', '/native/video', '/native/voice/task', '/native/subscribe', '/native/payment'];
+const hideNavbarPaths = ['/native/me', '/native/settings', '/native/create', '/native/tools', '/native/video', '/native/voice/task', '/native/subscribe', '/native/payment'];
 
 // 不显示底部导航的路径
-const hideBottomNavPaths = ['/native/settings', '/native/create', '/native/video', '/native/voice/task', '/native/subscribe', '/native/payment'];
+const hideBottomNavPaths = ['/native/settings', '/native/create', '/native/tools', '/native/video', '/native/voice/task', '/native/subscribe', '/native/payment'];
 
 /**
  * Native App 专用布局

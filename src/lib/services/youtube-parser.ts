@@ -1,220 +1,149 @@
 /**
  * YouTube Video Parser Service (Server-side only)
  *
- * Uses youtubei.js (InnerTube API) with residential proxy to parse YouTube videos.
- * Replaces the old tools-api.voicica.ai backend dependency.
+ * Production (Vercel): calls internal Python API (yt-dlp)
+ * Development: calls yt-dlp directly via child_process
  */
 
-import Innertube from 'youtubei.js';
-import { ProxyAgent, fetch as undiciFetch } from 'undici';
 import type { ParseResponse, VideoFormat } from '@/actions/video-downloader';
-
-// Residential proxy URL from environment variable
-const PROXY_URL = process.env.YOUTUBE_PROXY_URL;
-
-/**
- * Extract video ID from various YouTube URL formats
- */
-function extractVideoId(url: string): string | null {
-  const patterns = [
-    /(?:youtube\.com\/watch\?.*v=)([\w-]{11})/,
-    /(?:youtube\.com\/shorts\/)([\w-]{11})/,
-    /(?:youtu\.be\/)([\w-]{11})/,
-    /(?:youtube\.com\/embed\/)([\w-]{11})/,
-    /(?:youtube\.com\/v\/)([\w-]{11})/,
-    /(?:m\.youtube\.com\/watch\?.*v=)([\w-]{11})/,
-  ];
-
-  for (const pattern of patterns) {
-    const match = url.match(pattern);
-    if (match) return match[1];
-  }
-  return null;
-}
-
-/**
- * Infer file extension from MIME type
- */
-function inferExtension(mimeType: string | undefined): string {
-  if (!mimeType) return 'mp4';
-  if (mimeType.includes('video/mp4')) return 'mp4';
-  if (mimeType.includes('video/webm')) return 'webm';
-  if (mimeType.includes('audio/mp4')) return 'm4a';
-  if (mimeType.includes('audio/webm')) return 'webm';
-  if (mimeType.includes('audio/opus')) return 'opus';
-  return 'mp4';
-}
-
-/**
- * Extract short codec name from MIME type
- * e.g. "video/mp4; codecs=\"avc1.640028\"" → "H264"
- */
-function extractCodec(mimeType: string | undefined): string {
-  if (!mimeType) return '';
-  const codecMatch = mimeType.match(/codecs="([^"]+)"/);
-  if (!codecMatch) return '';
-  const codec = codecMatch[1].toLowerCase();
-  if (codec.startsWith('avc1')) return 'H264';
-  if (codec.startsWith('vp9') || codec.startsWith('vp09')) return 'VP9';
-  if (codec.startsWith('av01')) return 'AV1';
-  if (codec.startsWith('mp4a')) return 'AAC';
-  if (codec.startsWith('opus')) return 'Opus';
-  return '';
-}
-
-/**
- * Generate a descriptive note for a format
- */
-function generateNote(hasVideo: boolean, hasAudio: boolean): string {
-  if (hasVideo && hasAudio) return 'video with audio';
-  if (hasVideo) return 'video only';
-  if (hasAudio) return 'audio only';
-  return '';
-}
-
-/**
- * Create a fetch function with optional proxy support
- */
-function createProxyFetch() {
-  if (!PROXY_URL) {
-    return undefined; // Use default fetch
-  }
-
-  const agent = new ProxyAgent(PROXY_URL);
-
-  // youtubei.js passes Request objects; undici doesn't handle them natively,
-  // so we extract url + init from the Request before forwarding.
-  return (input: RequestInfo | URL, init?: RequestInit) => {
-    let url: string | URL;
-    let mergedInit: RequestInit | undefined = init;
-
-    if (input instanceof Request) {
-      url = input.url;
-      mergedInit = {
-        method: input.method,
-        headers: Object.fromEntries(input.headers.entries()),
-        body: input.body,
-        ...init,
-      };
-    } else {
-      url = input;
-    }
-
-    return undiciFetch(url as Parameters<typeof undiciFetch>[0], {
-      ...mergedInit as Parameters<typeof undiciFetch>[1],
-      dispatcher: agent,
-    });
-  };
-}
 
 /**
  * Parse a YouTube video URL and return format information
  */
 export async function parseYouTubeVideo(url: string): Promise<ParseResponse> {
-  const videoId = extractVideoId(url);
-  if (!videoId) {
-    throw new Error('Invalid YouTube URL: could not extract video ID');
+  // In development, call yt-dlp directly (no Python API server needed)
+  if (process.env.NODE_ENV === 'development') {
+    return parseViaChildProcess(url);
   }
 
-  // Create Innertube client with optional proxy
-  const proxyFetch = createProxyFetch();
+  // In production (Vercel), call the Python serverless function
+  return parseViaApi(url);
+}
 
-  const createOptions: Parameters<typeof Innertube.create>[0] = {};
-  if (proxyFetch) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    createOptions.fetch = proxyFetch as any;
-  }
+/**
+ * Development: call yt-dlp directly via child_process
+ */
+async function parseViaChildProcess(url: string): Promise<ParseResponse> {
+  const { execSync } = await import('child_process');
 
-  const innertube = await Innertube.create(createOptions);
-
-  // Fetch from multiple clients in parallel:
-  // - WEB: video details (title, author, thumbnail) + format metadata
-  // - ANDROID: returns pre-signed streaming URLs (no decipher needed)
-  const [webInfo, androidInfo] = await Promise.all([
-    innertube.getBasicInfo(videoId, 'WEB'),
-    innertube.getBasicInfo(videoId, 'ANDROID'),
-  ]);
-
-  // Build a map of itag → download URL from ANDROID client (pre-signed, no decipher)
-  const androidUrls = new Map<number, string>();
-  const androidData = androidInfo.streaming_data;
-  if (androidData) {
-    for (const fmt of [...(androidData.formats || []), ...(androidData.adaptive_formats || [])]) {
-      try {
-        const dUrl = await fmt.decipher(innertube.session.player);
-        if (dUrl) androidUrls.set(fmt.itag, dUrl);
-      } catch {
-        // skip
-      }
-    }
-  }
-
-  // Use WEB streaming data for the full format list (better metadata)
-  const streamingData = webInfo.streaming_data;
-  if (!streamingData) {
-    throw new Error('No streaming data available for this video');
-  }
-
-  const formats: VideoFormat[] = [];
-
-  const allFormats = [
-    ...(streamingData.formats || []),
-    ...(streamingData.adaptive_formats || []),
+  const args = [
+    '-m', 'yt_dlp',
+    '--dump-json',
+    '--no-download',
+    '--no-warnings',
+    '--no-check-certificates',
+    url,
   ];
 
-  const seen = new Set<number>();
+  const stdout = execSync(`python ${args.map(a => `"${a}"`).join(' ')}`, {
+    encoding: 'utf-8',
+    timeout: 60000,
+  });
 
-  for (const fmt of allFormats) {
-    if (seen.has(fmt.itag)) continue;
-    seen.add(fmt.itag);
+  const info = JSON.parse(stdout);
+  return mapYtdlpInfo(info);
+}
 
-    const hasVideo = fmt.has_video;
-    const hasAudio = fmt.has_audio;
-    const codec = extractCodec(fmt.mime_type);
-    const ext = inferExtension(fmt.mime_type);
+/**
+ * Production: call Python API on Vercel
+ */
+async function parseViaApi(url: string): Promise<ParseResponse> {
+  const apiBase = process.env.NEXT_PUBLIC_APP_URL
+    || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000');
 
-    // Build quality label: "1080p H264" or "128kbps Opus"
-    let qualityLabel: string;
-    if (hasVideo) {
-      qualityLabel = fmt.quality_label || 'unknown';
-      if (codec) qualityLabel += ` ${codec}`;
+  const res = await fetch(`${apiBase}/api/parse_youtube`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-Internal-Secret': process.env.INTERNAL_API_SECRET || '',
+    },
+    body: JSON.stringify({ url }),
+  });
+
+  if (!res.ok) {
+    let errorMessage = 'Failed to parse video';
+    try {
+      const errorData = await res.json();
+      errorMessage = errorData.error || errorMessage;
+    } catch {
+      // ignore
+    }
+    throw new Error(errorMessage);
+  }
+
+  return res.json();
+}
+
+/**
+ * Map yt-dlp JSON output to our ParseResponse format
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function mapYtdlpInfo(info: any): ParseResponse {
+  const formats: VideoFormat[] = [];
+
+  for (const f of (info.formats || [])) {
+    const dlUrl = f.url;
+    if (!dlUrl) continue;
+
+    const hasVideo = (f.vcodec || 'none') !== 'none';
+    const hasAudio = (f.acodec || 'none') !== 'none';
+
+    let note: string;
+    if (hasVideo && hasAudio) {
+      note = 'video with audio';
+    } else if (hasVideo) {
+      note = 'video only';
     } else if (hasAudio) {
-      const bitrate = fmt.bitrate ? `${Math.round(fmt.bitrate / 1000)}kbps` : 'audio';
-      qualityLabel = codec ? `${bitrate} ${codec}` : bitrate;
+      note = 'audio only';
     } else {
-      qualityLabel = 'unknown';
+      continue;
     }
 
-    // Get download URL: prefer ANDROID pre-signed, then try WEB decipher
-    let downloadUrl: string | null = androidUrls.get(fmt.itag) || null;
-    if (!downloadUrl) {
-      try {
-        downloadUrl = await fmt.decipher(innertube.session.player);
-      } catch {
-        // skip
+    // Build quality label with codec info
+    let quality = f.format_note || f.resolution || 'unknown';
+    if (hasVideo) {
+      const codec = shortCodec(f.vcodec);
+      if (codec) quality = `${quality} ${codec}`;
+    } else if (hasAudio) {
+      const codec = shortCodec(f.acodec);
+      const abr = f.abr;
+      if (abr) {
+        quality = `${Math.round(abr)}kbps`;
+        if (codec) quality = `${quality} ${codec}`;
       }
     }
 
     formats.push({
-      format_id: String(fmt.itag),
-      quality: qualityLabel,
-      ext,
-      filesize: fmt.content_length ? Number(fmt.content_length) : null,
-      note: generateNote(hasVideo, hasAudio),
-      url: downloadUrl,
+      format_id: String(f.format_id || ''),
+      quality,
+      ext: f.ext || 'mp4',
+      filesize: f.filesize || f.filesize_approx || null,
+      note,
+      url: dlUrl,
     });
   }
 
-  // Extract video details from WEB client
-  const details = webInfo.basic_info;
-
   return {
     platform: 'youtube',
-    video_id: videoId,
-    title: details.title || 'Untitled',
-    author: details.author || null,
-    thumbnail_url: details.thumbnail?.[0]?.url || null,
-    duration_seconds: details.duration || null,
+    video_id: info.id || '',
+    title: info.title || 'Untitled',
+    author: info.uploader || info.channel || null,
+    thumbnail_url: info.thumbnail || null,
+    duration_seconds: info.duration || null,
     formats,
   };
+}
+
+/**
+ * Map codec string to short display name
+ */
+function shortCodec(codec: string | undefined): string {
+  if (!codec || codec === 'none') return '';
+  const c = codec.toLowerCase();
+  if (c.startsWith('avc1') || c.startsWith('h264')) return 'H264';
+  if (c.startsWith('vp9') || c.startsWith('vp09')) return 'VP9';
+  if (c.startsWith('av01') || c === 'av1') return 'AV1';
+  if (c.startsWith('mp4a') || c === 'aac') return 'AAC';
+  if (c.startsWith('opus')) return 'Opus';
+  return '';
 }

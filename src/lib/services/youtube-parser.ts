@@ -45,33 +45,42 @@ async function parseViaChildProcess(url: string): Promise<ParseResponse> {
 }
 
 /**
- * Production: call Python API on Vercel
+ * Production: call Python API on Vercel (with 1 retry on failure)
  */
 async function parseViaApi(url: string): Promise<ParseResponse> {
   const apiBase = process.env.NEXT_PUBLIC_APP_URL
     || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000');
 
-  const res = await fetch(`${apiBase}/api/parse_youtube`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'X-Internal-Secret': process.env.INTERNAL_API_SECRET || '',
-    },
-    body: JSON.stringify({ url }),
-  });
+  const doFetch = async (): Promise<ParseResponse> => {
+    const res = await fetch(`${apiBase}/api/parse_youtube`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Internal-Secret': process.env.INTERNAL_API_SECRET || '',
+      },
+      body: JSON.stringify({ url }),
+    });
 
-  if (!res.ok) {
-    let errorMessage = 'Failed to parse video';
-    try {
-      const errorData = await res.json();
-      errorMessage = errorData.error || errorMessage;
-    } catch {
-      // ignore
+    if (!res.ok) {
+      let errorMessage = 'Failed to parse video';
+      try {
+        const errorData = await res.json();
+        errorMessage = errorData.error || errorMessage;
+      } catch {
+        // ignore
+      }
+      throw new Error(errorMessage);
     }
-    throw new Error(errorMessage);
-  }
 
-  return res.json();
+    return res.json();
+  };
+
+  try {
+    return await doFetch();
+  } catch (firstError) {
+    console.warn('[parseViaApi] First attempt failed, retrying...', firstError);
+    return await doFetch();
+  }
 }
 
 /**

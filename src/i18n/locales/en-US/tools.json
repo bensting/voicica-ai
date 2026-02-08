@@ -5,6 +5,7 @@
     "urlLabel": "Video URL",
     "urlPlaceholder": "Paste YouTube video link...",
     "parseButton": "Parse",
+    "parseVideoButton": "Parse Video",
     "parsing": "Parsing",
     "doNotClose": "Please do not close this page",
     "downloadButton": "Download",

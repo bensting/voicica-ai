@@ -5,6 +5,7 @@
     "urlLabel": "動画URL",
     "urlPlaceholder": "YouTubeの動画リンクを貼り付け...",
     "parseButton": "解析",
+    "parseVideoButton": "動画を解析",
     "parsing": "解析中",
     "doNotClose": "このページを閉じないでください",
     "downloadButton": "ダウンロード",

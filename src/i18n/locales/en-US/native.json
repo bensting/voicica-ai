@@ -76,7 +76,7 @@
         "videoDownloader": {
           "title": "Video Downloader",
           "shortName": "Video Download",
-          "description": "Download TikTok & YouTube videos"
+          "description": "Download YouTube videos"
         }
       }
     },

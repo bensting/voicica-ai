@@ -76,7 +76,7 @@
         "videoDownloader": {
           "title": "動画ダウンローダー",
           "shortName": "動画ダウンロード",
-          "description": "TikTokとYouTubeの動画をダウンロード"
+          "description": "YouTubeの動画をダウンロード"
         }
       }
     },

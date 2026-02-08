@@ -22,13 +22,13 @@ const ERROR_CODE_TO_KEY: Record<VideoParseErrorCode, string> = {
  * @param errorCode 错误码
  * @param errorData 错误相关数据（如积分不足时的 required/current）
  * @param t 翻译函数
- * @param prefix 翻译 key 前缀（如 'youtubeDownloader' 或 'tiktokDownloader'）
+ * @param prefix 翻译 key 前缀（如 'youtubeDownloader' 或 'videoDownloader'）
  */
 export function getVideoParseErrorMessage(
   errorCode: VideoParseErrorCode,
   errorData: Record<string, unknown> | undefined,
   t: (key: string, params?: Record<string, unknown>) => string,
-  prefix: 'youtubeDownloader' | 'tiktokDownloader' | 'videoDownloader'
+  prefix: 'youtubeDownloader' | 'videoDownloader'
 ): string {
   const errorKey = ERROR_CODE_TO_KEY[errorCode] || 'unknownError';
   const translationKey = `${prefix}.errors.${errorKey}`;

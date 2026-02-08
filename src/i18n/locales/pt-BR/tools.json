@@ -1,9 +1,9 @@
 {
   "videoDownloader": {
     "title": "Baixar Vídeos",
-    "subtitle": "Baixe vídeos do TikTok e YouTube grátis",
+    "subtitle": "Baixe vídeos do YouTube grátis",
     "urlLabel": "URL do vídeo",
-    "urlPlaceholder": "Cole o link do TikTok ou YouTube...",
+    "urlPlaceholder": "Cole o link do YouTube...",
     "parseButton": "Analisar",
     "parsing": "Analisando",
     "doNotClose": "Por favor, não feche esta página",
@@ -13,7 +13,7 @@
     "untitled": "Vídeo sem título",
     "detected": "detectado",
     "emptyTitle": "Baixar vídeos",
-    "emptyDescription": "Cole a URL de um vídeo do TikTok ou YouTube acima para começar a baixar.",
+    "emptyDescription": "Cole a URL de um vídeo do YouTube acima para começar a baixar.",
     "tabs": {
       "videoWithAudio": "Vídeo",
       "videoOnly": "Apenas vídeo",
@@ -21,32 +21,10 @@
     },
     "errors": {
       "emptyUrl": "Insira a URL do vídeo",
-      "invalidUrl": "URL não suportada. Insira um link válido do TikTok ou YouTube.",
+      "invalidUrl": "URL não suportada. Insira um link válido do YouTube.",
       "parseFailed": "Falha ao analisar o vídeo. Verifique a URL e tente novamente.",
       "insufficientCredits": "Créditos insuficientes. Necessários: {{required}}, Atuais: {{current}}",
       "unknownError": "Ocorreu um erro inesperado. Tente novamente mais tarde."
-    }
-  },
-  "tiktokDownloader": {
-    "title": "Baixador de vídeos do TikTok",
-    "subtitle": "Baixe vídeos do TikTok sem marca d'água grátis",
-    "urlLabel": "URL do vídeo do TikTok",
-    "urlPlaceholder": "Cole o link do vídeo do TikTok aqui...",
-    "parseButton": "Analisar",
-    "parsing": "Analisando",
-    "doNotClose": "Por favor, não feche esta página",
-    "downloadButton": "Baixar vídeo",
-    "downloading": "Baixando...",
-    "selectQuality": "Selecionar qualidade",
-    "untitled": "Vídeo sem título",
-    "emptyTitle": "Baixar vídeos do TikTok",
-    "emptyDescription": "Cole uma URL de vídeo do TikTok acima para começar a baixar. Suporta todos os formatos de vídeo do TikTok.",
-    "errors": {
-      "emptyUrl": "Por favor, insira uma URL de vídeo do TikTok",
-      "invalidUrl": "URL do TikTok inválida. Por favor, insira um link de vídeo do TikTok válido.",
-      "parseFailed": "Falha ao analisar o vídeo. Por favor, verifique a URL e tente novamente.",
-      "insufficientCredits": "Créditos insuficientes. Necessários: {{required}}, Atuais: {{current}}",
-      "unknownError": "Ocorreu um erro inesperado. Por favor, tente novamente mais tarde."
     }
   },
   "youtubeDownloader": {

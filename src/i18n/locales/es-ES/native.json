@@ -73,15 +73,10 @@
           "shortName": "IA Video",
           "description": "Genera videos desde texto"
         },
-        "tiktok": {
-          "title": "Descargar TikTok",
-          "shortName": "Descargar TikTok",
-          "description": "Descarga videos de TikTok sin marca de agua"
-        },
-        "youtube": {
-          "title": "Descargar YouTube",
-          "shortName": "Descargar YouTube",
-          "description": "Descarga videos y audio de YouTube"
+        "videoDownloader": {
+          "title": "Descargador de Vídeos",
+          "shortName": "Descargar Vídeo",
+          "description": "Descarga vídeos de TikTok y YouTube"
         }
       }
     },

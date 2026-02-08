@@ -73,15 +73,10 @@
           "shortName": "AI 影片",
           "description": "根據文字提示生成影片"
         },
-        "tiktok": {
-          "title": "TikTok 下載器",
-          "shortName": "TikTok 下載",
-          "description": "下載無浮水印的 TikTok 影片"
-        },
-        "youtube": {
-          "title": "YouTube 下載器",
-          "shortName": "YouTube 下載",
-          "description": "下載 YouTube 影片和音訊"
+        "videoDownloader": {
+          "title": "影片下載",
+          "shortName": "影片下載",
+          "description": "下載 TikTok 和 YouTube 影片"
         }
       }
     },

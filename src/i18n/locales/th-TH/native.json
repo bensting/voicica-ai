@@ -73,15 +73,10 @@
           "shortName": "AI วิดีโอ",
           "description": "สร้างวิดีโอจากข้อความ"
         },
-        "tiktok": {
-          "title": "ดาวน์โหลด TikTok",
-          "shortName": "ดาวน์โหลด TikTok",
-          "description": "ดาวน์โหลดวิดีโอ TikTok ไม่มีลายน้ำ"
-        },
-        "youtube": {
-          "title": "ดาวน์โหลด YouTube",
-          "shortName": "ดาวน์โหลด YouTube",
-          "description": "ดาวน์โหลดวิดีโอและเสียง YouTube"
+        "videoDownloader": {
+          "title": "ดาวน์โหลดวิดีโอ",
+          "shortName": "ดาวน์โหลดวิดีโอ",
+          "description": "ดาวน์โหลดวิดีโอ TikTok และ YouTube"
         }
       }
     },

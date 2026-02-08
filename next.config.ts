@@ -80,6 +80,22 @@ const nextConfig: NextConfig = {
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
   },
 
+  // 旧页面重定向到合并后的 Video Downloader
+  async redirects() {
+    return [
+      {
+        source: '/studio/tools/tiktok-downloader',
+        destination: '/native/tools/video-downloader',
+        permanent: true,
+      },
+      {
+        source: '/studio/tools/youtube-downloader',
+        destination: '/native/tools/video-downloader',
+        permanent: true,
+      },
+    ];
+  },
+
   // 修复 Firebase Auth 的 COOP 警告
   async headers() {
     return [

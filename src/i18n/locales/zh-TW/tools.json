@@ -1,4 +1,32 @@
 {
+  "videoDownloader": {
+    "title": "影片下載",
+    "subtitle": "免費下載 TikTok 和 YouTube 影片",
+    "urlLabel": "影片連結",
+    "urlPlaceholder": "貼上 TikTok 或 YouTube 影片連結...",
+    "parseButton": "解析",
+    "parsing": "正在解析中",
+    "doNotClose": "請勿關閉頁面",
+    "downloadButton": "下載",
+    "downloading": "下載中...",
+    "selectQuality": "選擇畫質",
+    "untitled": "無標題影片",
+    "detected": "已識別",
+    "emptyTitle": "下載影片",
+    "emptyDescription": "在上方貼上 TikTok 或 YouTube 影片連結即可開始下載。",
+    "tabs": {
+      "videoWithAudio": "影片",
+      "videoOnly": "僅影片",
+      "audioOnly": "音訊"
+    },
+    "errors": {
+      "emptyUrl": "請輸入影片連結",
+      "invalidUrl": "不支援的連結，請輸入正確的 TikTok 或 YouTube 影片連結。",
+      "parseFailed": "解析影片失敗，請檢查連結後重試。",
+      "insufficientCredits": "積分不足，需要: {{required}}，目前: {{current}}",
+      "unknownError": "發生未知錯誤，請稍後重試。"
+    }
+  },
   "tiktokDownloader": {
     "title": "TikTok 影片下載",
     "subtitle": "免費下載無浮水印 TikTok 影片",

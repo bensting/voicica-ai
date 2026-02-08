@@ -2,8 +2,6 @@
  * Navigation configuration for production environment
  */
 
-import TikTokIcon from '@/components/icons/TikTokIcon';
-import YouTubeIcon from '@/components/icons/YouTubeIcon';
 import TTSIcon from '@/components/icons/TTSIcon';
 import type { NavigationConfig } from './types';
 
@@ -35,16 +33,10 @@ export const navigationConfig: NavigationConfig = {
       insertAfter: 'studio', // Insert after Studio dropdown
       items: [
         {
-          href: '/studio/tools/tiktok-downloader',
-          labelKey: 'nav.tiktokDownloader',
-          descriptionKey: 'nav.tiktokDownloaderDesc',
-          icon: TikTokIcon,
-        },
-        {
-          href: '/studio/tools/youtube-downloader',
-          labelKey: 'nav.youtubeDownloader',
-          descriptionKey: 'nav.youtubeDownloaderDesc',
-          icon: YouTubeIcon,
+          href: '/native/tools/video-downloader',
+          labelKey: 'nav.videoDownloader',
+          descriptionKey: 'nav.videoDownloaderDesc',
+          icon: TTSIcon,
         },
       ],
     },

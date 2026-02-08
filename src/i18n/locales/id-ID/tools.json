@@ -1,4 +1,32 @@
 {
+  "videoDownloader": {
+    "title": "Pengunduh Video",
+    "subtitle": "Unduh video TikTok & YouTube gratis",
+    "urlLabel": "URL Video",
+    "urlPlaceholder": "Tempel tautan video TikTok atau YouTube...",
+    "parseButton": "Parse",
+    "parsing": "Sedang memproses",
+    "doNotClose": "Jangan tutup halaman ini",
+    "downloadButton": "Unduh",
+    "downloading": "Mengunduh...",
+    "selectQuality": "Pilih Kualitas",
+    "untitled": "Video Tanpa Judul",
+    "detected": "terdeteksi",
+    "emptyTitle": "Unduh Video",
+    "emptyDescription": "Tempel URL video TikTok atau YouTube di atas untuk mulai mengunduh.",
+    "tabs": {
+      "videoWithAudio": "Video",
+      "videoOnly": "Video Saja",
+      "audioOnly": "Audio"
+    },
+    "errors": {
+      "emptyUrl": "Masukkan URL video",
+      "invalidUrl": "URL tidak didukung. Masukkan tautan video TikTok atau YouTube yang valid.",
+      "parseFailed": "Gagal memproses video. Periksa URL dan coba lagi.",
+      "insufficientCredits": "Kredit tidak cukup. Dibutuhkan: {{required}}, Saat ini: {{current}}",
+      "unknownError": "Terjadi kesalahan. Silakan coba lagi nanti."
+    }
+  },
   "tiktokDownloader": {
     "title": "Pengunduh Video TikTok",
     "subtitle": "Unduh video TikTok tanpa watermark gratis",

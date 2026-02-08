@@ -73,15 +73,10 @@
           "shortName": "IA Vídeo",
           "description": "Gere vídeos a partir de texto"
         },
-        "tiktok": {
-          "title": "Baixar TikTok",
-          "shortName": "Baixar TikTok",
-          "description": "Baixe vídeos do TikTok sem marca d'água"
-        },
-        "youtube": {
-          "title": "Baixar YouTube",
-          "shortName": "Baixar YouTube",
-          "description": "Baixe vídeos e áudio do YouTube"
+        "videoDownloader": {
+          "title": "Baixar Vídeos",
+          "shortName": "Baixar Vídeo",
+          "description": "Baixe vídeos do TikTok e YouTube"
         }
       }
     },

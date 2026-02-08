@@ -1,4 +1,32 @@
 {
+  "videoDownloader": {
+    "title": "Tải Video",
+    "subtitle": "Tải video TikTok & YouTube miễn phí",
+    "urlLabel": "URL Video",
+    "urlPlaceholder": "Dán liên kết video TikTok hoặc YouTube...",
+    "parseButton": "Phân tích",
+    "parsing": "Đang phân tích",
+    "doNotClose": "Vui lòng không đóng trang này",
+    "downloadButton": "Tải xuống",
+    "downloading": "Đang tải...",
+    "selectQuality": "Chọn chất lượng",
+    "untitled": "Video không có tiêu đề",
+    "detected": "đã nhận diện",
+    "emptyTitle": "Tải video",
+    "emptyDescription": "Dán URL video TikTok hoặc YouTube ở trên để bắt đầu tải.",
+    "tabs": {
+      "videoWithAudio": "Video",
+      "videoOnly": "Chỉ video",
+      "audioOnly": "Chỉ âm thanh"
+    },
+    "errors": {
+      "emptyUrl": "Vui lòng nhập URL video",
+      "invalidUrl": "URL không được hỗ trợ. Vui lòng nhập liên kết video TikTok hoặc YouTube hợp lệ.",
+      "parseFailed": "Phân tích video thất bại. Vui lòng kiểm tra URL và thử lại.",
+      "insufficientCredits": "Không đủ tín dụng. Cần: {{required}}, Hiện tại: {{current}}",
+      "unknownError": "Đã xảy ra lỗi. Vui lòng thử lại sau."
+    }
+  },
   "tiktokDownloader": {
     "title": "Tải video TikTok",
     "subtitle": "Tải video TikTok không watermark miễn phí",

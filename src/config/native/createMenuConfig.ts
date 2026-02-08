@@ -7,7 +7,7 @@
 export type CreateMenuCategory = 'voiceover' | 'music' | 'image' | 'video' | 'tools';
 
 /** 图标类型 */
-export type CreateMenuIcon = 'music' | 'cover' | 'voice' | 'dialogue' | 'video' | 'clone' | 'tiktok' | 'youtube' | 'image';
+export type CreateMenuIcon = 'music' | 'cover' | 'voice' | 'dialogue' | 'video' | 'clone' | 'video-download' | 'image';
 
 /** 类别配置 */
 export interface CategoryConfig {
@@ -133,23 +133,13 @@ export const createMenuItems: CreateMenuItem[] = [
 
   // ========== AI Other Tools 类别 ==========
   {
-    id: 'tiktok-downloader',
-    icon: 'tiktok',
+    id: 'video-downloader',
+    icon: 'video-download',
     category: 'tools',
-    title: 'TikTok Downloader',
-    shortName: 'TikTok Downloader',
-    description: 'Download TikTok videos without watermark',
-    href: '/native/tools/tiktok',
-    enabled: { development: true, production: false },
-  },
-  {
-    id: 'youtube-downloader',
-    icon: 'youtube',
-    category: 'tools',
-    title: 'YouTube Downloader',
-    shortName: 'YouTube Downloader',
-    description: 'Download YouTube videos and audio',
-    href: '/native/tools/youtube',
+    title: 'Video Downloader',
+    shortName: 'Video Downloader',
+    description: 'Download TikTok & YouTube videos',
+    href: '/native/tools/video-downloader',
     enabled: { development: true, production: false },
   },
 ];

@@ -73,15 +73,10 @@
           "shortName": "فيديو AI",
           "description": "أنشئ فيديو من النص"
         },
-        "tiktok": {
-          "title": "تحميل TikTok",
-          "shortName": "تحميل TikTok",
-          "description": "تحميل فيديوهات TikTok بدون علامة مائية"
-        },
-        "youtube": {
-          "title": "تحميل YouTube",
-          "shortName": "تحميل YouTube",
-          "description": "تحميل فيديوهات وصوتيات YouTube"
+        "videoDownloader": {
+          "title": "تحميل الفيديو",
+          "shortName": "تحميل فيديو",
+          "description": "تحميل فيديوهات تيك توك ويوتيوب"
         }
       }
     },

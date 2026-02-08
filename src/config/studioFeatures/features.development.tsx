@@ -4,7 +4,7 @@
  * 开发环境显示所有功能
  */
 
-import { Mic, Music, Video, FileText, Wand2, Download, Zap } from 'lucide-react';
+import { Mic, Music, FileText, Wand2, Download, Zap } from 'lucide-react';
 import type { StudioFeatureItem } from './types';
 
 export const studioFeatureItems: StudioFeatureItem[] = [
@@ -49,19 +49,11 @@ export const studioFeatureItems: StudioFeatureItem[] = [
     enabled: true,
   },
   {
-    id: 'tiktok',
-    name: 'TikTok Download',
+    id: 'video-downloader',
+    name: 'Video Download',
     icon: <Download className="w-6 h-6" />,
-    href: '/studio/tools/tiktok-downloader',
-    gradient: 'from-gray-700 to-gray-800',
-    enabled: true,
-  },
-  {
-    id: 'youtube',
-    name: 'YouTube Download',
-    icon: <Video className="w-6 h-6" />,
-    href: '/studio/tools/youtube-downloader',
-    gradient: 'from-red-500 to-red-600',
+    href: '/native/tools/video-downloader',
+    gradient: 'from-purple-500 to-blue-500',
     enabled: true,
   },
 ];

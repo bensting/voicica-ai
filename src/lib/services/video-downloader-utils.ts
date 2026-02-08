@@ -28,7 +28,7 @@ export function getVideoParseErrorMessage(
   errorCode: VideoParseErrorCode,
   errorData: Record<string, unknown> | undefined,
   t: (key: string, params?: Record<string, unknown>) => string,
-  prefix: 'youtubeDownloader' | 'tiktokDownloader'
+  prefix: 'youtubeDownloader' | 'tiktokDownloader' | 'videoDownloader'
 ): string {
   const errorKey = ERROR_CODE_TO_KEY[errorCode] || 'unknownError';
   const translationKey = `${prefix}.errors.${errorKey}`;

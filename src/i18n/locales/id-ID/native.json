@@ -73,15 +73,10 @@
           "shortName": "AI Video",
           "description": "Buat video dari teks"
         },
-        "tiktok": {
-          "title": "Unduh TikTok",
-          "shortName": "Unduh TikTok",
-          "description": "Unduh video TikTok tanpa watermark"
-        },
-        "youtube": {
-          "title": "Unduh YouTube",
-          "shortName": "Unduh YouTube",
-          "description": "Unduh video dan audio YouTube"
+        "videoDownloader": {
+          "title": "Pengunduh Video",
+          "shortName": "Unduh Video",
+          "description": "Unduh video TikTok & YouTube"
         }
       }
     },

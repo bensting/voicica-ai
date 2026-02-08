@@ -5,8 +5,7 @@
  */
 
 import type { StudioMenuItemConfig } from './types';
-import TikTokIcon from '@/components/icons/TikTokIcon';
-import YouTubeIcon from '@/components/icons/YouTubeIcon';
+
 
 export const studioMenuItems: StudioMenuItemConfig[] = [
   // 主要功能
@@ -102,20 +101,18 @@ export const studioMenuItems: StudioMenuItemConfig[] = [
 
   // Tools
   {
-    id: 'tiktok-downloader',
-    labelKey: 'studio.menu.tiktokDownloader',
-    href: '/studio/tools/tiktok-downloader',
+    id: 'video-downloader',
+    labelKey: 'studio.menu.videoDownloader',
+    href: '/native/tools/video-downloader',
     category: 'tools',
     enabled: true,
-    icon: <TikTokIcon className="w-5 h-5" />,
-  },
-  {
-    id: 'youtube-downloader',
-    labelKey: 'studio.menu.youtubeDownloader',
-    href: '/studio/tools/youtube-downloader',
-    category: 'tools',
-    enabled: true,
-    icon: <YouTubeIcon className="w-5 h-5" />,
+    icon: (
+      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="1.5">
+        <rect x="2" y="3" width="20" height="14" rx="2" />
+        <polygon points="10,6 16,10 10,14" fill="currentColor" stroke="none" />
+        <path d="M12 17v4m-3 0h6" strokeLinecap="round" />
+      </svg>
+    ),
   },
 
   // Music AI

@@ -99,7 +99,12 @@ export default function VideoDownloaderPage() {
     setAdWatched(false);
 
     try {
-      const result = await parseVideoUrl(url);
+      // 60s 客户端超时，防止服务端卡死时前端无限等待
+      const timeoutPromise = new Promise<never>((_, reject) =>
+        setTimeout(() => reject(new Error('TIMEOUT')), 60000)
+      );
+      const result = await Promise.race([parseVideoUrl(url), timeoutPromise]);
+
       if (!result.success || !result.data) {
         const errorCode = result.errorCode || 'UNKNOWN_ERROR';
         setGeneratingStatus('error');
@@ -113,9 +118,13 @@ export default function VideoDownloaderPage() {
       // 关闭 GeneratingModal，打开 DetailModal
       setIsGeneratingModalOpen(false);
       setIsDetailModalOpen(true);
-    } catch {
+    } catch (err) {
       setGeneratingStatus('error');
-      setGeneratingError(t('videoDownloader.errors.unknownError'));
+      setGeneratingError(
+        err instanceof Error && err.message === 'TIMEOUT'
+          ? t('videoDownloader.errors.parseFailed')
+          : t('videoDownloader.errors.unknownError')
+      );
     }
   }, [url, t, refreshCredits, user, credits, creditCost]);
 

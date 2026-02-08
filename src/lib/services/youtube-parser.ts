@@ -8,16 +8,42 @@
 import type { ParseResponse, VideoFormat } from '@/actions/video-downloader';
 
 /**
+ * Clean YouTube URL: strip playlist/radio params, keep only the video
+ */
+function cleanYouTubeUrl(url: string): string {
+  try {
+    const u = new URL(url);
+    // For standard watch URLs, keep only 'v' param
+    if (u.pathname === '/watch') {
+      const videoId = u.searchParams.get('v');
+      if (videoId) {
+        return `https://www.youtube.com/watch?v=${videoId}`;
+      }
+    }
+    // For youtu.be, shorts, embed — strip query params
+    u.searchParams.delete('list');
+    u.searchParams.delete('start_radio');
+    u.searchParams.delete('index');
+    u.searchParams.delete('si');
+    return u.toString();
+  } catch {
+    return url;
+  }
+}
+
+/**
  * Parse a YouTube video URL and return format information
  */
 export async function parseYouTubeVideo(url: string): Promise<ParseResponse> {
+  const cleanUrl = cleanYouTubeUrl(url);
+
   // In development, call yt-dlp directly (no Python API server needed)
   if (process.env.NODE_ENV === 'development') {
-    return parseViaChildProcess(url);
+    return parseViaChildProcess(cleanUrl);
   }
 
   // In production (Vercel), call the Python serverless function
-  return parseViaApi(url);
+  return parseViaApi(cleanUrl);
 }
 
 /**
@@ -32,6 +58,7 @@ async function parseViaChildProcess(url: string): Promise<ParseResponse> {
     '--no-download',
     '--no-warnings',
     '--no-check-certificates',
+    '--no-playlist',
     url,
   ];
 

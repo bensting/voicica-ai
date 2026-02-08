@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import type { ParseResponse, VideoFormat } from '@/actions/video-downloader';
 import {
   getGroupedFormats,
@@ -12,8 +12,7 @@ import {
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useBottomNav } from '@/contexts/BottomNavContext';
 import DetailModalHeader from './DetailModalHeader';
-import GradientButton from '@/components/native/common/GradientButton';
-import { Download } from 'lucide-react';
+import DetailActionBar from './DetailActionBar';
 
 interface VideoDownloaderDetailModalProps {
   videoInfo: ParseResponse;
@@ -31,7 +30,6 @@ export default function VideoDownloaderDetailModal({
 
   const [selectedFormat, setSelectedFormat] = useState<VideoFormat | null>(null);
   const [activeTab, setActiveTab] = useState<FormatType>('video_with_audio');
-  const [downloading, setDownloading] = useState(false);
 
   // Hide bottom nav
   useEffect(() => {
@@ -78,23 +76,11 @@ export default function VideoDownloaderDetailModal({
     }
   }, [groupedFormats]);
 
-  const handleDownload = useCallback(() => {
-    if (!selectedFormat?.url || downloading) return;
-    setDownloading(true);
-
-    const ext = getFormatExtension(selectedFormat);
-    const filename = `${videoInfo.title || videoInfo.video_id}.${ext}`;
-    const a = document.createElement('a');
-    a.href = selectedFormat.url;
-    a.download = filename;
-    a.target = '_blank';
-    a.rel = 'noopener noreferrer';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-
-    setTimeout(() => setDownloading(false), 2000);
-  }, [videoInfo, selectedFormat, downloading]);
+  // 下载文件名
+  const downloadFileName = useMemo(() => {
+    const ext = selectedFormat ? getFormatExtension(selectedFormat) : 'mp4';
+    return `${videoInfo.title || videoInfo.video_id}.${ext}`;
+  }, [videoInfo, selectedFormat]);
 
   return (
     <div className="fixed inset-0 z-50 bg-[#0a0a1a] flex flex-col">
@@ -162,8 +148,8 @@ export default function VideoDownloaderDetailModal({
           </div>
         )}
 
-        {/* Format pills */}
-        <div className="flex flex-wrap gap-2">
+        {/* Format pills - 3 columns */}
+        <div className="grid grid-cols-3 gap-2">
           {currentFormats.map((format, index) => {
             const isSelected = selectedFormat?.format_id === format.format_id;
             const size = formatFileSize(format.filesize);
@@ -172,17 +158,14 @@ export default function VideoDownloaderDetailModal({
                 key={`${format.format_id}-${index}`}
                 onClick={() => setSelectedFormat(format)}
                 disabled={!format.url}
-                className={`flex items-center gap-1.5 px-3 py-2 rounded-full text-xs font-medium transition-all ${
+                className={`flex flex-col items-center justify-center gap-0.5 px-2 py-2.5 rounded-xl text-xs font-medium transition-all ${
                   isSelected
                     ? 'bg-gradient-to-r from-purple-600 to-blue-500 text-white shadow-lg shadow-purple-500/25'
                     : 'bg-white/5 text-gray-300 border border-white/10 hover:border-purple-500/30'
                 } ${!format.url ? 'opacity-40 cursor-not-allowed' : ''}`}
               >
-                <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3" />
-                </svg>
-                <span>{format.quality || format.format_id}</span>
-                {size && <span className={isSelected ? 'text-white/70' : 'text-gray-500'}>({size})</span>}
+                <span className="truncate w-full text-center">{format.quality || format.format_id}</span>
+                {size && <span className={`text-[10px] ${isSelected ? 'text-white/70' : 'text-gray-500'}`}>{size}</span>}
               </button>
             );
           })}
@@ -194,25 +177,26 @@ export default function VideoDownloaderDetailModal({
         className="fixed bottom-0 left-0 right-0 px-4 pt-3 bg-gradient-to-t from-[#0a0a1a] via-[#0a0a1a] to-transparent"
         style={{ paddingBottom: 'calc(var(--safe-area-inset-bottom, 0px) + 12px)' }}
       >
-        <div className="flex gap-3">
+        <div className="flex gap-2.5">
           <button
             onClick={() => {
               onClose();
               onSearchAnother();
             }}
-            className="flex-1 py-3 bg-gray-700/50 text-white rounded-xl text-sm font-medium hover:bg-gray-600/50 transition-colors"
+            className="flex-[1] flex items-center justify-center gap-1.5 py-2 bg-gray-800/80 border border-gray-700 rounded-lg text-white text-sm font-medium hover:bg-gray-700 transition-all"
           >
             {t('videoDownloader.searchAnother')}
           </button>
           <div className="flex-[2]">
-            <GradientButton
-              onClick={handleDownload}
-              disabled={!selectedFormat?.url || downloading}
-              icon={Download}
-              className="py-3 rounded-xl"
-            >
-              {downloading ? t('videoDownloader.downloading') : t('videoDownloader.downloadButton')}
-            </GradientButton>
+            <DetailActionBar
+              showRecreate={false}
+              showDownload={true}
+              fileUrl={selectedFormat?.url || undefined}
+              fileName={downloadFileName}
+              fileType="video"
+              downloadText={t('videoDownloader.downloadButton')}
+              showInterstitialOnDownload={true}
+            />
           </div>
         </div>
       </div>

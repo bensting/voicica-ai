@@ -16,7 +16,7 @@ export default function NewHero() {
     if (isAndroid) {
       window.location.href = playStoreUrl;
     } else {
-      window.location.href = '/studio/tts';
+      window.location.href = '/native';
     }
   };
 

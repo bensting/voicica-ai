@@ -5,6 +5,7 @@
     "urlLabel": "视频链接",
     "urlPlaceholder": "粘贴 YouTube 视频链接...",
     "parseButton": "解析",
+    "parseVideoButton": "解析视频",
     "parsing": "正在解析中",
     "doNotClose": "请勿关闭页面",
     "downloadButton": "下载",

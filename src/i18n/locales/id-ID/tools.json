@@ -5,6 +5,7 @@
     "urlLabel": "URL Video",
     "urlPlaceholder": "Tempel tautan video YouTube...",
     "parseButton": "Parse",
+    "parseVideoButton": "Analisis video",
     "parsing": "Sedang memproses",
     "doNotClose": "Jangan tutup halaman ini",
     "downloadButton": "Unduh",

@@ -22,6 +22,9 @@ import VideoDownloaderDetailModal from '@/components/native/me/VideoDownloaderDe
 import LoginModal from '@/components/native/LoginModal';
 import InsufficientCreditsModal from '@/components/native/common/InsufficientCreditsModal';
 import NativeDailyTasksModal from '@/components/native/NativeDailyTasksModal';
+import CreditsInfoBar from '@/components/native/common/CreditsInfoBar';
+import GradientButton from '@/components/native/common/GradientButton';
+import CreditsIcon from '@/components/native/common/CreditsIcon';
 
 /**
  * Video Downloader 页面 (Native) - YouTube only
@@ -147,7 +150,10 @@ export default function VideoDownloaderPage() {
     <div className="flex flex-col min-h-screen">
       <CreatePageHeader title={t('videoDownloader.title')} showCreateSheet={true} />
 
-      <div className="flex-1 overflow-y-auto px-4 pt-4 pb-8">
+      <div
+        className="flex-1 overflow-y-auto px-4 pt-4"
+        style={{ paddingBottom: 'calc(100px + var(--safe-area-inset-bottom, 0px))' }}
+      >
         <div className="flex flex-col gap-4">
 
           {/* ====== 搜索栏 (Pill Shape) ====== */}
@@ -168,15 +174,6 @@ export default function VideoDownloaderPage() {
                   </svg>
                 </button>
               )}
-              <button
-                onClick={handleParse}
-                disabled={isGeneratingModalOpen || !url.trim()}
-                className="m-1.5 w-10 h-10 flex-shrink-0 rounded-full bg-gradient-to-r from-purple-600 to-blue-500 flex items-center justify-center text-white disabled:opacity-40 transition-opacity"
-              >
-                <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" />
-                </svg>
-              </button>
             </div>
 
             {/* YouTube 标识 */}
@@ -186,13 +183,6 @@ export default function VideoDownloaderPage() {
               </p>
             )}
           </div>
-
-          {/* ====== 积分提示 ====== */}
-          <p className="text-xs text-gray-600 text-center">
-            {creditCost > 0
-              ? `${creditCost} credits / ${t('videoDownloader.parseButton').toLowerCase()}`
-              : 'Free'}
-          </p>
 
           {/* ====== 页面内错误提示（URL 验证错误） ====== */}
           {error && (
@@ -219,6 +209,27 @@ export default function VideoDownloaderPage() {
           )}
 
         </div>
+      </div>
+
+      {/* Fixed Bottom Section */}
+      <div
+        className="fixed bottom-0 left-0 right-0 z-30 px-4 pt-3 pb-3 bg-[#0a0a1a]"
+        style={{ paddingBottom: 'calc(var(--safe-area-inset-bottom, 0px) + 12px)' }}
+      >
+        <CreditsInfoBar
+          credits={credits}
+          creditRules={[{ name: t('videoDownloader.parseVideoButton'), credits: 1 }]}
+          className="mb-3"
+        />
+
+        <GradientButton
+          onClick={() => void handleParse()}
+          disabled={isGeneratingModalOpen || !url.trim()}
+        >
+          <span>{t('videoDownloader.parseVideoButton')}</span>
+          <CreditsIcon className="w-3.5 h-3.5" />
+          <span>1</span>
+        </GradientButton>
       </div>
 
       {/* ====== Modals ====== */}

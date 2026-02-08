@@ -5,6 +5,7 @@
     "urlLabel": "影片連結",
     "urlPlaceholder": "貼上 YouTube 影片連結...",
     "parseButton": "解析",
+    "parseVideoButton": "解析影片",
     "parsing": "正在解析中",
     "doNotClose": "請勿關閉頁面",
     "downloadButton": "下載",

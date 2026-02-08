@@ -5,6 +5,7 @@
     "urlLabel": "वीडियो URL",
     "urlPlaceholder": "YouTube वीडियो लिंक पेस्ट करें...",
     "parseButton": "पार्स करें",
+    "parseVideoButton": "वीडियो पार्स करें",
     "parsing": "पार्स हो रहा है",
     "doNotClose": "कृपया इस पेज को बंद न करें",
     "downloadButton": "डाउनलोड करें",

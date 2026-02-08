@@ -4,7 +4,7 @@ import CreditsIcon from './CreditsIcon';
 import CrownIcon from './CrownIcon';
 
 export type GeneratingStatus = 'generating' | 'loading' | 'success' | 'error';
-export type GeneratingType = 'music' | 'image' | 'video' | 'voice';
+export type GeneratingType = 'music' | 'image' | 'video' | 'voice' | 'download';
 
 interface GeneratingModalProps {
   isOpen: boolean;
@@ -78,6 +78,19 @@ const typeConfig: Record<GeneratingType, {
     ),
     successTitle: 'Voice Created!',
     successMessage: 'Your AI voice has been generated.',
+    estimatedTime: '10-30 seconds',
+  },
+  download: {
+    generatingTitle: 'Parsing video...',
+    generatingIcon: (
+      <svg className="w-8 h-8 text-gray-400 animate-pulse" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+        <circle cx="11" cy="11" r="8" />
+        <path d="m21 21-4.35-4.35" />
+        <path d="M11 8v6M8 11h6" />
+      </svg>
+    ),
+    successTitle: 'Video Found!',
+    successMessage: 'Video parsed successfully.',
     estimatedTime: '10-30 seconds',
   },
 };

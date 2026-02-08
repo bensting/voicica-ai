@@ -25,6 +25,7 @@ import NativeDailyTasksModal from '@/components/native/NativeDailyTasksModal';
 import CreditsInfoBar from '@/components/native/common/CreditsInfoBar';
 import GradientButton from '@/components/native/common/GradientButton';
 import CreditsIcon from '@/components/native/common/CreditsIcon';
+import VideoDownloadIcon from '@/components/native/icons/VideoDownloadIcon';
 
 /**
  * Video Downloader 页面 (Native) - YouTube only
@@ -203,12 +204,8 @@ export default function VideoDownloaderPage() {
           {/* ====== 空状态 ====== */}
           {!error && (
             <div className="flex flex-col items-center py-16 gap-4">
-              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-600/20 to-blue-600/20 flex items-center justify-center">
-                <svg className="w-8 h-8 text-purple-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                  <rect x="2" y="3" width="20" height="14" rx="2" />
-                  <polygon points="10,6 16,10 10,14" fill="currentColor" stroke="none" />
-                  <path d="M12 17v4m-3 0h6" strokeLinecap="round" />
-                </svg>
+              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-red-600/20 to-red-800/20 flex items-center justify-center">
+                <VideoDownloadIcon className="w-8 h-8" bgColor="#FF0000" />
               </div>
               <div className="text-center px-6">
                 <h3 className="text-white font-medium mb-1">{t('videoDownloader.emptyTitle')}</h3>

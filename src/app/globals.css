@@ -53,8 +53,12 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
-/* PC 端手机容器 - 隐藏滚动条 */
+/* PC 端手机容器 - 隐藏滚动条 + 约束 fixed 子元素 */
 @media (min-width: 1024px) {
+  .native-phone-frame {
+    /* 创建新的包含块，使 fixed 子元素限制在手机容器内 */
+    transform: translateZ(0);
+  }
   .native-phone-frame,
   .native-phone-frame * {
     scrollbar-width: none; /* Firefox */

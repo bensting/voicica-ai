@@ -6,7 +6,7 @@ interface PhoneMockupProps {
 
 export default function PhoneMockup({ children }: PhoneMockupProps) {
   return (
-    <div className="relative mx-auto w-[320px] sm:w-[360px]">
+    <div className="relative mx-auto w-[320px] sm:w-[360px] lg:w-[420px]">
       {/* Phone outer frame */}
       <div className="relative rounded-[3rem] bg-gradient-to-b from-gray-200 via-white to-gray-300 px-2 pt-2 pb-2 shadow-2xl shadow-black/50">
         {/* Phone inner bezel */}

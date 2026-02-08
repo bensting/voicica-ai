@@ -31,7 +31,7 @@ export default function NewHero() {
         {/* Background container - square, slightly larger than phone */}
         <div className="relative">
           {/* Square background image behind phone - 1:1 ratio, slightly larger */}
-          <div className="absolute left-1/2 top-1/2 z-0 -translate-x-1/2 -translate-y-1/2 h-[580px] w-[580px] sm:h-[720px] sm:w-[720px] lg:h-[820px] lg:w-[820px] overflow-hidden rounded-3xl">
+          <div className="absolute left-1/2 top-1/2 z-0 -translate-x-1/2 -translate-y-1/2 h-[580px] w-[580px] sm:h-[720px] sm:w-[720px] lg:h-[960px] lg:w-[960px] overflow-hidden rounded-3xl">
             <Image
               src={backgroundImage}
               alt=""
@@ -49,7 +49,7 @@ export default function NewHero() {
             <div className="absolute -inset-3 rounded-[3.5rem] bg-white/20 blur-xl" />
           <PhoneMockup>
           {/* Phone Screen Content */}
-          <div className="relative min-h-[580px] sm:min-h-[640px]">
+          <div className="relative min-h-[580px] sm:min-h-[640px] lg:min-h-[740px]">
             {/* Phone Background Image - fills entire screen */}
             <div className="absolute inset-0">
               <Image
@@ -64,7 +64,7 @@ export default function NewHero() {
             </div>
 
             {/* Phone Content */}
-            <div className="relative flex h-full min-h-[580px] sm:min-h-[640px] flex-col justify-between px-5 pb-6 pt-10">
+            <div className="relative flex h-full min-h-[580px] sm:min-h-[640px] lg:min-h-[740px] flex-col justify-between px-5 pb-6 pt-10">
               {/* Top Section */}
               <div>
                 {/* Header Logo */}
@@ -117,9 +117,9 @@ export default function NewHero() {
                         </p>
                         <div className="flex justify-between">
                           <div className="flex items-center gap-1">
-                            <div className="flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-md bg-purple-600/80">
+                            <div className="flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-md bg-red-600/90">
                               <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v12m0 0l-4-4m4 4l4-4M5 20h14" />
                               </svg>
                             </div>
                             <span className="text-[8px] leading-tight text-white/80">Video<br/>Downloader</span>

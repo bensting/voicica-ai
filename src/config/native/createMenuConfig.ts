@@ -140,7 +140,7 @@ export const createMenuItems: CreateMenuItem[] = [
     shortName: 'Video Downloader',
     description: 'Download YouTube videos',
     href: '/native/tools/video-downloader',
-    enabled: { development: true, production: false },
+    enabled: { development: true, production: true },
   },
 ];
 

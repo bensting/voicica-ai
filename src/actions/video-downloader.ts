@@ -3,8 +3,8 @@
 /**
  * Video Downloader Server Actions
  *
- * 统一的视频解析 Server Action，支持 TikTok 和 YouTube
- * 作为中间层隐藏后端 API 地址，并提供统一的错误处理
+ * YouTube video parsing via youtubei.js + residential proxy.
+ * Replaces the old tools-api.voicica.ai backend dependency.
  */
 
 import { getUserOrAnonymous } from '@/lib/auth-firebase';
@@ -12,7 +12,7 @@ import { InsufficientCreditsError } from '@/lib/errors';
 import { calculateProductCreditsCost } from '@/config/creditsCost';
 import { ProductType } from '@/config/productType';
 import { isYouTubeUrl } from '@/lib/services/youtube-downloader';
-import { isTikTokUrl } from '@/lib/services/tiktok-downloader';
+import { parseYouTubeVideo } from '@/lib/services/youtube-parser';
 import { checkCredits, deductCredits } from '@/lib/credits';
 
 // 视频格式信息
@@ -54,13 +54,8 @@ export interface ParseResult {
   errorData?: Record<string, unknown>;
 }
 
-// 后端 API 地址（从环境变量获取）
-const API_BASE_URL = process.env.NEXT_PUBLIC_TOOLS_API_URL || 'https://tools-api.voicica.ai';
-
 /**
- * 解析视频 URL（统一入口）
- *
- * 支持 TikTok 和 YouTube，后端会自动识别平台
+ * 解析视频 URL（YouTube only）
  */
 export async function parseVideoUrl(url: string): Promise<ParseResult> {
   console.log('🎬 [parseVideoUrl] 开始解析视频');
@@ -81,26 +76,17 @@ export async function parseVideoUrl(url: string): Promise<ParseResult> {
 
     console.log('🎬 [parseVideoUrl] 用户认证成功:', { userId, isAnonymous });
 
-    // 3. 判断平台类型
-    let productType: ProductType;
-    let platformName: string;
-
-    if (isYouTubeUrl(url)) {
-      productType = ProductType.YOUTUBE_DOWNLOADER;
-      platformName = 'YouTube';
-    } else if (isTikTokUrl(url)) {
-      productType = ProductType.TIKTOK_DOWNLOADER;
-      platformName = 'TikTok';
-    } else {
+    // 3. 验证 URL 是 YouTube
+    if (!isYouTubeUrl(url)) {
       return {
         success: false,
         errorCode: 'UNSUPPORTED_PLATFORM',
       };
     }
 
-    console.log('🎬 [parseVideoUrl] 检测平台:', platformName);
+    const productType = ProductType.YOUTUBE_DOWNLOADER;
 
-    // 4. 计算所需积分（使用统一入口）
+    // 4. 计算所需积分
     const requiredCredits = calculateProductCreditsCost(productType);
 
     console.log('🎬 [parseVideoUrl] 所需积分:', requiredCredits);
@@ -121,26 +107,8 @@ export async function parseVideoUrl(url: string): Promise<ParseResult> {
       console.log('✅ [parseVideoUrl] 积分充足:', current);
     }
 
-    // 6. 调用后端 API 解析视频
-    const response = await fetch(`${API_BASE_URL}/api/v1/parse`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ url }),
-    });
-
-    if (!response.ok) {
-      // 记录后端错误但不暴露给用户
-      const error = await response.json().catch(() => ({ detail: 'Unknown error' }));
-      console.error('🎬 [parseVideoUrl] 后端解析失败:', error.detail);
-      return {
-        success: false,
-        errorCode: 'PARSE_FAILED',
-      };
-    }
-
-    const data: ParseResponse = await response.json();
+    // 6. 使用 youtubei.js 解析视频
+    const data = await parseYouTubeVideo(url);
 
     // 7. 解析成功，扣除积分
     if (requiredCredits > 0) {
@@ -149,7 +117,7 @@ export async function parseVideoUrl(url: string): Promise<ParseResult> {
         requiredCredits,
         productType,
         isAnonymous,
-        `${platformName} video parsing: ${data.title || 'Untitled'}`
+        `YouTube video parsing: ${data.title || 'Untitled'}`
       );
     }
 
@@ -174,7 +142,7 @@ export async function parseVideoUrl(url: string): Promise<ParseResult> {
     // 未知错误不暴露详情
     return {
       success: false,
-      errorCode: 'UNKNOWN_ERROR',
+      errorCode: 'PARSE_FAILED',
     };
   }
 }

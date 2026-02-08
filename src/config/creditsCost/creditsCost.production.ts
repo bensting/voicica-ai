@@ -12,7 +12,6 @@ export const creditsCostConfig: CreditsCostConfig = {
   [ProductType.TEXT_TO_VIDEO]: 0, // 视频按分辨率和时长计费，由 calculateVideoCost 计算
   [ProductType.VOICE_CLONING]: 0, // 语音克隆待定
   [ProductType.YOUTUBE_DOWNLOADER]: 1, // YouTube 解析消耗 1 积分
-  [ProductType.TIKTOK_DOWNLOADER]: 1, // TikTok 解析消耗 1 积分
   [ProductType.STORY_IDEAS]: 5, // 故事创意生成消耗 5 积分
   [ProductType.STORY_GENERATE]: 10, // 故事内容生成消耗 10 积分
   [ProductType.STORY_ILLUSTRATION]: 10, // 故事插图生成消耗 10 积分/张

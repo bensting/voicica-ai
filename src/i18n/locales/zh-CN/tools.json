@@ -1,9 +1,9 @@
 {
   "videoDownloader": {
     "title": "视频下载",
-    "subtitle": "免费下载 TikTok 和 YouTube 视频",
+    "subtitle": "免费下载 YouTube 视频",
     "urlLabel": "视频链接",
-    "urlPlaceholder": "粘贴 TikTok 或 YouTube 视频链接...",
+    "urlPlaceholder": "粘贴 YouTube 视频链接...",
     "parseButton": "解析",
     "parsing": "正在解析中",
     "doNotClose": "请勿关闭页面",
@@ -13,7 +13,7 @@
     "untitled": "无标题视频",
     "detected": "已识别",
     "emptyTitle": "下载视频",
-    "emptyDescription": "在上方粘贴 TikTok 或 YouTube 视频链接即可开始下载。",
+    "emptyDescription": "在上方粘贴 YouTube 视频链接即可开始下载。",
     "tabs": {
       "videoWithAudio": "视频",
       "videoOnly": "仅视频",
@@ -21,29 +21,7 @@
     },
     "errors": {
       "emptyUrl": "请输入视频链接",
-      "invalidUrl": "不支持的链接，请输入正确的 TikTok 或 YouTube 视频链接。",
-      "parseFailed": "解析视频失败，请检查链接后重试。",
-      "insufficientCredits": "积分不足，需要: {{required}}，当前: {{current}}",
-      "unknownError": "发生未知错误，请稍后重试。"
-    }
-  },
-  "tiktokDownloader": {
-    "title": "TikTok 视频下载",
-    "subtitle": "免费下载无水印 TikTok 视频",
-    "urlLabel": "TikTok 视频链接",
-    "urlPlaceholder": "在此粘贴 TikTok 视频链接...",
-    "parseButton": "解析",
-    "parsing": "正在解析中",
-    "doNotClose": "请勿关闭页面",
-    "downloadButton": "下载视频",
-    "downloading": "下载中...",
-    "selectQuality": "选择画质",
-    "untitled": "无标题视频",
-    "emptyTitle": "下载 TikTok 视频",
-    "emptyDescription": "在上方粘贴 TikTok 视频链接即可开始下载，支持所有 TikTok 视频格式。",
-    "errors": {
-      "emptyUrl": "请输入 TikTok 视频链接",
-      "invalidUrl": "无效的 TikTok 链接，请输入正确的 TikTok 视频链接。",
+      "invalidUrl": "不支持的链接，请输入正确的 YouTube 视频链接。",
       "parseFailed": "解析视频失败，请检查链接后重试。",
       "insufficientCredits": "积分不足，需要: {{required}}，当前: {{current}}",
       "unknownError": "发生未知错误，请稍后重试。"

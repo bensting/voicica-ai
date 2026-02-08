@@ -76,7 +76,7 @@
         "videoDownloader": {
           "title": "影片下載",
           "shortName": "影片下載",
-          "description": "下載 TikTok 和 YouTube 影片"
+          "description": "下載 YouTube 影片"
         }
       }
     },

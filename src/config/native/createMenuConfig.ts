@@ -138,7 +138,7 @@ export const createMenuItems: CreateMenuItem[] = [
     category: 'tools',
     title: 'Video Downloader',
     shortName: 'Video Downloader',
-    description: 'Download TikTok & YouTube videos',
+    description: 'Download YouTube videos',
     href: '/native/tools/video-downloader',
     enabled: { development: true, production: false },
   },

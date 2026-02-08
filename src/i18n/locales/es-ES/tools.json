@@ -1,9 +1,9 @@
 {
   "videoDownloader": {
     "title": "Descargador de Vídeos",
-    "subtitle": "Descarga vídeos de TikTok y YouTube gratis",
+    "subtitle": "Descarga vídeos de YouTube gratis",
     "urlLabel": "URL del vídeo",
-    "urlPlaceholder": "Pega el enlace de TikTok o YouTube...",
+    "urlPlaceholder": "Pega el enlace de YouTube...",
     "parseButton": "Analizar",
     "parsing": "Analizando",
     "doNotClose": "Por favor, no cierres esta página",
@@ -13,7 +13,7 @@
     "untitled": "Vídeo sin título",
     "detected": "detectado",
     "emptyTitle": "Descargar vídeos",
-    "emptyDescription": "Pega una URL de TikTok o YouTube arriba para comenzar a descargar.",
+    "emptyDescription": "Pega una URL de YouTube arriba para comenzar a descargar.",
     "tabs": {
       "videoWithAudio": "Vídeo",
       "videoOnly": "Solo vídeo",
@@ -21,29 +21,7 @@
     },
     "errors": {
       "emptyUrl": "Por favor, introduce una URL de vídeo",
-      "invalidUrl": "URL no compatible. Por favor, introduce un enlace de TikTok o YouTube válido.",
-      "parseFailed": "Error al analizar el vídeo. Por favor, verifica la URL e inténtalo de nuevo.",
-      "insufficientCredits": "Créditos insuficientes. Necesarios: {{required}}, Actuales: {{current}}",
-      "unknownError": "Ocurrió un error inesperado. Por favor, inténtalo de nuevo más tarde."
-    }
-  },
-  "tiktokDownloader": {
-    "title": "Descargador de vídeos de TikTok",
-    "subtitle": "Descarga vídeos de TikTok sin marca de agua gratis",
-    "urlLabel": "URL del vídeo de TikTok",
-    "urlPlaceholder": "Pega el enlace del vídeo de TikTok aquí...",
-    "parseButton": "Analizar",
-    "parsing": "Analizando",
-    "doNotClose": "Por favor, no cierres esta página",
-    "downloadButton": "Descargar vídeo",
-    "downloading": "Descargando...",
-    "selectQuality": "Seleccionar calidad",
-    "untitled": "Vídeo sin título",
-    "emptyTitle": "Descargar vídeos de TikTok",
-    "emptyDescription": "Pega una URL de vídeo de TikTok arriba para comenzar a descargar. Compatible con todos los formatos de vídeo de TikTok.",
-    "errors": {
-      "emptyUrl": "Por favor, introduce una URL de vídeo de TikTok",
-      "invalidUrl": "URL de TikTok no válida. Por favor, introduce un enlace de vídeo de TikTok válido.",
+      "invalidUrl": "URL no compatible. Por favor, introduce un enlace de YouTube válido.",
       "parseFailed": "Error al analizar el vídeo. Por favor, verifica la URL e inténtalo de nuevo.",
       "insufficientCredits": "Créditos insuficientes. Necesarios: {{required}}, Actuales: {{current}}",
       "unknownError": "Ocurrió un error inesperado. Por favor, inténtalo de nuevo más tarde."

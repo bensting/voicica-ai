@@ -76,7 +76,7 @@
         "videoDownloader": {
           "title": "Descargador de Vídeos",
           "shortName": "Descargar Vídeo",
-          "description": "Descarga vídeos de TikTok y YouTube"
+          "description": "Descarga vídeos de YouTube"
         }
       }
     },

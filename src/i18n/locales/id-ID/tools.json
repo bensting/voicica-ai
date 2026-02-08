@@ -1,9 +1,9 @@
 {
   "videoDownloader": {
     "title": "Pengunduh Video",
-    "subtitle": "Unduh video TikTok & YouTube gratis",
+    "subtitle": "Unduh video YouTube gratis",
     "urlLabel": "URL Video",
-    "urlPlaceholder": "Tempel tautan video TikTok atau YouTube...",
+    "urlPlaceholder": "Tempel tautan video YouTube...",
     "parseButton": "Parse",
     "parsing": "Sedang memproses",
     "doNotClose": "Jangan tutup halaman ini",
@@ -13,7 +13,7 @@
     "untitled": "Video Tanpa Judul",
     "detected": "terdeteksi",
     "emptyTitle": "Unduh Video",
-    "emptyDescription": "Tempel URL video TikTok atau YouTube di atas untuk mulai mengunduh.",
+    "emptyDescription": "Tempel URL video YouTube di atas untuk mulai mengunduh.",
     "tabs": {
       "videoWithAudio": "Video",
       "videoOnly": "Video Saja",
@@ -21,32 +21,10 @@
     },
     "errors": {
       "emptyUrl": "Masukkan URL video",
-      "invalidUrl": "URL tidak didukung. Masukkan tautan video TikTok atau YouTube yang valid.",
+      "invalidUrl": "URL tidak didukung. Masukkan tautan video YouTube yang valid.",
       "parseFailed": "Gagal memproses video. Periksa URL dan coba lagi.",
       "insufficientCredits": "Kredit tidak cukup. Dibutuhkan: {{required}}, Saat ini: {{current}}",
       "unknownError": "Terjadi kesalahan. Silakan coba lagi nanti."
-    }
-  },
-  "tiktokDownloader": {
-    "title": "Pengunduh Video TikTok",
-    "subtitle": "Unduh video TikTok tanpa watermark gratis",
-    "urlLabel": "URL Video TikTok",
-    "urlPlaceholder": "Tempel tautan video TikTok di sini...",
-    "parseButton": "Parse",
-    "parsing": "Memparse",
-    "doNotClose": "Jangan tutup halaman ini",
-    "downloadButton": "Unduh Video",
-    "downloading": "Mengunduh...",
-    "selectQuality": "Pilih Kualitas",
-    "untitled": "Video Tanpa Judul",
-    "emptyTitle": "Unduh Video TikTok",
-    "emptyDescription": "Tempel URL video TikTok di atas untuk mulai mengunduh. Mendukung semua format video TikTok.",
-    "errors": {
-      "emptyUrl": "Silakan masukkan URL video TikTok",
-      "invalidUrl": "URL TikTok tidak valid. Silakan masukkan tautan video TikTok yang valid.",
-      "parseFailed": "Gagal memparse video. Periksa URL dan coba lagi.",
-      "insufficientCredits": "Kredit tidak cukup. Diperlukan: {{required}}, Saat ini: {{current}}",
-      "unknownError": "Terjadi kesalahan tak terduga. Silakan coba lagi nanti."
     }
   },
   "youtubeDownloader": {

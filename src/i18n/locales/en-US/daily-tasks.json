@@ -48,6 +48,9 @@
     "watchMore": "Watch More +1",
     "noAdsTitle": "Skip the ads, get unlimited!",
     "noAdsSubtitle": "Become a VIP member today",
-    "creditsClaimed": "Credits added to your account"
+    "creditsClaimed": "Credits added to your account",
+    "appOnlyTitle": "App Exclusive Feature",
+    "appOnlyDesc": "Free credits are only available in the app. Subscribe to get unlimited credits on web!",
+    "goSubscribe": "View Plans"
   }
 }

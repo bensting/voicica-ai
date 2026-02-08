@@ -48,6 +48,9 @@
     "watchMore": "Ver más +1",
     "noAdsTitle": "¡Salta los anuncios, obtén ilimitado!",
     "noAdsSubtitle": "Hazte miembro VIP hoy",
-    "creditsClaimed": "Créditos añadidos a tu cuenta"
+    "creditsClaimed": "Créditos añadidos a tu cuenta",
+    "appOnlyTitle": "Función exclusiva de la app",
+    "appOnlyDesc": "Los créditos gratuitos solo están disponibles en la app. ¡Suscríbete para obtener créditos ilimitados en la web!",
+    "goSubscribe": "Ver planes"
   }
 }

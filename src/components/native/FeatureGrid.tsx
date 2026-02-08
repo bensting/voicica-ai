@@ -130,7 +130,7 @@ const colorMap: Record<string, { icon: string; bg: string }> = {
   pink: { icon: 'text-pink-400', bg: 'bg-pink-500/20' },
   cyan: { icon: 'text-cyan-400', bg: 'bg-cyan-500/20' },
   blue: { icon: 'text-blue-400', bg: 'bg-blue-500/20' },
-  emerald: { icon: 'text-emerald-400', bg: 'bg-emerald-500/20' },
+  emerald: { icon: 'text-emerald-400', bg: 'bg-gradient-to-br from-red-600/20 to-red-800/20' },
 };
 
 /**

@@ -48,6 +48,9 @@
     "watchMore": "繼續觀看 +1",
     "noAdsTitle": "跳過廣告，暢享無限！",
     "noAdsSubtitle": "立即成為VIP會員",
-    "creditsClaimed": "積分已添加到您的帳戶"
+    "creditsClaimed": "積分已添加到您的帳戶",
+    "appOnlyTitle": "App 專屬功能",
+    "appOnlyDesc": "免費積分僅限 App 端使用，網頁端請訂閱獲取無限積分！",
+    "goSubscribe": "查看訂閱"
   }
 }

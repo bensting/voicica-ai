@@ -48,6 +48,9 @@
     "watchMore": "もっと見る +1",
     "noAdsTitle": "広告をスキップして無制限に！",
     "noAdsSubtitle": "今すぐVIPメンバーに",
-    "creditsClaimed": "クレジットがアカウントに追加されました"
+    "creditsClaimed": "クレジットがアカウントに追加されました",
+    "appOnlyTitle": "アプリ限定機能",
+    "appOnlyDesc": "無料クレジットはアプリでのみ利用可能です。Webでは定期購読をご利用ください！",
+    "goSubscribe": "プランを見る"
   }
 }

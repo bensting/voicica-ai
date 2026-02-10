@@ -185,12 +185,25 @@ function mapYtdlpInfo(info: any): ParseResponse {
     });
   }
 
+  // Proxy thumbnails from platforms that block direct browser access
+  let thumbnailUrl: string | null = info.thumbnail || null;
+  if (thumbnailUrl) {
+    try {
+      const host = new URL(thumbnailUrl).hostname;
+      if (host.endsWith('cdninstagram.com') || host.endsWith('fbcdn.net')) {
+        thumbnailUrl = `/api/image-proxy?url=${encodeURIComponent(thumbnailUrl)}`;
+      }
+    } catch {
+      // keep original
+    }
+  }
+
   return {
     platform: extractorToPlatform(info.extractor_key || info.extractor || ''),
     video_id: info.id || '',
     title: info.title || 'Untitled',
     author: info.uploader || info.channel || null,
-    thumbnail_url: info.thumbnail || null,
+    thumbnail_url: thumbnailUrl,
     duration_seconds: info.duration || null,
     formats,
   };

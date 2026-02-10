@@ -26,6 +26,7 @@
       "emptyUrl": "動画URLを入力してください",
       "invalidUrl": "サポートされていないURLです。対応プラットフォーム：YouTube、TikTok、Instagram、X、Facebook。",
       "parseFailed": "動画の解析に失敗しました。URLを確認してもう一度お試しください。",
+      "noVideoFound": "このURLに動画が見つかりません。写真またはサポートされていないコンテンツの可能性があります。",
       "insufficientCredits": "クレジットが不足しています。必要：{{required}}、現在：{{current}}",
       "unknownError": "予期しないエラーが発生しました。後でもう一度お試しください。"
     }
@@ -53,6 +54,7 @@
       "emptyUrl": "YouTube動画URLを入力してください",
       "invalidUrl": "無効なYouTube URLです。有効なYouTube動画リンクを入力してください。",
       "parseFailed": "動画の解析に失敗しました。URLを確認してもう一度お試しください。",
+      "noVideoFound": "このURLに動画が見つかりません。写真またはサポートされていないコンテンツの可能性があります。",
       "insufficientCredits": "クレジットが不足しています。必要：{{required}}、現在：{{current}}",
       "unknownError": "予期しないエラーが発生しました。後でもう一度お試しください。"
     }

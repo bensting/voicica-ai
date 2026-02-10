@@ -70,10 +70,24 @@ async function parseViaChildProcess(url: string): Promise<ParseResponse> {
     url,
   ];
 
-  const stdout = execSync(`python ${args.map(a => `"${a}"`).join(' ')}`, {
-    encoding: 'utf-8',
-    timeout: 60000,
-  });
+  let stdout: string;
+  try {
+    stdout = execSync(`python ${args.map(a => `"${a}"`).join(' ')}`, {
+      encoding: 'utf-8',
+      timeout: 60000,
+    });
+  } catch (e) {
+    // yt-dlp exits non-zero when it can't extract (e.g. photo-only post)
+    const stderr = (e as { stderr?: string }).stderr || '';
+    if (stderr.includes('Unsupported URL') || stderr.includes('no video')) {
+      throw new Error('NO_VIDEO_FOUND');
+    }
+    throw e;
+  }
+
+  if (!stdout?.trim()) {
+    throw new Error('NO_VIDEO_FOUND');
+  }
 
   const info = JSON.parse(stdout);
   return mapYtdlpInfo(info);
@@ -104,10 +118,19 @@ async function parseViaApi(url: string): Promise<ParseResponse> {
       } catch {
         // ignore
       }
+      // Detect "no video" errors from the Python API
+      if (errorMessage.toLowerCase().includes('unsupported url') || errorMessage.toLowerCase().includes('no video')) {
+        throw new Error('NO_VIDEO_FOUND');
+      }
       throw new Error(errorMessage);
     }
 
-    return res.json();
+    const data: ParseResponse = await res.json();
+    // If yt-dlp returned metadata but zero downloadable formats, treat as no video
+    if (!data.formats || data.formats.length === 0) {
+      throw new Error('NO_VIDEO_FOUND');
+    }
+    return data;
   };
 
   try {

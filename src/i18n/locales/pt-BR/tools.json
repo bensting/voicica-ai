@@ -26,6 +26,7 @@
       "emptyUrl": "Insira a URL do vídeo",
       "invalidUrl": "URL não suportada. Plataformas compatíveis: YouTube, TikTok, Instagram, X, Facebook.",
       "parseFailed": "Falha ao analisar o vídeo. Verifique a URL e tente novamente.",
+      "noVideoFound": "Nenhum vídeo encontrado nesta URL. O link pode ser uma foto ou conteúdo não suportado.",
       "insufficientCredits": "Créditos insuficientes. Necessários: {{required}}, Atuais: {{current}}",
       "unknownError": "Ocorreu um erro inesperado. Tente novamente mais tarde."
     }
@@ -53,6 +54,7 @@
       "emptyUrl": "Por favor, insira uma URL de vídeo do YouTube",
       "invalidUrl": "URL do YouTube inválida. Por favor, insira um link de vídeo do YouTube válido.",
       "parseFailed": "Falha ao analisar o vídeo. Por favor, verifique a URL e tente novamente.",
+      "noVideoFound": "Nenhum vídeo encontrado nesta URL. O link pode ser uma foto ou conteúdo não suportado.",
       "insufficientCredits": "Créditos insuficientes. Necessários: {{required}}, Atuais: {{current}}",
       "unknownError": "Ocorreu um erro inesperado. Por favor, tente novamente mais tarde."
     }

@@ -7,23 +7,70 @@
 
 import type { VideoFormat } from '@/actions/video-downloader';
 
+// 支持的视频平台
+export type VideoPlatform = 'youtube' | 'tiktok' | 'instagram' | 'twitter' | 'facebook';
+
 // 格式类型
 export type FormatType = 'video_with_audio' | 'video_only' | 'audio_only';
+
+const YOUTUBE_PATTERNS = [
+  /(?:https?:\/\/)?(?:www\.)?youtube\.com\/watch\?v=[\w-]+/,
+  /(?:https?:\/\/)?(?:www\.)?youtube\.com\/shorts\/[\w-]+/,
+  /(?:https?:\/\/)?youtu\.be\/[\w-]+/,
+  /(?:https?:\/\/)?(?:www\.)?youtube\.com\/embed\/[\w-]+/,
+  /(?:https?:\/\/)?(?:www\.)?youtube\.com\/v\/[\w-]+/,
+  /(?:https?:\/\/)?m\.youtube\.com\/watch\?v=[\w-]+/,
+];
+
+const TIKTOK_PATTERNS = [
+  /(?:https?:\/\/)?(?:www\.)?tiktok\.com\/@[^/]+\/video\/\d+/,
+  /(?:https?:\/\/)?vm\.tiktok\.com\/[\w-]+/,
+  /(?:https?:\/\/)?vt\.tiktok\.com\/[\w-]+/,
+];
+
+const INSTAGRAM_PATTERNS = [
+  /(?:https?:\/\/)?(?:www\.)?instagram\.com\/reel\/[\w-]+/,
+  /(?:https?:\/\/)?(?:www\.)?instagram\.com\/p\/[\w-]+/,
+  /(?:https?:\/\/)?(?:www\.)?instagram\.com\/reels\/[\w-]+/,
+];
+
+const TWITTER_PATTERNS = [
+  /(?:https?:\/\/)?(?:www\.)?twitter\.com\/[^/]+\/status\/\d+/,
+  /(?:https?:\/\/)?(?:www\.)?x\.com\/[^/]+\/status\/\d+/,
+];
+
+const FACEBOOK_PATTERNS = [
+  /(?:https?:\/\/)?(?:www\.)?facebook\.com\/[^/]+\/videos\/\d+/,
+  /(?:https?:\/\/)?(?:www\.)?facebook\.com\/watch/,
+  /(?:https?:\/\/)?fb\.watch\/[\w-]+/,
+  /(?:https?:\/\/)?(?:www\.)?fb\.com\//,
+];
+
+const PLATFORM_PATTERNS: [VideoPlatform, RegExp[]][] = [
+  ['youtube', YOUTUBE_PATTERNS],
+  ['tiktok', TIKTOK_PATTERNS],
+  ['instagram', INSTAGRAM_PATTERNS],
+  ['twitter', TWITTER_PATTERNS],
+  ['facebook', FACEBOOK_PATTERNS],
+];
+
+/**
+ * 检测视频 URL 属于哪个平台
+ */
+export function detectVideoPlatform(url: string): VideoPlatform | null {
+  for (const [platform, patterns] of PLATFORM_PATTERNS) {
+    if (patterns.some(pattern => pattern.test(url))) {
+      return platform;
+    }
+  }
+  return null;
+}
 
 /**
  * 检测是否为有效的 YouTube URL
  */
 export function isYouTubeUrl(url: string): boolean {
-  const patterns = [
-    /(?:https?:\/\/)?(?:www\.)?youtube\.com\/watch\?v=[\w-]+/,
-    /(?:https?:\/\/)?(?:www\.)?youtube\.com\/shorts\/[\w-]+/,
-    /(?:https?:\/\/)?youtu\.be\/[\w-]+/,
-    /(?:https?:\/\/)?(?:www\.)?youtube\.com\/embed\/[\w-]+/,
-    /(?:https?:\/\/)?(?:www\.)?youtube\.com\/v\/[\w-]+/,
-    /(?:https?:\/\/)?m\.youtube\.com\/watch\?v=[\w-]+/,
-  ];
-
-  return patterns.some(pattern => pattern.test(url));
+  return detectVideoPlatform(url) === 'youtube';
 }
 
 /**

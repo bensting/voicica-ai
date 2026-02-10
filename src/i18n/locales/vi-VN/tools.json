@@ -1,9 +1,9 @@
 {
   "videoDownloader": {
     "title": "Tải Video",
-    "subtitle": "Tải video YouTube miễn phí",
+    "subtitle": "Tải video từ YouTube, TikTok, Instagram, X và Facebook miễn phí",
     "urlLabel": "URL Video",
-    "urlPlaceholder": "Dán liên kết video YouTube...",
+    "urlPlaceholder": "Dán liên kết video (YouTube, TikTok, Instagram, X, Facebook)...",
     "parseButton": "Phân tích",
     "parseVideoButton": "Phân tích video",
     "parsing": "Đang phân tích",
@@ -15,7 +15,7 @@
     "detected": "đã nhận diện",
     "searchAnother": "Tìm video khác",
     "emptyTitle": "Tải video",
-    "emptyDescription": "Dán URL video YouTube ở trên để bắt đầu tải.",
+    "emptyDescription": "Dán URL video ở trên để bắt đầu tải. Hỗ trợ YouTube, TikTok, Instagram, Twitter/X và Facebook.",
     "tabs": {
       "videoWithAudio": "Video",
       "videoOnly": "Chỉ video",
@@ -23,7 +23,7 @@
     },
     "errors": {
       "emptyUrl": "Vui lòng nhập URL video",
-      "invalidUrl": "URL không được hỗ trợ. Vui lòng nhập liên kết video YouTube hợp lệ.",
+      "invalidUrl": "URL không được hỗ trợ. Nền tảng được hỗ trợ: YouTube, TikTok, Instagram, X, Facebook.",
       "parseFailed": "Phân tích video thất bại. Vui lòng kiểm tra URL và thử lại.",
       "insufficientCredits": "Không đủ tín dụng. Cần: {{required}}, Hiện tại: {{current}}",
       "unknownError": "Đã xảy ra lỗi. Vui lòng thử lại sau."

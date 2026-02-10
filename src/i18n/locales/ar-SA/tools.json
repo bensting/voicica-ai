@@ -1,9 +1,9 @@
 {
   "videoDownloader": {
     "title": "تحميل الفيديو",
-    "subtitle": "حمّل فيديوهات يوتيوب مجانًا",
+    "subtitle": "حمّل فيديوهات من YouTube و TikTok و Instagram و X و Facebook مجانًا",
     "urlLabel": "رابط الفيديو",
-    "urlPlaceholder": "الصق رابط فيديو يوتيوب...",
+    "urlPlaceholder": "الصق رابط الفيديو (YouTube، TikTok، Instagram، X، Facebook)...",
     "parseButton": "تحليل",
     "parseVideoButton": "تحليل الفيديو",
     "parsing": "جارٍ التحليل",
@@ -15,7 +15,7 @@
     "detected": "تم الكشف",
     "searchAnother": "البحث عن آخر",
     "emptyTitle": "تحميل الفيديوهات",
-    "emptyDescription": "الصق رابط فيديو يوتيوب أعلاه لبدء التحميل.",
+    "emptyDescription": "الصق رابط الفيديو أعلاه لبدء التحميل. يدعم YouTube و TikTok و Instagram و Twitter/X و Facebook.",
     "tabs": {
       "videoWithAudio": "فيديو",
       "videoOnly": "فيديو فقط",
@@ -23,7 +23,7 @@
     },
     "errors": {
       "emptyUrl": "يرجى إدخال رابط الفيديو",
-      "invalidUrl": "رابط غير مدعوم. يرجى إدخال رابط فيديو يوتيوب صحيح.",
+      "invalidUrl": "رابط غير مدعوم. المنصات المدعومة: YouTube، TikTok، Instagram، X، Facebook.",
       "parseFailed": "فشل في تحليل الفيديو. يرجى التحقق من الرابط والمحاولة مرة أخرى.",
       "insufficientCredits": "رصيد غير كافٍ. المطلوب: {{required}}، الحالي: {{current}}",
       "unknownError": "حدث خطأ غير متوقع. يرجى المحاولة مرة أخرى لاحقًا."

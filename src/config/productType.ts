@@ -26,6 +26,8 @@ export const ProductType = {
   YOUTUBE_DOWNLOADER: 'youtube_downloader',
   /** TikTok 视频下载器 */
   TIKTOK_DOWNLOADER: 'tiktok_downloader',
+  /** 通用视频下载器（多平台） */
+  VIDEO_DOWNLOADER: 'video_downloader',
   /** 订阅充值 */
   SUBSCRIPTION: 'subscription',
   /** 故事创意生成 */

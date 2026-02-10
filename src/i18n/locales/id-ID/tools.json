@@ -1,9 +1,9 @@
 {
   "videoDownloader": {
     "title": "Pengunduh Video",
-    "subtitle": "Unduh video YouTube gratis",
+    "subtitle": "Unduh video dari YouTube, TikTok, Instagram, X & Facebook gratis",
     "urlLabel": "URL Video",
-    "urlPlaceholder": "Tempel tautan video YouTube...",
+    "urlPlaceholder": "Tempel tautan video (YouTube, TikTok, Instagram, X, Facebook)...",
     "parseButton": "Parse",
     "parseVideoButton": "Analisis video",
     "parsing": "Sedang memproses",
@@ -15,7 +15,7 @@
     "detected": "terdeteksi",
     "searchAnother": "Cari lainnya",
     "emptyTitle": "Unduh Video",
-    "emptyDescription": "Tempel URL video YouTube di atas untuk mulai mengunduh.",
+    "emptyDescription": "Tempel URL video di atas untuk mulai mengunduh. Mendukung YouTube, TikTok, Instagram, Twitter/X, dan Facebook.",
     "tabs": {
       "videoWithAudio": "Video",
       "videoOnly": "Video Saja",
@@ -23,7 +23,7 @@
     },
     "errors": {
       "emptyUrl": "Masukkan URL video",
-      "invalidUrl": "URL tidak didukung. Masukkan tautan video YouTube yang valid.",
+      "invalidUrl": "URL tidak didukung. Platform yang didukung: YouTube, TikTok, Instagram, X, Facebook.",
       "parseFailed": "Gagal memproses video. Periksa URL dan coba lagi.",
       "insufficientCredits": "Kredit tidak cukup. Dibutuhkan: {{required}}, Saat ini: {{current}}",
       "unknownError": "Terjadi kesalahan. Silakan coba lagi nanti."

@@ -10,7 +10,7 @@ import {
   parseVideoUrl,
   type ParseResponse,
 } from '@/actions/video-downloader';
-import { isYouTubeUrl } from '@/lib/services/youtube-downloader';
+import { detectVideoPlatform } from '@/lib/services/youtube-downloader';
 import { getVideoParseErrorMessage } from '@/lib/services/video-downloader-utils';
 import { calculateProductCreditsCost } from '@/config/creditsCost';
 import { ProductType } from '@/config/productType';
@@ -28,7 +28,8 @@ import CreditsIcon from '@/components/native/common/CreditsIcon';
 import VideoDownloadIcon from '@/components/native/icons/VideoDownloadIcon';
 
 /**
- * Video Downloader 页面 (Native) - YouTube only
+ * Video Downloader 页面 (Native) - 多平台
+ * 支持 YouTube, TikTok, Instagram, Twitter/X, Facebook
  * 暗色风格，pill 搜索栏，GeneratingModal + VideoDownloaderDetailModal 流程
  */
 export default function VideoDownloaderPage() {
@@ -57,8 +58,14 @@ export default function VideoDownloaderPage() {
 
   // 积分成本
   const creditCost = useMemo(() => {
-    return calculateProductCreditsCost(ProductType.YOUTUBE_DOWNLOADER);
+    return calculateProductCreditsCost(ProductType.VIDEO_DOWNLOADER);
   }, []);
+
+  // 检测当前输入 URL 的平台
+  const detectedPlatform = useMemo(() => {
+    if (!url.trim()) return null;
+    return detectVideoPlatform(url);
+  }, [url]);
 
   const handleClear = useCallback(() => {
     setUrl('');
@@ -70,7 +77,7 @@ export default function VideoDownloaderPage() {
       setError(t('videoDownloader.errors.emptyUrl'));
       return;
     }
-    if (!isYouTubeUrl(url)) {
+    if (!detectVideoPlatform(url)) {
       setError(t('videoDownloader.errors.invalidUrl'));
       return;
     }
@@ -186,10 +193,10 @@ export default function VideoDownloaderPage() {
               )}
             </div>
 
-            {/* YouTube 标识 */}
-            {url.trim() && isYouTubeUrl(url) && !isGeneratingModalOpen && !videoInfo && (
+            {/* 平台标识 */}
+            {detectedPlatform && !isGeneratingModalOpen && !videoInfo && (
               <p className="mt-2 ml-4 text-xs text-purple-400">
-                YouTube {t('videoDownloader.detected')}
+                {detectedPlatform.charAt(0).toUpperCase() + detectedPlatform.slice(1)} {t('videoDownloader.detected')}
               </p>
             )}
           </div>
@@ -204,8 +211,8 @@ export default function VideoDownloaderPage() {
           {/* ====== 空状态 ====== */}
           {!error && (
             <div className="flex flex-col items-center py-16 gap-4">
-              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-red-600/20 to-red-800/20 flex items-center justify-center">
-                <VideoDownloadIcon className="w-8 h-8" bgColor="#FF0000" />
+              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-600/20 to-purple-800/20 flex items-center justify-center">
+                <VideoDownloadIcon className="w-8 h-8" bgColor="#9333ea" />
               </div>
               <div className="text-center px-6">
                 <h3 className="text-white font-medium mb-1">{t('videoDownloader.emptyTitle')}</h3>

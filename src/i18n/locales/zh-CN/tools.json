@@ -1,9 +1,9 @@
 {
   "videoDownloader": {
     "title": "视频下载",
-    "subtitle": "免费下载 YouTube 视频",
+    "subtitle": "免费下载 YouTube、TikTok、Instagram、X 和 Facebook 视频",
     "urlLabel": "视频链接",
-    "urlPlaceholder": "粘贴 YouTube 视频链接...",
+    "urlPlaceholder": "粘贴视频链接（YouTube、TikTok、Instagram、X、Facebook）...",
     "parseButton": "解析",
     "parseVideoButton": "解析视频",
     "parsing": "正在解析中",
@@ -15,7 +15,7 @@
     "detected": "已识别",
     "searchAnother": "再搜一个",
     "emptyTitle": "下载视频",
-    "emptyDescription": "在上方粘贴 YouTube 视频链接即可开始下载。",
+    "emptyDescription": "在上方粘贴视频链接即可开始下载，支持 YouTube、TikTok、Instagram、Twitter/X 和 Facebook。",
     "tabs": {
       "videoWithAudio": "视频",
       "videoOnly": "仅视频",
@@ -23,7 +23,7 @@
     },
     "errors": {
       "emptyUrl": "请输入视频链接",
-      "invalidUrl": "不支持的链接，请输入正确的 YouTube 视频链接。",
+      "invalidUrl": "不支持的链接。支持的平台：YouTube、TikTok、Instagram、X、Facebook。",
       "parseFailed": "解析视频失败，请检查链接后重试。",
       "insufficientCredits": "积分不足，需要: {{required}}，当前: {{current}}",
       "unknownError": "发生未知错误，请稍后重试。"

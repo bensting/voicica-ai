@@ -1,9 +1,9 @@
 {
   "videoDownloader": {
     "title": "ดาวน์โหลดวิดีโอ",
-    "subtitle": "ดาวน์โหลดวิดีโอ YouTube ฟรี",
+    "subtitle": "ดาวน์โหลดวิดีโอจาก YouTube, TikTok, Instagram, X และ Facebook ฟรี",
     "urlLabel": "ลิงก์วิดีโอ",
-    "urlPlaceholder": "วางลิงก์วิดีโอ YouTube...",
+    "urlPlaceholder": "วางลิงก์วิดีโอ (YouTube, TikTok, Instagram, X, Facebook)...",
     "parseButton": "วิเคราะห์",
     "parseVideoButton": "วิเคราะห์วิดีโอ",
     "parsing": "กำลังวิเคราะห์",
@@ -15,7 +15,7 @@
     "detected": "ตรวจพบ",
     "searchAnother": "ค้นหาอีก",
     "emptyTitle": "ดาวน์โหลดวิดีโอ",
-    "emptyDescription": "วางลิงก์วิดีโอ YouTube ด้านบนเพื่อเริ่มดาวน์โหลด",
+    "emptyDescription": "วางลิงก์วิดีโอด้านบนเพื่อเริ่มดาวน์โหลด รองรับ YouTube, TikTok, Instagram, Twitter/X และ Facebook",
     "tabs": {
       "videoWithAudio": "วิดีโอ",
       "videoOnly": "วิดีโอเท่านั้น",
@@ -23,7 +23,7 @@
     },
     "errors": {
       "emptyUrl": "กรุณาใส่ลิงก์วิดีโอ",
-      "invalidUrl": "ลิงก์ไม่รองรับ กรุณาใส่ลิงก์วิดีโอ YouTube ที่ถูกต้อง",
+      "invalidUrl": "ลิงก์ไม่รองรับ แพลตฟอร์มที่รองรับ: YouTube, TikTok, Instagram, X, Facebook",
       "parseFailed": "วิเคราะห์วิดีโอล้มเหลว กรุณาตรวจสอบลิงก์แล้วลองอีกครั้ง",
       "insufficientCredits": "เครดิตไม่เพียงพอ ต้องการ: {{required}} ปัจจุบัน: {{current}}",
       "unknownError": "เกิดข้อผิดพลาด กรุณาลองอีกครั้งในภายหลัง"

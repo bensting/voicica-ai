@@ -11,8 +11,8 @@ import { getUserOrAnonymous } from '@/lib/auth-firebase';
 import { InsufficientCreditsError } from '@/lib/errors';
 import { calculateProductCreditsCost } from '@/config/creditsCost';
 import { ProductType } from '@/config/productType';
-import { isYouTubeUrl } from '@/lib/services/youtube-downloader';
-import { parseYouTubeVideo } from '@/lib/services/youtube-parser';
+import { detectVideoPlatform } from '@/lib/services/youtube-downloader';
+import { parseVideo } from '@/lib/services/youtube-parser';
 import { checkCredits, deductCredits } from '@/lib/credits';
 
 // 视频格式信息
@@ -55,7 +55,7 @@ export interface ParseResult {
 }
 
 /**
- * 解析视频 URL（YouTube only）
+ * 解析视频 URL（支持 YouTube, TikTok, Instagram, Twitter/X, Facebook）
  */
 export async function parseVideoUrl(url: string): Promise<ParseResult> {
   console.log('🎬 [parseVideoUrl] 开始解析视频');
@@ -76,15 +76,16 @@ export async function parseVideoUrl(url: string): Promise<ParseResult> {
 
     console.log('🎬 [parseVideoUrl] 用户认证成功:', { userId, isAnonymous });
 
-    // 3. 验证 URL 是 YouTube
-    if (!isYouTubeUrl(url)) {
+    // 3. 检测平台
+    const platform = detectVideoPlatform(url);
+    if (!platform) {
       return {
         success: false,
         errorCode: 'UNSUPPORTED_PLATFORM',
       };
     }
 
-    const productType = ProductType.YOUTUBE_DOWNLOADER;
+    const productType = ProductType.VIDEO_DOWNLOADER;
 
     // 4. 计算所需积分
     const requiredCredits = calculateProductCreditsCost(productType);
@@ -107,8 +108,8 @@ export async function parseVideoUrl(url: string): Promise<ParseResult> {
       console.log('✅ [parseVideoUrl] 积分充足:', current);
     }
 
-    // 6. 使用 youtubei.js 解析视频
-    const data = await parseYouTubeVideo(url);
+    // 6. 使用 yt-dlp 解析视频
+    const data = await parseVideo(url, platform);
 
     // 7. 解析成功，扣除积分
     if (requiredCredits > 0) {
@@ -117,7 +118,7 @@ export async function parseVideoUrl(url: string): Promise<ParseResult> {
         requiredCredits,
         productType,
         isAnonymous,
-        `YouTube video parsing: ${data.title || 'Untitled'}`
+        `Video download (${platform}): ${data.title || 'Untitled'}`
       );
     }
 

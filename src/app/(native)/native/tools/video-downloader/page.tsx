@@ -268,6 +268,7 @@ export default function VideoDownloaderPage() {
       {isDetailModalOpen && videoInfo && (
         <VideoDownloaderDetailModal
           videoInfo={videoInfo}
+          videoUrl={url}
           onClose={() => setIsDetailModalOpen(false)}
           onSearchAnother={() => {
             setIsDetailModalOpen(false);

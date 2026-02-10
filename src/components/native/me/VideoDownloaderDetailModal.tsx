@@ -16,12 +16,15 @@ import DetailActionBar from './DetailActionBar';
 
 interface VideoDownloaderDetailModalProps {
   videoInfo: ParseResponse;
+  /** 用户输入的原始视频 URL（用于 TikTok 等 IP 锁定平台的代理下载） */
+  videoUrl: string;
   onClose: () => void;
   onSearchAnother: () => void;
 }
 
 export default function VideoDownloaderDetailModal({
   videoInfo,
+  videoUrl,
   onClose,
   onSearchAnother,
 }: VideoDownloaderDetailModalProps) {
@@ -194,7 +197,11 @@ export default function VideoDownloaderDetailModal({
               fileUrl={selectedFormat?.url || undefined}
               fileName={downloadFileName}
               fileType="video"
-              downloadHeaders={selectedFormat?.http_headers || undefined}
+              proxyDownloadInfo={
+                selectedFormat?.http_headers
+                  ? { originalUrl: videoUrl, formatId: selectedFormat.format_id }
+                  : undefined
+              }
               downloadText={t('videoDownloader.downloadButton')}
               showInterstitialOnDownload={true}
             />

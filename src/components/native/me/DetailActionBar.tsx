@@ -22,8 +22,8 @@ interface DetailActionBarProps {
   fileName?: string;
   /** 文件类型 - 决定保存位置：image/video→相册, music→Music目录, audio→Documents */
   fileType?: FileType;
-  /** 下载时需要携带的 HTTP headers（防盗链平台如 TikTok） */
-  downloadHeaders?: Record<string, string>;
+  /** 需要服务端代理下载的信息（TikTok 等 IP 锁定平台，通过 yt-dlp 重新下载） */
+  proxyDownloadInfo?: { originalUrl: string; formatId: string };
   /** Download 按钮文字 */
   downloadText?: string;
   /** 是否在弹出下载选项后显示插页式广告 */
@@ -48,7 +48,7 @@ export default function DetailActionBar({
   fileUrl,
   fileName = 'download',
   fileType = 'audio',
-  downloadHeaders,
+  proxyDownloadInfo,
   downloadText = 'Download',
   showInterstitialOnDownload = true,
   // 向后兼容的旧 API
@@ -119,11 +119,15 @@ export default function DetailActionBar({
 
     let downloadUrl = fileUrl;
 
-    // IP-locked CDN (TikTok etc.) → server-side download + R2 upload
-    if (downloadHeaders) {
+    // IP-locked CDN (TikTok etc.) → yt-dlp re-download + R2 upload
+    if (proxyDownloadInfo) {
       setPreparingAction('device');
       try {
-        const result = await proxyDownloadFormat(fileUrl, downloadHeaders, fileName);
+        const result = await proxyDownloadFormat(
+          proxyDownloadInfo.originalUrl,
+          proxyDownloadInfo.formatId,
+          fileName,
+        );
         if (!result.success || !result.url) {
           const { showToast } = await import('@/lib/native-toast');
           showToast({ text: result.error || 'Failed to prepare download', duration: 'long' });
@@ -141,7 +145,6 @@ export default function DetailActionBar({
     }
 
     setShowActionSheet(false);
-    // R2 URL is public, no headers needed
     await handleDownloadWithState(downloadUrl, fileName, setInternalDownloading, fileType);
   };
 
@@ -150,11 +153,15 @@ export default function DetailActionBar({
 
     let browserUrl = fileUrl;
 
-    // IP-locked CDN (TikTok etc.) → server-side download + R2 upload
-    if (downloadHeaders) {
+    // IP-locked CDN (TikTok etc.) → yt-dlp re-download + R2 upload
+    if (proxyDownloadInfo) {
       setPreparingAction('browser');
       try {
-        const result = await proxyDownloadFormat(fileUrl, downloadHeaders, fileName);
+        const result = await proxyDownloadFormat(
+          proxyDownloadInfo.originalUrl,
+          proxyDownloadInfo.formatId,
+          fileName,
+        );
         if (!result.success || !result.url) {
           const { showToast } = await import('@/lib/native-toast');
           showToast({ text: result.error || 'Failed to prepare download', duration: 'long' });

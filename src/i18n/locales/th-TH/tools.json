@@ -3,7 +3,7 @@
     "title": "ดาวน์โหลดวิดีโอ",
     "subtitle": "ดาวน์โหลดวิดีโอจาก YouTube, TikTok, Instagram, X และ Facebook ฟรี",
     "urlLabel": "ลิงก์วิดีโอ",
-    "urlPlaceholder": "วางลิงก์วิดีโอ (YouTube, TikTok, Instagram, X, Facebook)...",
+    "urlPlaceholder": "วางลิงก์วิดีโอที่นี่...",
     "parseButton": "วิเคราะห์",
     "parseVideoButton": "วิเคราะห์วิดีโอ",
     "parsing": "กำลังวิเคราะห์",
@@ -15,7 +15,8 @@
     "detected": "ตรวจพบ",
     "searchAnother": "ค้นหาอีก",
     "emptyTitle": "ดาวน์โหลดวิดีโอ",
-    "emptyDescription": "วางลิงก์วิดีโอด้านบนเพื่อเริ่มดาวน์โหลด รองรับ YouTube, TikTok, Instagram, Twitter/X และ Facebook",
+    "emptyDescription": "วางลิงก์วิดีโอด้านบนเพื่อเริ่มดาวน์โหลด",
+    "supportedPlatforms": "แพลตฟอร์มที่รองรับ",
     "tabs": {
       "videoWithAudio": "วิดีโอ",
       "videoOnly": "วิดีโอเท่านั้น",

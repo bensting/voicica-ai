@@ -3,7 +3,7 @@
     "title": "视频下载",
     "subtitle": "免费下载 YouTube、TikTok、Instagram、X 和 Facebook 视频",
     "urlLabel": "视频链接",
-    "urlPlaceholder": "粘贴视频链接（YouTube、TikTok、Instagram、X、Facebook）...",
+    "urlPlaceholder": "在此粘贴视频链接...",
     "parseButton": "解析",
     "parseVideoButton": "解析视频",
     "parsing": "正在解析中",
@@ -15,7 +15,8 @@
     "detected": "已识别",
     "searchAnother": "再搜一个",
     "emptyTitle": "下载视频",
-    "emptyDescription": "在上方粘贴视频链接即可开始下载，支持 YouTube、TikTok、Instagram、Twitter/X 和 Facebook。",
+    "emptyDescription": "在上方粘贴视频链接即可开始下载。",
+    "supportedPlatforms": "支持的平台",
     "tabs": {
       "videoWithAudio": "视频",
       "videoOnly": "仅视频",

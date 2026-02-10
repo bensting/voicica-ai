@@ -3,7 +3,7 @@
     "title": "影片下載",
     "subtitle": "免費下載 YouTube、TikTok、Instagram、X 和 Facebook 影片",
     "urlLabel": "影片連結",
-    "urlPlaceholder": "貼上影片連結（YouTube、TikTok、Instagram、X、Facebook）...",
+    "urlPlaceholder": "在此貼上影片連結...",
     "parseButton": "解析",
     "parseVideoButton": "解析影片",
     "parsing": "正在解析中",
@@ -15,7 +15,8 @@
     "detected": "已識別",
     "searchAnother": "再搜一個",
     "emptyTitle": "下載影片",
-    "emptyDescription": "在上方貼上影片連結即可開始下載，支援 YouTube、TikTok、Instagram、Twitter/X 和 Facebook。",
+    "emptyDescription": "在上方貼上影片連結即可開始下載。",
+    "supportedPlatforms": "支援的平台",
     "tabs": {
       "videoWithAudio": "影片",
       "videoOnly": "僅影片",

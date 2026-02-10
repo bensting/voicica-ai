@@ -3,7 +3,7 @@
     "title": "Baixar Vídeos",
     "subtitle": "Baixe vídeos do YouTube, TikTok, Instagram, X e Facebook grátis",
     "urlLabel": "URL do vídeo",
-    "urlPlaceholder": "Cole o link do vídeo (YouTube, TikTok, Instagram, X, Facebook)...",
+    "urlPlaceholder": "Cole o link do vídeo aqui...",
     "parseButton": "Analisar",
     "parseVideoButton": "Analisar vídeo",
     "parsing": "Analisando",
@@ -15,7 +15,8 @@
     "detected": "detectado",
     "searchAnother": "Buscar outro",
     "emptyTitle": "Baixar vídeos",
-    "emptyDescription": "Cole a URL de um vídeo acima para começar a baixar. Compatível com YouTube, TikTok, Instagram, Twitter/X e Facebook.",
+    "emptyDescription": "Cole uma URL de vídeo acima para começar o download.",
+    "supportedPlatforms": "Plataformas suportadas",
     "tabs": {
       "videoWithAudio": "Vídeo",
       "videoOnly": "Apenas vídeo",

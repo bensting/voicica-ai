@@ -3,7 +3,7 @@
     "title": "Descargador de Vídeos",
     "subtitle": "Descarga vídeos de YouTube, TikTok, Instagram, X y Facebook gratis",
     "urlLabel": "URL del vídeo",
-    "urlPlaceholder": "Pega el enlace del vídeo (YouTube, TikTok, Instagram, X, Facebook)...",
+    "urlPlaceholder": "Pega el enlace del video aquí...",
     "parseButton": "Analizar",
     "parseVideoButton": "Analizar video",
     "parsing": "Analizando",
@@ -15,7 +15,8 @@
     "detected": "detectado",
     "searchAnother": "Buscar otro",
     "emptyTitle": "Descargar vídeos",
-    "emptyDescription": "Pega una URL de vídeo arriba para comenzar a descargar. Compatible con YouTube, TikTok, Instagram, Twitter/X y Facebook.",
+    "emptyDescription": "Pega una URL de video arriba para empezar a descargar.",
+    "supportedPlatforms": "Plataformas compatibles",
     "tabs": {
       "videoWithAudio": "Vídeo",
       "videoOnly": "Solo vídeo",

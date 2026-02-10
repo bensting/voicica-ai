@@ -3,7 +3,7 @@
     "title": "Tải Video",
     "subtitle": "Tải video từ YouTube, TikTok, Instagram, X và Facebook miễn phí",
     "urlLabel": "URL Video",
-    "urlPlaceholder": "Dán liên kết video (YouTube, TikTok, Instagram, X, Facebook)...",
+    "urlPlaceholder": "Dán liên kết video tại đây...",
     "parseButton": "Phân tích",
     "parseVideoButton": "Phân tích video",
     "parsing": "Đang phân tích",
@@ -15,7 +15,8 @@
     "detected": "đã nhận diện",
     "searchAnother": "Tìm video khác",
     "emptyTitle": "Tải video",
-    "emptyDescription": "Dán URL video ở trên để bắt đầu tải. Hỗ trợ YouTube, TikTok, Instagram, Twitter/X và Facebook.",
+    "emptyDescription": "Dán URL video ở trên để bắt đầu tải xuống.",
+    "supportedPlatforms": "Nền tảng được hỗ trợ",
     "tabs": {
       "videoWithAudio": "Video",
       "videoOnly": "Chỉ video",

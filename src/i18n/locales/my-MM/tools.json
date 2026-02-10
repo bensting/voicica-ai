@@ -3,7 +3,7 @@
     "title": "ဗီဒီယိုဒေါင်းလုဒ်",
     "subtitle": "YouTube, TikTok, Instagram, X နှင့် Facebook မှ ဗီဒီယိုများကို အခမဲ့ဒေါင်းလုဒ်လုပ်ပါ",
     "urlLabel": "ဗီဒီယို URL",
-    "urlPlaceholder": "ဗီဒီယိုလင့်ခ်ကူးထည့်ပါ (YouTube, TikTok, Instagram, X, Facebook)...",
+    "urlPlaceholder": "ဗီဒီယိုလင့်ခ်ကိုဤနေရာတွင်ကူးထည့်ပါ...",
     "parseButton": "ခွဲခြမ်း",
     "parseVideoButton": "ဗီဒီယို ခွဲခြမ်းစိတ်ဖြာ",
     "parsing": "ခွဲခြမ်းနေသည်",
@@ -15,7 +15,8 @@
     "detected": "တွေ့ရှိပြီး",
     "searchAnother": "အခြားတစ်ခု ရှာမည်",
     "emptyTitle": "ဗီဒီယိုဒေါင်းလုဒ်",
-    "emptyDescription": "ဗီဒီယို URL ကို အထက်တွင်ကူးထည့်၍ ဒေါင်းလုဒ်စတင်ပါ။ YouTube, TikTok, Instagram, Twitter/X နှင့် Facebook ကိုပံ့ပိုးသည်။",
+    "emptyDescription": "ဒေါင်းလုဒ်စတင်ရန် အပေါ်တွင် ဗီဒီယို URL ကူးထည့်ပါ။",
+    "supportedPlatforms": "ပံ့ပိုးသော ပလက်ဖောင်းများ",
     "tabs": {
       "videoWithAudio": "ဗီဒီယို",
       "videoOnly": "ဗီဒီယိုသာ",

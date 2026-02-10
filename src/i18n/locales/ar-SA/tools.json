@@ -3,7 +3,7 @@
     "title": "تحميل الفيديو",
     "subtitle": "حمّل فيديوهات من YouTube و TikTok و Instagram و X و Facebook مجانًا",
     "urlLabel": "رابط الفيديو",
-    "urlPlaceholder": "الصق رابط الفيديو (YouTube، TikTok، Instagram، X، Facebook)...",
+    "urlPlaceholder": "الصق رابط الفيديو هنا...",
     "parseButton": "تحليل",
     "parseVideoButton": "تحليل الفيديو",
     "parsing": "جارٍ التحليل",
@@ -15,7 +15,8 @@
     "detected": "تم الكشف",
     "searchAnother": "البحث عن آخر",
     "emptyTitle": "تحميل الفيديوهات",
-    "emptyDescription": "الصق رابط الفيديو أعلاه لبدء التحميل. يدعم YouTube و TikTok و Instagram و Twitter/X و Facebook.",
+    "emptyDescription": "الصق رابط الفيديو أعلاه لبدء التنزيل.",
+    "supportedPlatforms": "المنصات المدعومة",
     "tabs": {
       "videoWithAudio": "فيديو",
       "videoOnly": "فيديو فقط",

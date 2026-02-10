@@ -3,7 +3,7 @@
     "title": "動画ダウンローダー",
     "subtitle": "YouTube、TikTok、Instagram、X、Facebookの動画を無料ダウンロード",
     "urlLabel": "動画URL",
-    "urlPlaceholder": "動画リンクを貼り付け（YouTube、TikTok、Instagram、X、Facebook）...",
+    "urlPlaceholder": "動画リンクをここに貼り付け...",
     "parseButton": "解析",
     "parseVideoButton": "動画を解析",
     "parsing": "解析中",
@@ -15,7 +15,8 @@
     "detected": "検出済み",
     "searchAnother": "別の動画を検索",
     "emptyTitle": "動画をダウンロード",
-    "emptyDescription": "上に動画URLを貼り付けてダウンロードを開始。YouTube、TikTok、Instagram、Twitter/X、Facebookに対応。",
+    "emptyDescription": "上に動画URLを貼り付けてダウンロードを開始。",
+    "supportedPlatforms": "対応プラットフォーム",
     "tabs": {
       "videoWithAudio": "動画",
       "videoOnly": "動画のみ",

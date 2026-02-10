@@ -3,7 +3,7 @@
     "title": "वीडियो डाउनलोडर",
     "subtitle": "YouTube, TikTok, Instagram, X और Facebook से वीडियो मुफ्त डाउनलोड करें",
     "urlLabel": "वीडियो URL",
-    "urlPlaceholder": "वीडियो लिंक पेस्ट करें (YouTube, TikTok, Instagram, X, Facebook)...",
+    "urlPlaceholder": "वीडियो लिंक यहाँ पेस्ट करें...",
     "parseButton": "पार्स करें",
     "parseVideoButton": "वीडियो पार्स करें",
     "parsing": "पार्स हो रहा है",
@@ -15,7 +15,8 @@
     "detected": "पहचाना गया",
     "searchAnother": "दूसरा खोजें",
     "emptyTitle": "वीडियो डाउनलोड करें",
-    "emptyDescription": "डाउनलोड शुरू करने के लिए ऊपर वीडियो URL पेस्ट करें। YouTube, TikTok, Instagram, Twitter/X और Facebook समर्थित हैं।",
+    "emptyDescription": "डाउनलोड शुरू करने के लिए ऊपर वीडियो URL पेस्ट करें।",
+    "supportedPlatforms": "समर्थित प्लेटफ़ॉर्म",
     "tabs": {
       "videoWithAudio": "वीडियो",
       "videoOnly": "केवल वीडियो",

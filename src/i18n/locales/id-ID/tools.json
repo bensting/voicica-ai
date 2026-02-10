@@ -3,7 +3,7 @@
     "title": "Pengunduh Video",
     "subtitle": "Unduh video dari YouTube, TikTok, Instagram, X & Facebook gratis",
     "urlLabel": "URL Video",
-    "urlPlaceholder": "Tempel tautan video (YouTube, TikTok, Instagram, X, Facebook)...",
+    "urlPlaceholder": "Tempel tautan video di sini...",
     "parseButton": "Parse",
     "parseVideoButton": "Analisis video",
     "parsing": "Sedang memproses",
@@ -15,7 +15,8 @@
     "detected": "terdeteksi",
     "searchAnother": "Cari lainnya",
     "emptyTitle": "Unduh Video",
-    "emptyDescription": "Tempel URL video di atas untuk mulai mengunduh. Mendukung YouTube, TikTok, Instagram, Twitter/X, dan Facebook.",
+    "emptyDescription": "Tempel URL video di atas untuk mulai mengunduh.",
+    "supportedPlatforms": "Platform yang didukung",
     "tabs": {
       "videoWithAudio": "Video",
       "videoOnly": "Video Saja",

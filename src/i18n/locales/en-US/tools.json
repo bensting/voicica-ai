@@ -3,7 +3,7 @@
     "title": "Video Downloader",
     "subtitle": "Download videos from YouTube, TikTok, Instagram, X & Facebook",
     "urlLabel": "Video URL",
-    "urlPlaceholder": "Paste video link (YouTube, TikTok, Instagram, X, Facebook)...",
+    "urlPlaceholder": "Paste video link here...",
     "parseButton": "Parse",
     "parseVideoButton": "Parse Video",
     "parsing": "Parsing",
@@ -15,7 +15,8 @@
     "detected": "detected",
     "searchAnother": "Search Another",
     "emptyTitle": "Download Videos",
-    "emptyDescription": "Paste a video URL above to start downloading. Supports YouTube, TikTok, Instagram, Twitter/X, and Facebook.",
+    "emptyDescription": "Paste a video URL above to start downloading.",
+    "supportedPlatforms": "Supported Platforms",
     "tabs": {
       "videoWithAudio": "Video",
       "videoOnly": "Video Only",

@@ -25,7 +25,7 @@ import NativeDailyTasksModal from '@/components/native/NativeDailyTasksModal';
 import CreditsInfoBar from '@/components/native/common/CreditsInfoBar';
 import GradientButton from '@/components/native/common/GradientButton';
 import CreditsIcon from '@/components/native/common/CreditsIcon';
-import VideoDownloadIcon from '@/components/native/icons/VideoDownloadIcon';
+import { Link2 } from 'lucide-react';
 
 /**
  * Video Downloader 页面 (Native) - 多平台
@@ -176,13 +176,16 @@ export default function VideoDownloaderPage() {
           {/* ====== 搜索栏 (Pill Shape) ====== */}
           <div>
             <div className="flex items-center bg-white/5 border border-purple-500/30 rounded-full overflow-hidden focus-within:border-purple-500/60 transition-colors">
+              <div className="pl-4 text-gray-500 flex-shrink-0">
+                <Link2 size={16} />
+              </div>
               <input
                 type="text"
                 value={url}
                 onChange={(e) => setUrl(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleParse()}
                 placeholder={t('videoDownloader.urlPlaceholder')}
-                className="flex-1 bg-transparent text-white placeholder-gray-500 px-5 py-3.5 text-sm focus:outline-none min-w-0"
+                className="flex-1 bg-transparent text-white placeholder-gray-500 pl-2.5 pr-5 py-3.5 text-sm focus:outline-none min-w-0"
               />
               {url && (
                 <button onClick={handleClear} className="p-2 text-gray-500 hover:text-gray-300 transition-colors">
@@ -210,13 +213,78 @@ export default function VideoDownloaderPage() {
 
           {/* ====== 空状态 ====== */}
           {!error && (
-            <div className="flex flex-col items-center py-16 gap-4">
-              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-600/20 to-purple-800/20 flex items-center justify-center">
-                <VideoDownloadIcon className="w-8 h-8" bgColor="#9333ea" />
+            <div className="flex flex-col items-center pt-8 gap-6">
+              <div className="text-center px-4">
+                <h3 className="text-white text-lg font-semibold mb-2">{t('videoDownloader.emptyTitle')}</h3>
+                <p className="text-sm text-gray-500">{t('videoDownloader.emptyDescription')}</p>
               </div>
-              <div className="text-center px-6">
-                <h3 className="text-white font-medium mb-1">{t('videoDownloader.emptyTitle')}</h3>
-                <p className="text-sm text-gray-500 leading-relaxed">{t('videoDownloader.emptyDescription')}</p>
+
+              {/* Supported platform logos */}
+              <div className="w-full">
+                <p className="text-[11px] text-gray-600 text-center mb-4 uppercase tracking-wider font-medium">
+                  {t('videoDownloader.supportedPlatforms')}
+                </p>
+                <div className="flex justify-center items-start gap-5">
+                  {/* YouTube */}
+                  <div className="flex flex-col items-center gap-1.5">
+                    <div className="w-11 h-11 rounded-xl bg-red-500/10 flex items-center justify-center">
+                      <svg className="w-6 h-6" viewBox="0 0 24 18">
+                        <rect width="24" height="18" rx="4" fill="#FF0000" />
+                        <path d="M9.5 4.5L16.5 9L9.5 13.5V4.5Z" fill="white" />
+                      </svg>
+                    </div>
+                    <span className="text-[10px] text-gray-500">YouTube</span>
+                  </div>
+
+                  {/* TikTok */}
+                  <div className="flex flex-col items-center gap-1.5">
+                    <div className="w-11 h-11 rounded-xl bg-white/5 flex items-center justify-center">
+                      <svg className="w-5 h-5 text-white" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.27 6.27 0 00-.79-.05c-3.56 0-6.45 2.89-6.45 6.45s2.89 6.45 6.45 6.45 6.45-2.89 6.45-6.45V8.98a8.32 8.32 0 004.87 1.56V7.09a4.84 4.84 0 01-1.22-.4z" />
+                      </svg>
+                    </div>
+                    <span className="text-[10px] text-gray-500">TikTok</span>
+                  </div>
+
+                  {/* Instagram */}
+                  <div className="flex flex-col items-center gap-1.5">
+                    <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-purple-500/10 via-pink-500/10 to-orange-500/10 flex items-center justify-center">
+                      <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none">
+                        <rect x="2" y="2" width="20" height="20" rx="5" stroke="url(#igGrad)" strokeWidth="2" />
+                        <circle cx="12" cy="12" r="5" stroke="url(#igGrad)" strokeWidth="2" />
+                        <circle cx="18" cy="6" r="1.5" fill="url(#igGrad)" />
+                        <defs>
+                          <linearGradient id="igGrad" x1="2" y1="22" x2="22" y2="2">
+                            <stop stopColor="#F58529" />
+                            <stop offset="0.5" stopColor="#DD2A7B" />
+                            <stop offset="1" stopColor="#8134AF" />
+                          </linearGradient>
+                        </defs>
+                      </svg>
+                    </div>
+                    <span className="text-[10px] text-gray-500">Instagram</span>
+                  </div>
+
+                  {/* X (Twitter) */}
+                  <div className="flex flex-col items-center gap-1.5">
+                    <div className="w-11 h-11 rounded-xl bg-white/5 flex items-center justify-center">
+                      <svg className="w-4 h-4 text-white" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                      </svg>
+                    </div>
+                    <span className="text-[10px] text-gray-500">X</span>
+                  </div>
+
+                  {/* Facebook */}
+                  <div className="flex flex-col items-center gap-1.5">
+                    <div className="w-11 h-11 rounded-xl bg-blue-500/10 flex items-center justify-center">
+                      <svg className="w-5 h-5" viewBox="0 0 24 24" fill="#1877F2">
+                        <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+                      </svg>
+                    </div>
+                    <span className="text-[10px] text-gray-500">Facebook</span>
+                  </div>
+                </div>
               </div>
             </div>
           )}

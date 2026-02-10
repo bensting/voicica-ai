@@ -11,6 +11,14 @@ export default function NewHero() {
     HOME_SHOWCASE_CONFIG;
 
   const handleCTAClick = () => {
+    // Microsoft UET 事件追踪
+    if (typeof window !== 'undefined' && window.uetq) {
+      window.uetq.push('event', 'start_creating_click', {
+        event_category: 'cta',
+        event_label: 'home_hero',
+      });
+    }
+
     // 直接检测 Android，避免 state 延迟问题
     const isAndroid = /android/i.test(navigator.userAgent);
     if (isAndroid) {

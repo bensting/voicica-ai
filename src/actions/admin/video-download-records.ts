@@ -143,7 +143,7 @@ export async function getVideoDownloadRecordsStats() {
   ] = await Promise.all([
     prisma.video_download_records.count(),
     prisma.video_download_records.count({ where: { status: 'SUCCESS' } }),
-    prisma.video_download_records.count({ where: { status: 'FAILED' } }),
+    prisma.video_download_records.count({ where: { status: 'FAILURE' } }),
     prisma.video_download_records.count({ where: { created_at: { gte: todayStart } } }),
     prisma.video_download_records.count({ where: { created_at: { gte: weekStart } } }),
     prisma.video_download_records.aggregate({ _sum: { credits_cost: true } }),

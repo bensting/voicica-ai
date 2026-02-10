@@ -45,6 +45,7 @@ interface StatsResult {
     image: TaskStats;
     cover: TaskStats;
     dialogue: TaskStats;
+    download: TaskStats;
   };
   // 兼容旧接口
   ttsRecords: {
@@ -133,6 +134,7 @@ export async function getAdminStats(timeRange: TimeRange): Promise<StatsResult> 
     imageStats,
     coverStats,
     dialogueStats,
+    downloadStats,
   ] = await Promise.all([
     // 用户总数
     prisma.users.count(),
@@ -167,6 +169,7 @@ export async function getAdminStats(timeRange: TimeRange): Promise<StatsResult> 
     getTaskStats('image_records'),
     getTaskStats('cover_records'),
     getTaskStats('dialogue_records'),
+    getTaskStats('video_download_records'),
   ]);
 
   // 转换每日数据格式
@@ -207,6 +210,7 @@ export async function getAdminStats(timeRange: TimeRange): Promise<StatsResult> 
       image: formatTaskStats(imageStats),
       cover: formatTaskStats(coverStats),
       dialogue: formatTaskStats(dialogueStats),
+      download: formatTaskStats(downloadStats),
     },
     // 兼容旧接口
     ttsRecords: {

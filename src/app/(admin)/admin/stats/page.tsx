@@ -37,6 +37,7 @@ interface StatsData {
     image: TaskStats;
     cover: TaskStats;
     dialogue: TaskStats;
+    download: TaskStats;
   };
   ttsRecords: {
     total: number;
@@ -55,6 +56,7 @@ const TASK_TYPES = [
   { key: 'image', label: 'Image', color: 'purple', icon: '🖼️' },
   { key: 'cover', label: 'Cover', color: 'orange', icon: '🎙️' },
   { key: 'dialogue', label: 'Dialogue', color: 'cyan', icon: '💬' },
+  { key: 'download', label: 'Download', color: 'yellow', icon: '⬇️' },
 ] as const;
 
 type TaskType = (typeof TASK_TYPES)[number]['key'];
@@ -361,7 +363,7 @@ export default function AdminStatsPage() {
                     </div>
                     <BarChart
                       data={taskStats.daily}
-                      color={type.color as 'purple' | 'blue' | 'green' | 'pink' | 'orange' | 'cyan'}
+                      color={type.color as 'purple' | 'blue' | 'green' | 'pink' | 'orange' | 'cyan' | 'yellow'}
                     />
                   </div>
                 </div>

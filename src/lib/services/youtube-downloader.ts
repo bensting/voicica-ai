@@ -42,6 +42,8 @@ const TWITTER_PATTERNS = [
 const FACEBOOK_PATTERNS = [
   /(?:https?:\/\/)?(?:www\.)?facebook\.com\/[^/]+\/videos\/\d+/,
   /(?:https?:\/\/)?(?:www\.)?facebook\.com\/watch/,
+  /(?:https?:\/\/)?(?:www\.)?facebook\.com\/share\/(?:r|v|p)\/[\w-]+/,
+  /(?:https?:\/\/)?(?:www\.)?facebook\.com\/reel\/[\w-]+/,
   /(?:https?:\/\/)?fb\.watch\/[\w-]+/,
   /(?:https?:\/\/)?(?:www\.)?fb\.com\//,
 ];

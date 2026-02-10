@@ -11,12 +11,12 @@ import {
 
 const STATUS_COLORS: Record<string, { bg: string; text: string }> = {
   SUCCESS: { bg: 'bg-green-100', text: 'text-green-800' },
-  FAILED: { bg: 'bg-red-100', text: 'text-red-800' },
+  FAILURE: { bg: 'bg-red-100', text: 'text-red-800' },
 };
 
 const STATUS_LABELS: Record<string, string> = {
   SUCCESS: '成功',
-  FAILED: '失败',
+  FAILURE: '失败',
 };
 
 const PLATFORM_COLORS: Record<string, { bg: string; text: string }> = {
@@ -219,7 +219,7 @@ export default function VideoDownloadRecordsPage() {
             >
               <option value="">全部状态</option>
               <option value="SUCCESS">成功</option>
-              <option value="FAILED">失败</option>
+              <option value="FAILURE">失败</option>
             </select>
           </div>
           <div>

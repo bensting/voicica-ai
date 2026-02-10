@@ -1,0 +1,6 @@
+name = "video-proxy"
+main = "src/index.ts"
+compatibility_date = "2024-12-01"
+
+# 部署后在 Cloudflare Dashboard 设置 secret:
+# npx wrangler secret put API_SECRET

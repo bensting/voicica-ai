@@ -95,3 +95,7 @@ keystore.properties
 .releases.json
 
 build-output/*
+
+# Cloudflare Workers
+workers/*/node_modules
+workers/*/.wrangler

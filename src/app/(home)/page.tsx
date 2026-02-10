@@ -1,4 +1,16 @@
+import type { Metadata } from 'next';
 import { NewHero } from '@/components/sections/new-home';
+import LanguageSwitcher from '@/components/sections/new-home/LanguageSwitcher';
+
+export const metadata: Metadata = {
+  alternates: {
+    canonical: 'https://voicica.ai',
+    languages: {
+      en: 'https://voicica.ai',
+      ja: 'https://voicica.ai/ja',
+    },
+  },
+};
 
 export default function Home() {
   return (
@@ -57,6 +69,8 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      <LanguageSwitcher current="en" />
     </div>
   );
 }

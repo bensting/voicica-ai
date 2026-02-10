@@ -6,9 +6,39 @@ import PhoneMockup from './PhoneMockup';
 import ArtShowcase from './ArtShowcase';
 import AudioShowcase from './AudioShowcase';
 
-export default function NewHero() {
-  const { backgroundImage, avatars, playStoreUrl, trustText } =
+const heroTexts = {
+  en: {
+    titleLine1: 'Turn Your Ideas',
+    titleLine2: 'Into Voice & Art',
+    subtitle: '3200+ AI Voices. Professional AI Art. 100% Free',
+    showcase: 'Preview Showcase',
+    cta: '[ Start Creating Now ]',
+    trustText: 'Trusted by 1M+ creators',
+    tools: [
+      { line1: 'Video', line2: 'Downloader' },
+      { line1: 'HD', line2: 'Upscaler' },
+      { line1: 'BG', line2: 'Remover' },
+    ],
+  },
+  ja: {
+    titleLine1: 'あなたのアイデアを',
+    titleLine2: '声とアートに',
+    subtitle: '3200以上のAI音声。プロのAIアート。完全無料',
+    showcase: 'プレビューショーケース',
+    cta: '[ 今すぐ作成する ]',
+    trustText: '100万人以上のクリエイターが利用',
+    tools: [
+      { line1: '動画', line2: 'ダウンロード' },
+      { line1: 'HD', line2: '高画質化' },
+      { line1: '背景', line2: '削除' },
+    ],
+  },
+} as const;
+
+export default function NewHero({ locale = 'en' }: { locale?: 'en' | 'ja' }) {
+  const { backgroundImage, avatars, playStoreUrl } =
     HOME_SHOWCASE_CONFIG;
+  const t = heroTexts[locale];
 
   const handleCTAClick = () => {
     // Microsoft UET 事件追踪
@@ -89,14 +119,14 @@ export default function NewHero() {
 
                 {/* Main Title */}
                 <h1 className="mb-2 text-center text-2xl font-bold leading-tight text-white sm:text-3xl">
-                  Turn Your Ideas
+                  {t.titleLine1}
                   <br />
-                  Into Voice & Art
+                  {t.titleLine2}
                 </h1>
 
                 {/* Subtitle - single line, centered */}
                 <p className="whitespace-nowrap text-center text-xs text-gray-300 sm:text-sm">
-                  3200+ AI Voices. Professional AI Art. 100% Free
+                  {t.subtitle}
                 </p>
               </div>
 
@@ -105,7 +135,7 @@ export default function NewHero() {
                 {/* Preview Showcase Section */}
                 <div className="mb-4">
                   <h2 className="mb-3 text-sm font-semibold text-white">
-                    Preview Showcase
+                    {t.showcase}
                   </h2>
 
                   <div className="flex gap-3">
@@ -127,7 +157,7 @@ export default function NewHero() {
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v12m0 0l-4-4m4 4l4-4M5 20h14" />
                               </svg>
                             </div>
-                            <span className="text-[7px] lg:text-[11px] leading-tight text-center lg:text-left text-white/80">Video<br/>Downloader</span>
+                            <span className="text-[7px] lg:text-[11px] leading-tight text-center lg:text-left text-white/80">{t.tools[0].line1}<br/>{t.tools[0].line2}</span>
                           </div>
                           <div className="flex flex-col items-center gap-1 lg:flex-row lg:gap-2">
                             <div className="flex h-6 w-6 lg:h-7 lg:w-7 flex-shrink-0 items-center justify-center rounded-lg bg-cyan-600/80">
@@ -135,7 +165,7 @@ export default function NewHero() {
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" />
                               </svg>
                             </div>
-                            <span className="text-[7px] lg:text-[11px] leading-tight text-center lg:text-left text-white/80">HD<br/>Upscaler</span>
+                            <span className="text-[7px] lg:text-[11px] leading-tight text-center lg:text-left text-white/80">{t.tools[1].line1}<br/>{t.tools[1].line2}</span>
                           </div>
                           <div className="flex flex-col items-center gap-1 lg:flex-row lg:gap-2">
                             <div className="flex h-6 w-6 lg:h-7 lg:w-7 flex-shrink-0 items-center justify-center rounded-lg bg-pink-600/80">
@@ -143,7 +173,7 @@ export default function NewHero() {
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M14.121 14.121L19 19m-7-7l7-7m-7 7l-2.879 2.879M12 12L9.121 9.121m0 5.758a3 3 0 10-4.243 4.243 3 3 0 004.243-4.243zm0-5.758a3 3 0 10-4.243-4.243 3 3 0 004.243 4.243z" />
                               </svg>
                             </div>
-                            <span className="text-[7px] lg:text-[11px] leading-tight text-center lg:text-left text-white/80">BG<br/>Remover</span>
+                            <span className="text-[7px] lg:text-[11px] leading-tight text-center lg:text-left text-white/80">{t.tools[2].line1}<br/>{t.tools[2].line2}</span>
                           </div>
                         </div>
                       </div>
@@ -158,7 +188,7 @@ export default function NewHero() {
                 >
                   <div className="relative flex items-center justify-center rounded-full bg-gray-900/80 px-6 py-3 backdrop-blur-sm transition-colors group-hover:bg-gray-900/60">
                     <span className="text-sm font-semibold text-white">
-                      [ Start Creating Now ]
+                      {t.cta}
                     </span>
                   </div>
                 </button>
@@ -182,7 +212,7 @@ export default function NewHero() {
                       </div>
                     ))}
                   </div>
-                  <p className="text-xs text-gray-400">{trustText}</p>
+                  <p className="text-xs text-gray-400">{t.trustText}</p>
                 </div>
               </div>
             </div>

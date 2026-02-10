@@ -12,7 +12,7 @@ import { InsufficientCreditsError } from '@/lib/errors';
 import { calculateProductCreditsCost } from '@/config/creditsCost';
 import { ProductType } from '@/config/productType';
 import { detectVideoPlatform } from '@/lib/services/youtube-downloader';
-import { parseVideo } from '@/lib/services/youtube-parser';
+import { parseVideo, downloadVideoFormat } from '@/lib/services/youtube-parser';
 import { checkCredits, deductCredits } from '@/lib/credits';
 import { uploadVideo } from '@/lib/services/r2-storage';
 
@@ -160,28 +160,18 @@ export interface ProxyDownloadResult {
 
 /**
  * 服务端代理下载视频格式（用于 TikTok 等 IP 锁定的平台）
- * 服务端 fetch 下载 → 上传 R2 → 返回 R2 公开 URL
+ * 通过 yt-dlp 重新协商下载（获取当前 IP 可用的新 CDN URL）→ 上传 R2 → 返回 R2 公开 URL
  */
 export async function proxyDownloadFormat(
-  videoUrl: string,
-  httpHeaders: Record<string, string>,
+  originalUrl: string,
+  formatId: string,
   fileName: string
 ): Promise<ProxyDownloadResult> {
   try {
-    console.log('🎬 [proxyDownload] 开始代理下载:', fileName);
+    console.log('🎬 [proxyDownload] 开始 yt-dlp 下载:', { formatId, fileName });
 
-    // 服务端下载（同 IP，绕过防盗链）
-    const response = await fetch(videoUrl, {
-      headers: httpHeaders,
-      redirect: 'follow',
-    });
-
-    if (!response.ok) {
-      console.error(`❌ [proxyDownload] 下载失败: ${response.status}`);
-      return { success: false, error: `Download failed: ${response.status}` };
-    }
-
-    const buffer = Buffer.from(await response.arrayBuffer());
+    // yt-dlp 重新协商下载（创建新会话，获取新 CDN URL）
+    const buffer = await downloadVideoFormat(originalUrl, formatId);
     console.log(`📦 [proxyDownload] 下载完成: ${(buffer.length / 1024 / 1024).toFixed(1)}MB`);
 
     // 上传到 R2

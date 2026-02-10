@@ -197,6 +197,76 @@ function mapYtdlpInfo(info: any): ParseResponse {
 }
 
 /**
+ * Download a specific format using yt-dlp
+ * Used for platforms with IP-locked CDNs (TikTok etc.)
+ * yt-dlp re-negotiates the download session, getting fresh CDN URLs for the current IP.
+ */
+export async function downloadVideoFormat(url: string, formatId: string): Promise<Buffer> {
+  if (process.env.NODE_ENV === 'development') {
+    return downloadFormatLocal(url, formatId);
+  }
+  return downloadFormatViaApi(url, formatId);
+}
+
+/**
+ * Local dev: download via yt-dlp child_process, pipe to stdout
+ */
+async function downloadFormatLocal(url: string, formatId: string): Promise<Buffer> {
+  const { execSync } = await import('child_process');
+
+  const args = [
+    '-m', 'yt_dlp',
+    '-f', formatId,
+    '-o', '-',
+    '--quiet',
+    '--no-warnings',
+    '--no-check-certificates',
+    '--no-playlist',
+    url,
+  ];
+
+  console.log(`🎬 [downloadFormatLocal] yt-dlp -f ${formatId} "${url}"`);
+
+  const buffer = execSync(`python ${args.map(a => `"${a}"`).join(' ')}`, {
+    timeout: 120000,
+    maxBuffer: 100 * 1024 * 1024, // 100MB
+  });
+
+  console.log(`✅ [downloadFormatLocal] Downloaded ${(buffer.length / 1024 / 1024).toFixed(1)}MB`);
+  return buffer;
+}
+
+/**
+ * Production: call Python serverless endpoint to download via yt-dlp
+ */
+async function downloadFormatViaApi(url: string, formatId: string): Promise<Buffer> {
+  const apiBase = process.env.NEXT_PUBLIC_APP_URL
+    || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000');
+
+  const res = await fetch(`${apiBase}/api/download_video`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-Internal-Secret': process.env.INTERNAL_API_SECRET || '',
+    },
+    body: JSON.stringify({ url, format_id: formatId }),
+  });
+
+  if (!res.ok) {
+    let errorMessage = 'Download failed';
+    try {
+      const errorData = await res.json();
+      errorMessage = errorData.error || errorMessage;
+    } catch {
+      // ignore
+    }
+    throw new Error(errorMessage);
+  }
+
+  return Buffer.from(await res.arrayBuffer());
+}
+
+/**
  * Map codec string to short display name
  */
 function shortCodec(codec: string | undefined): string {

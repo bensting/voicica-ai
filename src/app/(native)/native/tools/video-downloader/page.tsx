@@ -15,7 +15,6 @@ import { getVideoParseErrorMessage } from '@/lib/services/video-downloader-utils
 import { calculateProductCreditsCost } from '@/config/creditsCost';
 import { ProductType } from '@/config/productType';
 import { checkCreditsBeforeGenerate } from '@/lib/credits-check';
-import { adConfig } from '@/config/native/adConfig';
 import CreatePageHeader from '@/components/native/common/CreatePageHeader';
 import GeneratingModal, { type GeneratingStatus } from '@/components/native/common/GeneratingModal';
 import VideoDownloaderDetailModal from '@/components/native/me/VideoDownloaderDetailModal';
@@ -158,7 +157,7 @@ export default function VideoDownloaderPage() {
       } catch (err) {
         console.error('[VideoDownloader] Ad error:', err);
       }
-    }, adConfig.rewardedAdDelayMs);
+    }, 300); // 视频解析很快（2-3s），不用等 5s，立即弹出广告
 
     return () => clearTimeout(timer);
   }, [isGeneratingModalOpen, generatingStatus, isSubscribed, adWatched, showRewardedAd]);

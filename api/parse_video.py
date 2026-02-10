@@ -58,7 +58,9 @@ class handler(BaseHTTPRequestHandler):
     def _parse_video(self, url: str) -> dict:
         import yt_dlp
 
-        proxy_url = os.environ.get('YOUTUBE_PROXY_URL', '')
+        # YouTube 专用代理，非 YouTube 平台不使用
+        is_youtube = any(h in url for h in ['youtube.com', 'youtu.be'])
+        proxy_url = os.environ.get('YOUTUBE_PROXY_URL', '') if is_youtube else ''
         ydl_opts = {
             'quiet': True,
             'no_warnings': True,
@@ -110,6 +112,9 @@ class handler(BaseHTTPRequestHandler):
                     if codec:
                         quality = f'{quality} {codec}'
 
+            # 非 YouTube 平台保留 http_headers（Referer/Cookie 等防盗链）
+            http_headers = f.get('http_headers') if not is_youtube else None
+
             formats.append({
                 'format_id': str(f.get('format_id', '')),
                 'quality': quality,
@@ -117,6 +122,7 @@ class handler(BaseHTTPRequestHandler):
                 'filesize': f.get('filesize') or f.get('filesize_approx'),
                 'note': note,
                 'url': dl_url,
+                'http_headers': http_headers,
             })
 
         return {

@@ -21,6 +21,8 @@ interface DetailActionBarProps {
   fileName?: string;
   /** 文件类型 - 决定保存位置：image/video→相册, music→Music目录, audio→Documents */
   fileType?: FileType;
+  /** 下载时需要携带的 HTTP headers（防盗链平台如 TikTok） */
+  downloadHeaders?: Record<string, string>;
   /** Download 按钮文字 */
   downloadText?: string;
   /** 是否在弹出下载选项后显示插页式广告 */
@@ -45,6 +47,7 @@ export default function DetailActionBar({
   fileUrl,
   fileName = 'download',
   fileType = 'audio',
+  downloadHeaders,
   downloadText = 'Download',
   showInterstitialOnDownload = true,
   // 向后兼容的旧 API
@@ -112,17 +115,33 @@ export default function DetailActionBar({
   const handleDownloadToDevice = async () => {
     if (!fileUrl) return;
     setShowActionSheet(false);
-    await handleDownloadWithState(fileUrl, fileName, setInternalDownloading, fileType);
+    await handleDownloadWithState(fileUrl, fileName, setInternalDownloading, fileType, downloadHeaders);
   };
 
   const handleOpenInBrowser = async () => {
     if (!fileUrl) return;
     setShowActionSheet(false);
+
+    // 有 downloadHeaders 的平台需要走代理 URL
+    let browserUrl = fileUrl;
+    if (downloadHeaders) {
+      const proxyBase = process.env.NEXT_PUBLIC_VIDEO_PROXY_URL;
+      if (proxyBase) {
+        const encodedUrl = btoa(fileUrl);
+        const encodedHeaders = btoa(JSON.stringify(downloadHeaders));
+        browserUrl = `${proxyBase}/download?url=${encodeURIComponent(encodedUrl)}&h=${encodeURIComponent(encodedHeaders)}`;
+        const proxySecret = process.env.NEXT_PUBLIC_VIDEO_PROXY_SECRET;
+        if (proxySecret) {
+          browserUrl += `&secret=${encodeURIComponent(proxySecret)}`;
+        }
+      }
+    }
+
     try {
-      await Browser.open({ url: fileUrl });
+      await Browser.open({ url: browserUrl });
     } catch (error) {
       console.error('Failed to open browser:', error);
-      window.open(fileUrl, '_blank');
+      window.open(browserUrl, '_blank');
     }
   };
 

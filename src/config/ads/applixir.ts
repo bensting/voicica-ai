@@ -23,7 +23,7 @@ const devConfig: AppLixirConfig = {
  */
 const prodConfig: AppLixirConfig = {
   apiKey: '6efa877c-8828-4355-977a-fd57996ddcbf',
-  enabled: true,
+  enabled: false,
 };
 
 // 根据环境选择配置

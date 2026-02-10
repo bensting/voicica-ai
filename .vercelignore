@@ -29,3 +29,6 @@ docs/
 scripts/
 
 build-output/
+
+# Cloudflare Workers (独立部署，Vercel 不需要)
+workers/

@@ -14,6 +14,7 @@ import { ProductType } from '@/config/productType';
 import { detectVideoPlatform } from '@/lib/services/youtube-downloader';
 import { parseVideo } from '@/lib/services/youtube-parser';
 import { checkCredits, deductCredits } from '@/lib/credits';
+import { uploadVideo } from '@/lib/services/r2-storage';
 
 // 视频格式信息
 export interface VideoFormat {
@@ -147,5 +148,52 @@ export async function parseVideoUrl(url: string): Promise<ParseResult> {
       success: false,
       errorCode: 'PARSE_FAILED',
     };
+  }
+}
+
+// 代理下载结果
+export interface ProxyDownloadResult {
+  success: boolean;
+  url?: string;
+  error?: string;
+}
+
+/**
+ * 服务端代理下载视频格式（用于 TikTok 等 IP 锁定的平台）
+ * 服务端 fetch 下载 → 上传 R2 → 返回 R2 公开 URL
+ */
+export async function proxyDownloadFormat(
+  videoUrl: string,
+  httpHeaders: Record<string, string>,
+  fileName: string
+): Promise<ProxyDownloadResult> {
+  try {
+    console.log('🎬 [proxyDownload] 开始代理下载:', fileName);
+
+    // 服务端下载（同 IP，绕过防盗链）
+    const response = await fetch(videoUrl, {
+      headers: httpHeaders,
+      redirect: 'follow',
+    });
+
+    if (!response.ok) {
+      console.error(`❌ [proxyDownload] 下载失败: ${response.status}`);
+      return { success: false, error: `Download failed: ${response.status}` };
+    }
+
+    const buffer = Buffer.from(await response.arrayBuffer());
+    console.log(`📦 [proxyDownload] 下载完成: ${(buffer.length / 1024 / 1024).toFixed(1)}MB`);
+
+    // 上传到 R2
+    const ext = fileName.split('.').pop() || 'mp4';
+    const r2FileName = `${Date.now()}_${Math.random().toString(36).slice(2, 8)}.${ext}`;
+    const contentType = ext === 'mp4' ? 'video/mp4' : ext === 'webm' ? 'video/webm' : 'video/mp4';
+    const r2Url = await uploadVideo(buffer, r2FileName, contentType, 'video_downloads');
+
+    console.log('✅ [proxyDownload] R2 上传成功:', r2Url);
+    return { success: true, url: r2Url };
+  } catch (error) {
+    console.error('❌ [proxyDownload] 错误:', error);
+    return { success: false, error: 'Proxy download failed' };
   }
 }

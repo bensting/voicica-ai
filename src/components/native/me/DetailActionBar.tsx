@@ -7,6 +7,7 @@ import GradientButton from '@/components/native/common/GradientButton';
 import { handleDownloadWithState, type FileType } from '@/lib/native-download';
 import { useInterstitialAd } from '@/hooks/useInterstitialAd';
 import { useSubscription } from '@/contexts/SubscriptionContext';
+import { proxyDownloadFormat } from '@/actions/video-downloader';
 
 interface DetailActionBarProps {
   /** 是否显示 Recreate 按钮 */
@@ -57,6 +58,7 @@ export default function DetailActionBar({
 }: DetailActionBarProps) {
   const [showActionSheet, setShowActionSheet] = useState(false);
   const [internalDownloading, setInternalDownloading] = useState(false);
+  const [preparingAction, setPreparingAction] = useState<'device' | 'browser' | null>(null);
   const hasShownAdRef = useRef(false);
 
   // 插页式广告 hook
@@ -114,28 +116,62 @@ export default function DetailActionBar({
 
   const handleDownloadToDevice = async () => {
     if (!fileUrl) return;
+
+    let downloadUrl = fileUrl;
+
+    // IP-locked CDN (TikTok etc.) → server-side download + R2 upload
+    if (downloadHeaders) {
+      setPreparingAction('device');
+      try {
+        const result = await proxyDownloadFormat(fileUrl, downloadHeaders, fileName);
+        if (!result.success || !result.url) {
+          const { showToast } = await import('@/lib/native-toast');
+          showToast({ text: result.error || 'Failed to prepare download', duration: 'long' });
+          setPreparingAction(null);
+          return;
+        }
+        downloadUrl = result.url;
+      } catch {
+        const { showToast } = await import('@/lib/native-toast');
+        showToast({ text: 'Failed to prepare download', duration: 'long' });
+        setPreparingAction(null);
+        return;
+      }
+      setPreparingAction(null);
+    }
+
     setShowActionSheet(false);
-    await handleDownloadWithState(fileUrl, fileName, setInternalDownloading, fileType, downloadHeaders);
+    // R2 URL is public, no headers needed
+    await handleDownloadWithState(downloadUrl, fileName, setInternalDownloading, fileType);
   };
 
   const handleOpenInBrowser = async () => {
     if (!fileUrl) return;
-    setShowActionSheet(false);
 
-    // 有 downloadHeaders 的平台需要走代理 URL
     let browserUrl = fileUrl;
+
+    // IP-locked CDN (TikTok etc.) → server-side download + R2 upload
     if (downloadHeaders) {
-      const proxyBase = process.env.NEXT_PUBLIC_VIDEO_PROXY_URL;
-      if (proxyBase) {
-        const encodedUrl = btoa(fileUrl);
-        const encodedHeaders = btoa(JSON.stringify(downloadHeaders));
-        browserUrl = `${proxyBase}/download?url=${encodeURIComponent(encodedUrl)}&h=${encodeURIComponent(encodedHeaders)}`;
-        const proxySecret = process.env.NEXT_PUBLIC_VIDEO_PROXY_SECRET;
-        if (proxySecret) {
-          browserUrl += `&secret=${encodeURIComponent(proxySecret)}`;
+      setPreparingAction('browser');
+      try {
+        const result = await proxyDownloadFormat(fileUrl, downloadHeaders, fileName);
+        if (!result.success || !result.url) {
+          const { showToast } = await import('@/lib/native-toast');
+          showToast({ text: result.error || 'Failed to prepare download', duration: 'long' });
+          setPreparingAction(null);
+          return;
         }
+        browserUrl = result.url;
+      } catch {
+        const { showToast } = await import('@/lib/native-toast');
+        showToast({ text: 'Failed to prepare download', duration: 'long' });
+        setPreparingAction(null);
+        return;
       }
+      setPreparingAction(null);
     }
+
+    setShowActionSheet(false);
 
     try {
       await Browser.open({ url: browserUrl });
@@ -206,11 +242,11 @@ export default function DetailActionBar({
                 {/* Download to Device */}
                 <button
                   onClick={handleDownloadToDevice}
-                  disabled={downloading}
+                  disabled={downloading || preparingAction !== null}
                   className="w-full flex items-center gap-4 p-4 bg-gray-800 rounded-xl hover:bg-gray-700 transition-colors disabled:opacity-50"
                 >
                   <div className="w-10 h-10 flex items-center justify-center bg-purple-600 rounded-full">
-                    {downloading ? (
+                    {preparingAction === 'device' ? (
                       <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
                     ) : (
                       <svg className="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -221,7 +257,9 @@ export default function DetailActionBar({
                     )}
                   </div>
                   <div className="flex-1 text-left">
-                    <div className="text-white font-medium">Save to Device</div>
+                    <div className="text-white font-medium">
+                      {preparingAction === 'device' ? 'Preparing...' : 'Save to Device'}
+                    </div>
                     <div className="text-gray-400 text-sm">{getSaveLocationText()}</div>
                   </div>
                 </button>
@@ -229,17 +267,24 @@ export default function DetailActionBar({
                 {/* Open in Browser */}
                 <button
                   onClick={handleOpenInBrowser}
-                  className="w-full flex items-center gap-4 p-4 bg-gray-800 rounded-xl hover:bg-gray-700 transition-colors"
+                  disabled={preparingAction !== null}
+                  className="w-full flex items-center gap-4 p-4 bg-gray-800 rounded-xl hover:bg-gray-700 transition-colors disabled:opacity-50"
                 >
                   <div className="w-10 h-10 flex items-center justify-center bg-blue-600 rounded-full">
-                    <svg className="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <circle cx="12" cy="12" r="10" />
-                      <line x1="2" y1="12" x2="22" y2="12" />
-                      <path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z" />
-                    </svg>
+                    {preparingAction === 'browser' ? (
+                      <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    ) : (
+                      <svg className="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <circle cx="12" cy="12" r="10" />
+                        <line x1="2" y1="12" x2="22" y2="12" />
+                        <path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z" />
+                      </svg>
+                    )}
                   </div>
                   <div className="flex-1 text-left">
-                    <div className="text-white font-medium">Open in Browser</div>
+                    <div className="text-white font-medium">
+                      {preparingAction === 'browser' ? 'Preparing...' : 'Open in Browser'}
+                    </div>
                     <div className="text-gray-400 text-sm">View or save from browser</div>
                   </div>
                 </button>

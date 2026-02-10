@@ -93,9 +93,13 @@ function resolveProxyDownload(
   }
 
   // 通过 CF Worker 代理下载
+  // secret 同时放 query（浏览器 window.open 用）和 headers（原生 FileTransfer 用）
   const encodedUrl = btoa(url);
   const encodedHeaders = btoa(JSON.stringify(headers));
-  const proxyUrl = `${proxyBase}/download?url=${encodeURIComponent(encodedUrl)}&h=${encodeURIComponent(encodedHeaders)}`;
+  let proxyUrl = `${proxyBase}/download?url=${encodeURIComponent(encodedUrl)}&h=${encodeURIComponent(encodedHeaders)}`;
+  if (proxySecret) {
+    proxyUrl += `&secret=${encodeURIComponent(proxySecret)}`;
+  }
 
   return {
     url: proxyUrl,

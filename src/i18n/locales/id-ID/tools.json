@@ -26,6 +26,7 @@
       "emptyUrl": "Masukkan URL video",
       "invalidUrl": "URL tidak didukung. Platform yang didukung: YouTube, TikTok, Instagram, X, Facebook.",
       "parseFailed": "Gagal memproses video. Periksa URL dan coba lagi.",
+      "noVideoFound": "Tidak ditemukan video di URL ini. Tautan mungkin berupa foto atau konten yang tidak didukung.",
       "insufficientCredits": "Kredit tidak cukup. Dibutuhkan: {{required}}, Saat ini: {{current}}",
       "unknownError": "Terjadi kesalahan. Silakan coba lagi nanti."
     }
@@ -53,6 +54,7 @@
       "emptyUrl": "Silakan masukkan URL video YouTube",
       "invalidUrl": "URL YouTube tidak valid. Silakan masukkan tautan video YouTube yang valid.",
       "parseFailed": "Gagal memparse video. Periksa URL dan coba lagi.",
+      "noVideoFound": "Tidak ditemukan video di URL ini. Tautan mungkin berupa foto atau konten yang tidak didukung.",
       "insufficientCredits": "Kredit tidak cukup. Diperlukan: {{required}}, Saat ini: {{current}}",
       "unknownError": "Terjadi kesalahan tak terduga. Silakan coba lagi nanti."
     }

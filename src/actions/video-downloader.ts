@@ -15,6 +15,7 @@ import { detectVideoPlatform } from '@/lib/services/youtube-downloader';
 import { parseVideo, downloadVideoFormat } from '@/lib/services/youtube-parser';
 import { checkCredits, deductCredits } from '@/lib/credits';
 import { uploadVideo } from '@/lib/services/r2-storage';
+import prisma from '@/lib/prisma';
 
 // 视频格式信息
 export interface VideoFormat {
@@ -45,6 +46,7 @@ export type VideoParseErrorCode =
   | 'INVALID_URL'
   | 'UNSUPPORTED_PLATFORM'
   | 'INSUFFICIENT_CREDITS'
+  | 'NO_VIDEO_FOUND'
   | 'PARSE_FAILED'
   | 'UNKNOWN_ERROR';
 
@@ -63,6 +65,10 @@ export interface ParseResult {
 export async function parseVideoUrl(url: string): Promise<ParseResult> {
   console.log('🎬 [parseVideoUrl] 开始解析视频');
 
+  let userId = '';
+  let isAnonymous = false;
+  let platform: string | null = null;
+
   try {
     // 1. 服务端 URL 验证
     if (!url?.trim()) {
@@ -74,14 +80,30 @@ export async function parseVideoUrl(url: string): Promise<ParseResult> {
 
     // 2. 获取用户信息
     const unifiedUser = await getUserOrAnonymous();
-    const userId = unifiedUser.user_id;
-    const isAnonymous = unifiedUser.is_anonymous;
+    userId = unifiedUser.user_id;
+    isAnonymous = unifiedUser.is_anonymous;
 
     console.log('🎬 [parseVideoUrl] 用户认证成功:', { userId, isAnonymous });
 
     // 3. 检测平台
-    const platform = detectVideoPlatform(url);
+    platform = detectVideoPlatform(url);
     if (!platform) {
+      // 写入 FAILED 记录
+      try {
+        await prisma.video_download_records.create({
+          data: {
+            user_id: userId,
+            url: url.slice(0, 2000),
+            platform: null,
+            status: 'FAILED',
+            error_code: 'UNSUPPORTED_PLATFORM',
+            is_anonymous: isAnonymous,
+          },
+        });
+      } catch (e) {
+        console.error('[parseVideoUrl] 写入下载记录失败:', e);
+      }
+
       return {
         success: false,
         errorCode: 'UNSUPPORTED_PLATFORM',
@@ -127,6 +149,24 @@ export async function parseVideoUrl(url: string): Promise<ParseResult> {
 
     console.log('✅ [parseVideoUrl] 解析成功并扣除积分');
 
+    // 写入 SUCCESS 记录
+    try {
+      await prisma.video_download_records.create({
+        data: {
+          user_id: userId,
+          url: url.slice(0, 2000),
+          platform,
+          video_title: data.title || null,
+          video_author: data.author || null,
+          status: 'SUCCESS',
+          credits_cost: requiredCredits,
+          is_anonymous: isAnonymous,
+        },
+      });
+    } catch (e) {
+      console.error('[parseVideoUrl] 写入下载记录失败:', e);
+    }
+
     return {
       success: true,
       data,
@@ -143,10 +183,31 @@ export async function parseVideoUrl(url: string): Promise<ParseResult> {
       };
     }
 
-    // 未知错误不暴露详情
+    // 检查是否是「无视频」错误（如 Instagram 图片帖子）
+    const isNoVideo = error instanceof Error && error.message === 'NO_VIDEO_FOUND';
+    const errorCode = isNoVideo ? 'NO_VIDEO_FOUND' : 'PARSE_FAILED';
+
+    // 写入 FAILED 记录
+    if (userId) {
+      try {
+        await prisma.video_download_records.create({
+          data: {
+            user_id: userId,
+            url: url.slice(0, 2000),
+            platform: platform || null,
+            status: 'FAILED',
+            error_code: errorCode,
+            is_anonymous: isAnonymous,
+          },
+        });
+      } catch (e) {
+        console.error('[parseVideoUrl] 写入下载记录失败:', e);
+      }
+    }
+
     return {
       success: false,
-      errorCode: 'PARSE_FAILED',
+      errorCode,
     };
   }
 }

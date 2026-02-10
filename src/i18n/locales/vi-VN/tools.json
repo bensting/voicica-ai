@@ -26,6 +26,7 @@
       "emptyUrl": "Vui lòng nhập URL video",
       "invalidUrl": "URL không được hỗ trợ. Nền tảng được hỗ trợ: YouTube, TikTok, Instagram, X, Facebook.",
       "parseFailed": "Phân tích video thất bại. Vui lòng kiểm tra URL và thử lại.",
+      "noVideoFound": "Không tìm thấy video tại URL này. Liên kết có thể là ảnh hoặc nội dung không được hỗ trợ.",
       "insufficientCredits": "Không đủ tín dụng. Cần: {{required}}, Hiện tại: {{current}}",
       "unknownError": "Đã xảy ra lỗi. Vui lòng thử lại sau."
     }
@@ -53,6 +54,7 @@
       "emptyUrl": "Vui lòng nhập URL video YouTube",
       "invalidUrl": "URL YouTube không hợp lệ. Vui lòng nhập liên kết video YouTube hợp lệ.",
       "parseFailed": "Phân tích video thất bại. Vui lòng kiểm tra URL và thử lại.",
+      "noVideoFound": "Không tìm thấy video tại URL này. Liên kết có thể là ảnh hoặc nội dung không được hỗ trợ.",
       "insufficientCredits": "Không đủ điểm. Cần: {{required}}, Hiện tại: {{current}}",
       "unknownError": "Đã xảy ra lỗi không mong muốn. Vui lòng thử lại sau."
     }

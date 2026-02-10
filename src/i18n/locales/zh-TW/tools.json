@@ -26,6 +26,7 @@
       "emptyUrl": "請輸入影片連結",
       "invalidUrl": "不支援的連結。支援的平台：YouTube、TikTok、Instagram、X、Facebook。",
       "parseFailed": "解析影片失敗，請檢查連結後重試。",
+      "noVideoFound": "該連結未找到影片，可能是圖片或不支援的內容。",
       "insufficientCredits": "積分不足，需要: {{required}}，目前: {{current}}",
       "unknownError": "發生未知錯誤，請稍後重試。"
     }
@@ -54,6 +55,7 @@
       "emptyUrl": "請輸入 YouTube 影片連結",
       "invalidUrl": "無效的 YouTube 連結，請輸入正確的 YouTube 影片連結。",
       "parseFailed": "解析影片失敗，請檢查連結後重試。",
+      "noVideoFound": "該連結未找到影片，可能是圖片或不支援的內容。",
       "insufficientCredits": "積分不足，需要: {{required}}，目前: {{current}}",
       "unknownError": "發生未知錯誤，請稍後重試。"
     }

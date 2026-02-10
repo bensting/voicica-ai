@@ -679,3 +679,23 @@ model story_paragraphs {
   @@index([story_id], map: "ix_story_paragraphs_story_id")
   @@index([position], map: "ix_story_paragraphs_position")
 }
+
+/// 视频下载解析记录
+model video_download_records {
+  id           Int       @id @default(autoincrement())
+  user_id      String    @db.VarChar(255)
+  url          String
+  platform     String?   @db.VarChar(50)
+  video_title  String?
+  video_author String?
+  status       String    @db.VarChar(20) // SUCCESS / FAILED
+  error_code   String?   @db.VarChar(50)
+  credits_cost Int       @default(0)
+  is_anonymous Boolean   @default(false)
+  created_at   DateTime  @default(now()) @db.Timestamptz(6)
+
+  @@index([user_id], map: "ix_video_download_records_user_id")
+  @@index([platform], map: "ix_video_download_records_platform")
+  @@index([status], map: "ix_video_download_records_status")
+  @@index([created_at], map: "ix_video_download_records_created_at")
+}

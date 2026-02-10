@@ -12,6 +12,7 @@ const ERROR_CODE_TO_KEY: Record<VideoParseErrorCode, string> = {
   INVALID_URL: 'invalidUrl',
   UNSUPPORTED_PLATFORM: 'invalidUrl',
   INSUFFICIENT_CREDITS: 'insufficientCredits',
+  NO_VIDEO_FOUND: 'noVideoFound',
   PARSE_FAILED: 'parseFailed',
   UNKNOWN_ERROR: 'unknownError',
 };

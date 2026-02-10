@@ -33,9 +33,22 @@ const heroTexts = {
       { line1: '背景', line2: '削除' },
     ],
   },
+  'zh-Hant': {
+    titleLine1: '將你的創意',
+    titleLine2: '化為聲音與藝術',
+    subtitle: '3200+ AI語音。專業AI藝術。100%免費',
+    showcase: '預覽展示',
+    cta: '[ 立即開始創作 ]',
+    trustText: '超過100萬創作者的信賴之選',
+    tools: [
+      { line1: '影片', line2: '下載' },
+      { line1: 'HD', line2: '高畫質化' },
+      { line1: '背景', line2: '移除' },
+    ],
+  },
 } as const;
 
-export default function NewHero({ locale = 'en' }: { locale?: 'en' | 'ja' }) {
+export default function NewHero({ locale = 'en' }: { locale?: 'en' | 'ja' | 'zh-Hant' }) {
   const { backgroundImage, avatars, playStoreUrl } =
     HOME_SHOWCASE_CONFIG;
   const t = heroTexts[locale];

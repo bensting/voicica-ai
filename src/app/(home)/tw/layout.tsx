@@ -1,21 +1,21 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Voicica AI - 無料AI音声生成、音楽・画像作成ツール',
+  title: 'Voicica AI - 免費AI語音生成、音樂與圖片創作工具',
   description:
-    '無料AIプラットフォーム：3200以上の音声でテキスト読み上げ、AI音楽生成、AI画像作成、動画ダウンロード、HD高画質化、背景削除。',
+    '免費AI平台：3200+語音文字轉語音、AI音樂生成、AI圖片創作、影片下載、HD高畫質化、背景移除。',
   keywords: [
-    'AI音声',
-    'テキスト読み上げ',
-    'AI音楽生成',
-    'AI画像生成',
-    '動画ダウンロード',
-    '画像高画質化',
-    '背景削除',
-    '無料AIツール',
+    'AI語音',
+    '文字轉語音',
+    'AI音樂生成',
+    'AI圖片生成',
+    '影片下載',
+    '圖片高畫質化',
+    '背景移除',
+    '免費AI工具',
   ],
   alternates: {
-    canonical: 'https://voicica.ai/ja',
+    canonical: 'https://voicica.ai/tw',
     languages: {
       en: 'https://voicica.ai',
       ja: 'https://voicica.ai/ja',
@@ -23,17 +23,17 @@ export const metadata: Metadata = {
     },
   },
   openGraph: {
-    title: 'Voicica AI - 無料AI音声生成、音楽・画像作成ツール',
+    title: 'Voicica AI - 免費AI語音生成、音樂與圖片創作工具',
     description:
-      '無料AIプラットフォーム：3200以上の音声でテキスト読み上げ、AI音楽生成、AI画像作成、動画ダウンロード、HD高画質化、背景削除。',
-    url: 'https://voicica.ai/ja',
+      '免費AI平台：3200+語音文字轉語音、AI音樂生成、AI圖片創作、影片下載、HD高畫質化、背景移除。',
+    url: 'https://voicica.ai/tw',
     siteName: 'Voicica AI',
-    locale: 'ja_JP',
+    locale: 'zh_TW',
     type: 'website',
   },
 };
 
-export default function JaHomeLayout({
+export default function TwHomeLayout({
   children,
 }: {
   children: React.ReactNode;
@@ -55,22 +55,22 @@ export default function JaHomeLayout({
       {
         '@type': 'SoftwareApplication',
         name: 'Voicica AI',
-        url: 'https://voicica.ai/ja',
+        url: 'https://voicica.ai/tw',
         applicationCategory: 'MultimediaApplication',
         operatingSystem: 'Web, Android, iOS',
-        inLanguage: 'ja',
+        inLanguage: 'zh-Hant',
         offers: {
           '@type': 'Offer',
           price: '0',
           priceCurrency: 'USD',
         },
         featureList: [
-          '3200以上の音声によるAIテキスト読み上げ',
-          'AI音楽ジェネレーター',
-          'AI画像クリエイター',
-          '無料動画ダウンローダー',
-          'HD画像アップスケーラー',
-          '背景削除ツール',
+          '3200+語音的AI文字轉語音',
+          'AI音樂生成器',
+          'AI圖片創作器',
+          '免費影片下載器',
+          'HD圖片高畫質化',
+          '背景移除工具',
         ],
       },
     ],

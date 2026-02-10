@@ -8,6 +8,7 @@ export const metadata: Metadata = {
     languages: {
       en: 'https://voicica.ai',
       ja: 'https://voicica.ai/ja',
+      'zh-Hant': 'https://voicica.ai/tw',
     },
   },
 };

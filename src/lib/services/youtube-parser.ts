@@ -32,10 +32,11 @@ function cleanYouTubeUrl(url: string): string {
 }
 
 /**
- * Parse a YouTube video URL and return format information
+ * Parse any supported video URL and return format information
  */
-export async function parseYouTubeVideo(url: string): Promise<ParseResponse> {
-  const cleanUrl = cleanYouTubeUrl(url);
+export async function parseVideo(url: string, platform: string): Promise<ParseResponse> {
+  // Only clean YouTube URLs (strip playlist params etc.)
+  const cleanUrl = platform === 'youtube' ? cleanYouTubeUrl(url) : url;
 
   // In development, call yt-dlp directly (no Python API server needed)
   if (process.env.NODE_ENV === 'development') {
@@ -44,6 +45,13 @@ export async function parseYouTubeVideo(url: string): Promise<ParseResponse> {
 
   // In production (Vercel), call the Python serverless function
   return parseViaApi(cleanUrl);
+}
+
+/**
+ * Parse a YouTube video URL (legacy wrapper)
+ */
+export async function parseYouTubeVideo(url: string): Promise<ParseResponse> {
+  return parseVideo(url, 'youtube');
 }
 
 /**
@@ -79,7 +87,7 @@ async function parseViaApi(url: string): Promise<ParseResponse> {
     || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000');
 
   const doFetch = async (): Promise<ParseResponse> => {
-    const res = await fetch(`${apiBase}/api/parse_youtube`, {
+    const res = await fetch(`${apiBase}/api/parse_video`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -108,6 +116,19 @@ async function parseViaApi(url: string): Promise<ParseResponse> {
     console.warn('[parseViaApi] First attempt failed, retrying...', firstError);
     return await doFetch();
   }
+}
+
+/**
+ * Map yt-dlp extractor_key to our platform name
+ */
+function extractorToPlatform(extractorKey: string): string {
+  const key = extractorKey.toLowerCase();
+  if (key.includes('youtube')) return 'youtube';
+  if (key.includes('tiktok')) return 'tiktok';
+  if (key.includes('instagram')) return 'instagram';
+  if (key.includes('twitter') || key.includes('x')) return 'twitter';
+  if (key.includes('facebook') || key.includes('fb')) return 'facebook';
+  return extractorKey.toLowerCase() || 'unknown';
 }
 
 /**
@@ -160,7 +181,7 @@ function mapYtdlpInfo(info: any): ParseResponse {
   }
 
   return {
-    platform: 'youtube',
+    platform: extractorToPlatform(info.extractor_key || info.extractor || ''),
     video_id: info.id || '',
     title: info.title || 'Untitled',
     author: info.uploader || info.channel || null,

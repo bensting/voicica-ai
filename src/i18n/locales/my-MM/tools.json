@@ -1,9 +1,9 @@
 {
   "videoDownloader": {
     "title": "ဗီဒီယိုဒေါင်းလုဒ်",
-    "subtitle": "YouTube ဗီဒီယိုများကို အခမဲ့ဒေါင်းလုဒ်လုပ်ပါ",
+    "subtitle": "YouTube, TikTok, Instagram, X နှင့် Facebook မှ ဗီဒီယိုများကို အခမဲ့ဒေါင်းလုဒ်လုပ်ပါ",
     "urlLabel": "ဗီဒီယို URL",
-    "urlPlaceholder": "YouTube ဗီဒီယိုလင့်ခ်ကို ကူးထည့်ပါ...",
+    "urlPlaceholder": "ဗီဒီယိုလင့်ခ်ကူးထည့်ပါ (YouTube, TikTok, Instagram, X, Facebook)...",
     "parseButton": "ခွဲခြမ်း",
     "parseVideoButton": "ဗီဒီယို ခွဲခြမ်းစိတ်ဖြာ",
     "parsing": "ခွဲခြမ်းနေသည်",
@@ -15,7 +15,7 @@
     "detected": "တွေ့ရှိပြီး",
     "searchAnother": "အခြားတစ်ခု ရှာမည်",
     "emptyTitle": "ဗီဒီယိုဒေါင်းလုဒ်",
-    "emptyDescription": "YouTube ဗီဒီယို URL ကို အထက်တွင်ကူးထည့်၍ ဒေါင်းလုဒ်စတင်ပါ။",
+    "emptyDescription": "ဗီဒီယို URL ကို အထက်တွင်ကူးထည့်၍ ဒေါင်းလုဒ်စတင်ပါ။ YouTube, TikTok, Instagram, Twitter/X နှင့် Facebook ကိုပံ့ပိုးသည်။",
     "tabs": {
       "videoWithAudio": "ဗီဒီယို",
       "videoOnly": "ဗီဒီယိုသာ",
@@ -23,7 +23,7 @@
     },
     "errors": {
       "emptyUrl": "ဗီဒီယို URL ထည့်ပါ",
-      "invalidUrl": "ပံ့ပိုးမထားသော URL။ YouTube ဗီဒီယိုလင့်ခ် မှန်ကန်စွာထည့်ပါ။",
+      "invalidUrl": "ပံ့ပိုးမထားသော URL။ ပံ့ပိုးသော ပလက်ဖောင်းများ: YouTube, TikTok, Instagram, X, Facebook။",
       "parseFailed": "ဗီဒီယိုခွဲခြမ်းမှု မအောင်မြင်ပါ။ URL ကိုစစ်ဆေးပြီး ထပ်စမ်းပါ။",
       "insufficientCredits": "ခရက်ဒစ်မလုံလောက်ပါ။ လိုအပ်: {{required}}၊ လက်ရှိ: {{current}}",
       "unknownError": "မျှော်လင့်မထားသောအမှားဖြစ်ပါသည်။ နောက်မှထပ်စမ်းပါ။"

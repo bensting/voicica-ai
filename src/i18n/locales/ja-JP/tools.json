@@ -1,9 +1,9 @@
 {
   "videoDownloader": {
     "title": "動画ダウンローダー",
-    "subtitle": "YouTubeの動画を無料ダウンロード",
+    "subtitle": "YouTube、TikTok、Instagram、X、Facebookの動画を無料ダウンロード",
     "urlLabel": "動画URL",
-    "urlPlaceholder": "YouTubeの動画リンクを貼り付け...",
+    "urlPlaceholder": "動画リンクを貼り付け（YouTube、TikTok、Instagram、X、Facebook）...",
     "parseButton": "解析",
     "parseVideoButton": "動画を解析",
     "parsing": "解析中",
@@ -15,7 +15,7 @@
     "detected": "検出済み",
     "searchAnother": "別の動画を検索",
     "emptyTitle": "動画をダウンロード",
-    "emptyDescription": "上にYouTubeの動画URLを貼り付けてダウンロードを開始。",
+    "emptyDescription": "上に動画URLを貼り付けてダウンロードを開始。YouTube、TikTok、Instagram、Twitter/X、Facebookに対応。",
     "tabs": {
       "videoWithAudio": "動画",
       "videoOnly": "動画のみ",
@@ -23,7 +23,7 @@
     },
     "errors": {
       "emptyUrl": "動画URLを入力してください",
-      "invalidUrl": "サポートされていないURLです。有効なYouTubeの動画リンクを入力してください。",
+      "invalidUrl": "サポートされていないURLです。対応プラットフォーム：YouTube、TikTok、Instagram、X、Facebook。",
       "parseFailed": "動画の解析に失敗しました。URLを確認してもう一度お試しください。",
       "insufficientCredits": "クレジットが不足しています。必要：{{required}}、現在：{{current}}",
       "unknownError": "予期しないエラーが発生しました。後でもう一度お試しください。"

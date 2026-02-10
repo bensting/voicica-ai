@@ -1,9 +1,9 @@
 {
   "videoDownloader": {
     "title": "Video Downloader",
-    "subtitle": "Download YouTube videos for free",
+    "subtitle": "Download videos from YouTube, TikTok, Instagram, X & Facebook",
     "urlLabel": "Video URL",
-    "urlPlaceholder": "Paste YouTube video link...",
+    "urlPlaceholder": "Paste video link (YouTube, TikTok, Instagram, X, Facebook)...",
     "parseButton": "Parse",
     "parseVideoButton": "Parse Video",
     "parsing": "Parsing",
@@ -15,7 +15,7 @@
     "detected": "detected",
     "searchAnother": "Search Another",
     "emptyTitle": "Download Videos",
-    "emptyDescription": "Paste a YouTube video URL above to start downloading.",
+    "emptyDescription": "Paste a video URL above to start downloading. Supports YouTube, TikTok, Instagram, Twitter/X, and Facebook.",
     "tabs": {
       "videoWithAudio": "Video",
       "videoOnly": "Video Only",
@@ -23,7 +23,7 @@
     },
     "errors": {
       "emptyUrl": "Please enter a video URL",
-      "invalidUrl": "Unsupported URL. Please enter a valid YouTube video link.",
+      "invalidUrl": "Unsupported URL. Supported platforms: YouTube, TikTok, Instagram, X, Facebook.",
       "parseFailed": "Failed to parse video. Please check the URL and try again.",
       "insufficientCredits": "Insufficient credits. Required: {{required}}, Current: {{current}}",
       "unknownError": "An unexpected error occurred. Please try again later."

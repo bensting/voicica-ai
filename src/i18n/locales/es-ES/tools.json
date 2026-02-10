@@ -1,9 +1,9 @@
 {
   "videoDownloader": {
     "title": "Descargador de Vídeos",
-    "subtitle": "Descarga vídeos de YouTube gratis",
+    "subtitle": "Descarga vídeos de YouTube, TikTok, Instagram, X y Facebook gratis",
     "urlLabel": "URL del vídeo",
-    "urlPlaceholder": "Pega el enlace de YouTube...",
+    "urlPlaceholder": "Pega el enlace del vídeo (YouTube, TikTok, Instagram, X, Facebook)...",
     "parseButton": "Analizar",
     "parseVideoButton": "Analizar video",
     "parsing": "Analizando",
@@ -15,7 +15,7 @@
     "detected": "detectado",
     "searchAnother": "Buscar otro",
     "emptyTitle": "Descargar vídeos",
-    "emptyDescription": "Pega una URL de YouTube arriba para comenzar a descargar.",
+    "emptyDescription": "Pega una URL de vídeo arriba para comenzar a descargar. Compatible con YouTube, TikTok, Instagram, Twitter/X y Facebook.",
     "tabs": {
       "videoWithAudio": "Vídeo",
       "videoOnly": "Solo vídeo",
@@ -23,7 +23,7 @@
     },
     "errors": {
       "emptyUrl": "Por favor, introduce una URL de vídeo",
-      "invalidUrl": "URL no compatible. Por favor, introduce un enlace de YouTube válido.",
+      "invalidUrl": "URL no compatible. Plataformas compatibles: YouTube, TikTok, Instagram, X, Facebook.",
       "parseFailed": "Error al analizar el vídeo. Por favor, verifica la URL e inténtalo de nuevo.",
       "insufficientCredits": "Créditos insuficientes. Necesarios: {{required}}, Actuales: {{current}}",
       "unknownError": "Ocurrió un error inesperado. Por favor, inténtalo de nuevo más tarde."

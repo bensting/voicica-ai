@@ -1,9 +1,9 @@
 {
   "videoDownloader": {
     "title": "वीडियो डाउनलोडर",
-    "subtitle": "YouTube वीडियो मुफ्त डाउनलोड करें",
+    "subtitle": "YouTube, TikTok, Instagram, X और Facebook से वीडियो मुफ्त डाउनलोड करें",
     "urlLabel": "वीडियो URL",
-    "urlPlaceholder": "YouTube वीडियो लिंक पेस्ट करें...",
+    "urlPlaceholder": "वीडियो लिंक पेस्ट करें (YouTube, TikTok, Instagram, X, Facebook)...",
     "parseButton": "पार्स करें",
     "parseVideoButton": "वीडियो पार्स करें",
     "parsing": "पार्स हो रहा है",
@@ -15,7 +15,7 @@
     "detected": "पहचाना गया",
     "searchAnother": "दूसरा खोजें",
     "emptyTitle": "वीडियो डाउनलोड करें",
-    "emptyDescription": "डाउनलोड शुरू करने के लिए ऊपर YouTube वीडियो URL पेस्ट करें।",
+    "emptyDescription": "डाउनलोड शुरू करने के लिए ऊपर वीडियो URL पेस्ट करें। YouTube, TikTok, Instagram, Twitter/X और Facebook समर्थित हैं।",
     "tabs": {
       "videoWithAudio": "वीडियो",
       "videoOnly": "केवल वीडियो",
@@ -23,7 +23,7 @@
     },
     "errors": {
       "emptyUrl": "कृपया वीडियो URL दर्ज करें",
-      "invalidUrl": "असमर्थित URL। कृपया एक वैध YouTube वीडियो लिंक दर्ज करें।",
+      "invalidUrl": "असमर्थित URL। समर्थित प्लेटफ़ॉर्म: YouTube, TikTok, Instagram, X, Facebook।",
       "parseFailed": "वीडियो पार्स करने में विफल। कृपया URL जांचें और पुनः प्रयास करें।",
       "insufficientCredits": "अपर्याप्त क्रेडिट। आवश्यक: {{required}}, वर्तमान: {{current}}",
       "unknownError": "एक अप्रत्याशित त्रुटि हुई। कृपया बाद में पुनः प्रयास करें।"

@@ -18,6 +18,8 @@ export interface DownloadOptions {
   type?: FileType;
   /** 下载进度回调 */
   onProgress?: (progress: number) => void;
+  /** 自定义 HTTP headers（用于防盗链平台如 TikTok） */
+  headers?: Record<string, string>;
 }
 
 export interface DownloadResult {
@@ -75,15 +77,45 @@ async function getOrCreateAlbum(albumName: string): Promise<string> {
 }
 
 /**
+ * 如果存在 http_headers（防盗链平台），将下载 URL 转换为 CF Worker 代理 URL
+ * YouTube 等不需要 headers 的平台直接返回原始 URL
+ */
+function resolveProxyDownload(
+  url: string,
+  headers?: Record<string, string>
+): { url: string; headers?: Record<string, string> } {
+  const proxyBase = process.env.NEXT_PUBLIC_VIDEO_PROXY_URL;
+  const proxySecret = process.env.NEXT_PUBLIC_VIDEO_PROXY_SECRET;
+
+  // 没有 http_headers 或没配置代理 → 直接下载
+  if (!headers || !proxyBase) {
+    return { url };
+  }
+
+  // 通过 CF Worker 代理下载
+  const encodedUrl = btoa(url);
+  const encodedHeaders = btoa(JSON.stringify(headers));
+  const proxyUrl = `${proxyBase}/download?url=${encodeURIComponent(encodedUrl)}&h=${encodeURIComponent(encodedHeaders)}`;
+
+  return {
+    url: proxyUrl,
+    headers: proxySecret ? { 'X-Api-Secret': proxySecret } : undefined,
+  };
+}
+
+/**
  * 下载文件到设备
  *
  * - 原生 App: 根据文件类型保存到不同位置
  * - Web: 在新窗口打开
  */
 export async function downloadFile(options: DownloadOptions): Promise<DownloadResult> {
-  const { url, fileName, type = 'other', onProgress } = options;
+  const { url: rawUrl, fileName, type = 'other', onProgress, headers: rawHeaders } = options;
 
-  // Web 平台在新窗口打开
+  // 防盗链平台通过代理下载
+  const { url, headers } = resolveProxyDownload(rawUrl, rawHeaders);
+
+  // Web 平台在新窗口打开（代理 URL 也可以直接打开）
   if (!Capacitor.isNativePlatform()) {
     return downloadWeb(url);
   }
@@ -91,14 +123,14 @@ export async function downloadFile(options: DownloadOptions): Promise<DownloadRe
   // 原生平台根据类型选择保存方式
   switch (type) {
     case 'image':
-      return saveImageToGallery(url, fileName, onProgress);
+      return saveImageToGallery(url, fileName, onProgress, headers);
     case 'video':
-      return saveVideoToGallery(url, fileName, onProgress);
+      return saveVideoToGallery(url, fileName, onProgress, headers);
     case 'music':
-      return saveToMusicFolder(url, fileName, onProgress);
+      return saveToMusicFolder(url, fileName, onProgress, headers);
     default:
       // audio (TTS) 和 other 保存到 Documents
-      return saveToDocuments(url, fileName, onProgress);
+      return saveToDocuments(url, fileName, onProgress, headers);
   }
 }
 
@@ -110,11 +142,12 @@ export async function downloadFile(options: DownloadOptions): Promise<DownloadRe
 async function saveImageToGallery(
   url: string,
   fileName: string,
-  onProgress?: (progress: number) => void
+  onProgress?: (progress: number) => void,
+  headers?: Record<string, string>
 ): Promise<DownloadResult> {
   try {
     // 先下载到临时目录
-    const tempResult = await downloadToCache(url, fileName, onProgress);
+    const tempResult = await downloadToCache(url, fileName, onProgress, headers);
     if (!tempResult.success || !tempResult.filePath) {
       return tempResult;
     }
@@ -155,7 +188,7 @@ async function saveImageToGallery(
     } catch (mediaError) {
       // Media 插件调用失败，打印详细错误并 fallback 到 Documents
       console.error('⚠️ [saveImageToGallery] Media 插件错误:', mediaError);
-      return saveToDocuments(url, fileName, onProgress);
+      return saveToDocuments(url, fileName, onProgress, headers);
     }
   } catch (error) {
     console.error('❌ [saveImageToGallery] 失败:', error);
@@ -174,11 +207,12 @@ async function saveImageToGallery(
 async function saveVideoToGallery(
   url: string,
   fileName: string,
-  onProgress?: (progress: number) => void
+  onProgress?: (progress: number) => void,
+  headers?: Record<string, string>
 ): Promise<DownloadResult> {
   try {
     // 先下载到临时目录
-    const tempResult = await downloadToCache(url, fileName, onProgress);
+    const tempResult = await downloadToCache(url, fileName, onProgress, headers);
     if (!tempResult.success || !tempResult.filePath) {
       return tempResult;
     }
@@ -219,7 +253,7 @@ async function saveVideoToGallery(
     } catch (mediaError) {
       // Media 插件调用失败，打印详细错误并 fallback 到 Documents
       console.error('⚠️ [saveVideoToGallery] Media 插件错误:', mediaError);
-      return saveToDocuments(url, fileName, onProgress);
+      return saveToDocuments(url, fileName, onProgress, headers);
     }
   } catch (error) {
     console.error('❌ [saveVideoToGallery] 失败:', error);
@@ -237,7 +271,8 @@ async function saveVideoToGallery(
 async function saveToMusicFolder(
   url: string,
   fileName: string,
-  onProgress?: (progress: number) => void
+  onProgress?: (progress: number) => void,
+  headers?: Record<string, string>
 ): Promise<DownloadResult> {
   try {
     const { FileTransfer } = await import('@capacitor/file-transfer');
@@ -281,6 +316,7 @@ async function saveToMusicFolder(
       url,
       path: fileInfo.uri,
       progress: !!onProgress,
+      ...(headers ? { headers } : {}),
     });
 
     // 清理监听器
@@ -300,7 +336,7 @@ async function saveToMusicFolder(
     console.error('❌ [saveToMusicFolder] 失败:', error);
     // Fallback 到 Documents
     console.log('⚠️ [saveToMusicFolder] Fallback 到 Documents');
-    return saveToDocuments(url, fileName, onProgress);
+    return saveToDocuments(url, fileName, onProgress, headers);
   }
 }
 
@@ -311,7 +347,8 @@ async function saveToMusicFolder(
 async function saveToDocuments(
   url: string,
   fileName: string,
-  onProgress?: (progress: number) => void
+  onProgress?: (progress: number) => void,
+  headers?: Record<string, string>
 ): Promise<DownloadResult> {
   try {
     const { FileTransfer } = await import('@capacitor/file-transfer');
@@ -343,6 +380,7 @@ async function saveToDocuments(
       url,
       path: fileInfo.uri,
       progress: !!onProgress,
+      ...(headers ? { headers } : {}),
     });
 
     // 清理监听器
@@ -374,7 +412,8 @@ async function saveToDocuments(
 async function downloadToCache(
   url: string,
   fileName: string,
-  onProgress?: (progress: number) => void
+  onProgress?: (progress: number) => void,
+  headers?: Record<string, string>
 ): Promise<DownloadResult> {
   try {
     const { FileTransfer } = await import('@capacitor/file-transfer');
@@ -404,6 +443,7 @@ async function downloadToCache(
       url,
       path: fileInfo.uri,
       progress: !!onProgress,
+      ...(headers ? { headers } : {}),
     });
 
     // 清理监听器
@@ -463,10 +503,11 @@ async function downloadWeb(url: string): Promise<DownloadResult> {
 export async function downloadWithToast(
   url: string,
   fileName: string,
-  type: FileType = 'other'
+  type: FileType = 'other',
+  headers?: Record<string, string>
 ): Promise<boolean> {
   const { showToast } = await import('@/lib/native-toast');
-  const result = await downloadFile({ url, fileName, type });
+  const result = await downloadFile({ url, fileName, type, headers });
 
   if (result.success) {
     // 根据保存位置显示不同的提示
@@ -496,13 +537,14 @@ export async function handleDownloadWithState(
   url: string | undefined | null,
   fileName: string,
   setDownloading: (v: boolean) => void,
-  type: FileType = 'audio'
+  type: FileType = 'audio',
+  headers?: Record<string, string>
 ): Promise<void> {
   if (!url) return;
 
   setDownloading(true);
   try {
-    await downloadWithToast(url, fileName, type);
+    await downloadWithToast(url, fileName, type, headers);
   } finally {
     setDownloading(false);
   }

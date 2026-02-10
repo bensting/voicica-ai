@@ -116,8 +116,8 @@ export default function VideoDownloaderDetailModal({
                 <p className="text-xs text-gray-500 mt-1 truncate">{videoInfo.author}</p>
               )}
               <div className="flex items-center gap-2 mt-2">
-                <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium bg-red-500/20 text-red-400">
-                  YouTube
+                <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium bg-purple-500/20 text-purple-400">
+                  {videoInfo.platform ? videoInfo.platform.charAt(0).toUpperCase() + videoInfo.platform.slice(1) : 'Video'}
                 </span>
                 {videoInfo.duration_seconds && (
                   <span className="text-[10px] text-gray-500">
@@ -194,6 +194,7 @@ export default function VideoDownloaderDetailModal({
               fileUrl={selectedFormat?.url || undefined}
               fileName={downloadFileName}
               fileType="video"
+              downloadHeaders={selectedFormat?.http_headers || undefined}
               downloadText={t('videoDownloader.downloadButton')}
               showInterstitialOnDownload={true}
             />

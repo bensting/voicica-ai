@@ -170,6 +170,10 @@ function mapYtdlpInfo(info: any): ParseResponse {
       }
     }
 
+    // 非 YouTube 平台保留 http_headers（防盗链）
+    const platform = extractorToPlatform(info.extractor_key || info.extractor || '');
+    const httpHeaders = platform !== 'youtube' ? (f.http_headers || null) : null;
+
     formats.push({
       format_id: String(f.format_id || ''),
       quality,
@@ -177,6 +181,7 @@ function mapYtdlpInfo(info: any): ParseResponse {
       filesize: f.filesize || f.filesize_approx || null,
       note,
       url: dlUrl,
+      http_headers: httpHeaders,
     });
   }
 

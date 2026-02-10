@@ -23,6 +23,8 @@ export interface VideoFormat {
   filesize: number | null;
   note: string | null;
   url: string | null;
+  /** yt-dlp 返回的下载所需 HTTP headers（Referer、Cookie 等） */
+  http_headers?: Record<string, string> | null;
 }
 
 // 解析响应

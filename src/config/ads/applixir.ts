@@ -15,7 +15,7 @@ export interface AppLixirConfig {
  */
 const devConfig: AppLixirConfig = {
   apiKey: '6efa877c-8828-4355-977a-fd57996ddcbf',
-  enabled: true, // 开发环境也启用，方便测试
+  enabled: false, // 开发环境也启用，方便测试
 };
 
 /**

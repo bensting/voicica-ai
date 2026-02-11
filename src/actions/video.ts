@@ -7,10 +7,12 @@ import prisma from '@/lib/prisma';
 import { getUserOrAnonymous } from '@/lib/auth-firebase';
 import { v4 as uuidv4 } from 'uuid';
 import { nanoid } from 'nanoid';
-import { createKieVideoTask } from '@/lib/services/kie-video';
+import { createKieVideoTask, queryKieVideoTaskStatus } from '@/lib/services/kie-video';
+import { uploadVideo } from '@/lib/services/r2-storage';
 import { InsufficientCreditsError, errorToResponse } from '@/lib/errors';
 import { calculateVideoCost, type VideoResolution, type VideoDuration } from '@/config/creditsCost';
-import { checkCredits } from '@/lib/credits';
+import { checkCredits, refundCreditsSimple } from '@/lib/credits';
+import { ProductType } from '@/config/productType';
 
 /**
  * 生成分享短码
@@ -243,7 +245,35 @@ export async function createVideoTask(request: VideoGenerationRequest): Promise<
 }
 
 /**
+ * 从 URL 下载视频并上传到 R2
+ */
+async function downloadAndUploadVideoToR2(
+  url: string,
+  taskId: string,
+  userId: string
+): Promise<string | null> {
+  try {
+    console.log(`📥 [Video] 下载视频: ${url}`);
+    const response = await fetch(url);
+    if (!response.ok) {
+      console.error(`📥 [Video] 下载失败: ${response.status}`);
+      return null;
+    }
+    const buffer = Buffer.from(await response.arrayBuffer());
+    const fileName = `${taskId}.mp4`;
+    const r2Url = await uploadVideo(buffer, fileName, 'video/mp4', `videos/${userId}`);
+    console.log(`✅ [Video] 视频上传成功: ${r2Url}`);
+    return r2Url;
+  } catch (error) {
+    console.error(`❌ [Video] 上传失败:`, error);
+    return null;
+  }
+}
+
+/**
  * 查询视频任务状态
+ *
+ * 对于 PROCESSING 任务，主动查询 Kie.ai API 获取最新状态（和 Music 相同的轮询兜底模式）
  */
 export async function getVideoTaskStatus(taskId: string): Promise<VideoTaskStatus> {
   const record = await prisma.video_records.findUnique({
@@ -254,6 +284,127 @@ export async function getVideoTaskStatus(taskId: string): Promise<VideoTaskStatu
     throw new Error(`Task not found: ${taskId}`);
   }
 
+  // 如果任务还在处理中，且有外部任务 ID，直接查询 Kie.ai API
+  // 不完全依赖回调（回调可能失败），作为轮询兜底
+  // 超时判断：只在任务创建后 30 分钟内查询，避免无限轮询
+  const taskAgeMinutes = (Date.now() - new Date(record.created_at).getTime()) / 1000 / 60;
+  const isWithinTimeout = taskAgeMinutes < 30;
+
+  if (record.external_task_id && (record.status === 'PENDING' || record.status === 'PROCESSING') && isWithinTimeout) {
+    console.log(`🎬 [getVideoTaskStatus] 查询 Kie.ai API: ${record.external_task_id}, 任务已创建 ${taskAgeMinutes.toFixed(1)} 分钟`);
+
+    const kieStatus = await queryKieVideoTaskStatus(record.external_task_id);
+
+    // 如果 Kie.ai 返回成功，下载视频到 R2 并更新数据库
+    if (kieStatus.status === 'SUCCESS' && kieStatus.videoUrl) {
+      console.log('🎬 [getVideoTaskStatus] 开始下载视频到 R2...');
+
+      const r2VideoUrl = await downloadAndUploadVideoToR2(
+        kieStatus.videoUrl,
+        record.task_id,
+        record.user_id
+      );
+
+      const finalVideoUrl = r2VideoUrl || kieStatus.videoUrl;
+
+      await prisma.video_records.update({
+        where: { task_id: taskId },
+        data: {
+          status: 'SUCCESS',
+          progress: 100,
+          video_url: finalVideoUrl,
+          api_cost: kieStatus.costTime ? kieStatus.costTime / 1000 : null,
+          completed_at: new Date(),
+        },
+      });
+
+      await prisma.task_queue.updateMany({
+        where: { task_id: taskId },
+        data: {
+          status: 'SUCCESS',
+          completed_at: new Date(),
+        },
+      });
+
+      console.log('🎬 [getVideoTaskStatus] 视频处理完成');
+
+      return {
+        task_id: taskId,
+        status: 'SUCCESS',
+        progress: 100,
+        result: {
+          video_url: finalVideoUrl,
+          duration: record.actual_duration || record.duration,
+          format: record.format,
+          task_id: taskId,
+          user_id: record.user_id,
+          record_id: record.id,
+          credits_cost: record.credits_cost,
+        },
+        error: null,
+      };
+    }
+
+    // 如果 Kie.ai 返回失败，更新数据库并返还积分（使用乐观锁防止重复处理）
+    if (kieStatus.status === 'FAILURE') {
+      const updateResult = await prisma.video_records.updateMany({
+        where: {
+          task_id: taskId,
+          status: 'PROCESSING', // 乐观锁：防止重复处理
+        },
+        data: {
+          status: 'FAILURE',
+          progress: 0,
+          error_message: kieStatus.error || 'Video generation failed',
+          completed_at: new Date(),
+        },
+      });
+
+      // 如果更新成功（count > 0），说明是第一个处理的，需要返还积分
+      if (updateResult.count > 0 && record.credits_cost && record.credits_cost > 0) {
+        try {
+          await refundCreditsSimple(
+            record.user_id,
+            record.credits_cost,
+            ProductType.TEXT_TO_VIDEO,
+            `Video generation failed (KIE): ${kieStatus.error || 'Unknown error'}`,
+            record.task_id
+          );
+          console.log(`💰 [getVideoTaskStatus] 积分已返还: ${record.credits_cost}`);
+        } catch (refundError) {
+          console.error(`❌ [getVideoTaskStatus] 积分返还失败:`, refundError);
+        }
+      } else if (updateResult.count === 0) {
+        console.log(`⚠️ [getVideoTaskStatus] 任务已被其他请求处理，跳过积分返还: ${taskId}`);
+      }
+
+      return {
+        task_id: taskId,
+        status: 'FAILURE',
+        progress: 0,
+        result: null,
+        error: kieStatus.error || null,
+      };
+    }
+
+    // 仍在处理中，更新进度
+    if (kieStatus.progress !== record.progress) {
+      await prisma.video_records.update({
+        where: { task_id: taskId },
+        data: { progress: kieStatus.progress },
+      });
+    }
+
+    return {
+      task_id: taskId,
+      status: 'PROCESSING',
+      progress: kieStatus.progress,
+      result: null,
+      error: kieStatus.error || null,
+    };
+  }
+
+  // 任务已完成或超时，直接从数据库读取
   switch (record.status) {
     case 'PENDING':
       return {

@@ -3,14 +3,10 @@
 /**
  * 数据库管理 Server Actions
  */
-import { exec } from 'child_process';
-import { promisify } from 'util';
 import db from '@/lib/db';
 import { users, voices, ttsRecords, userSubscriptions, creditHistory, anonymousUsers } from '@/db/schema';
 import { eq, count, sum, lt, sql } from 'drizzle-orm';
 import { verifyAdmin, verifyAdminWithoutDb } from '@/lib/auth-admin';
-
-const execAsync = promisify(exec);
 
 interface SyncResult {
   success: boolean;
@@ -255,7 +251,19 @@ export async function runPrismaDbPush(): Promise<MigrationResult> {
   await verifyAdminWithoutDb();
 
   try {
+    // Cloudflare Workers 环境不支持 child_process
+    if (typeof globalThis.process === 'undefined' || !globalThis.process.versions?.node) {
+      return {
+        success: false,
+        message: '当前运行环境不支持执行命令行操作（Cloudflare Workers），请在 Node.js 环境中执行 drizzle-kit push',
+      };
+    }
+
     console.log('🔄 开始执行 drizzle-kit push...');
+
+    const { exec } = await import('child_process');
+    const { promisify } = await import('util');
+    const execAsync = promisify(exec);
 
     const { stdout, stderr } = await execAsync('npx drizzle-kit push', {
       cwd: process.cwd(),
@@ -291,7 +299,19 @@ export async function runPrismaGenerate(): Promise<MigrationResult> {
   await verifyAdminWithoutDb();
 
   try {
+    // Cloudflare Workers 环境不支持 child_process
+    if (typeof globalThis.process === 'undefined' || !globalThis.process.versions?.node) {
+      return {
+        success: false,
+        message: '当前运行环境不支持执行命令行操作（Cloudflare Workers），请在 Node.js 环境中执行 drizzle-kit generate',
+      };
+    }
+
     console.log('🔄 开始执行 drizzle-kit generate...');
+
+    const { exec } = await import('child_process');
+    const { promisify } = await import('util');
+    const execAsync = promisify(exec);
 
     const { stdout } = await execAsync('npx drizzle-kit generate', {
       cwd: process.cwd(),

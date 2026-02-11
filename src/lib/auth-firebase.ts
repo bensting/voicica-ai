@@ -5,15 +5,23 @@
  * 支持 Firebase 正式用户和设备指纹匿名用户
  */
 import { headers } from 'next/headers';
-import { auth as adminAuth } from './firebase-admin';
+import { verifyIdToken } from './firebase-verify';
 import db from './db';
 import { users, anonymousUsers, creditHistory } from '@/db/schema';
 import { eq } from 'drizzle-orm';
-import crypto from 'crypto';
 import { v4 as uuidv4 } from 'uuid';
 import { appConfig } from '@/config/appConfig';
 import { ProductType } from '@/config/productType';
 import { formatIpWithCountry } from './geoip';
+
+/** Web Crypto API 版 SHA-256 哈希 */
+async function sha256Hex(data: string): Promise<string> {
+  const encoded = new TextEncoder().encode(data);
+  const hashBuffer = await crypto.subtle.digest('SHA-256', encoded);
+  return Array.from(new Uint8Array(hashBuffer))
+    .map(b => b.toString(16).padStart(2, '0'))
+    .join('');
+}
 
 export interface AuthUser {
   uid: string;
@@ -44,7 +52,7 @@ async function verifyFirebaseToken(headersList: Awaited<ReturnType<typeof header
     const token = authHeader.substring(7); // 移除 "Bearer " 前缀
 
     // 验证 Firebase ID Token
-    const decodedToken = await adminAuth.verifyIdToken(token);
+    const decodedToken = await verifyIdToken(token);
 
     console.log('✅ [Firebase Auth] Token 验证成功:', decodedToken.uid);
 
@@ -198,8 +206,8 @@ async function createOrGetAnonymousUser(
   vercelCountry?: string
 ): Promise<{ user_id: string; credits: number }> {
   // 生成匿名用户 ID
-  const hash = crypto.createHash('sha256').update(deviceFingerprint).digest('hex').substring(0, 16);
-  const anonymousUserId = `anonymous_${hash}`;
+  const hash = await sha256Hex(deviceFingerprint);
+  const anonymousUserId = `anonymous_${hash.substring(0, 16)}`;
 
   // 查找现有匿名用户
   const [anonUser] = await db.select()

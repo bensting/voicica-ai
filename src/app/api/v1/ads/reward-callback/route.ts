@@ -2,8 +2,6 @@ import { NextRequest, NextResponse } from 'next/server';
 import db from '@/lib/db';
 import { adRewardTransactions } from '@/db/schema';
 import { eq } from 'drizzle-orm';
-import crypto from 'crypto';
-
 /**
  * AdMob Server-Side Verification (SSV) 回调处理
  *
@@ -12,15 +10,60 @@ import crypto from 'crypto';
  * 文档: https://developers.google.com/admob/android/rewarded-video-ssv
  */
 
-// Google AdMob 公钥缓存
-let googlePublicKeys: Map<string, string> | null = null;
+// Google AdMob 公钥缓存（缓存 CryptoKey 对象）
+let googlePublicKeys: Map<string, CryptoKey> | null = null;
 let keysLastFetched = 0;
 const KEYS_CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 小时
 
+/** base64 标准编码 → Uint8Array */
+function base64ToUint8Array(base64: string): Uint8Array {
+  const binary = atob(base64);
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) {
+    bytes[i] = binary.charCodeAt(i);
+  }
+  return bytes;
+}
+
 /**
- * 获取 Google AdMob 公钥
+ * 将 DER 编码的 ECDSA 签名转换为 IEEE P1363 格式（Web Crypto 要求）
+ * DER: 0x30 [len] 0x02 [r_len] [r] 0x02 [s_len] [s]
+ * P1363: [r_padded_32] [s_padded_32]
  */
-async function getGooglePublicKeys(): Promise<Map<string, string>> {
+function derToP1363(der: Uint8Array): Uint8Array {
+  // 跳过 SEQUENCE tag 和 length
+  let offset = 2;
+  if (der[1] & 0x80) {
+    offset += (der[1] & 0x7f);
+  }
+
+  // 读取 r
+  if (der[offset] !== 0x02) throw new Error('Invalid DER: expected INTEGER tag for r');
+  offset++;
+  const rLen = der[offset++];
+  const rBytes = der.slice(offset, offset + rLen);
+  offset += rLen;
+
+  // 读取 s
+  if (der[offset] !== 0x02) throw new Error('Invalid DER: expected INTEGER tag for s');
+  offset++;
+  const sLen = der[offset++];
+  const sBytes = der.slice(offset, offset + sLen);
+
+  // P-256 使用 32 字节，去掉前导零或左填充零
+  const result = new Uint8Array(64);
+  const rTrimmed = rBytes[0] === 0 ? rBytes.slice(1) : rBytes;
+  const sTrimmed = sBytes[0] === 0 ? sBytes.slice(1) : sBytes;
+  result.set(rTrimmed, 32 - rTrimmed.length);
+  result.set(sTrimmed, 64 - sTrimmed.length);
+
+  return result;
+}
+
+/**
+ * 获取 Google AdMob 公钥（CryptoKey 格式）
+ */
+async function getGooglePublicKeys(): Promise<Map<string, CryptoKey>> {
   const now = Date.now();
 
   // 使用缓存的公钥
@@ -35,12 +78,22 @@ async function getGooglePublicKeys(): Promise<Map<string, string>> {
   }
 
   const data = await response.json();
-  const keys = new Map<string, string>();
+  const keys = new Map<string, CryptoKey>();
 
   for (const key of data.keys) {
-    // 将 base64url 编码的公钥转换为 PEM 格式
+    // base64url → 标准 base64
     const base64Key = key.base64.replace(/-/g, '+').replace(/_/g, '/');
-    keys.set(key.keyId.toString(), base64Key);
+    const keyData = base64ToUint8Array(base64Key);
+
+    // 导入为 CryptoKey（ECDSA P-256）
+    const cryptoKey = await crypto.subtle.importKey(
+      'spki',
+      keyData.buffer as ArrayBuffer,
+      { name: 'ECDSA', namedCurve: 'P-256' },
+      false,
+      ['verify']
+    );
+    keys.set(key.keyId.toString(), cryptoKey);
   }
 
   googlePublicKeys = keys;
@@ -51,7 +104,7 @@ async function getGooglePublicKeys(): Promise<Map<string, string>> {
 }
 
 /**
- * 验证 AdMob SSV 签名
+ * 验证 AdMob SSV 签名（Web Crypto API）
  */
 async function verifySignature(
   queryString: string,
@@ -60,9 +113,9 @@ async function verifySignature(
 ): Promise<boolean> {
   try {
     const keys = await getGooglePublicKeys();
-    const publicKeyBase64 = keys.get(keyId);
+    const publicKey = keys.get(keyId);
 
-    if (!publicKeyBase64) {
+    if (!publicKey) {
       console.error(`❌ [AdMob SSV] 未找到 key_id: ${keyId}`);
       return false;
     }
@@ -76,22 +129,23 @@ async function verifySignature(
     const sortedParams = new URLSearchParams([...params.entries()].sort());
     const message = sortedParams.toString();
 
-    // 解码签名和公钥
-    const signatureBuffer = Buffer.from(signature.replace(/-/g, '+').replace(/_/g, '/'), 'base64');
-    const publicKeyDer = Buffer.from(publicKeyBase64, 'base64');
+    // 解码签名（base64url → 标准 base64 → bytes）
+    const sigBase64 = signature.replace(/-/g, '+').replace(/_/g, '/');
+    const sigDer = base64ToUint8Array(sigBase64);
 
-    // 创建公钥对象
-    const publicKey = crypto.createPublicKey({
-      key: publicKeyDer,
-      format: 'der',
-      type: 'spki',
-    });
+    // DER → IEEE P1363（Web Crypto ECDSA 要求 P1363 格式）
+    const sigP1363 = derToP1363(sigDer);
 
-    // 验证签名 (ECDSA with SHA-256)
-    const verifier = crypto.createVerify('SHA256');
-    verifier.update(message);
+    // 编码消息
+    const messageBytes = new TextEncoder().encode(message);
 
-    return verifier.verify(publicKey, signatureBuffer);
+    // 使用 Web Crypto 验证 ECDSA 签名
+    return await crypto.subtle.verify(
+      { name: 'ECDSA', hash: 'SHA-256' },
+      publicKey,
+      sigP1363.buffer as ArrayBuffer,
+      messageBytes
+    );
   } catch (error) {
     console.error('❌ [AdMob SSV] 签名验证失败:', error);
     return false;

@@ -2,7 +2,7 @@
  * 管理员权限验证工具
  */
 import { headers } from 'next/headers';
-import { auth as adminAuth } from '@/lib/firebase-admin';
+import { verifyIdToken } from '@/lib/firebase-verify';
 import { getCurrentUser } from '@/lib/auth-firebase';
 import { ADMIN_EMAILS } from '@/config/admin';
 
@@ -21,7 +21,7 @@ export async function verifyAdminWithoutDb(): Promise<void> {
   const token = authHeader.substring(7);
 
   try {
-    const decodedToken = await adminAuth.verifyIdToken(token);
+    const decodedToken = await verifyIdToken(token);
 
     if (!decodedToken.email || !ADMIN_EMAILS.includes(decodedToken.email)) {
       throw new Error('无权限访问');

@@ -308,7 +308,7 @@ export default function RvcModelsPage() {
     setEditForm({
       name: model.name,
       category: model.category,
-      sort_order: model.sort_order,
+      sort_order: model.sortOrder,
     });
     setEditAvatarFile(null);
     setShowEditModal(true);
@@ -461,10 +461,10 @@ export default function RvcModelsPage() {
                   <tr key={model.id} className="hover:bg-gray-50">
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-3">
-                        {model.avatar_url ? (
+                        {model.avatarUrl ? (
                           // eslint-disable-next-line @next/next/no-img-element
                           <img
-                            src={model.avatar_url}
+                            src={model.avatarUrl}
                             alt={model.name}
                             className="w-10 h-10 rounded-full object-cover"
                           />
@@ -485,9 +485,9 @@ export default function RvcModelsPage() {
                       </span>
                     </td>
                     <td className="px-4 py-3">
-                      {model.is_builtin ? (
+                      {model.isBuiltin ? (
                         <span className="px-2 py-0.5 text-xs font-medium rounded bg-blue-100 text-blue-700">
-                          内置 ({model.builtin_name})
+                          内置 ({model.builtinName})
                         </span>
                       ) : (
                         <span className="px-2 py-0.5 text-xs font-medium rounded bg-purple-100 text-purple-700">
@@ -496,20 +496,20 @@ export default function RvcModelsPage() {
                       )}
                     </td>
                     <td className="px-4 py-3 text-sm text-gray-600">
-                      {formatUsesCount(model.uses_count)}
+                      {formatUsesCount(model.usesCount)}
                     </td>
                     <td className="px-4 py-3">
                       <span
                         className={`px-2 py-0.5 text-xs font-medium rounded ${
-                          model.is_active
+                          model.isActive
                             ? 'bg-green-100 text-green-700'
                             : 'bg-gray-100 text-gray-500'
                         }`}
                       >
-                        {model.is_active ? '已启用' : '已禁用'}
+                        {model.isActive ? '已启用' : '已禁用'}
                       </span>
                     </td>
-                    <td className="px-4 py-3 text-sm text-gray-600">{model.sort_order}</td>
+                    <td className="px-4 py-3 text-sm text-gray-600">{model.sortOrder}</td>
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-2">
                         <button
@@ -521,12 +521,12 @@ export default function RvcModelsPage() {
                         <button
                           onClick={() => handleToggleActive(model.id)}
                           className={`text-sm ${
-                            model.is_active
+                            model.isActive
                               ? 'text-gray-600 hover:text-gray-700'
                               : 'text-green-600 hover:text-green-700'
                           }`}
                         >
-                          {model.is_active ? '禁用' : '启用'}
+                          {model.isActive ? '禁用' : '启用'}
                         </button>
                         <button
                           onClick={() => handleDelete(model.id, model.name)}
@@ -802,10 +802,10 @@ export default function RvcModelsPage() {
                       alt="新头像预览"
                       className="w-20 h-20 rounded-full object-cover border-2 border-purple-500"
                     />
-                  ) : editingModel.avatar_url ? (
+                  ) : editingModel.avatarUrl ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img
-                      src={editingModel.avatar_url}
+                      src={editingModel.avatarUrl}
                       alt={editingModel.name}
                       className="w-20 h-20 rounded-full object-cover"
                     />
@@ -883,8 +883,8 @@ export default function RvcModelsPage() {
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">模型类型</label>
                 <div className="px-3 py-2 border border-gray-200 rounded-lg bg-gray-50 text-gray-600 text-sm">
-                  {editingModel.is_builtin ? (
-                    <span>内置模型 ({editingModel.builtin_name})</span>
+                  {editingModel.isBuiltin ? (
+                    <span>内置模型 ({editingModel.builtinName})</span>
                   ) : (
                     <span>自定义模型</span>
                   )}
@@ -892,17 +892,17 @@ export default function RvcModelsPage() {
               </div>
 
               {/* 模型文件 URL (只读，仅自定义模型显示) */}
-              {!editingModel.is_builtin && editingModel.model_url && (
+              {!editingModel.isBuiltin && editingModel.modelUrl && (
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">模型文件 URL</label>
                   <div className="px-3 py-2 border border-gray-200 rounded-lg bg-gray-50 text-xs text-gray-600 break-all">
                     <a
-                      href={editingModel.model_url}
+                      href={editingModel.modelUrl}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-purple-600 hover:text-purple-700 hover:underline"
                     >
-                      {editingModel.model_url}
+                      {editingModel.modelUrl}
                     </a>
                   </div>
                   <p className="text-xs text-gray-500 mt-1">点击链接测试是否可以访问</p>
@@ -910,17 +910,17 @@ export default function RvcModelsPage() {
               )}
 
               {/* Index 文件 URL (只读，仅自定义模型显示) */}
-              {!editingModel.is_builtin && editingModel.index_url && (
+              {!editingModel.isBuiltin && editingModel.indexUrl && (
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Index 文件 URL</label>
                   <div className="px-3 py-2 border border-gray-200 rounded-lg bg-gray-50 text-xs text-gray-600 break-all">
                     <a
-                      href={editingModel.index_url}
+                      href={editingModel.indexUrl}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-purple-600 hover:text-purple-700 hover:underline"
                     >
-                      {editingModel.index_url}
+                      {editingModel.indexUrl}
                     </a>
                   </div>
                 </div>

@@ -56,9 +56,9 @@ export default function AppReleasesPage() {
   }, [loadReleases]);
 
   // 格式化文件大小
-  const formatFileSize = (bytes: bigint | null): string => {
+  const formatFileSize = (bytes: number | null): string => {
     if (!bytes) return '-';
-    const num = Number(bytes);
+    const num = bytes;
     if (num < 1024) return `${num} B`;
     if (num < 1024 * 1024) return `${(num / 1024).toFixed(1)} KB`;
     return `${(num / (1024 * 1024)).toFixed(1)} MB`;

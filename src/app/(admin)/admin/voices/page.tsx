@@ -34,7 +34,7 @@ interface Voice {
   avatar_url: string;
   style_list: string[];
   voice_sample_url: Record<string, string>;
-  created_at: Date | null;
+  created_at: string | null;
 }
 
 interface EditingVoice {

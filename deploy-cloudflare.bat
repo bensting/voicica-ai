@@ -42,7 +42,7 @@ if %errorlevel% neq 0 (
     exit /b 1
 )
 
-REM --- Step 2: OpenNext 构建（内含 prisma generate + next build + worker 打包）---
+REM --- Step 2: OpenNext 构建（内含 next build + worker 打包）---
 echo [2/2] Building Cloudflare Worker (OpenNext)...
 call npx opennextjs-cloudflare build
 if %errorlevel% neq 0 (

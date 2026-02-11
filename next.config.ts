@@ -30,6 +30,11 @@ const nextConfig: NextConfig = {
     },
   },
 
+  // 强制包含 Prisma 生成的文件（WASM + runtime），确保 OpenNext 打包时不遗漏
+  outputFileTracingIncludes: {
+    '/**': ['./src/generated/prisma/**/*'],
+  },
+
   // 环境变量注入
   env: {
     NEXT_PUBLIC_APP_VERSION: APP_VERSION,

@@ -13,7 +13,8 @@
       "Bash(gh api:*)",
       "Bash(dir:*)",
       "Bash(deploy-cloudflare.bat:*)",
-      "Bash(npx opennextjs-cloudflare deploy:*)"
+      "Bash(npx opennextjs-cloudflare deploy:*)",
+      "Bash(npm install:*)"
     ]
   }
 }

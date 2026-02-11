@@ -18,7 +18,7 @@ const nextConfig: NextConfig = {
   /* config options here */
 
   // 服务端外部包（不通过 webpack 打包）
-  serverExternalPackages: ["jose", "@neondatabase/serverless"],
+  serverExternalPackages: ["jose"],
 
   // 禁用尾部斜杠重定向（避免 Stripe webhook 307 错误）
   skipTrailingSlashRedirect: true,

@@ -108,6 +108,25 @@ const nextConfig: NextConfig = {
     ];
   },
 
+  // Cloudflare Workers: 重定向 Prisma 入口到 WASM 版本
+  // 默认 webpack 解析到 index.js（二进制引擎，用 readFileSync 读 WASM → Workers 无文件系统会报错），
+  // 用 alias 重定向到 wasm.js（用 import() 加载 WASM，兼容 Workers）
+  webpack: (config, { isServer }) => {
+    if (isServer) {
+      const prismaDir = join(__dirname, 'src', 'generated', 'prisma');
+      config.resolve.alias = {
+        ...config.resolve.alias,
+        [join(prismaDir, 'index.js')]: join(prismaDir, 'wasm.js'),
+      };
+      // 启用 WebAssembly 支持（wasm.js 通过 import() 加载 .wasm 文件）
+      config.experiments = {
+        ...config.experiments,
+        asyncWebAssembly: true,
+      };
+    }
+    return config;
+  },
+
   // 修复 Firebase Auth 的 COOP 警告
   async headers() {
     return [

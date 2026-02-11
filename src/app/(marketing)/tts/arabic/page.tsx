@@ -93,7 +93,7 @@ export default function ArabicTTSPage() {
         languages={EXPLORE_LANGUAGE_PAGES}
         currentLanguage="ar-SA"
         exploreMoreText={CONTENT.explore.exploreMore}
-        exploreMoreHref="/studio/tts"
+        exploreMoreHref="/native/create/voice"
       />
     </div>
   );

@@ -101,7 +101,7 @@ export default function TTSSamples() {
           size="lg"
           variant="pink-rose"
           className="w-fit"
-          onClick={() => router.push('/studio/ai-song')}
+          onClick={() => router.push('/native/create/voice')}
         >
           Create Music Now
         </GradientButton>
@@ -175,7 +175,7 @@ export default function TTSSamples() {
           size="lg"
           variant="pink-rose"
           className="w-fit"
-          onClick={() => router.push('/studio/ai-video/text-to-video')}
+          onClick={() => router.push('/native/create/voice')}
         >
           Create Video Now
         </GradientButton>

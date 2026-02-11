@@ -158,7 +158,7 @@ export default function TTSPromoPage() {
         subtitle={t('ttsPromo.explore.subtitle') || 'Our text-to-speech service supports 190+ languages. Select your preferred language and start creating content with high-quality AI voices.'}
         languages={EXPLORE_LANGUAGE_PAGES}
         exploreMoreText={t('ttsPromo.explore.exploreMore') || 'Explore More'}
-        exploreMoreHref="/studio/tts"
+        exploreMoreHref="/native/create/voice"
       />
     </div>
   );

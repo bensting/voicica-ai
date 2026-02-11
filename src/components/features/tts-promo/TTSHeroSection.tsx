@@ -49,7 +49,7 @@ export default function TTSHeroSection({
   const router = useRouter();
 
   const handleGetStarted = () => {
-    router.push('/studio/tts');
+    router.push('/native/create/voice');
   };
 
   return (

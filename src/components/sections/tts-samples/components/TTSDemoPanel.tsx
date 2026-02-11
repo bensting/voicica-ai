@@ -75,7 +75,7 @@ export default function TTSDemoPanel({
     localStorage.setItem('tts_prefill_voice', JSON.stringify(selectedVoice));
 
     // Open TTS page in new tab
-    window.open('/studio/tts', '_blank');
+    window.open('/native/create/voice', '_blank');
   };
 
   return (

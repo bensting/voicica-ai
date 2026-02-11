@@ -41,7 +41,7 @@ export default function CTA({
   const defaultButtons: CTAButton[] = [
     {
       labelKey: 'cta.getStarted',
-      href: '/studio/tts',
+      href: '/native/create/voice',
       variant: 'primary',
     },
     {

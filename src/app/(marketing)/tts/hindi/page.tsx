@@ -93,7 +93,7 @@ export default function HindiTTSPage() {
         languages={EXPLORE_LANGUAGE_PAGES}
         currentLanguage="hi-IN"
         exploreMoreText={CONTENT.explore.exploreMore}
-        exploreMoreHref="/studio/tts"
+        exploreMoreHref="/native/create/voice"
       />
     </div>
   );

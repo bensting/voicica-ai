@@ -26,7 +26,7 @@ export function useLogin() {
   const searchParams = useSearchParams();
 
   // 获取登录成功后的重定向地址
-  const returnUrl = searchParams.get('returnUrl') || '/studio/tts';
+  const returnUrl = searchParams.get('returnUrl') || '/native/create/voice';
 
   // 检测回访用户
   useEffect(() => {

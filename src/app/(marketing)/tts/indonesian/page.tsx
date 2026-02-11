@@ -93,7 +93,7 @@ export default function IndonesianTTSPage() {
         languages={EXPLORE_LANGUAGE_PAGES}
         currentLanguage="id-ID"
         exploreMoreText={CONTENT.explore.exploreMore}
-        exploreMoreHref="/studio/tts"
+        exploreMoreHref="/native/create/voice"
       />
     </div>
   );

@@ -92,7 +92,7 @@ export default function SpanishTTSPage() {
         languages={EXPLORE_LANGUAGE_PAGES}
         currentLanguage="es-ES"
         exploreMoreText={CONTENT.explore.exploreMore}
-        exploreMoreHref="/studio/tts"
+        exploreMoreHref="/native/create/voice"
       />
     </div>
   );

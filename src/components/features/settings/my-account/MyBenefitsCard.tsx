@@ -88,7 +88,7 @@ export default function MyBenefitsCard({ credits, onRefresh }: MyBenefitsCardPro
 
             {/* 右侧：查看历史链接 */}
             <Link
-              href="/studio/settings/credit-history"
+              href="/native/settings"
               className="group flex items-center gap-2 px-4 py-2.5 bg-white/10 hover:bg-white/20 rounded-lg transition-all border border-white/20 hover:border-white/30"
             >
               <span className="text-sm font-medium text-white whitespace-nowrap">

@@ -10,8 +10,8 @@ export type ProductType = 'text_to_speech' | 'voice_cloning';
  * 产品类型到路由的映射
  */
 export const PRODUCT_ROUTES: Record<ProductType, string> = {
-  text_to_speech: '/studio/tts',
-  voice_cloning: '/studio/voice-cloning',
+  text_to_speech: '/native/create/voice',
+  voice_cloning: '/native/create/voice',
 };
 
 /**

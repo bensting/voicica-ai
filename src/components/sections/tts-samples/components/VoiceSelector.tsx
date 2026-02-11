@@ -118,7 +118,7 @@ export default function VoiceSelector({
 
   // 处理解锁 CTA 点击
   const handleUnlockClick = () => {
-    router.push('/studio/tts');
+    router.push('/native/create/voice');
   };
 
   // 当可用语音列表变化时（语言切换），停止播放并重置状态

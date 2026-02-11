@@ -92,7 +92,7 @@ export default function VietnameseTTSPage() {
         languages={EXPLORE_LANGUAGE_PAGES}
         currentLanguage="vi-VN"
         exploreMoreText={CONTENT.explore.exploreMore}
-        exploreMoreHref="/studio/tts"
+        exploreMoreHref="/native/create/voice"
       />
     </div>
   );

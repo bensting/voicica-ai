@@ -37,7 +37,7 @@ export default function TTSCTASection({
   const router = useRouter();
 
   const handleGetStarted = () => {
-    router.push('/studio/tts');
+    router.push('/native/create/voice');
   };
 
   return (

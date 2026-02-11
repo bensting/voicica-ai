@@ -92,7 +92,7 @@ export default function ChineseTTSPage() {
         languages={EXPLORE_LANGUAGE_PAGES}
         currentLanguage="zh-CN"
         exploreMoreText={CONTENT.explore.exploreMore}
-        exploreMoreHref="/studio/tts"
+        exploreMoreHref="/native/create/voice"
       />
     </div>
   );

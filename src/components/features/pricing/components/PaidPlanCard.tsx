@@ -204,7 +204,7 @@ export default function PaidPlanCard({ plan }: PaidPlanCardProps) {
           if (verifyResult.success) {
             console.log('✅ [handleUpgrade] Purchase verified, subscription:', verifyResult.subscriptionId);
             // 购买成功，跳转到成功页面（带 Google Play 标识）
-            window.location.href = `/studio/payment/success?source=google_play&subscription_id=${verifyResult.subscriptionId}`;
+            window.location.href = `/native/payment/success?source=google_play&subscription_id=${verifyResult.subscriptionId}`;
           } else {
             console.error('❌ [handleUpgrade] Verification failed:', verifyResult.error);
             alert(verifyResult.error || 'Failed to verify purchase');
@@ -232,8 +232,8 @@ export default function PaidPlanCard({ plan }: PaidPlanCardProps) {
     setIsLoading(true);
 
     try {
-      const successUrl = process.env.NEXT_PUBLIC_PAYMENT_SUCCESS_URL || `${window.location.origin}/studio/payment/success`;
-      const cancelUrl = process.env.NEXT_PUBLIC_PAYMENT_CANCEL_URL || `${window.location.origin}/studio/payment/cancel`;
+      const successUrl = process.env.NEXT_PUBLIC_PAYMENT_SUCCESS_URL || `${window.location.origin}/native/payment/success`;
+      const cancelUrl = process.env.NEXT_PUBLIC_PAYMENT_CANCEL_URL || `${window.location.origin}/native`;
       const currency = priceInfo?.currency?.toLowerCase() || 'usd';
 
       const requestData = {

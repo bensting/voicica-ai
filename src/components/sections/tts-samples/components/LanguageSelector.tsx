@@ -59,7 +59,7 @@ export default function LanguageSelector({
 
   // 处理解锁CTA点击
   const handleUnlockClick = () => {
-    router.push('/studio/tts');
+    router.push('/native/create/voice');
   };
 
   return (

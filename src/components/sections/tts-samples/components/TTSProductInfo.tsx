@@ -13,7 +13,7 @@ export default function TTSProductInfo() {
 
   // Navigate to TTS page
   const handleTryNow = () => {
-    router.push('/studio/tts');
+    router.push('/native/create/voice');
   };
 
   return (

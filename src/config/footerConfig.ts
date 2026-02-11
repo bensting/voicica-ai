@@ -54,15 +54,15 @@ export const ABOUT_LINKS: FooterLink[] = [
 export const PRODUCTS_LINKS: FooterLink[] = [
   {
     labelKey: 'footer.products.tts',
-    href: '/studio/tts',
+    href: '/native/create/voice',
   },
   {
     labelKey: 'footer.products.aiMusic',
-    href: '/studio/ai-song',
+    href: '/native/create/music',
   },
   {
     labelKey: 'footer.products.aiVideo',
-    href: '/studio/ai-video/text-to-video',
+    href: '/native/create/video',
   },
 ];
 

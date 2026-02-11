@@ -61,7 +61,7 @@ export default function VoiceSamplesSection({
         {/* Explore All Button */}
         <div className="text-center mt-6">
           <button
-            onClick={() => router.push('/studio/voices')}
+            onClick={() => router.push('/native/create/voice')}
             className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400 font-semibold text-sm hover:opacity-80 transition-opacity"
           >
             {exploreAllText} →

@@ -20,7 +20,7 @@ export const navigationConfig: NavigationConfig = {
       labelKey: 'nav.studio',
       items: [
         {
-          href: '/tts',
+          href: '/native/create/voice',
           labelKey: 'nav.textToSpeech',
           descriptionKey: 'nav.textToSpeechDesc',
           icon: TTSIcon,

@@ -92,7 +92,7 @@ export default function KoreanTTSPage() {
         languages={EXPLORE_LANGUAGE_PAGES}
         currentLanguage="ko-KR"
         exploreMoreText={CONTENT.explore.exploreMore}
-        exploreMoreHref="/studio/tts"
+        exploreMoreHref="/native/create/voice"
       />
     </div>
   );

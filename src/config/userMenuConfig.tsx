@@ -17,7 +17,7 @@ export const userMenuItems: UserMenuItemConfig[] = [
   {
     id: 'studio',
     labelKey: 'navbar.myStudio',
-    href: '/studio',
+    href: '/native',
     icon: (
       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path
@@ -32,7 +32,7 @@ export const userMenuItems: UserMenuItemConfig[] = [
   {
     id: 'mySubscription',
     labelKey: 'settings.menu.mySubscription',
-    href: '/studio/settings/my-subscription',
+    href: '/native/subscribe',
     icon: (
       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path
@@ -47,7 +47,7 @@ export const userMenuItems: UserMenuItemConfig[] = [
   {
     id: 'myProfile',
     labelKey: 'settings.menu.myProfile',
-    href: '/studio/settings/my-account',
+    href: '/native/settings',
     icon: (
       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path

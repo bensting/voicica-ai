@@ -119,7 +119,7 @@ function FeatureCards() {
     <div className="space-y-3 sm:space-y-5 mb-4 sm:mb-8">
       {/* Main Card - AI Song One-Click */}
       <button
-        onClick={() => window.open('/studio/ai-song', '_blank')}
+        onClick={() => window.open('/native/create/voice', '_blank')}
         className="w-full group relative z-10"
       >
         <div className="relative rounded-2xl sm:rounded-[2rem] p-[2px] sm:p-[3px] bg-gradient-to-r from-pink-300 via-pink-200 to-pink-300 shadow-xl shadow-pink-200/40 hover:shadow-2xl hover:shadow-pink-300/50 hover:-translate-y-1 transition-all duration-300">
@@ -159,14 +159,14 @@ function FeatureCards() {
         <FeatureCardSmall
           icon={<Mic className="w-5 h-5 sm:w-6 sm:h-6 text-[#ff8da1]" />}
           title={t('home.textToSpeech')}
-          href="/studio/tts"
+          href="/native/create/voice"
         />
 
         {/* Lyrics to Music */}
         <FeatureCardSmall
           icon={<Music className="w-5 h-5 sm:w-6 sm:h-6 text-[#ff8da1]" />}
           title={t('home.lyricsToMusic')}
-          href="/studio/ai-music"
+          href="/native/create/voice"
         />
       </div>
     </div>

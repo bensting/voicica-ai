@@ -5,7 +5,7 @@ import type { Voice } from '@/types/voice';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 import { useBottomNav } from '@/contexts/BottomNavContext';
-import { useVoices } from '@/components/features/studio/voices/hooks/useVoices';
+import { useVoices } from '@/hooks/useVoices';
 import { getAllLocaleOptions } from '@/utils/localeMapper';
 import type { LocaleOption } from '@/types/config';
 import { TTS_GENDER_OPTIONS, TTS_PROVIDER_OPTIONS, isTTSProvider } from '@/config/ttsVoiceFilters';

@@ -92,7 +92,7 @@ export default function JapaneseTTSPage() {
         languages={EXPLORE_LANGUAGE_PAGES}
         currentLanguage="ja-JP"
         exploreMoreText={CONTENT.explore.exploreMore}
-        exploreMoreHref="/studio/tts"
+        exploreMoreHref="/native/create/voice"
       />
     </div>
   );

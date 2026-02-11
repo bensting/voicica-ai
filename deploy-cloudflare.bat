@@ -68,6 +68,12 @@ if %errorlevel% neq 0 (
     exit /b 1
 )
 
+REM --- 确保 Cloudflare Queues 存在（已存在则跳过）---
+echo.
+echo [Queue] Ensuring Cloudflare Queues exist...
+call npx wrangler queues create tts-tasks 2>nul
+call npx wrangler queues create tts-tasks-dlq 2>nul
+
 REM --- 部署主应用到 Cloudflare Workers ---
 echo.
 echo [Deploy] Deploying main app to Cloudflare...

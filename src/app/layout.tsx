@@ -46,6 +46,7 @@ const fredoka = Fredoka({
 
 // Static English SEO metadata
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://voicica.ai'),
   title: {
     default: "Voicica AI - Free AI Voice Generator, Music & Image Creator",
     template: "%s | Voicica AI",

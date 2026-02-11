@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import prisma from '@/lib/prisma';
-import { Prisma } from '@prisma/client';
+import { Prisma } from '@/generated/prisma';
 import { verifyAdminWithoutDb } from '@/lib/auth-admin';
 
 /**

@@ -5,7 +5,7 @@
  * 从 Azure/Google TTS API 获取语音列表，同步到数据库
  */
 import prisma from '@/lib/prisma';
-import { Prisma } from '@prisma/client';
+import { Prisma } from '@/generated/prisma';
 import { getLocaleInfo } from '@/utils/localeMapper';
 import { synthesizeSpeech as azureSynthesize } from '@/lib/services/azure-tts';
 import { synthesizeSpeech as googleSynthesize } from '@/lib/services/google-tts';

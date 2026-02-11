@@ -11,7 +11,7 @@ import { getCurrentUser, getUserOrAnonymous } from '@/lib/auth-firebase';
 import { uploadImage } from '@/lib/services/r2-storage';
 import { v4 as uuidv4 } from 'uuid';
 import type { UserProfile, CreditsInfo, CreditHistoryResponse } from '@/types/user';
-import { Prisma } from '@prisma/client';
+import { Prisma } from '@/generated/prisma';
 
 // ==================== 积分工具函数 ====================
 

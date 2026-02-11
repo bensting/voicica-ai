@@ -4,7 +4,7 @@
  * Google TTS 语音同步 Server Actions
  */
 import prisma from '@/lib/prisma';
-import { Prisma } from '@prisma/client';
+import { Prisma } from '@/generated/prisma';
 import { verifyAdminWithoutDb } from '@/lib/auth-admin';
 import { getLocaleInfo } from '@/utils/localeMapper';
 import { synthesizeSpeech as googleSynthesize } from '@/lib/services/google-tts';

@@ -4,7 +4,7 @@
  * 在开发环境中防止热重载创建多个实例
  * 生产环境使用 Neon HTTP Driver（无二进制引擎，适合 Cloudflare Workers）
  */
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from '@/generated/prisma';
 import { PrismaNeonHttp } from '@prisma/adapter-neon';
 
 function createPrismaClient() {

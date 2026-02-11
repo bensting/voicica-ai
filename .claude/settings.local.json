@@ -5,7 +5,15 @@
       "Bash(node -e:*)",
       "Bash(find:*)",
       "Bash(ls:*)",
-      "Bash(wc:*)"
+      "Bash(wc:*)",
+      "WebSearch",
+      "WebFetch(domain:opennext.js.org)",
+      "WebFetch(domain:github.com)",
+      "Bash(gh issue view:*)",
+      "Bash(gh api:*)",
+      "Bash(dir:*)",
+      "Bash(deploy-cloudflare.bat:*)",
+      "Bash(npx opennextjs-cloudflare deploy:*)"
     ]
   }
 }

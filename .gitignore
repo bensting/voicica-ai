@@ -99,6 +99,8 @@ keystore.properties
 
 build-output/*
 
-# Cloudflare Workers
+# Cloudflare Workers / OpenNext
 workers/*/node_modules
 workers/*/.wrangler
+/.open-next/
+.wrangler

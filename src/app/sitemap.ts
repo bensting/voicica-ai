@@ -6,6 +6,11 @@ const PAGES = [
   { path: 'ai-voice', priority: 0.8, changeFrequency: 'weekly' as const },
   { path: 'ai-music', priority: 0.8, changeFrequency: 'weekly' as const },
   { path: 'ai-image', priority: 0.8, changeFrequency: 'weekly' as const },
+  {
+    path: 'video-downloader',
+    priority: 0.8,
+    changeFrequency: 'weekly' as const,
+  },
 ];
 
 export default function sitemap(): MetadataRoute.Sitemap {

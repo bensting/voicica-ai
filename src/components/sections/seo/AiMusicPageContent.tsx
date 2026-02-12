@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { AI_MUSIC_CONTENT } from '@/config/seo/ai-music';
 import MusicShowcase from './MusicShowcase';
+import SeoAppBadges from './SeoAppBadges';
 
 interface AiMusicPageContentProps {
   locale: string;
@@ -38,6 +39,7 @@ export default function AiMusicPageContent({ locale }: AiMusicPageContentProps) 
           >
             {content.cta.buttonText}
           </Link>
+          <SeoAppBadges />
         </div>
       </section>
 

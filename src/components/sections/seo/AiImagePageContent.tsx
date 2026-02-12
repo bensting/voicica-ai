@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { AI_IMAGE_CONTENT } from '@/config/seo/ai-image';
 import ImageShowcase from './ImageShowcase';
+import SeoAppBadges from './SeoAppBadges';
 
 interface AiImagePageContentProps {
   locale: string;
@@ -38,6 +39,7 @@ export default function AiImagePageContent({ locale }: AiImagePageContentProps) 
           >
             {content.cta.buttonText}
           </Link>
+          <SeoAppBadges />
         </div>
       </section>
 

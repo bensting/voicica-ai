@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { VIDEO_DOWNLOADER_CONTENT } from '@/config/seo/video-downloader';
 import VideoDownloaderShowcase from './VideoDownloaderShowcase';
+import SeoAppBadges from './SeoAppBadges';
 
 interface VideoDownloaderPageContentProps {
   locale: string;
@@ -40,6 +41,7 @@ export default function VideoDownloaderPageContent({
           >
             {content.cta.buttonText}
           </Link>
+          <SeoAppBadges />
         </div>
       </section>
 

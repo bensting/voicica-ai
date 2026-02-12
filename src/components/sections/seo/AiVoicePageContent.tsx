@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { AI_VOICE_CONTENT } from '@/config/seo/ai-voice';
 import VoiceShowcase from './VoiceShowcase';
+import SeoAppBadges from './SeoAppBadges';
 
 interface AiVoicePageContentProps {
   locale: string;
@@ -38,6 +39,7 @@ export default function AiVoicePageContent({ locale }: AiVoicePageContentProps) 
           >
             {content.cta.buttonText}
           </Link>
+          <SeoAppBadges />
         </div>
       </section>
 

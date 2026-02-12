@@ -13,6 +13,7 @@ import {
 import { Menu, X, ChevronDown, Globe } from 'lucide-react';
 import { SEO_LOCALES, ENGLISH_LOCALE, ALL_SEO_LOCALES, type SeoLocale } from '@/config/seo/locales';
 import { SEO_NAV_LINKS, SEO_NAV_LABELS, SEO_LANGUAGE_LABEL } from '@/config/seo/navbar';
+import { NavbarDownloadButton } from './SeoAppBadges';
 
 function detectLocale(pathname: string): SeoLocale {
   for (const loc of SEO_LOCALES) {
@@ -119,8 +120,9 @@ export default function SeoNavbar() {
             })}
           </div>
 
-          {/* Right: language switcher (desktop) */}
-          <div className="hidden lg:block">
+          {/* Right: download + language switcher (desktop) */}
+          <div className="hidden items-center gap-2 lg:flex">
+            <NavbarDownloadButton />
             <Popover className="relative">
               <PopoverButton className="flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-medium text-gray-300 transition-colors hover:bg-white/10 hover:text-white focus:outline-none">
                 <Globe className="h-4 w-4" />
@@ -234,6 +236,25 @@ export default function SeoNavbar() {
                   </Link>
                 );
               })}
+            </div>
+
+            {/* Download button in mobile */}
+            <div className="mt-3 border-t border-white/10 pt-3">
+              <a
+                href="https://play.google.com/store/apps/details?id=ai.voicica.app"
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => setMobileOpen(false)}
+                className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-white transition-colors hover:bg-white/5"
+              >
+                <svg viewBox="0 0 24 24" className="h-5 w-5">
+                  <path fill="#EA4335" d="M3.609 1.814L13.792 12 3.609 22.186a2.168 2.168 0 01-.609-1.529V3.343c0-.569.221-1.103.609-1.529z"/>
+                  <path fill="#FBBC04" d="M17.727 8.062L14.839 12l2.888 3.938 4.265-2.472c.793-.459.793-1.472 0-1.931l-4.265-2.473z"/>
+                  <path fill="#34A853" d="M3.609 22.186l10.183-10.186L17.727 15.938 6.044 22.723a2.015 2.015 0 01-2.435-.537z"/>
+                  <path fill="#4285F4" d="M3.609 1.814a2.015 2.015 0 012.435-.537L17.727 8.062 13.792 12 3.609 1.814z"/>
+                </svg>
+                Download on Google Play
+              </a>
             </div>
 
             {/* Language section in mobile */}

@@ -136,70 +136,65 @@ export async function checkin(addToPermanent: boolean = false, isNative: boolean
     const today = getTodayDate();
     const credits = config.checkin_credits;
 
-    // 使用事务确保原子操作
-    const result = await db.transaction(async (tx) => {
-      // 先尝试创建记录（如果不存在），使用 onConflictDoNothing 替代 skipDuplicates
-      await tx
-        .insert(dailyTasks)
-        .values({
-          userId: authUser.uid,
-          date: today,
-          checkinDone: false,
-          checkinCredits: 0,
-          adRewardsClaimed: 0,
-          adRewardsCredits: 0,
-        })
-        .onConflictDoNothing();
-
-      // 使用原子更新，只有 checkin_done = false 时才会更新成功
-      const updateResult = await tx
-        .update(dailyTasks)
-        .set({
-          checkinDone: true,
-          checkinCredits: credits,
-        })
-        .where(
-          and(
-            eq(dailyTasks.userId, authUser.uid),
-            eq(dailyTasks.date, today),
-            eq(dailyTasks.checkinDone, false), // 关键：只更新未签到的记录
-          )
-        )
-        .returning();
-
-      // 如果没有更新任何记录，说明已经签到过了
-      if (updateResult.length === 0) {
-        console.log('[checkin] Already checked in today (update returned 0 rows)');
-        return { success: false, message: 'Already checked in today' };
-      }
-
-      console.log(`[checkin] Successfully checked in, updating ${addToPermanent ? 'credits' : 'monthly_credits'}...`);
-
-      // 增加用户积分（credits 是永久积分，monthly_credits 是当月积分）
-      if (addToPermanent) {
-        await tx
-          .update(users)
-          .set({ credits: sql`${users.credits} + ${credits}` })
-          .where(eq(users.userId, authUser.uid));
-      } else {
-        await tx
-          .update(users)
-          .set({ monthlyCredits: sql`${users.monthlyCredits} + ${credits}` })
-          .where(eq(users.userId, authUser.uid));
-      }
-
-      // 记录积分历史
-      await tx.insert(creditHistory).values({
+    // 先尝试创建记录（如果不存在），使用 onConflictDoNothing 替代 skipDuplicates
+    await db
+      .insert(dailyTasks)
+      .values({
         userId: authUser.uid,
-        amount: credits,
-        description: addToPermanent ? 'Daily check-in reward (permanent)' : 'Daily check-in reward',
-        productType: 'daily_checkin',
-      });
+        date: today,
+        checkinDone: false,
+        checkinCredits: 0,
+        adRewardsClaimed: 0,
+        adRewardsCredits: 0,
+      })
+      .onConflictDoNothing();
 
-      return { success: true, credits };
+    // 使用原子更新，只有 checkin_done = false 时才会更新成功
+    const updateResult = await db
+      .update(dailyTasks)
+      .set({
+        checkinDone: true,
+        checkinCredits: credits,
+      })
+      .where(
+        and(
+          eq(dailyTasks.userId, authUser.uid),
+          eq(dailyTasks.date, today),
+          eq(dailyTasks.checkinDone, false), // 关键：只更新未签到的记录
+        )
+      )
+      .returning();
+
+    // 如果没有更新任何记录，说明已经签到过了
+    if (updateResult.length === 0) {
+      console.log('[checkin] Already checked in today (update returned 0 rows)');
+      return { success: false, message: 'Already checked in today' };
+    }
+
+    console.log(`[checkin] Successfully checked in, updating ${addToPermanent ? 'credits' : 'monthly_credits'}...`);
+
+    // 增加用户积分（credits 是永久积分，monthly_credits 是当月积分）
+    if (addToPermanent) {
+      await db
+        .update(users)
+        .set({ credits: sql`${users.credits} + ${credits}` })
+        .where(eq(users.userId, authUser.uid));
+    } else {
+      await db
+        .update(users)
+        .set({ monthlyCredits: sql`${users.monthlyCredits} + ${credits}` })
+        .where(eq(users.userId, authUser.uid));
+    }
+
+    // 记录积分历史
+    await db.insert(creditHistory).values({
+      userId: authUser.uid,
+      amount: credits,
+      description: addToPermanent ? 'Daily check-in reward (permanent)' : 'Daily check-in reward',
+      productType: 'daily_checkin',
     });
 
-    return result;
+    return { success: true, credits };
   } catch (error) {
     console.error('❌ [checkin] 签到失败:', error);
     return { success: false, message: 'Check-in failed' };
@@ -234,121 +229,116 @@ export async function claimAdReward(adWatched: boolean = true, addToPermanent: b
     const tiers = config.ad_reward_tiers;
     const bonusCredits = 1; // 奖励模式固定1积分
 
-    // 使用事务确保原子操作
-    const result = await db.transaction(async (tx) => {
-      // 先尝试创建记录（如果不存在）
-      await tx
-        .insert(dailyTasks)
-        .values({
-          userId: authUser.uid,
-          date: today,
-          checkinDone: false,
-          checkinCredits: 0,
-          adRewardsClaimed: 0,
-          adRewardsCredits: 0,
+    // 先尝试创建记录（如果不存在）
+    await db
+      .insert(dailyTasks)
+      .values({
+        userId: authUser.uid,
+        date: today,
+        checkinDone: false,
+        checkinCredits: 0,
+        adRewardsClaimed: 0,
+        adRewardsCredits: 0,
+      })
+      .onConflictDoNothing();
+
+    // 尝试每个档位，从 0 开始
+    for (let tierIndex = 0; tierIndex < tiers.length; tierIndex++) {
+      // 使用原子更新：只有当 ad_rewards_claimed 等于当前 tierIndex 时才更新
+      const tierCredits = tiers[tierIndex];
+      const newClaimed = tierIndex + 1;
+
+      // 计算新的累计积分（基于档位）
+      const newTotalAdCredits = tiers.slice(0, newClaimed).reduce((sum: number, v: number) => sum + v, 0);
+
+      const updateResult = await db
+        .update(dailyTasks)
+        .set({
+          adRewardsClaimed: newClaimed,
+          adRewardsCredits: newTotalAdCredits,
         })
-        .onConflictDoNothing();
-
-      // 尝试每个档位，从 0 开始
-      for (let tierIndex = 0; tierIndex < tiers.length; tierIndex++) {
-        // 使用原子更新：只有当 ad_rewards_claimed 等于当前 tierIndex 时才更新
-        const tierCredits = tiers[tierIndex];
-        const newClaimed = tierIndex + 1;
-
-        // 计算新的累计积分（基于档位）
-        const newTotalAdCredits = tiers.slice(0, newClaimed).reduce((sum: number, v: number) => sum + v, 0);
-
-        const updateResult = await tx
-          .update(dailyTasks)
-          .set({
-            adRewardsClaimed: newClaimed,
-            adRewardsCredits: newTotalAdCredits,
-          })
-          .where(
-            and(
-              eq(dailyTasks.userId, authUser.uid),
-              eq(dailyTasks.date, today),
-              eq(dailyTasks.adRewardsClaimed, tierIndex), // 关键：只更新当前档位等于 tierIndex 的记录
-            )
+        .where(
+          and(
+            eq(dailyTasks.userId, authUser.uid),
+            eq(dailyTasks.date, today),
+            eq(dailyTasks.adRewardsClaimed, tierIndex), // 关键：只更新当前档位等于 tierIndex 的记录
           )
-          .returning();
+        )
+        .returning();
 
-        // 如果更新成功，说明成功领取了这个档位
-        if (updateResult.length > 0) {
-          console.log(`[claimAdReward] Successfully claimed tier ${newClaimed}, credits: ${tierCredits}, addToPermanent: ${addToPermanent}`);
+      // 如果更新成功，说明成功领取了这个档位
+      if (updateResult.length > 0) {
+        console.log(`[claimAdReward] Successfully claimed tier ${newClaimed}, credits: ${tierCredits}, addToPermanent: ${addToPermanent}`);
 
-          // 增加用户积分（credits 是永久积分，monthly_credits 是当月积分）
-          if (addToPermanent) {
-            await tx
-              .update(users)
-              .set({ credits: sql`${users.credits} + ${tierCredits}` })
-              .where(eq(users.userId, authUser.uid));
-          } else {
-            await tx
-              .update(users)
-              .set({ monthlyCredits: sql`${users.monthlyCredits} + ${tierCredits}` })
-              .where(eq(users.userId, authUser.uid));
-          }
-
-          // 记录积分历史
-          await tx.insert(creditHistory).values({
-            userId: authUser.uid,
-            amount: tierCredits,
-            description: addToPermanent ? `Ad reward tier ${newClaimed} (permanent)` : `Ad reward tier ${newClaimed}`,
-            productType: 'ad_reward',
-          });
-
-          return { success: true, credits: tierCredits };
-        }
-      }
-
-      // 所有档位都已领取
-      if (bonusMode) {
-        // 奖励模式：继续给予固定积分
-        console.log(`[claimAdReward] Bonus mode: giving ${bonusCredits} credits, addToPermanent: ${addToPermanent}`);
-
-        // 更新累计积分
-        await tx
-          .update(dailyTasks)
-          .set({
-            adRewardsCredits: sql`${dailyTasks.adRewardsCredits} + ${bonusCredits}`,
-          })
-          .where(
-            and(
-              eq(dailyTasks.userId, authUser.uid),
-              eq(dailyTasks.date, today),
-            )
-          );
-
-        // 增加用户积分
+        // 增加用户积分（credits 是永久积分，monthly_credits 是当月积分）
         if (addToPermanent) {
-          await tx
+          await db
             .update(users)
-            .set({ credits: sql`${users.credits} + ${bonusCredits}` })
+            .set({ credits: sql`${users.credits} + ${tierCredits}` })
             .where(eq(users.userId, authUser.uid));
         } else {
-          await tx
+          await db
             .update(users)
-            .set({ monthlyCredits: sql`${users.monthlyCredits} + ${bonusCredits}` })
+            .set({ monthlyCredits: sql`${users.monthlyCredits} + ${tierCredits}` })
             .where(eq(users.userId, authUser.uid));
         }
 
         // 记录积分历史
-        await tx.insert(creditHistory).values({
+        await db.insert(creditHistory).values({
           userId: authUser.uid,
-          amount: bonusCredits,
-          description: addToPermanent ? 'Bonus ad reward (permanent)' : 'Bonus ad reward',
-          productType: 'ad_reward_bonus',
+          amount: tierCredits,
+          description: addToPermanent ? `Ad reward tier ${newClaimed} (permanent)` : `Ad reward tier ${newClaimed}`,
+          productType: 'ad_reward',
         });
 
-        return { success: true, credits: bonusCredits };
+        return { success: true, credits: tierCredits };
+      }
+    }
+
+    // 所有档位都已领取
+    if (bonusMode) {
+      // 奖励模式：继续给予固定积分
+      console.log(`[claimAdReward] Bonus mode: giving ${bonusCredits} credits, addToPermanent: ${addToPermanent}`);
+
+      // 更新累计积分
+      await db
+        .update(dailyTasks)
+        .set({
+          adRewardsCredits: sql`${dailyTasks.adRewardsCredits} + ${bonusCredits}`,
+        })
+        .where(
+          and(
+            eq(dailyTasks.userId, authUser.uid),
+            eq(dailyTasks.date, today),
+          )
+        );
+
+      // 增加用户积分
+      if (addToPermanent) {
+        await db
+          .update(users)
+          .set({ credits: sql`${users.credits} + ${bonusCredits}` })
+          .where(eq(users.userId, authUser.uid));
+      } else {
+        await db
+          .update(users)
+          .set({ monthlyCredits: sql`${users.monthlyCredits} + ${bonusCredits}` })
+          .where(eq(users.userId, authUser.uid));
       }
 
-      console.log('[claimAdReward] All ad rewards claimed today');
-      return { success: false, message: 'All ad rewards claimed today' };
-    });
+      // 记录积分历史
+      await db.insert(creditHistory).values({
+        userId: authUser.uid,
+        amount: bonusCredits,
+        description: addToPermanent ? 'Bonus ad reward (permanent)' : 'Bonus ad reward',
+        productType: 'ad_reward_bonus',
+      });
 
-    return result;
+      return { success: true, credits: bonusCredits };
+    }
+
+    console.log('[claimAdReward] All ad rewards claimed today');
+    return { success: false, message: 'All ad rewards claimed today' };
   } catch (error) {
     console.error('❌ [claimAdReward] 领取广告奖励失败:', error);
     return { success: false, message: 'Claim failed' };

@@ -94,14 +94,19 @@ async function parseViaChildProcess(url: string): Promise<ParseResponse> {
 }
 
 /**
- * Production: call Python API on Vercel (with 1 retry on failure)
+ * Production: call Python API (with 1 retry on failure)
+ * Uses VIDEO_PARSER_API_URL env var to point to the Vercel Python serverless functions.
  */
 async function parseViaApi(url: string): Promise<ParseResponse> {
-  const apiBase = process.env.NEXT_PUBLIC_APP_URL
+  const apiBase = process.env.VIDEO_PARSER_API_URL
+    || process.env.NEXT_PUBLIC_APP_URL
     || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000');
 
   const doFetch = async (): Promise<ParseResponse> => {
-    const res = await fetch(`${apiBase}/api/parse_video`, {
+    const fetchUrl = `${apiBase}/api/parse_video`;
+    console.log(`🎬 [parseViaApi] Calling: ${fetchUrl}, apiBase: ${apiBase}`);
+
+    const res = await fetch(fetchUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -110,11 +115,19 @@ async function parseViaApi(url: string): Promise<ParseResponse> {
       body: JSON.stringify({ url }),
     });
 
+    console.log(`🎬 [parseViaApi] Response: ${res.status} ${res.statusText}`);
+
     if (!res.ok) {
       let errorMessage = 'Failed to parse video';
       try {
-        const errorData = await res.json();
-        errorMessage = errorData.error || errorMessage;
+        const text = await res.text();
+        console.error(`🎬 [parseViaApi] Error body: ${text.slice(0, 500)}`);
+        try {
+          const errorData = JSON.parse(text);
+          errorMessage = errorData.error || errorMessage;
+        } catch {
+          errorMessage = `HTTP ${res.status}: ${text.slice(0, 200)}`;
+        }
       } catch {
         // ignore
       }
@@ -274,9 +287,11 @@ async function downloadFormatLocal(url: string, formatId: string): Promise<Buffe
 
 /**
  * Production: call Python serverless endpoint to download via yt-dlp
+ * Uses VIDEO_PARSER_API_URL env var to point to the Vercel Python serverless functions.
  */
 async function downloadFormatViaApi(url: string, formatId: string): Promise<Buffer> {
-  const apiBase = process.env.NEXT_PUBLIC_APP_URL
+  const apiBase = process.env.VIDEO_PARSER_API_URL
+    || process.env.NEXT_PUBLIC_APP_URL
     || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000');
 
   const res = await fetch(`${apiBase}/api/download_video`, {

@@ -772,38 +772,34 @@ export async function checkAndHandleStuckTask(
     // 根据 Inngest worker 流程：progress >= 20 表示积分已扣减
     const creditsWereDeducted = (record.progress ?? 0) >= 20;
 
-    const updatedRecord = await db.transaction(async (tx) => {
-      // 更新任务状态
-      const [updated] = await tx.update(ttsRecords)
-        .set({
-          status: 'FAILURE',
-          progress: 0,
-          errorMessage: `任务超时（运行时间: ${elapsedMinutes.toFixed(1)} 分钟）`,
-          completedAt: now.toISOString(),
-        })
-        .where(eq(ttsRecords.id, recordId))
-        .returning();
+    // 更新任务状态
+    const [updatedRecord] = await db.update(ttsRecords)
+      .set({
+        status: 'FAILURE',
+        progress: 0,
+        errorMessage: `任务超时（运行时间: ${elapsedMinutes.toFixed(1)} 分钟）`,
+        completedAt: now.toISOString(),
+      })
+      .where(eq(ttsRecords.id, recordId))
+      .returning();
 
-      // 只有在积分已被扣减的情况下才返还
-      if (creditsWereDeducted) {
-        const isAnonymous = unifiedUser.is_anonymous;
-        if (isAnonymous) {
-          await tx.update(anonymousUsers)
-            .set({ credits: sql`${anonymousUsers.credits} + ${record.creditsCost}` })
-            .where(eq(anonymousUsers.userId, userId));
-        } else {
-          await tx.update(users)
-            .set({ credits: sql`${users.credits} + ${record.creditsCost}` })
-            .where(eq(users.userId, userId));
-        }
-
-        console.log(`✅ [checkStuckTask] 已返还 ${record.creditsCost} 积分给用户 ${userId}`);
+    // 只有在积分已被扣减的情况下才返还
+    if (creditsWereDeducted) {
+      const isAnonymous = unifiedUser.is_anonymous;
+      if (isAnonymous) {
+        await db.update(anonymousUsers)
+          .set({ credits: sql`${anonymousUsers.credits} + ${record.creditsCost}` })
+          .where(eq(anonymousUsers.userId, userId));
       } else {
-        console.log(`ℹ️ [checkStuckTask] 积分未被扣减（progress: ${record.progress}），无需返还`);
+        await db.update(users)
+          .set({ credits: sql`${users.credits} + ${record.creditsCost}` })
+          .where(eq(users.userId, userId));
       }
 
-      return updated;
-    });
+      console.log(`✅ [checkStuckTask] 已返还 ${record.creditsCost} 积分给用户 ${userId}`);
+    } else {
+      console.log(`ℹ️ [checkStuckTask] 积分未被扣减（progress: ${record.progress}），无需返还`);
+    }
 
     return {
       handled: true,

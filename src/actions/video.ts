@@ -690,33 +690,29 @@ export async function checkAndHandleStuckVideoTask(
     // 积分已扣减的条件：progress >= 20
     const creditsWereDeducted = (record.progress ?? 0) >= 20;
 
-    const updatedRecord = await db.transaction(async (tx) => {
-      const [updated] = await tx.update(videoRecords)
-        .set({
-          status: 'FAILURE',
-          progress: 0,
-          errorMessage: `任务超时（运行时间: ${elapsedMinutes.toFixed(1)} 分钟）`,
-          completedAt: now.toISOString(),
-        })
-        .where(eq(videoRecords.id, recordId))
-        .returning();
+    const [updatedRecord] = await db.update(videoRecords)
+      .set({
+        status: 'FAILURE',
+        progress: 0,
+        errorMessage: `任务超时（运行时间: ${elapsedMinutes.toFixed(1)} 分钟）`,
+        completedAt: now.toISOString(),
+      })
+      .where(eq(videoRecords.id, recordId))
+      .returning();
 
-      if (creditsWereDeducted) {
-        const isAnonymous = unifiedUser.is_anonymous;
-        if (isAnonymous) {
-          await tx.update(anonymousUsers)
-            .set({ credits: sql`${anonymousUsers.credits} + ${record.creditsCost}` })
-            .where(eq(anonymousUsers.userId, userId));
-        } else {
-          await tx.update(users)
-            .set({ credits: sql`${users.credits} + ${record.creditsCost}` })
-            .where(eq(users.userId, userId));
-        }
-        console.log(`✅ [checkStuckVideoTask] 已返还 ${record.creditsCost} 积分给用户 ${userId}`);
+    if (creditsWereDeducted) {
+      const isAnonymous = unifiedUser.is_anonymous;
+      if (isAnonymous) {
+        await db.update(anonymousUsers)
+          .set({ credits: sql`${anonymousUsers.credits} + ${record.creditsCost}` })
+          .where(eq(anonymousUsers.userId, userId));
+      } else {
+        await db.update(users)
+          .set({ credits: sql`${users.credits} + ${record.creditsCost}` })
+          .where(eq(users.userId, userId));
       }
-
-      return updated;
-    });
+      console.log(`✅ [checkStuckVideoTask] 已返还 ${record.creditsCost} 积分给用户 ${userId}`);
+    }
 
     return {
       handled: true,

@@ -301,14 +301,12 @@ export async function updateUserCredits(
 
     const diff = credits - user.credits;
 
-    await db.transaction(async (tx) => {
-      await tx.update(users).set({ credits }).where(eq(users.userId, userId));
-      await tx.insert(creditHistory).values({
-        userId,
-        amount: diff,
-        description: `[管理员调整] ${reason}`,
-        productType: 'admin_adjustment',
-      });
+    await db.update(users).set({ credits }).where(eq(users.userId, userId));
+    await db.insert(creditHistory).values({
+      userId,
+      amount: diff,
+      description: `[管理员调整] ${reason}`,
+      productType: 'admin_adjustment',
     });
 
     return { success: true, message: '积分已更新' };

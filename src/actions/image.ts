@@ -163,18 +163,16 @@ export async function createImageTask(
 
     const taskId = result.data.taskId;
 
-    // 扣除积分（使用事务）
-    await db.transaction(async (tx) => {
-      await tx.update(users)
-        .set({ credits: sql`${users.credits} - ${model.credits}` })
-        .where(eq(users.userId, user_id));
+    // 扣除积分
+    await db.update(users)
+      .set({ credits: sql`${users.credits} - ${model.credits}` })
+      .where(eq(users.userId, user_id));
 
-      await tx.insert(creditHistory).values({
-        userId: user_id,
-        amount: -model.credits,
-        productType: ProductType.IMAGE,
-        description: `AI Image generation (${model.name})`,
-      });
+    await db.insert(creditHistory).values({
+      userId: user_id,
+      amount: -model.credits,
+      productType: ProductType.IMAGE,
+      description: `AI Image generation (${model.name})`,
     });
 
     // 创建图片记录

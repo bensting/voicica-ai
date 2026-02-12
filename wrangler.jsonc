@@ -7,6 +7,9 @@
     "directory": ".open-next/assets",
     "binding": "ASSETS"
   },
+  "vars": {
+    "VIDEO_PARSER_API_URL": "https://ai-voice-labs-web.vercel.app"
+  },
   "queues": {
     "producers": [{ "binding": "TTS_QUEUE", "queue": "tts-tasks" }]
   }

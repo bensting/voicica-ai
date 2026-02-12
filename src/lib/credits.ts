@@ -234,63 +234,62 @@ export async function deductCreditsAtomic(
     total: amount,
   };
 
-  await db.transaction(async (tx) => {
-    if (isAnonymous) {
-      const result = await tx.update(anonymousUsers)
-        .set({
-          credits: sql`${anonymousUsers.credits} - ${amount}`,
-          totalCreditsUsed: sql`${anonymousUsers.totalCreditsUsed} + ${amount}`,
-        })
-        .where(and(
-          eq(anonymousUsers.userId, userId),
-          gte(anonymousUsers.credits, amount)
-        ));
+  if (isAnonymous) {
+    // 使用 WHERE 条件做乐观锁，防止余额不足时扣减
+    const result = await db.update(anonymousUsers)
+      .set({
+        credits: sql`${anonymousUsers.credits} - ${amount}`,
+        totalCreditsUsed: sql`${anonymousUsers.totalCreditsUsed} + ${amount}`,
+      })
+      .where(and(
+        eq(anonymousUsers.userId, userId),
+        gte(anonymousUsers.credits, amount)
+      ));
 
-      if (result.rowCount === 0) {
-        throw new Error('积分扣减失败，余额不足');
-      }
-
-      breakdown = {
-        fromCredits: amount,
-        fromMonthlyCredits: 0,
-        total: amount,
-      };
-    } else {
-      const [user] = await tx.select({ credits: users.credits, monthlyCredits: users.monthlyCredits })
-        .from(users)
-        .where(eq(users.userId, userId))
-        .limit(1);
-
-      const totalCredits = (user?.credits ?? 0) + (user?.monthlyCredits ?? 0);
-      if (!user || totalCredits < amount) {
-        throw new Error('积分扣减失败，余额不足');
-      }
-
-      const fromMonthly = Math.min(user.monthlyCredits, amount);
-      const fromCredits = amount - fromMonthly;
-
-      await tx.update(users)
-        .set({
-          credits: sql`${users.credits} - ${fromCredits}`,
-          monthlyCredits: sql`${users.monthlyCredits} - ${fromMonthly}`,
-          totalCreditsUsed: sql`${users.totalCreditsUsed} + ${amount}`,
-        })
-        .where(eq(users.userId, userId));
-
-      breakdown = {
-        fromCredits,
-        fromMonthlyCredits: fromMonthly,
-        total: amount,
-      };
+    if (result.rowCount === 0) {
+      throw new Error('积分扣减失败，余额不足');
     }
 
-    await tx.insert(creditHistory).values({
-      userId,
-      amount: -amount,
-      description: sanitizeDescription(description),
-      productType,
-      taskId,
-    });
+    breakdown = {
+      fromCredits: amount,
+      fromMonthlyCredits: 0,
+      total: amount,
+    };
+  } else {
+    const [user] = await db.select({ credits: users.credits, monthlyCredits: users.monthlyCredits })
+      .from(users)
+      .where(eq(users.userId, userId))
+      .limit(1);
+
+    const totalCredits = (user?.credits ?? 0) + (user?.monthlyCredits ?? 0);
+    if (!user || totalCredits < amount) {
+      throw new Error('积分扣减失败，余额不足');
+    }
+
+    const fromMonthly = Math.min(user.monthlyCredits, amount);
+    const fromCredits = amount - fromMonthly;
+
+    await db.update(users)
+      .set({
+        credits: sql`${users.credits} - ${fromCredits}`,
+        monthlyCredits: sql`${users.monthlyCredits} - ${fromMonthly}`,
+        totalCreditsUsed: sql`${users.totalCreditsUsed} + ${amount}`,
+      })
+      .where(eq(users.userId, userId));
+
+    breakdown = {
+      fromCredits,
+      fromMonthlyCredits: fromMonthly,
+      total: amount,
+    };
+  }
+
+  await db.insert(creditHistory).values({
+    userId,
+    amount: -amount,
+    description: sanitizeDescription(description),
+    productType,
+    taskId,
   });
 
   console.log(`✅ [deductCreditsAtomic] 原子性扣除积分成功: ${amount} (永久: ${breakdown.fromCredits}, 当月: ${breakdown.fromMonthlyCredits}), 用户: ${userId}`);
@@ -309,31 +308,29 @@ export async function refundCredits(
   description: string,
   taskId?: string
 ): Promise<void> {
-  await db.transaction(async (tx) => {
-    if (isAnonymous) {
-      await tx.update(anonymousUsers)
-        .set({
-          credits: sql`${anonymousUsers.credits} + ${breakdown.total}`,
-          totalCreditsUsed: sql`${anonymousUsers.totalCreditsUsed} - ${breakdown.total}`,
-        })
-        .where(eq(anonymousUsers.userId, userId));
-    } else {
-      await tx.update(users)
-        .set({
-          credits: sql`${users.credits} + ${breakdown.fromCredits}`,
-          monthlyCredits: sql`${users.monthlyCredits} + ${breakdown.fromMonthlyCredits}`,
-          totalCreditsUsed: sql`${users.totalCreditsUsed} - ${breakdown.total}`,
-        })
-        .where(eq(users.userId, userId));
-    }
+  if (isAnonymous) {
+    await db.update(anonymousUsers)
+      .set({
+        credits: sql`${anonymousUsers.credits} + ${breakdown.total}`,
+        totalCreditsUsed: sql`${anonymousUsers.totalCreditsUsed} - ${breakdown.total}`,
+      })
+      .where(eq(anonymousUsers.userId, userId));
+  } else {
+    await db.update(users)
+      .set({
+        credits: sql`${users.credits} + ${breakdown.fromCredits}`,
+        monthlyCredits: sql`${users.monthlyCredits} + ${breakdown.fromMonthlyCredits}`,
+        totalCreditsUsed: sql`${users.totalCreditsUsed} - ${breakdown.total}`,
+      })
+      .where(eq(users.userId, userId));
+  }
 
-    await tx.insert(creditHistory).values({
-      userId,
-      amount: breakdown.total,
-      description: sanitizeDescription(description),
-      productType,
-      taskId,
-    });
+  await db.insert(creditHistory).values({
+    userId,
+    amount: breakdown.total,
+    description: sanitizeDescription(description),
+    productType,
+    taskId,
   });
 
   console.log(`✅ [refundCredits] 精确返还积分成功: ${breakdown.total} (永久: ${breakdown.fromCredits}, 当月: ${breakdown.fromMonthlyCredits}), 用户: ${userId}`);
@@ -356,30 +353,28 @@ export async function refundCreditsSimple(
 
   const isAnonymous = !normalUser;
 
-  await db.transaction(async (tx) => {
-    if (isAnonymous) {
-      await tx.update(anonymousUsers)
-        .set({
-          credits: sql`${anonymousUsers.credits} + ${amount}`,
-          totalCreditsUsed: sql`${anonymousUsers.totalCreditsUsed} - ${amount}`,
-        })
-        .where(eq(anonymousUsers.userId, userId));
-    } else {
-      await tx.update(users)
-        .set({
-          credits: sql`${users.credits} + ${amount}`,
-          totalCreditsUsed: sql`${users.totalCreditsUsed} - ${amount}`,
-        })
-        .where(eq(users.userId, userId));
-    }
+  if (isAnonymous) {
+    await db.update(anonymousUsers)
+      .set({
+        credits: sql`${anonymousUsers.credits} + ${amount}`,
+        totalCreditsUsed: sql`${anonymousUsers.totalCreditsUsed} - ${amount}`,
+      })
+      .where(eq(anonymousUsers.userId, userId));
+  } else {
+    await db.update(users)
+      .set({
+        credits: sql`${users.credits} + ${amount}`,
+        totalCreditsUsed: sql`${users.totalCreditsUsed} - ${amount}`,
+      })
+      .where(eq(users.userId, userId));
+  }
 
-    await tx.insert(creditHistory).values({
-      userId,
-      amount,
-      description: sanitizeDescription(description),
-      productType,
-      taskId,
-    });
+  await db.insert(creditHistory).values({
+    userId,
+    amount,
+    description: sanitizeDescription(description),
+    productType,
+    taskId,
   });
 
   console.log(`✅ [refundCreditsSimple] 返还积分成功: ${amount}, 用户: ${userId}, 匿名: ${isAnonymous}`);

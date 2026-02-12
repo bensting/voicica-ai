@@ -76,7 +76,7 @@ if %errorlevel% neq 0 (
     popd
     exit /b 1
 )
-call npx wrangler deploy
+call npx wrangler deploy --config wrangler.toml
 if %errorlevel% neq 0 (
     echo [ERROR] TTS Consumer deployment failed!
     popd

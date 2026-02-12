@@ -4,7 +4,7 @@
  * 用于 Server Actions 中验证用户身份
  * 支持 Firebase 正式用户和设备指纹匿名用户
  */
-import { headers } from 'next/headers';
+import { headers, cookies } from 'next/headers';
 import { verifyIdToken } from './firebase-verify';
 import db from './db';
 import { users, anonymousUsers, creditHistory } from '@/db/schema';
@@ -43,13 +43,23 @@ export interface UnifiedUser {
  */
 async function verifyFirebaseToken(headersList: Awaited<ReturnType<typeof headers>>): Promise<AuthUser | null> {
   try {
+    // 优先从 Authorization header 读取（middleware 注入）
+    let token: string | null = null;
     const authHeader = headersList.get('authorization');
 
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return null;
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      token = authHeader.substring(7);
     }
 
-    const token = authHeader.substring(7); // 移除 "Bearer " 前缀
+    // Fallback: 直接从 cookie 读取（CF Workers 中 middleware header 可能未传递）
+    if (!token) {
+      const cookieStore = await cookies();
+      token = cookieStore.get('firebase-token')?.value || null;
+    }
+
+    if (!token) {
+      return null;
+    }
 
     // 验证 Firebase ID Token
     const decodedToken = await verifyIdToken(token);
@@ -297,7 +307,9 @@ export async function getUserOrAnonymous(): Promise<UnifiedUser> {
   }
 
   // 2. 降级到匿名用户
-  const fingerprint = headersList.get('x-device-fingerprint');
+  // 优先从 header 读取（middleware 注入），fallback 从 cookie 读取
+  const cookieStore = await cookies();
+  const fingerprint = headersList.get('x-device-fingerprint') || cookieStore.get('device-fingerprint')?.value || null;
 
   console.log('🔍 [getUserOrAnonymous] Firebase 验证失败,检查设备指纹');
   console.log('🔍 [getUserOrAnonymous] Fingerprint:', fingerprint);
@@ -305,7 +317,7 @@ export async function getUserOrAnonymous(): Promise<UnifiedUser> {
   if (fingerprint) {
     const ipAddress = headersList.get('x-forwarded-for')?.split(',')[0] || undefined;
     const userAgent = headersList.get('user-agent') || undefined;
-    const platform = headersList.get('x-platform') || undefined;
+    const platform = headersList.get('x-platform') || cookieStore.get('platform')?.value || undefined;
     // Vercel 自动提供的地理位置 header（生产环境）
     const vercelCountry = headersList.get('x-vercel-ip-country') || undefined;
 

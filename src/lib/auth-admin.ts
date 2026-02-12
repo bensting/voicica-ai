@@ -1,7 +1,7 @@
 /**
  * 管理员权限验证工具
  */
-import { headers } from 'next/headers';
+import { headers, cookies } from 'next/headers';
 import { verifyIdToken } from '@/lib/firebase-verify';
 import { getCurrentUser } from '@/lib/auth-firebase';
 import { ADMIN_EMAILS } from '@/config/admin';
@@ -12,13 +12,22 @@ import { ADMIN_EMAILS } from '@/config/admin';
  */
 export async function verifyAdminWithoutDb(): Promise<void> {
   const headersList = await headers();
-  const authHeader = headersList.get('authorization');
+  let token: string | null = null;
 
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    throw new Error('未登录');
+  const authHeader = headersList.get('authorization');
+  if (authHeader && authHeader.startsWith('Bearer ')) {
+    token = authHeader.substring(7);
   }
 
-  const token = authHeader.substring(7);
+  // Fallback: 直接从 cookie 读取
+  if (!token) {
+    const cookieStore = await cookies();
+    token = cookieStore.get('firebase-token')?.value || null;
+  }
+
+  if (!token) {
+    throw new Error('未登录');
+  }
 
   try {
     const decodedToken = await verifyIdToken(token);

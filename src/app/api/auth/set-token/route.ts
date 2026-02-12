@@ -21,7 +21,7 @@ export async function POST(request: NextRequest) {
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
       path: '/',
-      maxAge: 60 * 60, // 1 小时
+      maxAge: 60 * 60 * 24 * 7, // 7 天（token 有效期由 jose 验证，cookie 只是传输）
     });
 
     return response;

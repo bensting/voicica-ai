@@ -19,6 +19,7 @@ import {
   getRedirectResult,
   signOut as firebaseSignOut,
   onAuthStateChanged,
+  onIdTokenChanged,
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   sendPasswordResetEmail,
@@ -182,16 +183,41 @@ export function FirebaseAuthProvider({ children }: { children: React.ReactNode }
     return () => unsubscribe();
   }, []);
 
-  // 自动刷新 token（每 55 分钟刷新一次，token 默认 1 小时过期）
+  // 监听 token 变化（包括 Firebase SDK 自动刷新）并同步到 cookie
   useEffect(() => {
     if (!user) return;
 
-    const refreshToken = async () => {
+    const unsubscribe = onIdTokenChanged(auth, async (changedUser: User | null) => {
+      if (!changedUser) return;
+      try {
+        const idToken = await changedUser.getIdToken();
+        setToken(idToken);
+
+        await fetch('/api/auth/set-token', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ token: idToken }),
+        });
+        console.log('🔐 [FirebaseAuth] Token 自动同步到 cookie');
+      } catch (err) {
+        console.warn('[FirebaseAuth] Token 同步到 cookie 失败:', err);
+      }
+    });
+
+    return () => unsubscribe();
+  }, [user]);
+
+  // 定期强制刷新 token（每 50 分钟），失败后短间隔重试
+  useEffect(() => {
+    if (!user) return;
+
+    let retryTimeout: ReturnType<typeof setTimeout> | null = null;
+
+    const refreshToken = async (retryCount = 0) => {
       try {
         const idToken = await user.getIdToken(true); // force refresh
         setToken(idToken);
 
-        // 通过 API 更新 cookie
         await fetch('/api/auth/set-token', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -200,13 +226,22 @@ export function FirebaseAuthProvider({ children }: { children: React.ReactNode }
         console.log('🔐 [FirebaseAuth] Token 定时刷新成功');
       } catch (error) {
         console.error('[FirebaseAuth] Token 刷新失败:', error);
+        // 失败后重试：30s, 60s, 120s（最多 3 次）
+        if (retryCount < 3) {
+          const delay = Math.min(30000 * Math.pow(2, retryCount), 120000);
+          console.log(`🔄 [FirebaseAuth] ${delay / 1000}s 后重试刷新...`);
+          retryTimeout = setTimeout(() => refreshToken(retryCount + 1), delay);
+        }
       }
     };
 
-    // 每 55 分钟刷新一次
-    const interval = setInterval(refreshToken, 55 * 60 * 1000);
+    // 每 50 分钟强制刷新
+    const interval = setInterval(() => refreshToken(0), 50 * 60 * 1000);
 
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+      if (retryTimeout) clearTimeout(retryTimeout);
+    };
   }, [user]);
 
   /**

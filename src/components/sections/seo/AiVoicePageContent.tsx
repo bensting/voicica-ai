@@ -12,7 +12,7 @@ export default function AiVoicePageContent({ locale }: AiVoicePageContentProps) 
   return (
     <div className="min-h-screen bg-gray-950">
       {/* Hero */}
-      <section className="px-6 pb-16 pt-24 md:pb-24 md:pt-32">
+      <section className="px-6 pb-6 pt-24 md:pb-8 md:pt-32">
         <div className="mx-auto max-w-4xl text-center">
           <h1 className="mb-4 text-3xl font-bold text-white md:text-5xl">
             {content.hero.title}

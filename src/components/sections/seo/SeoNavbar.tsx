@@ -162,8 +162,22 @@ export default function SeoNavbar() {
             </Popover>
           </div>
 
-          {/* Mobile language button (compact) */}
-          <div className="lg:hidden">
+          {/* Mobile: download + language (compact) */}
+          <div className="flex items-center gap-1 lg:hidden">
+            <a
+              href="https://play.google.com/store/apps/details?id=ai.voicica.app"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center rounded-full p-1.5 text-gray-300 transition-colors hover:bg-white/10 hover:text-white"
+              aria-label="Download on Google Play"
+            >
+              <svg viewBox="0 0 24 24" className="h-4 w-4">
+                <path fill="#EA4335" d="M3.609 1.814L13.792 12 3.609 22.186a2.168 2.168 0 01-.609-1.529V3.343c0-.569.221-1.103.609-1.529z"/>
+                <path fill="#FBBC04" d="M17.727 8.062L14.839 12l2.888 3.938 4.265-2.472c.793-.459.793-1.472 0-1.931l-4.265-2.473z"/>
+                <path fill="#34A853" d="M3.609 22.186l10.183-10.186L17.727 15.938 6.044 22.723a2.015 2.015 0 01-2.435-.537z"/>
+                <path fill="#4285F4" d="M3.609 1.814a2.015 2.015 0 012.435-.537L17.727 8.062 13.792 12 3.609 1.814z"/>
+              </svg>
+            </a>
             <Popover className="relative">
               <PopoverButton className="flex items-center gap-1 rounded-full px-2 py-1.5 text-sm text-gray-300 transition-colors hover:bg-white/10 hover:text-white focus:outline-none">
                 <Globe className="h-4 w-4" />

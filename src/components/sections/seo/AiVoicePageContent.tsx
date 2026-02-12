@@ -26,6 +26,21 @@ export default function AiVoicePageContent({ locale }: AiVoicePageContentProps) 
       {/* Voice & Dialogue Showcase */}
       <VoiceShowcase locale={locale} />
 
+      {/* CTA */}
+      <section className="px-6 py-10 md:py-16">
+        <div className="mx-auto max-w-2xl text-center">
+          <h2 className="mb-6 text-2xl font-bold text-white md:text-3xl">
+            {content.cta.title}
+          </h2>
+          <Link
+            href="/native"
+            className="inline-block rounded-full bg-gradient-to-r from-purple-600 to-cyan-500 px-8 py-3 text-sm font-semibold text-white transition-opacity hover:opacity-90"
+          >
+            {content.cta.buttonText}
+          </Link>
+        </div>
+      </section>
+
       {/* Features */}
       <section className="px-6 py-16 md:py-24">
         <div className="mx-auto max-w-5xl">
@@ -44,21 +59,6 @@ export default function AiVoicePageContent({ locale }: AiVoicePageContentProps) 
               </div>
             ))}
           </div>
-        </div>
-      </section>
-
-      {/* CTA */}
-      <section className="px-6 py-16 md:py-24">
-        <div className="mx-auto max-w-2xl text-center">
-          <h2 className="mb-6 text-2xl font-bold text-white md:text-3xl">
-            {content.cta.title}
-          </h2>
-          <Link
-            href="/native"
-            className="inline-block rounded-full bg-gradient-to-r from-purple-600 to-cyan-500 px-8 py-3 text-sm font-semibold text-white transition-opacity hover:opacity-90"
-          >
-            {content.cta.buttonText}
-          </Link>
         </div>
       </section>
 

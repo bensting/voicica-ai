@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { AI_MUSIC_CONTENT } from '@/config/seo/ai-music';
+import MusicShowcase from './MusicShowcase';
 
 interface AiMusicPageContentProps {
   locale: string;
@@ -11,7 +12,7 @@ export default function AiMusicPageContent({ locale }: AiMusicPageContentProps) 
   return (
     <div className="min-h-screen bg-gray-950">
       {/* Hero */}
-      <section className="px-6 pb-16 pt-24 md:pb-24 md:pt-32">
+      <section className="px-6 pb-6 pt-24 md:pb-8 md:pt-32">
         <div className="mx-auto max-w-4xl text-center">
           <h1 className="mb-4 text-3xl font-bold text-white md:text-5xl">
             {content.hero.title}
@@ -19,6 +20,24 @@ export default function AiMusicPageContent({ locale }: AiMusicPageContentProps) 
           <p className="mx-auto max-w-2xl text-base text-gray-400 md:text-lg">
             {content.hero.subtitle}
           </p>
+        </div>
+      </section>
+
+      {/* Music Showcase */}
+      <MusicShowcase locale={locale} />
+
+      {/* CTA */}
+      <section className="px-6 py-10 md:py-16">
+        <div className="mx-auto max-w-2xl text-center">
+          <h2 className="mb-6 text-2xl font-bold text-white md:text-3xl">
+            {content.cta.title}
+          </h2>
+          <Link
+            href="/native"
+            className="inline-block rounded-full bg-gradient-to-r from-purple-600 to-cyan-500 px-8 py-3 text-sm font-semibold text-white transition-opacity hover:opacity-90"
+          >
+            {content.cta.buttonText}
+          </Link>
         </div>
       </section>
 
@@ -40,21 +59,6 @@ export default function AiMusicPageContent({ locale }: AiMusicPageContentProps) 
               </div>
             ))}
           </div>
-        </div>
-      </section>
-
-      {/* CTA */}
-      <section className="px-6 py-16 md:py-24">
-        <div className="mx-auto max-w-2xl text-center">
-          <h2 className="mb-6 text-2xl font-bold text-white md:text-3xl">
-            {content.cta.title}
-          </h2>
-          <Link
-            href="/native"
-            className="inline-block rounded-full bg-gradient-to-r from-purple-600 to-cyan-500 px-8 py-3 text-sm font-semibold text-white transition-opacity hover:opacity-90"
-          >
-            {content.cta.buttonText}
-          </Link>
         </div>
       </section>
 

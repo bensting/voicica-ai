@@ -34,8 +34,6 @@ export function useRequireAuth() {
       // 根据当前路径判断返回哪个首页
       if (pathname.startsWith('/studio')) {
         router.push('/studio');
-      } else if (pathname.startsWith('/marketing')) {
-        router.push('/marketing');
       } else {
         router.push('/');
       }

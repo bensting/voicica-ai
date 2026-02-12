@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { AI_VOICE_CONTENT } from '@/config/seo/ai-voice';
+import VoiceShowcase from './VoiceShowcase';
 
 interface AiVoicePageContentProps {
   locale: string;
@@ -21,6 +22,9 @@ export default function AiVoicePageContent({ locale }: AiVoicePageContentProps) 
           </p>
         </div>
       </section>
+
+      {/* Voice & Dialogue Showcase */}
+      <VoiceShowcase locale={locale} />
 
       {/* Features */}
       <section className="px-6 py-16 md:py-24">

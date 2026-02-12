@@ -1,77 +1,66 @@
 import type { Metadata } from 'next';
 import { NewHero } from '@/components/sections/new-home';
-import LanguageSwitcher from '@/components/sections/new-home/LanguageSwitcher';
+import HomepageContent from '@/components/sections/seo/HomepageContent';
+import { buildAlternates, buildSeoUrl } from '@/config/seo/locales';
+import { HOMEPAGE_CONTENT } from '@/config/seo/homepage';
 
 export const metadata: Metadata = {
+  title: HOMEPAGE_CONTENT.en.metadata.title,
+  description: HOMEPAGE_CONTENT.en.metadata.description,
+  keywords: HOMEPAGE_CONTENT.en.metadata.keywords,
   alternates: {
-    canonical: 'https://voicica.ai',
-    languages: {
-      en: 'https://voicica.ai',
-      ja: 'https://voicica.ai/ja',
-      'zh-Hant': 'https://voicica.ai/tw',
-    },
+    canonical: buildSeoUrl(''),
+    languages: buildAlternates(),
+  },
+  openGraph: {
+    title: HOMEPAGE_CONTENT.en.metadata.title,
+    description: HOMEPAGE_CONTENT.en.metadata.description,
+    url: buildSeoUrl(''),
+    siteName: 'Voicica AI',
+    locale: 'en_US',
+    type: 'website',
   },
 };
 
 export default function Home() {
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@graph': [
+      {
+        '@type': 'WebSite',
+        name: 'Voicica AI',
+        url: 'https://voicica.ai',
+      },
+      {
+        '@type': 'Organization',
+        name: 'Voicica AI',
+        url: 'https://voicica.ai',
+        logo: 'https://voicica.ai/icons/icon-512x512.png',
+      },
+      {
+        '@type': 'SoftwareApplication',
+        name: 'Voicica AI',
+        url: 'https://voicica.ai',
+        applicationCategory: 'MultimediaApplication',
+        operatingSystem: 'Web, Android, iOS',
+        offers: {
+          '@type': 'Offer',
+          price: '0',
+          priceCurrency: 'USD',
+        },
+        featureList: HOMEPAGE_CONTENT.en.jsonLdFeatureList,
+      },
+    ],
+  };
+
   return (
     <div className="min-h-screen bg-gray-950">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <NewHero />
-
-      {/* SEO content — server-rendered for crawlers */}
-      <section className="bg-gray-950 px-6 py-16 md:py-24">
-        <div className="mx-auto max-w-5xl space-y-12 text-gray-300">
-          <h1 className="text-center text-3xl font-bold text-white md:text-4xl">
-            Free AI Voice Generator, Music Creator &amp; Image Tools
-          </h1>
-
-          <div className="grid gap-10 md:grid-cols-2">
-            <div>
-              <h2 className="mb-2 text-xl font-semibold text-white">AI Text to Speech</h2>
-              <p className="text-sm leading-relaxed text-gray-400">
-                Convert any text to natural-sounding speech with over 3,200 AI voices in 190+ languages. Our free online text to speech generator produces studio-quality voiceovers in seconds — perfect for videos, podcasts, and e-learning.
-              </p>
-            </div>
-
-            <div>
-              <h2 className="mb-2 text-xl font-semibold text-white">AI Music Generator</h2>
-              <p className="text-sm leading-relaxed text-gray-400">
-                Create original music tracks with AI. Describe the mood, genre, or style you want and get a royalty-free composition instantly. Ideal for content creators, filmmakers, and game developers.
-              </p>
-            </div>
-
-            <div>
-              <h2 className="mb-2 text-xl font-semibold text-white">AI Image Creator</h2>
-              <p className="text-sm leading-relaxed text-gray-400">
-                Generate stunning AI images from text prompts. From concept art to social media graphics, our AI image generator turns your ideas into high-quality visuals in seconds.
-              </p>
-            </div>
-
-            <div>
-              <h2 className="mb-2 text-xl font-semibold text-white">Free Video Downloader</h2>
-              <p className="text-sm leading-relaxed text-gray-400">
-                Download videos from TikTok, YouTube, and more. Save your favorite content in high quality — no watermark, no signup required. Fast, free, and easy to use.
-              </p>
-            </div>
-
-            <div>
-              <h2 className="mb-2 text-xl font-semibold text-white">HD Image Upscaler</h2>
-              <p className="text-sm leading-relaxed text-gray-400">
-                Enhance and upscale images to HD quality using AI. Restore blurry photos, increase resolution, and sharpen details with a single click — completely free.
-              </p>
-            </div>
-
-            <div>
-              <h2 className="mb-2 text-xl font-semibold text-white">Background Remover</h2>
-              <p className="text-sm leading-relaxed text-gray-400">
-                Remove image backgrounds instantly with AI. Get clean, transparent cutouts for product photos, portraits, and design projects — no manual editing needed.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <LanguageSwitcher current="en" />
+      <HomepageContent locale="en" />
     </div>
   );
 }

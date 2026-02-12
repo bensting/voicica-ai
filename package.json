@@ -70,6 +70,7 @@
     "@capacitor/toast": "^7.0.3",
     "@capawesome/capacitor-app-update": "^7.2.0",
     "@fingerprintjs/fingerprintjs": "^4.6.2",
+    "@headlessui/react": "^2.2.9",
     "@m430/capacitor-app-install": "^0.0.3",
     "@microsoft/fetch-event-source": "^2.0.1",
     "@neondatabase/serverless": "^1.0.2",

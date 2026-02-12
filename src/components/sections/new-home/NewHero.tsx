@@ -46,12 +46,38 @@ const heroTexts = {
       { line1: '背景', line2: '移除' },
     ],
   },
+  ko: {
+    titleLine1: '아이디어를',
+    titleLine2: '음성과 아트로',
+    subtitle: '3200+ AI 음성. 전문 AI 아트. 100% 무료',
+    showcase: '미리보기 쇼케이스',
+    cta: '[ 지금 만들기 시작 ]',
+    trustText: '100만+ 크리에이터가 신뢰',
+    tools: [
+      { line1: '동영상', line2: '다운로드' },
+      { line1: 'HD', line2: '업스케일' },
+      { line1: '배경', line2: '제거' },
+    ],
+  },
+  th: {
+    titleLine1: 'เปลี่ยนไอเดีย',
+    titleLine2: 'เป็นเสียงและศิลปะ',
+    subtitle: '3200+ เสียง AI. ศิลปะ AI ระดับมือ. ฟรี 100%',
+    showcase: 'ตัวอย่างผลงาน',
+    cta: '[ เริ่มสร้างเลย ]',
+    trustText: 'ครีเอเตอร์กว่า 1 ล้านคนไว้วางใจ',
+    tools: [
+      { line1: 'ดาวน์โหลด', line2: 'วิดีโอ' },
+      { line1: 'HD', line2: 'อัปสเกล' },
+      { line1: 'ลบ', line2: 'พื้นหลัง' },
+    ],
+  },
 } as const;
 
-export default function NewHero({ locale = 'en' }: { locale?: 'en' | 'ja' | 'zh-Hant' }) {
+export default function NewHero({ locale = 'en' }: { locale?: 'en' | 'ja' | 'zh-Hant' | 'ko' | 'th' }) {
   const { backgroundImage, avatars, playStoreUrl } =
     HOME_SHOWCASE_CONFIG;
-  const t = heroTexts[locale];
+  const t = heroTexts[locale] || heroTexts.en;
 
   const handleCTAClick = () => {
     // Microsoft UET 事件追踪

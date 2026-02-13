@@ -4,11 +4,11 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { searchFishVoices } from '@/actions/clone';
 import type { FishVoiceItem, ClonedVoiceData, SearchFishVoicesResult } from '@/actions/clone';
-import { Search, Mic, Play, Pause, Trash2, Loader2 } from 'lucide-react';
+import { Search, Mic, Play, Pause, Trash2, Loader2, ChevronDown } from 'lucide-react';
 
 const STORAGE_KEY = 'fish_voice_language';
 const DEFAULT_LANGUAGE = 'en';
-const PAGE_SIZE = 30;
+const PAGE_SIZE = 20;
 const MY_CLONES = 'my_clones';
 
 // Fish Audio supported languages
@@ -60,7 +60,6 @@ interface FishVoiceGridProps {
   selectedClonedVoice: ClonedVoiceData | null;
   onDeleteCloned?: (id: number) => void;
   onGoToCloneTab?: () => void;
-  scrollContainerRef?: React.RefObject<HTMLDivElement | null>;
 }
 
 export default function FishVoiceGrid({
@@ -71,7 +70,6 @@ export default function FishVoiceGrid({
   selectedClonedVoice,
   onDeleteCloned,
   onGoToCloneTab,
-  scrollContainerRef,
 }: FishVoiceGridProps) {
   const { t } = useLanguage();
   const [query, setQuery] = useState('');
@@ -86,28 +84,10 @@ export default function FishVoiceGrid({
   const isMyClones = filter === MY_CLONES;
 
   const clientCache = useRef<Map<string, SearchFishVoicesResult>>(new Map());
-  const loadMoreRef = useRef<HTMLDivElement>(null);
-
-  // Race condition prevention: ignore stale responses
   const requestIdRef = useRef(0);
-
-  // Refs for stable IntersectionObserver callback (avoids re-creating observer on every state change)
   const pageRef = useRef(1);
-  const filterRef = useRef(filter);
-  const queryRef = useRef(query);
-  const loadingMoreRef = useRef(false);
-  const hasMoreRef = useRef(false);
-  const isMyClonesRef = useRef(isMyClones);
-
-  // Keep refs in sync with state
-  filterRef.current = filter;
-  queryRef.current = query;
-  loadingMoreRef.current = loadingMore;
-  hasMoreRef.current = hasMore;
-  isMyClonesRef.current = isMyClones;
 
   const loadVoices = useCallback(async (searchQuery: string, lang: string, pageNum: number, append: boolean) => {
-    // Always increment — invalidates any in-flight request (including load-more)
     const requestId = ++requestIdRef.current;
 
     const cacheKey = `${searchQuery}|${lang}|${pageNum}`;
@@ -118,29 +98,21 @@ export default function FishVoiceGrid({
       } else {
         setVoices(cached.items);
       }
-      const more = cached.total > pageNum * PAGE_SIZE;
-      setHasMore(more);
-      hasMoreRef.current = more;
+      setHasMore(cached.total > pageNum * PAGE_SIZE);
       setLoadingMore(false);
-      loadingMoreRef.current = false;
       setLoading(false);
       return;
     }
 
     if (append) {
       setLoadingMore(true);
-      loadingMoreRef.current = true;
     } else {
-      // Fresh load: clear stale loadingMore and show skeleton
       setLoadingMore(false);
-      loadingMoreRef.current = false;
       setLoading(true);
     }
 
     try {
       const result = await searchFishVoices(searchQuery || undefined, pageNum, PAGE_SIZE, lang || undefined);
-
-      // Stale response — user switched language/searched while this was in flight
       if (requestId !== requestIdRef.current) return;
 
       clientCache.current.set(cacheKey, result);
@@ -149,9 +121,7 @@ export default function FishVoiceGrid({
       } else {
         setVoices(result.items);
       }
-      const more = result.total > pageNum * PAGE_SIZE;
-      setHasMore(more);
-      hasMoreRef.current = more;
+      setHasMore(result.total > pageNum * PAGE_SIZE);
     } catch {
       if (requestId !== requestIdRef.current) return;
       console.error('Failed to load Fish voices');
@@ -159,7 +129,6 @@ export default function FishVoiceGrid({
       if (requestId === requestIdRef.current) {
         setLoading(false);
         setLoadingMore(false);
-        loadingMoreRef.current = false;
       }
     }
   }, []);
@@ -186,36 +155,21 @@ export default function FishVoiceGrid({
     setFilter(value);
     pageRef.current = 1;
     if (value === MY_CLONES) {
-      // Cancel any in-flight request
       requestIdRef.current++;
       setLoading(false);
       setLoadingMore(false);
-      loadingMoreRef.current = false;
     } else {
       localStorage.setItem(STORAGE_KEY, value);
       loadVoices(query, value, 1, false);
     }
   };
 
-  // Stable handleLoadMore using refs — never changes, so IntersectionObserver is set up once
-  const handleLoadMore = useCallback(() => {
-    if (loadingMoreRef.current || !hasMoreRef.current || isMyClonesRef.current) return;
+  const handleLoadMore = () => {
+    if (loadingMore || !hasMore || isMyClones) return;
     const nextPage = pageRef.current + 1;
     pageRef.current = nextPage;
-    loadVoices(queryRef.current, filterRef.current, nextPage, true);
-  }, [loadVoices]);
-
-  // IntersectionObserver — set up once since handleLoadMore is stable
-  useEffect(() => {
-    const el = loadMoreRef.current;
-    if (!el) return;
-    const observer = new IntersectionObserver(
-      (entries) => { if (entries[0].isIntersecting) handleLoadMore(); },
-      { root: scrollContainerRef?.current ?? null, rootMargin: '100px', threshold: 0.1 }
-    );
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, [handleLoadMore, scrollContainerRef]);
+    loadVoices(query, filter, nextPage, true);
+  };
 
   const togglePlay = useCallback((e: React.MouseEvent, url: string, id: string) => {
     e.stopPropagation();
@@ -236,7 +190,6 @@ export default function FishVoiceGrid({
     return () => { if (audioRef) audioRef.pause(); };
   }, [audioRef]);
 
-  // Shared voice card renderer for Fish voices
   const renderVoiceCard = (voice: FishVoiceItem) => (
     <div
       key={voice.id}
@@ -276,7 +229,6 @@ export default function FishVoiceGrid({
     </div>
   );
 
-  // Shared voice card renderer for cloned voices
   const renderClonedCard = (voice: ClonedVoiceData) => (
     <div
       key={`cloned-${voice.id}`}
@@ -376,7 +328,6 @@ export default function FishVoiceGrid({
 
       {/* Content area */}
       {isMyClones ? (
-        // My Clones view
         clonedVoices.length > 0 ? (
           <div className="grid grid-cols-4 gap-x-2 gap-y-3">
             {clonedVoices.map(renderClonedCard)}
@@ -408,13 +359,20 @@ export default function FishVoiceGrid({
             {voices.map(renderVoiceCard)}
           </div>
           {hasMore && (
-            <div ref={loadMoreRef} className="flex justify-center py-4" onClick={handleLoadMore} role="button" tabIndex={0}>
+            <button
+              onClick={handleLoadMore}
+              disabled={loadingMore}
+              className="w-full flex items-center justify-center gap-1.5 py-3 mt-3 text-gray-400 hover:text-white transition-colors"
+            >
               {loadingMore ? (
-                <Loader2 className="w-5 h-5 text-gray-500 animate-spin" />
+                <Loader2 className="w-4 h-4 animate-spin" />
               ) : (
-                <span className="text-xs text-gray-600">scroll for more</span>
+                <>
+                  <span className="text-xs">Load More</span>
+                  <ChevronDown className="w-3.5 h-3.5" />
+                </>
               )}
-            </div>
+            </button>
           )}
         </>
       ) : (

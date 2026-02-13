@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 import { useCredits } from '@/contexts/CreditsContext';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -54,7 +54,6 @@ export default function VoiceClonePage() {
 
   // Tab state
   const [activeTab, setActiveTab] = useState<TabId>('generate');
-  const voiceGridScrollRef = useRef<HTMLDivElement>(null);
 
   // Login & Credits modals
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
@@ -371,7 +370,6 @@ export default function VoiceClonePage() {
 
             {/* Scrollable voice grid */}
             <div
-              ref={voiceGridScrollRef}
               className="flex-1 min-h-0 overflow-y-auto"
               style={{ paddingBottom: 'calc(110px + var(--safe-area-inset-bottom, 0px))' }}
             >
@@ -383,7 +381,6 @@ export default function VoiceClonePage() {
                 selectedClonedVoice={selectedClonedVoice}
                 onDeleteCloned={handleDeleteClonedVoice}
                 onGoToCloneTab={() => setActiveTab('clone')}
-                scrollContainerRef={voiceGridScrollRef}
               />
             </div>
           </div>

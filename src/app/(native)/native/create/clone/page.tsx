@@ -4,6 +4,9 @@ import { useState, useEffect } from 'react';
 import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 import { useCredits } from '@/contexts/CreditsContext';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useSubscription } from '@/contexts/SubscriptionContext';
+import { useRewardedAd } from '@/hooks/useRewardedAd';
+import { adConfig } from '@/config/native/adConfig';
 import { calculateVoiceCost } from '@/config/creditsCost';
 import { detectPlatform } from '@/lib/platform';
 import { checkCreditsBeforeGenerate } from '@/lib/credits-check';
@@ -13,7 +16,9 @@ import {
   getMyClonedVoices,
   deleteClonedVoice,
 } from '@/actions/clone';
-import type { FishVoiceItem, ClonedVoiceData, CloneTtsResult } from '@/actions/clone';
+import { getTtsRecordByTaskId, deleteTtsRecord } from '@/actions/tts';
+import type { TtsRecord } from '@/actions/tts';
+import type { FishVoiceItem, ClonedVoiceData } from '@/actions/clone';
 
 import CreatePageHeader from '@/components/native/common/CreatePageHeader';
 import GradientButton from '@/components/native/common/GradientButton';
@@ -24,6 +29,9 @@ import AssistantModal from '@/components/native/common/AssistantModal';
 import LoginModal from '@/components/native/LoginModal';
 import InsufficientCreditsModal from '@/components/native/common/InsufficientCreditsModal';
 import NativeDailyTasksModal from '@/components/native/NativeDailyTasksModal';
+import GeneratingModal from '@/components/native/common/GeneratingModal';
+import type { GeneratingStatus } from '@/components/native/common/GeneratingModal';
+import VoiceDetailModal from '@/components/native/me/VoiceDetailModal';
 import FishVoiceGrid from '@/components/native/create/clone/FishVoiceGrid';
 import AudioUploader from '@/components/native/create/clone/AudioUploader';
 
@@ -41,6 +49,8 @@ export default function VoiceClonePage() {
   const { t } = useLanguage();
   const { user } = useFirebaseAuth();
   const { credits } = useCredits();
+  const { isSubscribed } = useSubscription();
+  const { showRewardedAd } = useRewardedAd();
 
   // Tab state
   const [activeTab, setActiveTab] = useState<TabId>('generate');
@@ -56,17 +66,18 @@ export default function VoiceClonePage() {
   const [selectedVoice, setSelectedVoice] = useState<FishVoiceItem | null>(null);
   const [selectedClonedVoice, setSelectedClonedVoice] = useState<ClonedVoiceData | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
-  const [generateResult, setGenerateResult] = useState<CloneTtsResult | null>(null);
-  const [generateError, setGenerateError] = useState<string | null>(null);
+
+  // GeneratingModal + VoiceDetailModal flow
+  const [isGeneratingModalOpen, setIsGeneratingModalOpen] = useState(false);
+  const [generatingStatus, setGeneratingStatus] = useState<GeneratingStatus>('generating');
+  const [generatingError, setGeneratingError] = useState<string | null>(null);
+  const [generatedVoice, setGeneratedVoice] = useState<TtsRecord | null>(null);
+  const [adWatched, setAdWatched] = useState(false);
 
   // Text assistant
   const [isTextAssistantOpen, setIsTextAssistantOpen] = useState(false);
   const [textPrompt, setTextPrompt] = useState('');
   const [isGeneratingText, setIsGeneratingText] = useState(false);
-
-  // Audio playback for generated result
-  const [isPlayingResult, setIsPlayingResult] = useState(false);
-  const [resultAudio, setResultAudio] = useState<HTMLAudioElement | null>(null);
 
   // ==================== Clone Tab State ====================
   const [cloneAudioBase64, setCloneAudioBase64] = useState<string | null>(null);
@@ -107,20 +118,24 @@ export default function VoiceClonePage() {
   const handleTextChange = (newText: string) => {
     if (newText.length <= maxCharacters) {
       setText(newText);
-      setGenerateError(null);
     }
   };
 
   const handleSelectVoice = (voice: FishVoiceItem) => {
     setSelectedVoice(voice);
     setSelectedClonedVoice(null);
-    setGenerateError(null);
   };
 
   const handleSelectClonedVoice = (voice: ClonedVoiceData) => {
     setSelectedClonedVoice(voice);
     setSelectedVoice(null);
-    setGenerateError(null);
+  };
+
+  // Close GeneratingModal and reset state
+  const handleCloseGeneratingModal = () => {
+    setIsGeneratingModalOpen(false);
+    setGeneratingStatus('generating');
+    setGeneratingError(null);
   };
 
   const handleGenerate = async () => {
@@ -141,9 +156,12 @@ export default function VoiceClonePage() {
     });
     if (!hasEnoughCredits) return;
 
+    // Open GeneratingModal
+    setIsGeneratingModalOpen(true);
+    setGeneratingStatus('generating');
+    setGeneratingError(null);
+    setAdWatched(false);
     setIsGenerating(true);
-    setGenerateError(null);
-    setGenerateResult(null);
 
     try {
       const result = await createCloneTtsTask({
@@ -154,34 +172,56 @@ export default function VoiceClonePage() {
       });
 
       if (result.status === 'FAILURE') {
-        setGenerateError(result.error || 'Generation failed');
+        setGeneratingStatus('error');
+        setGeneratingError(result.error || 'Generation failed');
+        setIsGenerating(false);
+        return;
+      }
+
+      // Success - fetch TTS record for VoiceDetailModal
+      setGeneratingStatus('loading');
+      setText('');
+
+      if (result.task_id) {
+        try {
+          const voiceRecord = await getTtsRecordByTaskId(result.task_id);
+          setGeneratedVoice(voiceRecord);
+          setIsGeneratingModalOpen(false);
+        } catch {
+          // Fallback: show success in modal
+          setGeneratingStatus('success');
+        }
       } else {
-        setGenerateResult(result);
-        setText('');
+        setGeneratingStatus('success');
       }
     } catch (err) {
       console.error('Clone TTS failed:', err);
-      setGenerateError(err instanceof Error ? err.message : 'Generation failed');
+      setGeneratingStatus('error');
+      setGeneratingError(err instanceof Error ? err.message : 'Generation failed');
     } finally {
       setIsGenerating(false);
     }
   };
 
-  const handlePlayResult = () => {
-    if (!generateResult?.audio_url) return;
-
-    if (isPlayingResult && resultAudio) {
-      resultAudio.pause();
-      setIsPlayingResult(false);
+  // Auto show rewarded ad for non-subscribers
+  useEffect(() => {
+    if (!isGeneratingModalOpen || generatingStatus !== 'generating' || isSubscribed || adWatched) {
       return;
     }
 
-    const audio = new Audio(generateResult.audio_url);
-    audio.onended = () => setIsPlayingResult(false);
-    audio.play();
-    setResultAudio(audio);
-    setIsPlayingResult(true);
-  };
+    const timer = setTimeout(async () => {
+      try {
+        const result = await showRewardedAd();
+        if (result.success) {
+          setAdWatched(true);
+        }
+      } catch (err) {
+        console.error('[Clone] Ad error:', err);
+      }
+    }, adConfig.rewardedAdDelayMs);
+
+    return () => clearTimeout(timer);
+  }, [isGeneratingModalOpen, generatingStatus, isSubscribed, adWatched, showRewardedAd]);
 
   // Generate text helper
   const handleGenerateText = async () => {
@@ -272,14 +312,14 @@ export default function VoiceClonePage() {
 
       {/* Tabs */}
       <div className="px-4 flex-shrink-0">
-        <div className="flex bg-gray-800/40 rounded-xl p-1">
+        <div className="flex bg-gray-800/60 rounded-full p-1 border border-gray-700/50">
           {(['generate', 'clone'] as TabId[]).map((tab) => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
-              className={`flex-1 py-2 text-sm font-medium rounded-lg transition-all ${
+              className={`flex-1 py-2.5 text-sm font-medium rounded-full transition-all ${
                 activeTab === tab
-                  ? 'bg-purple-600 text-white shadow-sm'
+                  ? 'bg-gray-700 text-white'
                   : 'text-gray-400 hover:text-gray-300'
               }`}
             >
@@ -299,39 +339,6 @@ export default function VoiceClonePage() {
           <div className="flex flex-col flex-1 min-h-0">
             {/* Fixed top area */}
             <div className="flex-shrink-0 space-y-3 pb-3">
-              {/* Error */}
-              {generateError && (
-                <div className="p-3 bg-red-500/20 border border-red-500/30 rounded-xl">
-                  <p className="text-red-400 text-sm">{generateError}</p>
-                </div>
-              )}
-
-              {/* Success result */}
-              {generateResult && generateResult.status === 'SUCCESS' && (
-                <div className="p-4 bg-green-500/10 border border-green-500/30 rounded-xl">
-                  <div className="flex items-center gap-3">
-                    <button
-                      onClick={handlePlayResult}
-                      className="w-10 h-10 flex items-center justify-center rounded-full bg-green-500/20 text-green-400 hover:bg-green-500/30 transition-colors"
-                    >
-                      {isPlayingResult ? (
-                        <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16" /><rect x="14" y="4" width="4" height="16" /></svg>
-                      ) : (
-                        <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3" /></svg>
-                      )}
-                    </button>
-                    <div className="flex-1">
-                      <div className="text-green-400 text-sm font-medium">
-                        {generateResult.duration ? `${generateResult.duration.toFixed(1)}s` : 'Generated'}
-                      </div>
-                      <div className="text-gray-500 text-xs">
-                        {generateResult.credits_cost} credits used
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
-
               {/* Text Input */}
               <AssistantInput
                 label={t('native.createClone.generate.enterText')}
@@ -359,6 +366,7 @@ export default function VoiceClonePage() {
                 onSelectCloned={handleSelectClonedVoice}
                 selectedClonedVoice={selectedClonedVoice}
                 onDeleteCloned={handleDeleteClonedVoice}
+                onGoToCloneTab={() => setActiveTab('clone')}
               />
             </div>
           </div>
@@ -563,6 +571,41 @@ export default function VoiceClonePage() {
         onGenerate={() => void handleGenerateText()}
         generateButtonText={t('native.createVoice.generateText')}
       />
+
+      {/* Generating Modal */}
+      <GeneratingModal
+        isOpen={isGeneratingModalOpen}
+        status={generatingStatus}
+        type="voice"
+        error={generatingError}
+        credits={credits}
+        onClose={handleCloseGeneratingModal}
+        onCreateAnother={handleCloseGeneratingModal}
+        onTryAgain={() => {
+          handleCloseGeneratingModal();
+          void handleGenerate();
+        }}
+        showAdPrompt={!isSubscribed}
+        adWatched={adWatched}
+      />
+
+      {/* Voice Detail Modal */}
+      {generatedVoice && (
+        <VoiceDetailModal
+          voice={generatedVoice}
+          onClose={() => setGeneratedVoice(null)}
+          onRecreate={() => {
+            if (generatedVoice.text) {
+              setText(generatedVoice.text);
+            }
+            setGeneratedVoice(null);
+          }}
+          onDelete={async (voice) => {
+            await deleteTtsRecord(String(voice.id));
+            setGeneratedVoice(null);
+          }}
+        />
+      )}
     </div>
   );
 }

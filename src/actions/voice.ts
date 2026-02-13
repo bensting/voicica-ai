@@ -220,7 +220,7 @@ export async function listVoices(filters: VoiceFilters = {}): Promise<VoiceListR
     }
 
     // 注意：标签过滤在 Drizzle 中需要用 SQL
-    // Prisma 的 array_contains 对应 PostgreSQL 的 @> 操作符
+    // PostgreSQL 的 @> 操作符（数组包含）
     // 在这里我们先跳过标签过滤，在结果中手动过滤
     const whereClause = and(...conditions);
 
@@ -318,7 +318,7 @@ export async function searchVoicesByTags(
   limit: number = 50
 ): Promise<Voice[]> {
   // 查询所有活跃语音，然后手动过滤标签
-  // Prisma 的 OR + array_contains 在 Drizzle 中需要手动处理
+  // PostgreSQL 的 @> 操作符（数组包含），用 OR 组合多个条件
   const allVoices = await db.select().from(voices)
     .where(eq(voices.isActive, true))
     .orderBy(desc(voices.provider), asc(voices.sortOrder), desc(voices.createdAt));

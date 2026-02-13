@@ -246,7 +246,7 @@ interface MigrationResult {
  * 执行 Drizzle db push（同步 schema 到数据库）
  * 这会根据 schema.ts 创建/修改数据库表结构
  */
-export async function runPrismaDbPush(): Promise<MigrationResult> {
+export async function runDrizzleDbPush(): Promise<MigrationResult> {
   // 使用不依赖数据库的验证方式，因为数据库表可能还不存在
   await verifyAdminWithoutDb();
 
@@ -294,7 +294,7 @@ export async function runPrismaDbPush(): Promise<MigrationResult> {
 /**
  * 执行 Drizzle generate（生成迁移文件）
  */
-export async function runPrismaGenerate(): Promise<MigrationResult> {
+export async function runDrizzleGenerate(): Promise<MigrationResult> {
   // 使用不依赖数据库的验证方式
   await verifyAdminWithoutDb();
 

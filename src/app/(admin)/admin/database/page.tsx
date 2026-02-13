@@ -3,8 +3,8 @@
 import { useState } from 'react';
 import {
   getTableStats,
-  runPrismaDbPush,
-  runPrismaGenerate,
+  runDrizzleDbPush,
+  runDrizzleGenerate,
   checkDatabaseConnection,
 } from '@/actions/admin/database';
 
@@ -36,16 +36,16 @@ export default function DatabaseSyncPage() {
   const migrationActions = [
     {
       key: 'db_push',
-      name: 'Prisma DB Push',
-      description: '根据 schema.prisma 创建/修改数据库表结构（会自动接受数据丢失）',
-      action: runPrismaDbPush,
+      name: 'Drizzle DB Push',
+      description: '根据 Drizzle schema 创建/修改数据库表结构（会自动接受数据丢失）',
+      action: runDrizzleDbPush,
       dangerous: true,
     },
     {
       key: 'generate',
-      name: 'Prisma Generate',
-      description: '重新生成 Prisma Client（修改 schema 后需要执行）',
-      action: runPrismaGenerate,
+      name: 'Drizzle Generate',
+      description: '根据 Drizzle schema 生成迁移文件',
+      action: runDrizzleGenerate,
       dangerous: false,
     },
   ];
@@ -262,8 +262,8 @@ export default function DatabaseSyncPage() {
       <div className="mt-8 bg-yellow-50 border border-yellow-200 rounded-xl p-4">
         <h3 className="text-sm font-semibold text-yellow-800 mb-2">注意事项</h3>
         <ul className="text-sm text-yellow-700 space-y-1">
-          <li>• <strong>Prisma DB Push</strong>: 会根据 schema.prisma 同步表结构，可能导致数据丢失</li>
-          <li>• <strong>Prisma Generate</strong>: 修改 schema 后需要执行，重新生成客户端</li>
+          <li>• <strong>Drizzle DB Push</strong>: 会根据 Drizzle schema 同步表结构，可能导致数据丢失</li>
+          <li>• <strong>Drizzle Generate</strong>: 修改 schema 后执行，生成迁移文件</li>
           <li>• 首次部署时需要先执行 DB Push 创建表结构</li>
         </ul>
       </div>

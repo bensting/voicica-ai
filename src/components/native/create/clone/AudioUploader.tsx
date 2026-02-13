@@ -103,7 +103,7 @@ export default function AudioUploader({
         setRecordingDuration(prev => {
           if (prev >= 60) {
             // Auto-stop at 60 seconds
-            stopRecording();
+            stopRecordingRef.current();
             return prev;
           }
           return prev + 1;
@@ -126,6 +126,9 @@ export default function AudioUploader({
       timerRef.current = null;
     }
   }, []);
+
+  const stopRecordingRef = useRef(stopRecording);
+  stopRecordingRef.current = stopRecording;
 
   // Play/pause preview
   const togglePlayback = useCallback(() => {

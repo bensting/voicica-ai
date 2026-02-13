@@ -69,8 +69,12 @@ function getApiKey(): string {
   return apiKey;
 }
 
+// Server-side in-memory cache (5 min TTL)
+const CACHE_TTL_MS = 5 * 60 * 1000;
+const searchCache = new Map<string, { data: FishAudioModelListResponse; timestamp: number }>();
+
 /**
- * Search Fish Audio voice library
+ * Search Fish Audio voice library (with server-side cache)
  */
 export async function searchFishModels(params: {
   title?: string;
@@ -96,6 +100,14 @@ export async function searchFishModels(params: {
 
   const url = `https://api.fish.audio/model?${queryParams.toString()}`;
 
+  // Check cache
+  const cacheKey = queryParams.toString();
+  const cached = searchCache.get(cacheKey);
+  if (cached && Date.now() - cached.timestamp < CACHE_TTL_MS) {
+    console.log(`🐟 Fish Audio: Cache hit for: ${cacheKey}`);
+    return cached.data;
+  }
+
   console.log(`🐟 Fish Audio: Searching models: ${url}`);
 
   const response = await fetch(url, {
@@ -113,10 +125,25 @@ export async function searchFishModels(params: {
 
   const data = await response.json();
 
-  return {
+  const result: FishAudioModelListResponse = {
     total: data.total ?? data.items?.length ?? 0,
     items: data.items ?? data ?? [],
   };
+
+  // Store in cache
+  searchCache.set(cacheKey, { data: result, timestamp: Date.now() });
+
+  // Evict old entries if cache grows too large
+  if (searchCache.size > 50) {
+    const now = Date.now();
+    for (const [key, entry] of searchCache) {
+      if (now - entry.timestamp > CACHE_TTL_MS) {
+        searchCache.delete(key);
+      }
+    }
+  }
+
+  return result;
 }
 
 /**

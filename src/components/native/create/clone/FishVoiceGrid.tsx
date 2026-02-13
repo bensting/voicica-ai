@@ -1,14 +1,16 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { searchFishVoices } from '@/actions/clone';
-import type { FishVoiceItem, ClonedVoiceData } from '@/actions/clone';
+import type { FishVoiceItem, ClonedVoiceData, SearchFishVoicesResult } from '@/actions/clone';
 import { Search, Mic, Play, Pause, ChevronDown, Trash2 } from 'lucide-react';
+
+const STORAGE_KEY = 'fish_voice_language';
+const DEFAULT_LANGUAGE = 'en';
 
 // Fish Audio supported languages
 const FISH_LANGUAGES = [
-  { code: '', label: 'All' },
   { code: 'en', label: 'English' },
   { code: 'zh', label: '中文' },
   { code: 'ja', label: '日本語' },
@@ -20,6 +22,11 @@ const FISH_LANGUAGES = [
   { code: 'pt', label: 'Português' },
   { code: 'ru', label: 'Русский' },
 ] as const;
+
+function getSavedLanguage(): string {
+  if (typeof window === 'undefined') return DEFAULT_LANGUAGE;
+  return localStorage.getItem(STORAGE_KEY) || DEFAULT_LANGUAGE;
+}
 
 // Generate a consistent color from a string
 function stringToColor(str: string): string {
@@ -63,17 +70,28 @@ export default function FishVoiceGrid({
 }: FishVoiceGridProps) {
   const { t } = useLanguage();
   const [query, setQuery] = useState('');
-  const [language, setLanguage] = useState('');
+  const [language, setLanguage] = useState(getSavedLanguage);
   const [voices, setVoices] = useState<FishVoiceItem[]>([]);
   const [loading, setLoading] = useState(false);
   const [playingId, setPlayingId] = useState<string | null>(null);
   const [audioRef, setAudioRef] = useState<HTMLAudioElement | null>(null);
   const [showCloned, setShowCloned] = useState(true);
 
+  // Client-side cache: key = "query|lang", value = search results
+  const clientCache = useRef<Map<string, SearchFishVoicesResult>>(new Map());
+
   const loadVoices = useCallback(async (searchQuery: string, lang: string) => {
+    const cacheKey = `${searchQuery}|${lang}`;
+    const cached = clientCache.current.get(cacheKey);
+    if (cached) {
+      setVoices(cached.items);
+      return;
+    }
+
     setLoading(true);
     try {
       const result = await searchFishVoices(searchQuery || undefined, 1, 30, lang || undefined);
+      clientCache.current.set(cacheKey, result);
       setVoices(result.items);
     } catch {
       console.error('Failed to load Fish voices');
@@ -82,9 +100,9 @@ export default function FishVoiceGrid({
     }
   }, []);
 
-  // Load default voices on mount
+  // Load voices on mount with saved language
   useEffect(() => {
-    loadVoices('', '');
+    loadVoices('', getSavedLanguage());
   }, [loadVoices]);
 
   const handleSearch = () => {
@@ -97,6 +115,7 @@ export default function FishVoiceGrid({
 
   const handleLanguageChange = (lang: string) => {
     setLanguage(lang);
+    localStorage.setItem(STORAGE_KEY, lang);
     loadVoices(query, lang);
   };
 
@@ -128,7 +147,7 @@ export default function FishVoiceGrid({
 
   return (
     <div>
-      {/* Sticky top: Search + Language Filter + Cloned Voices */}
+      {/* Top: Search + Language Filter + Cloned Voices */}
       <div className="sticky top-0 z-10 bg-[#0a0a1a] pb-3 space-y-3">
         {/* Search Bar */}
         <div className="relative">
@@ -238,58 +257,66 @@ export default function FishVoiceGrid({
 
       {/* Voice list (scrolls with parent) */}
       {loading ? (
-        <div className="grid grid-cols-2 gap-2">
-          {[...Array(6)].map((_, i) => (
-            <div key={i} className="h-20 bg-gray-800/40 rounded-xl animate-pulse" />
+        <div className="grid grid-cols-4 gap-3">
+          {[...Array(12)].map((_, i) => (
+            <div key={i} className="flex flex-col items-center gap-1.5">
+              <div className="w-14 h-14 rounded-full bg-gray-800/40 animate-pulse" />
+              <div className="w-12 h-3 bg-gray-800/40 rounded animate-pulse" />
+            </div>
           ))}
         </div>
       ) : voices.length > 0 ? (
-        <div className="grid grid-cols-2 gap-2">
+        <div className="grid grid-cols-4 gap-x-2 gap-y-3">
           {voices.map((voice) => (
             <div
               key={voice.id}
               onClick={() => onSelect(voice)}
               role="button"
               tabIndex={0}
-              className={`relative p-3 rounded-xl text-left transition-all cursor-pointer ${
-                selectedVoice?.id === voice.id
-                  ? 'bg-purple-600/30 border border-purple-500/50 ring-1 ring-purple-500/30'
-                  : 'bg-gray-800/40 border border-gray-700/30 hover:border-gray-600/50'
-              }`}
+              className="flex flex-col items-center cursor-pointer group"
             >
-              <div className="flex items-center gap-2">
+              <div className={`relative rounded-full transition-all ${
+                selectedVoice?.id === voice.id
+                  ? 'ring-2 ring-purple-500 ring-offset-2 ring-offset-[#0a0a1a]'
+                  : ''
+              }`}>
                 {voice.coverImage ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
                     src={voice.coverImage}
                     alt={voice.title}
-                    className="w-8 h-8 rounded-full object-cover flex-shrink-0"
+                    className="w-14 h-14 rounded-full object-cover"
                   />
                 ) : (
-                  <div className={`w-8 h-8 rounded-full bg-gradient-to-br ${stringToColor(voice.id)} flex items-center justify-center flex-shrink-0`}>
-                    <span className="text-white text-xs font-bold">{getInitials(voice.title)}</span>
+                  <div className={`w-14 h-14 rounded-full bg-gradient-to-br ${stringToColor(voice.id)} flex items-center justify-center`}>
+                    <span className="text-white text-sm font-bold">{getInitials(voice.title)}</span>
                   </div>
                 )}
-                <div className="flex-1 min-w-0">
-                  <div className="text-white text-sm font-medium truncate">{voice.title}</div>
-                  <div className="text-gray-500 text-xs truncate">
-                    {voice.languages.join(', ') || voice.authorName}
-                  </div>
-                </div>
+                {voice.sampleUrl && (
+                  <button
+                    onClick={(e) => togglePlay(e, voice.sampleUrl!, voice.id)}
+                    className={`absolute -bottom-0.5 -right-0.5 w-5 h-5 rounded-full flex items-center justify-center transition-colors ${
+                      playingId === voice.id
+                        ? 'bg-purple-500 text-white'
+                        : 'bg-gray-700 text-gray-300 group-hover:bg-gray-600'
+                    }`}
+                  >
+                    {playingId === voice.id ? (
+                      <Pause className="w-2.5 h-2.5" />
+                    ) : (
+                      <Play className="w-2.5 h-2.5 ml-0.5" />
+                    )}
+                  </button>
+                )}
               </div>
-
-              {voice.sampleUrl && (
-                <button
-                  onClick={(e) => togglePlay(e, voice.sampleUrl!, voice.id)}
-                  className="absolute top-2 right-2 p-1 text-gray-400 hover:text-white"
-                >
-                  {playingId === voice.id ? (
-                    <Pause className="w-3.5 h-3.5" />
-                  ) : (
-                    <Play className="w-3.5 h-3.5" />
-                  )}
-                </button>
-              )}
+              <span className={`mt-1.5 text-xs text-center leading-tight line-clamp-1 w-full px-0.5 ${
+                selectedVoice?.id === voice.id ? 'text-purple-400 font-medium' : 'text-gray-300'
+              }`}>
+                {voice.title}
+              </span>
+              <span className="text-[10px] text-gray-500 leading-tight">
+                {voice.languages[0] || voice.authorName}
+              </span>
             </div>
           ))}
         </div>

@@ -266,7 +266,7 @@ export default function VoiceClonePage() {
   // ==================== Render ====================
 
   return (
-    <div className="min-h-screen bg-[#0a0a1a] flex flex-col">
+    <div className="h-dvh bg-[#0a0a1a] flex flex-col overflow-hidden">
       {/* Header */}
       <CreatePageHeader title={t('native.createClone.title')} />
 
@@ -291,69 +291,76 @@ export default function VoiceClonePage() {
 
       {/* Content */}
       <div
-        className="flex-1 flex flex-col px-4 pt-3 min-h-0 overflow-y-auto"
-        style={{ paddingBottom: 'calc(110px + var(--safe-area-inset-bottom, 0px))' }}
+        className={`flex-1 flex flex-col px-4 pt-3 min-h-0 ${activeTab === 'clone' ? 'overflow-y-auto' : 'overflow-hidden'}`}
+        style={{ paddingBottom: activeTab === 'clone' ? 'calc(110px + var(--safe-area-inset-bottom, 0px))' : undefined }}
       >
         {/* ==================== Generate Tab ==================== */}
         {activeTab === 'generate' && (
-          <div className="space-y-3 flex-1">
-            {/* Error */}
-            {generateError && (
-              <div className="p-3 bg-red-500/20 border border-red-500/30 rounded-xl">
-                <p className="text-red-400 text-sm">{generateError}</p>
-              </div>
-            )}
+          <div className="flex flex-col flex-1 min-h-0">
+            {/* Fixed top area */}
+            <div className="flex-shrink-0 space-y-3 pb-3">
+              {/* Error */}
+              {generateError && (
+                <div className="p-3 bg-red-500/20 border border-red-500/30 rounded-xl">
+                  <p className="text-red-400 text-sm">{generateError}</p>
+                </div>
+              )}
 
-            {/* Success result */}
-            {generateResult && generateResult.status === 'SUCCESS' && (
-              <div className="p-4 bg-green-500/10 border border-green-500/30 rounded-xl">
-                <div className="flex items-center gap-3">
-                  <button
-                    onClick={handlePlayResult}
-                    className="w-10 h-10 flex items-center justify-center rounded-full bg-green-500/20 text-green-400 hover:bg-green-500/30 transition-colors"
-                  >
-                    {isPlayingResult ? (
-                      <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16" /><rect x="14" y="4" width="4" height="16" /></svg>
-                    ) : (
-                      <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3" /></svg>
-                    )}
-                  </button>
-                  <div className="flex-1">
-                    <div className="text-green-400 text-sm font-medium">
-                      {generateResult.duration ? `${generateResult.duration.toFixed(1)}s` : 'Generated'}
-                    </div>
-                    <div className="text-gray-500 text-xs">
-                      {generateResult.credits_cost} credits used
+              {/* Success result */}
+              {generateResult && generateResult.status === 'SUCCESS' && (
+                <div className="p-4 bg-green-500/10 border border-green-500/30 rounded-xl">
+                  <div className="flex items-center gap-3">
+                    <button
+                      onClick={handlePlayResult}
+                      className="w-10 h-10 flex items-center justify-center rounded-full bg-green-500/20 text-green-400 hover:bg-green-500/30 transition-colors"
+                    >
+                      {isPlayingResult ? (
+                        <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16" /><rect x="14" y="4" width="4" height="16" /></svg>
+                      ) : (
+                        <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3" /></svg>
+                      )}
+                    </button>
+                    <div className="flex-1">
+                      <div className="text-green-400 text-sm font-medium">
+                        {generateResult.duration ? `${generateResult.duration.toFixed(1)}s` : 'Generated'}
+                      </div>
+                      <div className="text-gray-500 text-xs">
+                        {generateResult.credits_cost} credits used
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            )}
+              )}
 
-            {/* Text Input */}
-            <AssistantInput
-              label={t('native.createClone.generate.enterText')}
-              placeholder={t('native.createClone.generate.placeholder')}
-              value={text}
-              onChange={handleTextChange}
-              maxLength={maxCharacters}
-              multiline
-              rows={5}
-              assistantButtonText={t('native.createVoice.generateText')}
-              onAssistantClick={() => setIsTextAssistantOpen(true)}
-              disabled={isGenerating}
-              className="flex-shrink-0"
-            />
+              {/* Text Input */}
+              <AssistantInput
+                label={t('native.createClone.generate.enterText')}
+                placeholder={t('native.createClone.generate.placeholder')}
+                value={text}
+                onChange={handleTextChange}
+                maxLength={maxCharacters}
+                multiline
+                rows={5}
+                assistantButtonText={t('native.createVoice.generateText')}
+                onAssistantClick={() => setIsTextAssistantOpen(true)}
+                disabled={isGenerating}
+              />
+            </div>
 
-            {/* Voice Selector Grid */}
-            <FishVoiceGrid
-              selectedVoice={selectedVoice}
-              onSelect={handleSelectVoice}
-              clonedVoices={clonedVoices}
-              onSelectCloned={handleSelectClonedVoice}
-              selectedClonedVoice={selectedClonedVoice}
-              onDeleteCloned={handleDeleteClonedVoice}
-            />
+            {/* Scrollable voice grid */}
+            <div
+              className="flex-1 min-h-0 overflow-y-auto"
+              style={{ paddingBottom: 'calc(110px + var(--safe-area-inset-bottom, 0px))' }}
+            >
+              <FishVoiceGrid
+                selectedVoice={selectedVoice}
+                onSelect={handleSelectVoice}
+                clonedVoices={clonedVoices}
+                onSelectCloned={handleSelectClonedVoice}
+                selectedClonedVoice={selectedClonedVoice}
+                onDeleteCloned={handleDeleteClonedVoice}
+              />
+            </div>
           </div>
         )}
 

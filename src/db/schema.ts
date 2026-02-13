@@ -627,6 +627,24 @@ export const videoDownloadRecords = pgTable("video_download_records", {
 	index("ix_video_download_records_user_id").using("btree", table.userId.asc().nullsLast().op("text_ops")),
 ]);
 
+export const clonedVoices = pgTable("cloned_voices", {
+	id: serial().primaryKey().notNull(),
+	userId: varchar("user_id", { length: 255 }).notNull(),
+	name: varchar({ length: 255 }).notNull(),
+	fishModelId: varchar("fish_model_id", { length: 255 }).notNull(),
+	description: text(),
+	coverImageUrl: text("cover_image_url"),
+	sampleAudioUrl: text("sample_audio_url"),
+	referenceText: text("reference_text"),
+	status: varchar({ length: 20 }).default('TRAINING').notNull(),
+	createdAt: timestamp("created_at", { precision: 6, withTimezone: true, mode: 'string' }).default(sql`CURRENT_TIMESTAMP`).notNull(),
+	updatedAt: timestamp("updated_at", { precision: 6, withTimezone: true, mode: 'string' }).$onUpdate(() => new Date().toISOString()),
+}, (table) => [
+	index("ix_cloned_voices_user_id").using("btree", table.userId.asc().nullsLast().op("text_ops")),
+	index("ix_cloned_voices_status").using("btree", table.status.asc().nullsLast().op("text_ops")),
+	uniqueIndex("ix_cloned_voices_fish_model_id").using("btree", table.fishModelId.asc().nullsLast().op("text_ops")),
+]);
+
 // ============================================================
 // Relations
 // ============================================================

@@ -30,7 +30,7 @@ export const voiceCostConfig: VoiceCostConfig = {
   professional: 1,
   celebrity: 2,
   special: 2,
-  clone: 3,
+  clone: 1,
 };
 
 /**

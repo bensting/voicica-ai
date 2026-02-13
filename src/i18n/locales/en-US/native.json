@@ -228,6 +228,51 @@
       "detailCreditsUsed": "Credits used",
       "deleteConfirmTitle": "Delete this image?"
     },
+    "createClone": {
+      "title": "Voice Clone",
+      "tabs": {
+        "generate": "Generate",
+        "clone": "Clone"
+      },
+      "generate": {
+        "enterText": "Enter your text",
+        "placeholder": "Type or paste the text you want to speak...",
+        "selectVoice": "Select a voice",
+        "searchPlaceholder": "Search voices...",
+        "searchButton": "Search",
+        "noResults": "No voices found",
+        "tryDifferentSearch": "Try a different search term",
+        "myClonedVoices": "My Cloned Voices",
+        "fishLibrary": "Voice Library",
+        "generate": "Generate",
+        "generating": "Generating...",
+        "creditsRule": "100 chars = 1 credit",
+        "voiceGeneration": "Clone voice generation"
+      },
+      "clone": {
+        "uploadAudio": "Upload Audio",
+        "uploadDescription": "Upload a clear audio sample (10-60 seconds recommended)",
+        "recordAudio": "Record Audio",
+        "recordDescription": "Record your voice directly",
+        "referenceText": "Reference Text",
+        "referenceTextPlaceholder": "Enter the exact text spoken in the audio...",
+        "voiceName": "Voice Name",
+        "voiceNamePlaceholder": "Give your voice a name...",
+        "createClone": "Create Voice Clone",
+        "creating": "Creating...",
+        "cloneSuccess": "Voice clone created successfully!",
+        "cloneFailed": "Failed to create voice clone",
+        "maxFileSize": "Max file size: 10MB",
+        "supportedFormats": "Supported: MP3, WAV, M4A",
+        "recording": "Recording...",
+        "stopRecording": "Stop",
+        "startRecording": "Start Recording",
+        "deleteVoice": "Delete Voice",
+        "deleteConfirm": "Are you sure you want to delete this cloned voice?",
+        "noClonedVoices": "No cloned voices yet",
+        "createFirst": "Create your first voice clone!"
+      }
+    },
     "createDialogue": {
       "title": "Text to Dialogue",
       "language": "Language",

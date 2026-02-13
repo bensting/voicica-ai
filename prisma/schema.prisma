@@ -680,6 +680,24 @@ model story_paragraphs {
   @@index([position], map: "ix_story_paragraphs_position")
 }
 
+/// 用户克隆语音模型（Fish Audio）
+model cloned_voices {
+  id              Int       @id @default(autoincrement())
+  user_id         String    @db.VarChar(255)
+  name            String    @db.VarChar(255)          // 语音名称
+  fish_model_id   String    @unique @db.VarChar(255)  // Fish Audio 模型 ID
+  description     String?   @db.Text                  // 描述
+  cover_image_url String?                             // 封面图 URL
+  sample_audio_url String?                            // 样本音频 URL
+  reference_text  String?   @db.Text                  // 参考文本
+  status          String    @default("TRAINING") @db.VarChar(20) // TRAINING, READY, FAILED
+  created_at      DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at      DateTime? @updatedAt @db.Timestamptz(6)
+
+  @@index([user_id], map: "ix_cloned_voices_user_id")
+  @@index([status], map: "ix_cloned_voices_status")
+}
+
 /// 视频下载解析记录
 model video_download_records {
   id           Int       @id @default(autoincrement())

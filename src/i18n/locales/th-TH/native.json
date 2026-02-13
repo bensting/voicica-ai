@@ -228,6 +228,48 @@
       "detailCreditsUsed": "เครดิตที่ใช้",
       "deleteConfirmTitle": "ลบรูปภาพนี้?"
     },
+    "createClone": {
+      "title": "โคลนเสียง",
+      "tabs": { "generate": "สร้าง", "clone": "โคลน" },
+      "generate": {
+        "enterText": "ป้อนข้อความ",
+        "placeholder": "พิมพ์หรือวางข้อความที่ต้องการพูด...",
+        "selectVoice": "เลือกเสียง",
+        "searchPlaceholder": "ค้นหาเสียง...",
+        "searchButton": "ค้นหา",
+        "noResults": "ไม่พบเสียง",
+        "tryDifferentSearch": "ลองใช้คำค้นหาอื่น",
+        "myClonedVoices": "เสียงโคลนของฉัน",
+        "fishLibrary": "คลังเสียง",
+        "generate": "สร้าง",
+        "generating": "กำลังสร้าง...",
+        "creditsRule": "100 ตัวอักษร = 1 เครดิต",
+        "voiceGeneration": "สร้างเสียงโคลน"
+      },
+      "clone": {
+        "uploadAudio": "อัปโหลดเสียง",
+        "uploadDescription": "อัปโหลดตัวอย่างเสียงที่ชัดเจน (แนะนำ 10-60 วินาที)",
+        "recordAudio": "บันทึกเสียง",
+        "recordDescription": "บันทึกเสียงของคุณโดยตรง",
+        "referenceText": "ข้อความอ้างอิง",
+        "referenceTextPlaceholder": "ป้อนข้อความที่พูดในเสียง...",
+        "voiceName": "ชื่อเสียง",
+        "voiceNamePlaceholder": "ตั้งชื่อให้เสียงของคุณ...",
+        "createClone": "สร้างเสียงโคลน",
+        "creating": "กำลังสร้าง...",
+        "cloneSuccess": "สร้างเสียงโคลนสำเร็จ!",
+        "cloneFailed": "สร้างเสียงโคลนไม่สำเร็จ",
+        "maxFileSize": "ขนาดไฟล์สูงสุด: 10MB",
+        "supportedFormats": "รองรับ: MP3, WAV, M4A",
+        "recording": "กำลังบันทึก...",
+        "stopRecording": "หยุด",
+        "startRecording": "เริ่มบันทึก",
+        "deleteVoice": "ลบเสียง",
+        "deleteConfirm": "คุณแน่ใจหรือไม่ว่าต้องการลบเสียงโคลนนี้?",
+        "noClonedVoices": "ยังไม่มีเสียงโคลน",
+        "createFirst": "สร้างเสียงโคลนแรกของคุณ!"
+      }
+    },
     "createDialogue": {
       "title": "ข้อความเป็นบทสนทนา",
       "language": "ภาษา",

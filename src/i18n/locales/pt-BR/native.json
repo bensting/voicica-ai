@@ -228,6 +228,48 @@
       "detailCreditsUsed": "Créditos usados",
       "deleteConfirmTitle": "Excluir esta imagem?"
     },
+    "createClone": {
+      "title": "Clonar Voz",
+      "tabs": { "generate": "Gerar", "clone": "Clonar" },
+      "generate": {
+        "enterText": "Digite seu texto",
+        "placeholder": "Digite ou cole o texto que deseja falar...",
+        "selectVoice": "Selecionar voz",
+        "searchPlaceholder": "Buscar vozes...",
+        "searchButton": "Buscar",
+        "noResults": "Nenhuma voz encontrada",
+        "tryDifferentSearch": "Tente outro termo de busca",
+        "myClonedVoices": "Minhas Vozes Clonadas",
+        "fishLibrary": "Biblioteca de Vozes",
+        "generate": "Gerar",
+        "generating": "Gerando...",
+        "creditsRule": "100 caracteres = 1 crédito",
+        "voiceGeneration": "Geração de voz clonada"
+      },
+      "clone": {
+        "uploadAudio": "Enviar Áudio",
+        "uploadDescription": "Envie uma amostra de áudio clara (10-60 segundos)",
+        "recordAudio": "Gravar Áudio",
+        "recordDescription": "Grave sua voz diretamente",
+        "referenceText": "Texto de Referência",
+        "referenceTextPlaceholder": "Digite o texto falado no áudio...",
+        "voiceName": "Nome da Voz",
+        "voiceNamePlaceholder": "Dê um nome à sua voz...",
+        "createClone": "Criar Clone de Voz",
+        "creating": "Criando...",
+        "cloneSuccess": "Clone de voz criado com sucesso!",
+        "cloneFailed": "Falha ao criar clone de voz",
+        "maxFileSize": "Máximo: 10MB",
+        "supportedFormats": "Formatos: MP3, WAV, M4A",
+        "recording": "Gravando...",
+        "stopRecording": "Parar",
+        "startRecording": "Iniciar Gravação",
+        "deleteVoice": "Excluir Voz",
+        "deleteConfirm": "Tem certeza que deseja excluir esta voz clonada?",
+        "noClonedVoices": "Nenhuma voz clonada ainda",
+        "createFirst": "Crie seu primeiro clone de voz!"
+      }
+    },
     "createDialogue": {
       "title": "Texto para Diálogo",
       "language": "Idioma",

@@ -228,6 +228,48 @@
       "detailCreditsUsed": "Kredit terpakai",
       "deleteConfirmTitle": "Hapus gambar ini?"
     },
+    "createClone": {
+      "title": "Kloning Suara",
+      "tabs": { "generate": "Buat", "clone": "Klon" },
+      "generate": {
+        "enterText": "Masukkan teks",
+        "placeholder": "Ketik atau tempel teks yang ingin diucapkan...",
+        "selectVoice": "Pilih suara",
+        "searchPlaceholder": "Cari suara...",
+        "searchButton": "Cari",
+        "noResults": "Suara tidak ditemukan",
+        "tryDifferentSearch": "Coba kata kunci lain",
+        "myClonedVoices": "Suara Klon Saya",
+        "fishLibrary": "Perpustakaan Suara",
+        "generate": "Buat",
+        "generating": "Membuat...",
+        "creditsRule": "100 karakter = 1 kredit",
+        "voiceGeneration": "Pembuatan suara klon"
+      },
+      "clone": {
+        "uploadAudio": "Unggah Audio",
+        "uploadDescription": "Unggah sampel audio yang jelas (10-60 detik)",
+        "recordAudio": "Rekam Audio",
+        "recordDescription": "Rekam suara Anda langsung",
+        "referenceText": "Teks Referensi",
+        "referenceTextPlaceholder": "Masukkan teks yang diucapkan di audio...",
+        "voiceName": "Nama Suara",
+        "voiceNamePlaceholder": "Beri nama untuk suara Anda...",
+        "createClone": "Buat Klon Suara",
+        "creating": "Membuat...",
+        "cloneSuccess": "Klon suara berhasil dibuat!",
+        "cloneFailed": "Gagal membuat klon suara",
+        "maxFileSize": "Maks: 10MB",
+        "supportedFormats": "Format: MP3, WAV, M4A",
+        "recording": "Merekam...",
+        "stopRecording": "Berhenti",
+        "startRecording": "Mulai Rekam",
+        "deleteVoice": "Hapus Suara",
+        "deleteConfirm": "Yakin ingin menghapus suara klon ini?",
+        "noClonedVoices": "Belum ada suara klon",
+        "createFirst": "Buat klon suara pertama Anda!"
+      }
+    },
     "createDialogue": {
       "title": "Teks ke Dialog",
       "language": "Bahasa",

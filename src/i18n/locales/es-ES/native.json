@@ -228,6 +228,48 @@
       "detailCreditsUsed": "Créditos usados",
       "deleteConfirmTitle": "¿Eliminar esta imagen?"
     },
+    "createClone": {
+      "title": "Clonar Voz",
+      "tabs": { "generate": "Generar", "clone": "Clonar" },
+      "generate": {
+        "enterText": "Ingresa tu texto",
+        "placeholder": "Escribe o pega el texto que quieres hablar...",
+        "selectVoice": "Seleccionar voz",
+        "searchPlaceholder": "Buscar voces...",
+        "searchButton": "Buscar",
+        "noResults": "No se encontraron voces",
+        "tryDifferentSearch": "Intenta con otro término",
+        "myClonedVoices": "Mis Voces Clonadas",
+        "fishLibrary": "Biblioteca de Voces",
+        "generate": "Generar",
+        "generating": "Generando...",
+        "creditsRule": "100 caracteres = 1 crédito",
+        "voiceGeneration": "Generación de voz clonada"
+      },
+      "clone": {
+        "uploadAudio": "Subir Audio",
+        "uploadDescription": "Sube una muestra de audio clara (10-60 segundos)",
+        "recordAudio": "Grabar Audio",
+        "recordDescription": "Graba tu voz directamente",
+        "referenceText": "Texto de Referencia",
+        "referenceTextPlaceholder": "Ingresa el texto dicho en el audio...",
+        "voiceName": "Nombre de la Voz",
+        "voiceNamePlaceholder": "Dale un nombre a tu voz...",
+        "createClone": "Crear Clon de Voz",
+        "creating": "Creando...",
+        "cloneSuccess": "¡Clon de voz creado!",
+        "cloneFailed": "Error al crear el clon de voz",
+        "maxFileSize": "Máximo: 10MB",
+        "supportedFormats": "Formatos: MP3, WAV, M4A",
+        "recording": "Grabando...",
+        "stopRecording": "Detener",
+        "startRecording": "Iniciar Grabación",
+        "deleteVoice": "Eliminar Voz",
+        "deleteConfirm": "¿Eliminar esta voz clonada?",
+        "noClonedVoices": "Aún no hay voces clonadas",
+        "createFirst": "¡Crea tu primer clon de voz!"
+      }
+    },
     "createDialogue": {
       "title": "Texto a Diálogo",
       "language": "Idioma",

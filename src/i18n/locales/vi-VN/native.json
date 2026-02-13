@@ -228,6 +228,48 @@
       "detailCreditsUsed": "Credit đã dùng",
       "deleteConfirmTitle": "Xóa hình ảnh này?"
     },
+    "createClone": {
+      "title": "Nhân bản giọng nói",
+      "tabs": { "generate": "Tạo", "clone": "Nhân bản" },
+      "generate": {
+        "enterText": "Nhập văn bản",
+        "placeholder": "Nhập hoặc dán văn bản bạn muốn nói...",
+        "selectVoice": "Chọn giọng nói",
+        "searchPlaceholder": "Tìm giọng nói...",
+        "searchButton": "Tìm",
+        "noResults": "Không tìm thấy giọng nói",
+        "tryDifferentSearch": "Thử từ khóa khác",
+        "myClonedVoices": "Giọng nói đã nhân bản",
+        "fishLibrary": "Thư viện giọng nói",
+        "generate": "Tạo",
+        "generating": "Đang tạo...",
+        "creditsRule": "100 ký tự = 1 điểm",
+        "voiceGeneration": "Tạo giọng nói nhân bản"
+      },
+      "clone": {
+        "uploadAudio": "Tải lên âm thanh",
+        "uploadDescription": "Tải lên mẫu âm thanh rõ ràng (10-60 giây)",
+        "recordAudio": "Ghi âm",
+        "recordDescription": "Ghi âm giọng nói trực tiếp",
+        "referenceText": "Văn bản tham chiếu",
+        "referenceTextPlaceholder": "Nhập văn bản được nói trong âm thanh...",
+        "voiceName": "Tên giọng nói",
+        "voiceNamePlaceholder": "Đặt tên cho giọng nói...",
+        "createClone": "Tạo nhân bản giọng nói",
+        "creating": "Đang tạo...",
+        "cloneSuccess": "Nhân bản giọng nói thành công!",
+        "cloneFailed": "Nhân bản giọng nói thất bại",
+        "maxFileSize": "Tối đa: 10MB",
+        "supportedFormats": "Định dạng: MP3, WAV, M4A",
+        "recording": "Đang ghi âm...",
+        "stopRecording": "Dừng",
+        "startRecording": "Bắt đầu ghi âm",
+        "deleteVoice": "Xóa giọng nói",
+        "deleteConfirm": "Bạn có chắc muốn xóa giọng nói này?",
+        "noClonedVoices": "Chưa có giọng nói nhân bản",
+        "createFirst": "Tạo bản nhân bản giọng nói đầu tiên!"
+      }
+    },
     "createDialogue": {
       "title": "Văn bản thành Hội thoại",
       "language": "Ngôn ngữ",

@@ -11,7 +11,7 @@
  */
 
 import db from '@/lib/db';
-import { clonedVoices, ttsRecords, taskQueue } from '@/db/schema';
+import { clonedVoices, ttsRecords } from '@/db/schema';
 import { eq, and, desc } from 'drizzle-orm';
 import { getUserOrAnonymous } from '@/lib/auth-firebase';
 import { v4 as uuidv4 } from 'uuid';

@@ -228,6 +228,48 @@
       "detailCreditsUsed": "消耗積分",
       "deleteConfirmTitle": "刪除此圖片？"
     },
+    "createClone": {
+      "title": "語音克隆",
+      "tabs": { "generate": "生成", "clone": "克隆" },
+      "generate": {
+        "enterText": "輸入文字",
+        "placeholder": "輸入或貼上要朗讀的文字...",
+        "selectVoice": "選擇語音",
+        "searchPlaceholder": "搜尋語音...",
+        "searchButton": "搜尋",
+        "noResults": "未找到語音",
+        "tryDifferentSearch": "嘗試不同的搜尋詞",
+        "myClonedVoices": "我的克隆語音",
+        "fishLibrary": "語音庫",
+        "generate": "生成",
+        "generating": "生成中...",
+        "creditsRule": "100字元 = 1積分",
+        "voiceGeneration": "克隆語音生成"
+      },
+      "clone": {
+        "uploadAudio": "上傳音訊",
+        "uploadDescription": "上傳清晰的音訊樣本（建議10-60秒）",
+        "recordAudio": "錄製音訊",
+        "recordDescription": "直接錄製您的聲音",
+        "referenceText": "參考文字",
+        "referenceTextPlaceholder": "輸入音訊中所說的文字...",
+        "voiceName": "語音名稱",
+        "voiceNamePlaceholder": "給您的語音取個名字...",
+        "createClone": "建立語音克隆",
+        "creating": "建立中...",
+        "cloneSuccess": "語音克隆建立成功！",
+        "cloneFailed": "建立語音克隆失敗",
+        "maxFileSize": "最大檔案: 10MB",
+        "supportedFormats": "支援: MP3, WAV, M4A",
+        "recording": "錄音中...",
+        "stopRecording": "停止",
+        "startRecording": "開始錄音",
+        "deleteVoice": "刪除語音",
+        "deleteConfirm": "確定要刪除這個克隆語音嗎？",
+        "noClonedVoices": "還沒有克隆語音",
+        "createFirst": "建立您的第一個語音克隆！"
+      }
+    },
     "createDialogue": {
       "title": "文字轉對話",
       "language": "語言",

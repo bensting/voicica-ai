@@ -228,6 +228,48 @@
       "detailCreditsUsed": "使用クレジット",
       "deleteConfirmTitle": "この画像を削除しますか？"
     },
+    "createClone": {
+      "title": "ボイスクローン",
+      "tabs": { "generate": "生成", "clone": "クローン" },
+      "generate": {
+        "enterText": "テキストを入力",
+        "placeholder": "読み上げたいテキストを入力または貼り付け...",
+        "selectVoice": "音声を選択",
+        "searchPlaceholder": "音声を検索...",
+        "searchButton": "検索",
+        "noResults": "音声が見つかりません",
+        "tryDifferentSearch": "別の検索ワードをお試しください",
+        "myClonedVoices": "マイクローン音声",
+        "fishLibrary": "音声ライブラリ",
+        "generate": "生成",
+        "generating": "生成中...",
+        "creditsRule": "100文字 = 1クレジット",
+        "voiceGeneration": "クローン音声生成"
+      },
+      "clone": {
+        "uploadAudio": "音声をアップロード",
+        "uploadDescription": "クリアな音声サンプルをアップロード（10〜60秒推奨）",
+        "recordAudio": "音声を録音",
+        "recordDescription": "直接声を録音",
+        "referenceText": "参照テキスト",
+        "referenceTextPlaceholder": "音声で話されているテキストを入力...",
+        "voiceName": "音声名",
+        "voiceNamePlaceholder": "音声に名前をつけてください...",
+        "createClone": "ボイスクローンを作成",
+        "creating": "作成中...",
+        "cloneSuccess": "ボイスクローンが正常に作成されました！",
+        "cloneFailed": "ボイスクローンの作成に失敗しました",
+        "maxFileSize": "最大ファイルサイズ: 10MB",
+        "supportedFormats": "対応: MP3, WAV, M4A",
+        "recording": "録音中...",
+        "stopRecording": "停止",
+        "startRecording": "録音開始",
+        "deleteVoice": "音声を削除",
+        "deleteConfirm": "このクローン音声を削除しますか？",
+        "noClonedVoices": "クローン音声はまだありません",
+        "createFirst": "最初のボイスクローンを作成しましょう！"
+      }
+    },
     "createDialogue": {
       "title": "テキストから対話",
       "language": "言語",

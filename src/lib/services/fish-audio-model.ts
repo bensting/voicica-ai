@@ -160,7 +160,7 @@ export async function createFishModel(params: CreateFishModelParams): Promise<Fi
   }
 
   // Add audio file as voice sample
-  const audioBlob = new Blob([params.audioBuffer], { type: 'audio/mpeg' });
+  const audioBlob = new Blob([new Uint8Array(params.audioBuffer)], { type: 'audio/mpeg' });
   formData.append('voices', audioBlob, params.audioFileName);
   formData.append('texts', params.referenceText);
 

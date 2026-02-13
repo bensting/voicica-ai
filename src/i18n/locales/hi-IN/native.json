@@ -228,6 +228,48 @@
       "detailCreditsUsed": "उपयोग किए गए क्रेडिट",
       "deleteConfirmTitle": "यह छवि हटाएं?"
     },
+    "createClone": {
+      "title": "वॉइस क्लोन",
+      "tabs": { "generate": "जनरेट", "clone": "क्लोन" },
+      "generate": {
+        "enterText": "टेक्स्ट दर्ज करें",
+        "placeholder": "बोलने के लिए टेक्स्ट टाइप या पेस्ट करें...",
+        "selectVoice": "आवाज़ चुनें",
+        "searchPlaceholder": "आवाज़ खोजें...",
+        "searchButton": "खोजें",
+        "noResults": "कोई आवाज़ नहीं मिली",
+        "tryDifferentSearch": "कोई अलग शब्द आज़माएं",
+        "myClonedVoices": "मेरी क्लोन आवाज़ें",
+        "fishLibrary": "वॉइस लाइब्रेरी",
+        "generate": "जनरेट करें",
+        "generating": "जनरेट हो रहा है...",
+        "creditsRule": "100 अक्षर = 1 क्रेडिट",
+        "voiceGeneration": "क्लोन वॉइस जनरेशन"
+      },
+      "clone": {
+        "uploadAudio": "ऑडियो अपलोड करें",
+        "uploadDescription": "साफ ऑडियो सैंपल अपलोड करें (10-60 सेकंड)",
+        "recordAudio": "ऑडियो रिकॉर्ड करें",
+        "recordDescription": "सीधे अपनी आवाज़ रिकॉर्ड करें",
+        "referenceText": "संदर्भ टेक्स्ट",
+        "referenceTextPlaceholder": "ऑडियो में बोला गया टेक्स्ट दर्ज करें...",
+        "voiceName": "आवाज़ का नाम",
+        "voiceNamePlaceholder": "अपनी आवाज़ को नाम दें...",
+        "createClone": "वॉइस क्लोन बनाएं",
+        "creating": "बना रहे हैं...",
+        "cloneSuccess": "वॉइस क्लोन सफलतापूर्वक बनाया गया!",
+        "cloneFailed": "वॉइस क्लोन बनाने में विफल",
+        "maxFileSize": "अधिकतम: 10MB",
+        "supportedFormats": "फॉर्मेट: MP3, WAV, M4A",
+        "recording": "रिकॉर्डिंग...",
+        "stopRecording": "रुकें",
+        "startRecording": "रिकॉर्डिंग शुरू करें",
+        "deleteVoice": "आवाज़ हटाएं",
+        "deleteConfirm": "क्या आप इस क्लोन आवाज़ को हटाना चाहते हैं?",
+        "noClonedVoices": "अभी कोई क्लोन आवाज़ नहीं",
+        "createFirst": "अपना पहला वॉइस क्लोन बनाएं!"
+      }
+    },
     "createDialogue": {
       "title": "टेक्स्ट से संवाद",
       "language": "भाषा",

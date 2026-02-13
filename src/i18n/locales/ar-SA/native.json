@@ -228,6 +228,48 @@
       "detailCreditsUsed": "الرصيد المستخدم",
       "deleteConfirmTitle": "حذف هذه الصورة?"
     },
+    "createClone": {
+      "title": "استنساخ الصوت",
+      "tabs": { "generate": "توليد", "clone": "استنساخ" },
+      "generate": {
+        "enterText": "أدخل النص",
+        "placeholder": "اكتب أو الصق النص الذي تريد نطقه...",
+        "selectVoice": "اختر صوتاً",
+        "searchPlaceholder": "البحث عن أصوات...",
+        "searchButton": "بحث",
+        "noResults": "لم يتم العثور على أصوات",
+        "tryDifferentSearch": "جرب مصطلح بحث مختلف",
+        "myClonedVoices": "أصواتي المستنسخة",
+        "fishLibrary": "مكتبة الأصوات",
+        "generate": "توليد",
+        "generating": "جاري التوليد...",
+        "creditsRule": "100 حرف = 1 نقطة",
+        "voiceGeneration": "توليد صوت مستنسخ"
+      },
+      "clone": {
+        "uploadAudio": "رفع صوت",
+        "uploadDescription": "ارفع عينة صوتية واضحة (10-60 ثانية)",
+        "recordAudio": "تسجيل صوت",
+        "recordDescription": "سجل صوتك مباشرة",
+        "referenceText": "نص مرجعي",
+        "referenceTextPlaceholder": "أدخل النص المنطوق في الصوت...",
+        "voiceName": "اسم الصوت",
+        "voiceNamePlaceholder": "أعط صوتك اسماً...",
+        "createClone": "إنشاء استنساخ صوت",
+        "creating": "جاري الإنشاء...",
+        "cloneSuccess": "تم إنشاء استنساخ الصوت بنجاح!",
+        "cloneFailed": "فشل إنشاء استنساخ الصوت",
+        "maxFileSize": "الحد الأقصى: 10 ميجابايت",
+        "supportedFormats": "الصيغ: MP3, WAV, M4A",
+        "recording": "جاري التسجيل...",
+        "stopRecording": "إيقاف",
+        "startRecording": "بدء التسجيل",
+        "deleteVoice": "حذف الصوت",
+        "deleteConfirm": "هل أنت متأكد من حذف هذا الصوت المستنسخ؟",
+        "noClonedVoices": "لا توجد أصوات مستنسخة بعد",
+        "createFirst": "أنشئ أول استنساخ صوت لك!"
+      }
+    },
     "createDialogue": {
       "title": "نص إلى حوار",
       "language": "اللغة",

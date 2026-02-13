@@ -228,6 +228,48 @@
       "detailCreditsUsed": "သုံးစွဲခဲ့သော ခရက်ဒစ်",
       "deleteConfirmTitle": "ဤပုံကို ဖျက်မလား?"
     },
+    "createClone": {
+      "title": "အသံ ကူးယူခြင်း",
+      "tabs": { "generate": "ဖန်တီးရန်", "clone": "ကူးယူရန်" },
+      "generate": {
+        "enterText": "စာသားထည့်ပါ",
+        "placeholder": "ပြောလိုသော စာသားကို ရိုက်ထည့် သို့မဟုတ် ကူးထည့်ပါ...",
+        "selectVoice": "အသံရွေးပါ",
+        "searchPlaceholder": "အသံရှာပါ...",
+        "searchButton": "ရှာရန်",
+        "noResults": "အသံမတွေ့ပါ",
+        "tryDifferentSearch": "အခြားစကားလုံးဖြင့် ရှာကြည့်ပါ",
+        "myClonedVoices": "ကျွန်ုပ်၏ ကူးယူအသံများ",
+        "fishLibrary": "အသံစာကြည့်တိုက်",
+        "generate": "ဖန်တီးရန်",
+        "generating": "ဖန်တီးနေသည်...",
+        "creditsRule": "စာလုံး 100 = ၁ ကရက်ဒစ်",
+        "voiceGeneration": "ကူးယူအသံ ဖန်တီးခြင်း"
+      },
+      "clone": {
+        "uploadAudio": "အသံတင်ရန်",
+        "uploadDescription": "ရှင်းလင်းသော အသံနမူနာတင်ပါ (စက္ကန့် 10-60)",
+        "recordAudio": "အသံဖမ်းရန်",
+        "recordDescription": "သင့်အသံကို တိုက်ရိုက်ဖမ်းယူပါ",
+        "referenceText": "ကိုးကားစာသား",
+        "referenceTextPlaceholder": "အသံထဲမှ ပြောဆိုသော စာသားကို ထည့်ပါ...",
+        "voiceName": "အသံအမည်",
+        "voiceNamePlaceholder": "သင့်အသံကို အမည်ပေးပါ...",
+        "createClone": "အသံကူးယူခြင်း ဖန်တီးရန်",
+        "creating": "ဖန်တီးနေသည်...",
+        "cloneSuccess": "အသံကူးယူခြင်း အောင်မြင်ပါသည်!",
+        "cloneFailed": "အသံကူးယူခြင်း မအောင်မြင်ပါ",
+        "maxFileSize": "အများဆုံး: 10MB",
+        "supportedFormats": "ပုံစံ: MP3, WAV, M4A",
+        "recording": "ဖမ်းယူနေသည်...",
+        "stopRecording": "ရပ်ရန်",
+        "startRecording": "စတင်ဖမ်းယူရန်",
+        "deleteVoice": "အသံဖျက်ရန်",
+        "deleteConfirm": "ဤကူးယူအသံကို ဖျက်လိုသည်မှာ သေချာပါသလား?",
+        "noClonedVoices": "ကူးယူအသံ မရှိသေးပါ",
+        "createFirst": "ပထမဆုံး အသံကူးယူခြင်းကို ဖန်တီးပါ!"
+      }
+    },
     "createDialogue": {
       "title": "စာသားမှ စကားပြောသို့",
       "language": "ဘာသာစကား",

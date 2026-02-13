@@ -51,8 +51,8 @@ export interface CreateFishModelParams {
   audioBuffer: Buffer;
   /** Audio file name */
   audioFileName: string;
-  /** Reference text (what the audio says) */
-  referenceText: string;
+  /** Reference text (what the audio says) - optional but improves quality */
+  referenceText?: string;
   /** Tags */
   tags?: string[];
   /** Training mode: 'fast' or 'full' */
@@ -190,7 +190,9 @@ export async function createFishModel(params: CreateFishModelParams): Promise<Fi
   // Add audio file as voice sample
   const audioBlob = new Blob([new Uint8Array(params.audioBuffer)], { type: 'audio/mpeg' });
   formData.append('voices', audioBlob, params.audioFileName);
-  formData.append('texts', params.referenceText);
+  if (params.referenceText) {
+    formData.append('texts', params.referenceText);
+  }
 
   console.log(`🐟 Fish Audio: Creating model "${params.title}"`);
 

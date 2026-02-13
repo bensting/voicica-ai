@@ -265,7 +265,7 @@ export default function VoiceClonePage() {
   // ==================== Clone Tab Handlers ====================
 
   const handleClone = async () => {
-    if (!cloneAudioBase64 || !cloneReferenceText.trim() || !cloneVoiceName.trim()) return;
+    if (!cloneAudioBase64 || !cloneVoiceName.trim()) return;
 
     if (!user) {
       setIsLoginModalOpen(true);
@@ -281,7 +281,7 @@ export default function VoiceClonePage() {
         name: cloneVoiceName.trim(),
         audioBase64: cloneAudioBase64,
         audioFileName: cloneAudioFileName || 'recording.mp3',
-        referenceText: cloneReferenceText.trim(),
+        referenceText: cloneReferenceText.trim() || undefined,
       });
 
       if (result.success && result.clonedVoice) {
@@ -316,7 +316,7 @@ export default function VoiceClonePage() {
     }
   };
 
-  const canClone = cloneAudioBase64 !== null && cloneReferenceText.trim().length > 0 && cloneVoiceName.trim().length > 0 && !isCloning;
+  const canClone = cloneAudioBase64 !== null && cloneVoiceName.trim().length > 0 && !isCloning;
 
   // ==================== Render ====================
 
@@ -421,7 +421,7 @@ export default function VoiceClonePage() {
             {/* Reference Text */}
             <div className="space-y-1.5">
               <label className="text-sm font-medium text-gray-300">
-                {t('native.createClone.clone.referenceText')}
+                {t('native.createClone.clone.referenceText')} <span className="text-gray-500 font-normal">(Optional)</span>
               </label>
               <textarea
                 value={cloneReferenceText}

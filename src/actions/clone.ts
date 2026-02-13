@@ -339,7 +339,7 @@ export async function createVoiceClone(params: {
   description?: string;
   audioBase64: string;
   audioFileName: string;
-  referenceText: string;
+  referenceText?: string;
 }): Promise<CreateVoiceCloneResult> {
   console.log('🐟 [createVoiceClone] Creating voice clone:', params.name);
 

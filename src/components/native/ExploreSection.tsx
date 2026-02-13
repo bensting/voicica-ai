@@ -14,7 +14,7 @@ import {
 } from '@/config/native/exploreTabsConfig';
 import ProviderIcon from '@/components/ui/icons/ProviderIcon';
 import { getCountryFlag } from '@/utils/countryFlags';
-import { User, UserRound } from 'lucide-react';
+import { User, UserRound, ChevronRight } from 'lucide-react';
 import NativeAdCard from './NativeAdCard';
 import { useSubscription } from '@/contexts/SubscriptionContext';
 import { isNativeAdEnabled, getNativeAdPosition } from '@/config/ads';
@@ -440,31 +440,43 @@ export default function ExploreSection() {
             ))}
           </div>
         ) : voiceList.length > 0 ? (
-          // 语音网格 - 2列布局（包含原生广告）
-          <div className="grid grid-cols-2 gap-2.5">
-            {voiceList.map((voice, index) => {
-              // 计算实际位置（考虑广告插入）
-              const actualIndex = showNativeAd && index >= nativeAdPosition ? index + 1 : index;
+          <>
+            {/* 语音网格 - 2列布局（包含原生广告） */}
+            <div className="grid grid-cols-2 gap-2.5">
+              {voiceList.map((voice, index) => {
+                // 计算实际位置（考虑广告插入）
+                const actualIndex = showNativeAd && index >= nativeAdPosition ? index + 1 : index;
 
-              return (
-                <React.Fragment key={voice.id}>
-                  {/* 在指定位置插入原生广告 */}
-                  {showNativeAd && index === nativeAdPosition && (
-                    <NativeAdCard index={nativeAdPosition} />
-                  )}
-                  <VoiceCard
-                    voice={voice}
-                    index={actualIndex}
-                    onClick={() => setSelectedVoice(voice)}
-                  />
-                </React.Fragment>
-              );
-            })}
-            {/* 如果广告位置在列表末尾 */}
-            {showNativeAd && nativeAdPosition >= voiceList.length && (
-              <NativeAdCard index={nativeAdPosition} />
-            )}
-          </div>
+                return (
+                  <React.Fragment key={voice.id}>
+                    {/* 在指定位置插入原生广告 */}
+                    {showNativeAd && index === nativeAdPosition && (
+                      <NativeAdCard index={nativeAdPosition} />
+                    )}
+                    <VoiceCard
+                      voice={voice}
+                      index={actualIndex}
+                      onClick={() => setSelectedVoice(voice)}
+                    />
+                  </React.Fragment>
+                );
+              })}
+              {/* 如果广告位置在列表末尾 */}
+              {showNativeAd && nativeAdPosition >= voiceList.length && (
+                <NativeAdCard index={nativeAdPosition} />
+              )}
+            </div>
+            {/* Explore More 链接 */}
+            <div className="mt-3 flex justify-center">
+              <button
+                onClick={() => router.push('/native/create/voice')}
+                className="flex items-center gap-1 text-sm text-gray-400 transition-colors hover:text-white active:text-white"
+              >
+                Explore More
+                <ChevronRight className="h-4 w-4" />
+              </button>
+            </div>
+          </>
         ) : (
           // 空状态
           <div className="text-center py-12 text-gray-500">
@@ -493,17 +505,29 @@ export default function ExploreSection() {
             ))}
           </div>
         ) : dialogueList.length > 0 ? (
-          // 对话网格 - 2列布局
-          <div className="grid grid-cols-2 gap-2.5">
-            {dialogueList.map((dialogue, index) => (
-              <DialogueCard
-                key={dialogue.id}
-                dialogue={dialogue}
-                index={index}
-                onClick={() => setSelectedDialogue(dialogue)}
-              />
-            ))}
-          </div>
+          <>
+            {/* 对话网格 - 2列布局 */}
+            <div className="grid grid-cols-2 gap-2.5">
+              {dialogueList.map((dialogue, index) => (
+                <DialogueCard
+                  key={dialogue.id}
+                  dialogue={dialogue}
+                  index={index}
+                  onClick={() => setSelectedDialogue(dialogue)}
+                />
+              ))}
+            </div>
+            {/* Explore More 链接 */}
+            <div className="mt-3 flex justify-center">
+              <button
+                onClick={() => router.push('/native/create/dialogue')}
+                className="flex items-center gap-1 text-sm text-gray-400 transition-colors hover:text-white active:text-white"
+              >
+                Explore More
+                <ChevronRight className="h-4 w-4" />
+              </button>
+            </div>
+          </>
         ) : (
           // 空状态
           <div className="text-center py-12 text-gray-500">

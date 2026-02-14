@@ -56,9 +56,9 @@ async function downloadAndUploadToR2(
   try {
     console.log(`📥 [R2 Upload] 下载文件: ${url}`);
 
-    // cover 用重试（图片可能延迟就绪），audio 直接下载
+    // cover 用重试（图片可能延迟就绪，最多等 ~15 秒），audio 直接下载
     const response = type === 'cover'
-      ? await fetchWithRetry(url, 3, 2000)
+      ? await fetchWithRetry(url, 5, 3000)
       : await fetchWithRetry(url, 1, 0);
 
     if (!response) {

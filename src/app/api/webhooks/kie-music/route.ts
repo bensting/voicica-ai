@@ -74,9 +74,9 @@ async function downloadAndUploadToR2(
   try {
     console.log(`📥 [R2 Upload] 下载文件: ${url}`);
 
-    // cover 用重试（图片可能延迟就绪），audio 直接下载
+    // cover 用重试（图片可能延迟就绪，最多等 ~15 秒），audio 直接下载
     const response = type === 'cover'
-      ? await fetchWithRetry(url, 3, 2000)
+      ? await fetchWithRetry(url, 5, 3000)
       : await fetchWithRetry(url, 1, 0);
 
     if (!response) {
@@ -216,26 +216,44 @@ export async function POST(request: NextRequest) {
 
     switch (callbackType) {
       case 'text':
-        // 歌词生成完成，更新进度
+        // 歌词生成完成，更新进度（仅 PROCESSING 状态）
+        if (record.status !== 'PROCESSING') {
+          console.log(`⚠️ [KIE Callback] 记录已非 PROCESSING 状态，跳过歌词更新: ${record.taskId}`);
+          break;
+        }
         await db
           .update(musicRecords)
           .set({
             progress: 30,
             lyrics: tracks[0]?.prompt || null,
           })
-          .where(eq(musicRecords.id, record.id));
+          .where(
+            and(
+              eq(musicRecords.id, record.id),
+              eq(musicRecords.status, 'PROCESSING')
+            )
+          );
         console.log(`🎵 [KIE Callback] 歌词生成完成: ${record.taskId}`);
         break;
 
       case 'first':
-        // 第一首歌曲完成，更新进度（不下载，等 complete 时一起下载）
+        // 第一首歌曲完成，更新进度（仅 PROCESSING 状态）
         if (tracks && tracks.length > 0) {
+          if (record.status !== 'PROCESSING') {
+            console.log(`⚠️ [KIE Callback] 记录已非 PROCESSING 状态，跳过进度更新: ${record.taskId}`);
+            break;
+          }
           await db
             .update(musicRecords)
             .set({
               progress: 70,
             })
-            .where(eq(musicRecords.id, record.id));
+            .where(
+              and(
+                eq(musicRecords.id, record.id),
+                eq(musicRecords.status, 'PROCESSING')
+              )
+            );
           console.log(`🎵 [KIE Callback] 第一首歌曲完成: ${record.taskId}`);
         }
         break;
@@ -243,6 +261,12 @@ export async function POST(request: NextRequest) {
       case 'complete':
         // 所有歌曲完成，下载文件到 R2
         if (tracks && tracks.length > 0) {
+          // 乐观锁：只在记录仍为 PROCESSING 时才处理，防止覆盖 Polling 已保存的 R2 URL
+          if (record.status === 'SUCCESS') {
+            console.log(`⚠️ [KIE Callback] 记录已被 Polling 处理为 SUCCESS，跳过: ${record.taskId}`);
+            break;
+          }
+
           console.log(`🎵 [KIE Callback] 开始处理 ${tracks.length} 首歌曲，下载到 R2...`);
 
           // 处理第一首歌
@@ -254,7 +278,7 @@ export async function POST(request: NextRequest) {
             secondTrackData = await processTrackData(tracks[1], record.taskId, 2);
           }
 
-          await db
+          const updateResult = await db
             .update(musicRecords)
             .set({
               status: 'SUCCESS',
@@ -277,8 +301,19 @@ export async function POST(request: NextRequest) {
               lyrics: firstTrackData.lyrics || record.lyrics,
               completedAt: new Date().toISOString(),
             })
-            .where(eq(musicRecords.id, record.id));
-          console.log(`🎵 [KIE Callback] 所有歌曲处理完成: ${record.taskId}, 共 ${tracks.length} 首, track_ids: [${firstTrackData.track_id}, ${secondTrackData?.track_id || 'N/A'}]`);
+            .where(
+              and(
+                eq(musicRecords.id, record.id),
+                eq(musicRecords.status, 'PROCESSING') // 乐观锁：防止覆盖 Polling 已保存的数据
+              )
+            )
+            .returning();
+
+          if (updateResult.length > 0) {
+            console.log(`🎵 [KIE Callback] 所有歌曲处理完成: ${record.taskId}, 共 ${tracks.length} 首, track_ids: [${firstTrackData.track_id}, ${secondTrackData?.track_id || 'N/A'}]`);
+          } else {
+            console.log(`⚠️ [KIE Callback] 记录已被 Polling 处理，跳过更新: ${record.taskId}`);
+          }
         }
         break;
 

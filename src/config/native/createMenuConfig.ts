@@ -128,7 +128,7 @@ export const createMenuItems: CreateMenuItem[] = [
     shortName: 'AI Video',
     description: 'Generate videos from text prompts',
     href: '/native/create/video',
-    enabled: { development: true, production: false },
+    enabled: { development: true, production: true },
   },
 
   // ========== AI Other Tools 类别 ==========

@@ -17,15 +17,15 @@ export const musicModelsConfig: MusicModel[] = [
     id: 'music-5.0',
     name: 'Music - 5.0',
     description: 'The latest model with more delicate human vocals and better output sound quality.',
-    credits: 25,
-    isPremium: true,
+    credits: 30,
+    isPremium: false,
   },
   {
     id: 'music-4.5-plus',
     name: 'Music - 4.5 Plus',
     description: 'The main generation model, featuring richer and fuller sound, songs up to 8 mins.',
     credits: 25,
-    isPremium: true,
+    isPremium: false,
   },
   {
     id: 'music-4.5',

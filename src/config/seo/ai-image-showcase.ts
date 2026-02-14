@@ -16,7 +16,7 @@ export const IMAGE_SAMPLES: ImageSample[] = [
     style: 'Sci-Fi, Cinematic',
     aspectRatio: '16:9',
     model: 'Nano Banana Pro',
-    imageUrl: 'https://cdn.voicica.ai/image_samples/cyberpunk-city.jpg',
+    imageUrl: 'https://cdn.voicica.ai/images/vtEyZ69jh3YfkGlyweAnJR6fhR13/656a876eb98e7c50a5698dae0ed5cf69.png',
   },
   {
     id: 'img2',
@@ -25,7 +25,7 @@ export const IMAGE_SAMPLES: ImageSample[] = [
     style: 'Anime, Illustration',
     aspectRatio: '3:4',
     model: 'Seedream 4.5',
-    imageUrl: 'https://cdn.voicica.ai/image_samples/anime-portrait.jpg',
+    imageUrl: 'https://cdn.voicica.ai/images/vtEyZ69jh3YfkGlyweAnJR6fhR13/0bd0d43b68f842f36692d5b6df71e9f8.jpg',
   },
   {
     id: 'img3',
@@ -34,7 +34,7 @@ export const IMAGE_SAMPLES: ImageSample[] = [
     style: 'Photography, Landscape',
     aspectRatio: '16:9',
     model: 'Flux.2',
-    imageUrl: 'https://cdn.voicica.ai/image_samples/mountain-landscape.jpg',
+    imageUrl: 'https://cdn.voicica.ai/images/vtEyZ69jh3YfkGlyweAnJR6fhR13/6b4315c99969b2d01bdbe08b00df2941.png',
   },
   {
     id: 'img4',
@@ -43,7 +43,7 @@ export const IMAGE_SAMPLES: ImageSample[] = [
     style: 'Fantasy, Concept Art',
     aspectRatio: '1:1',
     model: 'Nano Banana Pro',
-    imageUrl: 'https://cdn.voicica.ai/image_samples/fantasy-dragon.jpg',
+    imageUrl: 'https://cdn.voicica.ai/images/vtEyZ69jh3YfkGlyweAnJR6fhR13/aa7a97629657c3f2dc57c79c9ffd2bd2.png',
   },
   {
     id: 'img5',
@@ -52,7 +52,7 @@ export const IMAGE_SAMPLES: ImageSample[] = [
     style: 'Product, Commercial',
     aspectRatio: '1:1',
     model: 'Seedream 4.5',
-    imageUrl: 'https://cdn.voicica.ai/image_samples/product-mockup.jpg',
+    imageUrl: 'https://cdn.voicica.ai/images/vtEyZ69jh3YfkGlyweAnJR6fhR13/3f663d9a9e36ccec4e97d02246384f0c.jpg',
   },
   {
     id: 'img6',
@@ -61,7 +61,7 @@ export const IMAGE_SAMPLES: ImageSample[] = [
     style: 'Watercolor, Art',
     aspectRatio: '4:3',
     model: 'Flux.2',
-    imageUrl: 'https://cdn.voicica.ai/image_samples/watercolor-garden.jpg',
+    imageUrl: 'https://cdn.voicica.ai/images/vtEyZ69jh3YfkGlyweAnJR6fhR13/dd58158438161d39dd100eeb803e1559.jpg',
   },
 ];
 

@@ -444,6 +444,32 @@ export async function getMusicTaskStatus(taskId: string): Promise<MusicTaskStatu
 
     // 如果 KIE 返回成功，下载到 R2 并更新本地数据库
     if (kieStatus.status === 'SUCCESS' && kieStatus.data && kieStatus.data.length > 0) {
+      // 再次检查记录状态，避免 Webhook 已处理后重复下载
+      const [freshRecord] = await db.select({ status: musicRecords.status })
+        .from(musicRecords).where(eq(musicRecords.taskId, taskId)).limit(1);
+      if (freshRecord?.status === 'SUCCESS') {
+        console.log(`⚠️ [getMusicTaskStatus] 记录已被 Webhook 处理为 SUCCESS，跳过下载: ${taskId}`);
+        // 直接从数据库读取已有数据返回
+        const [existingRecord] = await db.select().from(musicRecords).where(eq(musicRecords.taskId, taskId)).limit(1);
+        return {
+          task_id: taskId,
+          status: 'SUCCESS',
+          progress: 100,
+          result: {
+            audio_url: existingRecord.audioUrl || '',
+            audio_url_2: existingRecord.audioUrl2 || undefined,
+            cover_url: existingRecord.coverUrl || undefined,
+            cover_url_2: existingRecord.coverUrl2 || undefined,
+            duration: existingRecord.duration || undefined,
+            duration_2: existingRecord.duration2 || undefined,
+            title: existingRecord.title || undefined,
+            tags: existingRecord.tags || undefined,
+            lyrics: existingRecord.lyrics || undefined,
+          },
+          error: null,
+        };
+      }
+
       const firstTrack = kieStatus.data[0];
       const secondTrack = kieStatus.data.length > 1 ? kieStatus.data[1] : null;
 
@@ -475,7 +501,8 @@ export async function getMusicTaskStatus(taskId: string): Promise<MusicTaskStatu
       const finalAudioUrl2 = r2AudioUrl2 || secondTrack?.audio_url;
       const finalCoverUrl2 = r2CoverUrl2 || secondTrack?.image_url;
 
-      await db.update(musicRecords)
+      // 乐观锁：仅在仍为 PROCESSING 时更新，防止覆盖 Webhook 已保存的数据
+      const updateResult = await db.update(musicRecords)
         .set({
           status: 'SUCCESS',
           progress: 100,
@@ -492,9 +519,14 @@ export async function getMusicTaskStatus(taskId: string): Promise<MusicTaskStatu
           duration2: secondTrack?.duration || null,
           completedAt: new Date().toISOString(),
         })
-        .where(eq(musicRecords.taskId, taskId));
+        .where(and(eq(musicRecords.taskId, taskId), eq(musicRecords.status, 'PROCESSING')))
+        .returning();
 
-      console.log('🎵 [getMusicTaskStatus] 文件下载到 R2 完成');
+      if (updateResult.length > 0) {
+        console.log('🎵 [getMusicTaskStatus] 文件下载到 R2 完成');
+      } else {
+        console.log(`⚠️ [getMusicTaskStatus] 记录已被 Webhook 处理，跳过更新: ${taskId}`);
+      }
 
       return {
         task_id: taskId,

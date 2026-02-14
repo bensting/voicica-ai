@@ -13,78 +13,12 @@ import { nanoid } from 'nanoid';
 import { InsufficientCreditsError, errorToResponse } from '@/lib/errors';
 import { checkCredits, refundCreditsSimple } from '@/lib/credits';
 import { getMusicModelById } from '@/config/native/musicModels';
-import { uploadAudio, uploadImage } from '@/lib/services/r2-storage';
+import { downloadAndUploadToR2 } from '@/lib/services/r2-storage';
 import { ProductType } from '@/config/productType';
 
 // KIE API 配置
 const KIE_API_BASE = 'https://api.kie.ai/api/v1';
 const KIE_API_KEY = process.env.KIE_API_KEY || '';
-
-/**
- * 从 URL 下载文件（带重试）
- * cover 图片可能在音频就绪后仍未上传完成，需要重试
- */
-async function fetchWithRetry(
-  url: string,
-  maxRetries: number = 3,
-  delayMs: number = 2000
-): Promise<Response | null> {
-  for (let attempt = 1; attempt <= maxRetries; attempt++) {
-    try {
-      const response = await fetch(url);
-      if (response.ok) return response;
-      console.warn(`📥 [R2 Upload] 下载失败 (${attempt}/${maxRetries}): ${response.status}`);
-    } catch (error) {
-      console.warn(`📥 [R2 Upload] 下载异常 (${attempt}/${maxRetries}):`, error);
-    }
-    if (attempt < maxRetries) {
-      await new Promise(r => setTimeout(r, delayMs));
-    }
-  }
-  return null;
-}
-
-/**
- * 从 URL 下载文件并上传到 R2
- */
-async function downloadAndUploadToR2(
-  url: string,
-  taskId: string,
-  type: 'audio' | 'cover',
-  trackIndex: number = 1
-): Promise<string | null> {
-  try {
-    console.log(`📥 [R2 Upload] 下载文件: ${url}`);
-
-    // cover 用重试（图片可能延迟就绪，最多等 ~15 秒），audio 直接下载
-    const response = type === 'cover'
-      ? await fetchWithRetry(url, 5, 3000)
-      : await fetchWithRetry(url, 1, 0);
-
-    if (!response) {
-      console.error(`📥 [R2 Upload] 下载最终失败: ${url}`);
-      return null;
-    }
-
-    const buffer = Buffer.from(await response.arrayBuffer());
-    const suffix = trackIndex > 1 ? `_v${trackIndex}` : '';
-
-    if (type === 'audio') {
-      const fileName = `${taskId}${suffix}.mp3`;
-      const r2Url = await uploadAudio(buffer, fileName, 'audio/mpeg', 'music_audio');
-      console.log(`✅ [R2 Upload] 音频上传成功: ${r2Url}`);
-      return r2Url;
-    } else {
-      const fileName = `${taskId}${suffix}.jpg`;
-      const r2Url = await uploadImage(buffer, fileName, 'image/jpeg', 'music_covers');
-      console.log(`✅ [R2 Upload] 封面上传成功: ${r2Url}`);
-      return r2Url;
-    }
-  } catch (error) {
-    console.error(`❌ [R2 Upload] 上传失败:`, error);
-    return null;
-  }
-}
 
 // 模型映射：内部模型 ID -> KIE API 模型枚举
 const MODEL_MAP: Record<string, string> = {

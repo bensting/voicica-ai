@@ -2,6 +2,8 @@
 
 import { useState, useRef, useEffect } from 'react';
 import type { DialogueRecord } from '@/actions/dialogue';
+import { Share } from '@capacitor/share';
+import { createShareLink } from '@/actions/share';
 import DetailModalHeader from './DetailModalHeader';
 import DetailActionBar from './DetailActionBar';
 import DeleteConfirmDialog from '@/components/native/ui/DeleteConfirmDialog';
@@ -31,6 +33,7 @@ export default function DialogueDetailModal({
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(dialogue.duration || 0);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [isSharing, setIsSharing] = useState(false);
   const { hide, show } = useBottomNav();
 
   // 隐藏底部导航
@@ -89,6 +92,38 @@ export default function DialogueDetailModal({
     onClose();
   };
 
+  // 分享
+  const handleShare = async () => {
+    if (!dialogue.task_id) return;
+    setIsSharing(true);
+    try {
+      const result = await createShareLink('dialogue', dialogue.task_id);
+
+      const canShare = await Share.canShare();
+      if (!canShare.value) {
+        await navigator.clipboard.writeText(result.url);
+        return;
+      }
+
+      await Share.share({
+        title: 'AI Dialogue',
+        text: 'Check out this AI-generated dialogue',
+        url: result.url,
+        dialogTitle: 'Share Dialogue',
+      });
+    } catch (error) {
+      console.error('Share failed:', error);
+      try {
+        const result = await createShareLink('dialogue', dialogue.task_id);
+        await navigator.clipboard.writeText(result.url);
+      } catch (e) {
+        console.error('Fallback copy failed:', e);
+      }
+    } finally {
+      setIsSharing(false);
+    }
+  };
+
   const progress = duration > 0 ? (currentTime / duration) * 100 : 0;
 
   return (
@@ -106,7 +141,12 @@ export default function DialogueDetailModal({
       {/* 顶部导航 */}
       <DetailModalHeader
         onClose={onClose}
+        onShare={handleShare}
         onDelete={() => setShowDeleteDialog(true)}
+        isSharing={isSharing}
+        shareDisabled={!dialogue.task_id}
+        contentType="dialogue"
+        contentId={dialogue.task_id}
       />
 
       {/* 可滚动内容区域 */}

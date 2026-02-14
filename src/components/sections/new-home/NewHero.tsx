@@ -163,13 +163,23 @@ export default function NewHero({ locale = 'en' }: { locale?: 'en' | 'ja' | 'zh-
           <PhoneMockup>
           {/* Phone Screen Content */}
           <div className="relative min-h-[580px] sm:min-h-[640px] lg:min-h-[740px]">
-            {/* Phone Background Image - fills entire screen */}
+            {/* Phone Background - mobile: 9:16 video, desktop: static image */}
             <div className="absolute inset-0">
+              <video
+                autoPlay
+                muted
+                loop
+                playsInline
+                poster={backgroundImage}
+                className="pointer-events-none h-full w-full object-cover lg:hidden"
+              >
+                <source src="https://cdn.voicica.ai/videos/vtEyZ69jh3YfkGlyweAnJR6fhR13/video_2973c444-efec-4c87-a736-720ccce75a9d.mp4" type="video/mp4" />
+              </video>
               <Image
                 src={backgroundImage}
                 alt="Background"
                 fill
-                className="object-cover"
+                className="hidden object-cover lg:block"
                 priority
               />
               {/* Gradient overlays for text readability */}

@@ -100,6 +100,7 @@ export interface SharedDialogueData {
   audio_url: string | null;
   duration: number | null;
   total_characters: number;
+  dialogue_json: string;
   created_at: Date;
 }
 
@@ -167,6 +168,7 @@ export async function getSharedContent(token: string): Promise<{
         audio_url: dialogueRecords.audioUrl,
         duration: dialogueRecords.duration,
         total_characters: dialogueRecords.totalCharacters,
+        dialogue_json: dialogueRecords.dialogueJson,
         created_at: dialogueRecords.createdAt,
       })
       .from(dialogueRecords)

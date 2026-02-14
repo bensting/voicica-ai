@@ -2,6 +2,7 @@ import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { getSharedContent } from '@/actions/share';
 import SharedMusicPlayer from '@/components/share/SharedMusicPlayer';
+import SharedDialoguePlayer from '@/components/share/SharedDialoguePlayer';
 import SharedExpired from '@/components/share/SharedExpired';
 
 interface PageProps {
@@ -32,6 +33,17 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     };
   }
 
+  if (type === 'dialogue') {
+    return {
+      title: 'AI Dialogue - Voicica AI',
+      description: 'AI generated dialogue on Voicica AI',
+      openGraph: {
+        title: 'AI Dialogue - Voicica AI',
+        description: 'AI generated dialogue on Voicica AI',
+      },
+    };
+  }
+
   return {
     title: 'Shared Content - Voicica AI',
   };
@@ -54,6 +66,10 @@ export default async function SharePage({ params }: PageProps) {
   // 根据类型渲染不同的播放器
   if (type === 'music' && data && 'title' in data) {
     return <SharedMusicPlayer music={data} />;
+  }
+
+  if (type === 'dialogue' && data && 'dialogue_json' in data) {
+    return <SharedDialoguePlayer dialogue={data} />;
   }
 
   // TODO: 支持更多类型

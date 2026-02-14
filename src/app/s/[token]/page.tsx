@@ -21,14 +21,23 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   }
 
   if (type === 'music' && 'title' in data) {
+    const title = `${data.title || 'AI Music'} - Voicica AI`;
+    const description = data.lyrics ? data.lyrics.slice(0, 160) : 'AI generated music on Voicica AI';
+    const images = data.cover_url ? [data.cover_url] : [];
     return {
-      title: `${data.title || 'AI Music'} - Voicica AI`,
-      description: data.lyrics ? data.lyrics.slice(0, 160) : 'AI generated music on Voicica AI',
+      title,
+      description,
       openGraph: {
-        title: `${data.title || 'AI Music'} - Voicica AI`,
-        description: data.lyrics ? data.lyrics.slice(0, 160) : 'AI generated music on Voicica AI',
-        images: data.cover_url ? [data.cover_url] : [],
+        title,
+        description,
+        images,
         type: 'music.song',
+      },
+      twitter: {
+        card: 'summary_large_image',
+        title,
+        description,
+        images,
       },
     };
   }
@@ -38,6 +47,11 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       title: 'AI Dialogue - Voicica AI',
       description: 'AI generated dialogue on Voicica AI',
       openGraph: {
+        title: 'AI Dialogue - Voicica AI',
+        description: 'AI generated dialogue on Voicica AI',
+      },
+      twitter: {
+        card: 'summary',
         title: 'AI Dialogue - Voicica AI',
         description: 'AI generated dialogue on Voicica AI',
       },

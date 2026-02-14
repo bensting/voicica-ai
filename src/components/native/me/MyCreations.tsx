@@ -121,7 +121,7 @@ export default function MyCreations() {
   useEffect(() => {
     if (!anyModalOpen || isSubscribed) return;
     const now = Date.now();
-    if (now - lastDetailAdTimeRef.current < DETAIL_AD_COOLDOWN_MS) return;
+    if (now - lastDetailAdTimeRef.current < 30 * 60 * 1000) return;
     const timer = setTimeout(() => {
       lastDetailAdTimeRef.current = Date.now();
       showInterstitialAd();

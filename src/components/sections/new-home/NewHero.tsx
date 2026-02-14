@@ -1,5 +1,6 @@
 'use client';
 
+import { useRef, useState } from 'react';
 import Image from 'next/image';
 import { HOME_SHOWCASE_CONFIG } from '@/config/homeShowcase';
 import PhoneMockup from './PhoneMockup';
@@ -78,6 +79,15 @@ export default function NewHero({ locale = 'en' }: { locale?: 'en' | 'ja' | 'zh-
   const { backgroundImage, avatars, playStoreUrl } =
     HOME_SHOWCASE_CONFIG;
   const t = heroTexts[locale] || heroTexts.en;
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [isMuted, setIsMuted] = useState(true);
+
+  const toggleMute = () => {
+    if (videoRef.current) {
+      videoRef.current.muted = !videoRef.current.muted;
+      setIsMuted(videoRef.current.muted);
+    }
+  };
 
   const handleCTAClick = () => {
     // Microsoft UET 事件追踪
@@ -99,26 +109,52 @@ export default function NewHero({ locale = 'en' }: { locale?: 'en' | 'ja' | 'zh-
 
   return (
     <section className="relative min-h-screen overflow-hidden bg-gray-950">
-      {/* Outer Background - Dark base */}
-      <div className="absolute inset-0 bg-gradient-to-b from-gray-900 via-gray-950 to-black" />
-
+      {/* Background - static image on mobile, video on desktop */}
+      <div className="absolute inset-0">
+        {/* Mobile: static image */}
+        <Image
+          src={backgroundImage}
+          alt=""
+          fill
+          className="object-cover lg:hidden"
+          priority
+        />
+        {/* Desktop: video background */}
+        <video
+          ref={videoRef}
+          autoPlay
+          muted
+          loop
+          playsInline
+          poster={backgroundImage}
+          className="pointer-events-none hidden h-full w-full object-cover lg:block"
+        >
+          <source src="https://cdn.voicica.ai/videos/vtEyZ69jh3YfkGlyweAnJR6fhR13/video_9fcba2fc-7d17-41c7-b787-dc68d82bc95d.mp4" type="video/mp4" />
+        </video>
+        {/* Dark overlay for readability */}
+        <div className="absolute inset-0 bg-black/50" />
+        {/* Mute/Unmute toggle - desktop only */}
+        <button
+          onClick={toggleMute}
+          className="absolute bottom-6 right-6 z-20 hidden h-10 w-10 items-center justify-center rounded-full bg-black/40 text-white backdrop-blur-sm transition-colors hover:bg-black/60 lg:flex"
+          aria-label={isMuted ? 'Unmute' : 'Mute'}
+        >
+          {isMuted ? (
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+              <path strokeLinecap="round" strokeLinejoin="round" d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2" />
+            </svg>
+          ) : (
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M15.536 8.464a5 5 0 010 7.072M18.364 5.636a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+            </svg>
+          )}
+        </button>
+      </div>
 
       {/* Content */}
       <div className="relative flex min-h-screen items-center justify-center px-4 py-12">
-        {/* Background container - square, slightly larger than phone */}
         <div className="relative">
-          {/* Square background image behind phone - 1:1 ratio, slightly larger */}
-          <div className="absolute left-1/2 top-1/2 z-0 -translate-x-1/2 -translate-y-1/2 h-[580px] w-[580px] sm:h-[720px] sm:w-[720px] lg:h-[960px] lg:w-[960px] overflow-hidden rounded-3xl">
-            <Image
-              src={backgroundImage}
-              alt=""
-              fill
-              className="object-cover object-top blur-[10px]"
-              priority
-            />
-            {/* Slight dark overlay for depth */}
-            <div className="absolute inset-0 bg-black/10" />
-          </div>
 
           <div className="relative z-10">
             {/* Phone glow effect - white */}

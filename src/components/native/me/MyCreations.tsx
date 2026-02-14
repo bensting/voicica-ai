@@ -21,6 +21,8 @@ import {
   type MyCreationsTabId,
 } from '@/config/native/myCreationsTabsConfig';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useSubscription } from '@/contexts/SubscriptionContext';
+import { useInterstitialAd } from '@/hooks/useInterstitialAd';
 
 // 提取的组件
 import MusicDetailModal from './MusicDetailModal';
@@ -107,6 +109,25 @@ export default function MyCreations() {
   const [selectedDialogue, setSelectedDialogue] = useState<DialogueRecord | null>(null);
   const [selectedImage, setSelectedImage] = useState<ImageRecord | null>(null);
   const [selectedVideo, setSelectedVideo] = useState<VideoRecord | null>(null);
+
+  // 插页式广告（非订阅用户打开 DetailModal 时）
+  const { showInterstitialAd } = useInterstitialAd();
+  const { isSubscribed } = useSubscription();
+  const lastDetailAdTimeRef = useRef<number>(0);
+
+  const anyModalOpen = !!(selectedMusic || selectedCover || selectedVoice
+    || selectedDialogue || selectedImage || selectedVideo);
+
+  useEffect(() => {
+    if (!anyModalOpen || isSubscribed) return;
+    const now = Date.now();
+    if (now - lastDetailAdTimeRef.current < DETAIL_AD_COOLDOWN_MS) return;
+    const timer = setTimeout(() => {
+      lastDetailAdTimeRef.current = Date.now();
+      showInterstitialAd();
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [anyModalOpen, isSubscribed, showInterstitialAd]);
 
   // 下拉刷新相关
   const scrollRef = useRef<HTMLDivElement>(null);

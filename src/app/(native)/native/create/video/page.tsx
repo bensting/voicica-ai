@@ -289,8 +289,12 @@ export default function CreateVideoPage() {
           return;
         }
         if (response.status === 402) {
-          // Already handled by checkCreditsBeforeGenerate, but as fallback
-          router.push('/native/subscribe');
+          // 服务端积分不足：弹出 InsufficientCreditsModal
+          setInsufficientCreditsInfo({
+            required: data.required || requiredCredits,
+            current: data.available ?? userCredits,
+          });
+          setIsInsufficientCreditsModalOpen(true);
           return;
         }
         throw new Error(data.error || 'Failed to create video');

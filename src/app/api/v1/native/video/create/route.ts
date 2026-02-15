@@ -11,7 +11,7 @@ import { videoRecords, taskQueue, users, anonymousUsers, creditHistory } from '@
 import { eq, sql } from 'drizzle-orm';
 import { getUserOrAnonymous } from '@/lib/auth-firebase';
 import { createKieVideoTask } from '@/lib/services/kie-video';
-import { videoModelsConfig } from '@/config/native/videoModels';
+import { videoModelsConfig, calculateCredits } from '@/config/native/videoModels';
 import { uploadImage } from '@/lib/services/r2-storage';
 
 // 请求参数
@@ -98,16 +98,14 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // 5. 验证并获取积分消耗
-    const qualityOption = modelConfig.qualityOptions.find((q) => q.value === quality);
-    if (!qualityOption) {
+    // 5. 验证并计算积分消耗（使用 creditsMatrix，和前端一致）
+    const creditsCost = calculateCredits(modelConfig, quality, duration, generateAudio);
+    if (creditsCost <= 0) {
       return NextResponse.json(
-        { success: false, error: 'Invalid quality option' },
+        { success: false, error: 'Invalid quality/duration combination' },
         { status: 400 }
       );
     }
-
-    const creditsCost = qualityOption.credits;
 
     // 6. 检查用户积分
     let userCredits = 0;

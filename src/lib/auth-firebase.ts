@@ -315,11 +315,11 @@ export async function getUserOrAnonymous(): Promise<UnifiedUser> {
   console.log('🔍 [getUserOrAnonymous] Fingerprint:', fingerprint);
 
   if (fingerprint) {
-    const ipAddress = headersList.get('x-forwarded-for')?.split(',')[0] || undefined;
+    const ipAddress = headersList.get('cf-connecting-ip') || headersList.get('x-forwarded-for')?.split(',')[0] || undefined;
     const userAgent = headersList.get('user-agent') || undefined;
     const platform = headersList.get('x-platform') || cookieStore.get('platform')?.value || undefined;
-    // Vercel 自动提供的地理位置 header（生产环境）
-    const vercelCountry = headersList.get('x-vercel-ip-country') || undefined;
+    // Cloudflare 提供 cf-ipcountry，Vercel 提供 x-vercel-ip-country
+    const vercelCountry = headersList.get('cf-ipcountry') || headersList.get('x-vercel-ip-country') || undefined;
 
     // 检测是否来自 Native App
     // 方式1: 检查 x-client-type header

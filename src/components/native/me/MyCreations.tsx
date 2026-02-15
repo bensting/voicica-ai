@@ -138,8 +138,6 @@ export default function MyCreations() {
 
   // 获取视频列表
   const fetchVideos = useCallback(async (isRefresh = false) => {
-    if (!token) return;
-
     try {
       if (isRefresh) {
         setRefreshing(true);
@@ -147,10 +145,13 @@ export default function MyCreations() {
         setLoading(true);
       }
 
+      const headers: Record<string, string> = {};
+      if (token) {
+        headers.Authorization = `Bearer ${token}`;
+      }
+
       const response = await fetch('/api/v1/native/video/list', {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers,
       });
 
       if (response.ok) {

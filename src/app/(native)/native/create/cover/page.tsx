@@ -111,7 +111,7 @@ const PitchIcon = () => (
 export default function NativeCoverPage() {
   const router = useRouter();
   const { user } = useFirebaseAuth();
-  const { credits } = useCredits();
+  const { credits, refreshCredits } = useCredits();
 
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isInsufficientCreditsModalOpen, setIsInsufficientCreditsModalOpen] = useState(false);
@@ -389,6 +389,7 @@ export default function NativeCoverPage() {
       setCoverTaskId(result.task_id);
       setCoverStatus(result.status);
       setGeneratingProgress(result.progress || 10);
+      refreshCredits(); // 积分已在 server 端扣除，立即刷新显示
 
       // 清空
       handleClearCoverAudio();

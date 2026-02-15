@@ -114,7 +114,7 @@ const CloseIcon = () => (
 export default function NativeTTSPage() {
   const { t } = useLanguage();
   const { user } = useFirebaseAuth();
-  const { credits } = useCredits();
+  const { credits, refreshCredits } = useCredits();
   const { isSubscribed } = useSubscription();
   const { showRewardedAd } = useRewardedAd();
   const { settings, updateSettings } = useAudioSettings();
@@ -285,6 +285,7 @@ export default function NativeTTSPage() {
       setCurrentTaskId(result.task_id);
       setTaskCreatedAt(new Date());
       setGeneratingProgress(result.progress || 10);
+      refreshCredits(); // 积分已在 server 端扣除，立即刷新显示
 
       // 清空草稿
       setText('');

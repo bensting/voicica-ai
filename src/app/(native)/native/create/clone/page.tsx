@@ -48,7 +48,7 @@ type TabId = 'generate' | 'clone';
 export default function VoiceClonePage() {
   const { t } = useLanguage();
   const { user } = useFirebaseAuth();
-  const { credits } = useCredits();
+  const { credits, refreshCredits } = useCredits();
   const { isSubscribed } = useSubscription();
   const { showRewardedAd } = useRewardedAd();
 
@@ -177,6 +177,7 @@ export default function VoiceClonePage() {
       // Success - fetch TTS record for VoiceDetailModal
       setGeneratingStatus('loading');
       setText('');
+      refreshCredits(); // 积分已在 server 端扣除，立即刷新显示
 
       if (result.task_id) {
         try {

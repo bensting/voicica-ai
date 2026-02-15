@@ -351,6 +351,7 @@ export default function NativeDialoguePage() {
       setCurrentTaskId(result.task_id);
       setTaskCreatedAt(new Date());
       setGeneratingProgress(result.progress);
+      refreshCredits(); // 积分已在 server 端扣除，立即刷新显示
 
       // 清空草稿
       setDialogues([{ id: '1', text: '', voice: 'Liam' }]);

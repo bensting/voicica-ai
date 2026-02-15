@@ -21,7 +21,7 @@ const LOGIN_MODAL_INTERVAL_MS = 24 * 60 * 60 * 1000; // 24 hours
  */
 export default function MePage() {
   const { user, loading } = useFirebaseAuth();
-  const { credits } = useCredits();
+  const { credits, refreshCredits } = useCredits();
   const { isSubscribed, activeSubscription } = useSubscription();
   const { t, locale } = useLanguage();
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
@@ -54,6 +54,14 @@ export default function MePage() {
     return 'Pro';
   };
   const planName = getPlanDisplayName();
+
+  // 每次进入 Me 页面时刷新积分（确保显示最新值）
+  useEffect(() => {
+    if (!loading) {
+      refreshCredits();
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loading]);
 
   // 登录成功时清除标记，下次退出登录后访问会重新弹出
   useEffect(() => {

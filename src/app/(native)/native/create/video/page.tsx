@@ -75,7 +75,7 @@ const VIDEO_PROMPT_STORAGE_KEY = 'video_draft_prompt';
 export default function CreateVideoPage() {
   const router = useRouter();
   const { token } = useFirebaseAuth();
-  const { credits: userCredits } = useCredits();
+  const { credits: userCredits, refreshCredits } = useCredits();
   const { isSubscribed } = useSubscription();
   const { showRewardedAd } = useRewardedAd();
 
@@ -306,6 +306,7 @@ export default function CreateVideoPage() {
       setAdWatched(false);
       setIsGeneratingModalOpen(true);
       startPolling(data.taskId);
+      refreshCredits(); // 积分已在 server 端扣除，立即刷新显示
     } catch (err) {
       console.error('Create video error:', err);
       setError(err instanceof Error ? err.message : 'Failed to create video');

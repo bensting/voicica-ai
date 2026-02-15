@@ -392,6 +392,7 @@ export default function NativeImagePage() {
       // 开始轮询
       setTaskId(result.taskId!);
       setGeneratingProgress(20);
+      refreshCredits(); // 积分已在 server 端扣除，立即刷新显示
 
       // 清空输入
       setPrompt('');

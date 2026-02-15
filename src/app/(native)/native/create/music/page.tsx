@@ -88,7 +88,7 @@ const UploadIcon = () => (
 export default function NativeMusicPage() {
   const router = useRouter();
   const { user } = useFirebaseAuth();
-  const { credits } = useCredits();
+  const { credits, refreshCredits } = useCredits();
   const { isSubscribed } = useSubscription();
   const { showRewardedAd } = useRewardedAd();
 
@@ -402,6 +402,7 @@ export default function NativeMusicPage() {
       setCurrentTaskId(result.task_id);
       setTaskCreatedAt(new Date());
       setGeneratingProgress(result.progress || 10);
+      refreshCredits(); // 积分已在 server 端扣除，立即刷新显示
 
       // 清空草稿
       setPrompt('');

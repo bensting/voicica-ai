@@ -347,12 +347,6 @@ export default function NativeMusicPage() {
       return;
     }
 
-    if (!user) {
-      console.log('🎵 [handleGenerate] 用户未登录，显示登录弹窗');
-      setIsLoginModalOpen(true);
-      return;
-    }
-
     // 检查积分是否足够
     const requiredCredits = selectedModel?.credits ?? 25;
     const hasEnoughCredits = checkCreditsBeforeGenerate({

@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 import { useCredits } from '@/contexts/CreditsContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useSubscription } from '@/contexts/SubscriptionContext';
@@ -84,7 +83,6 @@ const DialogueIcon = () => (
  */
 export default function NativeDialoguePage() {
   const router = useRouter();
-  const { user } = useFirebaseAuth();
   const { credits, refreshCredits } = useCredits();
   const { t } = useLanguage();
   const { isSubscribed } = useSubscription();
@@ -316,11 +314,6 @@ export default function NativeDialoguePage() {
   // 处理生成
   const handleGenerate = async () => {
     if (!canGenerate) return;
-
-    if (!user) {
-      setIsLoginModalOpen(true);
-      return;
-    }
 
     // 打开生成弹窗
     setIsGeneratingModalOpen(true);

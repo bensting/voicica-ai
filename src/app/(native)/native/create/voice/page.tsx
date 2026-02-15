@@ -244,12 +244,6 @@ export default function NativeTTSPage() {
   const handleGenerate = async () => {
     if (!canGenerate || !selectedVoice) return;
 
-    // 检查是否已登录
-    if (!user) {
-      setIsLoginModalOpen(true);
-      return;
-    }
-
     // 检查积分是否足够
     const hasEnoughCredits = checkCreditsBeforeGenerate({
       currentCredits: credits,

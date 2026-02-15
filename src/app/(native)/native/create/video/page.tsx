@@ -74,7 +74,7 @@ const VIDEO_PROMPT_STORAGE_KEY = 'video_draft_prompt';
 
 export default function CreateVideoPage() {
   const router = useRouter();
-  const { user, token } = useFirebaseAuth();
+  const { token } = useFirebaseAuth();
   const { credits: userCredits } = useCredits();
   const { isSubscribed } = useSubscription();
   const { showRewardedAd } = useRewardedAd();
@@ -226,12 +226,6 @@ export default function CreateVideoPage() {
 
   const handleCreateVideo = async () => {
     if (!prompt.trim() || isCreating) return;
-
-    // Check login first
-    if (!user) {
-      setIsLoginModalOpen(true);
-      return;
-    }
 
     // Check credits before creating
     const hasEnoughCredits = checkCreditsBeforeGenerate({

@@ -141,11 +141,6 @@ export default function VoiceClonePage() {
   const handleGenerate = async () => {
     if (!canGenerate || !activeVoiceId) return;
 
-    if (!user) {
-      setIsLoginModalOpen(true);
-      return;
-    }
-
     const hasEnoughCredits = checkCreditsBeforeGenerate({
       currentCredits: credits,
       requiredCredits: estimatedCredits,
@@ -265,11 +260,6 @@ export default function VoiceClonePage() {
 
   const handleClone = async () => {
     if (!cloneAudioBase64 || !cloneVoiceName.trim()) return;
-
-    if (!user) {
-      setIsLoginModalOpen(true);
-      return;
-    }
 
     setIsCloning(true);
     setCloneError(null);

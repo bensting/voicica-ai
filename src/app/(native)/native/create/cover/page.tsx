@@ -315,12 +315,6 @@ export default function NativeCoverPage() {
       return;
     }
 
-    if (!user) {
-      console.log('🎤 [handleGenerate] 用户未登录，显示登录弹窗');
-      setIsLoginModalOpen(true);
-      return;
-    }
-
     // 检查积分是否足够
     const hasEnoughCredits = checkCreditsBeforeGenerate({
       currentCredits: credits,

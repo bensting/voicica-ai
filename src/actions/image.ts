@@ -51,11 +51,6 @@ export async function createImageTask(
       return { success: false, error: 'Please login first' };
     }
 
-    // 匿名用户不能使用此功能
-    if (is_anonymous) {
-      return { success: false, error: 'Please login to use AI Image' };
-    }
-
     // 获取模型配置
     const model = getImageModelById(params.modelId);
     if (!model) {

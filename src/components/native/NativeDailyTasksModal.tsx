@@ -269,68 +269,7 @@ export default function NativeDailyTasksModal({ isOpen, onClose, onCreditsUpdate
   const isDisabled = config && !config.enabled;
   const formatCredits = (credits: number) => credits.toLocaleString();
 
-  // 渲染未登录内容
-  const renderGuestContent = () => {
-    const totalAdCredits = config?.ad_reward_tiers?.reduce((a, b) => a + b, 0) || 0;
-
-    return (
-      <div>
-        <div className="text-center mb-5">
-          <div className="w-14 h-14 mx-auto mb-3 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center">
-            <GiftIcon />
-          </div>
-          <h3 className="text-xl font-bold text-white">{t('dailyTasks.title')}</h3>
-          <p className="text-sm text-gray-400">{t('dailyTasks.loginToEarn')}</p>
-        </div>
-
-        <div className="space-y-3 mb-3">
-          {/* 签到 */}
-          <div className="bg-purple-500/10 border border-purple-500/20 rounded-xl p-3 flex items-center gap-3">
-            <div className="w-9 h-9 shrink-0 rounded-full bg-purple-500/20 flex items-center justify-center">
-              <PlayIcon />
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="font-medium text-white text-sm">{t('dailyTasks.checkin')}</p>
-              <p className="text-xs text-gray-400">+{formatCredits(config?.checkin_credits || 0)} {t('dailyTasks.credits')}</p>
-            </div>
-            <button
-              onClick={() => setShowLoginModal(true)}
-              className="shrink-0 px-3 py-2 bg-purple-600 text-white font-medium text-xs rounded-lg flex items-center gap-1"
-            >
-              <PlayIcon />
-              <span>Watch +{config?.checkin_credits || 0}</span>
-            </button>
-          </div>
-
-          {/* 看视频 */}
-          <div className="bg-green-500/10 border border-green-500/20 rounded-xl p-3 flex items-center gap-3">
-            <div className="w-9 h-9 shrink-0 rounded-full bg-green-500/20 flex items-center justify-center text-green-400">
-              <PlayIcon />
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="font-medium text-white text-sm">{t('dailyTasks.watchAds')}</p>
-              <p className="text-xs text-gray-400">+{formatCredits(totalAdCredits)} {t('dailyTasks.credits')}</p>
-            </div>
-            <button
-              onClick={() => setShowLoginModal(true)}
-              className="shrink-0 px-3 py-2 bg-green-600 text-white font-medium text-xs rounded-lg"
-            >
-              {t('dailyTasks.claim')}
-            </button>
-          </div>
-        </div>
-
-        <div className="bg-white/5 rounded-xl p-3 text-center">
-          <span className="text-sm text-gray-400">{t('dailyTasks.dailyMax')}: </span>
-          <span className="text-lg font-bold text-purple-400">
-            {formatCredits((config?.checkin_credits || 0) + totalAdCredits)} {t('dailyTasks.credits')}
-          </span>
-        </div>
-      </div>
-    );
-  };
-
-  // 渲染已登录内容
+  // 渲染任务内容
   const renderLoggedInContent = () => {
     if (!status) {
       return (
@@ -570,7 +509,7 @@ export default function NativeDailyTasksModal({ isOpen, onClose, onCreditsUpdate
               <div className="flex flex-col items-center justify-center py-12">
                 <p className="text-sm text-gray-400">{t('dailyTasks.disabled') || 'Daily tasks not available'}</p>
               </div>
-            ) : user ? renderLoggedInContent() : renderGuestContent()}
+            ) : renderLoggedInContent()}
           </div>
 
           {!isConfigLoading && !isDisabled && (

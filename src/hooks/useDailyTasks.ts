@@ -114,13 +114,6 @@ export function useDailyTasks(): UseDailyTasksReturn {
   const refresh = useCallback(async () => {
     if (authLoading) return;
 
-    // 未登录用户不加载状态
-    if (!user) {
-      setStatus(null);
-      setLoading(false);
-      return;
-    }
-
     try {
       setLoading(true);
       setError(null);
@@ -132,7 +125,7 @@ export function useDailyTasks(): UseDailyTasksReturn {
     } finally {
       setLoading(false);
     }
-  }, [authLoading, user, isNative]);
+  }, [authLoading, isNative]);
 
   // 初始化加载
   useEffect(() => {
@@ -152,14 +145,8 @@ export function useDailyTasks(): UseDailyTasksReturn {
       return;
     }
 
-    // 未登录用户：显示弹窗引导登录
-    if (!user) {
-      setShouldShowPopup(true);
-      return;
-    }
-
-    // 已登录用户：如果还有任务未完成，显示弹窗
-    if (user && status) {
+    // 如果还有任务未完成，显示弹窗
+    if (status) {
       const hasUnclaimedTasks =
         !status.checkinDone ||
         status.adRewardsClaimed < (config.ad_reward_tiers?.length || 0);

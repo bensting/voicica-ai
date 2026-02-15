@@ -3,7 +3,7 @@
 import db from '@/lib/db';
 import { dailyTasks, users, creditHistory } from '@/db/schema';
 import { eq, and, sql } from 'drizzle-orm';
-import { getOptionalUser } from '@/lib/auth-firebase';
+import { getUserOrAnonymous } from '@/lib/auth-firebase';
 import { getDailyTasksConfig } from '@/config/appConfig';
 
 /**
@@ -59,9 +59,8 @@ export async function getDailyTasksConfigAction(isNative: boolean = false) {
  */
 export async function getDailyTasksStatus(isNative: boolean = false): Promise<DailyTasksStatus | null> {
   try {
-    const authUser = await getOptionalUser();
-    if (!authUser) {
-      // 未登录用户返回 null
+    const { user_id } = await getUserOrAnonymous();
+    if (!user_id) {
       return null;
     }
 
@@ -72,7 +71,7 @@ export async function getDailyTasksStatus(isNative: boolean = false): Promise<Da
     const [record] = await db
       .select()
       .from(dailyTasks)
-      .where(and(eq(dailyTasks.userId, authUser.uid), eq(dailyTasks.date, today)))
+      .where(and(eq(dailyTasks.userId, user_id), eq(dailyTasks.date, today)))
       .limit(1);
 
     // 计算最大可获得积分
@@ -123,8 +122,8 @@ export async function getDailyTasksStatus(isNative: boolean = false): Promise<Da
  */
 export async function checkin(addToPermanent: boolean = false, isNative: boolean = false): Promise<TaskResult> {
   try {
-    const authUser = await getOptionalUser();
-    if (!authUser) {
+    const { user_id } = await getUserOrAnonymous();
+    if (!user_id) {
       return { success: false, message: 'Please login first' };
     }
 
@@ -140,7 +139,7 @@ export async function checkin(addToPermanent: boolean = false, isNative: boolean
     await db
       .insert(dailyTasks)
       .values({
-        userId: authUser.uid,
+        userId: user_id,
         date: today,
         checkinDone: false,
         checkinCredits: 0,
@@ -158,7 +157,7 @@ export async function checkin(addToPermanent: boolean = false, isNative: boolean
       })
       .where(
         and(
-          eq(dailyTasks.userId, authUser.uid),
+          eq(dailyTasks.userId, user_id),
           eq(dailyTasks.date, today),
           eq(dailyTasks.checkinDone, false), // 关键：只更新未签到的记录
         )
@@ -178,17 +177,17 @@ export async function checkin(addToPermanent: boolean = false, isNative: boolean
       await db
         .update(users)
         .set({ credits: sql`${users.credits} + ${credits}` })
-        .where(eq(users.userId, authUser.uid));
+        .where(eq(users.userId, user_id));
     } else {
       await db
         .update(users)
         .set({ monthlyCredits: sql`${users.monthlyCredits} + ${credits}` })
-        .where(eq(users.userId, authUser.uid));
+        .where(eq(users.userId, user_id));
     }
 
     // 记录积分历史
     await db.insert(creditHistory).values({
-      userId: authUser.uid,
+      userId: user_id,
       amount: credits,
       description: addToPermanent ? 'Daily check-in reward (permanent)' : 'Daily check-in reward',
       productType: 'daily_checkin',
@@ -215,8 +214,8 @@ export async function claimAdReward(adWatched: boolean = true, addToPermanent: b
       return { success: false, message: 'Please watch the ad first' };
     }
 
-    const authUser = await getOptionalUser();
-    if (!authUser) {
+    const { user_id } = await getUserOrAnonymous();
+    if (!user_id) {
       return { success: false, message: 'Please login first' };
     }
 
@@ -233,7 +232,7 @@ export async function claimAdReward(adWatched: boolean = true, addToPermanent: b
     await db
       .insert(dailyTasks)
       .values({
-        userId: authUser.uid,
+        userId: user_id,
         date: today,
         checkinDone: false,
         checkinCredits: 0,
@@ -259,7 +258,7 @@ export async function claimAdReward(adWatched: boolean = true, addToPermanent: b
         })
         .where(
           and(
-            eq(dailyTasks.userId, authUser.uid),
+            eq(dailyTasks.userId, user_id),
             eq(dailyTasks.date, today),
             eq(dailyTasks.adRewardsClaimed, tierIndex), // 关键：只更新当前档位等于 tierIndex 的记录
           )
@@ -275,17 +274,17 @@ export async function claimAdReward(adWatched: boolean = true, addToPermanent: b
           await db
             .update(users)
             .set({ credits: sql`${users.credits} + ${tierCredits}` })
-            .where(eq(users.userId, authUser.uid));
+            .where(eq(users.userId, user_id));
         } else {
           await db
             .update(users)
             .set({ monthlyCredits: sql`${users.monthlyCredits} + ${tierCredits}` })
-            .where(eq(users.userId, authUser.uid));
+            .where(eq(users.userId, user_id));
         }
 
         // 记录积分历史
         await db.insert(creditHistory).values({
-          userId: authUser.uid,
+          userId: user_id,
           amount: tierCredits,
           description: addToPermanent ? `Ad reward tier ${newClaimed} (permanent)` : `Ad reward tier ${newClaimed}`,
           productType: 'ad_reward',
@@ -308,7 +307,7 @@ export async function claimAdReward(adWatched: boolean = true, addToPermanent: b
         })
         .where(
           and(
-            eq(dailyTasks.userId, authUser.uid),
+            eq(dailyTasks.userId, user_id),
             eq(dailyTasks.date, today),
           )
         );
@@ -318,17 +317,17 @@ export async function claimAdReward(adWatched: boolean = true, addToPermanent: b
         await db
           .update(users)
           .set({ credits: sql`${users.credits} + ${bonusCredits}` })
-          .where(eq(users.userId, authUser.uid));
+          .where(eq(users.userId, user_id));
       } else {
         await db
           .update(users)
           .set({ monthlyCredits: sql`${users.monthlyCredits} + ${bonusCredits}` })
-          .where(eq(users.userId, authUser.uid));
+          .where(eq(users.userId, user_id));
       }
 
       // 记录积分历史
       await db.insert(creditHistory).values({
-        userId: authUser.uid,
+        userId: user_id,
         amount: bonusCredits,
         description: addToPermanent ? 'Bonus ad reward (permanent)' : 'Bonus ad reward',
         productType: 'ad_reward_bonus',

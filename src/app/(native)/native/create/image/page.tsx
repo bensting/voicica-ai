@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 import { useCredits } from '@/contexts/CreditsContext';
 import { useSubscription } from '@/contexts/SubscriptionContext';
 import { useRewardedAd } from '@/hooks/useRewardedAd';
@@ -111,7 +110,6 @@ const AspectRatioIcon = ({ ratio }: { ratio: string }) => {
  * Native AI Image 页面
  */
 export default function NativeImagePage() {
-  const { user } = useFirebaseAuth();
   const { credits, refreshCredits } = useCredits();
   const { isSubscribed } = useSubscription();
   const { showRewardedAd } = useRewardedAd();
@@ -333,11 +331,6 @@ export default function NativeImagePage() {
   // 处理生成
   const handleGenerate = async () => {
     if (!canGenerate) return;
-
-    if (!user) {
-      setIsLoginModalOpen(true);
-      return;
-    }
 
     // 检查积分是否足够
     const hasEnoughCredits = checkCreditsBeforeGenerate({

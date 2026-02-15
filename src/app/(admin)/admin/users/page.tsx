@@ -590,6 +590,7 @@ export default function UsersManagementPage() {
                     <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">积分</th>
                     <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">已用</th>
                     <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">状态</th>
+                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">注册时间</th>
                     <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">过期时间</th>
                     <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">操作</th>
                   </tr>
@@ -597,7 +598,7 @@ export default function UsersManagementPage() {
                 <tbody className="divide-y divide-gray-200">
                   {anonymousLoading ? (
                     <tr>
-                      <td colSpan={9} className="px-4 py-8 text-center text-gray-500">
+                      <td colSpan={10} className="px-4 py-8 text-center text-gray-500">
                         <div className="flex items-center justify-center gap-2">
                           <div className="w-5 h-5 border-2 border-purple-600 border-t-transparent rounded-full animate-spin" />
                           加载中...
@@ -606,7 +607,7 @@ export default function UsersManagementPage() {
                     </tr>
                   ) : anonymousUsers.length === 0 ? (
                     <tr>
-                      <td colSpan={9} className="px-4 py-8 text-center text-gray-500">
+                      <td colSpan={10} className="px-4 py-8 text-center text-gray-500">
                         没有找到匿名用户
                       </td>
                     </tr>
@@ -654,6 +655,9 @@ export default function UsersManagementPage() {
                               匿名
                             </span>
                           )}
+                        </td>
+                        <td className="px-4 py-3 text-sm text-gray-600">
+                          {formatDate(user.created_at)}
                         </td>
                         <td className="px-4 py-3 text-sm text-gray-600">
                           {formatDate(user.expires_at)}

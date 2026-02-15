@@ -6,7 +6,6 @@
 export interface QualityOption {
   value: string;      // 如 '512p', '768p', '1080p'
   label: string;      // 显示文本
-  credits: number;    // 消耗积分
   isPro?: boolean;    // 是否为 Pro 功能
 }
 
@@ -89,8 +88,8 @@ export const videoModelsConfig: VideoModel[] = [
     apiModelId: 'bytedance/seedance-1.5-pro',
     enabled: { development: true, production: true },
     qualityOptions: [
-      { value: '480p', label: '480p', credits: 40 },
-      { value: '720p', label: '720p', credits: 80 },
+      { value: '480p', label: '480p' },
+      { value: '720p', label: '720p' },
     ],
     durationOptions: [
       { value: '4s', label: '4s' },

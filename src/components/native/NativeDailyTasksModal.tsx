@@ -175,10 +175,8 @@ export default function NativeDailyTasksModal({ isOpen, onClose, onCreditsUpdate
       clearAdTimeout();
 
       if (result.success && result.credits) {
-        setTimeout(() => {
-          setLastClaimedCredits(result.credits!);
-          setShowCelebration(true);
-        }, 300);
+        setLastClaimedCredits(result.credits!);
+        setShowCelebration(true);
         onCreditsUpdated?.();
       } else if (!result.success) {
         setCheckinError(result.message || 'Check-in failed');
@@ -222,10 +220,8 @@ export default function NativeDailyTasksModal({ isOpen, onClose, onCreditsUpdate
       clearAdTimeout();
 
       if (result.success && result.credits) {
-        setTimeout(() => {
-          setLastClaimedCredits(result.credits!);
-          setShowCelebration(true);
-        }, 500);
+        setLastClaimedCredits(result.credits!);
+        setShowCelebration(true);
         onCreditsUpdated?.();
       } else if (!result.success) {
         setAdError(result.message || 'Claim failed');

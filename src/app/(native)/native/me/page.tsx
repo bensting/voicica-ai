@@ -11,8 +11,9 @@ import SubscribeCard from '@/components/native/me/SubscribeCard';
 import MyCreations from '@/components/native/me/MyCreations';
 import LoginModal from '@/components/native/LoginModal';
 
-// Session storage key for tracking login modal
-const LOGIN_MODAL_SHOWN_KEY = 'me_page_login_modal_shown';
+// localStorage key for tracking login modal last shown time
+const LOGIN_MODAL_LAST_SHOWN_KEY = 'me_page_login_modal_last_shown';
+const LOGIN_MODAL_INTERVAL_MS = 24 * 60 * 60 * 1000; // 24 hours
 
 /**
  * Me 页面
@@ -54,22 +55,21 @@ export default function MePage() {
   };
   const planName = getPlanDisplayName();
 
-  // 登录成功时清除 sessionStorage 标记
+  // 登录成功时清除标记，下次退出登录后访问会重新弹出
   useEffect(() => {
     if (isLoggedIn) {
-      sessionStorage.removeItem(LOGIN_MODAL_SHOWN_KEY);
+      localStorage.removeItem(LOGIN_MODAL_LAST_SHOWN_KEY);
       hasShownRef.current = false;
     }
   }, [isLoggedIn]);
 
-  // 未登录时自动弹出登录框（只弹一次，使用 sessionStorage 防止重复）
+  // 未登录时自动弹出登录框（24小时内只弹一次）
   useEffect(() => {
-    if (!loading && !isLoggedIn) {
-      // 检查 sessionStorage 和 ref，确保只弹一次
-      const alreadyShown = sessionStorage.getItem(LOGIN_MODAL_SHOWN_KEY) === 'true' || hasShownRef.current;
-      if (!alreadyShown) {
+    if (!loading && !isLoggedIn && !hasShownRef.current) {
+      const lastShown = parseInt(localStorage.getItem(LOGIN_MODAL_LAST_SHOWN_KEY) || '0', 10);
+      if (Date.now() - lastShown >= LOGIN_MODAL_INTERVAL_MS) {
         setIsLoginModalOpen(true);
-        sessionStorage.setItem(LOGIN_MODAL_SHOWN_KEY, 'true');
+        localStorage.setItem(LOGIN_MODAL_LAST_SHOWN_KEY, String(Date.now()));
         hasShownRef.current = true;
       }
     }

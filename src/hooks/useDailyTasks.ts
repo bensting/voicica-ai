@@ -230,7 +230,7 @@ export function useDailyTasks(): UseDailyTasksReturn {
       // 调用签到接口（积分加到永久积分，并使用对应平台配置）
       const result = await checkin(true, isNative);
       if (result.success && !cancelledRef.current) {
-        await refresh();
+        refresh(); // 后台刷新状态，不阻塞返回
       }
       return result;
     } catch (err) {
@@ -338,7 +338,7 @@ export function useDailyTasks(): UseDailyTasksReturn {
       console.log('[DailyTasks] 广告观看成功，领取奖励（兜底）...');
       const result = await claimAdReward(true, true, bonusMode, isNative); // 积分加到永久积分，并使用对应平台配置
       if (result.success && !cancelledRef.current) {
-        await refresh();
+        refresh(); // 后台刷新状态，不阻塞返回
       }
       return result;
     } catch (err) {

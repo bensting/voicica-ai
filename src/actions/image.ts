@@ -5,10 +5,10 @@
  * 使用 KIE API 生成图片
  */
 import db from '@/lib/db';
-import { imageRecords, users, creditHistory } from '@/db/schema';
-import { eq, and, desc, sql } from 'drizzle-orm';
+import { imageRecords } from '@/db/schema';
+import { eq, and, desc } from 'drizzle-orm';
 import { getUserOrAnonymous } from '@/lib/auth-firebase';
-import { checkCredits } from '@/lib/credits';
+import { checkCredits, deductCredits } from '@/lib/credits';
 import { ProductType } from '@/config/productType';
 import { getImageModelById } from '@/config/native/imageModels';
 import { moderateImagePrompt } from '@/lib/moderation';
@@ -158,17 +158,8 @@ export async function createImageTask(
 
     const taskId = result.data.taskId;
 
-    // 扣除积分
-    await db.update(users)
-      .set({ credits: sql`${users.credits} - ${model.credits}` })
-      .where(eq(users.userId, user_id));
-
-    await db.insert(creditHistory).values({
-      userId: user_id,
-      amount: -model.credits,
-      productType: ProductType.IMAGE,
-      description: `AI Image generation (${model.name})`,
-    });
+    // 扣除积分并记录历史
+    await deductCredits(user_id, model.credits, ProductType.IMAGE, is_anonymous, `AI Image generation (${model.name})`);
 
     // 创建图片记录
     await db.insert(imageRecords).values({

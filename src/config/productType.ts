@@ -38,6 +38,10 @@ export const ProductType = {
   STORY_ILLUSTRATION: 'story_illustration',
   /** AI 图片生成 */
   IMAGE: 'image',
+  /** AI 对话生成 */
+  DIALOGUE: 'dialogue',
+  /** AI 翻唱 */
+  AI_COVER: 'ai_cover',
 } as const;
 
 export type ProductType = typeof ProductType[keyof typeof ProductType];

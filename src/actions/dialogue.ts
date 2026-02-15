@@ -6,9 +6,11 @@
  */
 import { getUserOrAnonymous } from '@/lib/auth-firebase';
 import db from '@/lib/db';
-import { dialogueRecords, users, creditHistory } from '@/db/schema';
-import { eq, and, desc, sql } from 'drizzle-orm';
+import { dialogueRecords } from '@/db/schema';
+import { eq, and, desc } from 'drizzle-orm';
 import { calculateDialogueCost } from '@/config/creditsCost';
+import { checkCredits, deductCredits } from '@/lib/credits';
+import { ProductType } from '@/config/productType';
 import { v4 as uuidv4 } from 'uuid';
 import { uploadAudio } from '@/lib/services/r2-storage';
 
@@ -92,7 +94,7 @@ function getCallbackUrl(): string {
 export async function createDialogueTask(
   request: DialogueRequest
 ): Promise<DialogueTaskStatus> {
-  const { user_id: userId } = await getUserOrAnonymous();
+  const { user_id: userId, is_anonymous: isAnonymous } = await getUserOrAnonymous();
 
   // 计算总字符数
   const totalCharacters = request.dialogue.reduce(
@@ -112,17 +114,9 @@ export async function createDialogueTask(
   const creditsRequired = calculateDialogueCost(totalCharacters);
 
   // 检查用户积分
-  const [user] = await db.select({ credits: users.credits })
-    .from(users)
-    .where(eq(users.userId, userId))
-    .limit(1);
-
-  if (!user) {
-    throw new Error('User not found');
-  }
-
-  if (user.credits < creditsRequired) {
-    throw new Error(`Insufficient credits. Required: ${creditsRequired}, Current: ${user.credits}`);
+  const { hasEnough, current } = await checkCredits(userId, creditsRequired, isAnonymous);
+  if (!hasEnough) {
+    throw new Error(`Insufficient credits. Required: ${creditsRequired}, Current: ${current}`);
   }
 
   const token = getKieApiToken();
@@ -218,19 +212,8 @@ export async function createDialogueTask(
     })
     .where(eq(dialogueRecords.taskId, taskId));
 
-  // 扣除积分
-  await db.update(users)
-    .set({ credits: sql`${users.credits} - ${creditsRequired}` })
-    .where(eq(users.userId, userId));
-
-  // 记录积分消费历史
-  await db.insert(creditHistory).values({
-    userId,
-    amount: -creditsRequired,
-    taskId,
-    description: `Dialogue generation (${totalCharacters} chars)`,
-    productType: 'dialogue',
-  });
+  // 扣除积分并记录历史
+  await deductCredits(userId, creditsRequired, ProductType.DIALOGUE, isAnonymous, `Dialogue generation (${totalCharacters} chars)`, taskId);
 
   return {
     task_id: taskId,

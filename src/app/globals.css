@@ -284,6 +284,20 @@ body {
   animation: spin-slow 2s ease-in-out infinite;
 }
 
+/* Trophy bounce-gentle animation */
+@keyframes bounce-slow {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-3px);
+  }
+}
+
+.animate-bounce-slow {
+  animation: bounce-slow 2s ease-in-out infinite;
+}
+
 /* Campaign banner shimmer */
 @keyframes shimmer {
   0%, 100% { transform: translateX(-100%); }

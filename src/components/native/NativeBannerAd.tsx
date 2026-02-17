@@ -20,7 +20,8 @@ export default function NativeBannerAd() {
   const { isSubscribed } = useSubscription();
 
   // 活动开启时，所有用户看到活动 banner
-  if (activeCampaign.enabled) {
+  const isDev = process.env.NODE_ENV === 'development';
+  if (isDev ? activeCampaign.enabled.development : activeCampaign.enabled.production) {
     return <CampaignBanner />;
   }
 

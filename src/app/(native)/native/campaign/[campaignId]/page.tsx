@@ -8,28 +8,18 @@ import GradientButton from '@/components/native/common/GradientButton';
 
 /* ─── Mock data ─── */
 const MOCK_SOLD = 1847;
+const MOCK_MY_ENTRIES = 3; // 0 = 未购买, >0 = 已购买 (mock)
 
-const RECENT_JOINERS = [
-  'Adit', 'Sanjay', 'Priya', 'Rizky', 'Maria',
-  'Ahmed', 'Yuki', 'Carlos', 'Fatima', 'Davi',
+const MOCK_RECENT_ENTRIES = [
+  { id: 1, name: 'Adi**', qty: 5, timeAgo: '2min ago' },
+  { id: 2, name: 'San**', qty: 1, timeAgo: '3min ago' },
+  { id: 3, name: 'Pri**', qty: 10, timeAgo: '5min ago' },
+  { id: 4, name: 'Riz**', qty: 2, timeAgo: '8min ago' },
+  { id: 5, name: 'Mar**', qty: 20, timeAgo: '12min ago' },
+  { id: 6, name: 'Ahm**', qty: 1, timeAgo: '15min ago' },
+  { id: 7, name: 'Yuk**', qty: 3, timeAgo: '18min ago' },
+  { id: 8, name: 'Car**', qty: 50, timeAgo: '22min ago' },
 ];
-
-const MOCK_WINNERS = [
-  { id: 1, name: 'Sanj**', avatar: 'S', prize: 'AirPods Pro', date: '2026-02-10', txHash: '0xa1b2...c3d4' },
-  { id: 2, name: 'Pri**', avatar: 'P', prize: 'iPad Mini', date: '2026-01-28', txHash: '0xe5f6...7890' },
-  { id: 3, name: 'Ahm**', avatar: 'A', prize: 'iPhone 16', date: '2026-01-15', txHash: '0x1234...abcd' },
-];
-
-/* ─── Countdown (6h rolling cycle) ─── */
-function getCountdown() {
-  const now = Date.now();
-  const cycle = 6 * 60 * 60 * 1000;
-  const remaining = cycle - (now % cycle);
-  const h = Math.floor(remaining / 3_600_000);
-  const m = Math.floor((remaining % 3_600_000) / 60_000);
-  const s = Math.floor((remaining % 60_000) / 1_000);
-  return { h, m, s };
-}
 
 const REMAINING_SLOTS = activeCampaign.totalSlots - MOCK_SOLD;
 
@@ -67,6 +57,19 @@ const ExternalLinkIcon = () => (
   </svg>
 );
 
+const InfoIcon = () => (
+  <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+    <circle cx="12" cy="12" r="10" />
+    <path d="M12 16v-4M12 8h.01" />
+  </svg>
+);
+
+const TicketIcon = () => (
+  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+    <path d="M2 9a3 3 0 013-3h14a3 3 0 013 3v0a3 3 0 00-3 3v0a3 3 0 003 3v0a3 3 0 01-3 3H5a3 3 0 01-3-3v0a3 3 0 003-3v0a3 3 0 00-3-3z" />
+  </svg>
+);
+
 const MinusIcon = () => (
   <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
     <path d="M5 12h14" />
@@ -97,21 +100,7 @@ export default function CampaignDetailPage() {
   } = activeCampaign;
 
   const progressPct = Math.min((MOCK_SOLD / totalSlots) * 100, 100);
-
-  // Countdown
-  const [countdown, setCountdown] = useState<{ h: number; m: number; s: number } | null>(null);
-  useEffect(() => {
-    setCountdown(getCountdown());
-    const timer = setInterval(() => setCountdown(getCountdown()), 1000);
-    return () => clearInterval(timer);
-  }, []);
-
-  // Rolling ticker
-  const [joinerIdx, setJoinerIdx] = useState(0);
-  useEffect(() => {
-    const timer = setInterval(() => setJoinerIdx((i) => (i + 1) % RECENT_JOINERS.length), 2500);
-    return () => clearInterval(timer);
-  }, []);
+  const myWinProbability = ((MOCK_MY_ENTRIES / totalSlots) * 100).toFixed(2);
 
   // Toast
   const [toastMsg, setToastMsg] = useState<string | null>(null);
@@ -121,17 +110,19 @@ export default function CampaignDetailPage() {
     return () => clearTimeout(t);
   }, [toastMsg]);
 
-  // Bottom sheet
+  // Payment bottom sheet
   const [sheetOpen, setSheetOpen] = useState(false);
   const [qty, setQty] = useState(1);
   const [payMethod, setPayMethod] = useState<'crypto' | 'stripe'>('crypto');
+
+  // Rules bottom sheet
+  const [rulesOpen, setRulesOpen] = useState(false);
 
   const clampQty = useCallback((n: number) => Math.max(1, Math.min(n, REMAINING_SLOTS)), []);
 
   const winProbability = ((qty / totalSlots) * 100).toFixed(2);
   const totalCredits = qty * creditsPerPurchase;
 
-  const pad = (n: number) => String(n).padStart(2, '0');
   const shortAddr = `${contractAddress.slice(0, 6)}...${contractAddress.slice(-4)}`;
 
   return (
@@ -139,7 +130,7 @@ export default function CampaignDetailPage() {
       {/* Background gradient */}
       <div className="absolute inset-0 bg-gradient-to-b from-purple-900/30 via-transparent to-transparent pointer-events-none" />
 
-      {/* ─── A. Top Bar ─── */}
+      {/* ─── Top Bar ─── */}
       <div
         className="relative z-20 flex items-center px-4 py-2"
         style={{ marginTop: 'var(--safe-area-inset-top, 0px)' }}
@@ -156,7 +147,7 @@ export default function CampaignDetailPage() {
       {/* ─── Scrollable Content ─── */}
       <div className="relative z-10 flex-1 overflow-y-auto pb-28">
 
-        {/* ─── B. Hero ─── */}
+        {/* ─── Hero ─── */}
         <div className="px-6 pt-4 pb-6 text-center">
           <div className="relative inline-block">
             <Image
@@ -179,30 +170,23 @@ export default function CampaignDetailPage() {
             + <span className="text-white font-semibold">{creditsPerPurchase} AI Credits</span> per entry
           </p>
 
-          {/* Countdown */}
-          <div className="flex items-center justify-center gap-1.5 mt-4 text-sm font-mono">
-            <span className="text-purple-300/60 text-xs mr-1">Next draw in</span>
-            {['h', 'm', 's'].map((unit, i) => (
-              <span key={unit} className="contents">
-                {i > 0 && <span className="text-fuchsia-400">:</span>}
-                <span className="bg-white/10 backdrop-blur-sm text-white font-bold px-2 py-1 rounded">
-                  {countdown ? pad(countdown[unit as 'h' | 'm' | 's']) : '--'}
-                </span>
-              </span>
-            ))}
+          {/* Draw trigger hint */}
+          <div className="inline-flex items-center gap-1.5 mt-3 px-3 py-1.5 bg-amber-500/10 rounded-full">
+            <span className="text-amber-400 text-xs font-medium">
+              Draw when all {totalSlots.toLocaleString()} slots sold
+            </span>
           </div>
         </div>
 
-        {/* ─── C. Progress + Social Proof ─── */}
-        <div className="px-4 mb-6">
+        {/* ─── Progress ─── */}
+        <div className="px-4 mb-4">
           <div className="bg-white/5 rounded-2xl p-4">
-            {/* Progress bar */}
             <div className="flex items-center justify-between text-xs mb-2">
               <span className="text-purple-200/80">
                 <span className="text-white font-bold">{MOCK_SOLD.toLocaleString()}</span> / {totalSlots.toLocaleString()} slots
               </span>
               <span className="text-amber-400 font-semibold">
-                {Math.round(progressPct)}% SOLD
+                {REMAINING_SLOTS.toLocaleString()} left
               </span>
             </div>
             <div className="h-3 rounded-full bg-white/10 overflow-hidden">
@@ -211,31 +195,64 @@ export default function CampaignDetailPage() {
                 style={{ width: `${progressPct}%` }}
               />
             </div>
-
-            {/* Social ticker */}
-            <div className="mt-3 flex items-center gap-2">
-              <div className="flex -space-x-1.5">
-                {[0, 1, 2].map((i) => (
-                  <div
-                    key={i}
-                    className="w-6 h-6 rounded-full border border-purple-500/50 bg-gradient-to-br from-violet-500 to-fuchsia-600 flex items-center justify-center text-[9px] text-white font-bold"
-                  >
-                    {RECENT_JOINERS[(joinerIdx + i) % RECENT_JOINERS.length][0]}
-                  </div>
-                ))}
-              </div>
-              <p className="text-xs text-purple-300/70">
-                <span className="text-fuchsia-300 font-medium">
-                  {RECENT_JOINERS[joinerIdx]}
-                </span>{' '}
-                just joined!
-              </p>
-              <span className="ml-auto text-[10px] text-purple-400/50">{MOCK_SOLD.toLocaleString()} participants</span>
-            </div>
           </div>
         </div>
 
-        {/* ─── D. On-chain Fairness ─── */}
+        {/* ─── My Entries (only when user has entries) ─── */}
+        {MOCK_MY_ENTRIES > 0 && (
+          <div className="px-4 mb-4">
+            <div className="bg-gradient-to-r from-purple-900/40 to-fuchsia-900/30 border border-purple-500/20 rounded-2xl p-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-purple-500/20 flex items-center justify-center text-purple-300">
+                  <TicketIcon />
+                </div>
+                <div className="flex-1">
+                  <div className="flex items-center gap-2">
+                    <span className="text-white font-bold text-lg">{MOCK_MY_ENTRIES}</span>
+                    <span className="text-purple-200/70 text-sm">entries</span>
+                  </div>
+                  <p className="text-purple-300/60 text-xs">
+                    Win probability: <span className="text-amber-400 font-semibold">{myWinProbability}%</span>
+                  </p>
+                </div>
+                <button
+                  onClick={() => { setQty(1); setSheetOpen(true); }}
+                  className="px-4 py-2 bg-purple-600 text-white text-xs font-semibold rounded-full hover:bg-purple-500 transition-colors"
+                >
+                  + Add More
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ─── Recent Entries ─── */}
+        <div className="px-4 mb-4">
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="text-white font-semibold text-sm">Recent Entries</h3>
+            <span className="text-purple-400/50 text-xs">{MOCK_SOLD.toLocaleString()} total</span>
+          </div>
+          <div className="space-y-2">
+            {MOCK_RECENT_ENTRIES.map((entry) => (
+              <div key={entry.id} className="flex items-center gap-3 bg-white/5 rounded-xl px-3 py-2.5">
+                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-violet-500 to-fuchsia-600 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
+                  {entry.name[0]}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <span className="text-white text-sm">{entry.name}</span>
+                </div>
+                <span className="text-purple-300 text-xs font-medium flex-shrink-0">
+                  {entry.qty} {entry.qty === 1 ? 'entry' : 'entries'}
+                </span>
+                <span className="text-gray-500 text-[11px] flex-shrink-0 w-14 text-right">
+                  {entry.timeAgo}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* ─── Provably Fair + Rules & Terms link ─── */}
         <div className="px-4 mb-6">
           <div className="bg-white/5 rounded-2xl p-4">
             <div className="flex items-center gap-2 mb-3">
@@ -258,52 +275,27 @@ export default function CampaignDetailPage() {
               </a>
             </div>
 
-            {/* Rules */}
-            <div className="space-y-2 text-xs text-gray-400 leading-relaxed">
-              <p>1. Draw triggers when {totalSlots.toLocaleString()} entries are sold.</p>
-              <p>2. Winner = <span className="text-white font-mono">blockHash % {totalSlots.toLocaleString()}</span> at the trigger block.</p>
-              <p>3. Result is recorded on-chain — anyone can verify.</p>
+            {/* How it works — short summary */}
+            <div className="space-y-1.5 text-xs text-gray-400 leading-relaxed">
+              <p>Winner = <span className="text-white font-mono">blockHash % {totalSlots.toLocaleString()}</span> at the trigger block.</p>
+              <p>Result is recorded on-chain — anyone can verify.</p>
             </div>
-          </div>
-        </div>
 
-        {/* ─── E. Past Winners ─── */}
-        <div className="px-4 mb-6">
-          <h3 className="text-white font-semibold text-sm mb-3">Past Winners</h3>
-          <div className="space-y-2">
-            {MOCK_WINNERS.map((w) => (
-              <div key={w.id} className="flex items-center gap-3 bg-white/5 rounded-xl p-3">
-                <div className="w-9 h-9 rounded-full bg-gradient-to-br from-violet-500 to-fuchsia-600 flex items-center justify-center text-white text-sm font-bold flex-shrink-0">
-                  {w.avatar}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2">
-                    <span className="text-white text-sm font-medium">{w.name}</span>
-                    <span className="text-amber-400 text-xs">{w.prize}</span>
-                  </div>
-                  <div className="flex items-center gap-2 mt-0.5">
-                    <span className="text-gray-500 text-[11px]">{w.date}</span>
-                    <span className="text-purple-400/60 text-[11px] font-mono">{w.txHash}</span>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* ─── F. Rules ─── */}
-        <div className="px-4 mb-6">
-          <div className="text-[11px] text-gray-500 leading-relaxed space-y-1">
-            <p className="text-gray-400 font-medium mb-1">Rules & Terms</p>
-            <p>Each entry costs ${cryptoPriceUsd.toFixed(2)} (crypto) or ${stripePriceUsd.toFixed(2)} (card) and includes {creditsPerPurchase} AI credits.</p>
-            <p>Draw date announced when {totalSlots.toLocaleString()} entries are sold.</p>
-            <p>Winner will be contacted via registered email within 48 hours.</p>
-            <p>Prize is non-transferable and cannot be exchanged for cash.</p>
+            {/* Rules & Terms link */}
+            <div className="mt-3 pt-3 border-t border-white/5 flex justify-end">
+              <button
+                onClick={() => setRulesOpen(true)}
+                className="flex items-center gap-1.5 text-purple-400/70 text-xs hover:text-purple-300 transition-colors"
+              >
+                <span>Rules & Terms</span>
+                <InfoIcon />
+              </button>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* ─── G. Bottom CTA ─── */}
+      {/* ─── Bottom CTA ─── */}
       <div
         className="absolute bottom-0 left-0 right-0 z-20 px-4 py-4 bg-gradient-to-t from-[#0a0a1a] via-[#0a0a1a] to-transparent"
         style={{ paddingBottom: 'calc(var(--safe-area-inset-bottom, 0px) + 16px)' }}
@@ -316,24 +308,19 @@ export default function CampaignDetailPage() {
       {/* ═══════════ Payment Bottom Sheet ═══════════ */}
       {sheetOpen && (
         <>
-          {/* Backdrop */}
           <div
             className="fixed inset-0 z-[10000] bg-black/60 backdrop-blur-sm"
             onClick={() => setSheetOpen(false)}
           />
-
-          {/* Sheet */}
           <div
             className="fixed bottom-0 left-0 right-0 z-[10001] bg-[#111127] rounded-t-3xl animate-slide-up"
             style={{ paddingBottom: 'calc(var(--safe-area-inset-bottom, 0px) + 16px)' }}
           >
-            {/* Drag handle */}
             <div className="flex justify-center pt-3 pb-2">
               <div className="w-10 h-1 rounded-full bg-gray-600" />
             </div>
 
             <div className="px-5 pb-4">
-              {/* Header */}
               <div className="flex items-center justify-between mb-5">
                 <h3 className="text-white font-bold text-lg">Choose Entries</h3>
                 <button
@@ -395,7 +382,6 @@ export default function CampaignDetailPage() {
 
               {/* Payment method selector */}
               <div className="grid grid-cols-2 gap-3 mb-4">
-                {/* USDT */}
                 <button
                   onClick={() => setPayMethod('crypto')}
                   className={`relative flex flex-col items-center gap-1.5 rounded-2xl py-4 px-3 transition-all active:scale-[0.97] ${
@@ -412,7 +398,6 @@ export default function CampaignDetailPage() {
                   <span className="text-emerald-300/70 text-[11px]">USDT / USDC</span>
                 </button>
 
-                {/* Stripe */}
                 <button
                   onClick={() => setPayMethod('stripe')}
                   className={`relative flex flex-col items-center gap-1.5 rounded-2xl py-4 px-3 transition-all active:scale-[0.97] ${
@@ -430,7 +415,6 @@ export default function CampaignDetailPage() {
                 </button>
               </div>
 
-              {/* Confirm button */}
               <GradientButton
                 onClick={() => {
                   setSheetOpen(false);
@@ -439,6 +423,83 @@ export default function CampaignDetailPage() {
               >
                 JOIN NOW — ${(payMethod === 'crypto' ? cryptoPriceUsd * qty : stripePriceUsd * qty).toFixed(2)}
               </GradientButton>
+            </div>
+          </div>
+        </>
+      )}
+
+      {/* ═══════════ Rules & Terms Bottom Sheet ═══════════ */}
+      {rulesOpen && (
+        <>
+          <div
+            className="fixed inset-0 z-[10000] bg-black/60 backdrop-blur-sm"
+            onClick={() => setRulesOpen(false)}
+          />
+          <div
+            className="fixed bottom-0 left-0 right-0 z-[10001] bg-[#111127] rounded-t-3xl animate-slide-up max-h-[70vh] flex flex-col"
+            style={{ paddingBottom: 'calc(var(--safe-area-inset-bottom, 0px) + 16px)' }}
+          >
+            <div className="flex justify-center pt-3 pb-2">
+              <div className="w-10 h-1 rounded-full bg-gray-600" />
+            </div>
+
+            <div className="px-5 pb-4 overflow-y-auto">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-white font-bold text-lg">Rules & Terms</h3>
+                <button
+                  onClick={() => setRulesOpen(false)}
+                  className="w-8 h-8 flex items-center justify-center rounded-full bg-white/10 text-gray-400 hover:text-white"
+                >
+                  <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                    <path d="M18 6L6 18M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+
+              <div className="space-y-4 text-sm text-gray-300 leading-relaxed">
+                {/* Entry */}
+                <div>
+                  <h4 className="text-white font-semibold text-xs uppercase tracking-wider mb-2">Entry</h4>
+                  <ul className="space-y-1.5 text-gray-400 text-xs">
+                    <li>Each entry costs ${cryptoPriceUsd.toFixed(2)} (crypto) or ${stripePriceUsd.toFixed(2)} (card).</li>
+                    <li>Every entry includes {creditsPerPurchase} AI credits for use on the platform.</li>
+                    <li>Maximum {totalSlots.toLocaleString()} entries per draw round.</li>
+                    <li>No limit on entries per user — more entries, higher win probability.</li>
+                  </ul>
+                </div>
+
+                {/* Draw Mechanism */}
+                <div>
+                  <h4 className="text-white font-semibold text-xs uppercase tracking-wider mb-2">Draw Mechanism</h4>
+                  <ul className="space-y-1.5 text-gray-400 text-xs">
+                    <li>Draw triggers automatically when all {totalSlots.toLocaleString()} entries are sold.</li>
+                    <li>Winner is determined by: <span className="text-white font-mono">blockHash % {totalSlots.toLocaleString()}</span></li>
+                    <li>The result is recorded on-chain ({chainName}) and publicly verifiable.</li>
+                    <li>No one — including the platform — can influence or predict the outcome.</li>
+                  </ul>
+                </div>
+
+                {/* Prize */}
+                <div>
+                  <h4 className="text-white font-semibold text-xs uppercase tracking-wider mb-2">Prize</h4>
+                  <ul className="space-y-1.5 text-gray-400 text-xs">
+                    <li>Current prize: {prize}.</li>
+                    <li>Winner will be contacted via registered email within 48 hours.</li>
+                    <li>Prize is non-transferable and cannot be exchanged for cash.</li>
+                    <li>Shipping is free worldwide.</li>
+                  </ul>
+                </div>
+
+                {/* AI Credits */}
+                <div>
+                  <h4 className="text-white font-semibold text-xs uppercase tracking-wider mb-2">AI Credits</h4>
+                  <ul className="space-y-1.5 text-gray-400 text-xs">
+                    <li>Credits are delivered instantly to your account after purchase.</li>
+                    <li>Credits can be used for all AI features: TTS, voice cloning, image, music, and video generation.</li>
+                    <li>Credits do not expire.</li>
+                  </ul>
+                </div>
+              </div>
             </div>
           </div>
         </>

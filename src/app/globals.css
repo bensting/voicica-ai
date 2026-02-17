@@ -284,6 +284,12 @@ body {
   animation: spin-slow 2s ease-in-out infinite;
 }
 
+/* Campaign banner shimmer */
+@keyframes shimmer {
+  0%, 100% { transform: translateX(-100%); }
+  50% { transform: translateX(100%); }
+}
+
 /* ========== Adsterra Social Bar 强制底部显示 ========== */
 /* 覆盖 Adsterra 的默认顶部定位 */
 [id*="social-bar"],

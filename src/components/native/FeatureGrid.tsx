@@ -6,6 +6,7 @@ import {
   getCategoryConfig,
   CreateMenuIcon,
 } from '@/config/native/createMenuConfig';
+import { getActiveCampaigns } from '@/config/native/campaignConfig';
 import { useLanguage } from '@/contexts/LanguageContext';
 import VideoDownloadIcon from '@/components/native/icons/VideoDownloadIcon';
 
@@ -140,6 +141,7 @@ const colorMap: Record<string, { icon: string; bg: string }> = {
 export default function FeatureGrid() {
   const { t } = useLanguage();
   const items = getAvailableMenuItems();
+  const activeCampaigns = getActiveCampaigns();
 
   // 获取菜单项的翻译名称
   const getItemName = (id: string, fallback: string): string => {
@@ -159,7 +161,8 @@ export default function FeatureGrid() {
   };
 
   return (
-    <div className="py-4 px-4">
+    <div className="py-4 px-4 space-y-3">
+      {/* AI 工具网格 */}
       <div className="grid grid-cols-4 gap-3">
         {items.map((feature) => {
           const IconComponent = iconMap[feature.icon];
@@ -181,6 +184,43 @@ export default function FeatureGrid() {
           );
         })}
       </div>
+
+      {/* Lucky Draw 入口 */}
+      {activeCampaigns.length > 0 && (
+        <div className="grid grid-cols-3 gap-3">
+          {activeCampaigns.map((campaign) => (
+            <Link
+              key={campaign.id}
+              href={campaign.href}
+              className="relative overflow-hidden flex items-center gap-2.5 p-3 rounded-2xl bg-gradient-to-br from-amber-500/15 to-orange-500/10 border border-amber-500/10 hover:opacity-80 transition-opacity"
+            >
+              {/* 微光 */}
+              <div className="absolute top-0 right-0 w-16 h-16 rounded-full bg-amber-400/8 blur-[25px]" />
+              {/* 奖杯 */}
+              <div className="relative flex-shrink-0 text-amber-400">
+                <svg className="w-6 h-6" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M19 5h-2V3H7v2H5c-1.1 0-2 .9-2 2v1c0 2.55 1.92 4.63 4.39 4.94.63 1.5 1.98 2.63 3.61 2.96V19H7v2h10v-2h-4v-3.1c1.63-.33 2.98-1.46 3.61-2.96C19.08 12.63 21 10.55 21 8V7c0-1.1-.9-2-2-2zM5 8V7h2v3.82C5.84 10.4 5 9.3 5 8zm14 0c0 1.3-.84 2.4-2 2.82V7h2v1z" />
+                </svg>
+              </div>
+              {/* 文案 */}
+              <div className="relative flex-1 min-w-0">
+                <span className="text-[10px] text-amber-200/80 font-medium leading-tight block">
+                  {campaign.shortLabel.split('\n').map((line, i) => (
+                    <span key={i}>
+                      {i > 0 && <br />}
+                      {line}
+                    </span>
+                  ))}
+                </span>
+              </div>
+              {/* FREE 标签 */}
+              <span className="absolute top-1.5 right-1.5 text-[7px] font-bold px-1 py-0.5 rounded-full bg-emerald-500/80 text-white leading-none">
+                FREE
+              </span>
+            </Link>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

@@ -335,13 +335,14 @@ export default function ClaimPrizeSheet({ prize, claimData, onClose, onSubmit }:
 
         {/* 固定底部按钮（仅 unclaimed 状态） */}
         {claimData.status === 'unclaimed' && (
-          <div className="flex-shrink-0 px-5 py-4 border-t border-white/[0.06] safe-area-bottom">
+          <div className="flex-shrink-0 px-5 pt-4 border-t border-white/[0.06]">
             <button
               onClick={handleSubmit}
               className="w-full py-3 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 text-white font-bold text-[15px]"
             >
               Submit Shipping Info
             </button>
+            <div className="h-6" style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }} />
           </div>
         )}
 

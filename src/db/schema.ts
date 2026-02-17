@@ -646,6 +646,71 @@ export const clonedVoices = pgTable("cloned_voices", {
 ]);
 
 // ============================================================
+// Lucky Draw Tables
+// ============================================================
+
+export const luckyDrawEntries = pgTable("lucky_draw_entries", {
+	id: serial().primaryKey().notNull(),
+	drawId: varchar("draw_id", { length: 100 }).notNull(),
+	userId: varchar("user_id", { length: 128 }).notNull(),
+	slotNumber: integer("slot_number").notNull(),
+	packs: integer("packs").notNull(),
+	creditsAwarded: integer("credits_awarded").notNull(),
+	paymentPlatform: varchar("payment_platform", { length: 20 }).notNull(),
+	stripeSessionId: varchar("stripe_session_id", { length: 255 }),
+	amountPaid: integer("amount_paid"),
+	currency: varchar("currency", { length: 10 }),
+	createdAt: timestamp("created_at", { withTimezone: true, mode: 'string' })
+		.default(sql`CURRENT_TIMESTAMP`).notNull(),
+}, (table) => [
+	index("idx_lde_draw_id").using("btree", table.drawId),
+	index("idx_lde_user_id").using("btree", table.userId),
+	index("idx_lde_draw_user").using("btree", table.drawId, table.userId),
+	uniqueIndex("uq_lde_draw_slot").using("btree", table.drawId, table.slotNumber),
+]);
+
+export const luckyDrawResults = pgTable("lucky_draw_results", {
+	id: serial().primaryKey().notNull(),
+	drawId: varchar("draw_id", { length: 100 }).notNull(),
+	winnerSlot: integer("winner_slot").notNull(),
+	winnerUserId: varchar("winner_user_id", { length: 128 }).notNull(),
+	blockNumber: bigint("block_number", { mode: 'number' }),
+	blockHash: varchar("block_hash", { length: 66 }),
+	txHash: varchar("tx_hash", { length: 66 }),
+	totalSlots: integer("total_slots").notNull(),
+	createdAt: timestamp("created_at", { withTimezone: true, mode: 'string' })
+		.default(sql`CURRENT_TIMESTAMP`).notNull(),
+}, (table) => [
+	uniqueIndex("uq_ldr_draw_id").using("btree", table.drawId),
+]);
+
+export const luckyDrawClaims = pgTable("lucky_draw_claims", {
+	id: serial().primaryKey().notNull(),
+	drawId: varchar("draw_id", { length: 100 }).notNull(),
+	userId: varchar("user_id", { length: 128 }).notNull(),
+	status: varchar("status", { length: 20 }).notNull(),
+	fullName: varchar("full_name", { length: 255 }),
+	phone: varchar("phone", { length: 50 }),
+	email: varchar("email", { length: 255 }),
+	country: varchar("country", { length: 100 }),
+	address: text("address"),
+	zipCode: varchar("zip_code", { length: 20 }),
+	telegram: varchar("telegram", { length: 100 }),
+	carrier: varchar("carrier", { length: 100 }),
+	trackingNumber: varchar("tracking_number", { length: 255 }),
+	trackingUrl: text("tracking_url"),
+	shippedAt: timestamp("shipped_at", { withTimezone: true, mode: 'string' }),
+	deliveredAt: timestamp("delivered_at", { withTimezone: true, mode: 'string' }),
+	createdAt: timestamp("created_at", { withTimezone: true, mode: 'string' })
+		.default(sql`CURRENT_TIMESTAMP`).notNull(),
+	updatedAt: timestamp("updated_at", { withTimezone: true, mode: 'string' })
+		.$onUpdate(() => new Date().toISOString()),
+}, (table) => [
+	uniqueIndex("uq_ldc_draw_id").using("btree", table.drawId),
+	index("idx_ldc_user_id").using("btree", table.userId),
+]);
+
+// ============================================================
 // Relations
 // ============================================================
 

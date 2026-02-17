@@ -42,6 +42,8 @@ export const ProductType = {
   DIALOGUE: 'dialogue',
   /** AI 翻唱 */
   AI_COVER: 'ai_cover',
+  /** Lucky Draw 购买 */
+  LUCKY_DRAW: 'lucky_draw',
 } as const;
 
 export type ProductType = typeof ProductType[keyof typeof ProductType];

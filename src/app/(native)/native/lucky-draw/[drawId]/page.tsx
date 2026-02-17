@@ -1,10 +1,12 @@
 'use client';
 
 import { useState, useEffect, useCallback, useRef } from 'react';
+import { useParams } from 'next/navigation';
 import Image from 'next/image';
 import { useNativeBack } from '@/hooks/useNativeBack';
-import { activeCampaign } from '@/config/native/campaignConfig';
+import { luckyDraws, type LuckyDrawConfig } from '@/config/native/luckyDrawConfig';
 import GradientButton from '@/components/native/common/GradientButton';
+import { getLuckyDrawStatus, createLuckyDrawCheckout, type LuckyDrawStatusResult } from '@/actions/lucky-draw';
 
 /* ─── Confetti particle generator ─── */
 const CONFETTI_COLORS = ['#a855f7', '#ec4899', '#f59e0b', '#10b981', '#6366f1', '#f43f5e', '#facc15', '#22d3ee'];
@@ -30,39 +32,6 @@ function generateConfetti(count: number): ConfettiParticle[] {
     drift: (Math.random() - 0.5) * 60,
   }));
 }
-
-/* ─── Campaign status type ─── */
-type CampaignStatus = 'selling' | 'drawing' | 'completed';
-
-/* ─── Mock data ─── */
-// 切换这个值来预览不同状态的 UI
-const MOCK_STATUS: CampaignStatus = 'completed';
-const MOCK_SOLD: number = 1847;
-const MOCK_MY_ENTRIES: number = 3; // 0 = 未购买, >0 = 已购买
-
-const MOCK_RECENT_ENTRIES = [
-  { id: 1, name: 'Adi**', qty: 5, timeAgo: '2min ago' },
-  { id: 2, name: 'San**', qty: 1, timeAgo: '3min ago' },
-  { id: 3, name: 'Pri**', qty: 10, timeAgo: '5min ago' },
-  { id: 4, name: 'Riz**', qty: 2, timeAgo: '8min ago' },
-  { id: 5, name: 'Mar**', qty: 20, timeAgo: '12min ago' },
-  { id: 6, name: 'Ahm**', qty: 1, timeAgo: '15min ago' },
-  { id: 7, name: 'Yuk**', qty: 3, timeAgo: '18min ago' },
-  { id: 8, name: 'Car**', qty: 50, timeAgo: '22min ago' },
-];
-
-const REMAINING_SLOTS = activeCampaign.totalSlots - MOCK_SOLD;
-
-/* ─── Mock draw result (for completed state) ─── */
-const MOCK_DRAW_RESULT = {
-  winnerSlot: 1247,
-  winnerName: 'Riz**',
-  isMe: false, // true = 当前用户中奖
-  mySlots: [892, 893, 894],
-  blockNumber: 48291037,
-  blockHash: '0xa7f3e29d1b8c4f6a0e5d7c3b9a1f8e2d4c6b0a7f3e29d1b8c4f6a0e5d7c3b9a',
-  txHash: '0x1234abcd5678ef90',
-};
 
 /* ─── Icons ─── */
 const CloseIcon = () => (
@@ -132,22 +101,18 @@ const PlusIcon = () => (
 /* ─── Quick-pick presets ─── */
 const QUICK_PICKS = [1, 5, 10, 20, 50];
 
-export default function CampaignDetailPage() {
+export default function LuckyDrawDetailPage() {
   const goBack = useNativeBack();
+  const params = useParams();
+  const drawId = params.drawId as string;
 
-  const {
-    prize,
-    totalSlots,
-    creditsPerPurchase,
-    stripePriceUsd,
-    cryptoPriceUsd,
-    contractAddress,
-    chainName,
-    blockExplorerUrl,
-  } = activeCampaign;
+  // Find config for this draw
+  const config: LuckyDrawConfig | undefined = luckyDraws.find((d) => d.id === drawId);
 
-  const progressPct = Math.min((MOCK_SOLD / totalSlots) * 100, 100);
-  const myWinProbability = ((MOCK_MY_ENTRIES / totalSlots) * 100).toFixed(2);
+  // Server data
+  const [drawStatus, setDrawStatus] = useState<LuckyDrawStatusResult | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [purchasing, setPurchasing] = useState(false);
 
   // Toast
   const [toastMsg, setToastMsg] = useState<string | null>(null);
@@ -160,7 +125,7 @@ export default function CampaignDetailPage() {
   // Payment bottom sheet
   const [sheetOpen, setSheetOpen] = useState(false);
   const [qty, setQty] = useState(1);
-  const [payMethod, setPayMethod] = useState<'crypto' | 'stripe'>('crypto');
+  const [payMethod, setPayMethod] = useState<'crypto' | 'stripe'>('stripe');
 
   // Rules bottom sheet
   const [rulesOpen, setRulesOpen] = useState(false);
@@ -173,7 +138,6 @@ export default function CampaignDetailPage() {
   const showSuccess = useCallback((credits: number, draws: number) => {
     setSuccessInfo({ credits, draws });
     setConfetti(generateConfetti(60));
-    // Clear confetti after animation ends
     confettiTimerRef.current = setTimeout(() => setConfetti([]), 3500);
   }, []);
 
@@ -183,12 +147,88 @@ export default function CampaignDetailPage() {
     if (confettiTimerRef.current) clearTimeout(confettiTimerRef.current);
   }, []);
 
-  const clampQty = useCallback((n: number) => Math.max(1, Math.min(n, REMAINING_SLOTS)), []);
+  // Fetch status
+  const fetchStatus = useCallback(async () => {
+    try {
+      const status = await getLuckyDrawStatus(drawId);
+      setDrawStatus(status);
+    } catch (error) {
+      console.error('Failed to fetch draw status:', error);
+    } finally {
+      setLoading(false);
+    }
+  }, [drawId]);
+
+  useEffect(() => {
+    fetchStatus();
+    // Poll every 30 seconds when selling
+    const interval = setInterval(fetchStatus, 30000);
+    return () => clearInterval(interval);
+  }, [fetchStatus]);
+
+  if (!config) {
+    return (
+      <div className="fixed inset-0 z-[9999] bg-[#0a0a1a] flex items-center justify-center">
+        <p className="text-gray-400">Lucky Draw not found</p>
+      </div>
+    );
+  }
+
+  const {
+    prize,
+    totalSlots,
+    creditsPerPurchase,
+    stripePriceUsd,
+    cryptoPriceUsd,
+    contractAddress,
+    chainName,
+    blockExplorerUrl,
+  } = config;
+
+  const soldSlots = drawStatus?.soldSlots ?? 0;
+  const remainingSlots = totalSlots - soldSlots;
+  const progressPct = Math.min((soldSlots / totalSlots) * 100, 100);
+  const myEntryCount = drawStatus?.myEntries.length ?? 0;
+  const mySlots = drawStatus?.myEntries.map((e) => e.slotNumber) ?? [];
+  const currentStatus = drawStatus?.status ?? 'selling';
+
+  const clampQty = useCallback((n: number) => Math.max(1, Math.min(n, remainingSlots)), [remainingSlots]);
 
   const winProbability = ((qty / totalSlots) * 100).toFixed(2);
   const totalCredits = qty * creditsPerPurchase;
-
   const shortAddr = `${contractAddress.slice(0, 6)}...${contractAddress.slice(-4)}`;
+
+  // Handle purchase
+  const handlePurchase = async () => {
+    if (payMethod === 'crypto') {
+      setToastMsg('Crypto payment coming soon!');
+      return;
+    }
+
+    setPurchasing(true);
+    try {
+      const currentUrl = window.location.href;
+      const result = await createLuckyDrawCheckout(
+        drawId,
+        qty,
+        `${window.location.origin}/native/payment/success`,
+        currentUrl,
+      );
+      window.location.href = result.checkout_url;
+    } catch (error) {
+      console.error('Checkout failed:', error);
+      setToastMsg(error instanceof Error ? error.message : 'Purchase failed');
+      setPurchasing(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="fixed inset-0 z-[9999] bg-[#0a0a1a] flex items-center justify-center">
+        <div className="w-10 h-10 border-3 border-purple-500 border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
 
   return (
     <div className="fixed inset-0 z-[9999] bg-[#0a0a1a] flex flex-col overflow-auto">
@@ -212,12 +252,12 @@ export default function CampaignDetailPage() {
       {/* ─── Scrollable Content ─── */}
       <div className="relative z-10 flex-1 overflow-y-auto pb-28">
 
-        {MOCK_STATUS === 'completed' ? (
+        {currentStatus === 'completed' && drawStatus?.drawResult ? (
           /* ═══════════ COMPLETED STATE ═══════════ */
           <>
             {/* ─── Result Hero ─── */}
             <div className="px-6 pt-4 pb-6 text-center">
-              {MOCK_DRAW_RESULT.isMe ? (
+              {drawStatus.drawResult.isMe ? (
                 <>
                   <div className="w-20 h-20 mx-auto mb-3 rounded-full bg-amber-500/20 flex items-center justify-center text-amber-400">
                     <TrophyIcon />
@@ -259,37 +299,37 @@ export default function CampaignDetailPage() {
 
             {/* ─── Winner Card ─── */}
             <div className="px-4 mb-4">
-              <div className={`rounded-2xl p-4 ${MOCK_DRAW_RESULT.isMe
+              <div className={`rounded-2xl p-4 ${drawStatus.drawResult.isMe
                 ? 'bg-gradient-to-r from-amber-900/40 to-yellow-900/30 border border-amber-500/30'
                 : 'bg-white/5'
               }`}>
                 <div className="flex items-center gap-3 mb-3">
                   <div className="w-10 h-10 rounded-full bg-gradient-to-br from-amber-400 to-yellow-500 flex items-center justify-center text-white font-bold flex-shrink-0">
-                    {MOCK_DRAW_RESULT.winnerName[0]}
+                    W
                   </div>
                   <div className="flex-1">
                     <p className="text-white font-semibold">
-                      {MOCK_DRAW_RESULT.isMe ? 'You' : MOCK_DRAW_RESULT.winnerName}
+                      {drawStatus.drawResult.isMe ? 'You' : `User ***${drawStatus.drawResult.winnerUserId.slice(-4)}`}
                       <span className="text-amber-400 text-xs ml-2">Winner</span>
                     </p>
                     <p className="text-gray-400 text-xs">
-                      Slot #{MOCK_DRAW_RESULT.winnerSlot.toLocaleString()}
+                      Slot #{drawStatus.drawResult.winnerSlot.toLocaleString()}
                     </p>
                   </div>
                 </div>
                 <div className="text-xs text-gray-500 font-mono bg-black/20 rounded-lg p-2.5">
-                  blockHash % {totalSlots.toLocaleString()} = {MOCK_DRAW_RESULT.winnerSlot.toLocaleString()}
+                  blockHash % {totalSlots.toLocaleString()} = {drawStatus.drawResult.winnerSlot.toLocaleString()}
                 </div>
               </div>
             </div>
 
             {/* ─── My Slots (if participated but didn't win) ─── */}
-            {!MOCK_DRAW_RESULT.isMe && MOCK_MY_ENTRIES > 0 && (
+            {!drawStatus.drawResult.isMe && myEntryCount > 0 && (
               <div className="px-4 mb-4">
                 <div className="bg-white/5 rounded-2xl p-4">
                   <h3 className="text-white font-semibold text-sm mb-2">Your Slots</h3>
                   <div className="flex flex-wrap gap-2 mb-3">
-                    {MOCK_DRAW_RESULT.mySlots.map((slot) => (
+                    {mySlots.map((slot) => (
                       <span key={slot} className="text-purple-300 text-xs font-mono bg-purple-500/10 px-2.5 py-1 rounded-lg">
                         #{slot.toLocaleString()}
                       </span>
@@ -302,7 +342,7 @@ export default function CampaignDetailPage() {
                       </svg>
                     </div>
                     <p className="text-gray-400 text-xs">
-                      Your <span className="text-white font-semibold">{MOCK_MY_ENTRIES * creditsPerPurchase}</span> AI credits are still in your account
+                      Your <span className="text-white font-semibold">{myEntryCount * creditsPerPurchase}</span> AI credits are still in your account
                     </p>
                   </div>
                 </div>
@@ -318,29 +358,35 @@ export default function CampaignDetailPage() {
                   <span className="text-[10px] text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full">{chainName}</span>
                 </div>
                 <div className="space-y-2.5 text-xs">
-                  <div className="flex items-center justify-between">
-                    <span className="text-gray-400">Block</span>
-                    <span className="text-white font-mono">#{MOCK_DRAW_RESULT.blockNumber.toLocaleString()}</span>
-                  </div>
-                  <div className="flex items-center justify-between gap-4">
-                    <span className="text-gray-400 flex-shrink-0">Hash</span>
-                    <span className="text-purple-400 font-mono truncate">
-                      {MOCK_DRAW_RESULT.blockHash.slice(0, 10)}...{MOCK_DRAW_RESULT.blockHash.slice(-8)}
-                    </span>
-                  </div>
+                  {drawStatus.drawResult.blockNumber && (
+                    <div className="flex items-center justify-between">
+                      <span className="text-gray-400">Block</span>
+                      <span className="text-white font-mono">#{drawStatus.drawResult.blockNumber.toLocaleString()}</span>
+                    </div>
+                  )}
+                  {drawStatus.drawResult.blockHash && (
+                    <div className="flex items-center justify-between gap-4">
+                      <span className="text-gray-400 flex-shrink-0">Hash</span>
+                      <span className="text-purple-400 font-mono truncate">
+                        {drawStatus.drawResult.blockHash.slice(0, 10)}...{drawStatus.drawResult.blockHash.slice(-8)}
+                      </span>
+                    </div>
+                  )}
                   <div className="flex items-center justify-between">
                     <span className="text-gray-400">Winner Slot</span>
-                    <span className="text-amber-400 font-mono font-bold">#{MOCK_DRAW_RESULT.winnerSlot.toLocaleString()}</span>
+                    <span className="text-amber-400 font-mono font-bold">#{drawStatus.drawResult.winnerSlot.toLocaleString()}</span>
                   </div>
-                  <a
-                    href={blockExplorerUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center justify-center gap-1.5 mt-2 pt-2.5 border-t border-white/5 text-purple-400 hover:text-purple-300 transition-colors"
-                  >
-                    <span>View on Polygonscan</span>
-                    <ExternalLinkIcon />
-                  </a>
+                  {blockExplorerUrl && (
+                    <a
+                      href={blockExplorerUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center justify-center gap-1.5 mt-2 pt-2.5 border-t border-white/5 text-purple-400 hover:text-purple-300 transition-colors"
+                    >
+                      <span>View on Polygonscan</span>
+                      <ExternalLinkIcon />
+                    </a>
+                  )}
                 </div>
               </div>
             </div>
@@ -397,10 +443,10 @@ export default function CampaignDetailPage() {
               <div className="bg-white/5 rounded-2xl p-4">
                 <div className="flex items-center justify-between text-xs mb-2">
                   <span className="text-purple-200/80">
-                    <span className="text-white font-bold">{MOCK_SOLD.toLocaleString()}</span> / {totalSlots.toLocaleString()} slots
+                    <span className="text-white font-bold">{soldSlots.toLocaleString()}</span> / {totalSlots.toLocaleString()} slots
                   </span>
                   <span className="text-amber-400 font-semibold">
-                    {REMAINING_SLOTS.toLocaleString()} left
+                    {remainingSlots.toLocaleString()} left
                   </span>
                 </div>
                 <div className="h-3 rounded-full bg-white/10 overflow-hidden">
@@ -413,7 +459,7 @@ export default function CampaignDetailPage() {
             </div>
 
             {/* ─── My Entries (only when user has entries) ─── */}
-            {MOCK_MY_ENTRIES > 0 && (
+            {myEntryCount > 0 && (
               <div className="px-4 mb-4">
                 <div className="bg-gradient-to-r from-purple-900/40 to-fuchsia-900/30 border border-purple-500/20 rounded-2xl p-4">
                   <div className="flex items-center gap-3">
@@ -422,11 +468,11 @@ export default function CampaignDetailPage() {
                     </div>
                     <div className="flex-1">
                       <div className="flex items-center gap-2">
-                        <span className="text-white font-bold text-lg">{MOCK_MY_ENTRIES}</span>
-                        <span className="text-purple-200/70 text-sm">{MOCK_MY_ENTRIES === 1 ? 'pack' : 'packs'} purchased</span>
+                        <span className="text-white font-bold text-lg">{myEntryCount}</span>
+                        <span className="text-purple-200/70 text-sm">{myEntryCount === 1 ? 'pack' : 'packs'} purchased</span>
                       </div>
                       <p className="text-purple-300/60 text-xs">
-                        {MOCK_MY_ENTRIES * creditsPerPurchase} credits + <span className="text-emerald-400 font-semibold">{MOCK_MY_ENTRIES} free draws</span>
+                        {myEntryCount * creditsPerPurchase} credits + <span className="text-emerald-400 font-semibold">{myEntryCount} free draws</span>
                       </p>
                     </div>
                     <button
@@ -440,32 +486,6 @@ export default function CampaignDetailPage() {
               </div>
             )}
 
-            {/* ─── Recent Entries ─── */}
-            <div className="px-4 mb-4">
-              <div className="flex items-center justify-between mb-3">
-                <h3 className="text-white font-semibold text-sm">Recent Entries</h3>
-                <span className="text-purple-400/50 text-xs">{MOCK_SOLD.toLocaleString()} total</span>
-              </div>
-              <div className="space-y-2">
-                {MOCK_RECENT_ENTRIES.map((entry) => (
-                  <div key={entry.id} className="flex items-center gap-3 bg-white/5 rounded-xl px-3 py-2.5">
-                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-violet-500 to-fuchsia-600 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
-                      {entry.name[0]}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <span className="text-white text-sm">{entry.name}</span>
-                    </div>
-                    <span className="text-purple-300 text-xs font-medium flex-shrink-0">
-                      {entry.qty} {entry.qty === 1 ? 'pack' : 'packs'}
-                    </span>
-                    <span className="text-gray-500 text-[11px] flex-shrink-0 w-14 text-right">
-                      {entry.timeAgo}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
             {/* ─── Provably Fair + Rules & Terms link ─── */}
             <div className="px-4 mb-6">
               <div className="bg-white/5 rounded-2xl p-4">
@@ -476,18 +496,20 @@ export default function CampaignDetailPage() {
                 </div>
 
                 {/* Contract address */}
-                <div className="flex items-center gap-2 mb-3">
-                  <span className="text-gray-400 text-xs">Contract:</span>
-                  <a
-                    href={blockExplorerUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-purple-400 text-xs font-mono hover:text-purple-300 flex items-center gap-1"
-                  >
-                    {shortAddr}
-                    <ExternalLinkIcon />
-                  </a>
-                </div>
+                {blockExplorerUrl && (
+                  <div className="flex items-center gap-2 mb-3">
+                    <span className="text-gray-400 text-xs">Contract:</span>
+                    <a
+                      href={blockExplorerUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-purple-400 text-xs font-mono hover:text-purple-300 flex items-center gap-1"
+                    >
+                      {shortAddr}
+                      <ExternalLinkIcon />
+                    </a>
+                  </div>
+                )}
 
                 {/* How it works — short summary */}
                 <div className="space-y-1.5 text-xs text-gray-400 leading-relaxed">
@@ -516,9 +538,9 @@ export default function CampaignDetailPage() {
         className="absolute bottom-0 left-0 right-0 z-20 px-4 py-4 bg-gradient-to-t from-[#0a0a1a] via-[#0a0a1a] to-transparent"
         style={{ paddingBottom: 'calc(var(--safe-area-inset-bottom, 0px) + 16px)' }}
       >
-        {MOCK_STATUS === 'completed' ? (
+        {currentStatus === 'completed' ? (
           <GradientButton onClick={goBack}>
-            {MOCK_DRAW_RESULT.isMe ? 'Claim Prize' : 'Join Next Round'}
+            {drawStatus?.drawResult?.isMe ? 'Claim Prize' : 'Join Next Round'}
           </GradientButton>
         ) : (
           <GradientButton onClick={() => { setQty(1); setSheetOpen(true); }}>
@@ -567,7 +589,7 @@ export default function CampaignDetailPage() {
                 <span className="text-white text-4xl font-black w-20 text-center tabular-nums">{qty}</span>
                 <button
                   onClick={() => setQty((q) => clampQty(q + 1))}
-                  disabled={qty >= REMAINING_SLOTS}
+                  disabled={qty >= remainingSlots}
                   className="w-10 h-10 flex items-center justify-center rounded-full bg-white/10 text-white disabled:opacity-30 transition-opacity"
                 >
                   <PlusIcon />
@@ -576,7 +598,7 @@ export default function CampaignDetailPage() {
 
               {/* Quick-pick buttons */}
               <div className="flex items-center justify-center gap-2 mb-4">
-                {QUICK_PICKS.filter((n) => n <= REMAINING_SLOTS).map((n) => (
+                {QUICK_PICKS.filter((n) => n <= remainingSlots).map((n) => (
                   <button
                     key={n}
                     onClick={() => setQty(n)}
@@ -617,8 +639,8 @@ export default function CampaignDetailPage() {
                       : 'bg-white/5 border-2 border-transparent'
                   }`}
                 >
-                  <span className="absolute -top-2 bg-emerald-500 text-white text-[9px] font-bold px-2 py-0.5 rounded">
-                    Best Value
+                  <span className="absolute -top-2 bg-gray-500 text-white text-[9px] font-bold px-2 py-0.5 rounded">
+                    Coming Soon
                   </span>
                   <UsdtIcon />
                   <span className="text-white text-xl font-black">${(cryptoPriceUsd * qty).toFixed(2)}</span>
@@ -643,13 +665,13 @@ export default function CampaignDetailPage() {
               </div>
 
               <GradientButton
-                onClick={() => {
-                  // TODO: Replace with real payment flow
-                  setSheetOpen(false);
-                  showSuccess(totalCredits, qty);
-                }}
+                onClick={handlePurchase}
+                disabled={purchasing}
               >
-                GET {totalCredits.toLocaleString()} CREDITS — ${(payMethod === 'crypto' ? cryptoPriceUsd * qty : stripePriceUsd * qty).toFixed(2)}
+                {purchasing
+                  ? 'Processing...'
+                  : `GET ${totalCredits.toLocaleString()} CREDITS — $${(payMethod === 'crypto' ? cryptoPriceUsd * qty : stripePriceUsd * qty).toFixed(2)}`
+                }
               </GradientButton>
             </div>
           </div>

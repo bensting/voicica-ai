@@ -8,6 +8,13 @@
       "when": 1770801902894,
       "tag": "0000_charming_speed",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1739808000000,
+      "tag": "0001_lucky_draw_tables",
+      "breakpoints": true
     }
   ]
 }

@@ -6,6 +6,7 @@ import { eq, and, desc } from 'drizzle-orm';
 import { getCreditTierByProductId } from '@/config/subscription';
 import { addCredits } from '@/lib/credits';
 import { ProductType } from '@/config/productType';
+import { handleLuckyDrawPurchase } from '@/actions/lucky-draw';
 
 // 延迟初始化 Stripe，避免构建时因缺少环境变量而失败
 let _stripe: Stripe | null = null;
@@ -77,6 +78,13 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session, eventId
   console.log('💳 处理 checkout.session.completed:', session.id);
 
   const metadata = session.metadata || {};
+
+  // Lucky Draw 购买走独立流程
+  if (metadata.type === 'lucky_draw') {
+    await handleLuckyDrawPurchase(session, eventId);
+    return;
+  }
+
   const userId = metadata.user_id;
   const productId = metadata.product_id;
 

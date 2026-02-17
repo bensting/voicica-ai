@@ -8,10 +8,10 @@
  */
 
 import { useSubscription } from '@/contexts/SubscriptionContext';
-import { activeCampaign } from '@/config/native/campaignConfig';
+import { activeLuckyDraw } from '@/config/native/luckyDrawConfig';
 import AdsterraBanner from './AdsterraBanner';
 import BannerCarousel from './BannerCarousel';
-import CampaignBanner from './CampaignBanner';
+import LuckyDrawBanner from './LuckyDrawBanner';
 
 /**
  * 首页横幅广告
@@ -21,8 +21,8 @@ export default function NativeBannerAd() {
 
   // 活动开启时，所有用户看到活动 banner
   const isDev = process.env.NODE_ENV === 'development';
-  if (isDev ? activeCampaign.enabled.development : activeCampaign.enabled.production) {
-    return <CampaignBanner />;
+  if (isDev ? activeLuckyDraw.enabled.development : activeLuckyDraw.enabled.production) {
+    return <LuckyDrawBanner />;
   }
 
   // 订阅用户显示 BannerCarousel（不显示广告）

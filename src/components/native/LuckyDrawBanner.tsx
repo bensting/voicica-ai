@@ -2,13 +2,13 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { activeCampaign } from '@/config/native/campaignConfig';
+import { activeLuckyDraw } from '@/config/native/luckyDrawConfig';
 
 /** Mock data — will be replaced by API later */
 const MOCK_SOLD = 1847;
 
-export default function CampaignBanner() {
-  const { totalSlots, creditsPerPurchase, prize, href } = activeCampaign;
+export default function LuckyDrawBanner() {
+  const { totalSlots, creditsPerPurchase, prize, href } = activeLuckyDraw;
   const progressPct = Math.min((MOCK_SOLD / totalSlots) * 100, 100);
   const remaining = totalSlots - MOCK_SOLD;
 

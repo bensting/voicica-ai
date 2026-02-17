@@ -1,107 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import ClaimPrizeSheet, { type ClaimData, type ClaimStatus, type ShippingInfo } from '@/components/native/ClaimPrizeSheet';
-
-/**
- * Lucky Draw 参与记录
- * 每条记录对应一个 campaign round
- */
-interface DrawRecord {
-  id: string;
-  campaignId: string;
-  prize: string;
-  /** 购买的积分包数量 */
-  packs: number;
-  /** 获得的总积分 */
-  totalCredits: number;
-  /** 持有的 slot 号码 */
-  slots: number[];
-  status: 'selling' | 'drawing' | 'completed';
-  /** 开奖结果（仅 completed 时有值） */
-  result?: {
-    won: boolean;
-    winnerSlot?: number;
-  };
-  /** 领奖状态 */
-  claim?: ClaimData;
-  date: string;
-  href: string;
-}
-
-/** Mock data — 后续替换为 API */
-const MOCK_RECORDS: DrawRecord[] = [
-  {
-    id: '1',
-    campaignId: 'iphone17pro-launch',
-    prize: 'iPhone 17 Pro',
-    packs: 3,
-    totalCredits: 300,
-    slots: [892, 893, 894],
-    status: 'selling',
-    date: '2026-02-15',
-    href: '/native/campaign/iphone17pro-launch',
-  },
-  {
-    id: '3',
-    campaignId: 'ps5-pro-feb',
-    prize: 'PS5 Pro',
-    packs: 2,
-    totalCredits: 200,
-    slots: [417, 418],
-    status: 'completed',
-    result: { won: true, winnerSlot: 418 },
-    claim: { status: 'unclaimed' },
-    date: '2026-02-01',
-    href: '/native/campaign/ps5-pro-feb',
-  },
-  {
-    id: '4',
-    campaignId: 'airpods-max-jan',
-    prize: 'AirPods Max',
-    packs: 4,
-    totalCredits: 400,
-    slots: [55, 56, 57, 58],
-    status: 'completed',
-    result: { won: true, winnerSlot: 56 },
-    claim: {
-      status: 'shipped',
-      shippingInfo: {
-        fullName: 'John Doe',
-        phone: '+1 234 567 8900',
-        email: 'john@example.com',
-        country: 'United States',
-        address: '123 Main St, New York, NY',
-        zipCode: '10001',
-        telegram: 'johndoe',
-      },
-      tracking: {
-        carrier: 'FedEx',
-        trackingNumber: 'FX9876543210',
-        trackingUrl: 'https://www.fedex.com/fedextrack/?trknbr=FX9876543210',
-        shippedAt: '2026-01-28',
-      },
-    },
-    date: '2026-01-15',
-    href: '/native/campaign/airpods-max-jan',
-  },
-  {
-    id: '2',
-    campaignId: 'macbook-air-m4',
-    prize: 'MacBook Air M4',
-    packs: 5,
-    totalCredits: 500,
-    slots: [102, 103, 278, 279, 280],
-    status: 'completed',
-    result: { won: false, winnerSlot: 1547 },
-    date: '2026-01-20',
-    href: '/native/campaign/macbook-air-m4',
-  },
-];
+import { getUserLuckyDrawHistory, submitPrizeClaim, type LuckyDrawHistoryRecord } from '@/actions/lucky-draw';
 
 /** 状态标签配色 */
-const statusStyle: Record<DrawRecord['status'], { bg: string; text: string; label: string }> = {
+const statusStyle: Record<string, { bg: string; text: string; label: string }> = {
   selling: { bg: 'bg-emerald-500/20', text: 'text-emerald-400', label: 'In Progress' },
   drawing: { bg: 'bg-amber-500/20', text: 'text-amber-400', label: 'Drawing...' },
   completed: { bg: 'bg-gray-500/20', text: 'text-gray-400', label: 'Completed' },
@@ -141,37 +46,78 @@ function TrophyIcon() {
 }
 
 export default function LuckyDrawTab() {
-  const [claimRecord, setClaimRecord] = useState<DrawRecord | null>(null);
+  const [records, setRecords] = useState<LuckyDrawHistoryRecord[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [claimDrawId, setClaimDrawId] = useState<string | null>(null);
+  const [claimPrize, setClaimPrize] = useState<string>('');
+  const [claimData, setClaimData] = useState<ClaimData | null>(null);
 
-  if (MOCK_RECORDS.length === 0) {
+  useEffect(() => {
+    async function fetchHistory() {
+      try {
+        const history = await getUserLuckyDrawHistory();
+        setRecords(history);
+      } catch (error) {
+        console.error('Failed to fetch lucky draw history:', error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchHistory();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <div className="w-8 h-8 border-2 border-purple-500 border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
+
+  if (records.length === 0) {
     return null; // 空状态由父组件处理
   }
 
-  const handleClaimSubmit = (info: ShippingInfo) => {
-    // Mock: 提交后更新状态
-    console.log('Claim submitted:', info);
-    // 实际实现时调用 API，这里仅演示状态变化
-    if (claimRecord) {
-      setClaimRecord({
-        ...claimRecord,
-        claim: {
-          status: 'info_submitted',
-          shippingInfo: info,
-        },
+  const handleClaimSubmit = async (info: ShippingInfo) => {
+    if (!claimDrawId) return;
+
+    try {
+      await submitPrizeClaim(claimDrawId, {
+        fullName: info.fullName,
+        phone: info.phone,
+        email: info.email,
+        country: info.country,
+        address: info.address,
+        zipCode: info.zipCode,
+        telegram: info.telegram,
       });
+
+      // Update local state
+      setRecords((prev) =>
+        prev.map((r) =>
+          r.drawId === claimDrawId && r.claim
+            ? { ...r, claim: { ...r.claim, status: 'info_submitted', shippingInfo: info } }
+            : r
+        )
+      );
+
+      setClaimDrawId(null);
+      setClaimData(null);
+    } catch (error) {
+      console.error('Failed to submit claim:', error);
     }
   };
 
   return (
     <>
       <div className="space-y-3 pt-2">
-        {MOCK_RECORDS.map((record) => {
+        {records.map((record) => {
           const isWinner = record.status === 'completed' && record.result?.won;
-          const style = statusStyle[record.status];
-          const claimStatus = record.claim?.status;
+          const style = statusStyle[record.status] || statusStyle.selling;
+          const claimStatus = record.claim?.status as ClaimStatus | undefined;
 
           return (
-            <Link key={record.id} href={record.href} className="block">
+            <Link key={record.drawId} href={record.href} className="block">
               <div className={`relative overflow-hidden rounded-xl p-4 ${
                 isWinner
                   ? 'bg-gradient-to-br from-[#1a0f00] via-[#1f1200] to-[#0f0a00] border border-amber-500/20'
@@ -248,7 +194,9 @@ export default function LuckyDrawTab() {
                         onClick={(e) => {
                           e.preventDefault();
                           e.stopPropagation();
-                          setClaimRecord(record);
+                          setClaimDrawId(record.drawId);
+                          setClaimPrize(record.prize);
+                          setClaimData(record.claim ? { status: record.claim.status as ClaimStatus, shippingInfo: record.claim.shippingInfo, tracking: record.claim.tracking } : { status: 'unclaimed' });
                         }}
                         className={`text-[11px] font-bold px-3 py-1 rounded-full ${
                           claimStatus ? claimStatusStyle[claimStatus] : claimStatusStyle.unclaimed
@@ -285,11 +233,11 @@ export default function LuckyDrawTab() {
       </div>
 
       {/* Claim Prize Sheet */}
-      {claimRecord && claimRecord.claim && (
+      {claimDrawId && claimData && (
         <ClaimPrizeSheet
-          prize={claimRecord.prize}
-          claimData={claimRecord.claim}
-          onClose={() => setClaimRecord(null)}
+          prize={claimPrize}
+          claimData={claimData}
+          onClose={() => { setClaimDrawId(null); setClaimData(null); }}
           onSubmit={handleClaimSubmit}
         />
       )}

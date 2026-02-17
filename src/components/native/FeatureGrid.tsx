@@ -7,7 +7,7 @@ import {
   getCategoryConfig,
   CreateMenuIcon,
 } from '@/config/native/createMenuConfig';
-import { getActiveCampaigns, type CampaignIcon } from '@/config/native/campaignConfig';
+import { getActiveLuckyDraws, type LuckyDrawIcon } from '@/config/native/luckyDrawConfig';
 import { useLanguage } from '@/contexts/LanguageContext';
 import VideoDownloadIcon from '@/components/native/icons/VideoDownloadIcon';
 
@@ -135,8 +135,8 @@ const colorMap: Record<string, { icon: string; bg: string }> = {
   emerald: { icon: 'text-emerald-400', bg: 'bg-gradient-to-br from-red-600/20 to-red-800/20' },
 };
 
-// Campaign 图标映射
-const campaignIconMap: Record<CampaignIcon, React.ReactNode> = {
+// Lucky Draw 图标映射
+const luckyDrawIconMap: Record<LuckyDrawIcon, React.ReactNode> = {
   trophy: (
     <svg className="relative w-6 h-6 drop-shadow-[0_0_6px_rgba(251,191,36,0.4)]" viewBox="0 0 24 24" fill="currentColor">
       <path d="M19 5h-2V3H7v2H5c-1.1 0-2 .9-2 2v1c0 2.55 1.92 4.63 4.39 4.94.63 1.5 1.98 2.63 3.61 2.96V19H7v2h10v-2h-4v-3.1c1.63-.33 2.98-1.46 3.61-2.96C19.08 12.63 21 10.55 21 8V7c0-1.1-.9-2-2-2zM5 8V7h2v3.82C5.84 10.4 5 9.3 5 8zm14 0c0 1.3-.84 2.4-2 2.82V7h2v1z" />
@@ -158,7 +158,7 @@ const campaignIconMap: Record<CampaignIcon, React.ReactNode> = {
 export default function FeatureGrid() {
   const { t } = useLanguage();
   const items = getAvailableMenuItems();
-  const activeCampaigns = getActiveCampaigns();
+  const activeLuckyDraws = getActiveLuckyDraws();
 
   // 获取菜单项的翻译名称
   const getItemName = (id: string, fallback: string): string => {
@@ -203,14 +203,14 @@ export default function FeatureGrid() {
       </div>
 
       {/* Lucky Draw 入口 */}
-      {activeCampaigns.length > 0 && (
+      {activeLuckyDraws.length > 0 && (
         <div className="flex gap-3">
-          {activeCampaigns.map((campaign) => {
-            const [line1, line2] = campaign.shortLabel.split('\n');
+          {activeLuckyDraws.map((draw) => {
+            const [line1, line2] = draw.shortLabel.split('\n');
             return (
               <Link
-                key={campaign.id}
-                href={campaign.href}
+                key={draw.id}
+                href={draw.href}
                 className="relative overflow-hidden flex flex-col items-center justify-center w-1/3 py-3 px-2 rounded-2xl bg-gradient-to-br from-amber-500/15 to-orange-500/10 border border-amber-500/10 hover:opacity-80 transition-opacity"
               >
                 {/* 微光 */}
@@ -222,7 +222,7 @@ export default function FeatureGrid() {
                 {/* 图标 + 动画 */}
                 <div className="relative text-amber-400 mb-1.5 animate-bounce-slow">
                   <div className="absolute inset-0 bg-amber-400/20 rounded-full blur-md animate-pulse" />
-                  {campaignIconMap[campaign.icon]}
+                  {luckyDrawIconMap[draw.icon]}
                 </div>
                 {/* 文案 */}
                 <span className="relative text-[10px] text-amber-300/90 font-semibold leading-tight text-center">{line1}</span>

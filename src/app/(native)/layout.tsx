@@ -70,7 +70,7 @@ export default function NativeLayout({
           {showNavbar && <NativeNavbar />}
 
           {/* 主内容区域 - PC 端为 flex 滚动区域 */}
-          <main className="relative z-10 lg:flex-1 lg:overflow-y-auto lg:min-h-0">{children}</main>
+          <main className="relative lg:flex-1 lg:overflow-y-auto lg:min-h-0">{children}</main>
 
           {/* 底部导航 - 部分页面不显示 */}
           {showBottomNav && <BottomNav />}

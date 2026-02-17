@@ -92,7 +92,7 @@ export default function ClaimPrizeSheet({ prize, claimData, onClose, onSubmit }:
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center">
+    <div className="fixed inset-0 z-[60] flex items-end justify-center">
       {/* Backdrop */}
       <div className="absolute inset-0 bg-black/60" onClick={onClose} />
 
@@ -223,15 +223,8 @@ export default function ClaimPrizeSheet({ prize, claimData, onClose, onSubmit }:
                 </p>
               </div>
 
-              {/* Submit */}
-              <button
-                onClick={handleSubmit}
-                className="w-full py-3 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 text-white font-bold text-[15px] mt-2"
-              >
-                Submit Shipping Info
-              </button>
-
-              <div className="h-[env(safe-area-inset-bottom)]" />
+              {/* 底部留白，给固定按钮腾出空间 */}
+              <div className="h-4" />
             </div>
           )}
 
@@ -339,6 +332,18 @@ export default function ClaimPrizeSheet({ prize, claimData, onClose, onSubmit }:
             </div>
           )}
         </div>
+
+        {/* 固定底部按钮（仅 unclaimed 状态） */}
+        {claimData.status === 'unclaimed' && (
+          <div className="flex-shrink-0 px-5 py-4 border-t border-white/[0.06] safe-area-bottom">
+            <button
+              onClick={handleSubmit}
+              className="w-full py-3 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 text-white font-bold text-[15px]"
+            >
+              Submit Shipping Info
+            </button>
+          </div>
+        )}
 
         {/* Country Picker Overlay */}
         {showCountryPicker && (

@@ -8,6 +8,7 @@ import db from '@/lib/db';
 import { luckyDrawInstances, luckyDrawEntries } from '@/db/schema';
 import { eq, desc, sql, count } from 'drizzle-orm';
 import { verifyAdminWithoutDb } from '@/lib/auth-admin';
+import { getLuckyDrawProduct } from '@/config/native/luckyDrawConfig';
 
 // ─── Types ───
 
@@ -34,13 +35,6 @@ export interface CreateLuckyDrawInput {
   productId: string;
   title?: string;
   enabled: boolean;
-  totalSlots: number;
-  creditsPerPurchase: number;
-  stripePriceCents: number;
-  cryptoPriceCents: number;
-  chainName?: string;
-  contractAddress?: string;
-  blockExplorerUrl?: string;
 }
 
 interface ActionResult {
@@ -99,6 +93,11 @@ export async function createLuckyDraw(data: CreateLuckyDrawInput): Promise<Actio
   await verifyAdminWithoutDb();
 
   try {
+    const product = getLuckyDrawProduct(data.productId);
+    if (!product) {
+      return { success: false, message: `产品 ${data.productId} 不存在` };
+    }
+
     const drawId = `${data.productId}-${Date.now()}`;
 
     await db.insert(luckyDrawInstances).values({
@@ -107,13 +106,13 @@ export async function createLuckyDraw(data: CreateLuckyDrawInput): Promise<Actio
       title: data.title || null,
       enabled: data.enabled,
       status: 'selling',
-      totalSlots: data.totalSlots,
-      creditsPerPurchase: data.creditsPerPurchase,
-      stripePriceCents: data.stripePriceCents,
-      cryptoPriceCents: data.cryptoPriceCents,
-      chainName: data.chainName || null,
-      contractAddress: data.contractAddress || null,
-      blockExplorerUrl: data.blockExplorerUrl || null,
+      totalSlots: product.totalSlots,
+      creditsPerPurchase: product.creditsPerPurchase,
+      stripePriceCents: product.stripePriceCents,
+      cryptoPriceCents: product.cryptoPriceCents,
+      chainName: product.chainName,
+      contractAddress: null,
+      blockExplorerUrl: null,
     });
 
     return { success: true, message: `抽奖 ${drawId} 创建成功` };
@@ -141,13 +140,6 @@ export async function updateLuckyDraw(
       .set({
         ...(data.title !== undefined && { title: data.title || null }),
         ...(data.enabled !== undefined && { enabled: data.enabled }),
-        ...(data.totalSlots !== undefined && { totalSlots: data.totalSlots }),
-        ...(data.creditsPerPurchase !== undefined && { creditsPerPurchase: data.creditsPerPurchase }),
-        ...(data.stripePriceCents !== undefined && { stripePriceCents: data.stripePriceCents }),
-        ...(data.cryptoPriceCents !== undefined && { cryptoPriceCents: data.cryptoPriceCents }),
-        ...(data.chainName !== undefined && { chainName: data.chainName || null }),
-        ...(data.contractAddress !== undefined && { contractAddress: data.contractAddress || null }),
-        ...(data.blockExplorerUrl !== undefined && { blockExplorerUrl: data.blockExplorerUrl || null }),
       })
       .where(eq(luckyDrawInstances.id, id));
 

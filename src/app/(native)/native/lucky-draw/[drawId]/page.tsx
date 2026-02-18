@@ -1,9 +1,8 @@
 'use client';
 
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { useNativeBack } from '@/hooks/useNativeBack';
 import GradientButton from '@/components/native/common/GradientButton';
 import { getLuckyDrawStatus, createLuckyDrawCheckout, type LuckyDrawStatusResult } from '@/actions/lucky-draw';
 
@@ -101,7 +100,8 @@ const PlusIcon = () => (
 const QUICK_PICKS = [1, 5, 10, 20, 50];
 
 export default function LuckyDrawDetailPage() {
-  const goBack = useNativeBack();
+  const router = useRouter();
+  const goBack = useCallback(() => router.push('/native'), [router]);
   const params = useParams();
   const drawId = params.drawId as string;
 
@@ -175,12 +175,12 @@ export default function LuckyDrawDetailPage() {
 
     setPurchasing(true);
     try {
-      const currentUrl = window.location.href;
+      const returnUrl = `/native/lucky-draw/${drawId}`;
       const result = await createLuckyDrawCheckout(
         drawId,
         qty,
-        `${window.location.origin}/native/payment/success`,
-        currentUrl,
+        `${window.location.origin}/native/payment/success?return_url=${encodeURIComponent(returnUrl)}`,
+        `${window.location.origin}${returnUrl}`,
       );
       window.location.href = result.checkout_url;
     } catch (error) {

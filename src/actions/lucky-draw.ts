@@ -470,12 +470,10 @@ export async function handleLuckyDrawPurchase(
           (draw_id, user_id, slot_number, packs, credits_awarded, payment_platform, stripe_session_id, amount_paid, currency, created_at)
         SELECT
           ${drawId}, ${userId},
-          COALESCE(MAX(slot_number), -1) + gs.n,
+          (SELECT COALESCE(MAX(slot_number), -1) FROM lucky_draw_entries WHERE draw_id = ${drawId}) + gs.n,
           1, ${draw.creditsPerPurchase}, 'stripe', ${session.id},
           ${amountPerPack}, ${currency}, CURRENT_TIMESTAMP
-        FROM lucky_draw_entries
-        WHERE draw_id = ${drawId}
-        CROSS JOIN generate_series(1, ${packs}) AS gs(n)
+        FROM generate_series(1, ${packs}) AS gs(n)
       `);
       break;
     } catch (e: unknown) {

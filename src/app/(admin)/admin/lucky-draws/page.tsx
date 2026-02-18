@@ -21,13 +21,6 @@ const emptyFormData: CreateLuckyDrawInput = {
   productId: luckyDrawProducts[0]?.productId ?? '',
   title: '',
   enabled: false,
-  totalSlots: 5000,
-  creditsPerPurchase: 100,
-  stripePriceCents: 100,
-  cryptoPriceCents: 100,
-  chainName: 'Polygon',
-  contractAddress: '',
-  blockExplorerUrl: '',
 };
 
 const statusConfig: Record<string, { label: string; className: string }> = {
@@ -72,13 +65,6 @@ export default function LuckyDrawsPage() {
       productId: draw.productId,
       title: draw.title ?? '',
       enabled: draw.enabled,
-      totalSlots: draw.totalSlots,
-      creditsPerPurchase: draw.creditsPerPurchase,
-      stripePriceCents: draw.stripePriceCents,
-      cryptoPriceCents: draw.cryptoPriceCents,
-      chainName: draw.chainName ?? '',
-      contractAddress: draw.contractAddress ?? '',
-      blockExplorerUrl: draw.blockExplorerUrl ?? '',
     });
     setShowModal(true);
   };
@@ -86,10 +72,6 @@ export default function LuckyDrawsPage() {
   const handleSave = async () => {
     if (!formData.productId) {
       alert('请选择产品');
-      return;
-    }
-    if (!formData.totalSlots || formData.totalSlots <= 0) {
-      alert('请填写有效的总 Slots 数');
       return;
     }
 
@@ -323,6 +305,20 @@ export default function LuckyDrawsPage() {
                     </option>
                   ))}
                 </select>
+                {/* 显示选中产品的配置参数 */}
+                {(() => {
+                  const p = luckyDrawProducts.find((x) => x.productId === formData.productId);
+                  if (!p) return null;
+                  return (
+                    <div className="mt-2 text-xs text-gray-500 flex flex-wrap gap-x-4 gap-y-1">
+                      <span>Slots: {p.totalSlots}</span>
+                      <span>积分/包: {p.creditsPerPurchase}</span>
+                      <span>Stripe: ${(p.stripePriceCents / 100).toFixed(2)}</span>
+                      <span>Crypto: ${(p.cryptoPriceCents / 100).toFixed(2)}</span>
+                      <span>Chain: {p.chainName}</span>
+                    </div>
+                  );
+                })()}
               </div>
 
               {/* Title */}
@@ -332,126 +328,7 @@ export default function LuckyDrawsPage() {
                   type="text"
                   value={formData.title ?? ''}
                   onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                  placeholder="可选，显示在抽奖页面"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                />
-              </div>
-
-              {/* Total Slots + Credits per purchase */}
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    总 Slots <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="number"
-                    value={formData.totalSlots}
-                    onChange={(e) =>
-                      setFormData({ ...formData, totalSlots: parseInt(e.target.value, 10) || 0 })
-                    }
-                    min={1}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    积分/包 <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="number"
-                    value={formData.creditsPerPurchase}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        creditsPerPurchase: parseInt(e.target.value, 10) || 0,
-                      })
-                    }
-                    min={0}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                  />
-                </div>
-              </div>
-
-              {/* Stripe price + Crypto price */}
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Stripe 价格 (美分) <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="number"
-                    value={formData.stripePriceCents}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        stripePriceCents: parseInt(e.target.value, 10) || 0,
-                      })
-                    }
-                    min={0}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                  />
-                  <p className="text-xs text-gray-500 mt-1">
-                    = ${((formData.stripePriceCents || 0) / 100).toFixed(2)}
-                  </p>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Crypto 价格 (美分) <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="number"
-                    value={formData.cryptoPriceCents}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        cryptoPriceCents: parseInt(e.target.value, 10) || 0,
-                      })
-                    }
-                    min={0}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                  />
-                  <p className="text-xs text-gray-500 mt-1">
-                    = ${((formData.cryptoPriceCents || 0) / 100).toFixed(2)}
-                  </p>
-                </div>
-              </div>
-
-              {/* Chain Name */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Chain Name</label>
-                <input
-                  type="text"
-                  value={formData.chainName ?? ''}
-                  onChange={(e) => setFormData({ ...formData, chainName: e.target.value })}
-                  placeholder="Polygon"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                />
-              </div>
-
-              {/* Contract Address */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Contract Address
-                </label>
-                <input
-                  type="text"
-                  value={formData.contractAddress ?? ''}
-                  onChange={(e) => setFormData({ ...formData, contractAddress: e.target.value })}
-                  placeholder="0x..."
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent font-mono text-sm"
-                />
-              </div>
-
-              {/* Block Explorer URL */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Block Explorer URL
-                </label>
-                <input
-                  type="url"
-                  value={formData.blockExplorerUrl ?? ''}
-                  onChange={(e) => setFormData({ ...formData, blockExplorerUrl: e.target.value })}
-                  placeholder="https://polygonscan.com/address/..."
+                  placeholder="可选，如：第1期"
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                 />
               </div>

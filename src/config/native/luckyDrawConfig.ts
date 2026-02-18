@@ -1,8 +1,9 @@
 /**
  * Lucky Draw 产品目录（静态配置）
  *
- * 只定义产品的固有属性，不包含任何动态数据（如 totalSlots、价格、状态等）。
- * 动态数据由 lucky_draws 表管理，通过 product_id 关联。
+ * 定义产品的固有属性和默认参数（totalSlots、价格、积分等）。
+ * 每期抽奖实例由 lucky_draws 表管理，通过 product_id 关联，
+ * 创建时自动从此配置读取默认值。
  */
 
 /** 首页入口图标类型 */
@@ -19,6 +20,16 @@ export interface LuckyDrawProduct {
   prizeImageUrl: string;
   /** 首页入口显示名，如 "Lucky Draw\nWin iPhone 17 Pro" */
   shortLabel: string;
+  /** 每期总 Slots */
+  totalSlots: number;
+  /** 每包赠送积分 */
+  creditsPerPurchase: number;
+  /** Stripe 单价（美分） */
+  stripePriceCents: number;
+  /** Crypto 单价（美分） */
+  cryptoPriceCents: number;
+  /** 区块链名称 */
+  chainName: string;
 }
 
 /** 所有 Lucky Draw 产品 */
@@ -30,6 +41,11 @@ export const luckyDrawProducts: LuckyDrawProduct[] = [
     prize: 'iPhone 17 Pro',
     prizeImageUrl: '/images/campaign/iphone17pro.png',
     shortLabel: 'Lucky Draw\nWin iPhone 17 Pro',
+    totalSlots: 1500,
+    creditsPerPurchase: 100,
+    stripePriceCents: 100,
+    cryptoPriceCents: 100,
+    chainName: 'Polygon',
   },
   {
     productId: 'usdt-1000',
@@ -38,6 +54,11 @@ export const luckyDrawProducts: LuckyDrawProduct[] = [
     prize: '1000 USDT',
     prizeImageUrl: '/images/campaign/usdt.png',
     shortLabel: 'Lucky Draw\nWin 1000 USDT',
+    totalSlots: 5000,
+    creditsPerPurchase: 100,
+    stripePriceCents: 100,
+    cryptoPriceCents: 100,
+    chainName: 'Polygon',
   },
 ];
 

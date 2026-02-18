@@ -132,7 +132,7 @@ export default function ClaimPrizeSheet({ prize, claimData, onClose, onSubmit }:
       <div className="absolute inset-0 bg-black/60" onClick={onClose} />
 
       {/* Sheet */}
-      <div className="relative w-full max-w-lg bg-[#0f0f2a] rounded-t-2xl animate-slide-up max-h-[90vh] flex flex-col">
+      <div className="relative w-full max-w-lg bg-[#0f0f2a] rounded-t-2xl animate-slide-up max-h-[90vh] flex flex-col overflow-hidden">
         {/* Handle */}
         <div className="flex justify-center pt-3 pb-2 flex-shrink-0">
           <div className="w-10 h-1 bg-white/20 rounded-full" />
@@ -305,9 +305,6 @@ export default function ClaimPrizeSheet({ prize, claimData, onClose, onSubmit }:
                   </div>
                 </div>
               )}
-
-              {/* 状态时间线 */}
-              <StatusTimeline current="info_submitted" />
             </div>
           )}
 
@@ -351,9 +348,6 @@ export default function ClaimPrizeSheet({ prize, claimData, onClose, onSubmit }:
                   </a>
                 )}
               </div>
-
-              {/* 状态时间线 */}
-              <StatusTimeline current="shipped" />
             </div>
           )}
 
@@ -372,14 +366,12 @@ export default function ClaimPrizeSheet({ prize, claimData, onClose, onSubmit }:
               {claimData.deliveredAt && (
                 <p className="text-gray-500 text-xs">Delivered on {claimData.deliveredAt}</p>
               )}
-
-              <StatusTimeline current="delivered" />
             </div>
           )}
         </div>
 
-        {/* 固定底部按钮（仅 unclaimed 状态） */}
-        {claimData.status === 'unclaimed' && (
+        {/* 固定底部：unclaimed 显示提交按钮，其他状态显示时间线 */}
+        {claimData.status === 'unclaimed' ? (
           <div className="flex-shrink-0 px-5 pt-4 border-t border-white/[0.06]">
             <button
               onClick={handleSubmit}
@@ -388,6 +380,11 @@ export default function ClaimPrizeSheet({ prize, claimData, onClose, onSubmit }:
               Submit Shipping Info
             </button>
             <div className="h-6" style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }} />
+          </div>
+        ) : (
+          <div className="flex-shrink-0 px-5 py-4 border-t border-white/[0.06]">
+            <StatusTimeline current={claimData.status} />
+            <div className="h-2" style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }} />
           </div>
         )}
 

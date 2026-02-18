@@ -336,14 +336,15 @@ export async function getTtsTaskStatus(taskId: string): Promise<TtsTaskStatus> {
 /**
  * 获取用户 TTS 历史记录
  */
-export async function getTtsRecords(limit: number = 50): Promise<TtsRecord[]> {
+export async function getTtsRecords(limit: number = 20, offset: number = 0): Promise<TtsRecord[]> {
   const unifiedUser = await getUserOrAnonymous();
   const userId = unifiedUser.user_id;
 
   const records = await db.select().from(ttsRecords)
     .where(eq(ttsRecords.userId, userId))
     .orderBy(desc(ttsRecords.createdAt))
-    .limit(limit);
+    .limit(limit)
+    .offset(offset);
 
   // 获取所有不重复的 voice_name
   const voiceNames = [...new Set(records.map(r => r.voiceName))];

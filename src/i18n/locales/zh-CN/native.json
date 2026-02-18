@@ -90,6 +90,8 @@
       "goCreate": "去创作",
       "pullToRefresh": "下拉刷新",
       "releaseToRefresh": "松开刷新",
+      "loadMore": "加载更多",
+      "loading": "加载中...",
       "tabs": {
         "voices": "语音",
         "dialogues": "对话",

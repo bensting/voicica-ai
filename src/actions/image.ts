@@ -308,7 +308,7 @@ export interface ImageRecord {
 /**
  * 获取用户的图片记录列表
  */
-export async function getImageRecords(limit: number = 50): Promise<ImageRecord[]> {
+export async function getImageRecords(limit: number = 20, offset: number = 0): Promise<ImageRecord[]> {
   try {
     const { user_id } = await getUserOrAnonymous();
     if (!user_id) {
@@ -318,7 +318,8 @@ export async function getImageRecords(limit: number = 50): Promise<ImageRecord[]
     const records = await db.select().from(imageRecords)
       .where(eq(imageRecords.userId, user_id))
       .orderBy(desc(imageRecords.createdAt))
-      .limit(limit);
+      .limit(limit)
+      .offset(offset);
 
     return records.map(r => ({
       id: r.id,

@@ -90,6 +90,8 @@
       "goCreate": "作成する",
       "pullToRefresh": "下にスワイプして更新",
       "releaseToRefresh": "離して更新",
+      "loadMore": "もっと読み込む",
+      "loading": "読み込み中...",
       "tabs": {
         "voices": "音声",
         "dialogues": "対話",

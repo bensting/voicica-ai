@@ -90,6 +90,8 @@
       "goCreate": "बनाने जाएं",
       "pullToRefresh": "रीफ्रेश करने के लिए खींचें",
       "releaseToRefresh": "रीफ्रेश करने के लिए छोड़ें",
+      "loadMore": "और लोड करें",
+      "loading": "लोड हो रहा है...",
       "tabs": {
         "voices": "आवाज़ें",
         "dialogues": "संवाद",

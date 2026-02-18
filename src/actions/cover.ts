@@ -537,7 +537,7 @@ export async function getCoverTaskStatus(taskId: string): Promise<CoverTaskStatu
 /**
  * 获取用户 Cover 历史记录
  */
-export async function getCoverRecords(limit: number = 50): Promise<CoverRecord[]> {
+export async function getCoverRecords(limit: number = 20, offset: number = 0): Promise<CoverRecord[]> {
   const unifiedUser = await getUserOrAnonymous();
   const userId = unifiedUser.user_id;
 
@@ -545,7 +545,8 @@ export async function getCoverRecords(limit: number = 50): Promise<CoverRecord[]
     .from(coverRecords)
     .where(eq(coverRecords.userId, userId))
     .orderBy(desc(coverRecords.createdAt))
-    .limit(limit);
+    .limit(limit)
+    .offset(offset);
 
   return records.map((r) => ({
     id: r.id,

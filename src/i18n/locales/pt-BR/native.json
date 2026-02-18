@@ -90,6 +90,8 @@
       "goCreate": "Criar agora",
       "pullToRefresh": "Puxe para atualizar",
       "releaseToRefresh": "Solte para atualizar",
+      "loadMore": "Carregar mais",
+      "loading": "Carregando...",
       "tabs": {
         "voices": "Vozes",
         "dialogues": "Diálogos",

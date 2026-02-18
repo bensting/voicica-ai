@@ -441,7 +441,7 @@ export async function getDialogueHistory(limit: number = 20): Promise<Array<{
 /**
  * 获取用户的 Dialogue 记录列表（用于 My Creations）
  */
-export async function getDialogueRecords(limit: number = 50): Promise<DialogueRecord[]> {
+export async function getDialogueRecords(limit: number = 20, offset: number = 0): Promise<DialogueRecord[]> {
   const { user_id: userId } = await getUserOrAnonymous();
 
   const records = await db.select({
@@ -459,7 +459,8 @@ export async function getDialogueRecords(limit: number = 50): Promise<DialogueRe
     .from(dialogueRecords)
     .where(eq(dialogueRecords.userId, userId))
     .orderBy(desc(dialogueRecords.createdAt))
-    .limit(limit);
+    .limit(limit)
+    .offset(offset);
 
   return records.map(r => ({
     id: r.id,

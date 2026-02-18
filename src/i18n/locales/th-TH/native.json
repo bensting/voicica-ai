@@ -90,6 +90,8 @@
       "goCreate": "ไปสร้าง",
       "pullToRefresh": "ดึงลงเพื่อรีเฟรช",
       "releaseToRefresh": "ปล่อยเพื่อรีเฟรช",
+      "loadMore": "โหลดเพิ่ม",
+      "loading": "กำลังโหลด...",
       "tabs": {
         "voices": "เสียง",
         "dialogues": "บทสนทนา",

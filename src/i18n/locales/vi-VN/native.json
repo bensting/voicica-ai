@@ -90,6 +90,8 @@
       "goCreate": "Đi sáng tạo",
       "pullToRefresh": "Kéo xuống để làm mới",
       "releaseToRefresh": "Thả để làm mới",
+      "loadMore": "Tải thêm",
+      "loading": "Đang tải...",
       "tabs": {
         "voices": "Giọng nói",
         "dialogues": "Hội thoại",

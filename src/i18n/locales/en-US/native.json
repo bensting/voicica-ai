@@ -90,6 +90,8 @@
       "goCreate": "Go create",
       "pullToRefresh": "Pull to refresh",
       "releaseToRefresh": "Release to refresh",
+      "loadMore": "Load more",
+      "loading": "Loading...",
       "tabs": {
         "voices": "Voices",
         "dialogues": "Dialogues",

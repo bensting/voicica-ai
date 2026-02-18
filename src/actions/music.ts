@@ -710,14 +710,15 @@ export async function getMusicTaskStatus(taskId: string): Promise<MusicTaskStatu
 /**
  * 获取用户音乐历史记录
  */
-export async function getMusicRecords(limit: number = 50): Promise<MusicRecord[]> {
+export async function getMusicRecords(limit: number = 20, offset: number = 0): Promise<MusicRecord[]> {
   const unifiedUser = await getUserOrAnonymous();
   const userId = unifiedUser.user_id;
 
   const records = await db.select().from(musicRecords)
     .where(eq(musicRecords.userId, userId))
     .orderBy(desc(musicRecords.createdAt))
-    .limit(limit);
+    .limit(limit)
+    .offset(offset);
 
   return records.map((r) => ({
     id: r.id,

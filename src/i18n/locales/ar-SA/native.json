@@ -90,6 +90,8 @@
       "goCreate": "ابدأ الإنشاء",
       "pullToRefresh": "اسحب للتحديث",
       "releaseToRefresh": "اترك للتحديث",
+      "loadMore": "تحميل المزيد",
+      "loading": "جار التحميل...",
       "tabs": {
         "voices": "الأصوات",
         "dialogues": "الحوارات",

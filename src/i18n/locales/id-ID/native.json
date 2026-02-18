@@ -90,6 +90,8 @@
       "goCreate": "Buat sekarang",
       "pullToRefresh": "Tarik untuk menyegarkan",
       "releaseToRefresh": "Lepas untuk menyegarkan",
+      "loadMore": "Muat lebih",
+      "loading": "Memuat...",
       "tabs": {
         "voices": "Suara",
         "dialogues": "Dialog",

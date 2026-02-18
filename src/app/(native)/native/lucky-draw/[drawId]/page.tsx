@@ -6,7 +6,8 @@ import GradientButton from '@/components/native/common/GradientButton';
 import LoginModal from '@/components/native/LoginModal';
 import ClaimPrizeSheet, { type ClaimData, type ClaimStatus, type ShippingInfo } from '@/components/native/ClaimPrizeSheet';
 import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
-import { getLuckyDrawStatus, createLuckyDrawCheckout, submitPrizeClaim, type LuckyDrawStatusResult } from '@/actions/lucky-draw';
+import { useSearchParams } from 'next/navigation';
+import { getLuckyDrawStatus, createLuckyDrawCheckout, cancelLuckyDrawCheckout, submitPrizeClaim, type LuckyDrawStatusResult } from '@/actions/lucky-draw';
 
 import { CloseIcon } from '@/components/native/lucky-draw/icons';
 import SellingState from '@/components/native/lucky-draw/SellingState';
@@ -20,6 +21,7 @@ export default function LuckyDrawDetailPage() {
   const router = useRouter();
   const goBack = useCallback(() => router.push('/native'), [router]);
   const params = useParams();
+  const searchParams = useSearchParams();
   const drawId = params.drawId as string;
 
   // Auth
@@ -66,10 +68,17 @@ export default function LuckyDrawDetailPage() {
   }, [drawId]);
 
   useEffect(() => {
-    fetchStatus();
+    const cancelledSession = searchParams.get('cancelled_session');
+    if (cancelledSession) {
+      // User returned from Stripe without paying — release reserved slots
+      window.history.replaceState({}, '', `/native/lucky-draw/${drawId}`);
+      cancelLuckyDrawCheckout(cancelledSession).finally(fetchStatus);
+    } else {
+      fetchStatus();
+    }
     const interval = setInterval(fetchStatus, 30000);
     return () => clearInterval(interval);
-  }, [fetchStatus]);
+  }, [fetchStatus, searchParams, drawId]);
 
   const remainingSlots = drawStatus ? drawStatus.totalSlots - drawStatus.soldSlots : 0;
 

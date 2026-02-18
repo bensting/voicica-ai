@@ -441,6 +441,10 @@ export async function createLuckyDrawCheckout(
       ? `${successUrl}&request_id={CHECKOUT_SESSION_ID}`
       : `${successUrl}?request_id={CHECKOUT_SESSION_ID}`;
 
+    const cancelUrlWithSession = cancelUrl.includes('?')
+      ? `${cancelUrl}&cancelled_session={CHECKOUT_SESSION_ID}`
+      : `${cancelUrl}?cancelled_session={CHECKOUT_SESSION_ID}`;
+
     session = await getStripe().checkout.sessions.create({
       mode: 'payment',
       payment_method_types: ['card'],
@@ -467,7 +471,7 @@ export async function createLuckyDrawCheckout(
         },
       ],
       success_url: successUrlWithSession,
-      cancel_url: cancelUrl,
+      cancel_url: cancelUrlWithSession,
       metadata: {
         type: 'lucky_draw',
         draw_id: drawId,
@@ -546,6 +550,62 @@ export async function createLuckyDrawCheckout(
     checkout_url: session.url,
     session_id: session.id,
   };
+}
+
+// ─── cancelLuckyDrawCheckout (user cancelled / navigated back from Stripe) ───
+
+export async function cancelLuckyDrawCheckout(sessionId: string): Promise<void> {
+  // 1) Retrieve the session to check its status
+  let session: Stripe.Checkout.Session;
+  try {
+    session = await getStripe().checkout.sessions.retrieve(sessionId);
+  } catch {
+    // Session not found or invalid — nothing to clean up
+    return;
+  }
+
+  // Only act on unpaid / open sessions
+  if (session.payment_status === 'paid' || session.status === 'complete') {
+    return;
+  }
+
+  const drawId = session.metadata?.draw_id;
+  if (!drawId) return;
+
+  // 2) Expire the Stripe session (prevents late payment)
+  if (session.status === 'open') {
+    try {
+      await getStripe().checkout.sessions.expire(sessionId);
+    } catch { /* already expired or completed — safe to ignore */ }
+  }
+
+  // 3) Release reserved entries (same logic as handleLuckyDrawSessionExpired)
+  const [reservedResult] = await db
+    .select({ count: count() })
+    .from(luckyDrawEntries)
+    .where(and(
+      eq(luckyDrawEntries.drawId, drawId),
+      eq(luckyDrawEntries.stripeSessionId, sessionId),
+      eq(luckyDrawEntries.status, 'reserved'),
+    ));
+
+  const reservedCount = reservedResult?.count ?? 0;
+  if (reservedCount === 0) return;
+
+  await db.execute(sql`
+    DELETE FROM lucky_draw_entries
+    WHERE draw_id = ${drawId}
+      AND stripe_session_id = ${sessionId}
+      AND status = 'reserved'
+  `);
+
+  await db.execute(sql`
+    UPDATE lucky_draws
+    SET sold_count = sold_count - ${reservedCount}
+    WHERE draw_id = ${drawId}
+  `);
+
+  console.log(`♻️ Lucky Draw cancelled: released ${reservedCount} slots for session ${sessionId}, drawId=${drawId}`);
 }
 
 // ─── handleLuckyDrawPurchase (webhook: checkout.session.completed) ───

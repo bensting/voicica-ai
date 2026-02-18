@@ -292,14 +292,14 @@ export default function NativeDailyTasksModal({ isOpen, onClose, onCreditsUpdate
         </div>
 
         {/* 今日进度 */}
-        <div className="bg-white/5 rounded-xl p-4 mb-5">
-          <div className="flex items-center justify-between text-sm">
-            <span className="text-gray-400">{t('dailyTasks.todayEarned')}</span>
-            <span className="font-semibold text-purple-400">
+        <div className="mb-4">
+          <div className="flex items-center justify-between text-xs mb-1.5">
+            <span className="text-gray-500">{t('dailyTasks.todayEarned')}</span>
+            <span className="font-medium text-purple-400">
               {formatCredits(status.todayTotalCredits)} / {formatCredits(status.todayMaxCredits)}
             </span>
           </div>
-          <div className="mt-2 h-2 bg-white/10 rounded-full overflow-hidden">
+          <div className="h-1.5 bg-white/10 rounded-full overflow-hidden">
             <div
               className="h-full bg-gradient-to-r from-purple-500 to-pink-500 rounded-full transition-all duration-500"
               style={{ width: `${(status.todayTotalCredits / status.todayMaxCredits) * 100}%` }}

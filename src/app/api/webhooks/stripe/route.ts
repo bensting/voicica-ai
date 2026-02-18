@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import Stripe from 'stripe';
 import db from '@/lib/db';
 import { userSubscriptions, subscriptionHistory } from '@/db/schema';
 import { eq, and, desc } from 'drizzle-orm';
@@ -7,19 +6,14 @@ import { getCreditTierByProductId } from '@/config/subscription';
 import { addCredits } from '@/lib/credits';
 import { ProductType } from '@/config/productType';
 import { handleLuckyDrawPurchase, handleLuckyDrawSessionExpired } from '@/actions/lucky-draw';
-
-// 延迟初始化 Stripe，避免构建时因缺少环境变量而失败
-let _stripe: Stripe | null = null;
-function getStripe(): Stripe {
-  if (!_stripe) {
-    const apiKey = process.env.STRIPE_SECRET_KEY;
-    if (!apiKey) {
-      throw new Error('STRIPE_SECRET_KEY is not configured');
-    }
-    _stripe = new Stripe(apiKey);
-  }
-  return _stripe;
-}
+import {
+  verifyWebhookSignature,
+  retrieveSubscription,
+  type CheckoutSession,
+  type Subscription,
+  type Invoice,
+  type WebhookEvent,
+} from '@/lib/stripe-api';
 
 function getWebhookSecret(): string {
   const secret = process.env.STRIPE_WEBHOOK_SECRET;
@@ -74,7 +68,7 @@ async function recordSubscriptionHistory(params: {
  * 处理 checkout.session.completed 事件
  * 用户完成支付后触发
  */
-async function handleCheckoutCompleted(session: Stripe.Checkout.Session, eventId: string) {
+async function handleCheckoutCompleted(session: CheckoutSession, eventId: string) {
   console.log('💳 处理 checkout.session.completed:', session.id);
 
   const metadata = session.metadata || {};
@@ -110,9 +104,7 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session, eventId
 
   // 判断是否为订阅模式
   const isSubscription = session.mode === 'subscription';
-  const stripeSubscriptionId = typeof session.subscription === 'string'
-    ? session.subscription
-    : session.subscription?.id ?? null;
+  const stripeSubscriptionId = session.subscription ?? null;
 
   // 计算订阅日期
   const now = new Date();
@@ -121,7 +113,7 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session, eventId
   if (isSubscription && stripeSubscriptionId) {
     // 订阅模式：从 Stripe 获取周期结束时间（新版 API 中周期信息在 items.data 中）
     try {
-      const stripeSubscription = await getStripe().subscriptions.retrieve(stripeSubscriptionId);
+      const stripeSubscription = await retrieveSubscription(stripeSubscriptionId);
       const subscriptionItem = stripeSubscription.items.data[0];
       console.log('🔍 Stripe Subscription Item:', JSON.stringify({
         id: stripeSubscription.id,
@@ -213,7 +205,7 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session, eventId
  * 处理 invoice.paid 事件
  * 订阅续费成功后触发
  */
-async function handleInvoicePaid(invoice: Stripe.Invoice, eventId: string) {
+async function handleInvoicePaid(invoice: Invoice, eventId: string) {
   console.log('💰 处理 invoice.paid:', invoice.id, 'billing_reason:', invoice.billing_reason);
 
   // 只处理续费发票，初次订阅由 checkout.session.completed 处理
@@ -306,7 +298,7 @@ async function handleInvoicePaid(invoice: Stripe.Invoice, eventId: string) {
 /**
  * 处理 customer.subscription.updated 事件
  */
-async function handleSubscriptionUpdated(stripeSubscription: Stripe.Subscription, eventId: string) {
+async function handleSubscriptionUpdated(stripeSubscription: Subscription, eventId: string) {
   console.log('🔄 处理 customer.subscription.updated:', stripeSubscription.id);
 
   const [subscription] = await db.select().from(userSubscriptions)
@@ -380,7 +372,7 @@ async function handleSubscriptionUpdated(stripeSubscription: Stripe.Subscription
 /**
  * 处理 customer.subscription.deleted 事件
  */
-async function handleSubscriptionDeleted(stripeSubscription: Stripe.Subscription, eventId: string) {
+async function handleSubscriptionDeleted(stripeSubscription: Subscription, eventId: string) {
   console.log('❌ 处理 customer.subscription.deleted:', stripeSubscription.id);
 
   // 先用 external_subscription_id 查找
@@ -460,9 +452,9 @@ export async function POST(request: NextRequest) {
     }
 
     // 验证签名
-    let event: Stripe.Event;
+    let event: WebhookEvent;
     try {
-      event = getStripe().webhooks.constructEvent(body, signature, getWebhookSecret());
+      event = await verifyWebhookSignature(body, signature, getWebhookSecret());
     } catch (err) {
       console.error('❌ Webhook 签名验证失败:', err);
       return NextResponse.json({ error: 'Invalid signature' }, { status: 400 });
@@ -473,23 +465,23 @@ export async function POST(request: NextRequest) {
     // 处理不同事件类型
     switch (event.type) {
       case 'checkout.session.completed':
-        await handleCheckoutCompleted(event.data.object as Stripe.Checkout.Session, event.id);
+        await handleCheckoutCompleted(event.data.object as unknown as CheckoutSession, event.id);
         break;
 
       case 'invoice.paid':
-        await handleInvoicePaid(event.data.object as Stripe.Invoice, event.id);
+        await handleInvoicePaid(event.data.object as unknown as Invoice, event.id);
         break;
 
       case 'customer.subscription.updated':
-        await handleSubscriptionUpdated(event.data.object as Stripe.Subscription, event.id);
+        await handleSubscriptionUpdated(event.data.object as unknown as Subscription, event.id);
         break;
 
       case 'customer.subscription.deleted':
-        await handleSubscriptionDeleted(event.data.object as Stripe.Subscription, event.id);
+        await handleSubscriptionDeleted(event.data.object as unknown as Subscription, event.id);
         break;
 
       case 'checkout.session.expired': {
-        const expiredSession = event.data.object as Stripe.Checkout.Session;
+        const expiredSession = event.data.object as unknown as CheckoutSession;
         if (expiredSession.metadata?.type === 'lucky_draw') {
           await handleLuckyDrawSessionExpired(expiredSession);
         }

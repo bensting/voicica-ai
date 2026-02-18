@@ -16,7 +16,6 @@
  * - triggerDraw 使用 INSERT + catch unique violation 实现幂等
  */
 
-import Stripe from 'stripe';
 import db from '@/lib/db';
 import { luckyDrawInstances, luckyDrawEntries, luckyDrawResults, luckyDrawClaims } from '@/db/schema';
 import { eq, and, sql, desc, count } from 'drizzle-orm';
@@ -25,15 +24,12 @@ import { addCredits } from '@/lib/credits';
 import { ProductType } from '@/config/productType';
 import { getLuckyDrawProduct, STRIPE_PROCESSING_FEE_CENTS } from '@/config/native/luckyDrawConfig';
 import { getLatestBlock, calculateWinnerSlot } from '@/lib/services/polygon';
-
-// Lazy-init Stripe
-let _stripe: Stripe | null = null;
-function getStripe(): Stripe {
-  if (!_stripe) {
-    _stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
-  }
-  return _stripe;
-}
+import {
+  createCheckoutSession,
+  retrieveCheckoutSession,
+  expireCheckoutSession,
+  type CheckoutSession,
+} from '@/lib/stripe-api';
 
 // ─── Types ───
 
@@ -448,7 +444,7 @@ export async function createLuckyDrawCheckout(
   }
 
   // ── Step 2: Create Stripe checkout session (30 min expiry) ──
-  let session: Stripe.Checkout.Session;
+  let session: CheckoutSession;
   try {
     const successUrlWithSession = successUrl.includes('?')
       ? `${successUrl}&request_id={CHECKOUT_SESSION_ID}`
@@ -458,9 +454,9 @@ export async function createLuckyDrawCheckout(
       ? `${cancelUrl}&cancelled_session={CHECKOUT_SESSION_ID}`
       : `${cancelUrl}?cancelled_session={CHECKOUT_SESSION_ID}`;
 
-    session = await getStripe().checkout.sessions.create({
+    session = await createCheckoutSession({
       mode: 'payment',
-      payment_method_types: ['card'],
+      'payment_method_types[0]': 'card',
       expires_at: Math.floor(Date.now() / 1000) + 30 * 60,
       line_items: [
         {
@@ -549,7 +545,7 @@ export async function createLuckyDrawCheckout(
           WHERE draw_id = ${drawId}
         `);
         try {
-          await getStripe().checkout.sessions.expire(session.id);
+          await expireCheckoutSession(session.id);
         } catch { /* best effort */ }
         throw e;
       }
@@ -569,9 +565,9 @@ export async function createLuckyDrawCheckout(
 
 export async function cancelLuckyDrawCheckout(sessionId: string): Promise<void> {
   // 1) Retrieve the session to check its status
-  let session: Stripe.Checkout.Session;
+  let session: CheckoutSession;
   try {
-    session = await getStripe().checkout.sessions.retrieve(sessionId);
+    session = await retrieveCheckoutSession(sessionId);
   } catch {
     // Session not found or invalid — nothing to clean up
     return;
@@ -588,7 +584,7 @@ export async function cancelLuckyDrawCheckout(sessionId: string): Promise<void> 
   // 2) Expire the Stripe session (prevents late payment)
   if (session.status === 'open') {
     try {
-      await getStripe().checkout.sessions.expire(sessionId);
+      await expireCheckoutSession(sessionId);
     } catch { /* already expired or completed — safe to ignore */ }
   }
 
@@ -624,7 +620,7 @@ export async function cancelLuckyDrawCheckout(sessionId: string): Promise<void> 
 // ─── handleLuckyDrawPurchase (webhook: checkout.session.completed) ───
 
 export async function handleLuckyDrawPurchase(
-  session: Stripe.Checkout.Session,
+  session: CheckoutSession,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   eventId: string,
 ): Promise<void> {
@@ -727,7 +723,7 @@ export async function handleLuckyDrawPurchase(
 // ─── handleLuckyDrawSessionExpired (webhook: checkout.session.expired) ───
 
 export async function handleLuckyDrawSessionExpired(
-  session: Stripe.Checkout.Session,
+  session: CheckoutSession,
 ): Promise<void> {
   const metadata = session.metadata || {};
   const drawId = metadata.draw_id;

@@ -3,7 +3,6 @@
 /**
  * 订阅模块 Server Actions
  */
-import Stripe from 'stripe';
 import db from '@/lib/db';
 import { userSubscriptions } from '@/db/schema';
 import { eq, and, gte, desc } from 'drizzle-orm';
@@ -16,9 +15,7 @@ import {
   type Platform,
   type SubscriptionPlanConfig,
 } from '@/config/subscription';
-
-// Initialize Stripe
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
+import { cancelStripeSubscription } from '@/lib/stripe-api';
 
 /**
  * 获取订阅计划列表
@@ -238,7 +235,7 @@ export async function cancelSubscription(
     try {
       console.log(`🔄 取消 Stripe 订阅: ${subscription.externalSubscriptionId}`);
 
-      await stripe.subscriptions.cancel(subscription.externalSubscriptionId, {
+      await cancelStripeSubscription(subscription.externalSubscriptionId, {
         cancellation_details: {
           comment: data?.cancellation_reason,
         },

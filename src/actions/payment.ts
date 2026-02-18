@@ -3,15 +3,12 @@
 /**
  * 支付模块 Server Actions
  */
-import Stripe from 'stripe';
 import { getCurrentUser } from '@/lib/auth-firebase';
 import db from '@/lib/db';
 import { users, userSubscriptions } from '@/db/schema';
 import { eq, and } from 'drizzle-orm';
 import { getCreditTierByProductId } from '@/config/subscription';
-
-// Initialize Stripe
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
+import { createCheckoutSession, retrieveCheckoutSession } from '@/lib/stripe-api';
 
 // 支付特有的类型定义
 export interface StripeCheckoutRequest {
@@ -78,9 +75,9 @@ export async function createStripeCheckout(request: StripeCheckoutRequest): Prom
     : `${request.success_url}?request_id={CHECKOUT_SESSION_ID}`;
 
   // 创建 Stripe Checkout Session
-  const sessionParams: Stripe.Checkout.SessionCreateParams = {
+  const sessionParams: Record<string, unknown> = {
     mode: plan.billing_period ? 'subscription' : 'payment',
-    payment_method_types: ['card'],
+    'payment_method_types[0]': 'card',
     line_items: [
       {
         price_data: {
@@ -107,16 +104,13 @@ export async function createStripeCheckout(request: StripeCheckoutRequest): Prom
       plan_id: String(plan.id),
       credits: String(tier.credits),
     },
+    'expand[0]': 'line_items',
     ...(appUser?.email && {
       customer_email: appUser.email,
     }),
   };
 
-  const session = await stripe.checkout.sessions.create({
-    ...sessionParams,
-    // 展开 line_items 以便在 webhook 中获取
-    expand: ['line_items'],
-  });
+  const session = await createCheckoutSession(sessionParams);
 
   if (!session.url) {
     throw new Error('Failed to create checkout session');
@@ -140,7 +134,7 @@ export async function verifyStripePayment(params: { request_id: string }): Promi
   message: string;
 }> {
   try {
-    const session = await stripe.checkout.sessions.retrieve(params.request_id);
+    const session = await retrieveCheckoutSession(params.request_id);
 
     const isPaid = session.payment_status === 'paid';
 

@@ -32,7 +32,7 @@ const CloseIcon = () => (
 );
 
 const GiftIcon = () => (
-  <svg className="w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
     <rect x="3" y="8" width="18" height="13" rx="2" />
     <path d="M12 8v13M3 12h18M7.5 8a2.5 2.5 0 010-5C9 3 12 6 12 8M16.5 8a2.5 2.5 0 000-5C15 3 12 6 12 8" />
   </svg>
@@ -281,12 +281,14 @@ export default function NativeDailyTasksModal({ isOpen, onClose, onCreditsUpdate
 
     return (
       <div>
-        <div className="text-center mb-6">
-          <div className="w-14 h-14 mx-auto mb-3 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center text-white">
-            <GiftIcon />
-          </div>
-          <h3 className="text-xl font-bold text-white">{t('dailyTasks.title')}</h3>
-          <p className="text-sm text-gray-400">{t('dailyTasks.subtitle')}</p>
+        <div className="text-center mb-3">
+          <h3 className="text-lg font-bold text-white flex items-center justify-center gap-2">
+            <span className="text-purple-400">
+              <GiftIcon />
+            </span>
+            {t('dailyTasks.title')}
+          </h3>
+          <p className="text-xs text-gray-400 mt-0.5">{t('dailyTasks.subtitle')}</p>
         </div>
 
         {/* 今日进度 */}

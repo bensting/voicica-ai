@@ -155,7 +155,7 @@ export default function LuckyDrawTab() {
                       YOU WON!
                     </span>
                   ) : (
-                    <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${style.bg} ${style.text}`}>
+                    <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full whitespace-nowrap ${style.bg} ${style.text}`}>
                       {style.label}
                     </span>
                   )}

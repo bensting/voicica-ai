@@ -731,7 +731,7 @@ export async function getUserLuckyDrawHistory(): Promise<LuckyDrawHistoryRecord[
       totalCredits: data.totalCredits,
       slots: data.slots.sort((a, b) => a - b),
       status,
-      date: data.earliestDate.split('T')[0],
+      date: new Date(data.earliestDate).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }),
       href: `/native/lucky-draw/${drawId}`,
     };
 

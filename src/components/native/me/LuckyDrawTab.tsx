@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import ClaimPrizeSheet, { type ClaimData, type ClaimStatus, type ShippingInfo } from '@/components/native/ClaimPrizeSheet';
-import { getUserLuckyDrawHistory, submitPrizeClaim, type LuckyDrawHistoryRecord } from '@/actions/lucky-draw';
+import { type ClaimStatus } from '@/components/native/ClaimPrizeSheet';
+import { getUserLuckyDrawHistory, type LuckyDrawHistoryRecord } from '@/actions/lucky-draw';
 
 /** 状态标签配色 */
 const statusStyle: Record<string, { bg: string; text: string; label: string }> = {
@@ -48,9 +48,6 @@ function TrophyIcon() {
 export default function LuckyDrawTab() {
   const [records, setRecords] = useState<LuckyDrawHistoryRecord[]>([]);
   const [loading, setLoading] = useState(true);
-  const [claimDrawId, setClaimDrawId] = useState<string | null>(null);
-  const [claimPrize, setClaimPrize] = useState<string>('');
-  const [claimData, setClaimData] = useState<ClaimData | null>(null);
 
   useEffect(() => {
     async function fetchHistory() {
@@ -77,36 +74,6 @@ export default function LuckyDrawTab() {
   if (records.length === 0) {
     return null; // 空状态由父组件处理
   }
-
-  const handleClaimSubmit = async (info: ShippingInfo) => {
-    if (!claimDrawId) return;
-
-    try {
-      await submitPrizeClaim(claimDrawId, {
-        fullName: info.fullName,
-        phone: info.phone,
-        email: info.email,
-        country: info.country,
-        address: info.address,
-        zipCode: info.zipCode,
-        telegram: info.telegram,
-      });
-
-      // Update local state
-      setRecords((prev) =>
-        prev.map((r) =>
-          r.drawId === claimDrawId && r.claim
-            ? { ...r, claim: { ...r.claim, status: 'info_submitted', shippingInfo: info } }
-            : r
-        )
-      );
-
-      setClaimDrawId(null);
-      setClaimData(null);
-    } catch (error) {
-      console.error('Failed to submit claim:', error);
-    }
-  };
 
   return (
     <>
@@ -189,21 +156,12 @@ export default function LuckyDrawTab() {
                         </svg>
                         <span className="font-semibold">Slot #{record.result.winnerSlot}</span>
                       </div>
-                      {/* Claim 按钮 — 阻止 Link 跳转，打开 sheet */}
-                      <button
-                        onClick={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          setClaimDrawId(record.drawId);
-                          setClaimPrize(record.prize);
-                          setClaimData(record.claim ? { status: record.claim.status as ClaimStatus, shippingInfo: record.claim.shippingInfo, tracking: record.claim.tracking } : { status: 'unclaimed' });
-                        }}
-                        className={`text-[11px] font-bold px-3 py-1 rounded-full ${
-                          claimStatus ? claimStatusStyle[claimStatus] : claimStatusStyle.unclaimed
-                        }`}
-                      >
+                      {/* 状态标签 — 点击整张卡片进入详情页 claim */}
+                      <span className={`text-[11px] font-bold px-3 py-1 rounded-full ${
+                        claimStatus ? claimStatusStyle[claimStatus] : claimStatusStyle.unclaimed
+                      }`}>
                         {claimStatus ? claimStatusLabel[claimStatus] : claimStatusLabel.unclaimed}
-                      </button>
+                      </span>
                     </div>
                   </div>
                 )}
@@ -232,15 +190,6 @@ export default function LuckyDrawTab() {
         })}
       </div>
 
-      {/* Claim Prize Sheet */}
-      {claimDrawId && claimData && (
-        <ClaimPrizeSheet
-          prize={claimPrize}
-          claimData={claimData}
-          onClose={() => { setClaimDrawId(null); setClaimData(null); }}
-          onSubmit={handleClaimSubmit}
-        />
-      )}
     </>
   );
 }

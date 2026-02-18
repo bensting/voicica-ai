@@ -5,8 +5,9 @@ import { useParams, useRouter } from 'next/navigation';
 import Image from 'next/image';
 import GradientButton from '@/components/native/common/GradientButton';
 import LoginModal from '@/components/native/LoginModal';
+import ClaimPrizeSheet, { type ClaimData, type ClaimStatus, type ShippingInfo } from '@/components/native/ClaimPrizeSheet';
 import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
-import { getLuckyDrawStatus, createLuckyDrawCheckout, type LuckyDrawStatusResult } from '@/actions/lucky-draw';
+import { getLuckyDrawStatus, createLuckyDrawCheckout, submitPrizeClaim, type LuckyDrawStatusResult } from '@/actions/lucky-draw';
 
 /* ─── Confetti particle generator ─── */
 const CONFETTI_COLORS = ['#a855f7', '#ec4899', '#f59e0b', '#10b981', '#6366f1', '#f43f5e', '#facc15', '#22d3ee'];
@@ -110,6 +111,9 @@ export default function LuckyDrawDetailPage() {
   // Auth
   const { user } = useFirebaseAuth();
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+
+  // Claim prize
+  const [claimSheetOpen, setClaimSheetOpen] = useState(false);
 
   // Server data
   const [drawStatus, setDrawStatus] = useState<LuckyDrawStatusResult | null>(null);
@@ -233,6 +237,7 @@ export default function LuckyDrawDetailPage() {
     recentEntries,
     status: currentStatus,
     drawResult,
+    claim,
   } = drawStatus;
 
   const stripePriceUsd = stripePriceCents / 100;
@@ -738,9 +743,16 @@ export default function LuckyDrawDetailPage() {
         style={{ paddingBottom: 'calc(var(--safe-area-inset-bottom, 0px) + 16px)' }}
       >
         {currentStatus === 'completed' ? (
-          <GradientButton onClick={goBack}>
-            {drawResult?.isMe ? 'Claim Prize' : 'Join Next Round'}
-          </GradientButton>
+          drawResult?.isMe ? (
+            <GradientButton onClick={() => setClaimSheetOpen(true)}>
+              {claim?.status === 'info_submitted' ? 'Claim Processing...' :
+               claim?.status === 'shipped' ? 'Track Shipment' :
+               claim?.status === 'delivered' ? 'Prize Delivered' :
+               'Claim Prize'}
+            </GradientButton>
+          ) : (
+            <GradientButton onClick={goBack}>Join Next Round</GradientButton>
+          )
         ) : currentStatus === 'drawing' ? (
           <GradientButton disabled>
             Drawing in Progress...
@@ -1037,6 +1049,53 @@ export default function LuckyDrawDetailPage() {
         onClose={() => setIsLoginModalOpen(false)}
         onLoginSuccess={() => setIsLoginModalOpen(false)}
       />
+
+      {/* Claim Prize Sheet */}
+      {claimSheetOpen && (
+        <ClaimPrizeSheet
+          prize={prize}
+          claimData={{
+            status: (claim?.status as ClaimStatus) || 'unclaimed',
+            ...(claim?.fullName && {
+              shippingInfo: {
+                fullName: claim.fullName,
+                phone: '',
+                email: '',
+                country: '',
+                address: '',
+                zipCode: '',
+              },
+            }),
+            ...(claim?.carrier && {
+              tracking: {
+                carrier: claim.carrier,
+                trackingNumber: claim.trackingNumber ?? '',
+                trackingUrl: claim.trackingUrl ?? '',
+                shippedAt: claim.shippedAt ?? '',
+              },
+            }),
+          }}
+          onClose={() => setClaimSheetOpen(false)}
+          onSubmit={async (info: ShippingInfo) => {
+            try {
+              await submitPrizeClaim(drawId, {
+                fullName: info.fullName,
+                phone: info.phone,
+                email: info.email,
+                country: info.country,
+                address: info.address,
+                zipCode: info.zipCode,
+                telegram: info.telegram,
+              });
+              setClaimSheetOpen(false);
+              fetchStatus(); // Refresh to update claim status
+            } catch (error) {
+              console.error('Failed to submit claim:', error);
+              setToastMsg(error instanceof Error ? error.message : 'Claim failed');
+            }
+          }}
+        />
+      )}
     </div>
   );
 }

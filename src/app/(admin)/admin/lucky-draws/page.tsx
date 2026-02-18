@@ -23,6 +23,7 @@ const emptyFormData: CreateLuckyDrawInput = {
   productId: firstProduct?.productId ?? '',
   title: '',
   enabled: false,
+  status: 'selling',
   totalSlots: firstProduct?.totalSlots ?? 1500,
   creditsPerPurchase: firstProduct?.creditsPerPurchase ?? 100,
   stripePriceCents: firstProduct?.stripePriceCents ?? 100,
@@ -72,6 +73,7 @@ export default function LuckyDrawsPage() {
       productId: draw.productId,
       title: draw.title ?? '',
       enabled: draw.enabled,
+      status: draw.status,
       totalSlots: draw.totalSlots,
       creditsPerPurchase: draw.creditsPerPurchase,
       stripePriceCents: draw.stripePriceCents,
@@ -343,6 +345,22 @@ export default function LuckyDrawsPage() {
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                 />
               </div>
+
+              {/* Status (only for editing) */}
+              {editingDraw && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">状态</label>
+                  <select
+                    value={formData.status}
+                    onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  >
+                    <option value="selling">Selling</option>
+                    <option value="drawing">Drawing</option>
+                    <option value="completed">Completed</option>
+                  </select>
+                </div>
+              )}
 
               {/* Numeric fields — 2-column grid */}
               <div className="grid grid-cols-2 gap-4">

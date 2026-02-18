@@ -35,6 +35,7 @@ export interface CreateLuckyDrawInput {
   productId: string;
   title?: string;
   enabled: boolean;
+  status?: string;
   totalSlots: number;
   creditsPerPurchase: number;
   stripePriceCents: number;
@@ -145,6 +146,7 @@ export async function updateLuckyDraw(
       .set({
         ...(data.title !== undefined && { title: data.title || null }),
         ...(data.enabled !== undefined && { enabled: data.enabled }),
+        ...(data.status !== undefined && { status: data.status }),
         ...(data.totalSlots !== undefined && { totalSlots: data.totalSlots }),
         ...(data.creditsPerPurchase !== undefined && { creditsPerPurchase: data.creditsPerPurchase }),
         ...(data.stripePriceCents !== undefined && { stripePriceCents: data.stripePriceCents }),

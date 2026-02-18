@@ -8,6 +8,12 @@
  *
  * 抽奖实例从 lucky_draws 表读取（admin 创建），
  * 产品静态属性从 luckyDrawConfig 读取。
+ *
+ * 并发安全：
+ * - createLuckyDrawCheckout 使用 sold_count 原子 UPDATE (行级锁) 预留 slot
+ * - handleLuckyDrawPurchase 仅确认 reserved → paid
+ * - handleLuckyDrawSessionExpired 释放未付款的预留
+ * - triggerDraw 使用 INSERT + catch unique violation 实现幂等
  */
 
 import Stripe from 'stripe';
@@ -168,19 +174,13 @@ export async function getActiveDraw(): Promise<ActiveDrawInfo | null> {
 
   const product = mergeProductInfo(draw);
 
-  // Get sold count
-  const [soldResult] = await db
-    .select({ count: count() })
-    .from(luckyDrawEntries)
-    .where(eq(luckyDrawEntries.drawId, draw.drawId));
-
   return {
     drawId: draw.drawId,
     productId: draw.productId,
     title: draw.title,
     ...product,
     totalSlots: draw.totalSlots,
-    soldSlots: soldResult?.count ?? 0,
+    soldSlots: draw.soldCount,
     creditsPerPurchase: draw.creditsPerPurchase,
     stripePriceCents: draw.stripePriceCents,
     cryptoPriceCents: draw.cryptoPriceCents,
@@ -211,10 +211,6 @@ export async function getActiveDrawsByProduct(): Promise<ActiveDrawInfo[]> {
     seen.add(draw.productId);
 
     const product = mergeProductInfo(draw);
-    const [soldResult] = await db
-      .select({ count: count() })
-      .from(luckyDrawEntries)
-      .where(eq(luckyDrawEntries.drawId, draw.drawId));
 
     result.push({
       drawId: draw.drawId,
@@ -222,7 +218,7 @@ export async function getActiveDrawsByProduct(): Promise<ActiveDrawInfo[]> {
       title: draw.title,
       ...product,
       totalSlots: draw.totalSlots,
-      soldSlots: soldResult?.count ?? 0,
+      soldSlots: draw.soldCount,
       creditsPerPurchase: draw.creditsPerPurchase,
       stripePriceCents: draw.stripePriceCents,
       cryptoPriceCents: draw.cryptoPriceCents,
@@ -247,7 +243,7 @@ export async function getLuckyDrawStatus(drawId: string): Promise<LuckyDrawStatu
 
   const product = mergeProductInfo(draw);
 
-  // Get sold slots count
+  // soldSlots: count all entries (reserved + paid) to reflect true occupation
   const [soldResult] = await db
     .select({ count: count() })
     .from(luckyDrawEntries)
@@ -262,12 +258,10 @@ export async function getLuckyDrawStatus(drawId: string): Promise<LuckyDrawStatu
     .where(eq(luckyDrawResults.drawId, drawId))
     .limit(1);
 
-  // Determine status
+  // Determine status — trust DB status, only override if result exists but DB hasn't caught up
   let status: 'selling' | 'drawing' | 'completed' = draw.status as 'selling' | 'drawing' | 'completed';
   if (result) {
     status = 'completed';
-  } else if (soldSlots >= draw.totalSlots) {
-    status = 'drawing';
   }
 
   // Get current user's entries (optional - may not be logged in)
@@ -377,7 +371,7 @@ export async function getLuckyDrawStatus(drawId: string): Promise<LuckyDrawStatu
   };
 }
 
-// ─── createLuckyDrawCheckout ───
+// ─── createLuckyDrawCheckout (atomic slot reservation) ───
 
 export async function createLuckyDrawCheckout(
   drawId: string,
@@ -398,59 +392,122 @@ export async function createLuckyDrawCheckout(
   }
 
   const product = mergeProductInfo(draw);
-
-  // Check remaining slots
-  const [soldResult] = await db
-    .select({ count: count() })
-    .from(luckyDrawEntries)
-    .where(eq(luckyDrawEntries.drawId, drawId));
-
-  const soldSlots = soldResult?.count ?? 0;
-  const remaining = draw.totalSlots - soldSlots;
-
-  if (packs > remaining) {
-    throw new Error(`Not enough slots remaining. Available: ${remaining}`);
-  }
-
   const totalCredits = draw.creditsPerPurchase * packs;
 
-  const successUrlWithSession = successUrl.includes('?')
-    ? `${successUrl}&request_id={CHECKOUT_SESSION_ID}`
-    : `${successUrl}?request_id={CHECKOUT_SESSION_ID}`;
+  // ── Step 1: Atomic capacity reservation via row-level lock ──
+  // UPDATE ... WHERE sold_count + packs <= total_slots
+  // Two concurrent UPDATEs serialize on the row lock; the second sees the new sold_count.
+  const reserveResult = await db.execute(sql`
+    UPDATE lucky_draws
+    SET sold_count = sold_count + ${packs}
+    WHERE draw_id = ${drawId}
+      AND status = 'selling'
+      AND sold_count + ${packs} <= total_slots
+  `);
 
-  const session = await getStripe().checkout.sessions.create({
-    mode: 'payment',
-    payment_method_types: ['card'],
-    line_items: [
-      {
-        price_data: {
-          currency: 'usd',
-          unit_amount: draw.stripePriceCents,
-          product_data: {
-            name: `Lucky Draw Credit Pack × ${packs}`,
-            description: `${totalCredits} AI Credits + ${packs} Lucky Draw entries for ${product.prize}`,
+  if (reserveResult.rowCount === 0) {
+    throw new Error('Not enough slots remaining');
+  }
+
+  // ── Step 2: Create Stripe checkout session (30 min expiry) ──
+  let session: Stripe.Checkout.Session;
+  try {
+    const successUrlWithSession = successUrl.includes('?')
+      ? `${successUrl}&request_id={CHECKOUT_SESSION_ID}`
+      : `${successUrl}?request_id={CHECKOUT_SESSION_ID}`;
+
+    session = await getStripe().checkout.sessions.create({
+      mode: 'payment',
+      payment_method_types: ['card'],
+      expires_at: Math.floor(Date.now() / 1000) + 30 * 60,
+      line_items: [
+        {
+          price_data: {
+            currency: 'usd',
+            unit_amount: draw.stripePriceCents,
+            product_data: {
+              name: `Lucky Draw Credit Pack × ${packs}`,
+              description: `${totalCredits} AI Credits + ${packs} Lucky Draw entries for ${product.prize}`,
+            },
           },
+          quantity: packs,
         },
-        quantity: packs,
+      ],
+      success_url: successUrlWithSession,
+      cancel_url: cancelUrl,
+      metadata: {
+        type: 'lucky_draw',
+        draw_id: drawId,
+        user_id: userId,
+        packs: String(packs),
+        credits: String(totalCredits),
       },
-    ],
-    success_url: successUrlWithSession,
-    cancel_url: cancelUrl,
-    metadata: {
-      type: 'lucky_draw',
-      draw_id: drawId,
-      user_id: userId,
-      packs: String(packs),
-      credits: String(totalCredits),
-    },
-    ...(user.email && { customer_email: user.email }),
-  });
+      ...(user.email && { customer_email: user.email }),
+    });
+  } catch (stripeError) {
+    // Rollback sold_count if Stripe session creation fails
+    await db.execute(sql`
+      UPDATE lucky_draws
+      SET sold_count = sold_count - ${packs}
+      WHERE draw_id = ${drawId}
+    `);
+    throw stripeError;
+  }
 
   if (!session.url) {
+    // Rollback sold_count
+    await db.execute(sql`
+      UPDATE lucky_draws
+      SET sold_count = sold_count - ${packs}
+      WHERE draw_id = ${drawId}
+    `);
     throw new Error('Failed to create checkout session');
   }
 
-  console.log(`✅ Lucky Draw Checkout 创建成功: ${session.id}, 用户: ${userId}, packs: ${packs}`);
+  // ── Step 3: Insert reserved entries with slot numbers ──
+  const MAX_RETRIES = 5;
+  for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
+    try {
+      const amountPerPack = session.amount_total ? Math.round(session.amount_total / packs) : null;
+      const currency = session.currency?.toUpperCase() ?? null;
+
+      await db.execute(sql`
+        INSERT INTO lucky_draw_entries
+          (draw_id, user_id, slot_number, packs, credits_awarded, payment_platform, stripe_session_id, amount_paid, currency, status, created_at)
+        SELECT
+          ${drawId}, ${userId}, available_slot, 1, ${draw.creditsPerPurchase},
+          'stripe', ${session.id}, ${amountPerPack}, ${currency}, 'reserved', CURRENT_TIMESTAMP
+        FROM (
+          SELECT gs AS available_slot
+          FROM generate_series(0, ${draw.totalSlots - 1}) AS gs
+          WHERE NOT EXISTS (
+            SELECT 1 FROM lucky_draw_entries
+            WHERE draw_id = ${drawId} AND slot_number = gs
+          )
+          ORDER BY gs
+          LIMIT ${packs}
+        ) sub
+      `);
+      break;
+    } catch (e: unknown) {
+      const isUniqueViolation = e instanceof Error && e.message.includes('uq_lde_draw_slot');
+      if (!isUniqueViolation || attempt === MAX_RETRIES - 1) {
+        // Rollback: release sold_count and expire Stripe session
+        await db.execute(sql`
+          UPDATE lucky_draws
+          SET sold_count = sold_count - ${packs}
+          WHERE draw_id = ${drawId}
+        `);
+        try {
+          await getStripe().checkout.sessions.expire(session.id);
+        } catch { /* best effort */ }
+        throw e;
+      }
+      console.warn(`⚠️ Lucky Draw slot 冲突, 重试 ${attempt + 1}/${MAX_RETRIES}`);
+    }
+  }
+
+  console.log(`✅ Lucky Draw Checkout 创建成功 (slot reserved): ${session.id}, 用户: ${userId}, packs: ${packs}`);
 
   return {
     checkout_url: session.url,
@@ -458,7 +515,7 @@ export async function createLuckyDrawCheckout(
   };
 }
 
-// ─── handleLuckyDrawPurchase (called from webhook) ───
+// ─── handleLuckyDrawPurchase (webhook: checkout.session.completed) ───
 
 export async function handleLuckyDrawPurchase(
   session: Stripe.Checkout.Session,
@@ -475,6 +532,46 @@ export async function handleLuckyDrawPurchase(
     return;
   }
 
+  // Idempotency: check if entries are already paid
+  const [alreadyPaid] = await db
+    .select({ count: count() })
+    .from(luckyDrawEntries)
+    .where(and(
+      eq(luckyDrawEntries.drawId, drawId),
+      eq(luckyDrawEntries.stripeSessionId, session.id),
+      eq(luckyDrawEntries.status, 'paid'),
+    ));
+
+  if (alreadyPaid && alreadyPaid.count > 0) {
+    console.log(`⏭️ Lucky Draw: entries already paid for session ${session.id}, skipping`);
+    return;
+  }
+
+  // Check if reserved entries still exist (may have expired)
+  const [reservedCount] = await db
+    .select({ count: count() })
+    .from(luckyDrawEntries)
+    .where(and(
+      eq(luckyDrawEntries.drawId, drawId),
+      eq(luckyDrawEntries.stripeSessionId, session.id),
+      eq(luckyDrawEntries.status, 'reserved'),
+    ));
+
+  if (!reservedCount || reservedCount.count === 0) {
+    console.error(`❌ Lucky Draw: no reserved entries for session ${session.id} — reservation may have expired`);
+    // TODO: consider issuing a refund via Stripe
+    return;
+  }
+
+  // Confirm reserved → paid
+  await db.execute(sql`
+    UPDATE lucky_draw_entries
+    SET status = 'paid'
+    WHERE draw_id = ${drawId}
+      AND stripe_session_id = ${session.id}
+      AND status = 'reserved'
+  `);
+
   const draw = await getDrawInstance(drawId);
   if (!draw) {
     console.error(`❌ Lucky Draw: 找不到实例: ${drawId}`);
@@ -482,31 +579,6 @@ export async function handleLuckyDrawPurchase(
   }
 
   const product = mergeProductInfo(draw);
-
-  // Atomically allocate slot numbers
-  const amountPerPack = session.amount_total ? Math.round(session.amount_total / packs) : null;
-  const currency = session.currency?.toUpperCase() ?? null;
-
-  const MAX_RETRIES = 3;
-  for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
-    try {
-      await db.execute(sql`
-        INSERT INTO lucky_draw_entries
-          (draw_id, user_id, slot_number, packs, credits_awarded, payment_platform, stripe_session_id, amount_paid, currency, created_at)
-        SELECT
-          ${drawId}, ${userId},
-          (SELECT COALESCE(MAX(slot_number), -1) FROM lucky_draw_entries WHERE draw_id = ${drawId}) + gs.n,
-          1, ${draw.creditsPerPurchase}, 'stripe', ${session.id},
-          ${amountPerPack}, ${currency}, CURRENT_TIMESTAMP
-        FROM generate_series(1, ${packs}) AS gs(n)
-      `);
-      break;
-    } catch (e: unknown) {
-      const isUniqueViolation = e instanceof Error && e.message.includes('uq_lde_draw_slot');
-      if (!isUniqueViolation || attempt === MAX_RETRIES - 1) throw e;
-      console.warn(`⚠️ Lucky Draw slot 冲突, 重试 ${attempt + 1}/${MAX_RETRIES}`);
-    }
-  }
 
   // Add credits to user
   await addCredits(
@@ -519,44 +591,86 @@ export async function handleLuckyDrawPurchase(
 
   console.log(`✅ Lucky Draw 购买完成: drawId=${drawId}, userId=${userId}, packs=${packs}, credits=+${credits}`);
 
-  // Check if all slots are sold → trigger draw
-  const [soldResult] = await db
+  // Check if all slots are paid → trigger draw
+  const [paidResult] = await db
     .select({ count: count() })
     .from(luckyDrawEntries)
-    .where(eq(luckyDrawEntries.drawId, drawId));
+    .where(and(
+      eq(luckyDrawEntries.drawId, drawId),
+      eq(luckyDrawEntries.status, 'paid'),
+    ));
 
-  const soldSlots = soldResult?.count ?? 0;
+  const paidSlots = paidResult?.count ?? 0;
 
-  if (soldSlots >= draw.totalSlots) {
+  if (paidSlots >= draw.totalSlots) {
     // Update draw status to 'drawing'
     await db
       .update(luckyDrawInstances)
       .set({ status: 'drawing' })
-      .where(eq(luckyDrawInstances.drawId, drawId));
+      .where(and(
+        eq(luckyDrawInstances.drawId, drawId),
+        eq(luckyDrawInstances.status, 'selling'),
+      ));
 
-    console.log(`🎰 所有 slots 已售罄 (${soldSlots}/${draw.totalSlots})，触发开奖...`);
+    console.log(`🎰 所有 slots 已付款 (${paidSlots}/${draw.totalSlots})，触发开奖...`);
     await triggerDraw(drawId);
   }
 }
 
-// ─── triggerDraw ───
+// ─── handleLuckyDrawSessionExpired (webhook: checkout.session.expired) ───
+
+export async function handleLuckyDrawSessionExpired(
+  session: Stripe.Checkout.Session,
+): Promise<void> {
+  const metadata = session.metadata || {};
+  const drawId = metadata.draw_id;
+
+  if (!drawId) {
+    console.error('❌ Lucky Draw expired: missing draw_id in metadata');
+    return;
+  }
+
+  // Count reserved entries for this session
+  const [reservedResult] = await db
+    .select({ count: count() })
+    .from(luckyDrawEntries)
+    .where(and(
+      eq(luckyDrawEntries.drawId, drawId),
+      eq(luckyDrawEntries.stripeSessionId, session.id),
+      eq(luckyDrawEntries.status, 'reserved'),
+    ));
+
+  const reservedCount = reservedResult?.count ?? 0;
+
+  if (reservedCount === 0) {
+    console.log(`⏭️ Lucky Draw expired: no reserved entries for session ${session.id}`);
+    return;
+  }
+
+  // Delete reserved entries (frees slot numbers for future use)
+  await db.execute(sql`
+    DELETE FROM lucky_draw_entries
+    WHERE draw_id = ${drawId}
+      AND stripe_session_id = ${session.id}
+      AND status = 'reserved'
+  `);
+
+  // Release capacity on the draw counter
+  await db.execute(sql`
+    UPDATE lucky_draws
+    SET sold_count = sold_count - ${reservedCount}
+    WHERE draw_id = ${drawId}
+  `);
+
+  console.log(`♻️ Lucky Draw expired: released ${reservedCount} slots for session ${session.id}, drawId=${drawId}`);
+}
+
+// ─── triggerDraw (idempotent via unique constraint) ───
 
 export async function triggerDraw(drawId: string): Promise<void> {
   const draw = await getDrawInstance(drawId);
   if (!draw) {
     throw new Error(`Lucky Draw not found: ${drawId}`);
-  }
-
-  // Check if already drawn
-  const [existingResult] = await db
-    .select({ id: luckyDrawResults.id })
-    .from(luckyDrawResults)
-    .where(eq(luckyDrawResults.drawId, drawId))
-    .limit(1);
-
-  if (existingResult) {
-    console.log(`⏭️ Lucky Draw ${drawId} 已开奖，跳过`);
-    return;
   }
 
   // Get latest Polygon block
@@ -578,29 +692,46 @@ export async function triggerDraw(drawId: string): Promise<void> {
     return;
   }
 
-  // Write result
-  await db.insert(luckyDrawResults).values({
-    drawId,
-    winnerSlot,
-    winnerUserId: winnerEntry.userId,
-    blockNumber: block.number,
-    blockHash: block.hash,
-    txHash: null,
-    totalSlots: draw.totalSlots,
-  });
+  // Idempotent write: INSERT result, catch unique violation on uq_ldr_draw_id
+  try {
+    await db.insert(luckyDrawResults).values({
+      drawId,
+      winnerSlot,
+      winnerUserId: winnerEntry.userId,
+      blockNumber: block.number,
+      blockHash: block.hash,
+      txHash: null,
+      totalSlots: draw.totalSlots,
+    });
+  } catch (e: unknown) {
+    const isUniqueViolation = e instanceof Error && e.message.includes('uq_ldr_draw_id');
+    if (isUniqueViolation) {
+      console.log(`⏭️ Lucky Draw ${drawId} 已开奖，跳过`);
+      return;
+    }
+    throw e;
+  }
 
-  // Create claim record
-  await db.insert(luckyDrawClaims).values({
-    drawId,
-    userId: winnerEntry.userId,
-    status: 'unclaimed',
-  });
+  // Create claim record (also idempotent via uq_ldc_draw_id)
+  try {
+    await db.insert(luckyDrawClaims).values({
+      drawId,
+      userId: winnerEntry.userId,
+      status: 'unclaimed',
+    });
+  } catch (e: unknown) {
+    const isUniqueViolation = e instanceof Error && e.message.includes('uq_ldc_draw_id');
+    if (!isUniqueViolation) throw e;
+  }
 
-  // Update draw instance status
+  // Update draw instance status (only if still in selling/drawing)
   await db
     .update(luckyDrawInstances)
     .set({ status: 'completed', completedAt: new Date().toISOString() })
-    .where(eq(luckyDrawInstances.drawId, drawId));
+    .where(and(
+      eq(luckyDrawInstances.drawId, drawId),
+      sql`${luckyDrawInstances.status} IN ('selling', 'drawing')`,
+    ));
 
   console.log(`🎉 Lucky Draw ${drawId} 开奖完成! Winner: slot #${winnerSlot}, user: ${winnerEntry.userId}`);
 }

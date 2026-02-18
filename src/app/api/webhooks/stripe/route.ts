@@ -6,7 +6,7 @@ import { eq, and, desc } from 'drizzle-orm';
 import { getCreditTierByProductId } from '@/config/subscription';
 import { addCredits } from '@/lib/credits';
 import { ProductType } from '@/config/productType';
-import { handleLuckyDrawPurchase } from '@/actions/lucky-draw';
+import { handleLuckyDrawPurchase, handleLuckyDrawSessionExpired } from '@/actions/lucky-draw';
 
 // 延迟初始化 Stripe，避免构建时因缺少环境变量而失败
 let _stripe: Stripe | null = null;
@@ -487,6 +487,14 @@ export async function POST(request: NextRequest) {
       case 'customer.subscription.deleted':
         await handleSubscriptionDeleted(event.data.object as Stripe.Subscription, event.id);
         break;
+
+      case 'checkout.session.expired': {
+        const expiredSession = event.data.object as Stripe.Checkout.Session;
+        if (expiredSession.metadata?.type === 'lucky_draw') {
+          await handleLuckyDrawSessionExpired(expiredSession);
+        }
+        break;
+      }
 
       default:
         console.log(`⏭️ 未处理的事件类型: ${event.type}`);

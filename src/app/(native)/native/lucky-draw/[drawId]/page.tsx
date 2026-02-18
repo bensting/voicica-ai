@@ -209,6 +209,10 @@ export default function LuckyDrawDetailPage() {
           <GradientButton disabled>
             Drawing in Progress...
           </GradientButton>
+        ) : remainingSlots <= 0 ? (
+          <GradientButton disabled>
+            All Slots Taken
+          </GradientButton>
         ) : (
           <GradientButton onClick={openBuySheet}>
             TRY MY LUCK — Free

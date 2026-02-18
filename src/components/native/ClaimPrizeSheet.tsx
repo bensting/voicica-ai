@@ -280,19 +280,29 @@ export default function ClaimPrizeSheet({ prize, claimData, onClose, onSubmit }:
 
               {/* 收货信息摘要 */}
               {claimData.shippingInfo && (
-                <div className="mt-4 bg-white/5 rounded-xl p-4 text-left space-y-2">
+                <div className="mt-4 bg-white/5 rounded-xl p-4 text-left space-y-3">
                   <h5 className="text-gray-400 text-xs font-medium uppercase tracking-wider">Shipping To</h5>
-                  <p className="text-white text-sm">{claimData.shippingInfo.fullName}</p>
-                  <p className="text-gray-400 text-xs">
-                    {claimData.shippingInfo.address}, {claimData.shippingInfo.zipCode}
-                  </p>
-                  <p className="text-gray-400 text-xs">
-                    {claimData.shippingInfo.country}
-                  </p>
-                  <p className="text-gray-400 text-xs">{claimData.shippingInfo.phone}</p>
-                  {claimData.shippingInfo.telegram && (
-                    <p className="text-gray-400 text-xs">Telegram: @{claimData.shippingInfo.telegram}</p>
-                  )}
+                  <div className="text-sm leading-relaxed">
+                    <p className="text-white font-medium">{claimData.shippingInfo.fullName}</p>
+                    <p className="text-gray-400 mt-1">
+                      {[
+                        claimData.shippingInfo.address,
+                        claimData.shippingInfo.zipCode,
+                      ].filter(Boolean).join(', ')}
+                    </p>
+                    {claimData.shippingInfo.country && (
+                      <p className="text-gray-400">{claimData.shippingInfo.country}</p>
+                    )}
+                    {claimData.shippingInfo.phone && (
+                      <p className="text-gray-400 mt-1">{claimData.shippingInfo.phone}</p>
+                    )}
+                    {claimData.shippingInfo.email && (
+                      <p className="text-gray-400">{claimData.shippingInfo.email}</p>
+                    )}
+                    {claimData.shippingInfo.telegram && (
+                      <p className="text-gray-500 mt-1">Telegram: @{claimData.shippingInfo.telegram}</p>
+                    )}
+                  </div>
                 </div>
               )}
 

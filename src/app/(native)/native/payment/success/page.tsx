@@ -140,7 +140,7 @@ function PaymentSuccessContent() {
       const returnUrl = searchParams.get('return_url');
       router.push(returnUrl || '/native/me');
     }
-  }, [status, countdown, router]);
+  }, [status, countdown, router, searchParams]);
 
   return (
     <div className="min-h-screen bg-[#0a0a1a] flex items-center justify-center px-4">

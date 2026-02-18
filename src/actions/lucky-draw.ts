@@ -625,6 +625,7 @@ export async function cancelLuckyDrawCheckout(sessionId: string): Promise<void> 
 
 export async function handleLuckyDrawPurchase(
   session: Stripe.Checkout.Session,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   eventId: string,
 ): Promise<void> {
   const metadata = session.metadata || {};

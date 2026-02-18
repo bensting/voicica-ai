@@ -26,8 +26,6 @@ export default function SellingState({
   totalSlots,
   soldSlots,
   creditsPerPurchase,
-  cryptoPriceCents,
-  stripePriceCents,
   chainName,
   contractAddress,
   blockExplorerUrl,

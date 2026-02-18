@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import GradientButton from '@/components/native/common/GradientButton';
 import LoginModal from '@/components/native/LoginModal';
-import ClaimPrizeSheet, { type ClaimData, type ClaimStatus, type ShippingInfo } from '@/components/native/ClaimPrizeSheet';
+import ClaimPrizeSheet, { type ClaimStatus, type ShippingInfo } from '@/components/native/ClaimPrizeSheet';
 import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 import { useSearchParams } from 'next/navigation';
 import { getLuckyDrawStatus, createLuckyDrawCheckout, cancelLuckyDrawCheckout, submitPrizeClaim, type LuckyDrawStatusResult } from '@/actions/lucky-draw';

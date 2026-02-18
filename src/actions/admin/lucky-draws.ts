@@ -6,7 +6,7 @@
  */
 import db from '@/lib/db';
 import { luckyDrawInstances, luckyDrawEntries, luckyDrawResults, luckyDrawClaims } from '@/db/schema';
-import { eq, desc, asc, sql, count } from 'drizzle-orm';
+import { eq, desc, asc, count } from 'drizzle-orm';
 import { verifyAdminWithoutDb } from '@/lib/auth-admin';
 import { getLuckyDrawProduct } from '@/config/native/luckyDrawConfig';
 

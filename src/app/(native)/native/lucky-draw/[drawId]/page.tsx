@@ -475,20 +475,58 @@ export default function LuckyDrawDetailPage() {
                     <span className="text-gray-400">Winner Slot</span>
                     <span className="text-amber-400 font-mono font-bold">#{drawResult.winnerSlot.toLocaleString()}</span>
                   </div>
-                  {blockExplorerUrl && (
+                  {drawResult.drawnAt && (
+                    <div className="flex items-center justify-between">
+                      <span className="text-gray-400">Drawn At</span>
+                      <span className="text-gray-300">
+                        {new Date(drawResult.drawnAt).toLocaleString('en-US', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' })}
+                      </span>
+                    </div>
+                  )}
+                  {drawResult.blockNumber && (
                     <a
-                      href={blockExplorerUrl}
+                      href={`https://polygonscan.com/block/${drawResult.blockNumber}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="flex items-center justify-center gap-1.5 mt-2 pt-2.5 border-t border-white/5 text-purple-400 hover:text-purple-300 transition-colors"
                     >
-                      <span>View on Polygonscan</span>
+                      <span>Verify on Polygonscan</span>
                       <ExternalLinkIcon />
                     </a>
                   )}
                 </div>
               </div>
             </div>
+
+            {/* ─── All Purchases ─── */}
+            {recentEntries.length > 0 && (
+              <div className="px-4 mb-4">
+                <div className="bg-white/5 rounded-2xl p-4">
+                  <div className="flex items-center justify-between mb-3">
+                    <h3 className="text-white font-semibold text-sm">All Purchases</h3>
+                    <span className="text-gray-500 text-xs">{soldSlots.toLocaleString()} slots</span>
+                  </div>
+                  <div className="space-y-2.5 max-h-[300px] overflow-y-auto">
+                    {recentEntries.map((entry) => (
+                      <div key={entry.slotNumber} className="flex items-center justify-between text-xs">
+                        <div className="flex items-center gap-2">
+                          <div className="w-6 h-6 rounded-full bg-purple-500/15 flex items-center justify-center flex-shrink-0">
+                            <span className="text-purple-300 text-[10px] font-bold">U</span>
+                          </div>
+                          <span className="text-gray-300">User {entry.userId}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-purple-300 font-mono">#{entry.slotNumber.toLocaleString()}</span>
+                          <span className="text-gray-600">
+                            {new Date(entry.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* ─── Rules & Terms link ─── */}
             <div className="px-4 mb-6">

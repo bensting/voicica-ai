@@ -79,6 +79,7 @@ export interface LuckyDrawStatusResult {
     blockNumber: number | null;
     blockHash: string | null;
     txHash: string | null;
+    drawnAt: string;
     isMe: boolean;
   };
   claim?: {
@@ -300,6 +301,7 @@ export async function getLuckyDrawStatus(drawId: string): Promise<LuckyDrawStatu
         blockNumber: result.blockNumber,
         blockHash: result.blockHash,
         txHash: result.txHash,
+        drawnAt: result.createdAt,
         isMe: result.winnerUserId === userId,
       };
 
@@ -330,6 +332,7 @@ export async function getLuckyDrawStatus(drawId: string): Promise<LuckyDrawStatu
         blockNumber: result.blockNumber,
         blockHash: result.blockHash,
         txHash: result.txHash,
+        drawnAt: result.createdAt,
         isMe: false,
       };
     }

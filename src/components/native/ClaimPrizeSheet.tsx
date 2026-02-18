@@ -488,7 +488,7 @@ function StatusTimeline({ current }: { current: ClaimStatus }) {
             <div className="flex flex-col items-center">
               <div className={`w-3 h-3 rounded-full border-2 ${
                 isCompleted
-                  ? isCurrent
+                  ? isCurrent && current !== 'delivered'
                     ? 'bg-amber-400 border-amber-400'
                     : 'bg-emerald-400 border-emerald-400'
                   : 'bg-transparent border-gray-600'

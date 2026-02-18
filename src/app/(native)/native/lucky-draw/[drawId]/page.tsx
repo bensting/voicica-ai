@@ -219,6 +219,7 @@ export default function LuckyDrawDetailPage() {
     blockExplorerUrl,
     soldSlots,
     myEntries,
+    recentEntries,
     status: currentStatus,
     drawResult,
   } = drawStatus;
@@ -549,7 +550,8 @@ export default function LuckyDrawDetailPage() {
             {myEntryCount > 0 && (
               <div className="px-4 mb-4">
                 <div className="bg-gradient-to-r from-purple-900/40 to-fuchsia-900/30 border border-purple-500/20 rounded-2xl p-4">
-                  <div className="flex items-center gap-3">
+                  {/* Summary row */}
+                  <div className="flex items-center gap-3 mb-3">
                     <div className="w-10 h-10 rounded-full bg-purple-500/20 flex items-center justify-center text-purple-300">
                       <TicketIcon />
                     </div>
@@ -568,6 +570,67 @@ export default function LuckyDrawDetailPage() {
                     >
                       + Buy More
                     </button>
+                  </div>
+
+                  {/* Slot numbers */}
+                  <div className="pt-3 border-t border-purple-500/10">
+                    <h4 className="text-purple-200/60 text-xs font-medium mb-2">Your Slots</h4>
+                    <div className="flex flex-wrap gap-1.5">
+                      {mySlots.map((slot) => (
+                        <span key={slot} className="text-purple-300 text-xs font-mono bg-purple-500/10 px-2 py-0.5 rounded-md">
+                          #{slot.toLocaleString()}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Purchase history */}
+                  <div className="pt-3 mt-3 border-t border-purple-500/10">
+                    <h4 className="text-purple-200/60 text-xs font-medium mb-2">Purchase History</h4>
+                    <div className="space-y-2">
+                      {myEntries.map((entry) => (
+                        <div key={entry.slotNumber} className="flex items-center justify-between text-xs">
+                          <div className="flex items-center gap-2">
+                            <span className="text-purple-300 font-mono">#{entry.slotNumber.toLocaleString()}</span>
+                            <span className="text-purple-200/40">·</span>
+                            <span className="text-gray-400">{creditsPerPurchase} credits</span>
+                          </div>
+                          <span className="text-gray-500">
+                            {new Date(entry.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* ─── Recent Purchases (all users) ─── */}
+            {recentEntries.length > 0 && (
+              <div className="px-4 mb-4">
+                <div className="bg-white/5 rounded-2xl p-4">
+                  <div className="flex items-center justify-between mb-3">
+                    <h3 className="text-white font-semibold text-sm">Recent Purchases</h3>
+                    <span className="text-gray-500 text-xs">{soldSlots.toLocaleString()} total</span>
+                  </div>
+                  <div className="space-y-2.5 max-h-[240px] overflow-y-auto">
+                    {recentEntries.map((entry) => (
+                      <div key={entry.slotNumber} className="flex items-center justify-between text-xs">
+                        <div className="flex items-center gap-2">
+                          <div className="w-6 h-6 rounded-full bg-purple-500/15 flex items-center justify-center flex-shrink-0">
+                            <span className="text-purple-300 text-[10px] font-bold">U</span>
+                          </div>
+                          <span className="text-gray-300">User {entry.userId}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-purple-300 font-mono">#{entry.slotNumber.toLocaleString()}</span>
+                          <span className="text-gray-600">
+                            {new Date(entry.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                          </span>
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 </div>
               </div>

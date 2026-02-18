@@ -137,7 +137,8 @@ function PaymentSuccessContent() {
     }
 
     if (status === 'success' && countdown === 0) {
-      router.push('/native/me');
+      const returnUrl = searchParams.get('return_url');
+      router.push(returnUrl || '/native/me');
     }
   }, [status, countdown, router]);
 
@@ -204,10 +205,10 @@ function PaymentSuccessContent() {
 
             {/* 立即跳转按钮 */}
             <button
-              onClick={() => router.push('/native/me')}
+              onClick={() => router.push(searchParams.get('return_url') || '/native/me')}
               className="w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold py-3 px-6 rounded-xl hover:from-purple-600 hover:to-pink-600 transition-all"
             >
-              Go to My Page
+              {searchParams.get('return_url') ? 'Continue' : 'Go to My Page'}
             </button>
           </div>
         )}

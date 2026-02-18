@@ -72,6 +72,7 @@ export interface LuckyDrawStatusResult {
   contractAddress: string | null;
   blockExplorerUrl: string | null;
   myEntries: Array<{ slotNumber: number; packs: number; createdAt: string }>;
+  recentEntries: Array<{ slotNumber: number; userId: string; createdAt: string }>;
   drawResult?: {
     winnerSlot: number;
     winnerUserId: string;
@@ -332,6 +333,24 @@ export async function getLuckyDrawStatus(drawId: string): Promise<LuckyDrawStatu
     }
   }
 
+  // Get all entries for the public feed (latest first, limited)
+  const allEntries = await db
+    .select({
+      slotNumber: luckyDrawEntries.slotNumber,
+      userId: luckyDrawEntries.userId,
+      createdAt: luckyDrawEntries.createdAt,
+    })
+    .from(luckyDrawEntries)
+    .where(eq(luckyDrawEntries.drawId, drawId))
+    .orderBy(desc(luckyDrawEntries.createdAt))
+    .limit(100);
+
+  const recentEntries = allEntries.map((e) => ({
+    slotNumber: e.slotNumber,
+    userId: `***${e.userId.slice(-4)}`,
+    createdAt: e.createdAt,
+  }));
+
   return {
     drawId,
     productId: draw.productId,
@@ -347,6 +366,7 @@ export async function getLuckyDrawStatus(drawId: string): Promise<LuckyDrawStatu
     contractAddress: draw.contractAddress,
     blockExplorerUrl: draw.blockExplorerUrl,
     myEntries,
+    recentEntries,
     drawResult,
     claim,
   };

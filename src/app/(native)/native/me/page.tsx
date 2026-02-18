@@ -21,7 +21,7 @@ const LOGIN_MODAL_INTERVAL_MS = 24 * 60 * 60 * 1000; // 24 hours
  */
 export default function MePage() {
   const { user, loading } = useFirebaseAuth();
-  const { credits, refreshCredits } = useCredits();
+  const { credits, loading: creditsLoading, refreshCredits } = useCredits();
   const { isSubscribed, activeSubscription } = useSubscription();
   const { t, locale } = useLanguage();
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
@@ -99,6 +99,7 @@ export default function MePage() {
         <UserStatsBar
           planName={planName}
           credits={credits}
+          creditsLoading={creditsLoading}
         />
 
         {/* 订阅推广卡片 - 仅未订阅时显示 */}

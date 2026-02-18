@@ -13,6 +13,7 @@ import { useGooglePlayBilling } from '@/hooks/useGooglePlayBilling';
 import type { UserSubscription } from '@/types/subscription';
 import LoginModal from '@/components/native/LoginModal';
 import CreditsIcon from '@/components/native/common/CreditsIcon';
+import LoadingDots from '@/components/native/common/LoadingDots';
 import GradientButton from '@/components/native/common/GradientButton';
 import { useLanguage } from '@/contexts/LanguageContext';
 import {
@@ -235,7 +236,7 @@ export default function NativeSubscribePage() {
       >
         <div className="flex items-center justify-center gap-2 text-purple-400 mb-1">
           <CreditsIcon className="w-6 h-6" />
-          <span className="text-4xl font-bold text-white">{creditsLoading ? '—' : credits}</span>
+          <span className="text-4xl font-bold text-white">{creditsLoading ? <LoadingDots /> : credits}</span>
         </div>
         <p className="text-gray-500 text-sm">
           {currentPlan ? currentPlan.name : t('native.subscribe.notSubscribed')}

@@ -12,6 +12,7 @@ import LoginModal from './LoginModal';
 import NativeDailyTasksModal from './NativeDailyTasksModal';
 import LanguageSelectorSheet from './LanguageSelectorSheet';
 import CrownIcon from './common/CrownIcon';
+import LoadingDots from './common/LoadingDots';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 // 宝箱图标
@@ -31,7 +32,7 @@ const TreasureIcon = () => (
 export default function NativeNavbar() {
   const router = useRouter();
   const { user } = useFirebaseAuth();
-  const { credits, refreshCredits } = useCredits();
+  const { credits, loading: creditsLoading, refreshCredits } = useCredits();
   const { isTopNavVisible } = useBottomNav();
   const { shouldShowPopup, status, config } = useDailyTasks();
   const { t } = useLanguage();
@@ -104,7 +105,7 @@ export default function NativeNavbar() {
                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 hover:bg-white/10 transition-all active:scale-95"
               >
                 <CrownIcon className="w-4 h-4 text-amber-400" />
-                <span className="text-white text-sm font-medium">{credits}</span>
+                <span className="text-white text-sm font-medium">{creditsLoading ? <LoadingDots /> : credits}</span>
               </button>
             ) : (
               /* 未登录：显示登录按钮 */

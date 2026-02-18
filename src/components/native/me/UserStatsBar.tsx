@@ -1,5 +1,7 @@
 'use client';
 
+import LoadingDots from '@/components/native/common/LoadingDots';
+
 // 四角星积分图标
 const CreditIcon = () => (
   <svg className="w-5 h-5 text-white" viewBox="0 0 24 24" fill="currentColor">
@@ -10,6 +12,7 @@ const CreditIcon = () => (
 interface UserStatsBarProps {
   planName?: string;
   credits?: number;
+  creditsLoading?: boolean;
 }
 
 /**
@@ -19,6 +22,7 @@ interface UserStatsBarProps {
 export default function UserStatsBar({
   planName = 'Free version',
   credits = 0,
+  creditsLoading = false,
 }: UserStatsBarProps) {
   return (
     <div className="mx-4 flex items-center justify-center gap-8 py-2">
@@ -33,7 +37,7 @@ export default function UserStatsBar({
       {/* 积分 */}
       <div className="flex items-center gap-1.5">
         <CreditIcon />
-        <span className="text-white font-semibold">{credits}</span>
+        <span className="text-white font-semibold">{creditsLoading ? <LoadingDots /> : credits}</span>
       </div>
     </div>
   );

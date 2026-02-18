@@ -10,7 +10,6 @@ import {
 import { type LuckyDrawIcon } from '@/config/native/luckyDrawConfig';
 import { getActiveDrawsByProduct, type ActiveDrawInfo } from '@/actions/lucky-draw';
 import { useLanguage } from '@/contexts/LanguageContext';
-import VideoDownloadIcon from '@/components/native/icons/VideoDownloadIcon';
 
 // 图标组件 (w-6 h-6 for FeatureGrid)
 const MusicIcon = () => (
@@ -99,7 +98,19 @@ const CloneIcon = () => (
   </svg>
 );
 
-const VideoDownloadIconWrapped = () => <VideoDownloadIcon className="w-6 h-6" bgColor="#FF0000" />;
+const DownloadIcon = () => (
+  <svg
+    className="w-6 h-6"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.5"
+  >
+    <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" />
+    <polyline points="7,10 12,15 17,10" />
+    <line x1="12" y1="15" x2="12" y2="3" />
+  </svg>
+);
 
 const ImageIcon = () => (
   <svg
@@ -123,7 +134,7 @@ const iconMap: Record<CreateMenuIcon, React.FC> = {
   dialogue: DialogueIcon,
   video: VideoIcon,
   clone: CloneIcon,
-  'video-download': VideoDownloadIconWrapped,
+  'video-download': DownloadIcon,
   image: ImageIcon,
 };
 
@@ -133,7 +144,7 @@ const colorMap: Record<string, { icon: string; bg: string }> = {
   pink: { icon: 'text-pink-400', bg: 'bg-pink-500/20' },
   cyan: { icon: 'text-cyan-400', bg: 'bg-cyan-500/20' },
   blue: { icon: 'text-blue-400', bg: 'bg-blue-500/20' },
-  emerald: { icon: 'text-emerald-400', bg: 'bg-gradient-to-br from-red-600/20 to-red-800/20' },
+  emerald: { icon: 'text-emerald-400', bg: 'bg-emerald-500/20' },
 };
 
 // Lucky Draw 图标映射

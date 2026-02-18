@@ -5,8 +5,8 @@
  * 管理抽奖实例的 CRUD 操作
  */
 import db from '@/lib/db';
-import { luckyDrawInstances, luckyDrawEntries } from '@/db/schema';
-import { eq, desc, sql, count } from 'drizzle-orm';
+import { luckyDrawInstances, luckyDrawEntries, luckyDrawResults, luckyDrawClaims } from '@/db/schema';
+import { eq, desc, asc, sql, count } from 'drizzle-orm';
 import { verifyAdminWithoutDb } from '@/lib/auth-admin';
 import { getLuckyDrawProduct } from '@/config/native/luckyDrawConfig';
 
@@ -46,6 +46,38 @@ export interface CreateLuckyDrawInput {
 interface ActionResult {
   success: boolean;
   message: string;
+}
+
+export interface AdminLuckyDrawDetail {
+  entries: Array<{
+    id: number;
+    userId: string;
+    slotNumber: number;
+    status: string;
+    packs: number;
+    creditsAwarded: number;
+    paymentPlatform: string;
+    stripeSessionId: string | null;
+    amountPaid: number | null;
+    createdAt: string;
+  }>;
+  result: {
+    winnerSlot: number;
+    winnerUserId: string;
+    blockNumber: number | null;
+    blockHash: string | null;
+    totalSlots: number;
+    createdAt: string;
+  } | null;
+  claim: {
+    status: string;
+    fullName: string | null;
+    phone: string | null;
+    email: string | null;
+    country: string | null;
+    address: string | null;
+    createdAt: string;
+  } | null;
 }
 
 // ─── Actions ───
@@ -237,4 +269,63 @@ export async function toggleLuckyDrawEnabled(id: number): Promise<ActionResult> 
       message: error instanceof Error ? error.message : '切换失败',
     };
   }
+}
+
+/**
+ * 查询抽奖详情：entries、开奖结果、领奖信息
+ */
+export async function getAdminLuckyDrawDetail(drawId: string): Promise<AdminLuckyDrawDetail> {
+  await verifyAdminWithoutDb();
+
+  const [entries, resultRows, claimRows] = await Promise.all([
+    db
+      .select({
+        id: luckyDrawEntries.id,
+        userId: luckyDrawEntries.userId,
+        slotNumber: luckyDrawEntries.slotNumber,
+        status: luckyDrawEntries.status,
+        packs: luckyDrawEntries.packs,
+        creditsAwarded: luckyDrawEntries.creditsAwarded,
+        paymentPlatform: luckyDrawEntries.paymentPlatform,
+        stripeSessionId: luckyDrawEntries.stripeSessionId,
+        amountPaid: luckyDrawEntries.amountPaid,
+        createdAt: luckyDrawEntries.createdAt,
+      })
+      .from(luckyDrawEntries)
+      .where(eq(luckyDrawEntries.drawId, drawId))
+      .orderBy(asc(luckyDrawEntries.slotNumber)),
+
+    db
+      .select({
+        winnerSlot: luckyDrawResults.winnerSlot,
+        winnerUserId: luckyDrawResults.winnerUserId,
+        blockNumber: luckyDrawResults.blockNumber,
+        blockHash: luckyDrawResults.blockHash,
+        totalSlots: luckyDrawResults.totalSlots,
+        createdAt: luckyDrawResults.createdAt,
+      })
+      .from(luckyDrawResults)
+      .where(eq(luckyDrawResults.drawId, drawId))
+      .limit(1),
+
+    db
+      .select({
+        status: luckyDrawClaims.status,
+        fullName: luckyDrawClaims.fullName,
+        phone: luckyDrawClaims.phone,
+        email: luckyDrawClaims.email,
+        country: luckyDrawClaims.country,
+        address: luckyDrawClaims.address,
+        createdAt: luckyDrawClaims.createdAt,
+      })
+      .from(luckyDrawClaims)
+      .where(eq(luckyDrawClaims.drawId, drawId))
+      .limit(1),
+  ]);
+
+  return {
+    entries,
+    result: resultRows[0] ?? null,
+    claim: claimRows[0] ?? null,
+  };
 }

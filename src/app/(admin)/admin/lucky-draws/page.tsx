@@ -3,11 +3,13 @@
 import { useState, useEffect, useCallback } from 'react';
 import {
   getAdminLuckyDraws,
+  getAdminLuckyDrawDetail,
   createLuckyDraw,
   updateLuckyDraw,
   deleteLuckyDraw,
   toggleLuckyDrawEnabled,
   type AdminLuckyDraw,
+  type AdminLuckyDrawDetail,
   type CreateLuckyDrawInput,
 } from '@/actions/admin/lucky-draws';
 import { luckyDrawProducts } from '@/config/native/luckyDrawConfig';
@@ -44,6 +46,10 @@ export default function LuckyDrawsPage() {
   const [editingDraw, setEditingDraw] = useState<AdminLuckyDraw | null>(null);
   const [formData, setFormData] = useState<CreateLuckyDrawInput>(emptyFormData);
   const [saving, setSaving] = useState(false);
+  const [showDetailModal, setShowDetailModal] = useState(false);
+  const [detailLoading, setDetailLoading] = useState(false);
+  const [detailDraw, setDetailDraw] = useState<AdminLuckyDraw | null>(null);
+  const [detailData, setDetailData] = useState<AdminLuckyDrawDetail | null>(null);
 
   const loadDraws = useCallback(async () => {
     setLoading(true);
@@ -129,6 +135,26 @@ export default function LuckyDrawsPage() {
     } else {
       alert(result.message);
     }
+  };
+
+  const handleDetail = async (draw: AdminLuckyDraw) => {
+    setDetailDraw(draw);
+    setDetailData(null);
+    setShowDetailModal(true);
+    setDetailLoading(true);
+    try {
+      const data = await getAdminLuckyDrawDetail(draw.drawId);
+      setDetailData(data);
+    } catch (error) {
+      console.error('加载详情失败:', error);
+    } finally {
+      setDetailLoading(false);
+    }
+  };
+
+  const maskUserId = (uid: string) => {
+    if (uid.length <= 8) return uid;
+    return uid.slice(0, 4) + '...' + uid.slice(-4);
   };
 
   const getProductPrize = (productId: string): string => {
@@ -247,6 +273,12 @@ export default function LuckyDrawsPage() {
                       </td>
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-2">
+                          <button
+                            onClick={() => handleDetail(draw)}
+                            className="text-sm text-blue-600 hover:text-blue-700"
+                          >
+                            详情
+                          </button>
                           <button
                             onClick={() => handleEdit(draw)}
                             className="text-sm text-blue-600 hover:text-blue-700"
@@ -456,6 +488,215 @@ export default function LuckyDrawsPage() {
                 className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors disabled:opacity-50"
               >
                 {saving ? '保存中...' : '保存'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Detail Modal */}
+      {showDetailModal && detailDraw && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl shadow-xl w-full max-w-4xl m-4 max-h-[90vh] overflow-y-auto">
+            {/* Header */}
+            <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between sticky top-0 bg-white">
+              <div>
+                <h2 className="text-lg font-semibold text-gray-900">抽奖详情</h2>
+                <p className="text-sm text-gray-500 mt-0.5">
+                  <code className="bg-gray-100 px-1.5 py-0.5 rounded text-xs font-mono">
+                    {detailDraw.drawId}
+                  </code>
+                </p>
+              </div>
+              <button
+                onClick={() => setShowDetailModal(false)}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            {/* Body */}
+            <div className="p-6 space-y-6">
+              {detailLoading ? (
+                <div className="flex items-center justify-center py-12">
+                  <div className="w-6 h-6 border-2 border-purple-600 border-t-transparent rounded-full animate-spin" />
+                  <span className="ml-2 text-gray-500">加载中...</span>
+                </div>
+              ) : detailData ? (
+                <>
+                  {/* Entries Table */}
+                  <div>
+                    <h3 className="text-sm font-semibold text-gray-900 mb-3">
+                      购买记录 ({detailData.entries.length})
+                    </h3>
+                    {detailData.entries.length === 0 ? (
+                      <p className="text-sm text-gray-500 py-4 text-center">暂无购买记录</p>
+                    ) : (
+                      <div className="overflow-x-auto border border-gray-200 rounded-lg">
+                        <table className="w-full text-sm">
+                          <thead className="bg-gray-50 border-b border-gray-200">
+                            <tr>
+                              <th className="px-3 py-2 text-left font-medium text-gray-700">Slot#</th>
+                              <th className="px-3 py-2 text-left font-medium text-gray-700">User ID</th>
+                              <th className="px-3 py-2 text-left font-medium text-gray-700">Status</th>
+                              <th className="px-3 py-2 text-left font-medium text-gray-700">Packs</th>
+                              <th className="px-3 py-2 text-left font-medium text-gray-700">Credits</th>
+                              <th className="px-3 py-2 text-left font-medium text-gray-700">Payment</th>
+                              <th className="px-3 py-2 text-left font-medium text-gray-700">时间</th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-gray-200">
+                            {detailData.entries.map((entry) => (
+                              <tr key={entry.id} className="hover:bg-gray-50">
+                                <td className="px-3 py-2 font-mono text-xs">{entry.slotNumber}</td>
+                                <td className="px-3 py-2 font-mono text-xs" title={entry.userId}>
+                                  {maskUserId(entry.userId)}
+                                </td>
+                                <td className="px-3 py-2">
+                                  <span className={`inline-flex items-center px-1.5 py-0.5 text-xs font-medium rounded ${
+                                    entry.status === 'paid'
+                                      ? 'bg-green-100 text-green-700'
+                                      : 'bg-yellow-100 text-yellow-700'
+                                  }`}>
+                                    {entry.status}
+                                  </span>
+                                </td>
+                                <td className="px-3 py-2">{entry.packs}</td>
+                                <td className="px-3 py-2">{entry.creditsAwarded}</td>
+                                <td className="px-3 py-2 text-xs">
+                                  {entry.paymentPlatform}
+                                  {entry.amountPaid != null && (
+                                    <span className="text-gray-400 ml-1">
+                                      (${(entry.amountPaid / 100).toFixed(2)})
+                                    </span>
+                                  )}
+                                </td>
+                                <td className="px-3 py-2 text-xs text-gray-500">
+                                  {new Date(entry.createdAt).toLocaleString()}
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Draw Result */}
+                  <div>
+                    <h3 className="text-sm font-semibold text-gray-900 mb-3">开奖结果</h3>
+                    {detailData.result ? (
+                      <div className="bg-gray-50 rounded-lg border border-gray-200 p-4 space-y-2 text-sm">
+                        <div className="grid grid-cols-2 gap-x-6 gap-y-2">
+                          <div>
+                            <span className="text-gray-500">中奖 Slot：</span>
+                            <span className="font-medium">{detailData.result.winnerSlot}</span>
+                          </div>
+                          <div>
+                            <span className="text-gray-500">中奖用户：</span>
+                            <span className="font-mono text-xs" title={detailData.result.winnerUserId}>
+                              {maskUserId(detailData.result.winnerUserId)}
+                            </span>
+                          </div>
+                          <div>
+                            <span className="text-gray-500">总 Slots：</span>
+                            <span className="font-medium">{detailData.result.totalSlots}</span>
+                          </div>
+                          <div>
+                            <span className="text-gray-500">开奖时间：</span>
+                            <span>{new Date(detailData.result.createdAt).toLocaleString()}</span>
+                          </div>
+                          {detailData.result.blockNumber != null && (
+                            <div>
+                              <span className="text-gray-500">Block#：</span>
+                              <span className="font-mono text-xs">{detailData.result.blockNumber}</span>
+                            </div>
+                          )}
+                          {detailData.result.blockHash && (
+                            <div className="col-span-2">
+                              <span className="text-gray-500">Block Hash：</span>
+                              <span className="font-mono text-xs break-all">{detailData.result.blockHash}</span>
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Claim info */}
+                        {detailData.claim && (
+                          <div className="mt-3 pt-3 border-t border-gray-200">
+                            <h4 className="text-xs font-semibold text-gray-700 mb-2">领奖信息</h4>
+                            <div className="grid grid-cols-2 gap-x-6 gap-y-1 text-sm">
+                              <div>
+                                <span className="text-gray-500">状态：</span>
+                                <span className={`inline-flex items-center px-1.5 py-0.5 text-xs font-medium rounded ${
+                                  detailData.claim.status === 'shipped'
+                                    ? 'bg-blue-100 text-blue-700'
+                                    : detailData.claim.status === 'delivered'
+                                      ? 'bg-green-100 text-green-700'
+                                      : 'bg-yellow-100 text-yellow-700'
+                                }`}>
+                                  {detailData.claim.status}
+                                </span>
+                              </div>
+                              {detailData.claim.fullName && (
+                                <div>
+                                  <span className="text-gray-500">姓名：</span>
+                                  <span>{detailData.claim.fullName}</span>
+                                </div>
+                              )}
+                              {detailData.claim.email && (
+                                <div>
+                                  <span className="text-gray-500">邮箱：</span>
+                                  <span>{detailData.claim.email}</span>
+                                </div>
+                              )}
+                              {detailData.claim.phone && (
+                                <div>
+                                  <span className="text-gray-500">电话：</span>
+                                  <span>{detailData.claim.phone}</span>
+                                </div>
+                              )}
+                              {detailData.claim.country && (
+                                <div>
+                                  <span className="text-gray-500">国家：</span>
+                                  <span>{detailData.claim.country}</span>
+                                </div>
+                              )}
+                              {detailData.claim.address && (
+                                <div className="col-span-2">
+                                  <span className="text-gray-500">地址：</span>
+                                  <span>{detailData.claim.address}</span>
+                                </div>
+                              )}
+                              <div>
+                                <span className="text-gray-500">提交时间：</span>
+                                <span>{new Date(detailData.claim.createdAt).toLocaleString()}</span>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    ) : (
+                      <p className="text-sm text-gray-500 py-4 text-center bg-gray-50 rounded-lg border border-gray-200">
+                        尚未开奖
+                      </p>
+                    )}
+                  </div>
+                </>
+              ) : (
+                <p className="text-sm text-red-500 py-4 text-center">加载失败</p>
+              )}
+            </div>
+
+            {/* Footer */}
+            <div className="px-6 py-4 border-t border-gray-200 flex justify-end sticky bottom-0 bg-white">
+              <button
+                onClick={() => setShowDetailModal(false)}
+                className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+              >
+                关闭
               </button>
             </div>
           </div>

@@ -57,7 +57,7 @@ export default function RulesSheet({
             <div>
               <h4 className="text-white font-semibold text-xs uppercase tracking-wider mb-2">Credit Packs</h4>
               <ul className="space-y-1.5 text-gray-400 text-xs">
-                <li>Each credit pack contains {creditsPerPurchase} AI credits, priced at ${cryptoPriceUsd.toFixed(2)} (crypto) or ${stripePriceUsd.toFixed(2)} (card).</li>
+                <li>Each credit pack contains {creditsPerPurchase} AI credits, priced at ${cryptoPriceUsd.toFixed(2)} (crypto) or ${stripePriceUsd.toFixed(2)} + $0.30 fee (card).</li>
                 <li>Every pack purchase includes a FREE lucky draw entry.</li>
                 <li>Maximum {totalSlots.toLocaleString()} packs per draw round.</li>
                 <li>No limit per user — more packs, more credits, higher win probability.</li>

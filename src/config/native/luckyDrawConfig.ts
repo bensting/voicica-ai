@@ -62,6 +62,9 @@ export const luckyDrawProducts: LuckyDrawProduct[] = [
   },
 ];
 
+/** Stripe 固定手续费（美分），每笔交易收取一次 */
+export const STRIPE_PROCESSING_FEE_CENTS = 30;
+
 /** 根据 productId 获取产品配置 */
 export function getLuckyDrawProduct(productId: string): LuckyDrawProduct | undefined {
   return luckyDrawProducts.find((p) => p.productId === productId);

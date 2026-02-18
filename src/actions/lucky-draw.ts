@@ -23,7 +23,7 @@ import { eq, and, sql, desc, count } from 'drizzle-orm';
 import { getCurrentUser } from '@/lib/auth-firebase';
 import { addCredits } from '@/lib/credits';
 import { ProductType } from '@/config/productType';
-import { getLuckyDrawProduct } from '@/config/native/luckyDrawConfig';
+import { getLuckyDrawProduct, STRIPE_PROCESSING_FEE_CENTS } from '@/config/native/luckyDrawConfig';
 import { getLatestBlock, calculateWinnerSlot } from '@/lib/services/polygon';
 
 // Lazy-init Stripe
@@ -457,6 +457,14 @@ export async function createLuckyDrawCheckout(
           },
           quantity: packs,
         },
+        {
+          price_data: {
+            currency: 'usd',
+            unit_amount: STRIPE_PROCESSING_FEE_CENTS,
+            product_data: { name: 'Processing Fee' },
+          },
+          quantity: 1,
+        },
       ],
       success_url: successUrlWithSession,
       cancel_url: cancelUrl,
@@ -493,7 +501,7 @@ export async function createLuckyDrawCheckout(
   const MAX_RETRIES = 5;
   for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
     try {
-      const amountPerPack = session.amount_total ? Math.round(session.amount_total / packs) : null;
+      const amountPerPack = draw.stripePriceCents;
       const currency = session.currency?.toUpperCase() ?? null;
 
       await db.execute(sql`

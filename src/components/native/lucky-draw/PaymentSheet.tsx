@@ -2,6 +2,7 @@
 
 import GradientButton from '@/components/native/common/GradientButton';
 import { MinusIcon, PlusIcon, UsdtIcon, CreditCardIcon } from './icons';
+import { STRIPE_PROCESSING_FEE_CENTS } from '@/config/native/luckyDrawConfig';
 
 const QUICK_PICKS = [1, 5, 10, 20, 50];
 
@@ -41,6 +42,8 @@ export default function PaymentSheet({
   const clampQty = (n: number) => Math.max(1, Math.min(n, remainingSlots));
   const stripePriceUsd = stripePriceCents / 100;
   const cryptoPriceUsd = cryptoPriceCents / 100;
+  const stripeFeeUsd = STRIPE_PROCESSING_FEE_CENTS / 100;
+  const stripeTotalUsd = stripePriceUsd * qty + stripeFeeUsd;
   const totalCredits = qty * creditsPerPurchase;
   const winProbability = ((qty / totalSlots) * 100).toFixed(2);
 
@@ -164,9 +167,14 @@ export default function PaymentSheet({
           >
             {purchasing
               ? 'Processing...'
-              : `GET ${totalCredits.toLocaleString()} CREDITS — $${(payMethod === 'crypto' ? cryptoPriceUsd * qty : stripePriceUsd * qty).toFixed(2)}`
+              : `GET ${totalCredits.toLocaleString()} CREDITS — $${(payMethod === 'crypto' ? cryptoPriceUsd * qty : stripeTotalUsd).toFixed(2)}`
             }
           </GradientButton>
+          {payMethod === 'stripe' && (
+            <p className="text-gray-500 text-[10px] text-center mt-1.5">
+              Incl. ${stripeFeeUsd.toFixed(2)} processing fee
+            </p>
+          )}
         </div>
       </div>
     </>

@@ -1,13 +1,14 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import {
   getAvailableMenuItems,
   getCategoryConfig,
   CreateMenuIcon,
 } from '@/config/native/createMenuConfig';
-import { getActiveLuckyDraws, type LuckyDrawIcon } from '@/config/native/luckyDrawConfig';
+import { type LuckyDrawIcon } from '@/config/native/luckyDrawConfig';
+import { getActiveDrawsByProduct, type ActiveDrawInfo } from '@/actions/lucky-draw';
 import { useLanguage } from '@/contexts/LanguageContext';
 import VideoDownloadIcon from '@/components/native/icons/VideoDownloadIcon';
 
@@ -158,7 +159,13 @@ const luckyDrawIconMap: Record<LuckyDrawIcon, React.ReactNode> = {
 export default function FeatureGrid() {
   const { t } = useLanguage();
   const items = getAvailableMenuItems();
-  const activeLuckyDraws = getActiveLuckyDraws();
+  const [activeLuckyDraws, setActiveLuckyDraws] = useState<ActiveDrawInfo[]>([]);
+
+  useEffect(() => {
+    getActiveDrawsByProduct()
+      .then(setActiveLuckyDraws)
+      .catch(() => setActiveLuckyDraws([]));
+  }, []);
 
   // 获取菜单项的翻译名称
   const getItemName = (id: string, fallback: string): string => {
@@ -209,7 +216,7 @@ export default function FeatureGrid() {
             const [line1, line2] = draw.shortLabel.split('\n');
             return (
               <Link
-                key={draw.id}
+                key={draw.drawId}
                 href={draw.href}
                 className="relative overflow-hidden flex flex-col items-center justify-center w-1/3 py-3 px-2 rounded-2xl bg-gradient-to-br from-amber-500/15 to-orange-500/10 border border-amber-500/10 hover:opacity-80 transition-opacity"
               >
@@ -222,7 +229,7 @@ export default function FeatureGrid() {
                 {/* 图标 + 动画 */}
                 <div className="relative text-amber-400 mb-1.5 animate-bounce-slow">
                   <div className="absolute inset-0 bg-amber-400/20 rounded-full blur-md animate-pulse" />
-                  {luckyDrawIconMap[draw.icon]}
+                  {luckyDrawIconMap[draw.icon as LuckyDrawIcon]}
                 </div>
                 {/* 文案 */}
                 <span className="relative text-[10px] text-amber-300/90 font-semibold leading-tight text-center">{line1}</span>

@@ -2,15 +2,16 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { activeLuckyDraw } from '@/config/native/luckyDrawConfig';
+import type { ActiveDrawInfo } from '@/actions/lucky-draw';
 
-/** Mock data — will be replaced by API later */
-const MOCK_SOLD = 1847;
+interface LuckyDrawBannerProps {
+  draw: ActiveDrawInfo;
+}
 
-export default function LuckyDrawBanner() {
-  const { totalSlots, creditsPerPurchase, prize, href } = activeLuckyDraw;
-  const progressPct = Math.min((MOCK_SOLD / totalSlots) * 100, 100);
-  const remaining = totalSlots - MOCK_SOLD;
+export default function LuckyDrawBanner({ draw }: LuckyDrawBannerProps) {
+  const { totalSlots, creditsPerPurchase, prize, prizeImageUrl, href, soldSlots } = draw;
+  const progressPct = Math.min((soldSlots / totalSlots) * 100, 100);
+  const remaining = totalSlots - soldSlots;
 
   return (
     <Link href={href} className="block mx-4">
@@ -36,12 +37,12 @@ export default function LuckyDrawBanner() {
             </span>
           </div>
 
-          {/* === Center: Hero — iPhone + headline === */}
+          {/* === Center: Hero — Prize + headline === */}
           <div className="flex items-center gap-3">
-            {/* iPhone image */}
+            {/* Prize image */}
             <div className="relative flex-shrink-0 w-[140px]">
               <Image
-                src="/images/campaign/iphone17pro.png"
+                src={prizeImageUrl}
                 alt={prize}
                 width={220}
                 height={440}
@@ -61,7 +62,7 @@ export default function LuckyDrawBanner() {
               <div className="mt-2 space-y-1">
                 <p className="text-white text-xs font-semibold">
                   {creditsPerPurchase} AI Credits
-                  <span className="text-purple-200/50 font-normal"> — $1</span>
+                  <span className="text-purple-200/50 font-normal"> — ${(draw.stripePriceCents / 100).toFixed(0)}</span>
                 </p>
                 <p className="text-emerald-400 text-[11px] font-medium">
                   + FREE Draw Entry
@@ -76,7 +77,7 @@ export default function LuckyDrawBanner() {
             <div>
               <div className="flex items-center justify-between text-[11px] mb-1">
                 <span className="text-purple-200/80">
-                  <span className="text-white font-bold">{MOCK_SOLD.toLocaleString()}</span> / {totalSlots.toLocaleString()}
+                  <span className="text-white font-bold">{soldSlots.toLocaleString()}</span> / {totalSlots.toLocaleString()}
                 </span>
                 <span className="text-amber-400/90 font-semibold text-[10px]">
                   {Math.round(progressPct)}%

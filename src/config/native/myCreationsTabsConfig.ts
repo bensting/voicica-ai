@@ -92,7 +92,7 @@ export const myCreationsTabsConfig: MyCreationsTabConfig[] = [
     emptyState: {
       title: 'No draws yet.',
       subtitle: 'Try your luck and win prizes!',
-      createLink: '/native/lucky-draw/iphone17pro-launch',
+      createLink: '/native',
     },
     enabled: { development: true, production: true },
   },

@@ -15,6 +15,13 @@
       "when": 1739808000000,
       "tag": "0001_lucky_draw_tables",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1739894400000,
+      "tag": "0002_lucky_draws_instance_table",
+      "breakpoints": true
     }
   ]
 }

@@ -5,10 +5,12 @@
  *
  * 使用 Adsterra Native Banner 广告
  * 订阅用户不显示广告，回退到 BannerCarousel
+ * 有活跃 Lucky Draw 时优先显示 Lucky Draw Banner
  */
 
+import { useState, useEffect } from 'react';
 import { useSubscription } from '@/contexts/SubscriptionContext';
-import { activeLuckyDraw } from '@/config/native/luckyDrawConfig';
+import { getActiveDraw, type ActiveDrawInfo } from '@/actions/lucky-draw';
 import AdsterraBanner from './AdsterraBanner';
 import BannerCarousel from './BannerCarousel';
 import LuckyDrawBanner from './LuckyDrawBanner';
@@ -18,18 +20,21 @@ import LuckyDrawBanner from './LuckyDrawBanner';
  */
 export default function NativeBannerAd() {
   const { isSubscribed } = useSubscription();
+  const [activeDraw, setActiveDraw] = useState<ActiveDrawInfo | null | undefined>(undefined);
 
-  // 活动开启时，所有用户看到活动 banner
-  const isDev = process.env.NODE_ENV === 'development';
-  if (isDev ? activeLuckyDraw.enabled.development : activeLuckyDraw.enabled.production) {
-    return <LuckyDrawBanner />;
-  }
+  useEffect(() => {
+    getActiveDraw()
+      .then(setActiveDraw)
+      .catch(() => setActiveDraw(null));
+  }, []);
 
-  // 订阅用户显示 BannerCarousel（不显示广告）
-  if (isSubscribed) {
-    return <BannerCarousel />;
-  }
+  // Loading — show nothing while checking
+  if (activeDraw === undefined) return null;
 
-  // 非订阅用户显示 Adsterra 广告
+  // Active draw exists — show Lucky Draw banner
+  if (activeDraw) return <LuckyDrawBanner draw={activeDraw} />;
+
+  // No active draw — fallback
+  if (isSubscribed) return <BannerCarousel />;
   return <AdsterraBanner />;
 }

@@ -649,6 +649,31 @@ export const clonedVoices = pgTable("cloned_voices", {
 // Lucky Draw Tables
 // ============================================================
 
+/** 抽奖实例 — admin 创建，引用产品配置的 productId */
+export const luckyDrawInstances = pgTable("lucky_draws", {
+	id: serial().primaryKey().notNull(),
+	drawId: varchar("draw_id", { length: 100 }).notNull(),
+	productId: varchar("product_id", { length: 100 }).notNull(),
+	title: varchar("title", { length: 255 }),
+	enabled: boolean("enabled").default(false).notNull(),
+	status: varchar("status", { length: 20 }).default('selling').notNull(),
+	totalSlots: integer("total_slots").notNull(),
+	creditsPerPurchase: integer("credits_per_purchase").notNull(),
+	stripePriceCents: integer("stripe_price_cents").notNull(),
+	cryptoPriceCents: integer("crypto_price_cents").notNull(),
+	contractAddress: varchar("contract_address", { length: 66 }),
+	chainName: varchar("chain_name", { length: 50 }),
+	blockExplorerUrl: text("block_explorer_url"),
+	createdAt: timestamp("created_at", { withTimezone: true, mode: 'string' })
+		.default(sql`CURRENT_TIMESTAMP`).notNull(),
+	startedAt: timestamp("started_at", { withTimezone: true, mode: 'string' }),
+	completedAt: timestamp("completed_at", { withTimezone: true, mode: 'string' }),
+}, (table) => [
+	uniqueIndex("uq_ld_draw_id").using("btree", table.drawId),
+	index("idx_ld_product_id").using("btree", table.productId),
+	index("idx_ld_enabled_status").using("btree", table.enabled, table.status),
+]);
+
 export const luckyDrawEntries = pgTable("lucky_draw_entries", {
 	id: serial().primaryKey().notNull(),
 	drawId: varchar("draw_id", { length: 100 }).notNull(),

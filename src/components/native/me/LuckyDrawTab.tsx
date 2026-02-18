@@ -45,7 +45,11 @@ function TrophyIcon() {
   );
 }
 
-export default function LuckyDrawTab() {
+interface LuckyDrawTabProps {
+  filter?: 'all' | 'won';
+}
+
+export default function LuckyDrawTab({ filter = 'all' }: LuckyDrawTabProps) {
   const [records, setRecords] = useState<LuckyDrawHistoryRecord[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -63,6 +67,10 @@ export default function LuckyDrawTab() {
     fetchHistory();
   }, []);
 
+  const displayRecords = filter === 'won'
+    ? records.filter(r => r.status === 'completed' && r.result?.won)
+    : records;
+
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
@@ -78,7 +86,11 @@ export default function LuckyDrawTab() {
   return (
     <>
       <div className="space-y-3 pt-2">
-        {records.map((record) => {
+        {displayRecords.length === 0 ? (
+          <div className="text-center py-8 text-gray-500 text-sm">
+            {filter === 'won' ? 'No winning draws yet' : 'No draws yet'}
+          </div>
+        ) : displayRecords.map((record) => {
           const isWinner = record.status === 'completed' && record.result?.won;
           const style = statusStyle[record.status] || statusStyle.selling;
           const claimStatus = record.claim?.status as ClaimStatus | undefined;
@@ -193,3 +205,4 @@ export default function LuckyDrawTab() {
     </>
   );
 }
+

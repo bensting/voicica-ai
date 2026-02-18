@@ -102,13 +102,17 @@ export default function MyCreations() {
     sectionFromUrl === 'lucky-draws' ? 'lucky-draws' : 'creations'
   );
   const [activeDrawCount, setActiveDrawCount] = useState(0);
+  const [wonDrawCount, setWonDrawCount] = useState(0);
+  const [drawFilter, setDrawFilter] = useState<'all' | 'won'>('all');
 
-  // 获取活跃抽奖数量
+  // 获取活跃抽奖数量 & 中奖数量
   useEffect(() => {
     getUserLuckyDrawHistory()
       .then((records) => {
         const active = records.filter((r) => r.status === 'selling' || r.status === 'drawing');
         setActiveDrawCount(active.length);
+        const won = records.filter((r) => r.status === 'completed' && r.result?.won);
+        setWonDrawCount(won.length);
       })
       .catch(() => {});
   }, []);
@@ -716,6 +720,29 @@ export default function MyCreations() {
             ))}
           </div>
         )}
+
+        {/* Draw Filter Tabs (仅在 lucky-draws 模式下显示) */}
+        {activeSection === 'lucky-draws' && (
+          <div className="flex items-center justify-center gap-1 pb-2">
+            {(['all', 'won'] as const).map((tab) => {
+              const active = drawFilter === tab;
+              const label = tab === 'all' ? 'All' : `Won${wonDrawCount > 0 ? ` (${wonDrawCount})` : ''}`;
+              return (
+                <button
+                  key={tab}
+                  onClick={() => setDrawFilter(tab)}
+                  className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
+                    active
+                      ? 'bg-purple-500/20 text-purple-300'
+                      : 'text-gray-500 hover:text-gray-300'
+                  }`}
+                >
+                  {label}
+                </button>
+              );
+            })}
+          </div>
+        )}
       </div>
 
       {/* 可滚动的内容区域 */}
@@ -742,7 +769,7 @@ export default function MyCreations() {
 
         {/* 内容区域 */}
         {activeSection === 'lucky-draws' ? (
-          <LuckyDrawTab />
+          <LuckyDrawTab filter={drawFilter} />
         ) : activeTab === 'video' ? (
           loading && videos.length === 0 ? (
             // 加载中

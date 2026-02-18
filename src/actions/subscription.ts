@@ -100,7 +100,7 @@ export async function getMySubscriptions(params?: {
     .orderBy(desc(userSubscriptions.createdAt))
     .limit(100);
 
-  // 查询活跃订阅
+  // 查询活跃订阅（按金额降序，多个订阅时取最贵的）
   const now = new Date();
   const [activeSubscription] = await db.select().from(userSubscriptions)
     .where(and(
@@ -108,6 +108,7 @@ export async function getMySubscriptions(params?: {
       eq(userSubscriptions.status, 'ACTIVE'),
       gte(userSubscriptions.endDate, now.toISOString()),
     ))
+    .orderBy(desc(userSubscriptions.amount))
     .limit(1);
 
   // 转换为响应格式
@@ -163,6 +164,7 @@ export async function getMyActiveSubscription(): Promise<UserSubscription | null
       eq(userSubscriptions.status, 'ACTIVE'),
       gte(userSubscriptions.endDate, now.toISOString()),
     ))
+    .orderBy(desc(userSubscriptions.amount))
     .limit(1);
 
   if (!activeSubscription) {

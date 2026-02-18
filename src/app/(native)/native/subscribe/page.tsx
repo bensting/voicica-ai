@@ -238,7 +238,7 @@ export default function NativeSubscribePage() {
           <span className="text-4xl font-bold text-white">{creditsLoading ? '—' : credits}</span>
         </div>
         <p className="text-gray-500 text-sm">
-          {activeSubscription ? t('native.subscribe.vipBonus') : t('native.subscribe.notSubscribed')}
+          {currentPlan ? currentPlan.name : t('native.subscribe.notSubscribed')}
         </p>
       </div>
 

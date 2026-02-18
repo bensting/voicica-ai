@@ -225,28 +225,36 @@ export async function getActiveDrawsByProduct(): Promise<ActiveDrawInfo[]> {
 
   // 每个 productId 只取最新一期且状态为 selling
   const seen = new Set<string>();
-  const result: ActiveDrawInfo[] = [];
+  const sellingDraws: (typeof draws)[number][] = [];
 
   for (const draw of draws) {
     if (seen.has(draw.productId)) continue;
     if (draw.status !== 'selling') continue;
     seen.add(draw.productId);
+    sellingDraws.push(draw);
+  }
 
+  if (sellingDraws.length === 0) return [];
+
+  // 并行查询所有 draw 的 entry 数量，避免 N+1
+  const soldCounts = await Promise.all(
+    sellingDraws.map((draw) =>
+      db.select({ count: count() })
+        .from(luckyDrawEntries)
+        .where(eq(luckyDrawEntries.drawId, draw.drawId))
+        .then(([r]) => r?.count ?? 0)
+    )
+  );
+
+  return sellingDraws.map((draw, i) => {
     const product = mergeProductInfo(draw);
-
-    const [soldResult] = await db
-      .select({ count: count() })
-      .from(luckyDrawEntries)
-      .where(eq(luckyDrawEntries.drawId, draw.drawId));
-    const soldSlots = soldResult?.count ?? 0;
-
-    result.push({
+    return {
       drawId: draw.drawId,
       productId: draw.productId,
       title: draw.title,
       ...product,
       totalSlots: draw.totalSlots,
-      soldSlots,
+      soldSlots: soldCounts[i],
       creditsPerPurchase: draw.creditsPerPurchase,
       stripePriceCents: draw.stripePriceCents,
       cryptoPriceCents: draw.cryptoPriceCents,
@@ -255,10 +263,8 @@ export async function getActiveDrawsByProduct(): Promise<ActiveDrawInfo[]> {
       contractAddress: draw.contractAddress,
       blockExplorerUrl: draw.blockExplorerUrl,
       href: `/native/lucky-draw/${draw.drawId}`,
-    });
-  }
-
-  return result;
+    };
+  });
 }
 
 // ─── getLuckyDrawStatus ───

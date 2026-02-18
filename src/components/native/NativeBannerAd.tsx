@@ -35,8 +35,10 @@ export default function NativeBannerAd() {
     return () => clearInterval(interval);
   }, []);
 
-  // Loading — show nothing while checking
-  if (activeDraw === undefined) return null;
+  // Loading — skeleton placeholder
+  if (activeDraw === undefined) return (
+    <div className="mx-4 rounded-2xl bg-white/5 animate-pulse" style={{ height: 220 }} />
+  );
 
   // Active draw exists — show Lucky Draw banner
   if (activeDraw) return <LuckyDrawBanner draw={activeDraw} />;

@@ -1,30 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef, useCallback } from 'react';
-
-const CONFETTI_COLORS = ['#a855f7', '#ec4899', '#f59e0b', '#10b981', '#6366f1', '#f43f5e', '#facc15', '#22d3ee'];
-
-interface ConfettiParticle {
-  id: number;
-  x: number;
-  color: string;
-  delay: number;
-  duration: number;
-  size: number;
-  drift: number;
-}
-
-function generateConfetti(count: number): ConfettiParticle[] {
-  return Array.from({ length: count }, (_, i) => ({
-    id: i,
-    x: Math.random() * 100,
-    color: CONFETTI_COLORS[Math.floor(Math.random() * CONFETTI_COLORS.length)],
-    delay: Math.random() * 0.5,
-    duration: 1.5 + Math.random() * 1.5,
-    size: 4 + Math.random() * 6,
-    drift: (Math.random() - 0.5) * 60,
-  }));
-}
+import ConfettiBurst from '@/components/common/ConfettiBurst';
 
 export interface SuccessModalProps {
   info: { credits: number; draws: number } | null;
@@ -32,29 +8,6 @@ export interface SuccessModalProps {
 }
 
 export default function SuccessModal({ info, onClose }: SuccessModalProps) {
-  const [confetti, setConfetti] = useState<ConfettiParticle[]>([]);
-  const timerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
-
-  const cleanup = useCallback(() => {
-    setConfetti([]);
-    if (timerRef.current) clearTimeout(timerRef.current);
-  }, []);
-
-  useEffect(() => {
-    if (info) {
-      setConfetti(generateConfetti(60));
-      timerRef.current = setTimeout(() => setConfetti([]), 3500);
-    } else {
-      cleanup();
-    }
-    return cleanup;
-  }, [info, cleanup]);
-
-  const handleClose = () => {
-    cleanup();
-    onClose();
-  };
-
   if (!info) return null;
 
   return (
@@ -62,28 +15,8 @@ export default function SuccessModal({ info, onClose }: SuccessModalProps) {
       <div className="fixed inset-0 z-[10000] bg-black/70 backdrop-blur-sm" />
 
       {/* Confetti layer */}
-      <div className="fixed inset-0 z-[10002] pointer-events-none overflow-hidden">
-        {confetti.map((p) => (
-          <div
-            key={p.id}
-            className="absolute top-0 animate-[confettiFall_var(--dur)_ease-out_var(--delay)_forwards]"
-            style={{
-              left: `${p.x}%`,
-              '--delay': `${p.delay}s`,
-              '--dur': `${p.duration}s`,
-              '--drift': `${p.drift}px`,
-            } as React.CSSProperties}
-          >
-            <div
-              className="rounded-sm animate-[confettiSpin_0.6s_linear_infinite]"
-              style={{
-                width: p.size,
-                height: p.size * 0.6,
-                backgroundColor: p.color,
-              }}
-            />
-          </div>
-        ))}
+      <div className="fixed inset-0 z-[10002]">
+        <ConfettiBurst count={50} />
       </div>
 
       {/* Modal card */}
@@ -110,7 +43,7 @@ export default function SuccessModal({ info, onClose }: SuccessModalProps) {
           </div>
 
           <button
-            onClick={handleClose}
+            onClick={onClose}
             className="w-full py-3.5 bg-purple-600 text-white font-bold rounded-xl hover:bg-purple-500 transition-colors"
           >
             Continue

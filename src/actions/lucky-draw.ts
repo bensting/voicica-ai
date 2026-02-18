@@ -97,6 +97,8 @@ export interface LuckyDrawHistoryRecord {
   packs: number;
   totalCredits: number;
   slots: number[];
+  totalSlots: number;
+  soldSlots: number;
   status: 'selling' | 'drawing' | 'completed';
   result?: {
     won: boolean;
@@ -697,8 +699,8 @@ export async function getUserLuckyDrawHistory(): Promise<LuckyDrawHistoryRecord[
 
   const drawIds = Array.from(drawMap.keys());
 
-  // Batch fetch: draw instances, results, claims
-  const [drawInstances, results, claims] = await Promise.all([
+  // Batch fetch: draw instances, results, claims, sold counts
+  const [drawInstances, results, claims, soldCounts] = await Promise.all([
     db.select().from(luckyDrawInstances)
       .where(sql`${luckyDrawInstances.drawId} IN (${sql.join(drawIds.map(id => sql`${id}`), sql`, `)})`),
     db.select().from(luckyDrawResults)
@@ -708,11 +710,18 @@ export async function getUserLuckyDrawHistory(): Promise<LuckyDrawHistoryRecord[
         eq(luckyDrawClaims.userId, userId),
         sql`${luckyDrawClaims.drawId} IN (${sql.join(drawIds.map(id => sql`${id}`), sql`, `)})`,
       )),
+    db.select({
+      drawId: luckyDrawEntries.drawId,
+      count: count(),
+    }).from(luckyDrawEntries)
+      .where(sql`${luckyDrawEntries.drawId} IN (${sql.join(drawIds.map(id => sql`${id}`), sql`, `)})`)
+      .groupBy(luckyDrawEntries.drawId),
   ]);
 
   const instanceMap = new Map(drawInstances.map((d) => [d.drawId, d]));
   const resultMap = new Map(results.map((r) => [r.drawId, r]));
   const claimMap = new Map(claims.map((c) => [c.drawId, c]));
+  const soldMap = new Map(soldCounts.map((s) => [s.drawId, s.count]));
 
   const records: LuckyDrawHistoryRecord[] = [];
 
@@ -730,6 +739,8 @@ export async function getUserLuckyDrawHistory(): Promise<LuckyDrawHistoryRecord[
       packs: data.totalPacks,
       totalCredits: data.totalCredits,
       slots: data.slots.sort((a, b) => a - b),
+      totalSlots: draw?.totalSlots ?? 0,
+      soldSlots: soldMap.get(drawId) ?? 0,
       status,
       date: new Date(data.earliestDate).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }),
       href: `/native/lucky-draw/${drawId}`,

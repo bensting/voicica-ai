@@ -10,6 +10,7 @@ import { getCoverRecords, deleteCoverRecord, type CoverRecord } from '@/actions/
 import { getDialogueRecords, deleteDialogueRecord, type DialogueRecord } from '@/actions/dialogue';
 import { getImageRecords, deleteImageRecord, type ImageRecord } from '@/actions/image';
 import { getVideoRecordByTaskId, deleteVideoRecord, type VideoRecord } from '@/actions/video';
+import { getUserLuckyDrawHistory } from '@/actions/lucky-draw';
 import { useMusicTaskPolling } from '@/hooks/useMusicTaskPolling';
 import { useVideoTaskPolling } from '@/hooks/useVideoTaskPolling';
 import { useImageTaskPolling } from '@/hooks/useImageTaskPolling';
@@ -94,6 +95,23 @@ export default function MyCreations() {
   const initialTab = tabFromUrl && isValidMyCreationsTab(tabFromUrl)
     ? tabFromUrl
     : defaultTab;
+
+  // 顶级区域切换: 'creations' | 'lucky-draws'
+  const sectionFromUrl = searchParams.get('section');
+  const [activeSection, setActiveSection] = useState<'creations' | 'lucky-draws'>(
+    sectionFromUrl === 'lucky-draws' ? 'lucky-draws' : 'creations'
+  );
+  const [activeDrawCount, setActiveDrawCount] = useState(0);
+
+  // 获取活跃抽奖数量
+  useEffect(() => {
+    getUserLuckyDrawHistory()
+      .then((records) => {
+        const active = records.filter((r) => r.status === 'selling' || r.status === 'drawing');
+        setActiveDrawCount(active.length);
+      })
+      .catch(() => {});
+  }, []);
 
   const [activeTab, setActiveTab] = useState<MyCreationsTabId>(initialTab);
   const [videos, setVideos] = useState<VideoItem[]>([]);
@@ -563,7 +581,6 @@ export default function MyCreations() {
     cover: 'native.me.emptyState.createFirstCover',
     video: 'native.me.emptyState.createFirstVideo',
     image: 'native.me.emptyState.createFirstImage',
-    'lucky-draw': 'native.me.emptyState.tryLuckyDraw',
   };
   const emptyState = {
     title: t('native.me.emptyState.noContent'),
@@ -579,7 +596,6 @@ export default function MyCreations() {
     cover: 'native.me.tabs.cover',
     video: 'native.me.tabs.video',
     image: 'native.me.tabs.image',
-    'lucky-draw': 'native.me.tabs.luckyDraw',
   };
   const isEmpty = activeTab === 'video'
     ? filteredVideoRecords.length === 0
@@ -593,8 +609,6 @@ export default function MyCreations() {
     ? filteredCoverRecords.length === 0
     : activeTab === 'dialogues'
     ? filteredDialogueRecords.length === 0
-    : activeTab === 'lucky-draw'
-    ? false  // Lucky Draw tab 内部管理自己的空状态
     : true;
 
   // 按日期分组
@@ -656,28 +670,52 @@ export default function MyCreations() {
     <div className="h-full flex flex-col">
       {/* 固定的标题和 Tabs */}
       <div className="flex-shrink-0 px-4 pt-4 bg-[#0a0a1a]">
-        {/* 标题 */}
-        <h2 className="text-xl font-bold text-white mb-3">{t('native.me.myCreations')}</h2>
-
-        {/* Tabs */}
-        <div className="flex gap-4 border-b border-gray-800 overflow-x-auto">
-          {availableTabs.map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`pb-3 text-sm font-medium transition-colors relative whitespace-nowrap ${
-                activeTab === tab.id
-                  ? 'text-white'
-                  : 'text-gray-500 hover:text-gray-300'
-              }`}
-            >
-              {t(tabLabelKey[tab.id])}
-              {activeTab === tab.id && (
-                <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-white rounded-full" />
-              )}
-            </button>
-          ))}
+        {/* 顶级区域切换 */}
+        <div className="flex items-center gap-4 mb-3">
+          <button
+            onClick={() => setActiveSection('creations')}
+            className={`text-xl font-bold transition-colors ${
+              activeSection === 'creations' ? 'text-white' : 'text-gray-600'
+            }`}
+          >
+            {t('native.me.myCreations')}
+          </button>
+          <button
+            onClick={() => setActiveSection('lucky-draws')}
+            className={`text-xl font-bold transition-colors flex items-center gap-1.5 ${
+              activeSection === 'lucky-draws' ? 'text-white' : 'text-gray-600'
+            }`}
+          >
+            My Draws
+            {activeDrawCount > 0 && (
+              <span className="inline-flex items-center justify-center min-w-[18px] h-[18px] px-1 text-[10px] font-bold text-white bg-purple-600 rounded-full">
+                {activeDrawCount}
+              </span>
+            )}
+          </button>
         </div>
+
+        {/* Creation Tabs (仅在 creations 模式下显示) */}
+        {activeSection === 'creations' && (
+          <div className="flex gap-4 border-b border-gray-800 overflow-x-auto">
+            {availableTabs.map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`pb-3 text-sm font-medium transition-colors relative whitespace-nowrap ${
+                  activeTab === tab.id
+                    ? 'text-white'
+                    : 'text-gray-500 hover:text-gray-300'
+                }`}
+              >
+                {t(tabLabelKey[tab.id])}
+                {activeTab === tab.id && (
+                  <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-white rounded-full" />
+                )}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* 可滚动的内容区域 */}
@@ -703,7 +741,9 @@ export default function MyCreations() {
         )}
 
         {/* 内容区域 */}
-        {activeTab === 'video' ? (
+        {activeSection === 'lucky-draws' ? (
+          <LuckyDrawTab />
+        ) : activeTab === 'video' ? (
           loading && videos.length === 0 ? (
             // 加载中
             <div className="flex justify-center py-8">
@@ -931,8 +971,6 @@ export default function MyCreations() {
               ))}
             </div>
           )
-        ) : activeTab === 'lucky-draw' ? (
-          <LuckyDrawTab />
         ) : isEmpty ? (
           // 其他 tab 的空状态
           <div className="flex flex-col items-center justify-center py-8">

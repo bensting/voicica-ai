@@ -3,7 +3,7 @@
  * 控制 Me 页面 My Creations 区域显示哪些内容标签
  */
 
-export type MyCreationsTabId = 'voices' | 'dialogues' | 'music' | 'cover' | 'video' | 'image' | 'lucky-draw';
+export type MyCreationsTabId = 'voices' | 'dialogues' | 'music' | 'cover' | 'video' | 'image';
 
 export interface MyCreationsTabConfig {
   id: MyCreationsTabId;
@@ -86,16 +86,12 @@ export const myCreationsTabsConfig: MyCreationsTabConfig[] = [
     },
     enabled: { development: true, production: true },
   },
-  {
-    id: 'lucky-draw',
-    label: 'Lucky Draw',
-    emptyState: {
-      title: 'No draws yet.',
-      subtitle: 'Try your luck and win prizes!',
-      createLink: '/native',
-    },
-    enabled: { development: true, production: true },
-  },
+  // Lucky Draw 已独立为卡片入口，不再作为 tab 显示
+  // {
+  //   id: 'lucky-draw',
+  //   label: 'Lucky Draw',
+  //   ...
+  // },
 ];
 
 /**

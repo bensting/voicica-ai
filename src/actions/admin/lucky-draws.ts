@@ -16,6 +16,7 @@ export interface AdminLuckyDraw {
   id: number;
   drawId: string;
   productId: string;
+  prizeType: string | null;
   title: string | null;
   enabled: boolean;
   status: string;
@@ -113,6 +114,7 @@ export async function getAdminLuckyDraws(): Promise<AdminLuckyDraw[]> {
       id: draw.id,
       drawId: draw.drawId,
       productId: draw.productId,
+      prizeType: draw.prizeType,
       title: draw.title,
       enabled: draw.enabled,
       status: draw.status,
@@ -149,6 +151,7 @@ export async function createLuckyDraw(data: CreateLuckyDrawInput): Promise<Actio
     await db.insert(luckyDrawInstances).values({
       drawId,
       productId: data.productId,
+      prizeType: product.prizeType,
       title: data.title || null,
       enabled: data.enabled,
       status: 'selling',

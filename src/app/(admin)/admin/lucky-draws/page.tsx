@@ -251,6 +251,7 @@ export default function LuckyDrawsPage() {
               <tr>
                 <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Draw ID</th>
                 <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">产品</th>
+                <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">类型</th>
                 <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">标题</th>
                 <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">状态</th>
                 <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">进度</th>
@@ -262,7 +263,7 @@ export default function LuckyDrawsPage() {
             <tbody className="divide-y divide-gray-200">
               {loading ? (
                 <tr>
-                  <td colSpan={8} className="px-4 py-8 text-center text-gray-500">
+                  <td colSpan={9} className="px-4 py-8 text-center text-gray-500">
                     <div className="flex items-center justify-center gap-2">
                       <div className="w-5 h-5 border-2 border-purple-600 border-t-transparent rounded-full animate-spin" />
                       加载中...
@@ -271,7 +272,7 @@ export default function LuckyDrawsPage() {
                 </tr>
               ) : draws.length === 0 ? (
                 <tr>
-                  <td colSpan={8} className="px-4 py-8 text-center text-gray-500">
+                  <td colSpan={9} className="px-4 py-8 text-center text-gray-500">
                     暂无抽奖
                   </td>
                 </tr>
@@ -295,6 +296,9 @@ export default function LuckyDrawsPage() {
                       </td>
                       <td className="px-4 py-3 text-sm text-gray-900">
                         {getProductPrize(draw.productId)}
+                      </td>
+                      <td className="px-4 py-3 text-sm text-gray-600">
+                        {draw.prizeType === 'cash' ? '💰 Cash' : draw.prizeType === 'product' ? '📦 Product' : '-'}
                       </td>
                       <td className="px-4 py-3 text-sm text-gray-600">
                         {draw.title || '-'}
@@ -429,6 +433,19 @@ export default function LuckyDrawsPage() {
                     </option>
                   ))}
                 </select>
+              </div>
+
+              {/* Prize Type (read-only, derived from product) */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">奖品类型</label>
+                <div className="w-full px-3 py-2 border border-gray-200 rounded-lg bg-gray-50 text-gray-600 text-sm">
+                  {(() => {
+                    const p = luckyDrawProducts.find((x) => x.productId === formData.productId);
+                    return p?.prizeType === 'cash'
+                      ? '💰 Cash（现金/加密货币）'
+                      : '📦 Product（实物奖品）';
+                  })()}
+                </div>
               </div>
 
               {/* Title */}

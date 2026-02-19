@@ -654,6 +654,7 @@ export const luckyDrawInstances = pgTable("lucky_draws", {
 	id: serial().primaryKey().notNull(),
 	drawId: varchar("draw_id", { length: 100 }).notNull(),
 	productId: varchar("product_id", { length: 100 }).notNull(),
+	prizeType: varchar("prize_type", { length: 20 }),
 	title: varchar("title", { length: 255 }),
 	enabled: boolean("enabled").default(false).notNull(),
 	status: varchar("status", { length: 20 }).default('selling').notNull(),

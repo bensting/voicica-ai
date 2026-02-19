@@ -4,7 +4,7 @@ import CreditsIcon from './CreditsIcon';
 import CrownIcon from './CrownIcon';
 
 export type GeneratingStatus = 'generating' | 'loading' | 'success' | 'error';
-export type GeneratingType = 'music' | 'image' | 'video' | 'voice' | 'download';
+export type GeneratingType = 'music' | 'image' | 'video' | 'voice' | 'download' | 'image-tool';
 
 interface GeneratingModalProps {
   isOpen: boolean;
@@ -78,6 +78,13 @@ const typeConfig: Record<GeneratingType, {
     ),
     successTitle: 'Voice Created!',
     successMessage: 'Your AI voice has been generated.',
+    estimatedTime: '10-30 seconds',
+  },
+  'image-tool': {
+    generatingTitle: 'Processing image...',
+    generatingIcon: <div className="text-gray-400 animate-pulse text-2xl">✨</div>,
+    successTitle: 'Image Processed!',
+    successMessage: 'Your image has been processed successfully.',
     estimatedTime: '10-30 seconds',
   },
   download: {

@@ -627,6 +627,24 @@ export const videoDownloadRecords = pgTable("video_download_records", {
 	index("ix_video_download_records_user_id").using("btree", table.userId.asc().nullsLast().op("text_ops")),
 ]);
 
+export const imageToolRecords = pgTable("image_tool_records", {
+	id: serial().primaryKey().notNull(),
+	userId: varchar("user_id", { length: 255 }).notNull(),
+	taskId: varchar("task_id", { length: 255 }).notNull(),
+	toolType: varchar("tool_type", { length: 30 }).notNull(),
+	status: varchar({ length: 20 }).notNull(),
+	progress: integer().default(0).notNull(),
+	originalImageUrl: text("original_image_url").notNull(),
+	resultImageUrl: text("result_image_url"),
+	creditsUsed: integer("credits_used").notNull(),
+	error: text(),
+	completedAt: timestamp("completed_at", { precision: 6, withTimezone: true, mode: 'string' }),
+	createdAt: timestamp("created_at", { precision: 6, withTimezone: true, mode: 'string' }).default(sql`CURRENT_TIMESTAMP`).notNull(),
+}, (table) => [
+	uniqueIndex("image_tool_records_task_id_key").using("btree", table.taskId.asc().nullsLast()),
+	index("ix_image_tool_records_user_id").using("btree", table.userId.asc().nullsLast()),
+]);
+
 export const clonedVoices = pgTable("cloned_voices", {
 	id: serial().primaryKey().notNull(),
 	userId: varchar("user_id", { length: 255 }).notNull(),

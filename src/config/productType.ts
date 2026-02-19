@@ -44,6 +44,8 @@ export const ProductType = {
   AI_COVER: 'ai_cover',
   /** Lucky Draw 购买 */
   LUCKY_DRAW: 'lucky_draw',
+  /** 图片工具（去背景/高清放大） */
+  IMAGE_TOOL: 'image_tool',
 } as const;
 
 export type ProductType = typeof ProductType[keyof typeof ProductType];

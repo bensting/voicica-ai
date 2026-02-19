@@ -119,6 +119,17 @@ export const createMenuItems: CreateMenuItem[] = [
     enabled: { development: true, production: true },
   },
 
+  {
+    id: 'image-tools',
+    icon: 'image',
+    category: 'image',
+    title: 'BG Remover & HD Upscaler',
+    shortName: 'Image Tools',
+    description: 'Remove background or upscale images',
+    href: '/native/create/image-tools',
+    enabled: { development: true, production: true },
+  },
+
   // ========== AI Video 类别 ==========
   {
     id: 'video',

@@ -53,7 +53,7 @@ export const luckyDrawProducts: LuckyDrawProduct[] = [
     prizeType: 'cash',
     prize: '100 USDT',
     prizeImageUrl: '/images/campaign/usdt.png',
-    shortLabel: 'Lucky Draw\nWin 1000 USDT',
+    shortLabel: 'Lucky Draw\nWin 100 USDT',
     totalSlots: 120,
     creditsPerPurchase: 100,
     stripePriceCents: 100,

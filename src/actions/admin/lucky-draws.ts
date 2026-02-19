@@ -34,6 +34,7 @@ export interface AdminLuckyDraw {
 
 export interface CreateLuckyDrawInput {
   productId: string;
+  prizeType?: string;
   title?: string;
   enabled: boolean;
   status?: string;
@@ -195,6 +196,7 @@ export async function updateLuckyDraw(
         ...(data.stripePriceCents !== undefined && { stripePriceCents: data.stripePriceCents }),
         ...(data.cryptoPriceCents !== undefined && { cryptoPriceCents: data.cryptoPriceCents }),
         ...(data.chainName !== undefined && { chainName: data.chainName }),
+        ...(data.prizeType !== undefined && { prizeType: data.prizeType }),
       })
       .where(eq(luckyDrawInstances.id, id));
 

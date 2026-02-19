@@ -15,7 +15,7 @@ import {
   type CreateLuckyDrawInput,
   type ShipClaimInput,
 } from '@/actions/admin/lucky-draws';
-import { luckyDrawProducts } from '@/config/native/luckyDrawConfig';
+import { luckyDrawProducts, getLuckyDrawProduct } from '@/config/native/luckyDrawConfig';
 
 /**
  * Admin 抽奖管理页面
@@ -26,6 +26,7 @@ const firstProduct = luckyDrawProducts[0];
 
 const emptyFormData: CreateLuckyDrawInput = {
   productId: firstProduct?.productId ?? '',
+  prizeType: firstProduct?.prizeType ?? 'product',
   title: '',
   enabled: false,
   status: 'selling',
@@ -82,6 +83,7 @@ export default function LuckyDrawsPage() {
     setEditingDraw(draw);
     setFormData({
       productId: draw.productId,
+      prizeType: draw.prizeType ?? getLuckyDrawProduct(draw.productId)?.prizeType ?? 'product',
       title: draw.title ?? '',
       enabled: draw.enabled,
       status: draw.status,
@@ -415,6 +417,9 @@ export default function LuckyDrawsPage() {
                     setFormData({
                       ...formData,
                       productId: e.target.value,
+                      ...(p && {
+                        prizeType: p.prizeType,
+                      }),
                       ...(p && !editingDraw && {
                         totalSlots: p.totalSlots,
                         creditsPerPurchase: p.creditsPerPurchase,
@@ -435,17 +440,17 @@ export default function LuckyDrawsPage() {
                 </select>
               </div>
 
-              {/* Prize Type (read-only, derived from product) */}
+              {/* Prize Type */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">奖品类型</label>
-                <div className="w-full px-3 py-2 border border-gray-200 rounded-lg bg-gray-50 text-gray-600 text-sm">
-                  {(() => {
-                    const p = luckyDrawProducts.find((x) => x.productId === formData.productId);
-                    return p?.prizeType === 'cash'
-                      ? '💰 Cash（现金/加密货币）'
-                      : '📦 Product（实物奖品）';
-                  })()}
-                </div>
+                <select
+                  value={formData.prizeType ?? 'product'}
+                  onChange={(e) => setFormData({ ...formData, prizeType: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                >
+                  <option value="product">📦 Product（实物奖品）</option>
+                  <option value="cash">💰 Cash（现金/加密货币）</option>
+                </select>
               </div>
 
               {/* Title */}

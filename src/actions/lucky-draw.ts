@@ -214,6 +214,66 @@ export async function getActiveDraw(): Promise<ActiveDrawInfo | null> {
   };
 }
 
+// ─── getActiveDrawsForBanner — Banner 轮播用，每个 productId 最多一期（selling > completed）───
+
+export async function getActiveDrawsForBanner(): Promise<ActiveDrawInfo[]> {
+  const draws = await db
+    .select()
+    .from(luckyDrawInstances)
+    .where(eq(luckyDrawInstances.enabled, true))
+    .orderBy(desc(luckyDrawInstances.createdAt));
+
+  // 每个 productId 取一期：优先 selling，其次 completed
+  const sellingMap = new Map<string, DrawInstance>();
+  const completedMap = new Map<string, DrawInstance>();
+
+  for (const draw of draws) {
+    if (draw.status === 'selling' && !sellingMap.has(draw.productId)) {
+      sellingMap.set(draw.productId, draw);
+    } else if (draw.status === 'completed' && !completedMap.has(draw.productId)) {
+      completedMap.set(draw.productId, draw);
+    }
+  }
+
+  // 合并：selling 优先，缺少时用 completed 补位
+  const picked: DrawInstance[] = [];
+  const allProductIds = new Set([...sellingMap.keys(), ...completedMap.keys()]);
+  for (const pid of allProductIds) {
+    picked.push(sellingMap.get(pid) ?? completedMap.get(pid)!);
+  }
+
+  if (picked.length === 0) return [];
+
+  const soldCounts = await Promise.all(
+    picked.map((draw) =>
+      db.select({ count: count() })
+        .from(luckyDrawEntries)
+        .where(eq(luckyDrawEntries.drawId, draw.drawId))
+        .then(([r]) => r?.count ?? 0)
+    )
+  );
+
+  return picked.map((draw, i) => {
+    const product = mergeProductInfo(draw);
+    return {
+      drawId: draw.drawId,
+      productId: draw.productId,
+      title: draw.title,
+      ...product,
+      totalSlots: draw.totalSlots,
+      soldSlots: soldCounts[i],
+      creditsPerPurchase: draw.creditsPerPurchase,
+      stripePriceCents: draw.stripePriceCents,
+      cryptoPriceCents: draw.cryptoPriceCents,
+      status: draw.status,
+      chainName: draw.chainName,
+      contractAddress: draw.contractAddress,
+      blockExplorerUrl: draw.blockExplorerUrl,
+      href: `/native/lucky-draw/${draw.drawId}`,
+    };
+  });
+}
+
 // ─── getActiveDrawsByProduct — 获取各产品的活跃抽奖（FeatureGrid 用）───
 
 export async function getActiveDrawsByProduct(): Promise<ActiveDrawInfo[]> {

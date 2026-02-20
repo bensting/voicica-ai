@@ -15,7 +15,7 @@ export default function LuckyDrawBanner({ draw }: LuckyDrawBannerProps) {
   const remaining = totalSlots - soldSlots;
 
   return (
-    <Link href={href} className="block mx-4">
+    <Link href={href} className="block">
       <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#05001a] via-[#120030] to-[#0a0025]">
         {/* Animated glow orbs */}
         <div className="absolute top-1/4 -right-10 w-52 h-52 rounded-full bg-fuchsia-600/25 blur-[90px] animate-pulse" />

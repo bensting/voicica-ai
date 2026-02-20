@@ -742,6 +742,8 @@ export const luckyDrawClaims = pgTable("lucky_draw_claims", {
 	address: text("address"),
 	zipCode: varchar("zip_code", { length: 20 }),
 	telegram: varchar("telegram", { length: 100 }),
+	walletNetwork: varchar("wallet_network", { length: 50 }),
+	walletAddress: varchar("wallet_address", { length: 255 }),
 	carrier: varchar("carrier", { length: 100 }),
 	trackingNumber: varchar("tracking_number", { length: 255 }),
 	trackingUrl: text("tracking_url"),

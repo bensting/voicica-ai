@@ -4,10 +4,10 @@ import { useState, useEffect, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import GradientButton from '@/components/native/common/GradientButton';
 import LoginModal from '@/components/native/LoginModal';
-import ClaimPrizeSheet, { type ClaimStatus, type ShippingInfo } from '@/components/native/ClaimPrizeSheet';
+import ClaimPrizeSheet, { type ClaimStatus, type ShippingInfo, type WalletInfo } from '@/components/native/ClaimPrizeSheet';
 import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 import { useSearchParams } from 'next/navigation';
-import { getLuckyDrawStatus, createLuckyDrawCheckout, cancelLuckyDrawCheckout, submitPrizeClaim, type LuckyDrawStatusResult } from '@/actions/lucky-draw';
+import { getLuckyDrawStatus, createLuckyDrawCheckout, cancelLuckyDrawCheckout, submitPrizeClaim, type LuckyDrawStatusResult, type ClaimInfoInput } from '@/actions/lucky-draw';
 
 import { CloseIcon } from '@/components/native/lucky-draw/icons';
 import SellingState from '@/components/native/lucky-draw/SellingState';
@@ -128,7 +128,7 @@ export default function LuckyDrawDetailPage() {
   }
 
   const {
-    prize, prizeImageUrl, totalSlots, creditsPerPurchase, stripePriceCents, cryptoPriceCents,
+    prize, prizeImageUrl, prizeType, totalSlots, creditsPerPurchase, stripePriceCents, cryptoPriceCents,
     contractAddress, chainName, blockExplorerUrl, soldSlots, myEntries, recentEntries,
     status: currentStatus, drawResult, claim,
   } = drawStatus;
@@ -280,6 +280,7 @@ export default function LuckyDrawDetailPage() {
       {claimSheetOpen && (
         <ClaimPrizeSheet
           prize={prize}
+          prizeType={prizeType}
           claimData={{
             status: (claim?.status as ClaimStatus) || 'unclaimed',
             ...(claim?.fullName && {
@@ -293,6 +294,14 @@ export default function LuckyDrawDetailPage() {
                 telegram: claim.telegram ?? '',
               },
             }),
+            ...(claim?.walletAddress && {
+              walletInfo: {
+                walletNetwork: claim.walletNetwork ?? '',
+                walletAddress: claim.walletAddress,
+                email: claim.email ?? '',
+                telegram: claim.telegram ?? '',
+              },
+            }),
             ...(claim?.carrier && {
               tracking: {
                 carrier: claim.carrier,
@@ -303,17 +312,19 @@ export default function LuckyDrawDetailPage() {
             }),
           }}
           onClose={() => setClaimSheetOpen(false)}
-          onSubmit={async (info: ShippingInfo) => {
+          onSubmitShipping={async (info: ShippingInfo) => {
             try {
-              await submitPrizeClaim(drawId, {
-                fullName: info.fullName,
-                phone: info.phone,
-                email: info.email,
-                country: info.country,
-                address: info.address,
-                zipCode: info.zipCode,
-                telegram: info.telegram,
-              });
+              await submitPrizeClaim(drawId, { type: 'product', data: info });
+              setClaimSheetOpen(false);
+              fetchStatus();
+            } catch (error) {
+              console.error('Failed to submit claim:', error);
+              setToastMsg(error instanceof Error ? error.message : 'Claim failed');
+            }
+          }}
+          onSubmitWallet={async (info: WalletInfo) => {
+            try {
+              await submitPrizeClaim(drawId, { type: 'cash', data: info });
               setClaimSheetOpen(false);
               fetchStatus();
             } catch (error) {

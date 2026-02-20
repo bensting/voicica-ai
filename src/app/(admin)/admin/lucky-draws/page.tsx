@@ -148,11 +148,16 @@ export default function LuckyDrawsPage() {
   const handleDetail = async (draw: AdminLuckyDraw) => {
     setDetailDraw(draw);
     setDetailData(null);
+    setShipForm({ carrier: '', trackingNumber: '', trackingUrl: '' });
     setShowDetailModal(true);
     setDetailLoading(true);
     try {
       const data = await getAdminLuckyDrawDetail(draw.drawId);
       setDetailData(data);
+      // Pre-fill carrier with wallet network for cash claims
+      if (data.claim?.walletNetwork) {
+        setShipForm((prev) => ({ ...prev, carrier: data.claim!.walletNetwork! }));
+      }
     } catch (error) {
       console.error('加载详情失败:', error);
     } finally {
@@ -188,7 +193,8 @@ export default function LuckyDrawsPage() {
   const handleShipClaim = async () => {
     if (!detailDraw) return;
     if (!shipForm.carrier.trim() || !shipForm.trackingNumber.trim()) {
-      alert('请填写快递公司和快递单号');
+      const isCash = !!detailData?.claim?.walletAddress;
+      alert(isCash ? '请填写转账网络和 Tx Hash' : '请填写快递公司和快递单号');
       return;
     }
     setClaimActionLoading(true);
@@ -797,10 +803,16 @@ export default function LuckyDrawsPage() {
 
                         {/* Claim info */}
                         <div className="mt-3 pt-3 border-t border-gray-200">
-                          <h4 className="text-xs font-semibold text-gray-700 mb-2">领奖信息</h4>
+                          {(() => {
+                            const isCashClaim = !!detailData.claim?.walletAddress;
+                            return (
+                              <>
+                          <h4 className="text-xs font-semibold text-gray-700 mb-2">
+                            {isCashClaim ? '领奖信息（钱包）' : '领奖信息（收货）'}
+                          </h4>
 
                           {!detailData.claim ? (
-                            <p className="text-sm text-gray-500 py-2">等待用户提交收货信息</p>
+                            <p className="text-sm text-gray-500 py-2">等待用户提交信息</p>
                           ) : (
                             <div className="space-y-3">
                               {/* Status badge */}
@@ -815,80 +827,115 @@ export default function LuckyDrawsPage() {
                                         ? 'bg-yellow-100 text-yellow-700'
                                         : 'bg-gray-100 text-gray-600'
                                 }`}>
-                                  {detailData.claim.status}
+                                  {detailData.claim.status === 'shipped' && isCashClaim ? 'transferred' : detailData.claim.status === 'delivered' && isCashClaim ? 'confirmed' : detailData.claim.status}
                                 </span>
                               </div>
 
-                              {/* Shipping address info (shown for info_submitted / shipped / delivered) */}
+                              {/* Info (shown for info_submitted / shipped / delivered) */}
                               {detailData.claim.status !== 'unclaimed' && (
-                                <div className="grid grid-cols-2 gap-x-6 gap-y-1 text-sm">
-                                  {detailData.claim.fullName && (
+                                isCashClaim ? (
+                                  /* 钱包信息 */
+                                  <div className="grid grid-cols-2 gap-x-6 gap-y-1 text-sm">
+                                    {detailData.claim.walletNetwork && (
+                                      <div>
+                                        <span className="text-gray-500">网络：</span>
+                                        <span className="font-medium">{detailData.claim.walletNetwork}</span>
+                                      </div>
+                                    )}
+                                    {detailData.claim.email && (
+                                      <div>
+                                        <span className="text-gray-500">邮箱：</span>
+                                        <span>{detailData.claim.email}</span>
+                                      </div>
+                                    )}
+                                    {detailData.claim.walletAddress && (
+                                      <div className="col-span-2">
+                                        <span className="text-gray-500">钱包地址：</span>
+                                        <span className="font-mono text-xs break-all">{detailData.claim.walletAddress}</span>
+                                      </div>
+                                    )}
+                                    {detailData.claim.telegram && (
+                                      <div>
+                                        <span className="text-gray-500">Telegram：</span>
+                                        <span>{detailData.claim.telegram}</span>
+                                      </div>
+                                    )}
                                     <div>
-                                      <span className="text-gray-500">姓名：</span>
-                                      <span>{detailData.claim.fullName}</span>
+                                      <span className="text-gray-500">提交时间：</span>
+                                      <span>{new Date(detailData.claim.createdAt).toLocaleString()}</span>
                                     </div>
-                                  )}
-                                  {detailData.claim.email && (
-                                    <div>
-                                      <span className="text-gray-500">邮箱：</span>
-                                      <span>{detailData.claim.email}</span>
-                                    </div>
-                                  )}
-                                  {detailData.claim.phone && (
-                                    <div>
-                                      <span className="text-gray-500">电话：</span>
-                                      <span>{detailData.claim.phone}</span>
-                                    </div>
-                                  )}
-                                  {detailData.claim.telegram && (
-                                    <div>
-                                      <span className="text-gray-500">Telegram：</span>
-                                      <span>{detailData.claim.telegram}</span>
-                                    </div>
-                                  )}
-                                  {detailData.claim.country && (
-                                    <div>
-                                      <span className="text-gray-500">国家：</span>
-                                      <span>{detailData.claim.country}</span>
-                                    </div>
-                                  )}
-                                  {detailData.claim.zipCode && (
-                                    <div>
-                                      <span className="text-gray-500">邮编：</span>
-                                      <span>{detailData.claim.zipCode}</span>
-                                    </div>
-                                  )}
-                                  {detailData.claim.address && (
-                                    <div className="col-span-2">
-                                      <span className="text-gray-500">地址：</span>
-                                      <span>{detailData.claim.address}</span>
-                                    </div>
-                                  )}
-                                  <div>
-                                    <span className="text-gray-500">提交时间：</span>
-                                    <span>{new Date(detailData.claim.createdAt).toLocaleString()}</span>
                                   </div>
-                                </div>
+                                ) : (
+                                  /* 收货信息 */
+                                  <div className="grid grid-cols-2 gap-x-6 gap-y-1 text-sm">
+                                    {detailData.claim.fullName && (
+                                      <div>
+                                        <span className="text-gray-500">姓名：</span>
+                                        <span>{detailData.claim.fullName}</span>
+                                      </div>
+                                    )}
+                                    {detailData.claim.email && (
+                                      <div>
+                                        <span className="text-gray-500">邮箱：</span>
+                                        <span>{detailData.claim.email}</span>
+                                      </div>
+                                    )}
+                                    {detailData.claim.phone && (
+                                      <div>
+                                        <span className="text-gray-500">电话：</span>
+                                        <span>{detailData.claim.phone}</span>
+                                      </div>
+                                    )}
+                                    {detailData.claim.telegram && (
+                                      <div>
+                                        <span className="text-gray-500">Telegram：</span>
+                                        <span>{detailData.claim.telegram}</span>
+                                      </div>
+                                    )}
+                                    {detailData.claim.country && (
+                                      <div>
+                                        <span className="text-gray-500">国家：</span>
+                                        <span>{detailData.claim.country}</span>
+                                      </div>
+                                    )}
+                                    {detailData.claim.zipCode && (
+                                      <div>
+                                        <span className="text-gray-500">邮编：</span>
+                                        <span>{detailData.claim.zipCode}</span>
+                                      </div>
+                                    )}
+                                    {detailData.claim.address && (
+                                      <div className="col-span-2">
+                                        <span className="text-gray-500">地址：</span>
+                                        <span>{detailData.claim.address}</span>
+                                      </div>
+                                    )}
+                                    <div>
+                                      <span className="text-gray-500">提交时间：</span>
+                                      <span>{new Date(detailData.claim.createdAt).toLocaleString()}</span>
+                                    </div>
+                                  </div>
+                                )
                               )}
 
-                              {/* Shipping info (shown for shipped / delivered) */}
+                              {/* Tracking / Transfer info (shown for shipped / delivered) */}
                               {(detailData.claim.status === 'shipped' || detailData.claim.status === 'delivered') && (
-                                <div className="grid grid-cols-2 gap-x-6 gap-y-1 text-sm bg-blue-50 rounded-lg p-3">
+                                <div className={`grid grid-cols-2 gap-x-6 gap-y-1 text-sm rounded-lg p-3 ${isCashClaim ? 'bg-emerald-50' : 'bg-blue-50'}`}>
                                   {detailData.claim.carrier && (
                                     <div>
-                                      <span className="text-gray-500">快递公司：</span>
+                                      <span className="text-gray-500">{isCashClaim ? '转账网络：' : '快递公司：'}</span>
                                       <span>{detailData.claim.carrier}</span>
                                     </div>
                                   )}
                                   {detailData.claim.trackingNumber && (
-                                    <div>
-                                      <span className="text-gray-500">快递单号：</span>
-                                      <span className="font-mono text-xs">{detailData.claim.trackingNumber}</span>
+                                    <div className={isCashClaim ? 'col-span-2' : ''}>
+                                      <span className="text-gray-500">{isCashClaim ? 'Tx Hash：' : '快递单号：'}</span>
+                                      <span className="font-mono text-xs break-all">{detailData.claim.trackingNumber}</span>
                                     </div>
                                   )}
                                   {detailData.claim.trackingUrl && (
                                     <div className="col-span-2">
-                                      <span className="text-gray-500">物流链接：</span>
+                                      <span className="text-gray-500">{isCashClaim ? '区块链浏览器：' : '物流链接：'}</span>
                                       <a
                                         href={detailData.claim.trackingUrl}
                                         target="_blank"
@@ -901,51 +948,59 @@ export default function LuckyDrawsPage() {
                                   )}
                                   {detailData.claim.shippedAt && (
                                     <div>
-                                      <span className="text-gray-500">发货时间：</span>
+                                      <span className="text-gray-500">{isCashClaim ? '转账时间：' : '发货时间：'}</span>
                                       <span>{new Date(detailData.claim.shippedAt).toLocaleString()}</span>
                                     </div>
                                   )}
                                   {detailData.claim.deliveredAt && (
                                     <div>
-                                      <span className="text-gray-500">签收时间：</span>
+                                      <span className="text-gray-500">{isCashClaim ? '确认时间：' : '签收时间：'}</span>
                                       <span>{new Date(detailData.claim.deliveredAt).toLocaleString()}</span>
                                     </div>
                                   )}
                                 </div>
                               )}
 
-                              {/* Action: Ship form (info_submitted) */}
+                              {/* Action: Ship/Transfer form (info_submitted) */}
                               {detailData.claim.status === 'info_submitted' && (
-                                <div className="border border-orange-200 bg-orange-50 rounded-lg p-3 space-y-3">
-                                  <h5 className="text-xs font-semibold text-orange-700">发货操作</h5>
+                                <div className={`border rounded-lg p-3 space-y-3 ${isCashClaim ? 'border-emerald-200 bg-emerald-50' : 'border-orange-200 bg-orange-50'}`}>
+                                  <h5 className={`text-xs font-semibold ${isCashClaim ? 'text-emerald-700' : 'text-orange-700'}`}>
+                                    {isCashClaim ? '转账操作' : '发货操作'}
+                                  </h5>
                                   <div className="grid grid-cols-2 gap-3">
                                     <div>
-                                      <label className="block text-xs text-gray-600 mb-1">快递公司 *</label>
+                                      <label className="block text-xs text-gray-600 mb-1">
+                                        {isCashClaim ? '转账网络 *' : '快递公司 *'}
+                                      </label>
                                       <input
                                         type="text"
                                         value={shipForm.carrier}
-                                        onChange={(e) => setShipForm({ ...shipForm, carrier: e.target.value })}
-                                        placeholder="如：FedEx、DHL"
+                                        onChange={(e) => { const v = e.target.value; setShipForm((p) => ({ ...p, carrier: v })); }}
+                                        placeholder={isCashClaim ? (detailData.claim.walletNetwork ?? 'TRC-20') : '如：FedEx、DHL'}
                                         className="w-full px-2.5 py-1.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                                       />
                                     </div>
                                     <div>
-                                      <label className="block text-xs text-gray-600 mb-1">快递单号 *</label>
+                                      <label className="block text-xs text-gray-600 mb-1">
+                                        {isCashClaim ? 'Tx Hash *' : '快递单号 *'}
+                                      </label>
                                       <input
                                         type="text"
                                         value={shipForm.trackingNumber}
-                                        onChange={(e) => setShipForm({ ...shipForm, trackingNumber: e.target.value })}
-                                        placeholder="快递单号"
+                                        onChange={(e) => { const v = e.target.value; setShipForm((p) => ({ ...p, trackingNumber: v })); }}
+                                        placeholder={isCashClaim ? '0x...' : '快递单号'}
                                         className="w-full px-2.5 py-1.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                                       />
                                     </div>
                                   </div>
                                   <div>
-                                    <label className="block text-xs text-gray-600 mb-1">物流链接（可选）</label>
+                                    <label className="block text-xs text-gray-600 mb-1">
+                                      {isCashClaim ? '区块链浏览器链接（可选）' : '物流链接（可选）'}
+                                    </label>
                                     <input
                                       type="text"
                                       value={shipForm.trackingUrl}
-                                      onChange={(e) => setShipForm({ ...shipForm, trackingUrl: e.target.value })}
+                                      onChange={(e) => { const v = e.target.value; setShipForm((p) => ({ ...p, trackingUrl: v })); }}
                                       placeholder="https://..."
                                       className="w-full px-2.5 py-1.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                                     />
@@ -953,25 +1008,30 @@ export default function LuckyDrawsPage() {
                                   <button
                                     onClick={handleShipClaim}
                                     disabled={claimActionLoading}
-                                    className="px-4 py-1.5 text-sm bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors disabled:opacity-50"
+                                    className={`px-4 py-1.5 text-sm text-white rounded-lg transition-colors disabled:opacity-50 ${
+                                      isCashClaim ? 'bg-emerald-600 hover:bg-emerald-700' : 'bg-orange-600 hover:bg-orange-700'
+                                    }`}
                                   >
-                                    {claimActionLoading ? '处理中...' : '标记发货'}
+                                    {claimActionLoading ? '处理中...' : isCashClaim ? '标记已转账' : '标记发货'}
                                   </button>
                                 </div>
                               )}
 
-                              {/* Action: Deliver button (shipped) */}
+                              {/* Action: Deliver/Confirm button (shipped) */}
                               {detailData.claim.status === 'shipped' && (
                                 <button
                                   onClick={handleDeliverClaim}
                                   disabled={claimActionLoading}
                                   className="px-4 py-1.5 text-sm bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50"
                                 >
-                                  {claimActionLoading ? '处理中...' : '标记签收'}
+                                  {claimActionLoading ? '处理中...' : isCashClaim ? '标记已确认' : '标记签收'}
                                 </button>
                               )}
                             </div>
                           )}
+                              </>
+                            );
+                          })()}
                         </div>
                       </div>
                     ) : (

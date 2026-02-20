@@ -82,6 +82,8 @@ export interface AdminLuckyDrawDetail {
     address: string | null;
     zipCode: string | null;
     telegram: string | null;
+    walletNetwork: string | null;
+    walletAddress: string | null;
     carrier: string | null;
     trackingNumber: string | null;
     trackingUrl: string | null;
@@ -333,6 +335,8 @@ export async function getAdminLuckyDrawDetail(drawId: string): Promise<AdminLuck
         address: luckyDrawClaims.address,
         zipCode: luckyDrawClaims.zipCode,
         telegram: luckyDrawClaims.telegram,
+        walletNetwork: luckyDrawClaims.walletNetwork,
+        walletAddress: luckyDrawClaims.walletAddress,
         carrier: luckyDrawClaims.carrier,
         trackingNumber: luckyDrawClaims.trackingNumber,
         trackingUrl: luckyDrawClaims.trackingUrl,

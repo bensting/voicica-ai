@@ -93,6 +93,8 @@ export interface LuckyDrawStatusResult {
     address?: string | null;
     zipCode?: string | null;
     telegram?: string | null;
+    walletNetwork?: string | null;
+    walletAddress?: string | null;
     carrier?: string | null;
     trackingNumber?: string | null;
     trackingUrl?: string | null;
@@ -410,6 +412,8 @@ export async function getLuckyDrawStatus(drawId: string): Promise<LuckyDrawStatu
             address: claimRecord.address,
             zipCode: claimRecord.zipCode,
             telegram: claimRecord.telegram,
+            walletNetwork: claimRecord.walletNetwork,
+            walletAddress: claimRecord.walletAddress,
             carrier: claimRecord.carrier,
             trackingNumber: claimRecord.trackingNumber,
             trackingUrl: claimRecord.trackingUrl,
@@ -917,9 +921,20 @@ export interface ShippingInfoInput {
   telegram?: string;
 }
 
+export interface WalletInfoInput {
+  walletNetwork: string;
+  walletAddress: string;
+  email: string;
+  telegram?: string;
+}
+
+export type ClaimInfoInput =
+  | { type: 'product'; data: ShippingInfoInput }
+  | { type: 'cash'; data: WalletInfoInput };
+
 export async function submitPrizeClaim(
   drawId: string,
-  shippingInfo: ShippingInfoInput,
+  claimInfo: ClaimInfoInput,
 ): Promise<void> {
   const user = await getCurrentUser();
   const userId = user.uid;
@@ -934,24 +949,34 @@ export async function submitPrizeClaim(
     throw new Error('You are not the winner of this Lucky Draw');
   }
 
+  const setData = claimInfo.type === 'cash'
+    ? {
+        status: 'info_submitted' as const,
+        email: claimInfo.data.email,
+        telegram: claimInfo.data.telegram ?? null,
+        walletNetwork: claimInfo.data.walletNetwork,
+        walletAddress: claimInfo.data.walletAddress,
+      }
+    : {
+        status: 'info_submitted' as const,
+        fullName: claimInfo.data.fullName,
+        phone: claimInfo.data.phone,
+        email: claimInfo.data.email,
+        country: claimInfo.data.country,
+        address: claimInfo.data.address,
+        zipCode: claimInfo.data.zipCode,
+        telegram: claimInfo.data.telegram ?? null,
+      };
+
   await db
     .update(luckyDrawClaims)
-    .set({
-      status: 'info_submitted',
-      fullName: shippingInfo.fullName,
-      phone: shippingInfo.phone,
-      email: shippingInfo.email,
-      country: shippingInfo.country,
-      address: shippingInfo.address,
-      zipCode: shippingInfo.zipCode,
-      telegram: shippingInfo.telegram ?? null,
-    })
+    .set(setData)
     .where(and(
       eq(luckyDrawClaims.drawId, drawId),
       eq(luckyDrawClaims.userId, userId),
     ));
 
-  console.log(`✅ Lucky Draw ${drawId} 领奖信息已提交: ${userId}`);
+  console.log(`✅ Lucky Draw ${drawId} 领奖信息已提交 (${claimInfo.type}): ${userId}`);
 }
 
 // ─── getUserLuckyDrawHistory ───

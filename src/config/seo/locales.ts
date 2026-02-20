@@ -73,5 +73,6 @@ export function buildAlternates(
   for (const locale of ALL_SEO_LOCALES) {
     alternates[locale.hreflang] = buildSeoUrl(locale.slug, path);
   }
+  alternates['x-default'] = buildSeoUrl('', path);
   return alternates;
 }

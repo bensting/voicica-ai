@@ -73,12 +73,25 @@ const heroTexts = {
       { line1: 'ลบ', line2: 'พื้นหลัง' },
     ],
   },
+  es: {
+    titleLine1: 'Convierte Tus Ideas',
+    titleLine2: 'En Voz y Arte',
+    subtitle: '3200+ Voces IA. Arte IA Profesional. 100% Gratis',
+    showcase: 'Vista Previa',
+    cta: '[ Empieza a Crear Ahora ]',
+    trustText: 'Más de 1M de creadores confían en nosotros',
+    tools: [
+      { line1: 'Descargar', line2: 'Video' },
+      { line1: 'HD', line2: 'Escalador' },
+      { line1: 'Eliminar', line2: 'Fondo' },
+    ],
+  },
 } as const;
 
-export default function NewHero({ locale = 'en' }: { locale?: 'en' | 'ja' | 'zh-Hant' | 'ko' | 'th' }) {
+export default function NewHero({ locale = 'en' }: { locale?: string }) {
   const { backgroundImage, avatars, playStoreUrl } =
     HOME_SHOWCASE_CONFIG;
-  const t = heroTexts[locale] || heroTexts.en;
+  const t = heroTexts[locale as keyof typeof heroTexts] || heroTexts.en;
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isMuted, setIsMuted] = useState(true);
 

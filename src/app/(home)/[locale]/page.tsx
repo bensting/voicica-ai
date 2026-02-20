@@ -14,7 +14,7 @@ export default async function LocaleHomePage({
 
   return (
     <div className="min-h-screen bg-gray-950">
-      <NewHero locale={loc.localeCode as 'en' | 'ja' | 'zh-Hant' | 'ko' | 'th'} />
+      <NewHero locale={loc.localeCode} />
       <HomepageContent locale={loc.localeCode} />
     </div>
   );

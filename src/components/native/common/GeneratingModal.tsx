@@ -1,7 +1,6 @@
 'use client';
 
 import CreditsIcon from './CreditsIcon';
-import CrownIcon from './CrownIcon';
 
 export type GeneratingStatus = 'generating' | 'loading' | 'success' | 'error';
 export type GeneratingType = 'music' | 'image' | 'video' | 'voice' | 'download' | 'image-tool';
@@ -182,14 +181,6 @@ export default function GeneratingModal({
                   Thanks for watching!
                 </p>
               </div>
-            )}
-
-            {/* 订阅用户的快速通道按钮 */}
-            {!showAdPrompt && (
-              <button className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-full text-sm font-medium hover:opacity-90 transition-opacity">
-                <CrownIcon className="w-4 h-4" />
-                <span>Use fast channel</span>
-              </button>
             )}
           </>
         )}

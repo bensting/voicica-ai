@@ -233,7 +233,7 @@ export default function FeatureGrid() {
               <div className={`${colors.icon} mb-1.5`}>
                 <IconComponent />
               </div>
-              <span className="text-[10px] text-gray-300 font-medium text-center leading-tight px-1">
+              <span className="text-[10px] text-gray-300 font-medium text-center leading-tight px-1 line-clamp-2">
                 {getItemName(feature.id, feature.shortName)}
               </span>
             </Link>

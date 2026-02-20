@@ -30,6 +30,7 @@ export type ImageToolType = 'bg-remove' | 'upscale';
 
 export interface ImageToolTaskStatus {
   status: 'PENDING' | 'PROCESSING' | 'SUCCESS' | 'FAILURE';
+  originalImageUrl?: string;
   resultImageUrl?: string;
   error?: string;
 }
@@ -156,10 +157,10 @@ export async function getImageToolTaskStatus(taskId: string): Promise<ImageToolT
 
     // 如果已是终态，直接返回
     if (record.status === 'SUCCESS') {
-      return { status: 'SUCCESS', resultImageUrl: record.resultImageUrl || undefined };
+      return { status: 'SUCCESS', originalImageUrl: record.originalImageUrl, resultImageUrl: record.resultImageUrl || undefined };
     }
     if (record.status === 'FAILURE') {
-      return { status: 'FAILURE', error: record.error || 'Processing failed' };
+      return { status: 'FAILURE', originalImageUrl: record.originalImageUrl, error: record.error || 'Processing failed' };
     }
 
     // 仍 PENDING → 查询 KIE API
@@ -228,7 +229,7 @@ export async function getImageToolTaskStatus(taskId: string): Promise<ImageToolT
             })
             .where(eq(imageToolRecords.taskId, taskId));
 
-          return { status: 'SUCCESS', resultImageUrl: finalUrl };
+          return { status: 'SUCCESS', originalImageUrl: record.originalImageUrl, resultImageUrl: finalUrl };
         } else {
           // 已被 webhook 处理，重新查 DB
           const [updatedRecord] = await db.select().from(imageToolRecords)
@@ -236,7 +237,7 @@ export async function getImageToolTaskStatus(taskId: string): Promise<ImageToolT
             .limit(1);
 
           if (updatedRecord?.status === 'SUCCESS') {
-            return { status: 'SUCCESS', resultImageUrl: updatedRecord.resultImageUrl || undefined };
+            return { status: 'SUCCESS', originalImageUrl: record.originalImageUrl, resultImageUrl: updatedRecord.resultImageUrl || undefined };
           }
           // webhook 可能还在处理中
           return { status: 'PROCESSING' };

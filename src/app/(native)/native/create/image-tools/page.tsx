@@ -11,6 +11,7 @@ import CreditsInfoBar from '@/components/native/common/CreditsInfoBar';
 import InsufficientCreditsModal from '@/components/native/common/InsufficientCreditsModal';
 import NativeDailyTasksModal from '@/components/native/NativeDailyTasksModal';
 import GeneratingModal, { type GeneratingStatus } from '@/components/native/common/GeneratingModal';
+import ImageToolDetailModal from '@/components/native/me/ImageToolDetailModal';
 import { createImageToolTask, getImageToolTaskStatus, type ImageToolType } from '@/actions/image-tools';
 import { checkCreditsBeforeGenerate } from '@/lib/credits-check';
 import { adConfig } from '@/config/native/adConfig';
@@ -35,13 +36,14 @@ const TrashIcon = () => (
   </svg>
 );
 
-const DownloadIcon = () => (
-  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-    <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" />
-    <polyline points="7 10 12 15 17 10" />
-    <line x1="12" y1="15" x2="12" y2="3" />
-  </svg>
-);
+/** DetailModal 需要的结果数据 */
+interface ImageToolResult {
+  taskId: string;
+  toolType: 'bg-remove' | 'upscale';
+  originalImageUrl: string;
+  resultImageUrl: string;
+  creditsUsed: number;
+}
 
 /**
  * Native Image Tools 页面
@@ -60,9 +62,6 @@ export default function NativeImageToolsPage() {
   const [uploadedImagePreview, setUploadedImagePreview] = useState<string | null>(null); // object URL for preview
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // 处理结果
-  const [resultImageUrl, setResultImageUrl] = useState<string | null>(null);
-
   // 生成状态
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatingStatus, setGeneratingStatus] = useState<GeneratingStatus>('generating');
@@ -71,6 +70,12 @@ export default function NativeImageToolsPage() {
   const [taskId, setTaskId] = useState<string | null>(null);
   const [isGeneratingModalOpen, setIsGeneratingModalOpen] = useState(false);
   const [adWatched, setAdWatched] = useState(false);
+
+  // 记住创建时的原图 R2 URL（server action 返回 taskId 后通过 DB 查不到原图 URL，所以这里通过轮询结果获取）
+  const currentToolTypeRef = useRef<TabType>('bg-remove');
+
+  // DetailModal 结果
+  const [detailResult, setDetailResult] = useState<ImageToolResult | null>(null);
 
   // UI 弹窗状态
   const [isInsufficientCreditsModalOpen, setIsInsufficientCreditsModalOpen] = useState(false);
@@ -91,7 +96,6 @@ export default function NativeImageToolsPage() {
     }
     setUploadedImage(null);
     setUploadedImagePreview(null);
-    setResultImageUrl(null);
     setError(null);
     setTaskId(null);
     setIsGenerating(false);
@@ -120,7 +124,6 @@ export default function NativeImageToolsPage() {
       const base64 = e.target?.result as string;
       setUploadedImage(base64);
       setUploadedImagePreview(URL.createObjectURL(file));
-      setResultImageUrl(null); // 清空上次结果
       setError(null);
     };
     reader.readAsDataURL(file);
@@ -136,7 +139,6 @@ export default function NativeImageToolsPage() {
     }
     setUploadedImage(null);
     setUploadedImagePreview(null);
-    setResultImageUrl(null);
     setError(null);
   };
 
@@ -154,9 +156,16 @@ export default function NativeImageToolsPage() {
           setIsGenerating(false);
           refreshCredits();
           sendLocalNotification('image', 'success');
-          // 设置结果图片并关闭弹窗
-          setResultImageUrl(status.resultImageUrl);
-          setIsGeneratingModalOpen(false);
+
+          // 构造 DetailModal 需要的数据并弹出
+          setDetailResult({
+            taskId,
+            toolType: currentToolTypeRef.current,
+            originalImageUrl: status.originalImageUrl || uploadedImagePreview || '',
+            resultImageUrl: status.resultImageUrl,
+            creditsUsed: CREDITS_PER_TASK,
+          });
+          setIsGeneratingModalOpen(false); // 关闭生成中弹窗
           setTaskId(null);
         } else if (status.status === 'FAILURE') {
           setGeneratingStatus('error');
@@ -173,7 +182,7 @@ export default function NativeImageToolsPage() {
     }, 3000);
 
     return () => clearInterval(pollInterval);
-  }, [taskId, generatingStatus, refreshCredits]);
+  }, [taskId, generatingStatus, refreshCredits, uploadedImagePreview]);
 
   // 处理按钮点击
   const handleProcess = async () => {
@@ -189,6 +198,9 @@ export default function NativeImageToolsPage() {
       },
     });
     if (!hasEnoughCredits) return;
+
+    // 记录当前工具类型
+    currentToolTypeRef.current = activeTab;
 
     // 打开生成弹窗
     setIsGeneratingModalOpen(true);
@@ -229,33 +241,10 @@ export default function NativeImageToolsPage() {
     setGeneratingProgress(0);
   };
 
-  // 处理新的图片
+  // 处理新的图片（从 DetailModal 调用）
   const handleProcessNew = () => {
+    setDetailResult(null);
     handleClearImage();
-    setResultImageUrl(null);
-  };
-
-  // 下载结果图片
-  const handleDownload = async () => {
-    if (!resultImageUrl) return;
-
-    try {
-      const response = await fetch(resultImageUrl);
-      const blob = await response.blob();
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      const ext = blob.type.includes('png') ? 'png' : 'jpg';
-      a.download = `${activeTab === 'bg-remove' ? 'bg-removed' : 'upscaled'}_${Date.now()}.${ext}`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-    } catch (err) {
-      console.error('Download failed:', err);
-      // Fallback: open in new tab
-      window.open(resultImageUrl, '_blank');
-    }
   };
 
   // 非订阅用户：生成开始后自动弹出激励广告
@@ -266,6 +255,7 @@ export default function NativeImageToolsPage() {
 
     const timer = setTimeout(async () => {
       try {
+        console.log('[ImageTools] Auto showing rewarded ad...');
         const result = await showRewardedAd();
         if (result.success) {
           setAdWatched(true);
@@ -325,166 +315,101 @@ export default function NativeImageToolsPage() {
           </div>
         )}
 
-        {/* Result: Before/After Comparison */}
-        {resultImageUrl && uploadedImagePreview ? (
-          <div className="mb-4">
-            <div className="flex items-center gap-2 mb-3">
-              <span className="text-white font-medium">Result</span>
-              <span className="text-green-400 text-xs bg-green-400/10 px-2 py-0.5 rounded-full">Done</span>
-            </div>
-
-            {/* Before / After */}
-            <div className="grid grid-cols-2 gap-3 mb-4">
-              {/* Before */}
-              <div>
-                <p className="text-gray-400 text-xs mb-1.5 text-center">Before</p>
-                <div className="aspect-square bg-gray-800/60 rounded-xl overflow-hidden">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={uploadedImagePreview}
-                    alt="Before"
-                    className="w-full h-full object-contain"
-                  />
-                </div>
-              </div>
-              {/* After */}
-              <div>
-                <p className="text-gray-400 text-xs mb-1.5 text-center">After</p>
-                <div
-                  className="aspect-square rounded-xl overflow-hidden"
-                  style={activeTab === 'bg-remove' ? {
-                    backgroundImage: 'repeating-conic-gradient(#333 0% 25%, #444 0% 50%)',
-                    backgroundSize: '20px 20px',
-                  } : { backgroundColor: 'rgba(31, 41, 55, 0.6)' }}
-                >
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={resultImageUrl}
-                    alt="After"
-                    className="w-full h-full object-contain"
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* Action Buttons */}
-            <div className="flex gap-3">
-              <button
-                onClick={handleDownload}
-                className="flex-1 flex items-center justify-center gap-2 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl text-sm font-medium hover:opacity-90 transition-opacity"
-              >
-                <DownloadIcon />
-                <span>Download</span>
-              </button>
-              <button
-                onClick={handleProcessNew}
-                className="flex-1 flex items-center justify-center gap-2 py-3 bg-gray-700/50 text-white rounded-xl text-sm font-medium hover:bg-gray-600/50 transition-colors"
-              >
-                <span>Process New</span>
-              </button>
-            </div>
+        {/* Upload Section */}
+        <div className="mb-4">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-white font-medium">Upload Image</span>
+            <span className="text-gray-500 text-xs">Max {maxSizeMB}MB</span>
           </div>
-        ) : (
-          <>
-            {/* Upload Section */}
-            <div className="mb-4">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-white font-medium">Upload Image</span>
-                <span className="text-gray-500 text-xs">Max {maxSizeMB}MB</span>
+
+          {uploadedImagePreview ? (
+            <div className="relative">
+              <div className="aspect-video bg-gray-800/60 rounded-2xl overflow-hidden flex items-center justify-center">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={uploadedImagePreview}
+                  alt="Uploaded"
+                  className="max-w-full max-h-full object-contain"
+                />
               </div>
-
-              {uploadedImagePreview ? (
-                <div className="relative">
-                  <div className="aspect-video bg-gray-800/60 rounded-2xl overflow-hidden flex items-center justify-center">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={uploadedImagePreview}
-                      alt="Uploaded"
-                      className="max-w-full max-h-full object-contain"
-                    />
-                  </div>
-                  <button
-                    onClick={handleClearImage}
-                    className="absolute top-3 right-3 w-8 h-8 bg-black/60 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:bg-red-500/80 transition-colors"
-                  >
-                    <TrashIcon />
-                  </button>
+              <button
+                onClick={handleClearImage}
+                className="absolute top-3 right-3 w-8 h-8 bg-black/60 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:bg-red-500/80 transition-colors"
+              >
+                <TrashIcon />
+              </button>
+            </div>
+          ) : (
+            <label className="block cursor-pointer">
+              <div className="aspect-video border-2 border-dashed border-gray-600 rounded-2xl flex flex-col items-center justify-center gap-3 hover:border-purple-500 transition-colors bg-gray-800/30">
+                <UploadIcon />
+                <div className="text-center">
+                  <p className="text-gray-400 text-sm">Tap to upload image</p>
+                  <p className="text-gray-600 text-xs mt-1">JPG, PNG, WebP supported</p>
                 </div>
-              ) : (
-                <label className="block cursor-pointer">
-                  <div className="aspect-video border-2 border-dashed border-gray-600 rounded-2xl flex flex-col items-center justify-center gap-3 hover:border-purple-500 transition-colors bg-gray-800/30">
-                    <UploadIcon />
-                    <div className="text-center">
-                      <p className="text-gray-400 text-sm">Tap to upload image</p>
-                      <p className="text-gray-600 text-xs mt-1">JPG, PNG, WebP supported</p>
-                    </div>
-                  </div>
-                  <input
-                    ref={fileInputRef}
-                    type="file"
-                    accept="image/jpeg,image/png,image/webp"
-                    onChange={handleImageUpload}
-                    className="hidden"
-                  />
-                </label>
-              )}
-            </div>
+              </div>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+                onChange={handleImageUpload}
+                className="hidden"
+              />
+            </label>
+          )}
+        </div>
 
-            {/* Tool Description */}
-            <div className="bg-gray-800/30 rounded-xl p-4 mb-4">
-              {activeTab === 'bg-remove' ? (
-                <>
-                  <h3 className="text-white text-sm font-medium mb-2">Background Remover</h3>
-                  <p className="text-gray-400 text-xs leading-relaxed">
-                    Automatically remove the background from your image using AI.
-                    Perfect for product photos, portraits, and more.
-                  </p>
-                </>
-              ) : (
-                <>
-                  <h3 className="text-white text-sm font-medium mb-2">HD Upscaler</h3>
-                  <p className="text-gray-400 text-xs leading-relaxed">
-                    Upscale your image to higher resolution with AI enhancement.
-                    Makes low-resolution images crisp and clear.
-                  </p>
-                </>
-              )}
-            </div>
-          </>
-        )}
+        {/* Tool Description */}
+        <div className="bg-gray-800/30 rounded-xl p-4 mb-4">
+          {activeTab === 'bg-remove' ? (
+            <>
+              <h3 className="text-white text-sm font-medium mb-2">Background Remover</h3>
+              <p className="text-gray-400 text-xs leading-relaxed">
+                Automatically remove the background from your image using AI.
+                Perfect for product photos, portraits, and more.
+              </p>
+            </>
+          ) : (
+            <>
+              <h3 className="text-white text-sm font-medium mb-2">HD Upscaler</h3>
+              <p className="text-gray-400 text-xs leading-relaxed">
+                Upscale your image to higher resolution with AI enhancement.
+                Makes low-resolution images crisp and clear.
+              </p>
+            </>
+          )}
+        </div>
       </div>
 
       {/* Fixed Bottom Section */}
-      {!resultImageUrl && (
-        <div
-          className="fixed bottom-0 left-0 right-0 z-30 px-4 pt-3 pb-3 bg-[#0a0a1a]"
-          style={{ paddingBottom: 'calc(var(--safe-area-inset-bottom, 0px) + 12px)' }}
-        >
-          <CreditsInfoBar
-            credits={credits}
-            creditRules={[{ name: tabLabel, credits: CREDITS_PER_TASK }]}
-            className="mb-3"
-          />
+      <div
+        className="fixed bottom-0 left-0 right-0 z-30 px-4 pt-3 pb-3 bg-[#0a0a1a]"
+        style={{ paddingBottom: 'calc(var(--safe-area-inset-bottom, 0px) + 12px)' }}
+      >
+        <CreditsInfoBar
+          credits={credits}
+          creditRules={[{ name: tabLabel, credits: CREDITS_PER_TASK }]}
+          className="mb-3"
+        />
 
-          <GradientButton
-            onClick={() => void handleProcess()}
-            disabled={!canProcess}
-          >
-            {isGenerating ? (
-              <>
-                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                <span>Processing...</span>
-              </>
-            ) : (
-              <>
-                <span>Process</span>
-                <CreditsIcon className="w-3.5 h-3.5" />
-                <span>{CREDITS_PER_TASK}</span>
-              </>
-            )}
-          </GradientButton>
-        </div>
-      )}
+        <GradientButton
+          onClick={() => void handleProcess()}
+          disabled={!canProcess}
+        >
+          {isGenerating ? (
+            <>
+              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+              <span>Processing...</span>
+            </>
+          ) : (
+            <>
+              <span>Process</span>
+              <CreditsIcon className="w-3.5 h-3.5" />
+              <span>{CREDITS_PER_TASK}</span>
+            </>
+          )}
+        </GradientButton>
+      </div>
 
       {/* Insufficient Credits Modal */}
       <InsufficientCreditsModal
@@ -521,6 +446,15 @@ export default function NativeImageToolsPage() {
         showAdPrompt={!isSubscribed}
         adWatched={adWatched}
       />
+
+      {/* Detail Modal - 生成成功后显示 */}
+      {detailResult && (
+        <ImageToolDetailModal
+          result={detailResult}
+          onClose={() => setDetailResult(null)}
+          onProcessNew={handleProcessNew}
+        />
+      )}
     </div>
   );
 }

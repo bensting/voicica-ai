@@ -10,6 +10,7 @@ import {
   toggleLuckyDrawEnabled,
   updateClaimShipped,
   updateClaimDelivered,
+  adminTriggerDraw,
   type AdminLuckyDraw,
   type AdminLuckyDrawDetail,
   type CreateLuckyDrawInput,
@@ -156,6 +157,22 @@ export default function LuckyDrawsPage() {
       console.error('加载详情失败:', error);
     } finally {
       setDetailLoading(false);
+    }
+  };
+
+  const handleTriggerDraw = async (draw: AdminLuckyDraw) => {
+    if (!confirm(`确定要手动开奖 ${draw.drawId} 吗？`)) return;
+    try {
+      const result = await adminTriggerDraw(draw.drawId);
+      if (result.success) {
+        alert(result.message);
+        loadDraws();
+      } else {
+        alert(result.message);
+      }
+    } catch (error) {
+      console.error('手动开奖失败:', error);
+      alert('手动开奖失败');
     }
   };
 
@@ -350,6 +367,14 @@ export default function LuckyDrawsPage() {
                           >
                             详情
                           </button>
+                          {draw.status !== 'completed' && draw.soldSlots >= draw.totalSlots && (
+                            <button
+                              onClick={() => handleTriggerDraw(draw)}
+                              className="text-sm text-orange-600 hover:text-orange-700 font-medium"
+                            >
+                              开奖
+                            </button>
+                          )}
                           <button
                             onClick={() => handleEdit(draw)}
                             className="text-sm text-blue-600 hover:text-blue-700"

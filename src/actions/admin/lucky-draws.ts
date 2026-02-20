@@ -9,6 +9,7 @@ import { luckyDrawInstances, luckyDrawEntries, luckyDrawResults, luckyDrawClaims
 import { eq, desc, asc, count } from 'drizzle-orm';
 import { verifyAdminWithoutDb } from '@/lib/auth-admin';
 import { getLuckyDrawProduct } from '@/config/native/luckyDrawConfig';
+import { triggerDraw } from '@/actions/lucky-draw';
 
 // ─── Types ───
 
@@ -436,6 +437,57 @@ export async function updateClaimDelivered(drawId: string): Promise<ActionResult
     return {
       success: false,
       message: error instanceof Error ? error.message : '标记签收失败',
+    };
+  }
+}
+
+/**
+ * 手动开奖：仅允许对已满额但未开奖的实例操作
+ */
+export async function adminTriggerDraw(drawId: string): Promise<ActionResult> {
+  await verifyAdminWithoutDb();
+
+  try {
+    const [draw] = await db
+      .select()
+      .from(luckyDrawInstances)
+      .where(eq(luckyDrawInstances.drawId, drawId))
+      .limit(1);
+
+    if (!draw) {
+      return { success: false, message: '抽奖不存在' };
+    }
+
+    if (draw.status === 'completed') {
+      return { success: false, message: '该期已开奖' };
+    }
+
+    // 检查是否已满额
+    const [paidResult] = await db
+      .select({ count: count() })
+      .from(luckyDrawEntries)
+      .where(eq(luckyDrawEntries.drawId, drawId));
+
+    const paidSlots = paidResult?.count ?? 0;
+    if (paidSlots < draw.totalSlots) {
+      return { success: false, message: `尚未满额 (${paidSlots}/${draw.totalSlots})` };
+    }
+
+    // 更新状态为 drawing
+    await db
+      .update(luckyDrawInstances)
+      .set({ status: 'drawing' })
+      .where(eq(luckyDrawInstances.drawId, drawId));
+
+    // 执行开奖
+    await triggerDraw(drawId);
+
+    return { success: true, message: '开奖成功' };
+  } catch (error) {
+    console.error('手动开奖失败:', error);
+    return {
+      success: false,
+      message: error instanceof Error ? error.message : '开奖失败',
     };
   }
 }

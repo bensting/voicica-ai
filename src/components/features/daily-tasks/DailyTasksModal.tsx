@@ -344,8 +344,6 @@ export default function DailyTasksModal({
 
   // 渲染未登录内容
   const renderGuestContent = () => {
-    const totalAdCredits = config?.ad_reward_tiers?.reduce((a, b) => a + b, 0) || 0;
-
     return (
       <div>
         <DailyTasksHeader isLoggedIn={false} />
@@ -382,7 +380,7 @@ export default function DailyTasksModal({
               <div>
                 <p className="font-medium text-gray-900">{t('dailyTasks.watchAds')}</p>
                 <p className="text-xs text-gray-500">
-                  +{formatCredits(totalAdCredits)} {t('dailyTasks.credits')}
+                  {t('dailyTasks.watchMultiple') || 'Watch ads to earn $VOICICA'}
                 </p>
               </div>
             </div>
@@ -395,11 +393,10 @@ export default function DailyTasksModal({
           </div>
         </div>
 
-        {/* 总计 */}
+        {/* 提示 */}
         <div className="bg-gray-50 rounded-xl p-3 text-center">
-          <span className="text-sm text-gray-500">{t('dailyTasks.dailyMax')}: </span>
-          <span className="text-lg font-bold text-purple-600">
-            {formatCredits((config?.checkin_credits || 0) + totalAdCredits)} {t('dailyTasks.credits')}
+          <span className="text-sm text-gray-500">
+            {t('dailyTasks.maxViews') || 'Up to'} {config?.max_daily_ad_views || 100} {t('dailyTasks.viewsPerDay') || 'views per day'}
           </span>
         </div>
       </div>
@@ -423,7 +420,6 @@ export default function DailyTasksModal({
 
         <DailyTasksProgress
           earnedCredits={status.todayTotalCredits}
-          maxCredits={status.todayMaxCredits}
         />
 
         <CheckinTaskCard
@@ -435,10 +431,10 @@ export default function DailyTasksModal({
         />
 
         <WatchAdsTaskCard
-          adTiers={config?.ad_reward_tiers || []}
           claimedCount={status.adRewardsClaimed}
+          maxDailyViews={status.maxDailyAdViews}
+          remainingViews={status.remainingAdViews}
           earnedCredits={status.adRewardsCredits}
-          nextReward={status.nextAdReward}
           isLoading={claiming || adLoading}
           error={adError}
           onWatchAd={handleWatchAd}

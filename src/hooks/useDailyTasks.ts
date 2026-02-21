@@ -52,7 +52,7 @@ interface UseDailyTasksReturn {
   /** 签到 */
   doCheckin: () => Promise<TaskResult>;
   /** 领取广告奖励 */
-  doClaimAdReward: (bonusMode?: boolean) => Promise<TaskResult>;
+  doClaimAdReward: () => Promise<TaskResult>;
   /** 标记弹窗已显示 */
   markPopupShown: () => void;
   /** 关闭弹窗（不再显示今天） */
@@ -152,7 +152,7 @@ export function useDailyTasks(): UseDailyTasksReturn {
     if (status) {
       const hasUnclaimedTasks =
         !status.checkinDone ||
-        status.adRewardsClaimed < (config.ad_reward_tiers?.length || 0);
+        status.remainingAdViews > 0;
 
       if (hasUnclaimedTasks) {
         setShouldShowPopup(true);
@@ -252,7 +252,7 @@ export function useDailyTasks(): UseDailyTasksReturn {
   }, [refresh, showRewardedAd, isNative, lastAdRevenue]);
 
   // 领取广告奖励
-  const doClaimAdReward = useCallback(async (bonusMode: boolean = false): Promise<TaskResult> => {
+  const doClaimAdReward = useCallback(async (): Promise<TaskResult> => {
     try {
       cancelledRef.current = false;
       setClaiming(true);
@@ -290,7 +290,7 @@ export function useDailyTasks(): UseDailyTasksReturn {
 
       // 广告观看成功，领取奖励（传递广告收益数据）
       console.log('[DailyTasks] 广告观看成功，领取奖励...', lastAdRevenue ? `revenue: ${lastAdRevenue.valueMicros}` : 'no revenue data');
-      const result = await claimAdReward(true, true, bonusMode, isNative,
+      const result = await claimAdReward(true, true, false, isNative,
         lastAdRevenue?.valueMicros, lastAdRevenue?.currencyCode);
       if (result.success && !cancelledRef.current) {
         refresh(); // 后台刷新状态，不阻塞返回

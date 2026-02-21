@@ -55,6 +55,8 @@ export interface DailyTasksBaseConfig {
   checkin_credits: number;
   /** 广告奖励积分档位（递进式） */
   ad_reward_tiers: number[];
+  /** 每日最大广告观看次数（防刷上限） */
+  max_daily_ad_views: number;
   /** 弹窗最小间隔时间（分钟） */
   popup_interval_minutes: number;
   /** 是否启用 */

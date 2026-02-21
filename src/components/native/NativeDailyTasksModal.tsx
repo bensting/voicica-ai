@@ -184,7 +184,7 @@ export default function NativeDailyTasksModal({ isOpen, onClose, onCreditsUpdate
   }, [checkinLoading, claiming, doCheckin, onCreditsUpdated, t, clearAdTimeout, guardNativeOnly]);
 
   // 处理看广告
-  const handleWatchAd = useCallback(async (bonusMode: boolean = false) => {
+  const handleWatchAd = useCallback(async () => {
     if (!guardNativeOnly()) return;
     if (adLoading || claiming) return;
 
@@ -204,7 +204,7 @@ export default function NativeDailyTasksModal({ isOpen, onClose, onCreditsUpdate
     }, AD_LOADING_TIMEOUT);
 
     try {
-      const result = await doClaimAdReward(bonusMode);
+      const result = await doClaimAdReward();
       if (cancelledRef.current) return;
       clearAdTimeout();
 
@@ -348,15 +348,25 @@ export default function NativeDailyTasksModal({ isOpen, onClose, onCreditsUpdate
             </div>
           </div>
 
+          {/* 进度: 已观看 / 每日上限 */}
+          <div className="flex items-center justify-between mb-3 px-1">
+            <span className="text-xs text-gray-400">
+              {status.adRewardsClaimed} / {status.maxDailyAdViews} {t('dailyTasks.viewsToday') || 'views today'}
+            </span>
+            <span className="text-xs text-amber-400 font-medium">
+              +{formatCredits(status.adRewardsCredits)} $VOICICA
+            </span>
+          </div>
+
           {adError && (
             <div className="mb-3 p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-sm text-red-400 text-center">
               {adError}
             </div>
           )}
 
-          {status.nextAdReward !== null ? (
+          {status.remainingAdViews > 0 ? (
             <button
-              onClick={() => handleWatchAd(false)}
+              onClick={() => handleWatchAd()}
               disabled={claiming || adLoading}
               className="w-full py-3 bg-gradient-to-r from-amber-500 to-orange-500 text-white font-semibold rounded-xl flex items-center justify-center gap-2 disabled:opacity-50"
             >
@@ -368,28 +378,14 @@ export default function NativeDailyTasksModal({ isOpen, onClose, onCreditsUpdate
               ) : (
                 <>
                   <PlayIcon />
-                  {t('dailyTasks.watchAdGet')}
+                  {t('dailyTasks.startMining') || 'Start Mining'}
                 </>
               )}
             </button>
           ) : (
-            <button
-              onClick={() => handleWatchAd(true)}
-              disabled={claiming || adLoading}
-              className="w-full py-3 bg-gradient-to-r from-amber-500 to-orange-500 text-white font-semibold rounded-xl flex items-center justify-center gap-2 disabled:opacity-50"
-            >
-              {(claiming || adLoading) ? (
-                <>
-                  <LoaderIcon className="w-5 h-5" />
-                  <span>{t('dailyTasks.loadingAd') || 'Loading ad...'}</span>
-                </>
-              ) : (
-                <>
-                  <RefreshIcon />
-                  {t('dailyTasks.watchMore') || 'Continue Mining +1'}
-                </>
-              )}
-            </button>
+            <div className="w-full py-3 bg-white/5 text-gray-500 font-medium rounded-xl text-center text-sm">
+              {t('dailyTasks.dailyLimitReached') || 'Daily limit reached'}
+            </div>
           )}
         </div>
       </div>

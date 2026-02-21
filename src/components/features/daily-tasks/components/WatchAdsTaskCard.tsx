@@ -1,34 +1,32 @@
 'use client';
 
-import { Play, Check, Loader2 } from 'lucide-react';
+import { Play, Loader2 } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { formatCredits } from '../utils';
 
 interface WatchAdsTaskCardProps {
-  adTiers: number[];
   claimedCount: number;
+  maxDailyViews: number;
+  remainingViews: number;
   earnedCredits: number;
-  nextReward: number | null;
   isLoading: boolean;
   error: string | null;
   onWatchAd: () => void;
 }
 
 /**
- * 看广告赚积分任务卡片
+ * Video Mining 任务卡片
  */
 export default function WatchAdsTaskCard({
-  adTiers,
   claimedCount,
+  maxDailyViews,
+  remainingViews,
   earnedCredits,
-  nextReward,
   isLoading,
   error,
   onWatchAd,
 }: WatchAdsTaskCardProps) {
   const { t } = useLanguage();
-
-  const totalCredits = adTiers.reduce((sum, v) => sum + v, 0);
 
   return (
     <div className="border border-gray-200 rounded-xl p-4">
@@ -40,32 +38,21 @@ export default function WatchAdsTaskCard({
           <div>
             <p className="font-medium text-gray-900">{t('dailyTasks.watchAds')}</p>
             <p className="text-sm text-gray-500">
-              {formatCredits(earnedCredits)} / {formatCredits(totalCredits)} {t('dailyTasks.credits')}
+              {claimedCount} / {maxDailyViews} {t('dailyTasks.viewsToday') || 'views today'}
             </p>
           </div>
         </div>
+        <span className="text-sm font-medium text-green-600">
+          +{formatCredits(earnedCredits)} $VOICICA
+        </span>
       </div>
 
-      {/* 广告档位进度 */}
-      <div className="flex gap-1.5 mb-4">
-        {adTiers.map((tier, index) => {
-          const isClaimed = index < claimedCount;
-          const isNext = index === claimedCount;
-          return (
-            <div
-              key={index}
-              className={`flex-1 h-8 rounded-lg flex items-center justify-center text-xs font-medium transition-all ${
-                isClaimed
-                  ? 'bg-green-500 text-white'
-                  : isNext
-                  ? 'bg-purple-100 text-purple-600 border-2 border-purple-300'
-                  : 'bg-gray-100 text-gray-400'
-              }`}
-            >
-              {isClaimed ? <Check className="w-3.5 h-3.5" /> : tier}
-            </div>
-          );
-        })}
+      {/* 进度条 */}
+      <div className="mb-4 h-2 bg-gray-200 rounded-full overflow-hidden">
+        <div
+          className="h-full bg-gradient-to-r from-green-500 to-emerald-500 rounded-full transition-all duration-500"
+          style={{ width: `${maxDailyViews > 0 ? (claimedCount / maxDailyViews) * 100 : 0}%` }}
+        />
       </div>
 
       {/* 错误提示 */}
@@ -75,8 +62,8 @@ export default function WatchAdsTaskCard({
         </div>
       )}
 
-      {/* 看广告按钮 */}
-      {nextReward !== null ? (
+      {/* 按钮 */}
+      {remainingViews > 0 ? (
         <button
           onClick={onWatchAd}
           disabled={isLoading}
@@ -85,18 +72,18 @@ export default function WatchAdsTaskCard({
           {isLoading ? (
             <>
               <Loader2 className="w-5 h-5 animate-spin" />
-              <span>{t('dailyTasks.loadingAd') || '加载广告中...'}</span>
+              <span>{t('dailyTasks.loadingAd') || 'Loading ad...'}</span>
             </>
           ) : (
             <>
               <Play className="w-5 h-5" />
-              {t('dailyTasks.watchAdGet', { credits: formatCredits(nextReward) })}
+              {t('dailyTasks.startMining') || 'Start Mining'}
             </>
           )}
         </button>
       ) : (
         <div className="w-full py-3 bg-gray-100 text-gray-400 font-semibold rounded-xl text-center">
-          {t('dailyTasks.allAdsClaimed')}
+          {t('dailyTasks.dailyLimitReached') || 'Daily limit reached'}
         </div>
       )}
     </div>

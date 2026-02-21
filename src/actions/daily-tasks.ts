@@ -103,16 +103,16 @@ export interface DailyTasksStatus {
   checkinDone: boolean;
   /** 签到获得的积分 */
   checkinCredits: number;
-  /** 已领取的广告档位数 (0-6) */
+  /** 今日已观看广告次数 */
   adRewardsClaimed: number;
   /** 广告奖励累计获得的积分 */
   adRewardsCredits: number;
   /** 今日已获得总积分 */
   todayTotalCredits: number;
-  /** 今日可获得最大积分 */
-  todayMaxCredits: number;
-  /** 下一档广告奖励积分（如果还有） */
-  nextAdReward: number | null;
+  /** 每日最大广告观看次数 */
+  maxDailyAdViews: number;
+  /** 剩余可观看次数 */
+  remainingAdViews: number;
 }
 
 /**
@@ -161,12 +161,9 @@ export async function getDailyTasksStatus(isNative: boolean = false): Promise<Da
       .where(and(eq(dailyTasks.userId, user_id), eq(dailyTasks.date, today)))
       .limit(1);
 
-    // 计算最大可获得积分
-    const maxAdCredits = config.ad_reward_tiers.reduce((sum: number, v: number) => sum + v, 0);
-    const todayMaxCredits = config.checkin_credits + maxAdCredits;
+    const maxViews = config.max_daily_ad_views;
 
     if (!record) {
-      // 今日还没有任何任务记录
       return {
         date: today,
         checkinDone: false,
@@ -174,16 +171,12 @@ export async function getDailyTasksStatus(isNative: boolean = false): Promise<Da
         adRewardsClaimed: 0,
         adRewardsCredits: 0,
         todayTotalCredits: 0,
-        todayMaxCredits,
-        nextAdReward: config.ad_reward_tiers[0] || null,
+        maxDailyAdViews: maxViews,
+        remainingAdViews: maxViews,
       };
     }
 
     const todayTotalCredits = record.checkinCredits + record.adRewardsCredits;
-    const nextTierIndex = record.adRewardsClaimed;
-    const nextAdReward = nextTierIndex < config.ad_reward_tiers.length
-      ? config.ad_reward_tiers[nextTierIndex]
-      : null;
 
     return {
       date: today,
@@ -192,8 +185,8 @@ export async function getDailyTasksStatus(isNative: boolean = false): Promise<Da
       adRewardsClaimed: record.adRewardsClaimed,
       adRewardsCredits: record.adRewardsCredits,
       todayTotalCredits,
-      todayMaxCredits,
-      nextAdReward,
+      maxDailyAdViews: maxViews,
+      remainingAdViews: Math.max(0, maxViews - record.adRewardsClaimed),
     };
   } catch (error) {
     console.error('❌ [getDailyTasksStatus] 获取每日任务状态失败:', error);
@@ -282,10 +275,9 @@ export async function checkin(addToPermanent: boolean = false, isNative: boolean
  * 使用原子操作防止并发重复领取
  * @param adWatched 是否真的看完了广告（第一阶段模拟为 true）
  * @param addToPermanent 是否添加到永久积分（默认添加到当月积分）
- * @param bonusMode 是否为奖励模式（所有档位领取完后，继续看广告获得固定1积分）
  * @param isNative 是否为原生应用（用于获取对应的配置）
  */
-export async function claimAdReward(adWatched: boolean = true, addToPermanent: boolean = false, bonusMode: boolean = false, isNative: boolean = false, adRevenueMicros?: number, adRevenueCurrency?: string): Promise<TaskResult> {
+export async function claimAdReward(adWatched: boolean = true, addToPermanent: boolean = false, _bonusMode: boolean = false, isNative: boolean = false, adRevenueMicros?: number, adRevenueCurrency?: string): Promise<TaskResult> {
   try {
     if (!adWatched) {
       return { success: false, message: 'Please watch the ad first' };
@@ -302,10 +294,10 @@ export async function claimAdReward(adWatched: boolean = true, addToPermanent: b
     }
 
     const today = getTodayDate();
-    const tiers = config.ad_reward_tiers;
+    const maxViews = config.max_daily_ad_views;
 
     // 动态计算奖励（基于广告收益）
-    const { voicicaAmount, randomMultiplier, revenueMicros, revenueSource } = await calculateVoicicaReward(adRevenueMicros);
+    const { voicicaAmount, randomMultiplier, revenueMicros, revenueSource } = await calculateVoicicaReward(adRevenueMicros, adRevenueCurrency);
 
     // 先尝试创建记录（如果不存在）
     await db
@@ -320,86 +312,46 @@ export async function claimAdReward(adWatched: boolean = true, addToPermanent: b
       })
       .onConflictDoNothing();
 
-    // 尝试每个档位，从 0 开始（保留 tier 循环作为防刷计数机制）
-    for (let tierIndex = 0; tierIndex < tiers.length; tierIndex++) {
-      const newClaimed = tierIndex + 1;
-
-      const updateResult = await db
-        .update(dailyTasks)
-        .set({
-          adRewardsClaimed: newClaimed,
-          adRewardsCredits: sql`${dailyTasks.adRewardsCredits} + ${voicicaAmount}`,
-        })
-        .where(
-          and(
-            eq(dailyTasks.userId, user_id),
-            eq(dailyTasks.date, today),
-            eq(dailyTasks.adRewardsClaimed, tierIndex), // 关键：只更新当前档位等于 tierIndex 的记录
-          )
+    // 原子操作：只有 adRewardsClaimed < maxViews 时才递增并发放奖励
+    const updateResult = await db
+      .update(dailyTasks)
+      .set({
+        adRewardsClaimed: sql`${dailyTasks.adRewardsClaimed} + 1`,
+        adRewardsCredits: sql`${dailyTasks.adRewardsCredits} + ${voicicaAmount}`,
+      })
+      .where(
+        and(
+          eq(dailyTasks.userId, user_id),
+          eq(dailyTasks.date, today),
+          sql`${dailyTasks.adRewardsClaimed} < ${maxViews}`,
         )
-        .returning();
+      )
+      .returning();
 
-      // 如果更新成功，说明成功领取了这个档位
-      if (updateResult.length > 0) {
-        console.log(`[claimAdReward] Successfully claimed tier ${newClaimed}, voicicaAmount: ${voicicaAmount}, addToPermanent: ${addToPermanent}`);
-
-        // 增加用户积分（根据是否匿名用户选择正确的表）
-        await addUserCredits(user_id, is_anonymous, voicicaAmount, addToPermanent);
-
-        // 记录积分历史（含广告收益数据）
-        await db.insert(creditHistory).values({
-          userId: user_id,
-          amount: voicicaAmount,
-          description: addToPermanent ? `Ad reward tier ${newClaimed} (permanent)` : `Ad reward tier ${newClaimed}`,
-          productType: 'ad_reward',
-          adRevenueMicros: revenueMicros,
-          adRevenueCurrency: adRevenueCurrency ?? null,
-          adRevenueSource: revenueSource,
-          randomMultiplier,
-        });
-
-        return { success: true, credits: voicicaAmount };
-      }
+    if (updateResult.length === 0) {
+      console.log(`[claimAdReward] Daily limit reached (${maxViews} views)`);
+      return { success: false, message: `Daily limit reached (${maxViews} views)` };
     }
 
-    // 所有档位都已领取
-    if (bonusMode) {
-      // 奖励模式：动态计算（不再固定 1 积分）
-      console.log(`[claimAdReward] Bonus mode: giving ${voicicaAmount} credits, addToPermanent: ${addToPermanent}`);
+    const newClaimed = updateResult[0].adRewardsClaimed;
+    console.log(`[claimAdReward] Mining #${newClaimed}/${maxViews}, voicicaAmount: ${voicicaAmount}, addToPermanent: ${addToPermanent}`);
 
-      // 更新累计积分
-      await db
-        .update(dailyTasks)
-        .set({
-          adRewardsCredits: sql`${dailyTasks.adRewardsCredits} + ${voicicaAmount}`,
-        })
-        .where(
-          and(
-            eq(dailyTasks.userId, user_id),
-            eq(dailyTasks.date, today),
-          )
-        );
+    // 增加用户积分
+    await addUserCredits(user_id, is_anonymous, voicicaAmount, addToPermanent);
 
-      // 增加用户积分（根据是否匿名用户选择正确的表）
-      await addUserCredits(user_id, is_anonymous, voicicaAmount, addToPermanent);
+    // 记录积分历史（含广告收益数据）
+    await db.insert(creditHistory).values({
+      userId: user_id,
+      amount: voicicaAmount,
+      description: addToPermanent ? `Mining reward #${newClaimed} (permanent)` : `Mining reward #${newClaimed}`,
+      productType: 'ad_reward',
+      adRevenueMicros: revenueMicros,
+      adRevenueCurrency: adRevenueCurrency ?? null,
+      adRevenueSource: revenueSource,
+      randomMultiplier,
+    });
 
-      // 记录积分历史（含广告收益数据）
-      await db.insert(creditHistory).values({
-        userId: user_id,
-        amount: voicicaAmount,
-        description: addToPermanent ? 'Bonus ad reward (permanent)' : 'Bonus ad reward',
-        productType: 'ad_reward_bonus',
-        adRevenueMicros: revenueMicros,
-        adRevenueCurrency: adRevenueCurrency ?? null,
-        adRevenueSource: revenueSource,
-        randomMultiplier,
-      });
-
-      return { success: true, credits: voicicaAmount };
-    }
-
-    console.log('[claimAdReward] All ad rewards claimed today');
-    return { success: false, message: 'All ad rewards claimed today' };
+    return { success: true, credits: voicicaAmount };
   } catch (error) {
     console.error('❌ [claimAdReward] 领取广告奖励失败:', error);
     return { success: false, message: 'Claim failed' };

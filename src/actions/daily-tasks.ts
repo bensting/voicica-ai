@@ -355,7 +355,7 @@ export async function claimAdReward(adWatched: boolean = true, addToPermanent: b
     await db.insert(creditHistory).values({
       userId: user_id,
       amount: voicicaAmount,
-      description: addToPermanent ? `Mining reward #${newClaimed} (permanent)` : `Mining reward #${newClaimed}`,
+      description: `Mining reward #${newClaimed} (${isNative ? 'native' : 'web'}${addToPermanent ? ', permanent' : ''})`,
       productType: 'ad_reward',
       adRevenueMicros: revenueMicros,
       adRevenueCurrency: adRevenueCurrency ?? null,

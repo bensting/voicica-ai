@@ -3,6 +3,7 @@
 import db from '@/lib/db';
 import { dailyTasks, users, anonymousUsers, creditHistory } from '@/db/schema';
 import { eq, and, sql } from 'drizzle-orm';
+import { headers } from 'next/headers';
 import { getUserOrAnonymous } from '@/lib/auth-firebase';
 import { getDailyTasksConfig, getMiningEconomyConfig } from '@/config/appConfig';
 
@@ -31,25 +32,46 @@ async function addUserCredits(userId: string, isAnonymous: boolean, amount: numb
 }
 
 /**
+ * 获取用户所在国家代码（从 Cloudflare / Vercel 注入的 header 中读取）
+ */
+async function getCountryFromHeaders(): Promise<string | null> {
+  try {
+    const headersList = await headers();
+    return headersList.get('cf-ipcountry')
+      || headersList.get('x-vercel-ip-country')
+      || null;
+  } catch {
+    return null;
+  }
+}
+
+/**
  * 基于广告收益动态计算 $VOICICA 奖励
  * 公式: revenueUsd × revenue_share_ratio × randomFactor ÷ token_value_usd
  *
- * 新 APK 传真实 adRevenueMicros → 用真实收益
- * 旧 APK 不传 → 用 estimated_ecpm_usd 估算
+ * 新 APK 传真实 adRevenueMicros → 用真实收益（精准）
+ * 旧 APK 不传 → 根据 IP 所在国家查 eCPM 表估算
  */
-function calculateVoicicaReward(adRevenueMicros?: number): {
+async function calculateVoicicaReward(adRevenueMicros?: number): Promise<{
   voicicaAmount: number;
   randomMultiplier: number;
   revenueUsd: number;
-} {
+}> {
   const miningConfig = getMiningEconomyConfig();
   const [minMul, maxMul] = miningConfig.random_multiplier;
   const randomMultiplier = minMul + Math.random() * (maxMul - minMul);
 
-  // 真实收益 vs 估算回退
-  const revenueUsd = (adRevenueMicros && adRevenueMicros > 0)
-    ? adRevenueMicros / 1_000_000
-    : miningConfig.estimated_ecpm_usd / 1000;
+  let revenueUsd: number;
+  if (adRevenueMicros && adRevenueMicros > 0) {
+    // 精准：来自 OnPaidEvent
+    revenueUsd = adRevenueMicros / 1_000_000;
+  } else {
+    // 估算：根据国家查 eCPM 表
+    const country = await getCountryFromHeaders();
+    const ecpm = (country && miningConfig.estimated_ecpm_by_country[country])
+      || miningConfig.default_ecpm_usd;
+    revenueUsd = ecpm / 1000; // eCPM 是千次展示收益，单次 = ÷1000
+  }
 
   const voicicaAmount = Math.max(1, Math.round(
     revenueUsd * miningConfig.revenue_share_ratio * randomMultiplier / miningConfig.token_value_usd
@@ -270,7 +292,7 @@ export async function claimAdReward(adWatched: boolean = true, addToPermanent: b
     const tiers = config.ad_reward_tiers;
 
     // 动态计算奖励（基于广告收益）
-    const { voicicaAmount, randomMultiplier } = calculateVoicicaReward(adRevenueMicros);
+    const { voicicaAmount, randomMultiplier } = await calculateVoicicaReward(adRevenueMicros);
 
     // 先尝试创建记录（如果不存在）
     await db

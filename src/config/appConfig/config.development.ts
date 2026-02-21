@@ -73,7 +73,13 @@ export const appConfig: AppConfig = {
     token_value_usd: 0.0001,
     revenue_share_ratio: 0.8,
     random_multiplier: [0.8, 1.2],
-    estimated_ecpm_usd: 15,
+    estimated_ecpm_by_country: {
+      US: 25, CA: 22, AU: 20, GB: 18, DE: 17, FR: 16, JP: 20, KR: 18,
+      TW: 12, HK: 14, SG: 12,
+      TH: 6, MY: 5, PH: 4, ID: 3,
+      IN: 2, VN: 3,
+    },
+    default_ecpm_usd: 5,
   },
 
   /**

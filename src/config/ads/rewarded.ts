@@ -1,23 +1,23 @@
 /**
  * 激励广告统一配置
  *
- * 支持在 AppLixir（Web）、AdMob（原生）、Appodeal（原生）之间切换
+ * 支持在 ExoClick（Web）、AdMob（原生）、Appodeal（原生）之间切换
  *
  * 使用场景：
- * - Web 端：使用 AppLixir
+ * - Web 端：使用 ExoClick VAST In-Stream
  * - 原生端：使用 AdMob 或 Appodeal（根据配置）
  *
  * 提供商选择：
- * - 'applixir': Web 端激励广告
+ * - 'exoclick': Web 端激励广告（VAST In-Stream）
  * - 'admob': Google AdMob，最大广告网络，收益稳定
  * - 'appodeal': 广告聚合平台，整合多个广告网络，可能获得更高 eCPM
- * - 'auto': 自动选择（原生环境用 nativeProvider，Web 用 AppLixir）
+ * - 'auto': 自动选择（原生环境用 nativeProvider，Web 用 ExoClick）
  */
 
 /**
  * 激励广告提供商
  */
-export type RewardedAdProvider = 'applixir' | 'admob' | 'appodeal' | 'auto';
+export type RewardedAdProvider = 'exoclick' | 'admob' | 'appodeal' | 'auto';
 
 /**
  * 原生端广告提供商（当 provider 为 'auto' 时使用）
@@ -27,10 +27,10 @@ export type NativeAdProvider = 'admob' | 'appodeal';
 export interface RewardedAdConfig {
   /**
    * 激励广告提供商
-   * - 'applixir': 强制使用 AppLixir（Web 端）
+   * - 'exoclick': 强制使用 ExoClick（Web 端）
    * - 'admob': 强制使用 AdMob（原生端）
    * - 'appodeal': 强制使用 Appodeal（原生端）
-   * - 'auto': 自动选择（原生环境用 nativeProvider，Web 用 AppLixir）
+   * - 'auto': 自动选择（原生环境用 nativeProvider，Web 用 ExoClick）
    */
   provider: RewardedAdProvider;
 
@@ -45,8 +45,8 @@ export interface RewardedAdConfig {
  * 开发环境配置
  */
 const devConfig: RewardedAdConfig = {
-  provider: 'auto', // 开发环境自动选择
-  nativeProvider: 'admob', // 原生端默认使用 AdMob
+  provider: 'auto',
+  nativeProvider: 'admob',
 };
 
 /**
@@ -57,8 +57,8 @@ const devConfig: RewardedAdConfig = {
  * 2. 使用 Appodeal: nativeProvider: 'appodeal'（需先配置 appodeal.ts）
  */
 const prodConfig: RewardedAdConfig = {
-  provider: 'auto', // 自动选择：原生用 nativeProvider，Web 用 AppLixir
-  nativeProvider: 'admob', // 使用 AdMob 激励广告
+  provider: 'auto', // 自动选择：原生用 nativeProvider，Web 用 ExoClick
+  nativeProvider: 'admob',
 };
 
 // 根据环境选择配置
@@ -88,7 +88,7 @@ export function getNativeAdProvider(isNativePlatform: boolean): 'admob' | 'appod
   // 强制使用特定提供商
   if (provider === 'admob') return 'admob';
   if (provider === 'appodeal') return 'appodeal';
-  if (provider === 'applixir') return null; // 强制使用 AppLixir，不使用原生广告
+  if (provider === 'exoclick') return null; // 强制使用 ExoClick，不使用原生广告
 
   // auto 模式：使用配置的 nativeProvider
   return nativeProvider;
@@ -111,16 +111,16 @@ export function shouldUseAppodeal(isNativePlatform: boolean): boolean {
 }
 
 /**
- * 判断是否应该使用 AppLixir
+ * 判断是否应该使用 ExoClick
  * @param isNativePlatform 是否在原生平台运行
  */
-export function shouldUseAppLixir(isNativePlatform: boolean): boolean {
+export function shouldUseExoClick(isNativePlatform: boolean): boolean {
   const { provider } = rewardedAdConfig;
 
-  // 强制使用 AppLixir
-  if (provider === 'applixir') return true;
+  // 强制使用 ExoClick
+  if (provider === 'exoclick') return true;
 
-  // 非原生平台使用 AppLixir（auto 模式）
+  // 非原生平台使用 ExoClick（auto 模式）
   if (provider === 'auto' && !isNativePlatform) return true;
 
   return false;

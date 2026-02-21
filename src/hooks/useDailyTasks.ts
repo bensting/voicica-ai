@@ -201,7 +201,7 @@ export function useDailyTasks(): UseDailyTasksReturn {
       setClaiming(true);
       setError(null);
 
-      // 签到前需要先观看激励视频广告（Web 端使用 AppLixir，原生端使用 AdMob/Appodeal）
+      // 签到前需要先观看激励视频广告（Web 端使用 ExoClick VAST，原生端使用 AdMob/Appodeal）
       console.log('[useDailyTasks] 开始显示签到激励视频广告...');
       const adResult = await showRewardedAd();
 

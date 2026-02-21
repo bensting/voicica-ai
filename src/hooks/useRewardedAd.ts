@@ -3,7 +3,7 @@
 /**
  * 统一激励广告 Hook
  *
- * 根据配置自动切换 AppLixir（Web）、AdMob（原生）或 Appodeal（原生）
+ * 根据配置自动切换 ExoClick（Web）、AdMob（原生）或 Appodeal（原生）
  *
  * AdMob 使用 AdMobContext 在 App 启动时初始化，确保第一个广告能快速加载。
  *
@@ -25,12 +25,13 @@ import { Capacitor } from '@capacitor/core';
 import {
   shouldUseAdMob,
   shouldUseAppodeal,
-  shouldUseAppLixir,
+  shouldUseExoClick,
 } from '@/config/ads';
-import { applixirConfig } from '@/config/ads/applixir';
+import { exoclickConfig } from '@/config/ads/exoclick';
 import { admobConfig } from '@/config/ads/admob';
 import { appodealConfig, getAppodealAppKey } from '@/config/ads/appodeal';
 import { useAdMob } from '@/contexts/AdMobContext';
+import { useExoClickAd } from './useExoClickAd';
 
 export type RewardedAdStatus = 'idle' | 'loading' | 'ready' | 'showing' | 'rewarded' | 'error';
 
@@ -48,28 +49,13 @@ interface UseRewardedAdReturn {
   /** 当前状态 */
   status: RewardedAdStatus;
   /** 当前使用的广告提供商 */
-  provider: 'applixir' | 'admob' | 'appodeal' | 'none';
+  provider: 'exoclick' | 'admob' | 'appodeal' | 'none';
   /** 是否准备好显示广告 */
   isReady: boolean;
   /** 错误信息 */
   error: string | null;
   /** 显示激励广告，返回详细结果 */
   showRewardedAd: () => Promise<RewardedAdResult>;
-}
-
-// AppLixir SDK 容器 ID
-const APPLIXIR_CONTAINER_ID = 'applixir-container';
-
-// 声明全局函数类型
-declare global {
-  interface Window {
-    initializeAndOpenPlayer?: (options: {
-      apiKey: string;
-      injectionElementId: string;
-      adStatusCallbackFn: (status: string) => void;
-      adErrorCallbackFn: (error: { getError: () => { data: { errorCode?: number; errorMessage?: string } } }) => void;
-    }) => void;
-  }
 }
 
 /**
@@ -80,7 +66,7 @@ export function useRewardedAd(): UseRewardedAdReturn {
   const [error, setError] = useState<string | null>(null);
   const [AppodealPlugin, setAppodealPlugin] = useState<typeof import('@/plugins/appodeal').Appodeal | null>(null);
 
-  const applixirLoadedRef = useRef(false);
+  const exoclickReadyRef = useRef(false);
   const appodealReadyRef = useRef(false);
 
   // 使用 AdMob Context（在 App 启动时已初始化）
@@ -92,56 +78,39 @@ export function useRewardedAd(): UseRewardedAdReturn {
     prepareAd: prepareAdMobAd,
   } = useAdMob();
 
+  // ExoClick VAST 广告
+  const { showAd: showExoClickAd, preloadSDK: preloadExoClickSDK } = useExoClickAd();
+
   // 检测平台
   const isNative = Capacitor.isNativePlatform();
   const useAdMobEnabled = shouldUseAdMob(isNative);
   const useAppodeal = shouldUseAppodeal(isNative);
-  const useAppLixir = shouldUseAppLixir(isNative);
+  const useExoClick = shouldUseExoClick(isNative);
 
   // 当前使用的提供商
-  const provider: 'applixir' | 'admob' | 'appodeal' | 'none' = (() => {
+  const provider: 'exoclick' | 'admob' | 'appodeal' | 'none' = (() => {
     if (useAppodeal && appodealConfig.enabled) return 'appodeal';
     if (useAdMobEnabled && admobConfig.enabled) return 'admob';
-    if (useAppLixir && applixirConfig.enabled) return 'applixir';
+    if (useExoClick && exoclickConfig.enabled) return 'exoclick';
     return 'none';
   })();
 
-  // ==================== AppLixir 初始化 ====================
+  // ==================== ExoClick 初始化 ====================
   useEffect(() => {
-    if (provider !== 'applixir') return;
-    if (applixirLoadedRef.current) return;
-    if (typeof window === 'undefined') return;
+    if (provider !== 'exoclick') return;
+    if (exoclickReadyRef.current) return;
 
-    // 检查是否已加载
-    if (document.getElementById('applixir-sdk')) {
-      applixirLoadedRef.current = true;
+    preloadExoClickSDK().then(() => {
+      exoclickReadyRef.current = true;
       setStatus('ready');
-      return;
-    }
-
-    // 添加容器
-    if (!document.getElementById(APPLIXIR_CONTAINER_ID)) {
-      const container = document.createElement('div');
-      container.id = APPLIXIR_CONTAINER_ID;
-      container.style.cssText = 'position: relative; z-index: 99999;';
-      document.body.appendChild(container);
-    }
-
-    // 加载 SDK
-    const script = document.createElement('script');
-    script.id = 'applixir-sdk';
-    script.src = 'https://cdn.applixir.com/applixir.app.v6.0.1.js';
-    script.onload = () => {
-      applixirLoadedRef.current = true;
+      console.log('[RewardedAd] ExoClick Fluid Player SDK preloaded');
+    }).catch((err) => {
+      console.warn('[RewardedAd] ExoClick SDK preload failed (will retry on show):', err);
+      // 即使预加载失败，也标记为 ready，因为 showAd 会重试加载
+      exoclickReadyRef.current = true;
       setStatus('ready');
-      console.log('[RewardedAd] AppLixir SDK loaded');
-    };
-    script.onerror = () => {
-      setError('AppLixir SDK load failed');
-      setStatus('error');
-    };
-    document.head.appendChild(script);
-  }, [provider]);
+    });
+  }, [provider, preloadExoClickSDK]);
 
   // ==================== Appodeal 初始化 ====================
   useEffect(() => {
@@ -219,54 +188,23 @@ export function useRewardedAd(): UseRewardedAdReturn {
       return { success: true, reason: 'rewarded' };
     }
 
-    // ---- AppLixir ----
-    if (provider === 'applixir') {
-      if (!window.initializeAndOpenPlayer) {
-        setError('AppLixir not ready');
-        return { success: false, reason: 'error', message: 'AppLixir not ready' };
+    // ---- ExoClick VAST ----
+    if (provider === 'exoclick') {
+      setStatus('showing');
+      try {
+        const result = await showExoClickAd();
+        setStatus(result.success ? 'rewarded' : 'idle');
+        if (!result.success && result.reason === 'error') {
+          setError(result.message || 'Ad error');
+          setStatus('error');
+        }
+        return result;
+      } catch (err) {
+        console.error('[RewardedAd] ExoClick show failed:', err);
+        setError('Failed to show ad');
+        setStatus('error');
+        return { success: false, reason: 'error', message: 'Failed to show ad' };
       }
-
-      return new Promise((resolve) => {
-        setStatus('showing');
-
-        window.initializeAndOpenPlayer!({
-          apiKey: applixirConfig.apiKey,
-          injectionElementId: APPLIXIR_CONTAINER_ID,
-          adStatusCallbackFn: (adStatus) => {
-            console.log('[RewardedAd] AppLixir status:', adStatus);
-
-            if (adStatus === 'ad-watched') {
-              setStatus('rewarded');
-              resolve({ success: true, reason: 'rewarded' });
-            } else if (adStatus === 'ad-interrupted') {
-              setStatus('idle');
-              resolve({ success: false, reason: 'skipped' });
-            } else if (adStatus === 'ad-unavailable') {
-              setStatus('idle');
-              resolve({ success: false, reason: 'unavailable', message: 'No ads available at this time' });
-            }
-          },
-          adErrorCallbackFn: (err) => {
-            const errorData = err.getError()?.data || {};
-            const errorCode = errorData.errorCode;
-            const errorMsg = errorData.errorMessage || '';
-
-            // 空错误对象或错误码 303 = 无可用广告，静默处理
-            const isNoAdsError = !errorCode || errorCode === 303 || errorMsg.includes('No Ads') || errorMsg.includes('No Video');
-
-            if (isNoAdsError) {
-              console.log('[RewardedAd] No ads available');
-              setStatus('idle');
-              resolve({ success: false, reason: 'unavailable', message: 'No ads available at this time' });
-            } else {
-              console.error('[RewardedAd] AppLixir error:', errorData);
-              setError(errorMsg || 'Ad error');
-              setStatus('error');
-              resolve({ success: false, reason: 'error', message: errorMsg || 'Ad error' });
-            }
-          },
-        });
-      });
     }
 
     // ---- AdMob（使用 Context）----
@@ -283,12 +221,8 @@ export function useRewardedAd(): UseRewardedAdReturn {
           // 等待加载完成（最多 15 秒）
           let waited = 0;
           while (waited < 15000) {
-            // 需要检查最新状态
             await new Promise((r) => setTimeout(r, 100));
             waited += 100;
-            // 由于 React state 在这里不会同步更新，我们依赖 context 的 isAdReady
-            // 但这里有个问题：admobIsReady 是闭包值，不会更新
-            // 所以我们用一个简单的方式：等待固定时间后检查
             if (waited % 1000 === 0) {
               console.log('[RewardedAd] Still waiting for ad...', waited, 'ms');
             }
@@ -301,9 +235,6 @@ export function useRewardedAd(): UseRewardedAdReturn {
         // 等待一下让 Rewarded 事件有时间触发
         await new Promise((r) => setTimeout(r, 500));
 
-        // 检查是否获得奖励
-        // 注意：由于闭包问题，这里使用 admobRewarded 可能不是最新值
-        // Context 的 rewarded 状态会在 Rewarded 事件触发时更新
         if (admobRewarded) {
           setStatus('rewarded');
           return { success: true, reason: 'rewarded' };
@@ -404,12 +335,12 @@ export function useRewardedAd(): UseRewardedAdReturn {
     }
 
     return { success: false, reason: 'error', message: 'No ad provider available' };
-  }, [provider, AdMob, AppodealPlugin, admobIsReady, admobRewarded, resetAdMobRewarded, prepareAdMobAd]);
+  }, [provider, AdMob, AppodealPlugin, admobIsReady, admobRewarded, resetAdMobRewarded, prepareAdMobAd, showExoClickAd]);
 
   // 计算是否准备好
   const isReady =
     provider === 'none' ||
-    (provider === 'applixir' && applixirLoadedRef.current) ||
+    (provider === 'exoclick' && exoclickReadyRef.current) ||
     (provider === 'admob' && admobIsReady) ||
     (provider === 'appodeal' && appodealReadyRef.current);
 

@@ -15,7 +15,7 @@
     "oneClickClaim": "One-click claim",
     "claim": "Claim",
     "claimed": "Activated \u2713",
-    "watchCheckinGet": "Activate +{{credits}} $V",
+    "watchCheckinGet": "Activate +{{credits}}",
 
     "watchAds": "Video Mining",
     "watchMultiple": "Earn up to 500 $VOICICA per block",

@@ -302,10 +302,10 @@ export default function NativeDailyTasksModal({ isOpen, onClose, onCreditsUpdate
           <button
             onClick={handleCheckin}
             disabled={status.checkinDone || claiming || checkinLoading}
-            className={`w-full py-3 font-semibold rounded-xl flex items-center justify-center gap-2 ${
+            className={`w-full py-3 font-medium rounded-xl flex items-center justify-center gap-2 text-sm ${
               status.checkinDone
-                ? 'bg-white/10 text-gray-500 cursor-not-allowed'
-                : 'bg-gradient-to-r from-amber-500 to-orange-500 text-white disabled:opacity-50'
+                ? 'bg-white/5 text-gray-500 cursor-not-allowed'
+                : 'border border-amber-500/40 text-amber-400 hover:bg-amber-500/10 disabled:opacity-50'
             }`}
           >
             {(claiming || checkinLoading) ? (

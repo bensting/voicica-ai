@@ -272,6 +272,17 @@ export default function ExploreSection() {
   const [selectedMusic, setSelectedMusic] = useState<PublicMusicRecord | null>(null);
   const [selectedVideo, setSelectedVideo] = useState<PublicVideoData | null>(null);
 
+  // Music / Video 分页：初始显示 6 个，每次加载 6 个
+  const PAGE_SIZE = 6;
+  const [musicVisibleCount, setMusicVisibleCount] = useState(PAGE_SIZE);
+  const [videoVisibleCount, setVideoVisibleCount] = useState(PAGE_SIZE);
+
+  // 切换 Tab 时重置可见数量
+  useEffect(() => {
+    if (activeTab === 'music') setMusicVisibleCount(PAGE_SIZE);
+    if (activeTab === 'video') setVideoVisibleCount(PAGE_SIZE);
+  }, [activeTab]);
+
   // 订阅状态（订阅用户不显示广告）
   const { isSubscribed } = useSubscription();
 
@@ -555,17 +566,31 @@ export default function ExploreSection() {
             ))}
           </div>
         ) : musicList.length > 0 ? (
-          // 音乐网格
-          <div className="grid grid-cols-2 gap-3">
-            {musicList.map((music, index) => (
-              <MusicCard
-                key={music.id}
-                music={music}
-                index={index}
-                onClick={() => setSelectedMusic(music)}
-              />
-            ))}
-          </div>
+          <>
+            {/* 音乐网格 */}
+            <div className="grid grid-cols-2 gap-3">
+              {musicList.slice(0, musicVisibleCount).map((music, index) => (
+                <MusicCard
+                  key={music.id}
+                  music={music}
+                  index={index}
+                  onClick={() => setSelectedMusic(music)}
+                />
+              ))}
+            </div>
+            {/* Explore More 按钮 */}
+            {musicVisibleCount < musicList.length && (
+              <div className="mt-3 flex justify-center">
+                <button
+                  onClick={() => setMusicVisibleCount(prev => prev + PAGE_SIZE)}
+                  className="flex items-center gap-1 text-sm text-gray-400 transition-colors hover:text-white active:text-white"
+                >
+                  Explore More
+                  <ChevronRight className="h-4 w-4" />
+                </button>
+              </div>
+            )}
+          </>
         ) : (
           // 空状态
           <div className="text-center py-12 text-gray-500">
@@ -591,17 +616,31 @@ export default function ExploreSection() {
             ))}
           </div>
         ) : videoList.length > 0 ? (
-          // 视频网格
-          <div className="grid grid-cols-2 gap-3">
-            {videoList.map((video, index) => (
-              <ExploreVideoCard
-                key={video.id}
-                video={video}
-                index={index}
-                onClick={() => setSelectedVideo(video)}
-              />
-            ))}
-          </div>
+          <>
+            {/* 视频网格 */}
+            <div className="grid grid-cols-2 gap-3">
+              {videoList.slice(0, videoVisibleCount).map((video, index) => (
+                <ExploreVideoCard
+                  key={video.id}
+                  video={video}
+                  index={index}
+                  onClick={() => setSelectedVideo(video)}
+                />
+              ))}
+            </div>
+            {/* Explore More 按钮 */}
+            {videoVisibleCount < videoList.length && (
+              <div className="mt-3 flex justify-center">
+                <button
+                  onClick={() => setVideoVisibleCount(prev => prev + PAGE_SIZE)}
+                  className="flex items-center gap-1 text-sm text-gray-400 transition-colors hover:text-white active:text-white"
+                >
+                  Explore More
+                  <ChevronRight className="h-4 w-4" />
+                </button>
+              </div>
+            )}
+          </>
         ) : (
           // 空状态
           <div className="text-center py-12 text-gray-500">

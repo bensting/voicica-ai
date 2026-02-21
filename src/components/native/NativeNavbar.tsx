@@ -82,13 +82,13 @@ export default function NativeNavbar() {
               </picture>
             </Link>
 
-            {/* 每日任务按钮 - 宝箱 + FREE */}
+            {/* Mining Center 入口 */}
             <button
               onClick={() => setIsDailyTasksOpen(true)}
-              className="relative flex items-center gap-1 px-2 py-1 rounded-lg bg-gradient-to-r from-amber-500/20 to-orange-500/20 border border-amber-500/30 hover:from-amber-500/30 hover:to-orange-500/30 transition-all active:scale-95"
+              className="relative flex items-center gap-1 px-2 py-1 rounded-lg bg-gradient-to-r from-amber-500/20 to-orange-500/20 border border-amber-500/30 animate-pulse hover:from-amber-500/30 hover:to-orange-500/30 transition-all active:scale-95"
             >
-              <TreasureIcon />
-              <span className="text-xs font-bold text-amber-400">{t('native.navbar.free')}</span>
+              <Image src="/logo/voicica-token.png" alt="" width={20} height={20} className="w-5 h-5" />
+              <span className="text-xs font-bold text-amber-400">Mine</span>
               {/* 小红点提示 - 有未领取的奖励时显示 */}
               {hasUnclaimedRewards && (
                 <span className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full animate-pulse" />

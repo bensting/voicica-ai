@@ -63,20 +63,26 @@ export default function TotalAssetsCard() {
                 <span className="text-gray-300 text-sm font-medium">$VOICICA</span>
               </div>
             </div>
-            <div className="flex items-center gap-3">
-              <span className="text-white text-sm font-semibold">
+            <div className="flex items-center gap-2">
+              <span className="text-white text-sm font-semibold mr-1">
                 {loading ? '...' : credits.toLocaleString()}
               </span>
               <button
                 onClick={() => setShowConvertModal(true)}
-                className="px-3 py-1 rounded-lg bg-purple-500/20 border border-purple-500/30 text-purple-400 text-xs font-medium hover:bg-purple-500/30 transition-colors active:scale-[0.95]"
+                className="px-2.5 py-1 rounded-lg bg-purple-500/20 border border-purple-500/30 text-purple-400 text-xs font-medium hover:bg-purple-500/30 transition-colors active:scale-[0.95]"
               >
                 {t('native.totalAssets.convert')}
+              </button>
+              <button
+                onClick={() => setShowWithdrawSheet(true)}
+                className="px-2.5 py-1 rounded-lg bg-white/5 border border-white/10 text-gray-400 text-xs font-medium hover:bg-white/10 transition-colors active:scale-[0.95]"
+              >
+                {t('native.totalAssets.withdraw')}
               </button>
             </div>
           </div>
 
-          {/* USDT row + Withdraw */}
+          {/* USDT row */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2.5">
               <div className="w-8 h-8 rounded-full flex items-center justify-center">
@@ -87,13 +93,19 @@ export default function TotalAssetsCard() {
               </div>
               <span className="text-gray-300 text-sm font-medium">USDT</span>
             </div>
-            <div className="flex items-center gap-3">
-              <span className="text-white text-sm font-semibold">
+            <div className="flex items-center gap-2">
+              <span className="text-white text-sm font-semibold mr-1">
                 {usdtBalance.toFixed(2)}
               </span>
               <button
+                onClick={() => setShowConvertModal(true)}
+                className="px-2.5 py-1 rounded-lg bg-purple-500/20 border border-purple-500/30 text-purple-400 text-xs font-medium hover:bg-purple-500/30 transition-colors active:scale-[0.95]"
+              >
+                {t('native.totalAssets.convert')}
+              </button>
+              <button
                 onClick={() => setShowWithdrawSheet(true)}
-                className="px-3 py-1 rounded-lg bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 text-xs font-medium hover:bg-emerald-500/30 transition-colors active:scale-[0.95]"
+                className="px-2.5 py-1 rounded-lg bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 text-xs font-medium hover:bg-emerald-500/30 transition-colors active:scale-[0.95]"
               >
                 {t('native.totalAssets.withdraw')}
               </button>

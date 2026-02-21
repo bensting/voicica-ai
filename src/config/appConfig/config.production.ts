@@ -94,6 +94,23 @@ export const appConfig: AppConfig = {
       NG: 2, KE: 2, EG: 3, ZA: 5,
     },
     default_ecpm_usd: 5,
+    // Web 端 ExoClick VAST In-Stream（eCPM 远低于 AdMob，单位 USD）
+    // 每次奖励播 2 个 zone，所以实际收入 = eCPM × 2 / 1000
+    web_estimated_ecpm_by_country: {
+      // T1
+      US: 0.10, CA: 0.10, AU: 0.10, GB: 0.10, DE: 0.10, FR: 0.10, JP: 0.10, KR: 0.10,
+      NZ: 0.10, CH: 0.10, NO: 0.10, SE: 0.10, DK: 0.10, AT: 0.10, NL: 0.10, BE: 0.10,
+      // T2
+      TW: 0.05, HK: 0.05, SG: 0.05, IL: 0.05,
+      BR: 0.05, MX: 0.05, AR: 0.05, CL: 0.05, CO: 0.05,
+      TH: 0.05, MY: 0.05, PH: 0.05, ID: 0.05,
+      SA: 0.05, AE: 0.05, TR: 0.05, PL: 0.05, CZ: 0.05, RO: 0.05,
+      // T3
+      IN: 0.01, PK: 0.01, BD: 0.01, LK: 0.01,
+      VN: 0.01, MM: 0.01, KH: 0.01, LA: 0.01,
+      NG: 0.01, KE: 0.01, EG: 0.01, ZA: 0.01,
+    },
+    web_default_ecpm_usd: 0.03,
     show_wallet_card: false, // 生产环境暂不显示
   },
 

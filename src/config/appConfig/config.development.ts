@@ -86,6 +86,14 @@ export const appConfig: AppConfig = {
       IN: 2, VN: 3,
     },
     default_ecpm_usd: 5,
+    // Web 端 ExoClick VAST In-Stream（每次播 2 个 zone）
+    web_estimated_ecpm_by_country: {
+      US: 0.10, CA: 0.10, AU: 0.10, GB: 0.10, DE: 0.10, JP: 0.10, KR: 0.10,
+      TW: 0.05, HK: 0.05, SG: 0.05,
+      TH: 0.05, MY: 0.05, PH: 0.05, ID: 0.05,
+      IN: 0.01, VN: 0.01,
+    },
+    web_default_ecpm_usd: 0.03,
     show_wallet_card: true, // 开发环境显示，方便测试
   },
 

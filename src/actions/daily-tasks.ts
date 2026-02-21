@@ -49,10 +49,10 @@ async function getCountryFromHeaders(): Promise<string | null> {
  * 基于广告收益动态计算 $VOICICA 奖励
  * 公式: revenueUsd × revenue_share_ratio × randomFactor ÷ token_value_usd
  *
- * 新 APK 传真实 adRevenueMicros → 用真实收益（精准）
- * 旧 APK 不传 → 根据 IP 所在国家查 eCPM 表估算
+ * 原生端（AdMob）：新 APK 传真实 adRevenueMicros → 精准；旧 APK → 按 AdMob eCPM 估算
+ * Web 端（ExoClick）：无精准数据，按 ExoClick eCPM 估算（远低于 AdMob）
  */
-async function calculateVoicicaReward(adRevenueMicros?: number, adRevenueCurrency?: string): Promise<{
+async function calculateVoicicaReward(isNative: boolean, adRevenueMicros?: number, adRevenueCurrency?: string): Promise<{
   voicicaAmount: number;
   randomMultiplier: number;
   revenueMicros: number;
@@ -65,22 +65,34 @@ async function calculateVoicicaReward(adRevenueMicros?: number, adRevenueCurrenc
   let revenueUsd: number;
   let revenueSource: 'precise' | 'estimated';
 
-  // 有真实数据且币种有配置汇率 → 精准；否则 → 估算
+  // 有真实数据且币种有配置汇率 → 精准（仅原生端 AdMob 会传）
   const exchangeRate = adRevenueCurrency
     ? miningConfig.currency_to_usd[adRevenueCurrency]
     : undefined;
   const hasValidRevenue = adRevenueMicros && adRevenueMicros > 0 && exchangeRate;
 
   if (hasValidRevenue) {
-    // 精准：来自 OnPaidEvent，按汇率转 USD
+    // 精准：来自 AdMob OnPaidEvent，按汇率转 USD
     revenueUsd = (adRevenueMicros / 1_000_000) * exchangeRate;
     revenueSource = 'precise';
   } else {
-    // 估算：无数据 / 非 USD 币种 → 根据国家查 eCPM 表
+    // 估算：根据平台选择对应的 eCPM 表
     const country = await getCountryFromHeaders();
-    const ecpm = (country && miningConfig.estimated_ecpm_by_country[country])
-      || miningConfig.default_ecpm_usd;
-    revenueUsd = ecpm / 1000; // eCPM 是千次展示收益，单次 = ÷1000
+
+    if (isNative) {
+      // 原生端：AdMob 激励视频 eCPM（$2~$25）
+      const ecpm = (country && miningConfig.estimated_ecpm_by_country[country])
+        || miningConfig.default_ecpm_usd;
+      revenueUsd = ecpm / 1000;
+    } else {
+      // Web 端：ExoClick VAST In-Stream eCPM（$0.01~$0.10）
+      // 注意：每次奖励播放多个 zone，这里是单个 zone 的 eCPM
+      const ecpm = (country && miningConfig.web_estimated_ecpm_by_country[country])
+        || miningConfig.web_default_ecpm_usd;
+      // Web 端播放多个 zone，总收入 = 单 zone eCPM × zone 数量 / 1000
+      const zoneCount = 2; // 与 exoclick.ts zoneIds 数量一致
+      revenueUsd = (ecpm * zoneCount) / 1000;
+    }
     revenueSource = 'estimated';
   }
 
@@ -297,7 +309,7 @@ export async function claimAdReward(adWatched: boolean = true, addToPermanent: b
     const maxViews = config.max_daily_ad_views;
 
     // 动态计算奖励（基于广告收益）
-    const { voicicaAmount, randomMultiplier, revenueMicros, revenueSource } = await calculateVoicicaReward(adRevenueMicros, adRevenueCurrency);
+    const { voicicaAmount, randomMultiplier, revenueMicros, revenueSource } = await calculateVoicicaReward(isNative, adRevenueMicros, adRevenueCurrency);
 
     // 先尝试创建记录（如果不存在）
     await db

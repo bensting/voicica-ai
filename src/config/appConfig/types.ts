@@ -83,10 +83,14 @@ export interface MiningEconomyConfig {
   random_multiplier: [number, number];
   /** AdMob 报告币种到 USD 的汇率（如 THB: 0.029 表示 1 THB = 0.029 USD） */
   currency_to_usd: Record<string, number>;
-  /** 按国家估算 eCPM（USD），旧 APK 无 OnPaidEvent 时根据 IP 所在国家回退 */
+  /** 按国家估算 eCPM（USD），原生端 AdMob 激励视频 */
   estimated_ecpm_by_country: Record<string, number>;
-  /** 未知国家的默认 eCPM（USD） */
+  /** 未知国家的默认 eCPM（USD），原生端 */
   default_ecpm_usd: number;
+  /** 按国家估算 eCPM（USD），Web 端 ExoClick VAST In-Stream */
+  web_estimated_ecpm_by_country: Record<string, number>;
+  /** 未知国家的默认 eCPM（USD），Web 端 */
+  web_default_ecpm_usd: number;
   /** 是否显示资产钱包卡片（Total Assets） */
   show_wallet_card: boolean;
 }

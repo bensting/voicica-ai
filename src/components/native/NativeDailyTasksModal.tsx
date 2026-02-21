@@ -355,7 +355,7 @@ export default function NativeDailyTasksModal({ isOpen, onClose, onCreditsUpdate
           </div>
           {status.adRewardsCredits > 0 && (
             <p className="text-[10px] text-gray-500 text-right px-1 mb-3">
-              ≈ ${(status.adRewardsCredits * getMiningEconomyConfig().token_value_usd).toFixed(2)} USD
+              ≈ ${(status.adRewardsCredits * getMiningEconomyConfig().token_value_usd).toFixed(4)} USD
             </p>
           )}
 

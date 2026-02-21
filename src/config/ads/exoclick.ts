@@ -20,7 +20,7 @@ export interface ExoClickConfig {
  */
 const devConfig: ExoClickConfig = {
   zoneId: '2366423', // ExoClick 测试 zone
-  enabled: false,
+  enabled: true,
   vastBaseUrl: 'https://s.magsrv.com/v1/vast.php',
 };
 

@@ -36,7 +36,7 @@ export default function ConfettiBurst({ count = 30, cx = '50%', cy = '45%' }: Co
     }), [count]);
 
   return (
-    <div className="fixed inset-0 pointer-events-none overflow-hidden">
+    <div className="absolute inset-0 pointer-events-none overflow-visible">
       {particles.map((p) => (
         <div
           key={p.id}

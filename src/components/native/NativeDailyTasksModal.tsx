@@ -529,26 +529,26 @@ export default function NativeDailyTasksModal({ isOpen, onClose, onCreditsUpdate
 
       {/* 庆祝效果 */}
       {showCelebration && lastClaimedCredits !== null && (
-        <>
-          {/* 弹窗 */}
-          <div className="fixed inset-0 z-[10002] flex items-center justify-center pointer-events-none">
-            <div className="bg-gray-900/95 backdrop-blur-sm rounded-2xl p-8 text-center border border-purple-500/30 pointer-events-auto animate-bounce-in">
+        <div className="fixed inset-0 z-[10002] flex items-center justify-center pointer-events-none">
+          <div className="relative bg-gray-900/95 backdrop-blur-sm rounded-2xl p-8 text-center border border-purple-500/30 pointer-events-auto animate-bounce-in overflow-visible">
+            {/* 撒花从卡片中心喷出 */}
+            <div className="absolute inset-0 z-10 pointer-events-none">
+              <ConfettiBurst cx="50%" cy="30%" />
+            </div>
+            {/* 卡片内容 */}
+            <div className="relative z-0">
               <div className="text-5xl mb-4">🎉</div>
               <p className="text-white text-lg font-bold mb-2">+{lastClaimedCredits} $VOICICA</p>
               <p className="text-gray-400 text-sm">{t('dailyTasks.creditsClaimed') || '$VOICICA mined successfully!'}</p>
               <button
                 onClick={handleCelebrationComplete}
-                className="mt-4 px-6 py-2 bg-purple-600 text-white rounded-lg text-sm font-medium"
+                className="mt-4 px-6 py-2 bg-purple-600 text-white rounded-lg text-sm font-medium relative z-20"
               >
                 {t('common.ok') || 'OK'}
               </button>
             </div>
           </div>
-          {/* 撒花效果 — 独立 fixed 层，z-index 高于弹窗 */}
-          <div className="fixed inset-0 z-[10003] pointer-events-none">
-            <ConfettiBurst />
-          </div>
-        </>
+        </div>
       )}
     </>
   );

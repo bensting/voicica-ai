@@ -200,7 +200,7 @@ export async function getDailyTasksStatus(isNative: boolean = false): Promise<Da
  * @param addToPermanent 是否添加到永久积分（默认添加到当月积分）
  * @param isNative 是否为原生应用（用于获取对应的配置）
  */
-export async function checkin(addToPermanent: boolean = false, isNative: boolean = false, adRevenueMicros?: number, adRevenueCurrency?: string): Promise<TaskResult> {
+export async function checkin(addToPermanent: boolean = false, isNative: boolean = false): Promise<TaskResult> {
   try {
     const { user_id, is_anonymous } = await getUserOrAnonymous();
     if (!user_id) {
@@ -277,7 +277,7 @@ export async function checkin(addToPermanent: boolean = false, isNative: boolean
  * @param addToPermanent 是否添加到永久积分（默认添加到当月积分）
  * @param isNative 是否为原生应用（用于获取对应的配置）
  */
-export async function claimAdReward(adWatched: boolean = true, addToPermanent: boolean = false, _bonusMode: boolean = false, isNative: boolean = false, adRevenueMicros?: number, adRevenueCurrency?: string): Promise<TaskResult> {
+export async function claimAdReward(adWatched: boolean = true, addToPermanent: boolean = false, isNative: boolean = false, adRevenueMicros?: number, adRevenueCurrency?: string): Promise<TaskResult> {
   try {
     if (!adWatched) {
       return { success: false, message: 'Please watch the ad first' };

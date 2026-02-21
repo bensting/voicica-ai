@@ -167,7 +167,7 @@ export default function DailyTasksModal({
           showError('checkin', result.message || '签到失败');
         }
       } else {
-        const result = await claimAdReward(true, false, false);
+        const result = await claimAdReward(true, false);
         if (result.success && result.credits) {
           await refresh();
           showSuccess(result.credits);

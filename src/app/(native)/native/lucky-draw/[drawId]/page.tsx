@@ -7,7 +7,7 @@ import LoginModal from '@/components/native/LoginModal';
 import ClaimPrizeSheet, { type ClaimStatus, type ShippingInfo, type WalletInfo } from '@/components/native/ClaimPrizeSheet';
 import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 import { useSearchParams } from 'next/navigation';
-import { getLuckyDrawStatus, createLuckyDrawCheckout, cancelLuckyDrawCheckout, submitPrizeClaim, type LuckyDrawStatusResult, type ClaimInfoInput } from '@/actions/lucky-draw';
+import { getLuckyDrawStatus, createLuckyDrawCheckout, cancelLuckyDrawCheckout, submitPrizeClaim, type LuckyDrawStatusResult } from '@/actions/lucky-draw';
 
 import { CloseIcon } from '@/components/native/lucky-draw/icons';
 import SellingState from '@/components/native/lucky-draw/SellingState';

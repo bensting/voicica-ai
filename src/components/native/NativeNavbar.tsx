@@ -15,15 +15,6 @@ import CrownIcon from './common/CrownIcon';
 import LoadingDots from './common/LoadingDots';
 import { useLanguage } from '@/contexts/LanguageContext';
 
-// 宝箱图标
-const TreasureIcon = () => (
-  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-    <path d="M3 10h18v10a2 2 0 01-2 2H5a2 2 0 01-2-2V10z" fill="currentColor" fillOpacity="0.2" />
-    <path d="M3 10h18M3 10V8a2 2 0 012-2h14a2 2 0 012 2v2M12 10v5M9 15h6" />
-    <path d="M7 6V4a2 2 0 012-2h6a2 2 0 012 2v2" />
-  </svg>
-);
-
 /**
  * Native App 顶部导航栏
  * 包含 Logo 和 Login & Rewards 按钮

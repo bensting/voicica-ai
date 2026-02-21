@@ -231,7 +231,7 @@ export function useDailyTasks(): UseDailyTasksReturn {
       }
 
       // 调用签到接口（积分加到永久积分，并传递广告收益数据）
-      const result = await checkin(true, isNative, lastAdRevenue?.valueMicros, lastAdRevenue?.currencyCode);
+      const result = await checkin(true, isNative);
       if (result.success && !cancelledRef.current) {
         // 乐观更新：立即标记签到完成，防止重复点击
         setStatus(prev => prev ? {
@@ -297,7 +297,7 @@ export function useDailyTasks(): UseDailyTasksReturn {
 
       // 广告观看成功，领取奖励（传递广告收益数据）
       console.log('[DailyTasks] 广告观看成功，领取奖励...', lastAdRevenue ? `revenue: ${lastAdRevenue.valueMicros}` : 'no revenue data');
-      const result = await claimAdReward(true, true, false, isNative,
+      const result = await claimAdReward(true, true, isNative,
         lastAdRevenue?.valueMicros, lastAdRevenue?.currencyCode);
       if (result.success && !cancelledRef.current) {
         // 乐观更新：立即递增观看次数，防止 UI 闪烁

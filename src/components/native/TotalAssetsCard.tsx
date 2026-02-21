@@ -31,10 +31,11 @@ export default function TotalAssetsCard() {
   const { credits, loading, refreshCredits } = useCredits();
   const miningConfig = getMiningEconomyConfig();
 
-  if (!miningConfig.show_wallet_card) return null;
   const [showDailyTasks, setShowDailyTasks] = useState(false);
   const [showConvertModal, setShowConvertModal] = useState(false);
   const [showWithdrawSheet, setShowWithdrawSheet] = useState(false);
+
+  if (!miningConfig.show_wallet_card) return null;
 
   const usdtBalance = 0;
   const totalValue = credits * EXCHANGE_RATE + usdtBalance;

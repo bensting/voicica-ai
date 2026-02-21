@@ -26,6 +26,13 @@
         "usdtDesc": "Withdraw to exchange (min. 2 USDT)"
       }
     },
+    "withdraw": {
+      "balance": "Balance",
+      "toWallet": "Withdraw to Wallet",
+      "walletDesc": "Withdraw to Phantom or other Solana wallets",
+      "cashOut": "Cash Out",
+      "cashOutDesc": "Withdraw to exchange address (min. 2 USDT)"
+    },
     "bottomNav": {
       "explore": "Explore",
       "me": "Me"

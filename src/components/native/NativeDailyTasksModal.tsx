@@ -52,12 +52,6 @@ const LoaderIcon = ({ className = "w-5 h-5" }: { className?: string }) => (
   </svg>
 );
 
-const CrownIcon = () => (
-  <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
-    <path d="M2 19h20v2H2v-2zm2-4l-2-9 6 4 4-7 4 7 6-4-2 9H4z" />
-  </svg>
-);
-
 const RefreshIcon = () => (
   <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
     <path d="M23 4v6h-6M1 20v-6h6" />
@@ -247,12 +241,6 @@ export default function NativeDailyTasksModal({ isOpen, onClose, onCreditsUpdate
     setShowCelebration(false);
     setLastClaimedCredits(null);
   }, []);
-
-  // 前往订阅页
-  const handleUpgrade = () => {
-    handleClose();
-    router.push('/native/subscribe');
-  };
 
   if (!isOpen) return null;
 
@@ -482,32 +470,6 @@ export default function NativeDailyTasksModal({ isOpen, onClose, onCreditsUpdate
             ) : renderLoggedInContent()}
           </div>
 
-          {!isConfigLoading && !isDisabled && (
-            <div className="px-6 pb-5 space-y-4">
-              {/* Mining Booster */}
-              <button
-                onClick={handleUpgrade}
-                className="w-full p-4 rounded-xl bg-gradient-to-r from-amber-500/20 via-orange-500/20 to-pink-500/20 border border-amber-500/30 hover:from-amber-500/30 hover:via-orange-500/30 hover:to-pink-500/30 transition-all active:scale-[0.98]"
-              >
-                <div className="flex items-center justify-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center">
-                    <CrownIcon />
-                  </div>
-                  <div className="text-left">
-                    <p className="text-sm font-semibold text-white">
-                      {t('dailyTasks.noAdsTitle') || "Skip the ads, get unlimited!"}
-                    </p>
-                    <p className="text-xs text-amber-400/80">
-                      {t('dailyTasks.noAdsSubtitle') || "Become a VIP member today"}
-                    </p>
-                  </div>
-                  <svg className="w-5 h-5 text-amber-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M9 18l6-6-6-6" />
-                  </svg>
-                </div>
-              </button>
-            </div>
-          )}
         </div>
       </div>
 

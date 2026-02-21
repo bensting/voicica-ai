@@ -6,12 +6,14 @@
  * 使用 Fluid Player 加载 ExoClick VAST In-Stream 广告。
  * 广告作为 preRoll 播放，主视频使用占位视频。
  *
- * 流程：
- * 1. 动态加载 Fluid Player SDK
- * 2. 创建 video 元素 + 全屏遮罩层
- * 3. 配置 VAST preRoll 广告
- * 4. 通过回调判断结果（看完/跳过/无广告）
- * 5. 广告结束后销毁播放器、移除 DOM 元素
+ * 广告播放流程（通过日志验证）：
+ * 1. Fluid Player 加载自己的 blank.mp4（0.04s）并立即结束
+ * 2. VAST 广告视频（如 aucdn.net）加载并播放
+ * 3. 广告播放结束 → video 'ended' 事件触发
+ * 4. Fluid Player 尝试切回主内容，但 src 变成 null → error
+ *
+ * 注意：Fluid Player v3 的 vastVideoEndedCallback 实测不触发，
+ * 所以通过 video 原生 ended 事件 + currentTime 判断广告是否看完。
  */
 
 import { useRef, useCallback } from 'react';
@@ -21,6 +23,12 @@ import { getExoClickVastUrl } from '@/config/ads/exoclick';
 // Fluid Player SDK CDN
 const FLUID_PLAYER_JS = 'https://cdn.fluidplayer.com/v3/current/fluidplayer.min.js';
 const FLUID_PLAYER_CSS = 'https://cdn.fluidplayer.com/v3/current/fluidplayer.min.css';
+
+// 占位视频：Fluid Player 官方 demo
+const PLACEHOLDER_VIDEO = 'https://cdn.fluidplayer.com/static/demo.mp4';
+
+// 判定"广告看完"的最小播放时长（秒）
+const MIN_AD_WATCH_SECONDS = 5;
 
 // Fluid Player 类型声明
 declare global {
@@ -33,7 +41,6 @@ interface FluidPlayerOptions {
   layoutControls?: {
     fillToContainer?: boolean;
     primaryColor?: string;
-    posterImage?: string;
     allowTheatre?: boolean;
     playbackRateEnabled?: boolean;
     autoPlay?: boolean;
@@ -64,7 +71,6 @@ function loadFluidPlayerSDK(): Promise<void> {
       return;
     }
 
-    // 已加载则直接返回
     if (window.fluidPlayer) {
       resolve();
       return;
@@ -102,38 +108,14 @@ function loadFluidPlayerSDK(): Promise<void> {
 }
 
 /**
- * 创建一个极短的空白视频 Blob URL（约 1 秒黑屏）
- * 用作 Fluid Player 的主视频，广告作为 preRoll 播放在它之前
+ * 判断是否为广告视频 URL（非占位、非 blank）
  */
-function createBlankVideoUrl(): string {
-  // 最小的有效 MP4（1帧黑屏，约 几百字节）
-  const base64 =
-    'AAAAIGZ0eXBpc29tAAACAGlzb21pc28yYXZjMW1wNDEAAAAIZnJlZQAAAAhtZGF0AAAA' +
-    'MW1vb3YAAABsbXZoZAAAAAAAAAAAAAAAAAAAAAEAAAABAQAAAQAAAAAAAAAAAAAAAAEAAAAA' +
-    'AAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIA' +
-    'AAACdHJhawAAAFx0a2hkAAAAAwAAAAAAAAAAAAAAAQAAAAAAAAEAAAAAAAAAAAAAAAAAAAAA' +
-    'AAEAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAJGVkdHMAAAAcZWxzdAAAAAAAAAABAAAA' +
-    'AQAAAAABAAAAAAR0bWRpYQAAACBtZGhkAAAAAAAAAAAAAAAAAAAoAAAAKFXEAAAAAAAtaGRs' +
-    'cgAAAAAAAAAAdmlkZQAAAAAAAAAAAAAAAFZpZGVvSGFuZGxlcgAAALRtaW5mAAAAFHZtaGQA' +
-    'AAABAAAAAAAAAAAAAAAkZGluZgAAABxkcmVmAAAAAAAAAAEAAAAMdXJsIAAAAAEAAAB0c3Ri' +
-    'bAAAAFBzdHNkAAAAAAAAAAEAAABAYXZjMQAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAA0AFC' +
-    'AEgAAABIAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAY//8AAAAc' +
-    'c3R0cwAAAAAAAAABAAAAASgAAAAAAAhzdHN6AAAAAAAAABcAAAABAAAAFHN0Y28AAAAAAAAA' +
-    'AQAAADAAAABidWR0YQAAAFptZXRhAAAAAAAAACFoZGxyAAAAAAAAAABtZGlyYXBwbAAAAAAA' +
-    'AAAAAAAAAAAAAAAAAGlsc3QAAAAlaXRvbwAAAB1kYXRhAAAAAQAAAABMYXZmNjAuMTYuMTAw';
-
-  try {
-    const binary = atob(base64);
-    const bytes = new Uint8Array(binary.length);
-    for (let i = 0; i < binary.length; i++) {
-      bytes[i] = binary.charCodeAt(i);
-    }
-    const blob = new Blob([bytes], { type: 'video/mp4' });
-    return URL.createObjectURL(blob);
-  } catch {
-    // Fallback: 使用 Fluid Player demo 视频
-    return 'https://cdn.fluidplayer.com/static/demo.mp4';
-  }
+function isAdVideoSrc(src: string): boolean {
+  if (!src) return false;
+  if (src.includes('demo.mp4')) return false;
+  if (src.includes('blank.mp4')) return false;
+  if (src.endsWith('/null') || src === 'null') return false;
+  return true;
 }
 
 /**
@@ -143,9 +125,6 @@ export function useExoClickAd() {
   const isShowingRef = useRef(false);
   const sdkLoadedRef = useRef(false);
 
-  /**
-   * 预加载 Fluid Player SDK
-   */
   const preloadSDK = useCallback(async () => {
     if (sdkLoadedRef.current) return;
     try {
@@ -156,9 +135,6 @@ export function useExoClickAd() {
     }
   }, []);
 
-  /**
-   * 显示 VAST 激励广告
-   */
   const showAd = useCallback(async (): Promise<RewardedAdResult> => {
     if (isShowingRef.current) {
       return { success: false, reason: 'error', message: 'Ad is already showing' };
@@ -167,7 +143,6 @@ export function useExoClickAd() {
     isShowingRef.current = true;
 
     try {
-      // 确保 SDK 已加载
       await loadFluidPlayerSDK();
       sdkLoadedRef.current = true;
 
@@ -176,89 +151,62 @@ export function useExoClickAd() {
         return { success: false, reason: 'error', message: 'Fluid Player not available' };
       }
 
-      // 创建占位视频 URL
-      const placeholderUrl = createBlankVideoUrl();
-
       return await new Promise<RewardedAdResult>((resolve) => {
         let settled = false;
         let playerInstance: FluidPlayerInstance | null = null;
 
+        // 广告播放追踪
+        let adDetected = false;    // 是否检测到广告视频 URL
+        let adMaxTime = 0;         // 广告视频播放的最大 currentTime
+
         const cleanup = () => {
           isShowingRef.current = false;
-          // 恢复页面滚动
           document.body.style.overflow = '';
-          // 销毁播放器
           if (playerInstance) {
-            try {
-              playerInstance.destroy();
-            } catch {
-              // ignore
-            }
+            try { playerInstance.destroy(); } catch { /* ignore */ }
             playerInstance = null;
           }
-          // 强制移除 overlay 及其所有子元素
           const overlayEl = document.getElementById('exoclick-overlay');
-          if (overlayEl) {
-            overlayEl.remove();
-          }
-          // 释放 blob URL
-          if (placeholderUrl.startsWith('blob:')) {
-            URL.revokeObjectURL(placeholderUrl);
-          }
+          if (overlayEl) overlayEl.remove();
         };
 
         const settleResult = (result: RewardedAdResult) => {
           if (settled) return;
           settled = true;
-          console.log('[ExoClick] Settling with result:', result.reason);
+          console.log('[ExoClick] Settle:', result.reason, `(adDetected=${adDetected}, adMaxTime=${adMaxTime.toFixed(1)}s)`);
           cleanup();
           resolve(result);
         };
 
-        // === 创建 DOM ===
+        // === DOM 创建 ===
 
-        // 全屏遮罩层
         const overlay = document.createElement('div');
         overlay.id = 'exoclick-overlay';
         overlay.style.cssText = [
-          'position:fixed',
-          'top:0',
-          'left:0',
-          'width:100vw',
-          'height:100vh',
-          'background:rgba(0,0,0,0.95)',
-          'z-index:999999',
-          'display:flex',
-          'align-items:center',
-          'justify-content:center',
-          'flex-direction:column',
-          'padding:16px',
-          'box-sizing:border-box',
+          'position:fixed', 'top:0', 'left:0', 'width:100vw', 'height:100vh',
+          'background:rgba(0,0,0,0.95)', 'z-index:999999',
+          'display:flex', 'align-items:center', 'justify-content:center',
+          'flex-direction:column', 'padding:16px', 'box-sizing:border-box',
         ].join(';');
 
-        // 关闭按钮（右上角）
+        // 关闭按钮
         const closeBtn = document.createElement('button');
-        closeBtn.innerText = '\u2715'; // ✕
+        closeBtn.innerText = '\u2715';
         closeBtn.style.cssText = [
-          'position:absolute',
-          'top:12px',
-          'right:16px',
-          'width:36px',
-          'height:36px',
-          'border-radius:50%',
-          'border:none',
-          'background:rgba(255,255,255,0.2)',
-          'color:#fff',
-          'font-size:18px',
-          'cursor:pointer',
-          'z-index:1000000',
-          'display:flex',
-          'align-items:center',
-          'justify-content:center',
+          'position:absolute', 'top:12px', 'right:16px',
+          'width:36px', 'height:36px', 'border-radius:50%', 'border:none',
+          'background:rgba(255,255,255,0.2)', 'color:#fff', 'font-size:18px',
+          'cursor:pointer', 'z-index:1000000',
+          'display:flex', 'align-items:center', 'justify-content:center',
         ].join(';');
         closeBtn.onclick = () => {
-          console.log('[ExoClick] User closed overlay manually');
-          settleResult({ success: false, reason: 'skipped' });
+          console.log('[ExoClick] User closed overlay, adMaxTime:', adMaxTime.toFixed(1));
+          if (adDetected && adMaxTime >= MIN_AD_WATCH_SECONDS) {
+            // 广告已经播放了足够长，视为看完
+            settleResult({ success: true, reason: 'rewarded' });
+          } else {
+            settleResult({ success: false, reason: 'skipped' });
+          }
         };
 
         // 视频容器
@@ -268,12 +216,50 @@ export function useExoClickAd() {
         const containerHeight = Math.round(containerWidth * 9 / 16);
         container.style.cssText = `width:${containerWidth}px;height:${containerHeight}px;position:relative;background:#000;border-radius:8px;overflow:hidden;`;
 
-        // video 元素（不设 autoplay，让 Fluid Player 控制播放）
+        // video 元素
         const video = document.createElement('video');
         video.id = 'exoclick-video-' + Date.now();
         video.style.cssText = 'width:100%;height:100%;';
         video.setAttribute('playsinline', '');
-        video.src = placeholderUrl;
+        video.src = PLACEHOLDER_VIDEO;
+
+        // === 视频事件监听（核心检测逻辑）===
+
+        // 检测广告视频 URL
+        video.addEventListener('loadstart', () => {
+          const src = video.currentSrc || '';
+          if (isAdVideoSrc(src)) {
+            adDetected = true;
+            console.log('[ExoClick] Ad video detected:', src.substring(0, 60));
+          }
+        });
+
+        // 追踪广告播放进度
+        video.addEventListener('timeupdate', () => {
+          if (adDetected && isAdVideoSrc(video.currentSrc || '')) {
+            adMaxTime = Math.max(adMaxTime, video.currentTime);
+          }
+        });
+
+        // 广告视频播放结束 → 自动判定
+        video.addEventListener('ended', () => {
+          const src = video.currentSrc || '';
+          console.log('[ExoClick] Video ended: currentTime=', video.currentTime.toFixed(1), 'src=', src.substring(0, 60));
+
+          if (adDetected && isAdVideoSrc(src) && video.currentTime >= MIN_AD_WATCH_SECONDS) {
+            console.log('[ExoClick] Ad video completed naturally');
+            settleResult({ success: true, reason: 'rewarded' });
+          }
+        });
+
+        // 广告结束后 Fluid Player 把 src 设为 null → error
+        // 如果广告已经播放够了，视为完成
+        video.addEventListener('error', () => {
+          console.log('[ExoClick] Video error, adDetected=', adDetected, 'adMaxTime=', adMaxTime.toFixed(1));
+          if (adDetected && adMaxTime >= MIN_AD_WATCH_SECONDS) {
+            settleResult({ success: true, reason: 'rewarded' });
+          }
+        });
 
         container.appendChild(video);
         overlay.appendChild(closeBtn);
@@ -283,8 +269,12 @@ export function useExoClickAd() {
 
         // 超时保护（90 秒）
         const timeout = setTimeout(() => {
-          console.warn('[ExoClick] Ad timed out');
-          settleResult({ success: false, reason: 'error', message: 'Ad timed out' });
+          console.warn('[ExoClick] Timeout, adMaxTime:', adMaxTime.toFixed(1));
+          if (adDetected && adMaxTime >= MIN_AD_WATCH_SECONDS) {
+            settleResult({ success: true, reason: 'rewarded' });
+          } else {
+            settleResult({ success: false, reason: 'error', message: 'Ad timed out' });
+          }
         }, 90000);
 
         const clearTimeoutAndSettle = (result: RewardedAdResult) => {
@@ -300,18 +290,13 @@ export function useExoClickAd() {
               allowTheatre: false,
               playbackRateEnabled: false,
               autoPlay: true,
-              controlBar: {
-                autoHide: true,
-                autoHideTimeout: 1,
-              },
+              controlBar: { autoHide: true, autoHideTimeout: 1 },
             },
             vastOptions: {
               adList: [
-                {
-                  roll: 'preRoll',
-                  vastTag: getExoClickVastUrl(),
-                },
+                { roll: 'preRoll', vastTag: getExoClickVastUrl() },
               ],
+              // 保留 VAST 回调（虽然 v3 实测不触发，但作为保险）
               vastVideoEndedCallback: () => {
                 console.log('[ExoClick] VAST callback: ad completed');
                 clearTimeoutAndSettle({ success: true, reason: 'rewarded' });
@@ -321,12 +306,13 @@ export function useExoClickAd() {
                 clearTimeoutAndSettle({ success: false, reason: 'skipped' });
               },
               noVastVideoCallback: () => {
-                console.log('[ExoClick] VAST callback: no ad available');
-                clearTimeoutAndSettle({ success: false, reason: 'unavailable', message: 'No ads available at this time' });
+                console.log('[ExoClick] VAST callback: no ad');
+                clearTimeoutAndSettle({ success: false, reason: 'unavailable', message: 'No ads available' });
               },
             },
           });
 
+          console.log('[ExoClick] Fluid Player initialized');
         } catch (err) {
           clearTimeout(timeout);
           cleanup();
@@ -342,9 +328,5 @@ export function useExoClickAd() {
     }
   }, []);
 
-  return {
-    showAd,
-    preloadSDK,
-    isShowing: isShowingRef.current,
-  };
+  return { showAd, preloadSDK, isShowing: isShowingRef.current };
 }

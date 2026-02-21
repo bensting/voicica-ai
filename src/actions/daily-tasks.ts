@@ -52,7 +52,7 @@ async function getCountryFromHeaders(): Promise<string | null> {
  * 新 APK 传真实 adRevenueMicros → 用真实收益（精准）
  * 旧 APK 不传 → 根据 IP 所在国家查 eCPM 表估算
  */
-async function calculateVoicicaReward(adRevenueMicros?: number): Promise<{
+async function calculateVoicicaReward(adRevenueMicros?: number, adRevenueCurrency?: string): Promise<{
   voicicaAmount: number;
   randomMultiplier: number;
   revenueMicros: number;
@@ -65,12 +65,18 @@ async function calculateVoicicaReward(adRevenueMicros?: number): Promise<{
   let revenueUsd: number;
   let revenueSource: 'precise' | 'estimated';
 
-  if (adRevenueMicros && adRevenueMicros > 0) {
-    // 精准：来自 OnPaidEvent
-    revenueUsd = adRevenueMicros / 1_000_000;
+  // 有真实数据且币种有配置汇率 → 精准；否则 → 估算
+  const exchangeRate = adRevenueCurrency
+    ? miningConfig.currency_to_usd[adRevenueCurrency]
+    : undefined;
+  const hasValidRevenue = adRevenueMicros && adRevenueMicros > 0 && exchangeRate;
+
+  if (hasValidRevenue) {
+    // 精准：来自 OnPaidEvent，按汇率转 USD
+    revenueUsd = (adRevenueMicros / 1_000_000) * exchangeRate;
     revenueSource = 'precise';
   } else {
-    // 估算：根据国家查 eCPM 表
+    // 估算：无数据 / 非 USD 币种 → 根据国家查 eCPM 表
     const country = await getCountryFromHeaders();
     const ecpm = (country && miningConfig.estimated_ecpm_by_country[country])
       || miningConfig.default_ecpm_usd;

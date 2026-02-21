@@ -79,6 +79,8 @@ export interface MiningEconomyConfig {
   revenue_share_ratio: number;
   /** 随机浮动范围 [min, max] */
   random_multiplier: [number, number];
+  /** AdMob 报告币种到 USD 的汇率（如 THB: 0.029 表示 1 THB = 0.029 USD） */
+  currency_to_usd: Record<string, number>;
   /** 按国家估算 eCPM（USD），旧 APK 无 OnPaidEvent 时根据 IP 所在国家回退 */
   estimated_ecpm_by_country: Record<string, number>;
   /** 未知国家的默认 eCPM（USD） */

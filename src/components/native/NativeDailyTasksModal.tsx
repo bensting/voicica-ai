@@ -15,6 +15,7 @@ import { useRouter } from 'next/navigation';
 import { Capacitor } from '@capacitor/core';
 import Image from 'next/image';
 import EnergyOrb from '@/components/common/EnergyOrb';
+import { getMiningEconomyConfig } from '@/config/appConfig';
 import LoginModal from './LoginModal';
 
 // 广告加载超时时间（毫秒）
@@ -343,8 +344,8 @@ export default function NativeDailyTasksModal({ isOpen, onClose, onCreditsUpdate
             <EnergyOrb />
           </div>
 
-          {/* 进度: 已观看 / 每日上限 */}
-          <div className="flex items-center justify-between mb-3 px-1">
+          {/* 进度 + 收益 */}
+          <div className="flex items-center justify-between mb-1 px-1">
             <span className="text-xs text-gray-400">
               {status.adRewardsClaimed} / {status.maxDailyAdViews} {t('dailyTasks.viewsToday') || 'views today'}
             </span>
@@ -352,6 +353,11 @@ export default function NativeDailyTasksModal({ isOpen, onClose, onCreditsUpdate
               +{formatCredits(status.adRewardsCredits)} $VOICICA
             </span>
           </div>
+          {status.adRewardsCredits > 0 && (
+            <p className="text-[10px] text-gray-500 text-right px-1 mb-3">
+              ≈ ${(status.adRewardsCredits * getMiningEconomyConfig().token_value_usd).toFixed(2)} USD
+            </p>
+          )}
 
           {adError && (
             <div className="mb-3 p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-sm text-red-400 text-center">

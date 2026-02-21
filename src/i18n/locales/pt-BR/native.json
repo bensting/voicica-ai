@@ -2,6 +2,7 @@
   "native": {
     "navbar": {
       "loginRewards": "Entrar e Recompensas",
+      "login": "Entrar",
       "free": "Grátis"
     },
     "bottomNav": {

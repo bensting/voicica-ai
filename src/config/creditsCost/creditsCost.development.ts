@@ -5,17 +5,18 @@
  */
 
 import { ProductType } from '../productType';
-import type { CreditsCostConfig, VoiceCostConfig, VideoCostConfig, DialogueCostConfig } from './types';
+import type { CreditsCostConfig, VoiceCostConfig, DialogueCostConfig } from './types';
 
 export const creditsCostConfig: CreditsCostConfig = {
   [ProductType.TEXT_TO_SPEECH]: 0, // TTS 按字符数计费，由 calculateVoiceCost 计算
-  [ProductType.TEXT_TO_VIDEO]: 0, // 视频按分辨率和时长计费，由 calculateVideoCost 计算
+  [ProductType.TEXT_TO_VIDEO]: 0, // 视频按 creditsMatrix 计费（见 videoModels.ts）
   [ProductType.VOICE_CLONING]: 0, // 语音克隆待定
   [ProductType.YOUTUBE_DOWNLOADER]: 1, // YouTube 解析消耗 1 积分
   [ProductType.VIDEO_DOWNLOADER]: 1, // 通用视频下载消耗 1 积分
   [ProductType.STORY_IDEAS]: 10, // 故事创意生成消耗 1 积分（开发环境）
   [ProductType.STORY_GENERATE]: 20, // 故事内容生成消耗 1 积分（开发环境）
   [ProductType.STORY_ILLUSTRATION]: 1, // 故事插图生成消耗 1 积分/张（开发环境）
+  [ProductType.IMAGE_TOOL]: 1, // 图片工具（去背景/高清放大）消耗 1 积分
 };
 
 /**
@@ -31,25 +32,6 @@ export const voiceCostConfig: VoiceCostConfig = {
   celebrity: 2,
   special: 2,
   clone: 1,
-};
-
-/**
- * 视频成本配置 - 开发环境
- *
- * 开发环境使用较低积分，方便测试
- */
-export const videoCostConfig: VideoCostConfig = {
-  models: ['veo-3.1'],
-  costs: [
-    { resolution: '768p', duration: 5, credits: 1 },
-    { resolution: '768p', duration: 8, credits: 1 },
-    { resolution: '768p', duration: 10, credits: 1 },
-    { resolution: '768p', duration: 15, credits: 1 },
-    { resolution: '1080p', duration: 5, credits: 1 },
-    { resolution: '1080p', duration: 8, credits: 1 },
-    { resolution: '1080p', duration: 10, credits: 1 },
-    { resolution: '1080p', duration: 15, credits: 1 },
-  ],
 };
 
 /**

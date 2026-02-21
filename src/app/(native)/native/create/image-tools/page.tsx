@@ -14,10 +14,12 @@ import GeneratingModal, { type GeneratingStatus } from '@/components/native/comm
 import ImageToolDetailModal from '@/components/native/me/ImageToolDetailModal';
 import { createImageToolTask, getImageToolTaskStatus, type ImageToolType } from '@/actions/image-tools';
 import { checkCreditsBeforeGenerate } from '@/lib/credits-check';
+import { creditsCostConfig } from '@/config/creditsCost';
+import { ProductType } from '@/config/productType';
 import { adConfig } from '@/config/native/adConfig';
 import { sendLocalNotification } from '@/lib/notifications';
 
-const CREDITS_PER_TASK = 1;
+const CREDITS_PER_TASK = creditsCostConfig[ProductType.IMAGE_TOOL] || 1;
 
 type TabType = 'bg-remove' | 'upscale';
 

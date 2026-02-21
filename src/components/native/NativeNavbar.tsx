@@ -102,9 +102,12 @@ export default function NativeNavbar() {
               /* 未登录：显示登录按钮 */
               <button
                 onClick={() => setIsLoginModalOpen(true)}
-                className="px-3 py-1.5 text-xs font-medium text-white rounded-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 transition-all"
+                className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-white rounded-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 transition-all active:scale-95"
               >
-                {t('native.navbar.loginRewards')}
+                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3-3l3-3m0 0l-3-3m3 3H9" />
+                </svg>
+                {t('native.navbar.login')}
               </button>
             )}
 

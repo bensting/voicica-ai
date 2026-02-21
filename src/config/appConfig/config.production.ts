@@ -25,12 +25,12 @@ export const appConfig: AppConfig = {
    */
   credits: {
     // Web 端
-    anonymous_user: 50,
-    registered_user: 100,
+    anonymous_user: 1000,
+    registered_user: 2000,
     // Native App 端
     native: {
-      anonymous_user: 0,    // Native 匿名用户不赠送积分
-      registered_user: 100, // Native 登录用户赠送 100 积分
+      anonymous_user: 1000,    // Native 匿名用户不赠送积分
+      registered_user: 2000, // Native 登录用户赠送 2000 积分
     },
   },
 
@@ -77,7 +77,7 @@ export const appConfig: AppConfig = {
     random_multiplier: [0.8, 1.2],
     currency_to_usd: {
       USD: 1,
-      THB: 0.029, // 1 THB ≈ 0.029 USD，需定期更新
+      THB: 0.030, // 1 THB ≈ 0.029 USD，需定期更新
     },
     estimated_ecpm_by_country: {
       // T1 高收益国家

@@ -2,6 +2,7 @@
   "native": {
     "navbar": {
       "loginRewards": "登录领积分",
+      "login": "登录",
       "free": "免费"
     },
     "bottomNav": {

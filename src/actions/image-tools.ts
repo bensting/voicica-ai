@@ -10,6 +10,7 @@ import { eq, and } from 'drizzle-orm';
 import { getUserOrAnonymous } from '@/lib/auth-firebase';
 import { checkCredits, deductCredits, refundCreditsSimple } from '@/lib/credits';
 import { ProductType } from '@/config/productType';
+import { creditsCostConfig } from '@/config/creditsCost';
 import { uploadImage } from '@/lib/services/r2-storage';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -17,8 +18,8 @@ import { v4 as uuidv4 } from 'uuid';
 const KIE_API_BASE = 'https://api.kie.ai/api/v1';
 const KIE_API_KEY = process.env.KIE_API_KEY || '';
 
-// 每个工具消耗的积分
-const CREDITS_PER_TASK = 1;
+// 每个工具消耗的积分（从配置读取）
+const CREDITS_PER_TASK = creditsCostConfig[ProductType.IMAGE_TOOL] || 1;
 
 // 工具类型到 KIE 模型的映射
 const TOOL_MODEL_MAP: Record<ImageToolType, string> = {

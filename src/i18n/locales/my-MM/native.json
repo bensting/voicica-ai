@@ -2,6 +2,7 @@
   "native": {
     "navbar": {
       "loginRewards": "ဝင်ရောက်ပြီး ဆုလာဘ်ယူပါ",
+      "login": "ဝင်ရောက်",
       "free": "အခမဲ့"
     },
     "bottomNav": {

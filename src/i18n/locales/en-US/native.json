@@ -2,6 +2,7 @@
   "native": {
     "navbar": {
       "loginRewards": "Login & Rewards",
+      "login": "Login",
       "free": "FREE"
     },
     "totalAssets": {

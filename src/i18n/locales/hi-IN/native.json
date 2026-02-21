@@ -2,6 +2,7 @@
   "native": {
     "navbar": {
       "loginRewards": "लॉगिन और पुरस्कार",
+      "login": "लॉगिन",
       "free": "मुफ़्त"
     },
     "bottomNav": {

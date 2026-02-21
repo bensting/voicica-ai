@@ -7,22 +7,17 @@
 import {
   creditsCostConfig as devConfig,
   voiceCostConfig as devVoiceCost,
-  videoCostConfig as devVideoCost,
   dialogueCostConfig as devDialogueCost,
 } from './creditsCost.development';
 import {
   creditsCostConfig as prodConfig,
   voiceCostConfig as prodVoiceCost,
-  videoCostConfig as prodVideoCost,
   dialogueCostConfig as prodDialogueCost,
 } from './creditsCost.production';
 import type {
   CreditsCostConfig,
   VoiceCostConfig,
-  VideoCostConfig,
   DialogueCostConfig,
-  VideoResolution,
-  VideoDuration,
 } from './types';
 import { ProductType } from '../productType';
 
@@ -30,18 +25,13 @@ import { ProductType } from '../productType';
 const isProduction = process.env.NODE_ENV === 'production';
 export const creditsCostConfig: CreditsCostConfig = isProduction ? prodConfig : devConfig;
 export const voiceCostConfig: VoiceCostConfig = isProduction ? prodVoiceCost : devVoiceCost;
-export const videoCostConfig: VideoCostConfig = isProduction ? prodVideoCost : devVideoCost;
 export const dialogueCostConfig: DialogueCostConfig = isProduction ? prodDialogueCost : devDialogueCost;
 
 // 导出类型
 export type {
   CreditsCostConfig,
   VoiceCostConfig,
-  VideoCostConfig,
   DialogueCostConfig,
-  VideoResolution,
-  VideoDuration,
-  VideoCostItem,
 } from './types';
 
 /** 语音类型 */
@@ -55,10 +45,6 @@ export interface CalculateCostOptions {
   charCount?: number;
   /** TTS: 语音类型 */
   voiceType?: VoiceType;
-  /** Video: 分辨率 */
-  resolution?: VideoResolution;
-  /** Video: 时长（秒） */
-  duration?: VideoDuration;
 }
 
 /**
@@ -90,14 +76,6 @@ export function calculateProductCreditsCost(
       throw new Error('TEXT_TO_SPEECH requires charCount and voiceType in options');
     }
     return calculateVoiceCost(options.charCount, options.voiceType);
-  }
-
-  // 视频特殊处理：根据分辨率和时长计算
-  if (productType === ProductType.TEXT_TO_VIDEO) {
-    if (!options?.resolution || !options?.duration) {
-      throw new Error('TEXT_TO_VIDEO requires resolution and duration in options');
-    }
-    return calculateVideoCost(options.resolution, options.duration);
   }
 
   // 其他产品：使用固定积分消耗
@@ -150,69 +128,6 @@ export function calculateVoiceCost(charCount: number, voiceType: VoiceType): num
   const costPerUnit = voiceCostConfig[voiceType];
   const units = Math.ceil(charCount / unit_chars);
   return units * costPerUnit;
-}
-
-// ==================== 视频成本相关函数 ====================
-
-/**
- * 获取视频成本配置
- */
-export function getVideoCostConfig(): VideoCostConfig {
-  return videoCostConfig;
-}
-
-/**
- * 获取支持的视频模型列表
- */
-export function getSupportedVideoModels(): string[] {
-  return videoCostConfig.models;
-}
-
-/**
- * 获取支持的分辨率列表
- */
-export function getSupportedVideoResolutions(): VideoResolution[] {
-  const resolutions = new Set(videoCostConfig.costs.map((c) => c.resolution));
-  return Array.from(resolutions);
-}
-
-/**
- * 获取指定分辨率支持的时长列表
- */
-export function getSupportedVideoDurations(resolution: VideoResolution): VideoDuration[] {
-  return videoCostConfig.costs.filter((c) => c.resolution === resolution).map((c) => c.duration);
-}
-
-/**
- * 计算视频生成需要消耗的积分
- *
- * @param resolution 分辨率 (768p, 1080p)
- * @param duration 时长（秒）
- * @returns 需要消耗的积分数，找不到配置返回 0
- *
- * @example
- * calculateVideoCost('768p', 10)  // 返回 100 (生产环境)
- * calculateVideoCost('1080p', 15) // 返回 450 (生产环境)
- */
-export function calculateVideoCost(resolution: VideoResolution, duration: VideoDuration): number {
-  const costItem = videoCostConfig.costs.find(
-    (c) => c.resolution === resolution && c.duration === duration
-  );
-  return costItem?.credits ?? 0;
-}
-
-/**
- * 获取所有视频成本配置项（用于 UI 展示）
- */
-export function getAllVideoCostItems() {
-  return videoCostConfig.costs;
-}
-
-/**
- * 检查视频模型是否支持
- */
-export function isVideoModelSupported(model: string): boolean {
-  return videoCostConfig.models.includes(model);
 }
 
 // ==================== 对话成本相关函数 ====================

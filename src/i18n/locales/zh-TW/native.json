@@ -2,6 +2,7 @@
   "native": {
     "navbar": {
       "loginRewards": "登入領積分",
+      "login": "登入",
       "free": "免費"
     },
     "bottomNav": {

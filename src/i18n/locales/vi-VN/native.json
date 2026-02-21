@@ -2,6 +2,7 @@
   "native": {
     "navbar": {
       "loginRewards": "Đăng nhập nhận thưởng",
+      "login": "Đăng nhập",
       "free": "Miễn phí"
     },
     "bottomNav": {

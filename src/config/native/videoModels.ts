@@ -99,8 +99,8 @@ export const videoModelsConfig: VideoModel[] = [
     aspectRatioOptions: seedanceAspectRatios,
     // 基础积分（无音频），有音频时 x2
     creditsMatrix: {
-      '480p': { '4s': 20, '8s': 40, '12s': 60 },
-      '720p': { '4s': 40, '8s': 80, '12s': 120 },
+      '480p': { '4s': 400, '8s': 800, '12s': 1200 },
+      '720p': { '4s': 800, '8s': 1600, '12s': 2400 },
     },
     defaultQuality: '480p',
     defaultDuration: '4s',

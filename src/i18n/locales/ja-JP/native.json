@@ -2,6 +2,7 @@
   "native": {
     "navbar": {
       "loginRewards": "ログインで報酬",
+      "login": "ログイン",
       "free": "無料"
     },
     "bottomNav": {

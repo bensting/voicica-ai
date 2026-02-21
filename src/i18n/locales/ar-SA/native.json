@@ -2,6 +2,7 @@
   "native": {
     "navbar": {
       "loginRewards": "تسجيل الدخول والمكافآت",
+      "login": "دخول",
       "free": "مجاني"
     },
     "bottomNav": {

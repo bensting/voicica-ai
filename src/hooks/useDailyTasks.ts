@@ -16,7 +16,7 @@ import { useAdMob } from '@/contexts/AdMobContext';
 import { Capacitor } from '@capacitor/core';
 
 /**
- * 检测是否为 Native 应用环境
+ * 检测是否为 Native 应用环境（用于 UI 配置）
  * 1. Capacitor 原生平台检测
  * 2. URL 路径是否以 /native 开头（用于浏览器中测试 native 路由）
  */
@@ -26,6 +26,13 @@ function useIsNativeApp(): boolean {
   const isNativeRoute = pathname?.startsWith('/native');
   return isCapacitorNative || isNativeRoute;
 }
+
+/**
+ * 是否为真正的原生平台（Capacitor），用于积分计算
+ * 手机浏览器访问 /native 路由时，广告走的是 ExoClick（Web 端），
+ * 所以积分估算应该用 Web eCPM，而不是 AdMob eCPM
+ */
+const isRealNativePlatform = Capacitor.isNativePlatform();
 
 interface UseDailyTasksReturn {
   /** 每日任务状态 */
@@ -168,7 +175,7 @@ export function useDailyTasks(): UseDailyTasksReturn {
       }
 
       // 调用签到接口（积分加到永久积分，并传递广告收益数据）
-      const result = await checkin(true, isNative);
+      const result = await checkin(true, isRealNativePlatform);
       if (result.success && !cancelledRef.current) {
         // 乐观更新：立即标记签到完成，防止重复点击
         setStatus(prev => prev ? {
@@ -234,7 +241,7 @@ export function useDailyTasks(): UseDailyTasksReturn {
 
       // 广告观看成功，领取奖励（传递广告收益数据）
       console.log('[DailyTasks] 广告观看成功，领取奖励...', lastAdRevenue ? `revenue: ${lastAdRevenue.valueMicros}` : 'no revenue data');
-      const result = await claimAdReward(true, true, isNative,
+      const result = await claimAdReward(true, true, isRealNativePlatform,
         lastAdRevenue?.valueMicros, lastAdRevenue?.currencyCode);
       if (result.success && !cancelledRef.current) {
         // 乐观更新：立即递增观看次数，防止 UI 闪烁

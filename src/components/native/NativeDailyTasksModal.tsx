@@ -129,9 +129,9 @@ export default function NativeDailyTasksModal({ isOpen, onClose, onCreditsUpdate
     }, 5000);
   }, [t, clearAdTimeout, cancelClaiming]);
 
-  // Web 端拦截：免费积分只在 App 可用
+  // Web 端拦截：免费积分只在 App 可用（开发环境跳过，方便测试）
   const guardNativeOnly = useCallback((): boolean => {
-    if (!isRealNativeApp) {
+    if (!isRealNativeApp && process.env.NODE_ENV !== 'development') {
       setShowAppOnlyPrompt(true);
       return false;
     }

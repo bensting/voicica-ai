@@ -55,29 +55,36 @@ async function getCountryFromHeaders(): Promise<string | null> {
 async function calculateVoicicaReward(adRevenueMicros?: number): Promise<{
   voicicaAmount: number;
   randomMultiplier: number;
-  revenueUsd: number;
+  revenueMicros: number;
+  revenueSource: 'precise' | 'estimated';
 }> {
   const miningConfig = getMiningEconomyConfig();
   const [minMul, maxMul] = miningConfig.random_multiplier;
   const randomMultiplier = minMul + Math.random() * (maxMul - minMul);
 
   let revenueUsd: number;
+  let revenueSource: 'precise' | 'estimated';
+
   if (adRevenueMicros && adRevenueMicros > 0) {
     // 精准：来自 OnPaidEvent
     revenueUsd = adRevenueMicros / 1_000_000;
+    revenueSource = 'precise';
   } else {
     // 估算：根据国家查 eCPM 表
     const country = await getCountryFromHeaders();
     const ecpm = (country && miningConfig.estimated_ecpm_by_country[country])
       || miningConfig.default_ecpm_usd;
     revenueUsd = ecpm / 1000; // eCPM 是千次展示收益，单次 = ÷1000
+    revenueSource = 'estimated';
   }
+
+  const revenueMicros = Math.round(revenueUsd * 1_000_000);
 
   const voicicaAmount = Math.max(1, Math.round(
     revenueUsd * miningConfig.revenue_share_ratio * randomMultiplier / miningConfig.token_value_usd
   ));
 
-  return { voicicaAmount, randomMultiplier, revenueUsd };
+  return { voicicaAmount, randomMultiplier, revenueMicros, revenueSource };
 }
 
 /**
@@ -292,7 +299,7 @@ export async function claimAdReward(adWatched: boolean = true, addToPermanent: b
     const tiers = config.ad_reward_tiers;
 
     // 动态计算奖励（基于广告收益）
-    const { voicicaAmount, randomMultiplier } = await calculateVoicicaReward(adRevenueMicros);
+    const { voicicaAmount, randomMultiplier, revenueMicros, revenueSource } = await calculateVoicicaReward(adRevenueMicros);
 
     // 先尝试创建记录（如果不存在）
     await db
@@ -339,8 +346,9 @@ export async function claimAdReward(adWatched: boolean = true, addToPermanent: b
           amount: voicicaAmount,
           description: addToPermanent ? `Ad reward tier ${newClaimed} (permanent)` : `Ad reward tier ${newClaimed}`,
           productType: 'ad_reward',
-          adRevenueMicros: adRevenueMicros ?? null,
+          adRevenueMicros: revenueMicros,
           adRevenueCurrency: adRevenueCurrency ?? null,
+          adRevenueSource: revenueSource,
           randomMultiplier,
         });
 
@@ -375,8 +383,9 @@ export async function claimAdReward(adWatched: boolean = true, addToPermanent: b
         amount: voicicaAmount,
         description: addToPermanent ? 'Bonus ad reward (permanent)' : 'Bonus ad reward',
         productType: 'ad_reward_bonus',
-        adRevenueMicros: adRevenueMicros ?? null,
+        adRevenueMicros: revenueMicros,
         adRevenueCurrency: adRevenueCurrency ?? null,
+        adRevenueSource: revenueSource,
         randomMultiplier,
       });
 

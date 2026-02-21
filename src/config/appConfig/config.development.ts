@@ -53,10 +53,10 @@ export const appConfig: AppConfig = {
    * 每日任务配置 (Studio Web 端)
    */
   daily_tasks: {
-    checkin_credits: 1,
-    ad_reward_tiers: [1, 1, 1, 1, 1, 1],
+    checkin_credits: 50,
+    ad_reward_tiers: [1, 1, 2, 2, 3, 3],
     popup_interval_minutes: 5, // 开发环境 5 分钟，方便测试
-    enabled: false,
+    enabled: true, // 开发环境启用，方便测试挖矿经济
     // Native App 独立配置
     native: {
       checkin_credits: 50,

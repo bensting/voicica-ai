@@ -154,6 +154,7 @@ export const creditHistory = pgTable("credit_history", {
 	productType: varchar("product_type", { length: 50 }),
 	adRevenueMicros: bigint("ad_revenue_micros", { mode: "number" }),
 	adRevenueCurrency: varchar("ad_revenue_currency", { length: 3 }),
+	adRevenueSource: varchar("ad_revenue_source", { length: 10 }),
 	randomMultiplier: real("random_multiplier"),
 }, (table) => [
 	index("idx_credit_history_created_at").using("btree", table.createdAt.asc().nullsLast().op("timestamptz_ops")),

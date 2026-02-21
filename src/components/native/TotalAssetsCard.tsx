@@ -49,7 +49,7 @@ export default function TotalAssetsCard() {
             {t('native.totalAssets.title')}
           </p>
           <p className="text-white text-3xl font-bold tracking-tight">
-            {loading ? '...' : `$${totalValue.toFixed(2)}`}
+            {loading ? '...' : `$${totalValue.toFixed(4)}`}
           </p>
           <p className="text-gray-500 text-xs mt-0.5">
             1 $VOICICA = ${EXCHANGE_RATE} USDT
@@ -100,7 +100,7 @@ export default function TotalAssetsCard() {
                 <span className="text-gray-300 text-sm font-medium">USDT</span>
               </div>
               <span className="text-white text-sm font-semibold">
-                {usdtBalance.toFixed(2)}
+                {usdtBalance.toFixed(4)}
               </span>
             </div>
             <div className="flex justify-end gap-2">

@@ -4,6 +4,28 @@
       "loginRewards": "Login & Rewards",
       "free": "FREE"
     },
+    "totalAssets": {
+      "title": "Total Assets",
+      "mining": "Mining",
+      "convert": "Convert",
+      "withdraw": "Withdraw",
+      "comingSoon": "Coming soon",
+      "convertModal": {
+        "title": "Convert",
+        "from": "From",
+        "to": "To",
+        "amount": "Amount",
+        "max": "MAX",
+        "youWillReceive": "You will receive",
+        "confirm": "Confirm"
+      },
+      "withdrawModal": {
+        "voicicaTitle": "Withdraw $VOICICA",
+        "voicicaDesc": "Withdraw to Phantom wallet",
+        "usdtTitle": "Withdraw USDT",
+        "usdtDesc": "Withdraw to exchange (min. 2 USDT)"
+      }
+    },
     "bottomNav": {
       "explore": "Explore",
       "me": "Me"

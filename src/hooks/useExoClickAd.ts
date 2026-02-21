@@ -162,9 +162,16 @@ export function useExoClickAd() {
         let currentAdSrc = '';        // 当前正在播放的广告 src
         let currentAdStartTime = 0;   // 当前广告开始时的 currentTime
 
+        // 全屏拦截处理器（后面赋值，cleanup 需要移除）
+        let fullscreenHandler: (() => void) | null = null;
+
         const cleanup = () => {
           isShowingRef.current = false;
           document.body.style.overflow = '';
+          if (fullscreenHandler) {
+            document.removeEventListener('fullscreenchange', fullscreenHandler);
+            fullscreenHandler = null;
+          }
           if (playerInstance) {
             try { playerInstance.destroy(); } catch { /* ignore */ }
             playerInstance = null;
@@ -199,7 +206,7 @@ export function useExoClickAd() {
           'position:absolute', 'top:12px', 'right:16px',
           'width:36px', 'height:36px', 'border-radius:50%', 'border:none',
           'background:rgba(255,255,255,0.2)', 'color:#fff', 'font-size:18px',
-          'cursor:pointer', 'z-index:1000000',
+          'cursor:pointer', 'z-index:10000001',
           'display:flex', 'align-items:center', 'justify-content:center',
         ].join(';');
         closeBtn.onclick = () => {
@@ -215,8 +222,8 @@ export function useExoClickAd() {
         // === 顶部进度指示器 ===
         const progressBar = document.createElement('div');
         progressBar.style.cssText = [
-          'position:absolute', 'top:0', 'left:0', 'width:100%', 'height:3px',
-          'background:rgba(255,255,255,0.15)', 'z-index:1000000',
+          'position:absolute', 'top:0', 'left:0', 'width:100%', 'height:4px',
+          'background:rgba(255,255,255,0.2)', 'z-index:10000001',
         ].join(';');
 
         const progressFill = document.createElement('div');
@@ -232,9 +239,9 @@ export function useExoClickAd() {
         const adLabel = document.createElement('div');
         adLabel.style.cssText = [
           'position:absolute', 'top:14px', 'left:16px',
-          'color:rgba(255,255,255,0.7)', 'font-size:12px',
-          'font-family:system-ui,sans-serif', 'z-index:1000000',
-          'background:rgba(0,0,0,0.5)', 'padding:4px 10px',
+          'color:rgba(255,255,255,0.8)', 'font-size:12px',
+          'font-family:system-ui,sans-serif', 'z-index:10000001',
+          'background:rgba(0,0,0,0.6)', 'padding:4px 10px',
           'border-radius:12px', 'backdrop-filter:blur(4px)',
         ].join(';');
         adLabel.textContent = `Ad 1 of ${totalAdsExpected}`;
@@ -312,12 +319,22 @@ export function useExoClickAd() {
         });
 
         container.appendChild(video);
+        // container 先追加，进度条/标签/关闭按钮在后面，确保 DOM 顺序在 Fluid Player 之上
+        overlay.appendChild(container);
         overlay.appendChild(progressBar);
         overlay.appendChild(adLabel);
         overlay.appendChild(closeBtn);
-        overlay.appendChild(container);
         document.body.appendChild(overlay);
         document.body.style.overflow = 'hidden';
+
+        // 阻止 Fluid Player / 广告脚本触发浏览器全屏（全屏会导致 overlay 控件不可见）
+        fullscreenHandler = () => {
+          if (document.fullscreenElement) {
+            console.log('[ExoClick] Exiting fullscreen to keep controls visible');
+            document.exitFullscreen().catch(() => {});
+          }
+        };
+        document.addEventListener('fullscreenchange', fullscreenHandler);
 
         console.log(`[ExoClick] Starting ad session: ${totalAdsExpected} ads to play`);
 

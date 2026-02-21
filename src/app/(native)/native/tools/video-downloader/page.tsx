@@ -298,7 +298,7 @@ export default function VideoDownloaderPage() {
       >
         <CreditsInfoBar
           credits={credits}
-          creditRules={[{ name: t('videoDownloader.parseVideoButton'), credits: 1 }]}
+          creditRules={[{ name: t('videoDownloader.parseVideoButton'), credits: creditCost }]}
           className="mb-3"
         />
 
@@ -308,7 +308,7 @@ export default function VideoDownloaderPage() {
         >
           <span>{t('videoDownloader.parseVideoButton')}</span>
           <CreditsIcon className="w-3.5 h-3.5" />
-          <span>1</span>
+          <span>{creditCost}</span>
         </GradientButton>
       </div>
 

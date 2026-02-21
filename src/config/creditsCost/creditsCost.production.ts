@@ -11,8 +11,8 @@ export const creditsCostConfig: CreditsCostConfig = {
   [ProductType.TEXT_TO_SPEECH]: 0, // TTS 按字符数计费，由 calculateVoiceCost 计算
   [ProductType.TEXT_TO_VIDEO]: 0, // 视频按 creditsMatrix 计费（见 videoModels.ts）
   [ProductType.VOICE_CLONING]: 0, // 语音克隆待定
-  [ProductType.YOUTUBE_DOWNLOADER]: 10, // YouTube 解析消耗 1 积分
-  [ProductType.VIDEO_DOWNLOADER]: 10, // 通用视频下载消耗 1 积分
+  [ProductType.YOUTUBE_DOWNLOADER]: 10, // YouTube 解析消耗 10 积分
+  [ProductType.VIDEO_DOWNLOADER]: 10, // 通用视频下载消耗 10 积分
   [ProductType.STORY_IDEAS]: 5, // 故事创意生成消耗 5 积分
   [ProductType.STORY_GENERATE]: 10, // 故事内容生成消耗 10 积分
   [ProductType.STORY_ILLUSTRATION]: 10, // 故事插图生成消耗 10 积分/张

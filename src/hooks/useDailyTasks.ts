@@ -233,7 +233,14 @@ export function useDailyTasks(): UseDailyTasksReturn {
       // 调用签到接口（积分加到永久积分，并传递广告收益数据）
       const result = await checkin(true, isNative, lastAdRevenue?.valueMicros, lastAdRevenue?.currencyCode);
       if (result.success && !cancelledRef.current) {
-        refresh(); // 后台刷新状态，不阻塞返回
+        // 乐观更新：立即标记签到完成，防止重复点击
+        setStatus(prev => prev ? {
+          ...prev,
+          checkinDone: true,
+          checkinCredits: result.credits || 0,
+          todayTotalCredits: prev.todayTotalCredits + (result.credits || 0),
+        } : prev);
+        refresh(); // 后台同步最新状态
       }
       return result;
     } catch (err) {
@@ -293,7 +300,15 @@ export function useDailyTasks(): UseDailyTasksReturn {
       const result = await claimAdReward(true, true, false, isNative,
         lastAdRevenue?.valueMicros, lastAdRevenue?.currencyCode);
       if (result.success && !cancelledRef.current) {
-        refresh(); // 后台刷新状态，不阻塞返回
+        // 乐观更新：立即递增观看次数，防止 UI 闪烁
+        setStatus(prev => prev ? {
+          ...prev,
+          adRewardsClaimed: prev.adRewardsClaimed + 1,
+          adRewardsCredits: prev.adRewardsCredits + (result.credits || 0),
+          todayTotalCredits: prev.todayTotalCredits + (result.credits || 0),
+          remainingAdViews: Math.max(0, prev.remainingAdViews - 1),
+        } : prev);
+        refresh(); // 后台同步最新状态
       }
       return result;
     } catch (err) {

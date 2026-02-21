@@ -212,6 +212,40 @@ export function useExoClickAd() {
           }
         };
 
+        // === 顶部进度指示器 ===
+        const progressBar = document.createElement('div');
+        progressBar.style.cssText = [
+          'position:absolute', 'top:0', 'left:0', 'width:100%', 'height:3px',
+          'background:rgba(255,255,255,0.15)', 'z-index:1000000',
+        ].join(';');
+
+        const progressFill = document.createElement('div');
+        progressFill.style.cssText = [
+          'height:100%', 'width:0%',
+          'background:linear-gradient(90deg,#9333ea,#c084fc)',
+          'transition:width 0.3s ease',
+          'border-radius:0 2px 2px 0',
+        ].join(';');
+        progressBar.appendChild(progressFill);
+
+        // 广告计数标签 "Ad 1 of 2"
+        const adLabel = document.createElement('div');
+        adLabel.style.cssText = [
+          'position:absolute', 'top:14px', 'left:16px',
+          'color:rgba(255,255,255,0.7)', 'font-size:12px',
+          'font-family:system-ui,sans-serif', 'z-index:1000000',
+          'background:rgba(0,0,0,0.5)', 'padding:4px 10px',
+          'border-radius:12px', 'backdrop-filter:blur(4px)',
+        ].join(';');
+        adLabel.textContent = `Ad 1 of ${totalAdsExpected}`;
+
+        // 更新进度 UI 的函数
+        const updateProgressUI = (completedCount: number) => {
+          const currentAd = Math.min(completedCount + 1, totalAdsExpected);
+          adLabel.textContent = `Ad ${currentAd} of ${totalAdsExpected}`;
+          progressFill.style.width = `${(completedCount / totalAdsExpected) * 100}%`;
+        };
+
         // 视频容器
         const container = document.createElement('div');
         const isMobile = window.innerWidth < 768;
@@ -234,6 +268,7 @@ export function useExoClickAd() {
           if (isAdVideoSrc(src) && src !== currentAdSrc) {
             currentAdSrc = src;
             currentAdStartTime = 0;
+            updateProgressUI(adsCompleted);
             console.log(`[ExoClick] Ad ${adsCompleted + 1}/${totalAdsExpected} loading:`, src.substring(0, 60));
           }
         });
@@ -254,6 +289,7 @@ export function useExoClickAd() {
           if (isAdVideoSrc(src) && time >= MIN_AD_WATCH_SECONDS) {
             adsCompleted++;
             adTotalWatchTime += time;
+            updateProgressUI(adsCompleted);
             console.log(`[ExoClick] Ad completed: ${adsCompleted}/${totalAdsExpected} (totalTime=${adTotalWatchTime.toFixed(1)}s)`);
 
             // 所有广告都播完了 → 成功
@@ -276,6 +312,8 @@ export function useExoClickAd() {
         });
 
         container.appendChild(video);
+        overlay.appendChild(progressBar);
+        overlay.appendChild(adLabel);
         overlay.appendChild(closeBtn);
         overlay.appendChild(container);
         document.body.appendChild(overlay);

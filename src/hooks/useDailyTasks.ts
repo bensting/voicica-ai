@@ -27,9 +27,6 @@ function useIsNativeApp(): boolean {
   return isCapacitorNative || isNativeRoute;
 }
 
-// 弹窗上次显示时间存储 key
-const POPUP_LAST_SHOWN_KEY = 'daily_tasks_popup_last_shown';
-
 interface UseDailyTasksReturn {
   /** 每日任务状态 */
   status: DailyTasksStatus | null;
@@ -62,36 +59,10 @@ interface UseDailyTasksReturn {
 }
 
 /**
- * 获取上次弹窗显示时间
- */
-function getLastPopupTime(): number {
-  if (typeof window === 'undefined') return 0;
-  return parseInt(localStorage.getItem(POPUP_LAST_SHOWN_KEY) || '0', 10);
-}
-
-/**
- * 记录弹窗显示时间
- */
-function setLastPopupTime(): void {
-  if (typeof window === 'undefined') return;
-  localStorage.setItem(POPUP_LAST_SHOWN_KEY, String(Date.now()));
-}
-
-/**
- * 检查是否已过间隔时间
- */
-function hasIntervalPassed(intervalMinutes: number): boolean {
-  const lastTime = getLastPopupTime();
-  if (lastTime === 0) return true; // 从未显示过
-  const intervalMs = intervalMinutes * 60 * 1000;
-  return Date.now() - lastTime >= intervalMs;
-}
-
-/**
  * 每日任务 Hook
  */
 export function useDailyTasks(): UseDailyTasksReturn {
-  const { user, loading: authLoading } = useFirebaseAuth();
+  const { loading: authLoading } = useFirebaseAuth();
   // 签到和观看视频都使用同一个激励视频广告，共享缓存，加载更快
   const { showRewardedAd, isReady: isAdReady } = useRewardedAd();
   // 获取最近一次广告收益数据（来自 AdMob OnPaidEvent）
@@ -110,8 +81,7 @@ export function useDailyTasks(): UseDailyTasksReturn {
   const [loading, setLoading] = useState(true);
   const [claiming, setClaiming] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [shouldShowPopup, setShouldShowPopup] = useState(false);
-  const [popupDismissed, setPopupDismissed] = useState(false);
+  const [shouldShowPopup] = useState(false);
 
   // 加载状态
   const refresh = useCallback(async () => {
@@ -138,16 +108,8 @@ export function useDailyTasks(): UseDailyTasksReturn {
   // 自动弹窗已禁用，用户可通过入口手动打开
   // 如需恢复自动弹出，还原此处的条件判断逻辑
 
-  // 标记弹窗已显示
-  const markPopupShown = useCallback(() => {
-    setLastPopupTime();
-  }, []);
-
-  // 关闭弹窗
-  const dismissPopup = useCallback(() => {
-    setPopupDismissed(true);
-    setShouldShowPopup(false);
-  }, []);
+  const markPopupShown = useCallback(() => {}, []);
+  const dismissPopup = useCallback(() => {}, []);
 
   // 用于防止签到重复调用
   const checkinInProgressRef = useRef(false);

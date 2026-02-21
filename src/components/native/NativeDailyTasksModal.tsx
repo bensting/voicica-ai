@@ -281,7 +281,7 @@ export default function NativeDailyTasksModal({ isOpen, onClose, onCreditsUpdate
 
         {/* Daily Activation (check-in) */}
         <div className="border border-white/10 rounded-xl p-3 mb-4">
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 mb-3">
             <div className={`w-9 h-9 shrink-0 rounded-full flex items-center justify-center ${
               status.checkinDone ? 'bg-green-500/20 text-green-400' : 'bg-amber-500/20 text-amber-400'
             }`}>
@@ -291,32 +291,37 @@ export default function NativeDailyTasksModal({ isOpen, onClose, onCreditsUpdate
               <p className="font-medium text-white text-sm">{t('dailyTasks.checkin')}</p>
               <p className="text-xs text-gray-400">+{formatCredits(config?.checkin_credits || 0)} {t('dailyTasks.credits')}</p>
             </div>
-            <button
-              onClick={handleCheckin}
-              disabled={status.checkinDone || claiming || checkinLoading}
-              className={`shrink-0 px-3 py-2 rounded-lg font-medium text-xs flex items-center gap-1 whitespace-nowrap ${
-                status.checkinDone
-                  ? 'bg-white/10 text-gray-500 cursor-not-allowed'
-                  : 'bg-gradient-to-r from-amber-500 to-orange-500 text-white disabled:opacity-50'
-              }`}
-            >
-              {(claiming || checkinLoading) ? (
-                <LoaderIcon className="w-4 h-4" />
-              ) : status.checkinDone ? (
-                t('dailyTasks.claimed')
-              ) : (
-                <>
-                  <PlayIcon />
-                  <span>{t('dailyTasks.watchCheckinGet', { credits: config?.checkin_credits || 0 })}</span>
-                </>
-              )}
-            </button>
           </div>
+
           {checkinError && (
-            <div className="mt-3 p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-sm text-red-400 text-center">
+            <div className="mb-3 p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-sm text-red-400 text-center">
               {checkinError}
             </div>
           )}
+
+          <button
+            onClick={handleCheckin}
+            disabled={status.checkinDone || claiming || checkinLoading}
+            className={`w-full py-3 font-semibold rounded-xl flex items-center justify-center gap-2 ${
+              status.checkinDone
+                ? 'bg-white/10 text-gray-500 cursor-not-allowed'
+                : 'bg-gradient-to-r from-amber-500 to-orange-500 text-white disabled:opacity-50'
+            }`}
+          >
+            {(claiming || checkinLoading) ? (
+              <>
+                <LoaderIcon className="w-5 h-5" />
+                <span>{t('dailyTasks.loadingAd') || 'Loading...'}</span>
+              </>
+            ) : status.checkinDone ? (
+              t('dailyTasks.claimed')
+            ) : (
+              <>
+                <PlayIcon />
+                {t('dailyTasks.watchCheckinGet', { credits: config?.checkin_credits || 0 })}
+              </>
+            )}
+          </button>
         </div>
 
         {/* Video Mining */}

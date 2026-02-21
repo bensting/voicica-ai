@@ -14,6 +14,7 @@ import { useDailyTasks } from '@/hooks/useDailyTasks';
 import { useRouter } from 'next/navigation';
 import { Capacitor } from '@capacitor/core';
 import Image from 'next/image';
+import EnergyOrb from '@/components/common/EnergyOrb';
 import LoginModal from './LoginModal';
 
 // 广告加载超时时间（毫秒）
@@ -339,12 +340,7 @@ export default function NativeDailyTasksModal({ isOpen, onClose, onCreditsUpdate
 
           {/* Energy orb animation */}
           <div className="flex justify-center mb-4">
-            <div className="relative w-24 h-24 rounded-full bg-purple-950/80 flex items-center justify-center">
-              {/* Spinning outer ring */}
-              <div className="absolute inset-0 rounded-full border-2 border-transparent border-t-amber-400/60 border-r-amber-400/30 animate-spin" style={{ animationDuration: '3s' }} />
-              {/* Pulsing inner glow */}
-              <div className="w-14 h-14 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 animate-pulse shadow-[0_0_24px_6px_rgba(245,158,11,0.35)]" />
-            </div>
+            <EnergyOrb />
           </div>
 
           {/* 进度: 已观看 / 每日上限 */}

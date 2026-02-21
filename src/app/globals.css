@@ -264,6 +264,26 @@ body {
   animation: confetti-burst 1s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
 }
 
+/* 能量球漂浮粒子 */
+@keyframes float-particle {
+  0%, 100% {
+    transform: translate(-50%, -50%) rotate(var(--float-angle)) translateY(-48px) scale(0.5);
+    opacity: 0;
+  }
+  20% {
+    opacity: 1;
+    transform: translate(-50%, -50%) rotate(var(--float-angle)) translateY(-52px) scale(1);
+  }
+  80% {
+    opacity: 0.8;
+    transform: translate(-50%, -50%) rotate(calc(var(--float-angle) + 60deg)) translateY(-60px) scale(0.8);
+  }
+}
+
+.animate-float-particle {
+  animation: float-particle 3s ease-in-out infinite;
+}
+
 /* 庆祝弹出动画 */
 @keyframes celebration-pop {
   0% {

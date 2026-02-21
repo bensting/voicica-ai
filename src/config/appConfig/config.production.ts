@@ -57,7 +57,7 @@ export const appConfig: AppConfig = {
     ad_reward_tiers: [1, 1, 1, 1, 1, 1],
     max_daily_ad_views: 100,
     popup_interval_minutes: 30, // 生产环境每 30 分钟最多弹出一次
-    enabled: false,
+    enabled: true,
     // Native App 独立配置
     native: {
       checkin_credits: 50,

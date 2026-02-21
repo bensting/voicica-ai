@@ -55,14 +55,14 @@ export const appConfig: AppConfig = {
   daily_tasks: {
     checkin_credits: 50,
     ad_reward_tiers: [1, 1, 2, 2, 3, 3],
-    max_daily_ad_views: 10, // 开发环境 10 次，方便测试
+    max_daily_ad_views: 100, // 开发环境 10 次，方便测试
     popup_interval_minutes: 5, // 开发环境 5 分钟，方便测试
     enabled: true, // 开发环境启用，方便测试挖矿经济
     // Native App 独立配置
     native: {
       checkin_credits: 50,
       ad_reward_tiers: [1, 1, 2, 2, 3, 3],
-      max_daily_ad_views: 10, // 开发环境 10 次，方便测试
+      max_daily_ad_views: 100, // 开发环境 10 次，方便测试
       popup_interval_minutes: 5, // 开发环境 5 分钟，方便测试
       enabled: true,
     },

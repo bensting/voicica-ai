@@ -74,6 +74,9 @@ export function useDailyTasks(): UseDailyTasksReturn {
   const { showRewardedAd, isReady: isAdReady } = useRewardedAd();
   // 获取最近一次广告收益数据（来自 AdMob OnPaidEvent）
   const { lastAdRevenue, clearLastAdRevenue } = useAdMob();
+  // 用 ref 跟踪最新值，避免 useCallback 闭包捕获旧值
+  const lastAdRevenueRef = useRef(lastAdRevenue);
+  lastAdRevenueRef.current = lastAdRevenue;
   // 使用增强的 Native 检测（包括 Capacitor 和 /native 路由）
   const isNative = useIsNativeApp();
   const [status, setStatus] = useState<DailyTasksStatus | null>(null);
@@ -239,10 +242,11 @@ export function useDailyTasks(): UseDailyTasksReturn {
         return { success: false, message: '已取消' };
       }
 
-      // 广告观看成功，领取奖励（传递广告收益数据）
-      console.log('[DailyTasks] 广告观看成功，领取奖励...', lastAdRevenue ? `revenue: ${lastAdRevenue.valueMicros}` : 'no revenue data');
+      // 广告观看成功，领取奖励（从 ref 读取最新的广告收益数据，避免闭包旧值）
+      const revenue = lastAdRevenueRef.current;
+      console.log('[DailyTasks] 广告观看成功，领取奖励...', revenue ? `revenue: ${revenue.valueMicros} ${revenue.currencyCode}` : 'no revenue data');
       const result = await claimAdReward(true, true, isRealNativePlatform,
-        lastAdRevenue?.valueMicros, lastAdRevenue?.currencyCode);
+        revenue?.valueMicros, revenue?.currencyCode);
       if (result.success && !cancelledRef.current) {
         // 乐观更新：立即递增观看次数，防止 UI 闪烁
         setStatus(prev => prev ? {
@@ -267,7 +271,7 @@ export function useDailyTasks(): UseDailyTasksReturn {
         setClaiming(false);
       }
     }
-  }, [refresh, showRewardedAd, lastAdRevenue, clearLastAdRevenue]);
+  }, [refresh, showRewardedAd, clearLastAdRevenue]);
 
   return {
     status,

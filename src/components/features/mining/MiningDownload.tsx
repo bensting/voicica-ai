@@ -38,7 +38,7 @@ export default function MiningDownload() {
       <div className="mx-auto max-w-md">
         {/* === 外层卡片：彩色渐变边框（紫→粉→青） === */}
         <div className="relative rounded-2xl p-[1.5px]">
-          <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-purple-600 via-pink-500 to-cyan-400" />
+          <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-purple-600/30 via-pink-500/20 to-cyan-400/30" />
 
           <div className="relative rounded-2xl bg-[#0c0a1a] px-4 py-5">
             {/* 背景光斑 */}

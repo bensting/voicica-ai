@@ -164,7 +164,7 @@ export async function uploadAppRelease(formData: FormData): Promise<ActionResult
     // 上传文件到 R2
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
-    const fileName = `${platform}-v${version}-${versionCode}.apk`;
+    const fileName = `voicica-v${version}-${versionCode}.apk`;
     const downloadUrl = await uploadApk(buffer, fileName);
 
     // 如果设为最新版本，先将其他版本的 is_latest 设为 false
@@ -361,7 +361,7 @@ export async function getApkUploadUrl(params: {
     }
 
     // 生成预签名 URL
-    const fileName = `${platform}-v${version}-${versionCode}.apk`;
+    const fileName = `voicica-v${version}-${versionCode}.apk`;
     const { uploadUrl, publicUrl, key } = await generateApkUploadUrl(fileName);
 
     return {

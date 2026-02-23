@@ -10,6 +10,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { Capacitor } from '@capacitor/core';
 import { App } from '@capacitor/app';
 import { checkAppUpdate } from '@/actions/admin/app-releases';
+import { detectPlatformDetail } from '@/lib/platform';
 
 export interface UpdateInfo {
   hasUpdate: boolean;
@@ -52,9 +53,10 @@ export function useAppUpdate(): UseAppUpdateReturn {
   const [downloadProgress, setDownloadProgress] = useState(0);
   const downloadAbortRef = useRef(false);
 
-  // 检测是否在原生 App 中运行
+  // 检测是否在 standalone APK 中运行（Play Store 版走 Google Play 更新，不走自建更新）
   useEffect(() => {
-    setIsNativeApp(Capacitor.isNativePlatform());
+    const isStandaloneApk = Capacitor.isNativePlatform() && detectPlatformDetail() === 'android-apk';
+    setIsNativeApp(isStandaloneApk);
   }, []);
 
   // 检查更新

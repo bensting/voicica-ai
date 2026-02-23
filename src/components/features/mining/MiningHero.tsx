@@ -1,14 +1,13 @@
-'use client';
-
-import { useLanguage } from '@/contexts/LanguageContext';
 import EnergyOrb from '@/components/common/EnergyOrb';
 
 /**
  * Mining Hero — 标题左对齐一行 + 副标题一行 + 小能量球居中
  */
-export default function MiningHero() {
-  const { t } = useLanguage();
-
+export default function MiningHero({
+  content,
+}: {
+  content: { title: string; subtitle: string };
+}) {
   return (
     <section className="relative overflow-hidden bg-[#06060f] px-4 pt-20 pb-2">
       {/* 背景层 */}
@@ -20,13 +19,13 @@ export default function MiningHero() {
         {/* 标题 — 左对齐一行 */}
         <h1 className="text-2xl md:text-4xl font-extrabold leading-tight">
           <span className="bg-gradient-to-r from-purple-400 via-violet-400 to-cyan-400 bg-clip-text text-transparent">
-            {t('mining.heroTitle')}
+            {content.title}
           </span>
         </h1>
 
         {/* 副标题 — 左对齐一行 */}
         <p className="mt-1 text-xs md:text-sm text-gray-400">
-          {t('mining.heroSubtitle')}
+          {content.subtitle}
         </p>
 
         {/* 能量球居中 */}

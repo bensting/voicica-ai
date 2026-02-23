@@ -1,7 +1,3 @@
-'use client';
-
-import { useLanguage } from '@/contexts/LanguageContext';
-
 /**
  * Mining Trust — 第四屏：背书墙
  * 灰色低对比度，三个标识横排居中
@@ -29,20 +25,28 @@ const LockIcon = () => (
   </svg>
 );
 
-export default function MiningTrust() {
-  const { t } = useLanguage();
+interface MiningTrustContent {
+  poweredBy: string;
+  secureNode: string;
+  ddosProtected: string;
+}
 
+export default function MiningTrust({
+  content,
+}: {
+  content: MiningTrustContent;
+}) {
   const badges = [
     { icon: <AppLovinIcon />, label: 'AppLovin MAX' },
-    { icon: <ShieldIcon />, label: t('mining.secureNode') },
-    { icon: <LockIcon />, label: t('mining.ddosProtected') },
+    { icon: <ShieldIcon />, label: content.secureNode },
+    { icon: <LockIcon />, label: content.ddosProtected },
   ];
 
   return (
     <section className="bg-[#06060f] px-4 pt-3 pb-6">
       <div className="mx-auto max-w-md rounded-xl border border-white/[0.06] bg-white/[0.03] px-4 py-3">
         <p className="mb-2.5 text-[10px] uppercase tracking-widest text-gray-500">
-          {t('mining.poweredBy')}
+          {content.poweredBy}
         </p>
         <div className="flex items-center justify-between">
           {badges.map((badge, i) => (

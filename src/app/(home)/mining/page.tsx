@@ -1,28 +1,19 @@
 import type { Metadata } from 'next';
 import { buildSeoUrl, buildAlternates } from '@/config/seo/locales';
+import { MINING_CONTENT } from '@/config/seo/mining';
 import MiningPageContent from './MiningPageContent';
 
 export const metadata: Metadata = {
-  title: 'AI Mining — Decentralized AI Compute Power | Voicica',
-  description:
-    'Turn your phone into an AI compute node and earn daily rewards. Download Voicica Pro to join the decentralized AI power network.',
-  keywords: [
-    'AI mining',
-    'decentralized AI',
-    'compute node',
-    'earn crypto',
-    'Voicica Pro',
-    'AI power network',
-    'mobile mining',
-  ],
+  title: MINING_CONTENT.en.metadata.title,
+  description: MINING_CONTENT.en.metadata.description,
+  keywords: MINING_CONTENT.en.metadata.keywords,
   alternates: {
     canonical: buildSeoUrl('', 'mining'),
     languages: buildAlternates('mining'),
   },
   openGraph: {
-    title: 'AI Mining — Decentralized AI Compute Power | Voicica',
-    description:
-      'Turn your phone into an AI compute node and earn daily rewards.',
+    title: MINING_CONTENT.en.metadata.title,
+    description: MINING_CONTENT.en.metadata.description,
     url: buildSeoUrl('', 'mining'),
     siteName: 'Voicica AI',
     locale: 'en_US',
@@ -72,7 +63,7 @@ export default function MiningPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <MiningPageContent />
+      <MiningPageContent locale="en" />
     </>
   );
 }

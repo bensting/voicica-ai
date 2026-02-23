@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useLanguage } from '@/contexts/LanguageContext';
 import { getLatestRelease } from '@/actions/admin/app-releases';
 
 const GOOGLE_PLAY_URL = 'https://play.google.com/store/apps/details?id=ai.voicica.app';
@@ -15,12 +14,24 @@ const GooglePlayIcon = () => (
   </svg>
 );
 
+interface MiningDownloadContent {
+  apk: string;
+  unlockFeatures: string;
+  googlePlay: string;
+  standardVersion: string;
+  apkTip: string;
+  hot: string;
+}
+
 /**
  * Mining Download — 核心转化区
  * 外层彩色渐变边框卡片，内部 APK(左) + Google Play(右) 横排
  */
-export default function MiningDownload() {
-  const { t } = useLanguage();
+export default function MiningDownload({
+  content,
+}: {
+  content: MiningDownloadContent;
+}) {
   const [apkUrl, setApkUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -62,15 +73,15 @@ export default function MiningDownload() {
                 <div className="relative flex flex-col items-center rounded-[10px] bg-[#12102a] px-3 py-4">
                   {/* HOT 徽章 */}
                   <span className="mb-2 rounded-full bg-red-500 px-3 py-1 text-[10px] font-bold uppercase text-white leading-none shadow-lg shadow-red-500/30">
-                    {t('mining.hot')}
+                    {content.hot}
                   </span>
                   {/* 标题 */}
                   <span className="text-sm font-bold text-white text-center leading-snug">
-                    {loading ? 'Loading...' : t('mining.downloadApk')}
+                    {loading ? 'Loading...' : content.apk}
                   </span>
                   {/* 副文字 */}
                   <p className="mt-1.5 text-[10px] text-gray-400 text-center leading-tight">
-                    {t('mining.unlockFeatures')}
+                    {content.unlockFeatures}
                   </p>
                 </div>
               </a>
@@ -84,10 +95,10 @@ export default function MiningDownload() {
               >
                 <GooglePlayIcon />
                 <span className="mt-2 text-[10px] font-medium text-gray-300 group-hover:text-white text-center leading-tight">
-                  {t('mining.googlePlay')}
+                  {content.googlePlay}
                 </span>
                 <span className="mt-0.5 text-[9px] text-gray-600 text-center leading-tight">
-                  {t('mining.standardVersion')}
+                  {content.standardVersion}
                 </span>
               </a>
             </div>
@@ -95,7 +106,7 @@ export default function MiningDownload() {
             {/* 底部提示 — 青色渐变 */}
             <p className="relative mt-4 text-center text-[11px] font-medium italic">
               <span className="bg-gradient-to-r from-purple-400 via-pink-400 to-cyan-400 bg-clip-text text-transparent">
-                {t('mining.apkTip')}
+                {content.apkTip}
               </span>
             </p>
           </div>

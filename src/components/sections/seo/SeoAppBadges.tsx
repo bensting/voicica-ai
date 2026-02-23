@@ -1,3 +1,5 @@
+import { IoLogoAndroid } from 'react-icons/io5';
+
 const GOOGLE_PLAY_URL =
   'https://play.google.com/store/apps/details?id=ai.voicica.app';
 
@@ -72,19 +74,17 @@ export default function SeoAppBadges() {
 }
 
 /**
- * Compact Google Play icon button for the SeoNavbar.
+ * Compact download button for the SeoNavbar.
  */
-export function NavbarDownloadButton() {
+export function NavbarDownloadButton({ onClick }: { onClick?: () => void }) {
   return (
-    <a
-      href={GOOGLE_PLAY_URL}
-      target="_blank"
-      rel="noopener noreferrer"
+    <button
+      onClick={onClick}
       className="flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-white/15"
-      aria-label="Download on Google Play"
+      aria-label="Download App"
     >
-      <GooglePlayIcon className="h-4 w-4" />
+      <IoLogoAndroid className="h-4 w-4 text-[#3DDC84]" />
       <span className="hidden sm:inline">Download</span>
-    </a>
+    </button>
   );
 }

@@ -11,9 +11,9 @@ export default function MiningSteps() {
   const { t } = useLanguage();
 
   const steps = [
-    { icon: <RiDownloadCloud2Fill className="w-7 h-7 text-white" />, gradient: 'from-purple-500 to-violet-600', shadow: 'shadow-purple-500/25', title: t('mining.step1Title') },
-    { icon: <RiFlashlightFill className="w-7 h-7 text-white" />, gradient: 'from-violet-500 to-cyan-500', shadow: 'shadow-violet-500/25', title: t('mining.step2Title') },
-    { icon: <RiWallet3Fill className="w-7 h-7 text-white" />, gradient: 'from-cyan-500 to-emerald-500', shadow: 'shadow-cyan-500/25', title: t('mining.step3Title') },
+    { icon: <RiDownloadCloud2Fill className="w-6 h-6 text-white" />, gradient: 'from-purple-500 to-violet-600', shadow: 'shadow-purple-500/25', title: t('mining.step1Title') },
+    { icon: <RiFlashlightFill className="w-6 h-6 text-white" />, gradient: 'from-violet-500 to-cyan-500', shadow: 'shadow-violet-500/25', title: t('mining.step2Title') },
+    { icon: <RiWallet3Fill className="w-6 h-6 text-white" />, gradient: 'from-cyan-500 to-emerald-500', shadow: 'shadow-cyan-500/25', title: t('mining.step3Title') },
   ];
 
   return (
@@ -23,12 +23,12 @@ export default function MiningSteps() {
           {steps.map((step, i) => (
             <div
               key={i}
-              className="flex aspect-square flex-col items-center justify-center rounded-2xl bg-[#12121f] px-2 text-center"
+              className="flex aspect-square flex-col items-center rounded-2xl bg-[#12121f] px-2 pt-5 pb-3 text-center"
             >
-              <div className={`flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br ${step.gradient} shadow-lg ${step.shadow}`}>
+              <div className={`flex h-11 w-11 items-center justify-center rounded-full bg-gradient-to-br ${step.gradient} shadow-lg ${step.shadow}`}>
                 {step.icon}
               </div>
-              <h3 className="mt-3 text-[11px] font-semibold text-white leading-tight">{step.title}</h3>
+              <h3 className="mt-auto text-[11px] font-semibold text-white leading-tight">{step.title}</h3>
             </div>
           ))}
         </div>

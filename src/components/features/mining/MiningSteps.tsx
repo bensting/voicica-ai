@@ -23,7 +23,7 @@ export default function MiningSteps() {
           {steps.map((step, i) => (
             <div
               key={i}
-              className="flex flex-col items-center rounded-xl border border-white/[0.06] bg-white/[0.03] px-2 py-4 text-center"
+              className="flex aspect-square flex-col items-center justify-center rounded-2xl bg-[#12121f] px-2 text-center"
             >
               <div className={`flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br ${step.gradient} shadow-lg ${step.shadow}`}>
                 {step.icon}

@@ -47,19 +47,27 @@ export default function MiningBanner() {
 
             {/* ===== 移动端布局 ===== */}
             <div className="relative md:hidden">
-              <h3 className="text-2xl font-extrabold text-white leading-tight">
-                Turn Your Phone into an AI Power Node
+              <h3 className="text-[22px] font-extrabold leading-tight">
+                <span className="bg-gradient-to-r from-white via-white to-gray-300 bg-clip-text text-transparent">
+                  Turn Your Phone into an AI Power Node
+                </span>
               </h3>
-              <p className="mt-3 text-sm text-gray-400 leading-relaxed">
+              <p className="mt-3 text-[13px] text-gray-400/90 leading-relaxed">
                 Join the Voicica ecosystem. Earn $VOICICA rewards while powering the future of AI Voice.
               </p>
-              <div className="mt-4">
-                <span className="inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-purple-600 to-cyan-400 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-purple-500/20">
+              <div className="mt-5 flex items-center justify-between">
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-purple-600 via-violet-500 to-cyan-400 px-6 py-2.5 text-sm font-semibold text-white shadow-[0_4px_20px_rgba(139,92,246,0.3)]">
                   Learn More & Join
                   <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                     <path d="M9 5l7 7-7 7" />
                   </svg>
                 </span>
+                {/* 右下角迷你装饰粒子 */}
+                <div className="flex gap-1 opacity-40">
+                  <div className="w-1 h-1 rounded-full bg-purple-400 animate-pulse" />
+                  <div className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" style={{ animationDelay: '0.5s' }} />
+                  <div className="w-1 h-1 rounded-full bg-violet-400 animate-pulse" style={{ animationDelay: '1s' }} />
+                </div>
               </div>
             </div>
 

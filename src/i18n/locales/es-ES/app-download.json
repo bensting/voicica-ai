@@ -6,6 +6,11 @@
     "freeDownload": "Descarga gratuita",
     "comingSoon": "Próximamente",
     "loading": "Cargando...",
-    "tip": "Descarga la aplicación para ver vídeos y ganar créditos"
+    "tip": "Descarga la aplicación para ver vídeos y ganar créditos",
+    "proVersion": "Versión Pro",
+    "standardVersion": "Versión Estándar",
+    "unlockAllModels": "Desbloquea todos los modelos IA + Recompensas diarias",
+    "downloadApk": "Descargar APK",
+    "downloadViaGooglePlay": "Descargar en Google Play"
   }
 }

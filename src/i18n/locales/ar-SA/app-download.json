@@ -6,6 +6,11 @@
     "freeDownload": "تحميل مجاني",
     "comingSoon": "قريبا",
     "loading": "جاري التحميل...",
-    "tip": "قم بتحميل التطبيق لمشاهدة الفيديوهات وكسب الرصيد"
+    "tip": "قم بتحميل التطبيق لمشاهدة الفيديوهات وكسب الرصيد",
+    "proVersion": "النسخة الاحترافية",
+    "standardVersion": "النسخة العادية",
+    "unlockAllModels": "افتح جميع نماذج الذكاء الاصطناعي + مكافآت يومية",
+    "downloadApk": "تحميل APK",
+    "downloadViaGooglePlay": "التحميل عبر Google Play"
   }
 }

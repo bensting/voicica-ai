@@ -6,6 +6,11 @@
     "freeDownload": "免费下载",
     "comingSoon": "即将上线",
     "loading": "加载中...",
-    "tip": "下载 App 观看视频即可获得积分奖励"
+    "tip": "下载 App 观看视频即可获得积分奖励",
+    "proVersion": "专业版",
+    "standardVersion": "标准版",
+    "unlockAllModels": "解锁全部 AI 模型 + 每日奖励",
+    "downloadApk": "下载 APK",
+    "downloadViaGooglePlay": "通过 Google Play 下载"
   }
 }

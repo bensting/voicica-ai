@@ -6,6 +6,11 @@
     "freeDownload": "免費下載",
     "comingSoon": "即將上線",
     "loading": "載入中...",
-    "tip": "下載 App 觀看影片即可獲得積分獎勵"
+    "tip": "下載 App 觀看影片即可獲得積分獎勵",
+    "proVersion": "專業版",
+    "standardVersion": "標準版",
+    "unlockAllModels": "解鎖全部 AI 模型 + 每日獎勵",
+    "downloadApk": "下載 APK",
+    "downloadViaGooglePlay": "透過 Google Play 下載"
   }
 }

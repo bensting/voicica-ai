@@ -6,6 +6,7 @@ import { HOME_SHOWCASE_CONFIG } from '@/config/homeShowcase';
 import PhoneMockup from './PhoneMockup';
 import ArtShowcase from './ArtShowcase';
 import AudioShowcase from './AudioShowcase';
+import AppDownloadModal from '@/components/common/AppDownloadModal';
 
 const heroTexts = {
   en: {
@@ -89,11 +90,11 @@ const heroTexts = {
 } as const;
 
 export default function NewHero({ locale = 'en' }: { locale?: string }) {
-  const { backgroundImage, avatars, playStoreUrl } =
-    HOME_SHOWCASE_CONFIG;
+  const { backgroundImage, avatars } = HOME_SHOWCASE_CONFIG;
   const t = heroTexts[locale as keyof typeof heroTexts] || heroTexts.en;
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isMuted, setIsMuted] = useState(true);
+  const [showDownloadModal, setShowDownloadModal] = useState(false);
 
   const toggleMute = () => {
     if (videoRef.current) {
@@ -111,13 +112,7 @@ export default function NewHero({ locale = 'en' }: { locale?: string }) {
       });
     }
 
-    // 直接检测 Android，避免 state 延迟问题
-    const isAndroid = /android/i.test(navigator.userAgent);
-    if (isAndroid) {
-      window.location.href = playStoreUrl;
-    } else {
-      window.location.href = '/native';
-    }
+    setShowDownloadModal(true);
   };
 
   return (
@@ -319,6 +314,11 @@ export default function NewHero({ locale = 'en' }: { locale?: string }) {
           </div>
         </div>
       </div>
+
+      <AppDownloadModal
+        isOpen={showDownloadModal}
+        onClose={() => setShowDownloadModal(false)}
+      />
     </section>
   );
 }

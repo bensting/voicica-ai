@@ -414,6 +414,20 @@ body {
   animation: btn-shine 4s ease-in-out infinite;
 }
 
+/* 旋转光边框 */
+@keyframes border-glow {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-border-glow {
+  animation: border-glow 6s linear infinite;
+}
+
 /* ========== Adsterra Social Bar 强制底部显示 ========== */
 /* 覆盖 Adsterra 的默认顶部定位 */
 [id*="social-bar"],

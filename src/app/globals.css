@@ -399,6 +399,21 @@ body {
   animation: feed-scroll 30s linear infinite;
 }
 
+/* 按钮光扫效果 */
+@keyframes btn-shine {
+  0%, 85% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.animate-btn-shine {
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  animation: btn-shine 4s ease-in-out infinite;
+}
+
 /* ========== Adsterra Social Bar 强制底部显示 ========== */
 /* 覆盖 Adsterra 的默认顶部定位 */
 [id*="social-bar"],

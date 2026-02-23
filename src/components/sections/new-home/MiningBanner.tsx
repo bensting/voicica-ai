@@ -4,7 +4,7 @@ import Link from 'next/link';
 
 /**
  * Mining 诱饵横幅 — 引导用户前往 /mining 了解更多
- * 深色科技渐变背景 + 能量球视觉 + CTA
+ * 深色科技渐变背景 + 能量球 + 社交证明 + CTA
  */
 export default function MiningBanner() {
   return (
@@ -14,7 +14,6 @@ export default function MiningBanner() {
           <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#0c0c20] via-[#10102a] to-[#0a1628] border border-white/[0.06] p-6 md:p-8">
             {/* 背景效果 */}
             <div className="pointer-events-none absolute inset-0 overflow-hidden">
-              {/* 底部青蓝光晕 */}
               <div className="absolute -bottom-10 right-0 h-40 w-60 rounded-full bg-cyan-500/8 blur-[80px]" />
               <div className="absolute -bottom-10 left-1/3 h-32 w-40 rounded-full bg-blue-600/8 blur-[60px]" />
               {/* 桌面端流动线条 */}
@@ -47,17 +46,17 @@ export default function MiningBanner() {
 
             {/* ===== 移动端布局 ===== */}
             <div className="relative md:hidden">
-              <h3 className="text-[22px] font-extrabold leading-tight">
-                <span className="bg-gradient-to-r from-white via-white to-gray-300 bg-clip-text text-transparent">
-                  Turn Your Phone into an AI Power Node
-                </span>
+              <h3 className="text-[22px] font-extrabold leading-tight text-white">
+                Turn Your Phone into an AI Power Node
               </h3>
 
               <p className="mt-3 text-[13px] text-gray-400/90 leading-relaxed">
-                Join the Voicica ecosystem. Earn $VOICICA rewards while powering the future of AI Voice.
+                Join the Voicica ecosystem.{' '}
+                <span className="font-semibold text-emerald-400">Earn $VOICICA rewards</span>{' '}
+                while powering the future of AI Voice.
               </p>
 
-              <div className="mt-5 flex flex-col items-center gap-3">
+              <div className="mt-5 flex flex-col items-center gap-2.5">
                 {/* 迷你能量球 */}
                 <div className="relative h-12 w-12 flex items-center justify-center">
                   <div className="absolute inset-0 rounded-full bg-purple-500/15 blur-lg animate-pulse" />
@@ -71,12 +70,19 @@ export default function MiningBanner() {
                     <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/15 to-transparent animate-spin" style={{ animationDuration: '3s' }} />
                   </div>
                 </div>
-                {/* 按钮 */}
-                <span className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-purple-600 via-violet-500 to-cyan-400 px-6 py-2.5 text-sm font-semibold text-white shadow-[0_4px_20px_rgba(139,92,246,0.3)]">
+
+                {/* 社交证明 */}
+                <p className="text-[11px] text-gray-500">
+                  <span className="text-orange-400">&#x1F525;</span> 12,843 Nodes Online Now
+                </p>
+
+                {/* 按钮 + shine */}
+                <span className="relative overflow-hidden inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-purple-600 via-violet-500 to-cyan-400 px-7 py-3 text-sm font-semibold text-white shadow-[0_4px_20px_rgba(139,92,246,0.3)]">
                   Learn More & Join
                   <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                     <path d="M9 5l7 7-7 7" />
                   </svg>
+                  <span className="absolute inset-0 animate-btn-shine" />
                 </span>
               </div>
             </div>
@@ -109,17 +115,23 @@ export default function MiningBanner() {
                   Turn Your Phone into an AI Power Node
                 </h3>
                 <p className="mt-1.5 text-sm text-gray-400 leading-relaxed">
-                  Join the Voicica ecosystem. Earn $VOICICA rewards while powering the future of AI Voice.
+                  Join the Voicica ecosystem.{' '}
+                  <span className="font-semibold text-emerald-400">Earn $VOICICA rewards</span>{' '}
+                  while powering the future of AI Voice.
+                </p>
+                <p className="mt-2 text-xs text-gray-500">
+                  <span className="text-orange-400">&#x1F525;</span> 12,843 Nodes Online Now
                 </p>
               </div>
 
               {/* CTA */}
               <div className="shrink-0">
-                <span className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-purple-600 to-cyan-400 px-6 py-2.5 text-sm font-semibold text-white shadow-lg shadow-purple-500/20 transition-all group-hover:shadow-purple-500/40 group-hover:-translate-y-0.5">
+                <span className="relative overflow-hidden inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-purple-600 to-cyan-400 px-6 py-2.5 text-sm font-semibold text-white shadow-lg shadow-purple-500/20 transition-all group-hover:shadow-purple-500/40 group-hover:-translate-y-0.5">
                   Learn More & Join
                   <svg className="w-4 h-4 transition-transform group-hover:translate-x-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                     <path d="M9 5l7 7-7 7" />
                   </svg>
+                  <span className="absolute inset-0 animate-btn-shine" />
                 </span>
               </div>
             </div>

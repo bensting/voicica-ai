@@ -1,8 +1,16 @@
 {
-  "version": "1.2.19",
-  "buildNumber": 40,
+  "version": "1.2.20",
+  "buildNumber": 41,
   "description": "原生应用版本（Android/iOS 应用壳）",
   "changelog": [
+    {
+      "version": "1.2.20",
+      "buildNumber": 41,
+      "date": "2026-02-23",
+      "changes": [
+        "修正判定广告收益的预测"
+      ]
+    },
     {
       "version": "1.2.19",
       "buildNumber": 40,

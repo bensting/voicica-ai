@@ -54,7 +54,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
 
       const userData = await getCurrentUserProfile(platformRef.current);
 
-      console.log('✅ UserContext: 用户数据获取成功', userData);
+      console.log('✅ UserContext: 用户数据获取成功');
       setProfile(userData);
     } catch (err) {
       const error = err as Error;

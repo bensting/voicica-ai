@@ -200,7 +200,7 @@ export function useDailyTasks(): UseDailyTasksReturn {
       }
       checkinInProgressRef.current = false;
     }
-  }, [refresh, showRewardedAd, isNative]);
+  }, [refresh, showRewardedAd]);
 
   // 领取广告奖励
   const doClaimAdReward = useCallback(async (): Promise<TaskResult> => {
@@ -267,7 +267,7 @@ export function useDailyTasks(): UseDailyTasksReturn {
         setClaiming(false);
       }
     }
-  }, [refresh, showRewardedAd, isNative, lastAdRevenue, clearLastAdRevenue]);
+  }, [refresh, showRewardedAd, lastAdRevenue, clearLastAdRevenue]);
 
   return {
     status,

@@ -72,7 +72,7 @@ export default function MiningPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <MiningPageContent locale="en" />
+      <MiningPageContent />
     </>
   );
 }

@@ -1,7 +1,6 @@
-import Link from 'next/link';
 import { AI_VOICE_CONTENT } from '@/config/seo/ai-voice';
 import VoiceShowcase from './VoiceShowcase';
-import SeoAppBadges from './SeoAppBadges';
+import SeoCta from './SeoCta';
 
 interface AiVoicePageContentProps {
   locale: string;
@@ -11,7 +10,7 @@ export default function AiVoicePageContent({ locale }: AiVoicePageContentProps) 
   const content = AI_VOICE_CONTENT[locale] || AI_VOICE_CONTENT.en;
 
   return (
-    <div className="min-h-screen bg-gray-950">
+    <div className="min-h-screen overflow-hidden bg-gray-950">
       {/* Hero */}
       <section className="px-6 pb-6 pt-24 md:pb-8 md:pt-32">
         <div className="mx-auto max-w-4xl text-center">
@@ -33,13 +32,7 @@ export default function AiVoicePageContent({ locale }: AiVoicePageContentProps) 
           <h2 className="mb-6 text-2xl font-bold text-white md:text-3xl">
             {content.cta.title}
           </h2>
-          <Link
-            href="/native"
-            className="inline-block rounded-full bg-gradient-to-r from-purple-600 to-cyan-500 px-8 py-3 text-sm font-semibold text-white transition-opacity hover:opacity-90"
-          >
-            {content.cta.buttonText}
-          </Link>
-          <SeoAppBadges />
+          <SeoCta buttonText={content.cta.buttonText} />
         </div>
       </section>
 

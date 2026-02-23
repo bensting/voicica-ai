@@ -1,7 +1,6 @@
-import Link from 'next/link';
 import { VIDEO_DOWNLOADER_CONTENT } from '@/config/seo/video-downloader';
 import VideoDownloaderShowcase from './VideoDownloaderShowcase';
-import SeoAppBadges from './SeoAppBadges';
+import SeoCta from './SeoCta';
 
 interface VideoDownloaderPageContentProps {
   locale: string;
@@ -35,13 +34,7 @@ export default function VideoDownloaderPageContent({
           <h2 className="mb-6 text-2xl font-bold text-white md:text-3xl">
             {content.cta.title}
           </h2>
-          <Link
-            href="/native"
-            className="inline-block rounded-full bg-gradient-to-r from-purple-600 to-cyan-500 px-8 py-3 text-sm font-semibold text-white transition-opacity hover:opacity-90"
-          >
-            {content.cta.buttonText}
-          </Link>
-          <SeoAppBadges />
+          <SeoCta buttonText={content.cta.buttonText} />
         </div>
       </section>
 

@@ -199,8 +199,8 @@ export default function VoiceShowcase({ locale }: { locale: string }) {
   };
 
   return (
-    <section className="px-6 py-6 md:py-10">
-      <div className="mx-auto max-w-5xl space-y-10">
+    <section className="overflow-hidden px-6 py-6 md:py-10">
+      <div className="mx-auto max-w-5xl space-y-10 overflow-hidden">
         {/* Voice Samples */}
         <div>
           <h2 className="mb-4 text-lg font-semibold text-white">

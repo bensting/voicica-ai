@@ -1,7 +1,6 @@
-import Link from 'next/link';
 import { IMAGE_TOOLS_CONTENT } from '@/config/seo/image-tools';
 import ImageToolsShowcase from './ImageToolsShowcase';
-import SeoAppBadges from './SeoAppBadges';
+import SeoCta from './SeoCta';
 
 interface ImageToolsPageContentProps {
   locale: string;
@@ -33,13 +32,7 @@ export default function ImageToolsPageContent({ locale }: ImageToolsPageContentP
           <h2 className="mb-6 text-2xl font-bold text-white md:text-3xl">
             {content.cta.title}
           </h2>
-          <Link
-            href="/native"
-            className="inline-block rounded-full bg-gradient-to-r from-purple-600 to-cyan-500 px-8 py-3 text-sm font-semibold text-white transition-opacity hover:opacity-90"
-          >
-            {content.cta.buttonText}
-          </Link>
-          <SeoAppBadges />
+          <SeoCta buttonText={content.cta.buttonText} />
         </div>
       </section>
 

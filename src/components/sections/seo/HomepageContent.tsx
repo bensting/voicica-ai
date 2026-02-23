@@ -1,6 +1,5 @@
-import Link from 'next/link';
 import { HOMEPAGE_CONTENT } from '@/config/seo/homepage';
-import SeoAppBadges from './SeoAppBadges';
+import SeoCta from './SeoCta';
 
 const CTA_LABELS: Record<string, { title: string; button: string }> = {
   en: { title: 'Start Creating with AI Now', button: 'Try Voicica AI Free' },
@@ -42,13 +41,7 @@ export default function HomepageContent({ locale }: HomepageContentProps) {
           <h2 className="mb-6 text-2xl font-bold text-white md:text-3xl">
             {(CTA_LABELS[locale] || CTA_LABELS.en).title}
           </h2>
-          <Link
-            href="/native"
-            className="inline-block rounded-full bg-gradient-to-r from-purple-600 to-cyan-500 px-8 py-3 text-sm font-semibold text-white transition-opacity hover:opacity-90"
-          >
-            {(CTA_LABELS[locale] || CTA_LABELS.en).button}
-          </Link>
-          <SeoAppBadges />
+          <SeoCta buttonText={(CTA_LABELS[locale] || CTA_LABELS.en).button} />
         </div>
       </div>
     </section>

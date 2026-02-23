@@ -1,7 +1,6 @@
-import Link from 'next/link';
 import { AI_VIDEO_CONTENT } from '@/config/seo/ai-video';
 import AiVideoShowcase from './AiVideoShowcase';
-import SeoAppBadges from './SeoAppBadges';
+import SeoCta from './SeoCta';
 
 interface AiVideoPageContentProps {
   locale: string;
@@ -33,13 +32,7 @@ export default function AiVideoPageContent({ locale }: AiVideoPageContentProps) 
           <h2 className="mb-6 text-2xl font-bold text-white md:text-3xl">
             {content.cta.title}
           </h2>
-          <Link
-            href="/native"
-            className="inline-block rounded-full bg-gradient-to-r from-purple-600 to-cyan-500 px-8 py-3 text-sm font-semibold text-white transition-opacity hover:opacity-90"
-          >
-            {content.cta.buttonText}
-          </Link>
-          <SeoAppBadges />
+          <SeoCta buttonText={content.cta.buttonText} />
         </div>
       </section>
 

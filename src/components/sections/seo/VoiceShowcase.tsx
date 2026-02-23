@@ -51,7 +51,7 @@ function VoiceCard({
   return (
     <div
       onClick={() => onPlay(voice.id, voice.audioUrl)}
-      className="group cursor-pointer rounded-xl border border-gray-700/50 bg-gray-800/50 p-3 transition-all hover:border-gray-600/50 hover:bg-gray-800/80 active:scale-[0.98]"
+      className="group min-w-0 cursor-pointer overflow-hidden rounded-xl border border-gray-700/50 bg-gray-800/50 p-3 transition-all hover:border-gray-600/50 hover:bg-gray-800/80 active:scale-[0.98]"
     >
       <div className="mb-2 flex items-center gap-2.5">
         {/* Avatar */}
@@ -130,7 +130,7 @@ function DialogueCard({
   return (
     <div
       onClick={() => onPlay(dialogue.id, dialogue.audioUrl)}
-      className="group cursor-pointer rounded-xl border border-gray-700/50 bg-gray-800/50 p-3 transition-all hover:border-gray-600/50 hover:bg-gray-800/80 active:scale-[0.98]"
+      className="group min-w-0 cursor-pointer overflow-hidden rounded-xl border border-gray-700/50 bg-gray-800/50 p-3 transition-all hover:border-gray-600/50 hover:bg-gray-800/80 active:scale-[0.98]"
     >
       <div className="mb-2 flex items-center gap-2.5">
         {/* Dialogue icon */}

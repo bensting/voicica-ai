@@ -167,6 +167,7 @@ export function LanguageProvider({ children, initialLocale }: LanguageProviderPr
           appDownloadModule,
           storyModule,
           nativeModule,
+          miningModule,
         ] = await Promise.all([
           import(`@/i18n/locales/${locale}/common.json`),
           import(`@/i18n/locales/${locale}/auth.json`),
@@ -190,6 +191,7 @@ export function LanguageProvider({ children, initialLocale }: LanguageProviderPr
           import(`@/i18n/locales/${locale}/app-download.json`),
           import(`@/i18n/locales/${locale}/story.json`),
           import(`@/i18n/locales/${locale}/native.json`),
+          import(`@/i18n/locales/${locale}/mining.json`),
         ]);
 
         // 合并所有模块的消息
@@ -216,6 +218,7 @@ export function LanguageProvider({ children, initialLocale }: LanguageProviderPr
           ...appDownloadModule.default,
           ...storyModule.default,
           ...nativeModule.default,
+          ...miningModule.default,
         });
 
         // 语言文件加载完成后，标记为已就绪

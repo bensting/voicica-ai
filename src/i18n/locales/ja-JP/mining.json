@@ -1,0 +1,21 @@
+{
+  "mining": {
+    "heroTitle": "分散型AIパワー",
+    "heroSubtitle": "スマホをAI計算ノードに変えて毎日稼ごう",
+    "step1Title": "ダウンロード＆セットアップ",
+    "step1Desc": "Voicica Pro APKをインストールしてマイニング機能をアンロック",
+    "step2Title": "ノードを有効化",
+    "step2Desc": "ワンタップでAI計算ノードを起動",
+    "step3Title": "報酬を引き出す",
+    "step3Desc": "$VOICICAをいつでもローカルウォレットに引き出し",
+    "downloadApk": "Voicica Pro APKをダウンロード",
+    "unlockFeatures": "全機能アンロック + 高リターン",
+    "googlePlay": "Google Playで入手",
+    "standardVersion": "スタンダード版",
+    "apkTip": "APK直接インストールで全機能・マイニング・報酬にアクセス",
+    "hot": "注目",
+    "poweredBy": "提供元",
+    "secureNode": "セキュアノード技術",
+    "ddosProtected": "DDoS保護済み"
+  }
+}

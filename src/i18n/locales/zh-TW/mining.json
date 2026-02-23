@@ -1,0 +1,21 @@
+{
+  "mining": {
+    "heroTitle": "去中心化 AI 算力",
+    "heroSubtitle": "將手機變為 AI 算力節點，每日賺取收益",
+    "step1Title": "下載安裝",
+    "step1Desc": "安裝 Voicica Pro APK 解鎖全部挖礦功能",
+    "step2Title": "啟動節點",
+    "step2Desc": "一鍵啟動 AI 算力節點",
+    "step3Title": "提取獎勵",
+    "step3Desc": "隨時將 $VOICICA 提現至本地錢包",
+    "downloadApk": "下載 Voicica Pro APK",
+    "unlockFeatures": "解鎖全部功能 + 高收益",
+    "googlePlay": "在 Google Play 下載",
+    "standardVersion": "標準版",
+    "apkTip": "直接安裝 APK 享受完整功能、挖礦與獎勵",
+    "hot": "熱門",
+    "poweredBy": "技術支持",
+    "secureNode": "安全節點技術",
+    "ddosProtected": "DDoS 防護"
+  }
+}

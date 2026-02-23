@@ -1,0 +1,21 @@
+{
+  "mining": {
+    "heroTitle": "ဗဟိုချုပ်ကိုင်မှုမဲ့ AI စွမ်းအင်",
+    "heroSubtitle": "သင့်ဖုန်းကို AI Compute Node အဖြစ် ပြောင်းလဲပြီး နေ့စဉ်ဝင်ငွေရယူပါ",
+    "step1Title": "ဒေါင်းလုဒ်လုပ်ပြီး စတင်ပါ",
+    "step1Desc": "Voicica Pro APK ထည့်သွင်းပြီး mining စွမ်းရည်အားလုံး ဖွင့်ပါ",
+    "step2Title": "Node ဖွင့်ပါ",
+    "step2Desc": "AI compute node ကို တစ်ချက်နှိပ်ရုံဖြင့် စတင်ပါ",
+    "step3Title": "ဆုလာဘ်ထုတ်ယူပါ",
+    "step3Desc": "$VOICICA ကို သင့်ပိုက်ဆံအိတ်သို့ အချိန်မရွေး ထုတ်ယူပါ",
+    "downloadApk": "Voicica Pro APK ဒေါင်းလုဒ်",
+    "unlockFeatures": "အင်္ဂါရပ်အားလုံး + မြင့်မားသောအမြတ်",
+    "googlePlay": "Google Play တွင် ရယူပါ",
+    "standardVersion": "စံဗားရှင်း",
+    "apkTip": "APK တိုက်ရိုက်ထည့်သွင်းခြင်းဖြင့် အပြည့်အဝ အသုံးပြုခွင့်၊ mining နှင့် ဆုလာဘ်များ ရရှိပါ",
+    "hot": "ခေတ်စား",
+    "poweredBy": "ပံ့ပိုးသူ",
+    "secureNode": "လုံခြုံသော Node နည်းပညာ",
+    "ddosProtected": "DDoS ကာကွယ်ထား"
+  }
+}

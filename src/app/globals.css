@@ -369,6 +369,36 @@ body {
   100% { transform: scale(1); opacity: 1; }
 }
 
+/* ========== Mining 页面动画 ========== */
+
+/* 晶体上下浮动 */
+@keyframes crystal-float {
+  0%, 100% {
+    transform: translateY(8px);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+.animate-crystal-float {
+  animation: crystal-float 6s ease-in-out infinite;
+}
+
+/* 实时数据竖向无限滚动 */
+@keyframes feed-scroll {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(-50%);
+  }
+}
+
+.animate-feed-scroll {
+  animation: feed-scroll 30s linear infinite;
+}
+
 /* ========== Adsterra Social Bar 强制底部显示 ========== */
 /* 覆盖 Adsterra 的默认顶部定位 */
 [id*="social-bar"],

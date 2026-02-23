@@ -85,7 +85,54 @@ export default function PrivacyPolicy() {
 
           <section>
             <h2 className="text-xl sm:text-2xl font-semibold mb-3">
-              4. Data Security
+              4. Third-Party Advertising Partners
+            </h2>
+            <p className="mb-3">
+              To provide our services and support the &quot;$VOICICA Reward Program,&quot; we work with several third-party advertising partners. These partners may collect device information and usage data to serve personalized ads. Our partners include but are not limited to:
+            </p>
+            <ul className="list-disc list-inside space-y-2 ml-4">
+              <li>
+                <strong>AppLovin (MAX):</strong> Used for ad mediation and performance tracking.{" "}
+                <a
+                  href="https://www.applovin.com/privacy/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-600 dark:text-blue-400 hover:underline"
+                >
+                  Privacy Policy
+                </a>
+              </li>
+              <li>
+                <strong>Unity Ads:</strong> Used for providing rewarded video advertisements.{" "}
+                <a
+                  href="https://unity.com/legal/privacy-policy"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-600 dark:text-blue-400 hover:underline"
+                >
+                  Privacy Policy
+                </a>
+              </li>
+              <li>
+                <strong>Google AdMob:</strong> Used for display and video advertisements.{" "}
+                <a
+                  href="https://policies.google.com/privacy"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-600 dark:text-blue-400 hover:underline"
+                >
+                  Privacy Policy
+                </a>
+              </li>
+            </ul>
+            <p className="mt-3">
+              You can opt-out of personalized advertising through your mobile device settings.
+            </p>
+          </section>
+
+          <section>
+            <h2 className="text-xl sm:text-2xl font-semibold mb-3">
+              5. Data Security
             </h2>
             <p>
               We implement reasonable technical and organizational measures to protect your personal information from unauthorized access, use, disclosure, modification, or destruction. This includes encryption, access controls, and secure storage facilities. However, please note that no method of Internet transmission or electronic storage is 100% secure.
@@ -94,7 +141,7 @@ export default function PrivacyPolicy() {
 
           <section>
             <h2 className="text-xl sm:text-2xl font-semibold mb-3">
-              5. Data Retention
+              6. Data Retention
             </h2>
             <p>
               We retain your personal information for as long as necessary to fulfill the purposes for which it was collected, or as required by law. When you delete your account, we will delete or anonymize your personal information unless we are required by law to retain certain information.
@@ -103,7 +150,7 @@ export default function PrivacyPolicy() {
 
           <section>
             <h2 className="text-xl sm:text-2xl font-semibold mb-3">
-              6. Your Rights
+              7. Your Rights
             </h2>
             <p className="mb-3">Depending on applicable data protection laws, you may have the following rights:</p>
             <ul className="list-disc list-inside space-y-2 ml-4">
@@ -118,7 +165,7 @@ export default function PrivacyPolicy() {
 
           <section>
             <h2 className="text-xl sm:text-2xl font-semibold mb-3">
-              7. Account Deletion
+              8. Account Deletion
             </h2>
             <p className="mb-3">
               If you wish to delete your account and associated data, please send an email to{" "}
@@ -137,7 +184,7 @@ export default function PrivacyPolicy() {
 
           <section>
             <h2 className="text-xl sm:text-2xl font-semibold mb-3">
-              8. User Data Deletion
+              9. User Data Deletion
             </h2>
             <p className="mb-3">
               You have the right to request the deletion of your personal data at any time. To request the deletion of your data, please contact us at{" "}
@@ -164,7 +211,7 @@ export default function PrivacyPolicy() {
 
           <section>
             <h2 className="text-xl sm:text-2xl font-semibold mb-3">
-              9. Cookies and Tracking Technologies
+              10. Cookies and Tracking Technologies
             </h2>
             <p>
               We use cookies and similar tracking technologies to collect and use information about your use of our services. You can manage cookie preferences through your browser settings, but disabling cookies may affect the functionality of certain features.
@@ -173,7 +220,7 @@ export default function PrivacyPolicy() {
 
           <section>
             <h2 className="text-xl sm:text-2xl font-semibold mb-3">
-              10. Children&apos;s Privacy
+              11. Children&apos;s Privacy
             </h2>
             <p>
               Our services are not directed to children under 18 years of age. We do not knowingly collect personal information from children. If you become aware that a child has provided us with personal information, please contact us and we will take steps to delete such information.
@@ -182,7 +229,7 @@ export default function PrivacyPolicy() {
 
           <section>
             <h2 className="text-xl sm:text-2xl font-semibold mb-3">
-              11. Changes to This Privacy Policy
+              12. Changes to This Privacy Policy
             </h2>
             <p>
               We may update this Privacy Policy from time to time. When we make significant changes, we will notify you by posting a notice on our service or by sending you a direct notification. We recommend that you review this Privacy Policy periodically for the latest information.
@@ -191,7 +238,7 @@ export default function PrivacyPolicy() {
 
           <section>
             <h2 className="text-xl sm:text-2xl font-semibold mb-3">
-              12. Contact Us
+              13. Contact Us
             </h2>
             <p className="mb-3">
               If you have any questions, comments, or requests regarding this Privacy Policy, please contact us:

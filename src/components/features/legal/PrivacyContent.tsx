@@ -49,14 +49,25 @@ export default function PrivacyContent() {
       </section>
 
       <section>
-        <h3 className="text-base font-semibold text-gray-900 mb-2">4. Data Security</h3>
+        <h3 className="text-base font-semibold text-gray-900 mb-2">4. Third-Party Advertising Partners</h3>
+        <p className="mb-2">We work with advertising partners who may collect device information and usage data to serve personalized ads:</p>
+        <ul className="list-disc list-inside space-y-1 ml-2">
+          <li><strong>AppLovin (MAX):</strong> Ad mediation and performance tracking</li>
+          <li><strong>Unity Ads:</strong> Rewarded video advertisements</li>
+          <li><strong>Google AdMob:</strong> Display and video advertisements</li>
+        </ul>
+        <p className="mt-2">You can opt-out of personalized advertising through your mobile device settings.</p>
+      </section>
+
+      <section>
+        <h3 className="text-base font-semibold text-gray-900 mb-2">5. Data Security</h3>
         <p>
           We implement reasonable technical and organizational measures to protect your information, including encryption, access controls, and secure storage. However, no method of transmission is 100% secure.
         </p>
       </section>
 
       <section>
-        <h3 className="text-base font-semibold text-gray-900 mb-2">5. Your Rights</h3>
+        <h3 className="text-base font-semibold text-gray-900 mb-2">6. Your Rights</h3>
         <ul className="list-disc list-inside space-y-1 ml-2">
           <li>Access and obtain a copy of your information</li>
           <li>Correct inaccurate information</li>
@@ -68,14 +79,14 @@ export default function PrivacyContent() {
       </section>
 
       <section>
-        <h3 className="text-base font-semibold text-gray-900 mb-2">6. Account Deletion</h3>
+        <h3 className="text-base font-semibold text-gray-900 mb-2">7. Account Deletion</h3>
         <p>
           To delete your account and data, email <span className="text-purple-600">info@voicica.ai</span>. We will process your request within 7 business days.
         </p>
       </section>
 
       <section>
-        <h3 className="text-base font-semibold text-gray-900 mb-2">7. Contact Us</h3>
+        <h3 className="text-base font-semibold text-gray-900 mb-2">8. Contact Us</h3>
         <p>
           Questions? Contact us at: <span className="text-purple-600">info@voicica.ai</span>
         </p>

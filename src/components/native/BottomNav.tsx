@@ -72,11 +72,6 @@ export default function BottomNav() {
         className="fixed bottom-0 left-0 right-0 z-50 bg-slate-950/80 backdrop-blur-xl border-t border-white/5 lg:static lg:shrink-0"
         style={{ paddingBottom: 'var(--safe-area-inset-bottom, 0px)' }}
       >
-        <div className="flex items-center justify-center gap-3 py-1.5 text-[9px] text-gray-600 border-b border-white/5">
-          <a href="/privacy" className="hover:text-gray-400 transition-colors">Privacy Policy</a>
-          <span>·</span>
-          <a href="/terms" className="hover:text-gray-400 transition-colors">Terms & Conditions</a>
-        </div>
         <div className="flex items-center justify-around h-16">
           {/* Explore */}
           <Link

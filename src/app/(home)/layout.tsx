@@ -1,4 +1,5 @@
 import SeoNavbar from '@/components/sections/seo/SeoNavbar';
+import SimpleFooter from '@/components/layout/SimpleFooter';
 
 export default function HomeLayout({
   children,
@@ -9,6 +10,7 @@ export default function HomeLayout({
     <>
       <SeoNavbar />
       {children}
+      <SimpleFooter />
     </>
   );
 }

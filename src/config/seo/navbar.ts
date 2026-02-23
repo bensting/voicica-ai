@@ -10,6 +10,7 @@ export const SEO_NAV_LINKS: SeoNavLink[] = [
   { id: 'ai-video', path: 'ai-video' },
   { id: 'image-tools', path: 'image-tools' },
   { id: 'video-downloader', path: 'video-downloader' },
+  { id: 'mining', path: 'mining' },
 ];
 
 export const SEO_NAV_LABELS: Record<string, Record<string, string>> = {
@@ -60,6 +61,14 @@ export const SEO_NAV_LABELS: Record<string, Record<string, string>> = {
     ko: '동영상 다운로드',
     th: 'ดาวน์โหลดวิดีโอ',
     es: 'Descargar Video',
+  },
+  'mining': {
+    en: 'Mining',
+    ja: 'マイニング',
+    'zh-Hant': '挖礦',
+    ko: '마이닝',
+    th: 'ขุดเหรียญ',
+    es: 'Minería',
   },
 };
 

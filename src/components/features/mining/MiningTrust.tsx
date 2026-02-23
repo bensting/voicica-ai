@@ -39,19 +39,16 @@ export default function MiningTrust() {
   ];
 
   return (
-    <section className="bg-[#06060f] px-4 py-16">
-      <div className="mx-auto max-w-3xl">
-        {/* "Powered by" 小字 */}
-        <p className="mb-6 text-center text-xs uppercase tracking-widest text-gray-600">
+    <section className="bg-[#06060f] px-4 pt-4 pb-8">
+      <div className="mx-auto max-w-md">
+        <p className="mb-3 text-center text-[10px] uppercase tracking-widest text-gray-600">
           {t('mining.poweredBy')}
         </p>
-
-        {/* 三个标识横排 */}
-        <div className="flex flex-wrap items-center justify-center gap-8">
+        <div className="flex items-center justify-center gap-6">
           {badges.map((badge, i) => (
-            <div key={i} className="flex items-center gap-2 text-gray-500">
+            <div key={i} className="flex items-center gap-1.5 text-gray-500">
               {badge.icon}
-              <span className="text-sm font-medium">{badge.label}</span>
+              <span className="text-[11px] font-medium">{badge.label}</span>
             </div>
           ))}
         </div>

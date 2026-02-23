@@ -1,8 +1,8 @@
 'use client';
 
 /**
- * Mining LiveFeed — 实时数据滚动
- * 深色半透明卡片，CSS 竖向无限滚动（clone 一份实现无缝循环）
+ * Mining LiveFeed — 紧凑实时数据滚动
+ * 固定高度小卡片，CSS 竖向无缝循环
  */
 
 const FEED_DATA = [
@@ -26,33 +26,25 @@ const FEED_DATA = [
   { user: 'ID**40', action: 'earned 2,000 Credits' },
 ];
 
-/* 随机 emoji 指示器 */
-const indicators = ['🟢', '💰', '⚡'];
-
-function FeedItem({ user, action, index }: { user: string; action: string; index: number }) {
+function FeedItem({ user, action }: { user: string; action: string }) {
   return (
-    <div className="flex items-center gap-2.5 px-4 py-2 text-sm">
-      <span>{indicators[index % indicators.length]}</span>
-      <span className="font-medium text-gray-300">User {user}</span>
-      <span className="text-gray-500">{action}</span>
+    <div className="px-3 py-1 text-[11px] text-gray-500">
+      User {user} {action}
     </div>
   );
 }
 
 export default function MiningLiveFeed() {
   return (
-    <section className="bg-[#06060f] px-4 pb-16">
+    <section className="bg-[#06060f] px-4 pb-6">
       <div className="mx-auto max-w-md">
-        <div className="overflow-hidden rounded-xl border border-white/[0.06] bg-white/[0.02] backdrop-blur-sm" style={{ height: '180px' }}>
-          {/* 滚动容器：列表 clone 一份实现无缝循环 */}
+        <div className="overflow-hidden rounded-lg border border-white/[0.05] bg-white/[0.02]" style={{ height: '72px' }}>
           <div className="animate-feed-scroll">
-            {/* 原始列表 */}
             {FEED_DATA.map((item, i) => (
-              <FeedItem key={`a-${i}`} user={item.user} action={item.action} index={i} />
+              <FeedItem key={`a-${i}`} user={item.user} action={item.action} />
             ))}
-            {/* Clone 列表 */}
             {FEED_DATA.map((item, i) => (
-              <FeedItem key={`b-${i}`} user={item.user} action={item.action} index={i} />
+              <FeedItem key={`b-${i}`} user={item.user} action={item.action} />
             ))}
           </div>
         </div>

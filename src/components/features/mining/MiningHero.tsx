@@ -48,7 +48,7 @@ export default function MiningHero() {
       </h1>
 
       {/* 副标题 */}
-      <p className="relative mt-2 text-center text-sm text-gray-400 leading-relaxed whitespace-nowrap">
+      <p className="relative mt-2 text-center text-xs md:text-sm text-gray-400 leading-relaxed px-2">
         {t('mining.heroSubtitle')}
       </p>
 

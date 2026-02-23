@@ -17,7 +17,7 @@ export default function MiningSteps() {
   ];
 
   return (
-    <section className="bg-[#06060f] px-4 py-6">
+    <section className="bg-[#06060f] px-4 py-3">
       <div className="mx-auto max-w-md">
         <div className="grid grid-cols-3 gap-2.5">
           {steps.map((step, i) => (

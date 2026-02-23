@@ -36,7 +36,7 @@ function FeedItem({ user, action }: { user: string; action: string }) {
 
 export default function MiningLiveFeed() {
   return (
-    <section className="bg-[#06060f] px-4 pb-6">
+    <section className="bg-[#06060f] px-4 py-3">
       <div className="mx-auto max-w-md">
         <div className="overflow-hidden rounded-lg border border-white/[0.05] bg-white/[0.02]" style={{ height: '72px' }}>
           <div className="animate-feed-scroll">

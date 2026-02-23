@@ -34,7 +34,7 @@ export default function MiningDownload() {
   }, []);
 
   return (
-    <section className="bg-[#06060f] px-4 py-6">
+    <section className="bg-[#06060f] px-4 py-3">
       <div className="mx-auto max-w-md">
         {/* === 外层卡片：彩色渐变边框（紫→粉→青） === */}
         <div className="relative rounded-2xl p-[1.5px]">

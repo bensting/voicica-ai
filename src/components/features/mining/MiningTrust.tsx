@@ -39,7 +39,7 @@ export default function MiningTrust() {
   ];
 
   return (
-    <section className="bg-[#06060f] px-4 pt-4 pb-8">
+    <section className="bg-[#06060f] px-4 pt-3 pb-6">
       <div className="mx-auto max-w-md rounded-xl border border-white/[0.06] bg-white/[0.03] px-4 py-3">
         <p className="mb-2.5 text-[10px] uppercase tracking-widest text-gray-500">
           {t('mining.poweredBy')}

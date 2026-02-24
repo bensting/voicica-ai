@@ -33,6 +33,43 @@
         "usdtDesc": "Withdraw to exchange (min. 2 USDT)"
       }
     },
+    "withdraw": {
+      "title": "提現 USDT",
+      "available": "可用餘額",
+      "amount": "金額",
+      "min": "最低",
+      "network": "網路",
+      "feeLabel": "手續費",
+      "netAmount": "實際到帳",
+      "withdrawAmount": "提現金額",
+      "walletAddress": "錢包地址",
+      "confirmAddress": "確認錢包地址",
+      "confirmAddressPlaceholder": "再次輸入您的錢包地址",
+      "email": "電郵",
+      "telegram": "Telegram",
+      "optional": "選填",
+      "submit": "提交提現",
+      "submitting": "提交中...",
+      "successTitle": "提現已提交！",
+      "successDesc": "您的提現申請正在審核中，我們將盡快處理。",
+      "errors": {
+        "required": "必填",
+        "minAmount": "最低提現金額：{{min}} USDT",
+        "insufficientBalance": "餘額不足",
+        "amountTooLow": "金額必須大於手續費",
+        "addressMismatch": "兩次輸入的地址不一致",
+        "invalidEmail": "電郵格式不正確",
+        "invalidNetwork": "無效的網路",
+        "disabled": "提現功能暫未開放",
+        "loginRequired": "請登入後提現",
+        "serverError": "伺服器錯誤，請稍後重試"
+      },
+      "balance": "Balance",
+      "toWallet": "Withdraw to Wallet",
+      "walletDesc": "Withdraw to Phantom or other Solana wallets",
+      "cashOut": "Cash Out",
+      "cashOutDesc": "Withdraw to exchange address (min. 2 USDT)"
+    },
     "bottomNav": {
       "explore": "探索",
       "me": "我的"

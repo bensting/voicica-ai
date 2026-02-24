@@ -158,6 +158,7 @@ export default function TotalAssetsCard() {
       <WithdrawSheet
         isOpen={showWithdrawSheet}
         onClose={() => setShowWithdrawSheet(false)}
+        onSuccess={async () => { await refreshProfile(); }}
       />
 
       <LoginModal

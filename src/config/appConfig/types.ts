@@ -95,6 +95,8 @@ export interface MiningEconomyConfig {
   show_wallet_card: boolean;
   /** $VOICICA → USDT 兑换配置 */
   conversion: ConversionConfig;
+  /** USDT 提现配置 */
+  withdrawal: WithdrawalConfig;
 }
 
 /**
@@ -108,6 +110,32 @@ export interface ConversionConfig {
   /** 是否启用兑换功能 */
   enabled: boolean;
   // 汇率复用 mining_economy.token_value_usd（1 $VOICICA = token_value_usd USDT）
+}
+
+/**
+ * USDT 提现网络配置
+ */
+export interface WithdrawalNetworkConfig {
+  /** 网络标识 */
+  id: string;
+  /** 显示名称 */
+  label: string;
+  /** 固定手续费 USDT */
+  fee: number;
+  /** 地址占位符 */
+  placeholder: string;
+}
+
+/**
+ * USDT 提现配置
+ */
+export interface WithdrawalConfig {
+  /** 最低提现金额 USDT */
+  min_amount: number;
+  /** 支持的网络列表 */
+  networks: WithdrawalNetworkConfig[];
+  /** 是否启用提现功能 */
+  enabled: boolean;
 }
 
 /**

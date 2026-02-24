@@ -117,6 +117,15 @@ export const appConfig: AppConfig = {
       min_convert_amount: 100,   // 单次最低兑换 100
       enabled: true,             // 汇率复用上面的 token_value_usd
     },
+    withdrawal: {
+      min_amount: 5, // 最低提现 5 USDT
+      networks: [
+        { id: 'polygon', label: 'Polygon', fee: 0.5, placeholder: '0x...' },
+        { id: 'bep20', label: 'BEP-20 (BSC)', fee: 0.5, placeholder: '0x...' },
+        { id: 'trc20', label: 'TRC-20 (Tron)', fee: 1.0, placeholder: 'T...' },
+      ],
+      enabled: true,
+    },
   },
 
   /**

@@ -681,6 +681,30 @@ export const conversions = pgTable("conversions", {
 ]);
 
 // ============================================================
+// Withdrawal Tables
+// ============================================================
+
+export const withdrawals = pgTable("withdrawals", {
+	id: serial().primaryKey().notNull(),
+	userId: varchar("user_id", { length: 128 }).notNull(),
+	amount: numeric("amount", { precision: 18, scale: 6 }).notNull(),
+	fee: numeric("fee", { precision: 18, scale: 6 }).notNull(),
+	netAmount: numeric("net_amount", { precision: 18, scale: 6 }).notNull(),
+	network: varchar("network", { length: 20 }).notNull(),
+	walletAddress: varchar("wallet_address", { length: 255 }).notNull(),
+	email: varchar("email", { length: 255 }).notNull(),
+	telegram: varchar("telegram", { length: 100 }),
+	status: varchar("status", { length: 20 }).default('pending').notNull(),
+	txHash: varchar("tx_hash", { length: 255 }),
+	adminNote: text("admin_note"),
+	completedAt: timestamp("completed_at", { precision: 6, withTimezone: true, mode: 'string' }),
+	createdAt: timestamp("created_at", { precision: 6, withTimezone: true, mode: 'string' }).default(sql`CURRENT_TIMESTAMP`).notNull(),
+}, (table) => [
+	index("idx_withdrawals_user_id").using("btree", table.userId.asc().nullsLast().op("text_ops")),
+	index("idx_withdrawals_status").using("btree", table.status.asc().nullsLast().op("text_ops")),
+]);
+
+// ============================================================
 // Lucky Draw Tables
 // ============================================================
 

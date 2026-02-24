@@ -48,6 +48,8 @@ export const ProductType = {
   IMAGE_TOOL: 'image_tool',
   /** $VOICICA → USDT 兑换 */
   CONVERSION: 'conversion',
+  /** USDT 提现 */
+  WITHDRAWAL: 'withdrawal',
 } as const;
 
 export type ProductType = typeof ProductType[keyof typeof ProductType];

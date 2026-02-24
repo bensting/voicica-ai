@@ -73,6 +73,8 @@ interface FirebaseAuthContextType {
   signUpWithEmail: (email: string, password: string) => Promise<SignUpResult>;
   resetPassword: (email: string) => Promise<void>;
   signOut: () => Promise<void>;
+  // 确保 token 是新鲜的（刷新并同步到 cookie），在调用 server action 前使用
+  ensureFreshToken: () => Promise<boolean>;
   // 账户关联方法
   linkAccountWithPassword: (password: string) => Promise<void>;
   cancelAccountLinking: () => void;
@@ -597,6 +599,27 @@ export function FirebaseAuthProvider({ children }: { children: React.ReactNode }
     setAccountLinking(null);
   }, []);
 
+  /**
+   * 确保 token 是新鲜的（刷新并同步到 cookie）
+   * 在调用需要精确身份的 server action 前使用，防止已登录用户被降级为匿名
+   * @returns true 如果成功刷新，false 如果用户未登录或刷新失败
+   */
+  const ensureFreshToken = useCallback(async (): Promise<boolean> => {
+    if (!user) return false;
+    try {
+      const idToken = await user.getIdToken();
+      await fetch('/api/auth/set-token', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token: idToken }),
+      });
+      return true;
+    } catch (err) {
+      console.warn('[FirebaseAuth] ensureFreshToken 失败:', err);
+      return false;
+    }
+  }, [user]);
+
   const value: FirebaseAuthContextType = {
     user,
     loading,
@@ -611,6 +634,7 @@ export function FirebaseAuthProvider({ children }: { children: React.ReactNode }
     signUpWithEmail,
     resetPassword,
     signOut,
+    ensureFreshToken,
     linkAccountWithPassword,
     cancelAccountLinking,
   };

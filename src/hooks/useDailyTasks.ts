@@ -69,7 +69,7 @@ interface UseDailyTasksReturn {
  * 每日任务 Hook
  */
 export function useDailyTasks(): UseDailyTasksReturn {
-  const { loading: authLoading } = useFirebaseAuth();
+  const { loading: authLoading, ensureFreshToken } = useFirebaseAuth();
   // 签到和观看视频都使用同一个激励视频广告，共享缓存，加载更快
   const { showRewardedAd, isReady: isAdReady } = useRewardedAd();
   // 获取最近一次广告收益数据（来自 AdMob OnPaidEvent）
@@ -100,6 +100,8 @@ export function useDailyTasks(): UseDailyTasksReturn {
     try {
       setLoading(true);
       setError(null);
+      // 确保 token 新鲜，防止已登录用户被降级为匿名
+      await ensureFreshToken();
       const data = await getDailyTasksStatus(isNative);
       setStatus(data);
     } catch (err) {
@@ -108,7 +110,7 @@ export function useDailyTasks(): UseDailyTasksReturn {
     } finally {
       setLoading(false);
     }
-  }, [authLoading, isNative]);
+  }, [authLoading, isNative, ensureFreshToken]);
 
   // 初始化加载
   useEffect(() => {
@@ -147,6 +149,9 @@ export function useDailyTasks(): UseDailyTasksReturn {
       cancelledRef.current = false;
       setClaiming(true);
       setError(null);
+
+      // 确保 token 新鲜
+      await ensureFreshToken();
 
       // 签到前需要先观看激励视频广告（Web 端使用 ExoClick VAST，原生端使用 AdMob/Appodeal）
       console.log('[useDailyTasks] 开始显示签到激励视频广告...');
@@ -203,7 +208,7 @@ export function useDailyTasks(): UseDailyTasksReturn {
       }
       checkinInProgressRef.current = false;
     }
-  }, [refresh, showRewardedAd]);
+  }, [refresh, showRewardedAd, ensureFreshToken]);
 
   // 领取广告奖励
   const doClaimAdReward = useCallback(async (): Promise<TaskResult> => {
@@ -211,6 +216,9 @@ export function useDailyTasks(): UseDailyTasksReturn {
       cancelledRef.current = false;
       setClaiming(true);
       setError(null);
+
+      // 确保 token 新鲜
+      await ensureFreshToken();
 
       // 清空旧的广告收益数据，等待新广告的 OnPaidEvent
       clearLastAdRevenue();
@@ -271,7 +279,7 @@ export function useDailyTasks(): UseDailyTasksReturn {
         setClaiming(false);
       }
     }
-  }, [refresh, showRewardedAd, clearLastAdRevenue]);
+  }, [refresh, showRewardedAd, clearLastAdRevenue, ensureFreshToken]);
 
   return {
     status,

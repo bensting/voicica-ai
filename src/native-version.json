@@ -8,7 +8,8 @@
       "buildNumber": 43,
       "date": "2026-02-24",
       "changes": [
-        "新增 Unity Ads 中介适配器（AdMob mediation）"
+        "新增 Unity Ads 中介适配器（AdMob mediation）",
+        "新增 Pangle 中介适配器（AdMob mediation）"
       ]
     },
     {

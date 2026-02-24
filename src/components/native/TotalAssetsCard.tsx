@@ -89,18 +89,12 @@ export default function TotalAssetsCard() {
                 {loading ? '...' : credits.toLocaleString()}
               </span>
             </div>
-            <div className="flex justify-end gap-2">
+            <div className="flex justify-end">
               <button
                 onClick={() => requireLogin(() => setShowConvertModal(true))}
                 className="px-2.5 py-0.5 rounded-md bg-purple-500/15 text-purple-400 text-[11px] font-medium hover:bg-purple-500/25 transition-colors active:scale-[0.95]"
               >
                 {t('native.totalAssets.convert')}
-              </button>
-              <button
-                onClick={() => requireLogin(() => setShowWithdrawSheet(true))}
-                className="px-2.5 py-0.5 rounded-md bg-white/5 text-gray-400 text-[11px] font-medium hover:bg-white/10 transition-colors active:scale-[0.95]"
-              >
-                {t('native.totalAssets.withdraw')}
               </button>
             </div>
           </div>
@@ -121,13 +115,7 @@ export default function TotalAssetsCard() {
                 {usdtBalance.toFixed(4)}
               </span>
             </div>
-            <div className="flex justify-end gap-2">
-              <button
-                onClick={() => requireLogin(() => setShowConvertModal(true))}
-                className="px-2.5 py-0.5 rounded-md bg-purple-500/15 text-purple-400 text-[11px] font-medium hover:bg-purple-500/25 transition-colors active:scale-[0.95]"
-              >
-                {t('native.totalAssets.convert')}
-              </button>
+            <div className="flex justify-end">
               <button
                 onClick={() => requireLogin(() => setShowWithdrawSheet(true))}
                 className="px-2.5 py-0.5 rounded-md bg-emerald-500/15 text-emerald-400 text-[11px] font-medium hover:bg-emerald-500/25 transition-colors active:scale-[0.95]"

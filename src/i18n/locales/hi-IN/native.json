@@ -161,6 +161,26 @@
       "latest": "नवीनतम",
       "forYou": "आपके लिए"
     },
+    "history": {
+      "title": "लेन-देन इतिहास",
+      "convertTab": "रूपांतरण",
+      "withdrawTab": "निकासी",
+      "noRecords": "कोई रिकॉर्ड नहीं",
+      "loadMore": "और लोड करें",
+      "allLoaded": "सब लोड हो गया",
+      "converted": "रूपांतरण",
+      "rate": "दर",
+      "amount": "राशि",
+      "fee": "शुल्क",
+      "netAmount": "शुद्ध राशि",
+      "network": "नेटवर्क",
+      "wallet": "वॉलेट",
+      "status": {
+        "pending": "प्रक्रिया में",
+        "completed": "पूर्ण",
+        "rejected": "अस्वीकृत"
+      }
+    },
     "common": {
       "cancel": "रद्द करें",
       "confirm": "पुष्टि करें",

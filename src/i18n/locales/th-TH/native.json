@@ -161,6 +161,26 @@
       "latest": "ล่าสุด",
       "forYou": "สำหรับคุณ"
     },
+    "history": {
+      "title": "ประวัติการทำรายการ",
+      "convertTab": "แปลง",
+      "withdrawTab": "ถอน",
+      "noRecords": "ยังไม่มีรายการ",
+      "loadMore": "โหลดเพิ่ม",
+      "allLoaded": "โหลดทั้งหมดแล้ว",
+      "converted": "แปลง",
+      "rate": "อัตรา",
+      "amount": "จำนวน",
+      "fee": "ค่าธรรมเนียม",
+      "netAmount": "จำนวนสุทธิ",
+      "network": "เครือข่าย",
+      "wallet": "กระเป๋า",
+      "status": {
+        "pending": "กำลังดำเนินการ",
+        "completed": "สำเร็จ",
+        "rejected": "ถูกปฏิเสธ"
+      }
+    },
     "common": {
       "cancel": "ยกเลิก",
       "confirm": "ยืนยัน",

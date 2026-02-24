@@ -161,6 +161,26 @@
       "latest": "Más recientes",
       "forYou": "Para ti"
     },
+    "history": {
+      "title": "Historial",
+      "convertTab": "Conversión",
+      "withdrawTab": "Retiro",
+      "noRecords": "Sin registros",
+      "loadMore": "Cargar más",
+      "allLoaded": "Todo cargado",
+      "converted": "Conversión",
+      "rate": "Tasa",
+      "amount": "Monto",
+      "fee": "Comisión",
+      "netAmount": "Monto Neto",
+      "network": "Red",
+      "wallet": "Billetera",
+      "status": {
+        "pending": "Pendiente",
+        "completed": "Completado",
+        "rejected": "Rechazado"
+      }
+    },
     "common": {
       "cancel": "Cancelar",
       "confirm": "Confirmar",

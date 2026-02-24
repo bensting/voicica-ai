@@ -15,6 +15,7 @@ import { getMiningEconomyConfig } from '@/config/appConfig';
 import NativeDailyTasksModal from './NativeDailyTasksModal';
 import ConvertModal from './ConvertModal';
 import WithdrawSheet from './WithdrawSheet';
+import TransactionHistorySheet from './TransactionHistorySheet';
 import LoginModal from './LoginModal';
 
 // Mining pickaxe icon
@@ -38,6 +39,7 @@ export default function TotalAssetsCard() {
   const [showConvertModal, setShowConvertModal] = useState(false);
   const [showWithdrawSheet, setShowWithdrawSheet] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
+  const [showHistory, setShowHistory] = useState(false);
 
   // Login guard: if not logged in, show login modal
   const requireLogin = useCallback((action: () => void) => {
@@ -63,9 +65,21 @@ export default function TotalAssetsCard() {
       <div className="mx-4 mt-2 rounded-2xl bg-gradient-to-br from-purple-900/40 via-[#1e1e3a]/80 to-[#1a1a35]/80 border border-purple-500/15 backdrop-blur-sm overflow-hidden">
         {/* Header */}
         <div className="px-5 pt-5 pb-3">
-          <p className="text-gray-400 text-sm font-medium mb-1">
-            {t('native.totalAssets.title')}
-          </p>
+          <div className="flex items-center justify-between mb-1">
+            <p className="text-gray-400 text-sm font-medium">
+              {t('native.totalAssets.title')}
+            </p>
+            <button
+              onClick={() => requireLogin(() => setShowHistory(true))}
+              className="text-gray-400 hover:text-white transition-colors p-1 -mr-1"
+              aria-label="History"
+            >
+              <svg className="w-4.5 h-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="10" />
+                <polyline points="12 6 12 12 16 14" />
+              </svg>
+            </button>
+          </div>
           <p className="text-white text-3xl font-bold tracking-tight">
             {loading ? '...' : `$${totalValue.toFixed(4)}`}
           </p>
@@ -159,6 +173,11 @@ export default function TotalAssetsCard() {
         isOpen={showWithdrawSheet}
         onClose={() => setShowWithdrawSheet(false)}
         onSuccess={async () => { await refreshProfile(); }}
+      />
+
+      <TransactionHistorySheet
+        isOpen={showHistory}
+        onClose={() => setShowHistory(false)}
       />
 
       <LoginModal

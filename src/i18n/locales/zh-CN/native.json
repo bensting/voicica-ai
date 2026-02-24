@@ -199,6 +199,26 @@
       "latest": "最新",
       "forYou": "为您推荐"
     },
+    "history": {
+      "title": "交易记录",
+      "convertTab": "兑换",
+      "withdrawTab": "提现",
+      "noRecords": "暂无记录",
+      "loadMore": "加载更多",
+      "allLoaded": "已全部加载",
+      "converted": "兑换",
+      "rate": "汇率",
+      "amount": "金额",
+      "fee": "手续费",
+      "netAmount": "实际到账",
+      "network": "网络",
+      "wallet": "钱包",
+      "status": {
+        "pending": "处理中",
+        "completed": "已完成",
+        "rejected": "已拒绝"
+      }
+    },
     "common": {
       "cancel": "取消",
       "confirm": "确认",

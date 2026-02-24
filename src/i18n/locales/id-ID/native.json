@@ -161,6 +161,26 @@
       "latest": "Terbaru",
       "forYou": "Untuk Anda"
     },
+    "history": {
+      "title": "Riwayat Transaksi",
+      "convertTab": "Konversi",
+      "withdrawTab": "Penarikan",
+      "noRecords": "Belum ada catatan",
+      "loadMore": "Muat lebih banyak",
+      "allLoaded": "Semua dimuat",
+      "converted": "Konversi",
+      "rate": "Kurs",
+      "amount": "Jumlah",
+      "fee": "Biaya",
+      "netAmount": "Jumlah Bersih",
+      "network": "Jaringan",
+      "wallet": "Dompet",
+      "status": {
+        "pending": "Diproses",
+        "completed": "Selesai",
+        "rejected": "Ditolak"
+      }
+    },
     "common": {
       "cancel": "Batal",
       "confirm": "Konfirmasi",

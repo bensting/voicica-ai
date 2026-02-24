@@ -161,6 +161,26 @@
       "latest": "الأحدث",
       "forYou": "لك"
     },
+    "history": {
+      "title": "سجل المعاملات",
+      "convertTab": "تحويل",
+      "withdrawTab": "سحب",
+      "noRecords": "لا توجد سجلات",
+      "loadMore": "تحميل المزيد",
+      "allLoaded": "تم تحميل الكل",
+      "converted": "تحويل",
+      "rate": "السعر",
+      "amount": "المبلغ",
+      "fee": "الرسوم",
+      "netAmount": "المبلغ الصافي",
+      "network": "الشبكة",
+      "wallet": "المحفظة",
+      "status": {
+        "pending": "قيد المعالجة",
+        "completed": "مكتمل",
+        "rejected": "مرفوض"
+      }
+    },
     "common": {
       "cancel": "إلغاء",
       "confirm": "تأكيد",

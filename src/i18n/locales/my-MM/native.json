@@ -161,6 +161,26 @@
       "latest": "နောက်ဆုံး",
       "forYou": "သင့်အတွက်"
     },
+    "history": {
+      "title": "ငွေလွှဲမှတ်တမ်း",
+      "convertTab": "ပြောင်းလဲ",
+      "withdrawTab": "ထုတ်ယူ",
+      "noRecords": "မှတ်တမ်းမရှိသေးပါ",
+      "loadMore": "ထပ်ကြည့်ရန်",
+      "allLoaded": "အားလုံးပြီးပါပြီ",
+      "converted": "ပြောင်းလဲ",
+      "rate": "နှုန်း",
+      "amount": "ပမာဏ",
+      "fee": "ကြေး",
+      "netAmount": "လက်ခံရရှိမည့်ပမာဏ",
+      "network": "ကွန်ယက်",
+      "wallet": "ပိုက်ဆံအိတ်",
+      "status": {
+        "pending": "ဆောင်ရွက်ဆဲ",
+        "completed": "ပြီးစီး",
+        "rejected": "ငြင်းပယ်"
+      }
+    },
     "common": {
       "cancel": "ပယ်ဖျက်ရန်",
       "confirm": "အတည်ပြုရန်",

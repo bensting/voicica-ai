@@ -161,6 +161,26 @@
       "latest": "最新",
       "forYou": "おすすめ"
     },
+    "history": {
+      "title": "取引履歴",
+      "convertTab": "変換",
+      "withdrawTab": "出金",
+      "noRecords": "記録がありません",
+      "loadMore": "もっと読み込む",
+      "allLoaded": "すべて読み込み済み",
+      "converted": "変換",
+      "rate": "レート",
+      "amount": "金額",
+      "fee": "手数料",
+      "netAmount": "受取額",
+      "network": "ネットワーク",
+      "wallet": "ウォレット",
+      "status": {
+        "pending": "処理中",
+        "completed": "完了",
+        "rejected": "拒否"
+      }
+    },
     "common": {
       "cancel": "キャンセル",
       "confirm": "確認",

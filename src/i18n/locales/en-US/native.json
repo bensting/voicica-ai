@@ -199,6 +199,26 @@
       "latest": "Latest",
       "forYou": "For You"
     },
+    "history": {
+      "title": "History",
+      "convertTab": "Convert",
+      "withdrawTab": "Withdraw",
+      "noRecords": "No records yet",
+      "loadMore": "Load more",
+      "allLoaded": "All loaded",
+      "converted": "Convert",
+      "rate": "Rate",
+      "amount": "Amount",
+      "fee": "Fee",
+      "netAmount": "Net Amount",
+      "network": "Network",
+      "wallet": "Wallet",
+      "status": {
+        "pending": "Pending",
+        "completed": "Completed",
+        "rejected": "Rejected"
+      }
+    },
     "common": {
       "cancel": "Cancel",
       "confirm": "Confirm",

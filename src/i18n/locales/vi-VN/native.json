@@ -161,6 +161,26 @@
       "latest": "Mới nhất",
       "forYou": "Dành cho bạn"
     },
+    "history": {
+      "title": "Lịch sử giao dịch",
+      "convertTab": "Chuyển đổi",
+      "withdrawTab": "Rút tiền",
+      "noRecords": "Chưa có giao dịch",
+      "loadMore": "Tải thêm",
+      "allLoaded": "Đã tải hết",
+      "converted": "Chuyển đổi",
+      "rate": "Tỷ giá",
+      "amount": "Số tiền",
+      "fee": "Phí",
+      "netAmount": "Thực nhận",
+      "network": "Mạng",
+      "wallet": "Ví",
+      "status": {
+        "pending": "Đang xử lý",
+        "completed": "Hoàn thành",
+        "rejected": "Bị từ chối"
+      }
+    },
     "common": {
       "cancel": "Hủy",
       "confirm": "Xác nhận",

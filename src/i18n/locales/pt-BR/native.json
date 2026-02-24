@@ -161,6 +161,26 @@
       "latest": "Mais recentes",
       "forYou": "Para você"
     },
+    "history": {
+      "title": "Histórico",
+      "convertTab": "Conversão",
+      "withdrawTab": "Saque",
+      "noRecords": "Nenhum registro",
+      "loadMore": "Carregar mais",
+      "allLoaded": "Tudo carregado",
+      "converted": "Conversão",
+      "rate": "Taxa",
+      "amount": "Valor",
+      "fee": "Taxa",
+      "netAmount": "Valor Líquido",
+      "network": "Rede",
+      "wallet": "Carteira",
+      "status": {
+        "pending": "Pendente",
+        "completed": "Concluído",
+        "rejected": "Rejeitado"
+      }
+    },
     "common": {
       "cancel": "Cancelar",
       "confirm": "Confirmar",

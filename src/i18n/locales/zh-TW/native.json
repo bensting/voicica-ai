@@ -199,6 +199,26 @@
       "latest": "最新",
       "forYou": "為您推薦"
     },
+    "history": {
+      "title": "交易記錄",
+      "convertTab": "兌換",
+      "withdrawTab": "提現",
+      "noRecords": "暫無記錄",
+      "loadMore": "載入更多",
+      "allLoaded": "已全部載入",
+      "converted": "兌換",
+      "rate": "匯率",
+      "amount": "金額",
+      "fee": "手續費",
+      "netAmount": "實際到帳",
+      "network": "網路",
+      "wallet": "錢包",
+      "status": {
+        "pending": "處理中",
+        "completed": "已完成",
+        "rejected": "已拒絕"
+      }
+    },
     "common": {
       "cancel": "取消",
       "confirm": "確認",

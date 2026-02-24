@@ -141,7 +141,7 @@ export default function TransactionHistorySheet({ isOpen, onClose }: Transaction
 
       {/* Sheet */}
       <div
-        className="relative w-full max-w-lg bg-gradient-to-b from-[#2a2a4a] to-[#1a1a3a] rounded-t-3xl shadow-2xl animate-[slideUp_0.3s_ease-out] max-h-[90vh] flex flex-col overflow-hidden"
+        className="relative w-full max-w-lg bg-gradient-to-b from-[#2a2a4a] to-[#1a1a3a] rounded-t-3xl shadow-2xl animate-[slideUp_0.3s_ease-out] h-[70vh] flex flex-col overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Handle bar */}

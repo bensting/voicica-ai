@@ -48,6 +48,7 @@
       "email": "電郵",
       "telegram": "Telegram",
       "optional": "選填",
+      "minHint": "最低提現金額：{{min}} USDT",
       "submit": "提交提現",
       "submitting": "提交中...",
       "successTitle": "提現已提交！",

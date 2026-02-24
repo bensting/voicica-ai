@@ -258,7 +258,10 @@ export default function WithdrawSheet({ isOpen, onClose, onSuccess }: WithdrawSh
                     MAX
                   </button>
                 </div>
-                {errors.amount && <p className="text-red-400 text-xs mt-1">{errors.amount}</p>}
+                {errors.amount
+                  ? <p className="text-red-400 text-xs mt-1">{errors.amount}</p>
+                  : <p className="text-gray-500 text-xs mt-1">{t('native.withdraw.minHint', { min: config.min_amount.toString() })}</p>
+                }
               </div>
 
               {/* Network selector */}

@@ -48,6 +48,7 @@
       "email": "Email",
       "telegram": "Telegram",
       "optional": "optional",
+      "minHint": "Minimum withdrawal: {{min}} USDT",
       "submit": "Submit Withdrawal",
       "submitting": "Submitting...",
       "successTitle": "Withdrawal Submitted!",

@@ -37,6 +37,13 @@ const MENU_GROUPS = [
     ],
   },
   {
+    title: '财务',
+    items: [
+      { href: '/admin/withdrawals', label: '提现管理', icon: '💰' },
+      { href: '/admin/conversions', label: '兑换记录', icon: '🔄' },
+    ],
+  },
+  {
     title: '配置',
     items: [
       { href: '/admin/native-banners', label: 'Native Banner', icon: '🖼️' },

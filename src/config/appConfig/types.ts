@@ -93,6 +93,22 @@ export interface MiningEconomyConfig {
   web_default_ecpm_usd: number;
   /** 是否显示资产钱包卡片（Total Assets） */
   show_wallet_card: boolean;
+  /** $VOICICA → USDT 兑换配置 */
+  conversion: ConversionConfig;
+}
+
+/**
+ * $VOICICA → USDT 兑换配置
+ */
+export interface ConversionConfig {
+  /** 汇率：1 $VOICICA = rate USDT */
+  rate: number;
+  /** 最低保留 $VOICICA 余额（低于此值不可兑换） */
+  min_voicica_reserve: number;
+  /** 单次最低兑换数量 */
+  min_convert_amount: number;
+  /** 是否启用兑换功能 */
+  enabled: boolean;
 }
 
 /**

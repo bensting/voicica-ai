@@ -146,6 +146,7 @@ export async function getCurrentUserProfile(platform?: string): Promise<UserProf
     credits: user.credits,
     monthly_credits: user.monthlyCredits,
     total_credits_used: user.totalCreditsUsed,
+    usdt_balance: parseFloat(user.usdtBalance) || 0,
     is_anonymous: false,
     expires_at: null,
   };
@@ -209,6 +210,7 @@ export async function updateUserProfile(data: {
     credits: user.credits,
     monthly_credits: user.monthlyCredits,
     total_credits_used: user.totalCreditsUsed,
+    usdt_balance: parseFloat(user.usdtBalance) || 0,
     is_anonymous: false,
     expires_at: null,
   };
@@ -331,6 +333,7 @@ export async function getUnifiedUserProfile(): Promise<UserProfile> {
       credits: anonUser.credits,
       monthly_credits: 0,
       total_credits_used: anonUser.totalCreditsUsed,
+      usdt_balance: 0,
       is_anonymous: true,
       expires_at: anonUser.expiresAt || null,
     };
@@ -359,6 +362,7 @@ export async function getUnifiedUserProfile(): Promise<UserProfile> {
       credits: user.credits,
       monthly_credits: user.monthlyCredits,
       total_credits_used: user.totalCreditsUsed,
+      usdt_balance: parseFloat(user.usdtBalance) || 0,
       is_anonymous: false,
       expires_at: null,
     };

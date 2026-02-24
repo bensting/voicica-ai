@@ -1,4 +1,4 @@
-import { pgTable, index, uniqueIndex, varchar, text, integer, timestamp, boolean, serial, json, foreignKey, jsonb, doublePrecision, bigint, real } from "drizzle-orm/pg-core"
+import { pgTable, index, uniqueIndex, varchar, text, integer, timestamp, boolean, serial, json, foreignKey, jsonb, doublePrecision, bigint, real, numeric } from "drizzle-orm/pg-core"
 import { relations, sql } from "drizzle-orm"
 
 // ============================================================
@@ -92,6 +92,7 @@ export const users = pgTable("users", {
 	monthlyCreditsResetAt: timestamp("monthly_credits_reset_at", { precision: 6, withTimezone: true, mode: 'string' }),
 	authProvider: varchar("auth_provider", { length: 50 }),
 	platform: varchar({ length: 20 }),
+	usdtBalance: numeric("usdt_balance", { precision: 18, scale: 6 }).default('0').notNull(),
 }, (table) => [
 	index("idx_user_email").using("btree", table.email.asc().nullsLast().op("text_ops")),
 	index("idx_user_id").using("btree", table.userId.asc().nullsLast().op("text_ops")),
@@ -665,6 +666,18 @@ export const clonedVoices = pgTable("cloned_voices", {
 	index("ix_cloned_voices_user_id").using("btree", table.userId.asc().nullsLast().op("text_ops")),
 	index("ix_cloned_voices_status").using("btree", table.status.asc().nullsLast().op("text_ops")),
 	uniqueIndex("ix_cloned_voices_fish_model_id").using("btree", table.fishModelId.asc().nullsLast().op("text_ops")),
+]);
+
+export const conversions = pgTable("conversions", {
+	id: serial().primaryKey().notNull(),
+	userId: varchar("user_id", { length: 128 }).notNull(),
+	type: varchar({ length: 20 }).notNull(),
+	voicicaAmount: integer("voicica_amount").notNull(),
+	usdtAmount: numeric("usdt_amount", { precision: 18, scale: 6 }).notNull(),
+	rate: numeric("rate", { precision: 18, scale: 6 }).notNull(),
+	createdAt: timestamp("created_at", { precision: 6, withTimezone: true, mode: 'string' }).default(sql`CURRENT_TIMESTAMP`).notNull(),
+}, (table) => [
+	index("idx_conversions_user_id").using("btree", table.userId.asc().nullsLast().op("text_ops")),
 ]);
 
 // ============================================================

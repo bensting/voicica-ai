@@ -14,6 +14,7 @@ export interface UserProfile {
   monthly_credits: number; // 当月积分（每日任务，月初重置）
   // 总可用积分 = credits + monthly_credits
   total_credits_used: number;
+  usdt_balance: number; // USDT 余额（兑换所得）
 
   // 用户类型标识
   is_anonymous: boolean; // 是否为匿名用户

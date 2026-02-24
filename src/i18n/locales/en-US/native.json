@@ -18,7 +18,13 @@
         "amount": "Amount",
         "max": "MAX",
         "youWillReceive": "You will receive",
-        "confirm": "Confirm"
+        "confirm": "Confirm",
+        "ruleHint": "Minimum {{reserve}} $VOICICA balance required. Only the portion above {{reserve}} is convertible.",
+        "minAmount": "Minimum convert amount: {{min}} $VOICICA",
+        "insufficientBalance": "Insufficient balance",
+        "convertSuccess": "Successfully converted {{amount}} $VOICICA to {{usdt}} USDT",
+        "converting": "Converting...",
+        "loginRequired": "Please log in to convert"
       },
       "withdrawModal": {
         "voicicaTitle": "Withdraw $VOICICA",

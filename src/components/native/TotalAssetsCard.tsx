@@ -5,14 +5,17 @@
  */
 'use client';
 
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import Image from 'next/image';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useCredits } from '@/contexts/CreditsContext';
+import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
+import { useUser } from '@/contexts/UserContext';
 import { getMiningEconomyConfig } from '@/config/appConfig';
 import NativeDailyTasksModal from './NativeDailyTasksModal';
 import ConvertModal from './ConvertModal';
 import WithdrawSheet from './WithdrawSheet';
+import LoginModal from './LoginModal';
 
 const EXCHANGE_RATE = 0.001; // 1 VOICICA = 0.001 USDT
 
@@ -29,15 +32,31 @@ const MiningIcon = () => (
 export default function TotalAssetsCard() {
   const { t } = useLanguage();
   const { credits, loading, refreshCredits } = useCredits();
+  const { user } = useFirebaseAuth();
+  const { profile, refreshProfile } = useUser();
   const miningConfig = getMiningEconomyConfig();
 
   const [showDailyTasks, setShowDailyTasks] = useState(false);
   const [showConvertModal, setShowConvertModal] = useState(false);
   const [showWithdrawSheet, setShowWithdrawSheet] = useState(false);
+  const [showLoginModal, setShowLoginModal] = useState(false);
+
+  // Login guard: if not logged in, show login modal
+  const requireLogin = useCallback((action: () => void) => {
+    if (!user) {
+      setShowLoginModal(true);
+      return;
+    }
+    action();
+  }, [user]);
+
+  const handleConvertSuccess = useCallback(async () => {
+    await refreshProfile();
+  }, [refreshProfile]);
 
   if (!miningConfig.show_wallet_card) return null;
 
-  const usdtBalance = 0;
+  const usdtBalance = profile?.usdt_balance ?? 0;
   const totalValue = credits * EXCHANGE_RATE + usdtBalance;
 
   return (
@@ -73,13 +92,13 @@ export default function TotalAssetsCard() {
             </div>
             <div className="flex justify-end gap-2">
               <button
-                onClick={() => setShowConvertModal(true)}
+                onClick={() => requireLogin(() => setShowConvertModal(true))}
                 className="px-2.5 py-0.5 rounded-md bg-purple-500/15 text-purple-400 text-[11px] font-medium hover:bg-purple-500/25 transition-colors active:scale-[0.95]"
               >
                 {t('native.totalAssets.convert')}
               </button>
               <button
-                onClick={() => setShowWithdrawSheet(true)}
+                onClick={() => requireLogin(() => setShowWithdrawSheet(true))}
                 className="px-2.5 py-0.5 rounded-md bg-white/5 text-gray-400 text-[11px] font-medium hover:bg-white/10 transition-colors active:scale-[0.95]"
               >
                 {t('native.totalAssets.withdraw')}
@@ -105,13 +124,13 @@ export default function TotalAssetsCard() {
             </div>
             <div className="flex justify-end gap-2">
               <button
-                onClick={() => setShowConvertModal(true)}
+                onClick={() => requireLogin(() => setShowConvertModal(true))}
                 className="px-2.5 py-0.5 rounded-md bg-purple-500/15 text-purple-400 text-[11px] font-medium hover:bg-purple-500/25 transition-colors active:scale-[0.95]"
               >
                 {t('native.totalAssets.convert')}
               </button>
               <button
-                onClick={() => setShowWithdrawSheet(true)}
+                onClick={() => requireLogin(() => setShowWithdrawSheet(true))}
                 className="px-2.5 py-0.5 rounded-md bg-emerald-500/15 text-emerald-400 text-[11px] font-medium hover:bg-emerald-500/25 transition-colors active:scale-[0.95]"
               >
                 {t('native.totalAssets.withdraw')}
@@ -144,11 +163,20 @@ export default function TotalAssetsCard() {
       <ConvertModal
         isOpen={showConvertModal}
         onClose={() => setShowConvertModal(false)}
+        onSuccess={handleConvertSuccess}
       />
 
       <WithdrawSheet
         isOpen={showWithdrawSheet}
         onClose={() => setShowWithdrawSheet(false)}
+      />
+
+      <LoginModal
+        isOpen={showLoginModal}
+        onClose={() => setShowLoginModal(false)}
+        onLoginSuccess={() => {
+          setShowLoginModal(false);
+        }}
       />
     </>
   );

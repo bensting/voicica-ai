@@ -46,6 +46,8 @@ export const ProductType = {
   LUCKY_DRAW: 'lucky_draw',
   /** 图片工具（去背景/高清放大） */
   IMAGE_TOOL: 'image_tool',
+  /** $VOICICA → USDT 兑换 */
+  CONVERSION: 'conversion',
 } as const;
 
 export type ProductType = typeof ProductType[keyof typeof ProductType];

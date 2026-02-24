@@ -95,6 +95,12 @@ export const appConfig: AppConfig = {
     },
     web_default_ecpm_usd: 0.03,
     show_wallet_card: true, // 开发环境显示，方便测试
+    conversion: {
+      rate: 0.001,              // 1 $VOICICA = 0.001 USDT
+      min_voicica_reserve: 2000, // 最低保留 2000 $VOICICA
+      min_convert_amount: 100,   // 单次最低兑换 100
+      enabled: true,
+    },
   },
 
   /**

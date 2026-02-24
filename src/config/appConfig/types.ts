@@ -101,14 +101,13 @@ export interface MiningEconomyConfig {
  * $VOICICA → USDT 兑换配置
  */
 export interface ConversionConfig {
-  /** 汇率：1 $VOICICA = rate USDT */
-  rate: number;
   /** 最低保留 $VOICICA 余额（低于此值不可兑换） */
   min_voicica_reserve: number;
   /** 单次最低兑换数量 */
   min_convert_amount: number;
   /** 是否启用兑换功能 */
   enabled: boolean;
+  // 汇率复用 mining_economy.token_value_usd（1 $VOICICA = token_value_usd USDT）
 }
 
 /**

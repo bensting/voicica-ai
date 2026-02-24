@@ -17,8 +17,6 @@ import ConvertModal from './ConvertModal';
 import WithdrawSheet from './WithdrawSheet';
 import LoginModal from './LoginModal';
 
-const EXCHANGE_RATE = 0.001; // 1 VOICICA = 0.001 USDT
-
 // Mining pickaxe icon
 const MiningIcon = () => (
   <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -57,7 +55,8 @@ export default function TotalAssetsCard() {
   if (!miningConfig.show_wallet_card) return null;
 
   const usdtBalance = profile?.usdt_balance ?? 0;
-  const totalValue = credits * EXCHANGE_RATE + usdtBalance;
+  const rate = miningConfig.token_value_usd;
+  const totalValue = credits * rate + usdtBalance;
 
   return (
     <>
@@ -71,7 +70,7 @@ export default function TotalAssetsCard() {
             {loading ? '...' : `$${totalValue.toFixed(4)}`}
           </p>
           <p className="text-gray-500 text-xs mt-0.5">
-            1 $VOICICA = ${EXCHANGE_RATE} USDT
+            1 $VOICICA = ${rate} USDT
           </p>
         </div>
 

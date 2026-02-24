@@ -11,7 +11,7 @@ import db from '@/lib/db';
 import { users, creditHistory, conversions } from '@/db/schema';
 import { eq, sql, and, gte } from 'drizzle-orm';
 import { getCurrentUser } from '@/lib/auth-firebase';
-import { getConversionConfig } from '@/config/appConfig';
+import { getConversionConfig, getMiningEconomyConfig } from '@/config/appConfig';
 import { ProductType } from '@/config/productType';
 
 export interface ConvertResult {
@@ -32,8 +32,10 @@ export async function convertVoicicaToUsdt(amount: number): Promise<ConvertResul
     // 1. 必须登录
     const authUser = await getCurrentUser();
 
-    // 2. 读取配置
+    // 2. 读取配置（汇率复用 token_value_usd）
     const config = getConversionConfig();
+    const miningConfig = getMiningEconomyConfig();
+    const rate = miningConfig.token_value_usd;
 
     if (!config.enabled) {
       return { success: false, error: 'conversion_disabled' };
@@ -50,7 +52,7 @@ export async function convertVoicicaToUsdt(amount: number): Promise<ConvertResul
 
     // 4. 原子 UPDATE：credits - amount, usdt_balance + (amount * rate)
     //    WHERE credits >= amount + min_voicica_reserve  防止余额不足
-    const usdtReceived = amount * config.rate;
+    const usdtReceived = amount * rate;
     const minRequired = amount + config.min_voicica_reserve;
 
     const result = await db
@@ -91,7 +93,7 @@ export async function convertVoicicaToUsdt(amount: number): Promise<ConvertResul
       type: 'voicica_to_usdt',
       voicicaAmount: amount,
       usdtAmount: usdtReceived.toFixed(6),
-      rate: config.rate.toFixed(6),
+      rate: rate.toFixed(6),
     });
 
     console.log(`✅ [Conversion] ${authUser.uid}: ${amount} $VOICICA → ${usdtReceived} USDT`);

@@ -8,7 +8,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useCredits } from '@/contexts/CreditsContext';
-import { getConversionConfig } from '@/config/appConfig';
+import { getConversionConfig, getMiningEconomyConfig } from '@/config/appConfig';
 import { convertVoicicaToUsdt } from '@/actions/conversion';
 
 interface ConvertModalProps {
@@ -18,6 +18,7 @@ interface ConvertModalProps {
 }
 
 const config = getConversionConfig();
+const RATE = getMiningEconomyConfig().token_value_usd;
 
 const CloseIcon = () => (
   <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -43,7 +44,7 @@ export default function ConvertModal({ isOpen, onClose, onSuccess }: ConvertModa
   // Convertible amount = max(0, credits - reserve)
   const maxConvertible = Math.max(0, credits - config.min_voicica_reserve);
   const inputAmount = parseFloat(amount) || 0;
-  const outputAmount = inputAmount * config.rate;
+  const outputAmount = inputAmount * RATE;
   const isDisabled = maxConvertible <= 0 || inputAmount <= 0 || inputAmount > maxConvertible || inputAmount < config.min_convert_amount || loading;
 
   const handleMax = useCallback(() => {
@@ -219,7 +220,7 @@ export default function ConvertModal({ isOpen, onClose, onSuccess }: ConvertModa
 
           {/* Exchange rate info */}
           <p className="text-gray-500 text-xs text-center mb-2">
-            1 $VOICICA = {config.rate} USDT
+            1 $VOICICA = {RATE} USDT
           </p>
 
           {/* Min amount hint */}

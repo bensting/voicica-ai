@@ -113,10 +113,9 @@ export const appConfig: AppConfig = {
     web_default_ecpm_usd: 0.03,
     show_wallet_card: false, // 生产环境暂不显示
     conversion: {
-      rate: 0.001,              // 1 $VOICICA = 0.001 USDT
       min_voicica_reserve: 2000, // 最低保留 2000 $VOICICA
       min_convert_amount: 100,   // 单次最低兑换 100
-      enabled: true,
+      enabled: true,             // 汇率复用上面的 token_value_usd
     },
   },
 

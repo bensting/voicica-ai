@@ -56,6 +56,13 @@
     "creditsClaimed": "积分已添加到您的账户",
     "appOnlyTitle": "App 专属功能",
     "appOnlyDesc": "免费积分仅限 App 端使用，网页端请订阅获取无限积分！",
-    "goSubscribe": "查看订阅"
+    "goSubscribe": "查看订阅",
+
+    "guestPrompt": {
+      "title": "以游客身份挖矿？",
+      "desc": "游客可以挖矿获得 $VOICICA，但只有登录用户才能兑换 USDT 并提现。游客收益仅可在应用内使用。",
+      "login": "登录解锁全部功能",
+      "continueAsGuest": "以游客身份继续"
+    }
   }
 }

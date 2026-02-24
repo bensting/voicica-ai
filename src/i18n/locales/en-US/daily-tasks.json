@@ -57,6 +57,13 @@
     "creditsClaimed": "$VOICICA mined successfully!",
     "appOnlyTitle": "App Exclusive Feature",
     "appOnlyDesc": "Free credits are only available in the app. Subscribe to get unlimited credits on web!",
-    "goSubscribe": "View Plans"
+    "goSubscribe": "View Plans",
+
+    "guestPrompt": {
+      "title": "Mine as a Guest?",
+      "desc": "You can mine $VOICICA as a guest, but only logged-in users can convert to USDT and withdraw. Guest earnings can only be used within the app.",
+      "login": "Log In to Unlock Full Access",
+      "continueAsGuest": "Continue as Guest"
+    }
   }
 }

@@ -73,6 +73,7 @@ export default function NativeDailyTasksModal({ isOpen, onClose, onCreditsUpdate
   } = useDailyTasks();
 
   const [showLoginModal, setShowLoginModal] = useState(false);
+  const [guestDismissed, setGuestDismissed] = useState(false);
   const [lastClaimedCredits, setLastClaimedCredits] = useState<number | null>(null);
   const [showCelebration, setShowCelebration] = useState(false);
   const [adLoading, setAdLoading] = useState(false);
@@ -91,9 +92,10 @@ export default function NativeDailyTasksModal({ isOpen, onClose, onCreditsUpdate
     }
   }, [user, showLoginModal, refresh]);
 
-  // 关闭弹窗时标记已显示
+  // 关闭弹窗时标记已显示 + 重置 guest 状态
   const handleClose = useCallback(() => {
     markPopupShown();
+    setGuestDismissed(false);
     onClose();
   }, [markPopupShown, onClose]);
 
@@ -452,6 +454,32 @@ export default function NativeDailyTasksModal({ isOpen, onClose, onCreditsUpdate
             ) : isDisabled ? (
               <div className="flex flex-col items-center justify-center py-12">
                 <p className="text-sm text-gray-400">{t('dailyTasks.disabled') || 'Daily tasks not available'}</p>
+              </div>
+            ) : !user && !guestDismissed ? (
+              /* ── 匿名用户提示：登录后才能 Convert / Withdraw ── */
+              <div className="flex flex-col items-center text-center py-4">
+                <div className="w-16 h-16 rounded-full bg-amber-500/10 flex items-center justify-center mb-4">
+                  <svg className="w-8 h-8 text-amber-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                    <circle cx="12" cy="12" r="10" />
+                    <path d="M12 8v4M12 16h.01" strokeLinecap="round" />
+                  </svg>
+                </div>
+                <h4 className="text-white font-bold text-lg mb-2">{t('dailyTasks.guestPrompt.title')}</h4>
+                <p className="text-gray-400 text-sm leading-relaxed mb-6 px-2">
+                  {t('dailyTasks.guestPrompt.desc')}
+                </p>
+                <button
+                  onClick={() => setShowLoginModal(true)}
+                  className="w-full py-3 bg-gradient-to-r from-purple-500 to-purple-600 text-white font-semibold rounded-xl mb-3 active:scale-[0.97] transition-transform"
+                >
+                  {t('dailyTasks.guestPrompt.login')}
+                </button>
+                <button
+                  onClick={() => setGuestDismissed(true)}
+                  className="w-full py-3 border border-white/10 text-gray-400 font-medium rounded-xl hover:bg-white/5 transition-colors"
+                >
+                  {t('dailyTasks.guestPrompt.continueAsGuest')}
+                </button>
               </div>
             ) : renderLoggedInContent()}
           </div>

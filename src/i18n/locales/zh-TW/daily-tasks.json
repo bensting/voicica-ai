@@ -56,6 +56,13 @@
     "creditsClaimed": "積分已添加到您的帳戶",
     "appOnlyTitle": "App 專屬功能",
     "appOnlyDesc": "免費積分僅限 App 端使用，網頁端請訂閱獲取無限積分！",
-    "goSubscribe": "查看訂閱"
+    "goSubscribe": "查看訂閱",
+
+    "guestPrompt": {
+      "title": "以訪客身份挖礦？",
+      "desc": "訪客可以挖礦獲得 $VOICICA，但只有登入用戶才能兌換 USDT 並提現。訪客收益僅可在應用內使用。",
+      "login": "登入解鎖全部功能",
+      "continueAsGuest": "以訪客身份繼續"
+    }
   }
 }

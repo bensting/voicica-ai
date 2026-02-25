@@ -103,9 +103,9 @@ export const appConfig: AppConfig = {
     withdrawal: {
       min_amount: 5, // 最低提现 5 USDT
       networks: [
-        { id: 'polygon', label: 'Polygon(POL)', fee: 0.02, placeholder: '0x...' },
-        { id: 'bep20', label: 'BEP20 (BSC)', fee: 0.02, placeholder: '0x...' },
-        { id: 'solana', label: 'Solana (SOL)', fee: 0.5, placeholder: 'T...' },
+        { id: 'polygon', label: 'Polygon(POL)', fee: 0.02, placeholder: '0x...', addressPattern: '^0x[0-9a-fA-F]{40}$' },
+        { id: 'bep20', label: 'BEP20 (BSC)', fee: 0.02, placeholder: '0x...', addressPattern: '^0x[0-9a-fA-F]{40}$' },
+        { id: 'solana', label: 'Solana (SOL)', fee: 0.5, placeholder: 'So...', addressPattern: '^[1-9A-HJ-NP-Za-km-z]{32,44}$' },
       ],
       enabled: true,
     },

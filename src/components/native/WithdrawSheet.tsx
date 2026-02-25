@@ -12,19 +12,10 @@ import { getWithdrawalConfig } from '@/config/appConfig';
 import { submitWithdrawal } from '@/actions/withdrawal';
 import type { WithdrawalNetworkConfig } from '@/config/appConfig/types';
 
-/** 校验钱包地址格式是否匹配所选网络 */
-function isValidAddress(address: string, networkId: string): boolean {
-  switch (networkId) {
-    case 'polygon':
-    case 'bep20':
-      // EVM 地址：0x 开头 + 40 位十六进制，共 42 字符
-      return /^0x[0-9a-fA-F]{40}$/.test(address);
-    case 'trc20':
-      // Tron 地址：T 开头 + 33 位 Base58 字符，共 34 字符
-      return /^T[1-9A-HJ-NP-Za-km-z]{33}$/.test(address);
-    default:
-      return true;
-  }
+/** 校验钱包地址格式是否匹配所选网络（使用配置中的 addressPattern） */
+function isValidAddress(address: string, network: WithdrawalNetworkConfig): boolean {
+  if (!network.addressPattern) return true;
+  return new RegExp(network.addressPattern).test(address);
 }
 
 interface WithdrawSheetProps {
@@ -130,7 +121,7 @@ export default function WithdrawSheet({ isOpen, onClose, onSuccess }: WithdrawSh
 
     if (!walletAddress.trim()) {
       e.walletAddress = t('native.withdraw.errors.required');
-    } else if (selectedNetwork && !isValidAddress(walletAddress.trim(), selectedNetwork.id)) {
+    } else if (selectedNetwork && !isValidAddress(walletAddress.trim(), selectedNetwork)) {
       e.walletAddress = t('native.withdraw.errors.invalidAddress');
     }
 

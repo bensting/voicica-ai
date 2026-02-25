@@ -124,6 +124,8 @@ export interface WithdrawalNetworkConfig {
   fee: number;
   /** 地址占位符 */
   placeholder: string;
+  /** 地址格式正则（用于前端校验） */
+  addressPattern?: string;
 }
 
 /**

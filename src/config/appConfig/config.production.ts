@@ -111,7 +111,7 @@ export const appConfig: AppConfig = {
       NG: 0.01, KE: 0.01, EG: 0.01, ZA: 0.01,
     },
     web_default_ecpm_usd: 0.03,
-    show_wallet_card: false, // 生产环境暂不显示
+    show_wallet_card: true, // 生产环境暂不显示
     conversion: {
       min_voicica_reserve: 2000, // 最低保留 2000 $VOICICA
       min_convert_amount: 100,   // 单次最低兑换 100
@@ -120,9 +120,9 @@ export const appConfig: AppConfig = {
     withdrawal: {
       min_amount: 5, // 最低提现 5 USDT
       networks: [
-        { id: 'polygon', label: 'Polygon(POL)', fee: 0.02, placeholder: '0x...' },
-        { id: 'bep20', label: 'BEP20 (BSC)', fee: 0.02, placeholder: '0x...' },
-        { id: 'solana', label: 'Solana (SOL)', fee: 0.5, placeholder: 'T...' },
+        { id: 'polygon', label: 'Polygon(POL)', fee: 0.02, placeholder: '0x...', addressPattern: '^0x[0-9a-fA-F]{40}$' },
+        { id: 'bep20', label: 'BEP20 (BSC)', fee: 0.02, placeholder: '0x...', addressPattern: '^0x[0-9a-fA-F]{40}$' },
+        { id: 'solana', label: 'Solana (SOL)', fee: 0.5, placeholder: 'So...', addressPattern: '^[1-9A-HJ-NP-Za-km-z]{32,44}$' },
       ],
       enabled: true,
     },

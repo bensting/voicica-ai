@@ -122,6 +122,12 @@ export async function getCurrentUserProfile(platform?: string): Promise<UserProf
     user = newUser;
     console.log(`新用户注册: ${authUser.uid}, 平台: ${platform || '未知'}`);
   } else {
+    // 补填 platform（老用户可能为空）
+    if (!user.platform && platform) {
+      await db.update(users).set({ platform }).where(eq(users.userId, authUser.uid));
+      user = { ...user, platform };
+    }
+
     // 检查并重置当月积分（懒加载）
     const { wasReset } = await checkAndResetMonthlyCredits(authUser.uid);
     if (wasReset) {

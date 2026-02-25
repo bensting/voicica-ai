@@ -91,6 +91,8 @@ export interface MiningEconomyConfig {
   web_estimated_ecpm_by_country: Record<string, number>;
   /** 未知国家的默认 eCPM（USD），Web 端 */
   web_default_ecpm_usd: number;
+  /** 是否显示首页横幅区域（Lucky Draw / 广告 / Banner 轮播） */
+  show_home_banner: boolean;
   /** 是否显示资产钱包卡片（Total Assets） */
   show_wallet_card: boolean;
   /** $VOICICA → USDT 兑换配置 */

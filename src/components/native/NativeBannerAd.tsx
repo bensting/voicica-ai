@@ -10,11 +10,14 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useSubscription } from '@/contexts/SubscriptionContext';
 import { getActiveDrawsForBanner, type ActiveDrawInfo } from '@/actions/lucky-draw';
+import { getMiningEconomyConfig } from '@/config/appConfig';
 import AdsterraBanner from './AdsterraBanner';
 import BannerCarousel from './BannerCarousel';
 import LuckyDrawBanner from './LuckyDrawBanner';
 
 export default function NativeBannerAd() {
+  const { show_home_banner } = getMiningEconomyConfig();
+  if (!show_home_banner) return null;
   const { isSubscribed } = useSubscription();
   const [activeDraws, setActiveDraws] = useState<ActiveDrawInfo[] | undefined>(undefined);
   const [currentIndex, setCurrentIndex] = useState(0);

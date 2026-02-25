@@ -111,7 +111,8 @@ export const appConfig: AppConfig = {
       NG: 0.01, KE: 0.01, EG: 0.01, ZA: 0.01,
     },
     web_default_ecpm_usd: 0.03,
-    show_wallet_card: true, // 生产环境暂不显示
+    show_home_banner: false, // 是否显示首页 Banner
+    show_wallet_card: true, // 是否显示首页 钱包
     conversion: {
       min_voicica_reserve: 2000, // 最低保留 2000 $VOICICA
       min_convert_amount: 100,   // 单次最低兑换 100

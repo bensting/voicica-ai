@@ -6,31 +6,31 @@
       "free": "免費"
     },
     "totalAssets": {
-      "title": "Total Assets",
-      "mining": "Mining",
-      "convert": "Convert",
-      "withdraw": "Withdraw",
-      "comingSoon": "Coming soon",
+      "title": "總資產",
+      "mining": "挖礦",
+      "convert": "兌換",
+      "withdraw": "提現",
+      "comingSoon": "即將推出",
       "convertModal": {
-        "title": "Convert",
-        "from": "From",
-        "to": "To",
-        "amount": "Amount",
-        "max": "MAX",
-        "youWillReceive": "You will receive",
-        "confirm": "Confirm",
-        "ruleHint": "Minimum {{reserve}} $VOICICA balance required. Only the portion above {{reserve}} is convertible.",
-        "minAmount": "Minimum convert amount: {{min}} $VOICICA",
-        "insufficientBalance": "Insufficient balance",
-        "convertSuccess": "Successfully converted {{amount}} $VOICICA to {{usdt}} USDT",
-        "converting": "Converting...",
-        "loginRequired": "Please log in to convert"
+        "title": "兌換",
+        "from": "從",
+        "to": "到",
+        "amount": "數量",
+        "max": "最大",
+        "youWillReceive": "你將收到",
+        "confirm": "確認",
+        "ruleHint": "需保留最低 {{reserve}} $VOICICA 餘額，僅超出 {{reserve}} 的部分可兌換。",
+        "minAmount": "最低兌換數量：{{min}} $VOICICA",
+        "insufficientBalance": "餘額不足",
+        "convertSuccess": "成功將 {{amount}} $VOICICA 兌換為 {{usdt}} USDT",
+        "converting": "兌換中...",
+        "loginRequired": "請先登入再兌換"
       },
       "withdrawModal": {
-        "voicicaTitle": "Withdraw $VOICICA",
-        "voicicaDesc": "Withdraw to Phantom wallet",
-        "usdtTitle": "Withdraw USDT",
-        "usdtDesc": "Withdraw to exchange (min. 2 USDT)"
+        "voicicaTitle": "提取 $VOICICA",
+        "voicicaDesc": "提取到 Phantom 錢包",
+        "usdtTitle": "提取 USDT",
+        "usdtDesc": "提取到交易所（最低 2 USDT）"
       }
     },
     "withdraw": {

@@ -6,31 +6,31 @@
       "free": "Grátis"
     },
     "totalAssets": {
-      "title": "Total Assets",
-      "mining": "Mining",
-      "convert": "Convert",
-      "withdraw": "Withdraw",
-      "comingSoon": "Coming soon",
+      "title": "Ativos totais",
+      "mining": "Mineração",
+      "convert": "Converter",
+      "withdraw": "Sacar",
+      "comingSoon": "Em breve",
       "convertModal": {
-        "title": "Convert",
-        "from": "From",
-        "to": "To",
-        "amount": "Amount",
-        "max": "MAX",
-        "youWillReceive": "You will receive",
-        "confirm": "Confirm",
-        "ruleHint": "Minimum {{reserve}} $VOICICA balance required. Only the portion above {{reserve}} is convertible.",
-        "minAmount": "Minimum convert amount: {{min}} $VOICICA",
-        "insufficientBalance": "Insufficient balance",
-        "convertSuccess": "Successfully converted {{amount}} $VOICICA to {{usdt}} USDT",
-        "converting": "Converting...",
-        "loginRequired": "Please log in to convert"
+        "title": "Converter",
+        "from": "De",
+        "to": "Para",
+        "amount": "Quantidade",
+        "max": "MÁX",
+        "youWillReceive": "Você receberá",
+        "confirm": "Confirmar",
+        "ruleHint": "Saldo mínimo de {{reserve}} $VOICICA necessário. Apenas a parte acima de {{reserve}} pode ser convertida.",
+        "minAmount": "Quantidade mínima de conversão: {{min}} $VOICICA",
+        "insufficientBalance": "Saldo insuficiente",
+        "convertSuccess": "{{amount}} $VOICICA convertidos com sucesso para {{usdt}} USDT",
+        "converting": "Convertendo...",
+        "loginRequired": "Faça login para converter"
       },
       "withdrawModal": {
-        "voicicaTitle": "Withdraw $VOICICA",
-        "voicicaDesc": "Withdraw to Phantom wallet",
-        "usdtTitle": "Withdraw USDT",
-        "usdtDesc": "Withdraw to exchange (min. 2 USDT)"
+        "voicicaTitle": "Sacar $VOICICA",
+        "voicicaDesc": "Sacar para carteira Phantom",
+        "usdtTitle": "Sacar USDT",
+        "usdtDesc": "Sacar para corretora (mín. 2 USDT)"
       }
     },
     "bottomNav": {

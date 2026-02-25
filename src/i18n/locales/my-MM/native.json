@@ -6,31 +6,31 @@
       "free": "အခမဲ့"
     },
     "totalAssets": {
-      "title": "Total Assets",
-      "mining": "Mining",
-      "convert": "Convert",
-      "withdraw": "Withdraw",
-      "comingSoon": "Coming soon",
+      "title": "စုစုပေါင်းပိုင်ဆိုင်မှု",
+      "mining": "တူးဖော်ခြင်း",
+      "convert": "ပြောင်းလဲခြင်း",
+      "withdraw": "ထုတ်ယူခြင်း",
+      "comingSoon": "မကြာမီလာမည်",
       "convertModal": {
-        "title": "Convert",
-        "from": "From",
-        "to": "To",
-        "amount": "Amount",
-        "max": "MAX",
-        "youWillReceive": "You will receive",
-        "confirm": "Confirm",
-        "ruleHint": "Minimum {{reserve}} $VOICICA balance required. Only the portion above {{reserve}} is convertible.",
-        "minAmount": "Minimum convert amount: {{min}} $VOICICA",
-        "insufficientBalance": "Insufficient balance",
-        "convertSuccess": "Successfully converted {{amount}} $VOICICA to {{usdt}} USDT",
-        "converting": "Converting...",
-        "loginRequired": "Please log in to convert"
+        "title": "ပြောင်းလဲခြင်း",
+        "from": "မှ",
+        "to": "သို့",
+        "amount": "ပမာဏ",
+        "max": "အများဆုံး",
+        "youWillReceive": "သင်ရရှိမည်",
+        "confirm": "အတည်ပြုပါ",
+        "ruleHint": "အနည်းဆုံး {{reserve}} $VOICICA လက်ကျန်ထားရှိရမည်။ {{reserve}} ထက်ပိုသောပမာဏသာ ပြောင်းလဲနိုင်ပါသည်။",
+        "minAmount": "အနည်းဆုံးပြောင်းလဲပမာဏ: {{min}} $VOICICA",
+        "insufficientBalance": "လက်ကျန်မလုံလောက်ပါ",
+        "convertSuccess": "{{amount}} $VOICICA ကို {{usdt}} USDT သို့ အောင်မြင်စွာပြောင်းလဲပြီးပါပြီ",
+        "converting": "ပြောင်းလဲနေသည်...",
+        "loginRequired": "ပြောင်းလဲရန် ကျေးဇူးပြု၍ အကောင့်ဝင်ပါ"
       },
       "withdrawModal": {
-        "voicicaTitle": "Withdraw $VOICICA",
-        "voicicaDesc": "Withdraw to Phantom wallet",
-        "usdtTitle": "Withdraw USDT",
-        "usdtDesc": "Withdraw to exchange (min. 2 USDT)"
+        "voicicaTitle": "$VOICICA ထုတ်ယူရန်",
+        "voicicaDesc": "Phantom ပိုက်ဆံအိတ်သို့ ထုတ်ယူရန်",
+        "usdtTitle": "USDT ထုတ်ယူရန်",
+        "usdtDesc": "ငွေလဲလှယ်ရေးသို့ ထုတ်ယူရန် (အနည်းဆုံး 2 USDT)"
       }
     },
     "bottomNav": {

@@ -6,31 +6,31 @@
       "free": "Gratis"
     },
     "totalAssets": {
-      "title": "Total Assets",
-      "mining": "Mining",
-      "convert": "Convert",
-      "withdraw": "Withdraw",
-      "comingSoon": "Coming soon",
+      "title": "Activos totales",
+      "mining": "Minería",
+      "convert": "Convertir",
+      "withdraw": "Retirar",
+      "comingSoon": "Próximamente",
       "convertModal": {
-        "title": "Convert",
-        "from": "From",
-        "to": "To",
-        "amount": "Amount",
-        "max": "MAX",
-        "youWillReceive": "You will receive",
-        "confirm": "Confirm",
-        "ruleHint": "Minimum {{reserve}} $VOICICA balance required. Only the portion above {{reserve}} is convertible.",
-        "minAmount": "Minimum convert amount: {{min}} $VOICICA",
-        "insufficientBalance": "Insufficient balance",
-        "convertSuccess": "Successfully converted {{amount}} $VOICICA to {{usdt}} USDT",
-        "converting": "Converting...",
-        "loginRequired": "Please log in to convert"
+        "title": "Convertir",
+        "from": "De",
+        "to": "A",
+        "amount": "Cantidad",
+        "max": "MÁX",
+        "youWillReceive": "Recibirás",
+        "confirm": "Confirmar",
+        "ruleHint": "Se requiere un saldo mínimo de {{reserve}} $VOICICA. Solo la parte superior a {{reserve}} es convertible.",
+        "minAmount": "Cantidad mínima de conversión: {{min}} $VOICICA",
+        "insufficientBalance": "Saldo insuficiente",
+        "convertSuccess": "Se convirtieron exitosamente {{amount}} $VOICICA a {{usdt}} USDT",
+        "converting": "Convirtiendo...",
+        "loginRequired": "Inicia sesión para convertir"
       },
       "withdrawModal": {
-        "voicicaTitle": "Withdraw $VOICICA",
-        "voicicaDesc": "Withdraw to Phantom wallet",
-        "usdtTitle": "Withdraw USDT",
-        "usdtDesc": "Withdraw to exchange (min. 2 USDT)"
+        "voicicaTitle": "Retirar $VOICICA",
+        "voicicaDesc": "Retirar a billetera Phantom",
+        "usdtTitle": "Retirar USDT",
+        "usdtDesc": "Retirar a exchange (mín. 2 USDT)"
       }
     },
     "bottomNav": {

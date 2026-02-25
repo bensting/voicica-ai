@@ -6,31 +6,31 @@
       "free": "मुफ़्त"
     },
     "totalAssets": {
-      "title": "Total Assets",
-      "mining": "Mining",
-      "convert": "Convert",
-      "withdraw": "Withdraw",
-      "comingSoon": "Coming soon",
+      "title": "कुल संपत्ति",
+      "mining": "माइनिंग",
+      "convert": "रूपांतरण",
+      "withdraw": "निकासी",
+      "comingSoon": "जल्द आ रहा है",
       "convertModal": {
-        "title": "Convert",
-        "from": "From",
-        "to": "To",
-        "amount": "Amount",
-        "max": "MAX",
-        "youWillReceive": "You will receive",
-        "confirm": "Confirm",
-        "ruleHint": "Minimum {{reserve}} $VOICICA balance required. Only the portion above {{reserve}} is convertible.",
-        "minAmount": "Minimum convert amount: {{min}} $VOICICA",
-        "insufficientBalance": "Insufficient balance",
-        "convertSuccess": "Successfully converted {{amount}} $VOICICA to {{usdt}} USDT",
-        "converting": "Converting...",
-        "loginRequired": "Please log in to convert"
+        "title": "रूपांतरण",
+        "from": "से",
+        "to": "में",
+        "amount": "राशि",
+        "max": "अधिकतम",
+        "youWillReceive": "आपको मिलेगा",
+        "confirm": "पुष्टि करें",
+        "ruleHint": "न्यूनतम {{reserve}} $VOICICA शेष आवश्यक है। केवल {{reserve}} से अधिक भाग ही रूपांतरित किया जा सकता है।",
+        "minAmount": "न्यूनतम रूपांतरण राशि: {{min}} $VOICICA",
+        "insufficientBalance": "अपर्याप्त शेष",
+        "convertSuccess": "{{amount}} $VOICICA को {{usdt}} USDT में सफलतापूर्वक रूपांतरित किया गया",
+        "converting": "रूपांतरित हो रहा है...",
+        "loginRequired": "रूपांतरण के लिए कृपया लॉगिन करें"
       },
       "withdrawModal": {
-        "voicicaTitle": "Withdraw $VOICICA",
-        "voicicaDesc": "Withdraw to Phantom wallet",
-        "usdtTitle": "Withdraw USDT",
-        "usdtDesc": "Withdraw to exchange (min. 2 USDT)"
+        "voicicaTitle": "$VOICICA निकालें",
+        "voicicaDesc": "Phantom वॉलेट में निकालें",
+        "usdtTitle": "USDT निकालें",
+        "usdtDesc": "एक्सचेंज में निकालें (न्यूनतम 2 USDT)"
       }
     },
     "bottomNav": {

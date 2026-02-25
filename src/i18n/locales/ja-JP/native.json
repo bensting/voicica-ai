@@ -6,31 +6,31 @@
       "free": "無料"
     },
     "totalAssets": {
-      "title": "Total Assets",
-      "mining": "Mining",
-      "convert": "Convert",
-      "withdraw": "Withdraw",
-      "comingSoon": "Coming soon",
+      "title": "総資産",
+      "mining": "マイニング",
+      "convert": "交換",
+      "withdraw": "出金",
+      "comingSoon": "近日公開",
       "convertModal": {
-        "title": "Convert",
-        "from": "From",
-        "to": "To",
-        "amount": "Amount",
-        "max": "MAX",
-        "youWillReceive": "You will receive",
-        "confirm": "Confirm",
-        "ruleHint": "Minimum {{reserve}} $VOICICA balance required. Only the portion above {{reserve}} is convertible.",
-        "minAmount": "Minimum convert amount: {{min}} $VOICICA",
-        "insufficientBalance": "Insufficient balance",
-        "convertSuccess": "Successfully converted {{amount}} $VOICICA to {{usdt}} USDT",
-        "converting": "Converting...",
-        "loginRequired": "Please log in to convert"
+        "title": "交換",
+        "from": "変換元",
+        "to": "変換先",
+        "amount": "数量",
+        "max": "最大",
+        "youWillReceive": "受取額",
+        "confirm": "確認",
+        "ruleHint": "最低 {{reserve}} $VOICICA の残高が必要です。{{reserve}} を超える分のみ交換可能です。",
+        "minAmount": "最低交換数量：{{min}} $VOICICA",
+        "insufficientBalance": "残高不足",
+        "convertSuccess": "{{amount}} $VOICICA を {{usdt}} USDT に交換しました",
+        "converting": "交換中...",
+        "loginRequired": "交換するにはログインしてください"
       },
       "withdrawModal": {
-        "voicicaTitle": "Withdraw $VOICICA",
-        "voicicaDesc": "Withdraw to Phantom wallet",
-        "usdtTitle": "Withdraw USDT",
-        "usdtDesc": "Withdraw to exchange (min. 2 USDT)"
+        "voicicaTitle": "$VOICICA を出金",
+        "voicicaDesc": "Phantom ウォレットに出金",
+        "usdtTitle": "USDT を出金",
+        "usdtDesc": "取引所に出金（最低 2 USDT）"
       }
     },
     "bottomNav": {

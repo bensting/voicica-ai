@@ -6,31 +6,31 @@
       "free": "ฟรี"
     },
     "totalAssets": {
-      "title": "Total Assets",
-      "mining": "Mining",
-      "convert": "Convert",
-      "withdraw": "Withdraw",
-      "comingSoon": "Coming soon",
+      "title": "สินทรัพย์รวม",
+      "mining": "ขุดเหรียญ",
+      "convert": "แลกเปลี่ยน",
+      "withdraw": "ถอนเงิน",
+      "comingSoon": "เร็วๆ นี้",
       "convertModal": {
-        "title": "Convert",
-        "from": "From",
-        "to": "To",
-        "amount": "Amount",
-        "max": "MAX",
-        "youWillReceive": "You will receive",
-        "confirm": "Confirm",
-        "ruleHint": "Minimum {{reserve}} $VOICICA balance required. Only the portion above {{reserve}} is convertible.",
-        "minAmount": "Minimum convert amount: {{min}} $VOICICA",
-        "insufficientBalance": "Insufficient balance",
-        "convertSuccess": "Successfully converted {{amount}} $VOICICA to {{usdt}} USDT",
-        "converting": "Converting...",
-        "loginRequired": "Please log in to convert"
+        "title": "แลกเปลี่ยน",
+        "from": "จาก",
+        "to": "เป็น",
+        "amount": "จำนวน",
+        "max": "สูงสุด",
+        "youWillReceive": "คุณจะได้รับ",
+        "confirm": "ยืนยัน",
+        "ruleHint": "ต้องคงเหลือขั้นต่ำ {{reserve}} $VOICICA เฉพาะส่วนที่เกิน {{reserve}} เท่านั้นที่สามารถแลกได้",
+        "minAmount": "จำนวนแลกขั้นต่ำ: {{min}} $VOICICA",
+        "insufficientBalance": "ยอดเงินไม่เพียงพอ",
+        "convertSuccess": "แลกเปลี่ยน {{amount}} $VOICICA เป็น {{usdt}} USDT สำเร็จ",
+        "converting": "กำลังแลกเปลี่ยน...",
+        "loginRequired": "กรุณาเข้าสู่ระบบเพื่อแลกเปลี่ยน"
       },
       "withdrawModal": {
-        "voicicaTitle": "Withdraw $VOICICA",
-        "voicicaDesc": "Withdraw to Phantom wallet",
-        "usdtTitle": "Withdraw USDT",
-        "usdtDesc": "Withdraw to exchange (min. 2 USDT)"
+        "voicicaTitle": "ถอน $VOICICA",
+        "voicicaDesc": "ถอนไปยังกระเป๋า Phantom",
+        "usdtTitle": "ถอน USDT",
+        "usdtDesc": "ถอนไปยังกระดานเทรด (ขั้นต่ำ 2 USDT)"
       }
     },
     "bottomNav": {

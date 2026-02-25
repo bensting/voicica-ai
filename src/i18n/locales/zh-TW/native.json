@@ -59,6 +59,7 @@
         "insufficientBalance": "餘額不足",
         "amountTooLow": "金額必須大於手續費",
         "addressMismatch": "兩次輸入的地址不一致",
+        "invalidAddress": "錢包地址格式與所選網路不匹配",
         "invalidEmail": "電郵格式不正確",
         "invalidNetwork": "無效的網路",
         "disabled": "提現功能暫未開放",

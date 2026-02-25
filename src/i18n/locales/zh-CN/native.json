@@ -59,6 +59,7 @@
         "insufficientBalance": "余额不足",
         "amountTooLow": "金额必须大于手续费",
         "addressMismatch": "两次输入的地址不一致",
+        "invalidAddress": "钱包地址格式与所选网络不匹配",
         "invalidEmail": "邮箱格式不正确",
         "invalidNetwork": "无效的网络",
         "disabled": "提现功能暂未开放",

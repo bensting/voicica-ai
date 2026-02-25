@@ -59,6 +59,7 @@
         "insufficientBalance": "Insufficient balance",
         "amountTooLow": "Amount must be greater than the fee",
         "addressMismatch": "Addresses do not match",
+        "invalidAddress": "Invalid wallet address format for the selected network",
         "invalidEmail": "Invalid email address",
         "invalidNetwork": "Invalid network",
         "disabled": "Withdrawal is currently disabled",

@@ -73,7 +73,7 @@ export default function NativeDailyTasksModal({ isOpen, onClose, onCreditsUpdate
   } = useDailyTasks();
 
   const [showLoginModal, setShowLoginModal] = useState(false);
-  const [guestDismissed, setGuestDismissed] = useState(false);
+  const [loginPromptAction, setLoginPromptAction] = useState<'checkin' | 'ad' | null>(null);
   const [lastClaimedCredits, setLastClaimedCredits] = useState<number | null>(null);
   const [showCelebration, setShowCelebration] = useState(false);
   const [adLoading, setAdLoading] = useState(false);
@@ -84,18 +84,42 @@ export default function NativeDailyTasksModal({ isOpen, onClose, onCreditsUpdate
   const cancelledRef = useRef(false);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  // 登录成功后刷新状态
+  // 24 小时内是否已跳过登录提示
+  const LOGIN_DISMISS_KEY = 'mining_login_dismissed_at';
+  const isLoginDismissedRecently = useCallback(() => {
+    try {
+      const ts = localStorage.getItem(LOGIN_DISMISS_KEY);
+      if (!ts) return false;
+      return Date.now() - parseInt(ts, 10) < 24 * 60 * 60 * 1000;
+    } catch { return false; }
+  }, []);
+
+  const dismissLogin = useCallback(() => {
+    try { localStorage.setItem(LOGIN_DISMISS_KEY, Date.now().toString()); } catch {}
+  }, []);
+
+  // 未登录时拦截操作，24 小时内跳过提示
+  const requireLoginOrProceed = useCallback((action: 'checkin' | 'ad', proceed: () => void) => {
+    if (user || isLoginDismissedRecently()) {
+      proceed();
+    } else {
+      setLoginPromptAction(action);
+    }
+  }, [user, isLoginDismissedRecently]);
+
+  // 登录成功后自动执行之前被拦截的操作
   useEffect(() => {
     if (user && showLoginModal) {
       setShowLoginModal(false);
+      setLoginPromptAction(null);
       refresh();
     }
   }, [user, showLoginModal, refresh]);
 
-  // 关闭弹窗时标记已显示 + 重置 guest 状态
+  // 关闭弹窗时标记已显示
   const handleClose = useCallback(() => {
     markPopupShown();
-    setGuestDismissed(false);
+    setLoginPromptAction(null);
     onClose();
   }, [markPopupShown, onClose]);
 
@@ -287,7 +311,7 @@ export default function NativeDailyTasksModal({ isOpen, onClose, onCreditsUpdate
           )}
 
           <button
-            onClick={handleCheckin}
+            onClick={() => requireLoginOrProceed('checkin', handleCheckin)}
             disabled={status.checkinDone || claiming || checkinLoading}
             className={`w-full py-3 font-medium rounded-xl flex items-center justify-center gap-2 text-sm ${
               status.checkinDone
@@ -353,7 +377,7 @@ export default function NativeDailyTasksModal({ isOpen, onClose, onCreditsUpdate
 
           {status.remainingAdViews > 0 ? (
             <button
-              onClick={() => handleWatchAd()}
+              onClick={() => requireLoginOrProceed('ad', handleWatchAd)}
               disabled={claiming || adLoading}
               className="w-full py-3 bg-gradient-to-r from-amber-500 to-orange-500 text-white font-semibold rounded-xl flex items-center justify-center gap-2 disabled:opacity-50"
             >
@@ -455,37 +479,57 @@ export default function NativeDailyTasksModal({ isOpen, onClose, onCreditsUpdate
               <div className="flex flex-col items-center justify-center py-12">
                 <p className="text-sm text-gray-400">{t('dailyTasks.disabled') || 'Daily tasks not available'}</p>
               </div>
-            ) : !user && !guestDismissed ? (
-              /* ── 匿名用户提示：登录后才能 Convert / Withdraw ── */
-              <div className="flex flex-col items-center text-center py-4">
-                <div className="w-16 h-16 rounded-full bg-amber-500/10 flex items-center justify-center mb-4">
-                  <svg className="w-8 h-8 text-amber-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                    <circle cx="12" cy="12" r="10" />
-                    <path d="M12 8v4M12 16h.01" strokeLinecap="round" />
-                  </svg>
-                </div>
-                <h4 className="text-white font-bold text-lg mb-2">{t('dailyTasks.guestPrompt.title')}</h4>
-                <p className="text-gray-400 text-sm leading-relaxed mb-6 px-2">
-                  {t('dailyTasks.guestPrompt.desc')}
-                </p>
-                <button
-                  onClick={() => setShowLoginModal(true)}
-                  className="w-full py-3 bg-gradient-to-r from-purple-500 to-purple-600 text-white font-semibold rounded-xl mb-3 active:scale-[0.97] transition-transform"
-                >
-                  {t('dailyTasks.guestPrompt.login')}
-                </button>
-                <button
-                  onClick={() => setGuestDismissed(true)}
-                  className="w-full py-3 border border-white/10 text-gray-400 font-medium rounded-xl hover:bg-white/5 transition-colors"
-                >
-                  {t('dailyTasks.guestPrompt.continueAsGuest')}
-                </button>
-              </div>
             ) : renderLoggedInContent()}
           </div>
 
         </div>
       </div>
+
+      {/* 操作时登录提示（未登录且 24h 内未跳过） */}
+      {loginPromptAction && (
+        <div
+          className="fixed inset-0 flex items-center justify-center bg-black/80 backdrop-blur-sm z-[10001]"
+          onClick={() => setLoginPromptAction(null)}
+        >
+          <div
+            className="bg-gray-900 rounded-2xl p-6 mx-4 max-w-[360px] w-full border border-white/10 text-center"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="w-16 h-16 rounded-full bg-amber-500/10 flex items-center justify-center mb-4 mx-auto">
+              <svg className="w-8 h-8 text-amber-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                <circle cx="12" cy="12" r="10" />
+                <path d="M12 8v4M12 16h.01" strokeLinecap="round" />
+              </svg>
+            </div>
+            <h4 className="text-white font-bold text-lg mb-2">{t('dailyTasks.guestPrompt.title')}</h4>
+            <p className="text-gray-400 text-sm leading-relaxed mb-6 px-2">
+              {t('dailyTasks.guestPrompt.desc')}
+            </p>
+            <button
+              onClick={() => {
+                setLoginPromptAction(null);
+                setShowLoginModal(true);
+              }}
+              className="w-full py-3 bg-gradient-to-r from-purple-500 to-purple-600 text-white font-semibold rounded-xl mb-3 active:scale-[0.97] transition-transform"
+            >
+              {t('dailyTasks.guestPrompt.login')}
+            </button>
+            <button
+              onClick={() => {
+                dismissLogin();
+                const action = loginPromptAction;
+                setLoginPromptAction(null);
+                // 跳过后直接执行操作
+                if (action === 'checkin') handleCheckin();
+                else if (action === 'ad') handleWatchAd();
+              }}
+              className="w-full py-3 border border-white/10 text-gray-400 font-medium rounded-xl hover:bg-white/5 transition-colors"
+            >
+              {t('dailyTasks.guestPrompt.continueAsGuest')}
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* 登录弹窗 */}
       <LoginModal

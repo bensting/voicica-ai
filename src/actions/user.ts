@@ -91,7 +91,7 @@ const getCachedAnonymousUser = cache(async (userId: string) => {
  * 需要认证，首次登录自动注册
  * 包含懒加载当月积分重置逻辑
  *
- * @param platform - 可选，用户注册时的平台 (web, mobile-web, android, ios)
+ * @param platform - 可选，用户注册时的平台 (web, mobile-web, android, android-apk, ios)
  */
 export async function getCurrentUserProfile(platform?: string): Promise<UserProfile> {
   const authUser = await getCurrentUser();

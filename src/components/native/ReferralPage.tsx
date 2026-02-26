@@ -241,7 +241,7 @@ export default function ReferralPage() {
         <div className="flex items-center gap-3 mb-4">
           {loading
             ? <Skeleton className="h-9 w-48" />
-            : <span className="text-3xl font-bold text-white tracking-[0.3em] font-mono">{info.referralCode}</span>
+            : <span className="text-3xl font-bold text-white tracking-[0.3em] font-mono">{info!.referralCode}</span>
           }
         </div>
         <div className="flex gap-3">
@@ -277,13 +277,13 @@ export default function ReferralPage() {
           <Skeleton className="h-2 w-full rounded-full" />
         </div>
       ) : (
-        <div style={getLevelBorderStyle(info.referralLevel)} className="mb-4">
-          <div className={`rounded-2xl p-4 ${getLevelCardBg(info.referralLevel)}`}>
+        <div style={getLevelBorderStyle(info!.referralLevel)} className="mb-4">
+          <div className={`rounded-2xl p-4 ${getLevelCardBg(info!.referralLevel)}`}>
             {/* Level Header */}
             <div className="flex items-center gap-2.5 mb-4">
-              <span className="text-2xl">{getLevelIcon(info.referralLevel)}</span>
-              <span className={`text-lg font-bold ${getLevelColor(info.referralLevel)}`}>
-                {getLevelLabel(info.referralLevel)}
+              <span className="text-2xl">{getLevelIcon(info!.referralLevel)}</span>
+              <span className={`text-lg font-bold ${getLevelColor(info!.referralLevel)}`}>
+                {getLevelLabel(info!.referralLevel)}
               </span>
             </div>
 
@@ -294,12 +294,12 @@ export default function ReferralPage() {
                 { key: 'l2' as const, label: t('native.referral.level.l2'), rate: '3%' },
                 { key: 'team' as const, label: 'Pool', rate: '2%' },
               ]).map((item, idx) => {
-                const active = isCommissionActive(info.referralLevel, item.key);
+                const active = isCommissionActive(info!.referralLevel, item.key);
                 return (
                   <div key={item.key} className="flex items-center gap-2">
                     {idx > 0 && <span className="text-slate-600">·</span>}
                     <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium ${
-                      active ? getActivePillStyle(info.referralLevel) : 'text-slate-600 bg-slate-800/50 line-through'
+                      active ? getActivePillStyle(info!.referralLevel) : 'text-slate-600 bg-slate-800/50 line-through'
                     }`}>
                       {item.label} {item.rate}
                     </span>
@@ -309,7 +309,7 @@ export default function ReferralPage() {
             </div>
 
             {/* Upgrade Progress */}
-            {info.referralLevel === 'miner' && (
+            {info!.referralLevel === 'miner' && (
               <div>
                 <div className="flex items-center gap-1.5 text-xs text-slate-400 mb-1.5">
                   <span>▸</span>
@@ -319,14 +319,14 @@ export default function ReferralPage() {
                   <div className="flex-1 h-2 bg-slate-700 rounded-full overflow-hidden">
                     <div
                       className="h-full bg-gradient-to-r from-amber-600 to-amber-400 rounded-full transition-all"
-                      style={{ width: `${Math.min(100, (info.upgradeProgress.bronze.current / info.upgradeProgress.bronze.required) * 100)}%` }}
+                      style={{ width: `${Math.min(100, (info!.upgradeProgress.bronze.current / info!.upgradeProgress.bronze.required) * 100)}%` }}
                     />
                   </div>
-                  <span className="text-xs text-slate-500 shrink-0">{info.upgradeProgress.bronze.current}/{info.upgradeProgress.bronze.required} {t('native.referral.directReferrals')}</span>
+                  <span className="text-xs text-slate-500 shrink-0">{info!.upgradeProgress.bronze.current}/{info!.upgradeProgress.bronze.required} {t('native.referral.directReferrals')}</span>
                 </div>
               </div>
             )}
-            {info.referralLevel === 'bronze' && (
+            {info!.referralLevel === 'bronze' && (
               <div>
                 <div className="flex items-center gap-1.5 text-xs text-slate-400 mb-1.5">
                   <span>▸</span>
@@ -336,14 +336,14 @@ export default function ReferralPage() {
                   <div className="flex-1 h-2 bg-slate-700 rounded-full overflow-hidden">
                     <div
                       className="h-full bg-gradient-to-r from-yellow-600 to-yellow-400 rounded-full transition-all"
-                      style={{ width: `${Math.min(100, (info.upgradeProgress.gold.current / info.upgradeProgress.gold.required) * 100)}%` }}
+                      style={{ width: `${Math.min(100, (info!.upgradeProgress.gold.current / info!.upgradeProgress.gold.required) * 100)}%` }}
                     />
                   </div>
-                  <span className="text-xs text-slate-500 shrink-0">{info.upgradeProgress.gold.current}/{info.upgradeProgress.gold.required} {t('native.referral.bronzeCaptains')}</span>
+                  <span className="text-xs text-slate-500 shrink-0">{info!.upgradeProgress.gold.current}/{info!.upgradeProgress.gold.required} {t('native.referral.bronzeCaptains')}</span>
                 </div>
               </div>
             )}
-            {info.referralLevel === 'gold' && (
+            {info!.referralLevel === 'gold' && (
               <div className="flex items-center gap-1.5 text-xs text-yellow-400/70">
                 <span>★</span>
                 <span>{t('native.referral.level.maxLevel')}</span>
@@ -360,10 +360,10 @@ export default function ReferralPage() {
           {loading
             ? <Skeleton className="h-7 w-20 mt-1" />
             : <>
-                <p className="text-xl font-bold text-white">{formatCredits(info.totalEarnings)}</p>
+                <p className="text-xl font-bold text-white">{formatCredits(info!.totalEarnings)}</p>
                 <p className="text-[10px] text-slate-500">$VOICICA</p>
                 <p className="text-[10px] text-emerald-400/80 mt-0.5">
-                  ≈ {(info.totalEarnings * getMiningEconomyConfig().token_value_usd).toFixed(4)} USDT
+                  ≈ {(info!.totalEarnings * getMiningEconomyConfig().token_value_usd).toFixed(4)} USDT
                 </p>
               </>
           }
@@ -373,10 +373,10 @@ export default function ReferralPage() {
           {loading
             ? <Skeleton className="h-7 w-20 mt-1" />
             : <>
-                <p className="text-xl font-bold text-white">{formatCredits(info.todayEarnings)}</p>
+                <p className="text-xl font-bold text-white">{formatCredits(info!.todayEarnings)}</p>
                 <p className="text-[10px] text-slate-500">$VOICICA</p>
                 <p className="text-[10px] text-emerald-400/80 mt-0.5">
-                  ≈ {(info.todayEarnings * getMiningEconomyConfig().token_value_usd).toFixed(4)} USDT
+                  ≈ {(info!.todayEarnings * getMiningEconomyConfig().token_value_usd).toFixed(4)} USDT
                 </p>
               </>
           }

@@ -30,6 +30,9 @@ export async function getAdminUserList(params: {
     total_credits_used: number;
     created_at: Date;
     has_active_subscription: boolean;
+    referral_code: string | null;
+    referred_by: string | null;
+    referral_level: string;
   }>;
   total: number;
   page: number;
@@ -92,6 +95,9 @@ export async function getAdminUserList(params: {
     total_credits_used: u.totalCreditsUsed,
     created_at: new Date(u.createdAt),
     has_active_subscription: activeSubUserIds.has(u.userId),
+    referral_code: u.referralCode,
+    referred_by: u.referredBy,
+    referral_level: u.referralLevel,
   }));
 
   // 过滤订阅状态

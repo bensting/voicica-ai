@@ -22,7 +22,7 @@ function generateCode(length: number): string {
 /**
  * 生成唯一邀请码（查库去重）
  */
-async function generateUniqueCode(): Promise<string> {
+export async function generateUniqueCode(): Promise<string> {
   const config = getReferralConfig();
   for (let i = 0; i < 10; i++) {
     const code = generateCode(config.code_length);

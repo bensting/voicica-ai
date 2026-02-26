@@ -25,6 +25,9 @@ interface RegisteredUser {
   total_credits_used: number;
   created_at: Date;
   has_active_subscription: boolean;
+  referral_code: string | null;
+  referred_by: string | null;
+  referral_level: string;
 }
 
 /**
@@ -365,6 +368,9 @@ export default function UsersManagementPage() {
                     <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">积分</th>
                     <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">已用积分</th>
                     <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">订阅</th>
+                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">邀请码</th>
+                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">推荐人</th>
+                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">推荐等级</th>
                     <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">注册时间</th>
                     <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">操作</th>
                   </tr>
@@ -372,7 +378,7 @@ export default function UsersManagementPage() {
                 <tbody className="divide-y divide-gray-200">
                   {registeredLoading ? (
                     <tr>
-                      <td colSpan={8} className="px-4 py-8 text-center text-gray-500">
+                      <td colSpan={11} className="px-4 py-8 text-center text-gray-500">
                         <div className="flex items-center justify-center gap-2">
                           <div className="w-5 h-5 border-2 border-purple-600 border-t-transparent rounded-full animate-spin" />
                           加载中...
@@ -381,7 +387,7 @@ export default function UsersManagementPage() {
                     </tr>
                   ) : registeredUsers.length === 0 ? (
                     <tr>
-                      <td colSpan={8} className="px-4 py-8 text-center text-gray-500">
+                      <td colSpan={11} className="px-4 py-8 text-center text-gray-500">
                         没有找到用户
                       </td>
                     </tr>
@@ -461,6 +467,35 @@ export default function UsersManagementPage() {
                           ) : (
                             <span className="text-xs text-gray-400">无</span>
                           )}
+                        </td>
+                        <td className="px-4 py-3">
+                          {user.referral_code ? (
+                            <span className="text-sm font-mono text-purple-600">{user.referral_code}</span>
+                          ) : (
+                            <span className="text-xs text-gray-400">-</span>
+                          )}
+                        </td>
+                        <td className="px-4 py-3">
+                          {user.referred_by ? (
+                            <span className="text-xs font-mono text-gray-600">{user.referred_by.substring(0, 12)}...</span>
+                          ) : (
+                            <span className="text-xs text-gray-400">-</span>
+                          )}
+                        </td>
+                        <td className="px-4 py-3">
+                          {(() => {
+                            const levelConfig: Record<string, { label: string; bg: string; text: string }> = {
+                              miner: { label: '矿工', bg: 'bg-gray-100', text: 'text-gray-600' },
+                              bronze: { label: '青铜队长', bg: 'bg-orange-100', text: 'text-orange-700' },
+                              gold: { label: '黄金船长', bg: 'bg-yellow-100', text: 'text-yellow-700' },
+                            };
+                            const config = levelConfig[user.referral_level] || levelConfig.miner;
+                            return (
+                              <span className={`inline-flex items-center px-2 py-0.5 text-xs font-medium rounded ${config.bg} ${config.text}`}>
+                                {config.label}
+                              </span>
+                            );
+                          })()}
                         </td>
                         <td className="px-4 py-3 text-sm text-gray-600">
                           {formatDate(user.created_at)}

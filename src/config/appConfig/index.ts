@@ -6,7 +6,7 @@
 
 import { appConfig as devConfig } from './config.development';
 import { appConfig as prodConfig } from './config.production';
-import type { AppConfig, TtsSamplesConfig, DailyTasksConfig, DailyTasksBaseConfig, MiningEconomyConfig, AppUpdateConfig, AnonymousUserConfig, ConversionConfig, WithdrawalConfig } from './types';
+import type { AppConfig, TtsSamplesConfig, DailyTasksConfig, DailyTasksBaseConfig, MiningEconomyConfig, AppUpdateConfig, AnonymousUserConfig, ConversionConfig, WithdrawalConfig, ReferralConfig } from './types';
 
 // 导出语音成本相关功能（从 creditsCost 重新导出以保持向后兼容）
 export {
@@ -23,7 +23,7 @@ const isProduction = process.env.NODE_ENV === 'production';
 export const appConfig: AppConfig = isProduction ? prodConfig : devConfig;
 
 // 导出类型
-export type { AppConfig, TtsSamplesConfig, DailyTasksConfig, DailyTasksBaseConfig, MiningEconomyConfig, AppUpdateConfig, AnonymousUserConfig, ConversionConfig, WithdrawalConfig };
+export type { AppConfig, TtsSamplesConfig, DailyTasksConfig, DailyTasksBaseConfig, MiningEconomyConfig, AppUpdateConfig, AnonymousUserConfig, ConversionConfig, WithdrawalConfig, ReferralConfig };
 
 /**
  * 获取 TTS 试听配置
@@ -104,4 +104,11 @@ export function getWithdrawalConfig(): WithdrawalConfig {
 export function isDailyTasksEnabled(isNative: boolean = false): boolean {
   const config = getDailyTasksConfig(isNative);
   return config.enabled;
+}
+
+/**
+ * 获取推荐裂变配置
+ */
+export function getReferralConfig(): ReferralConfig {
+  return appConfig.referral;
 }

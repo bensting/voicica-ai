@@ -35,7 +35,39 @@
     },
     "bottomNav": {
       "explore": "Khám phá",
+      "team": "Đội",
       "me": "Tôi"
+    },
+    "referral": {
+      "title": "Đội giới thiệu",
+      "subtitle": "Mời bạn bè, cùng kiếm tiền",
+      "myCode": "Mã mời của tôi",
+      "copyCode": "Sao chép mã",
+      "copied": "Đã sao chép!",
+      "share": "Chia sẻ",
+      "myLevel": "Cấp bậc",
+      "levelMiner": "Thợ mỏ",
+      "levelBronze": "Đội trưởng Đồng",
+      "levelGold": "Đội trưởng Vàng",
+      "upgradeProgress": "Tiến trình nâng cấp",
+      "directReferrals": "Giới thiệu trực tiếp",
+      "bronzeCaptains": "Số đội trưởng Đồng",
+      "teamMembers": "Thành viên đội",
+      "totalEarnings": "Tổng thu nhập",
+      "todayEarnings": "Thu nhập hôm nay",
+      "loginRequired": "Đăng nhập để xem đội giới thiệu",
+      "rules": {
+        "title": "Quy tắc hoa hồng",
+        "l1": "Giới thiệu trực tiếp (L1): 8% phần thưởng đào",
+        "l2": "Giới thiệu gián tiếp (L2): 3% (Đồng trở lên)",
+        "team": "Thưởng đội: 2% (Đội trưởng Vàng, tất cả cấp)"
+      },
+      "team": {
+        "title": "Đội của tôi",
+        "empty": "Chưa có thành viên. Chia sẻ mã mời ngay!",
+        "loadMore": "Tải thêm"
+      },
+      "inviteText": "Tham gia VoicicaAI và cùng kiếm $VOICICA! Dùng mã mời: {{code}} {{url}}"
     },
     "settings": {
       "title": "Cài đặt",

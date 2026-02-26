@@ -27,6 +27,18 @@ export default function NativeLayout({
   const pathname = usePathname();
   const router = useRouter();
 
+  // 捕获 URL 中的推荐码参数并存入 localStorage
+  useEffect(() => {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const refCode = params.get('ref');
+      if (refCode) {
+        localStorage.setItem('pending_referral_code', refCode);
+        console.log('[NativeLayout] Saved referral code:', refCode);
+      }
+    } catch { /* ignore */ }
+  }, []);
+
   // 添加 native-app class 来禁用非输入元素的文本选择
   useEffect(() => {
     document.body.classList.add('native-app');

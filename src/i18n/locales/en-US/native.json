@@ -74,7 +74,39 @@
     },
     "bottomNav": {
       "explore": "Explore",
+      "team": "Team",
       "me": "Me"
+    },
+    "referral": {
+      "title": "Referral Team",
+      "subtitle": "Invite friends, earn together",
+      "myCode": "My Invite Code",
+      "copyCode": "Copy Code",
+      "copied": "Copied!",
+      "share": "Share",
+      "myLevel": "My Level",
+      "levelMiner": "Miner",
+      "levelBronze": "Bronze Captain",
+      "levelGold": "Gold Captain",
+      "upgradeProgress": "Upgrade Progress",
+      "directReferrals": "Direct Referrals",
+      "bronzeCaptains": "Bronze Captains",
+      "teamMembers": "Team Members",
+      "totalEarnings": "Total Earnings",
+      "todayEarnings": "Today's Earnings",
+      "loginRequired": "Log in to view your referral team",
+      "rules": {
+        "title": "Commission Rules",
+        "l1": "Direct referral (L1): 8% of their mining rewards",
+        "l2": "Indirect referral (L2): 3% (Bronze+)",
+        "team": "Team bonus: 2% (Gold Captain, all levels)"
+      },
+      "team": {
+        "title": "My Team",
+        "empty": "No team members yet. Share your invite code!",
+        "loadMore": "Load more"
+      },
+      "inviteText": "Join VoicicaAI and earn $VOICICA together! Use my invite code: {{code}} {{url}}"
     },
     "settings": {
       "title": "Settings",

@@ -3,6 +3,7 @@
 import { createContext, useContext, useState, useEffect, ReactNode, useRef } from 'react';
 import { useFirebaseAuth } from './FirebaseAuthContext';
 import { getCurrentUserProfile } from '@/actions/user';
+import { processReferralCode } from '@/actions/referral';
 import { detectPlatformDetail } from '@/lib/platform';
 import type { UserProfile } from '@/types/user';
 
@@ -56,6 +57,24 @@ export function UserProvider({ children }: { children: ReactNode }) {
 
       console.log('✅ UserContext: 用户数据获取成功');
       setProfile(userData);
+
+      // 首次登录且没有推荐人时，尝试绑定 localStorage 中的推荐码
+      if (!userData.is_anonymous) {
+        try {
+          const pendingCode = localStorage.getItem('pending_referral_code');
+          if (pendingCode) {
+            const result = await processReferralCode(pendingCode);
+            if (result.success) {
+              console.log('✅ UserContext: 推荐码绑定成功:', pendingCode);
+            } else {
+              console.log('ℹ️ UserContext: 推荐码绑定跳过:', result.message);
+            }
+            localStorage.removeItem('pending_referral_code');
+          }
+        } catch (refError) {
+          console.error('❌ UserContext: 推荐码绑定失败:', refError);
+        }
+      }
     } catch (err) {
       const error = err as Error;
       console.error('❌ UserContext: 后端 API 调用失败', error);

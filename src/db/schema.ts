@@ -93,11 +93,16 @@ export const users = pgTable("users", {
 	authProvider: varchar("auth_provider", { length: 50 }),
 	platform: varchar({ length: 20 }),
 	usdtBalance: numeric("usdt_balance", { precision: 18, scale: 6 }).default('0').notNull(),
+	referralCode: varchar("referral_code", { length: 10 }),
+	referredBy: varchar("referred_by", { length: 128 }),
+	referralLevel: varchar("referral_level", { length: 20 }).default('miner').notNull(),
 }, (table) => [
 	index("idx_user_email").using("btree", table.email.asc().nullsLast().op("text_ops")),
 	index("idx_user_id").using("btree", table.userId.asc().nullsLast().op("text_ops")),
 	index("idx_user_platform").using("btree", table.platform.asc().nullsLast().op("text_ops")),
 	uniqueIndex("uq_users_user_id").using("btree", table.userId.asc().nullsLast().op("text_ops")),
+	uniqueIndex("uq_users_referral_code").using("btree", table.referralCode.asc().nullsLast().op("text_ops")),
+	index("idx_user_referred_by").using("btree", table.referredBy.asc().nullsLast().op("text_ops")),
 ]);
 
 export const ttsRecords = pgTable("tts_records", {
@@ -797,6 +802,25 @@ export const luckyDrawClaims = pgTable("lucky_draw_claims", {
 }, (table) => [
 	uniqueIndex("uq_ldc_draw_id").using("btree", table.drawId),
 	index("idx_ldc_user_id").using("btree", table.userId),
+]);
+
+// ============================================================
+// Referral Commission Tables
+// ============================================================
+
+export const referralCommissions = pgTable("referral_commissions", {
+	id: serial().primaryKey().notNull(),
+	userId: varchar("user_id", { length: 128 }).notNull(),
+	fromUserId: varchar("from_user_id", { length: 128 }).notNull(),
+	level: varchar("level", { length: 10 }).notNull(),
+	sourceAmount: integer("source_amount").notNull(),
+	commissionRate: real("commission_rate").notNull(),
+	commissionAmount: integer("commission_amount").notNull(),
+	createdAt: timestamp("created_at", { precision: 6, withTimezone: true, mode: 'string' }).default(sql`CURRENT_TIMESTAMP`).notNull(),
+}, (table) => [
+	index("idx_referral_commissions_user_id").using("btree", table.userId.asc().nullsLast().op("text_ops")),
+	index("idx_referral_commissions_from_user_id").using("btree", table.fromUserId.asc().nullsLast().op("text_ops")),
+	index("idx_referral_commissions_created_at").using("btree", table.createdAt.asc().nullsLast().op("timestamptz_ops")),
 ]);
 
 // ============================================================

@@ -35,7 +35,39 @@
     },
     "bottomNav": {
       "explore": "Jelajahi",
+      "team": "Tim",
       "me": "Saya"
+    },
+    "referral": {
+      "title": "Tim Referral",
+      "subtitle": "Undang teman, raih penghasilan bersama",
+      "myCode": "Kode Undangan Saya",
+      "copyCode": "Salin Kode",
+      "copied": "Tersalin!",
+      "share": "Bagikan",
+      "myLevel": "Level Saya",
+      "levelMiner": "Penambang",
+      "levelBronze": "Kapten Perunggu",
+      "levelGold": "Kapten Emas",
+      "upgradeProgress": "Progres Upgrade",
+      "directReferrals": "Referral Langsung",
+      "bronzeCaptains": "Jumlah Kapten Perunggu",
+      "teamMembers": "Anggota Tim",
+      "totalEarnings": "Total Pendapatan",
+      "todayEarnings": "Pendapatan Hari Ini",
+      "loginRequired": "Masuk untuk melihat tim referral",
+      "rules": {
+        "title": "Aturan Komisi",
+        "l1": "Referral langsung (L1): 8% dari hadiah mining",
+        "l2": "Referral tidak langsung (L2): 3% (Perunggu ke atas)",
+        "team": "Bonus tim: 2% (Kapten Emas, semua level)"
+      },
+      "team": {
+        "title": "Tim Saya",
+        "empty": "Belum ada anggota tim. Bagikan kode undangan!",
+        "loadMore": "Muat lebih banyak"
+      },
+      "inviteText": "Bergabung VoicicaAI dan dapatkan $VOICICA bersama! Gunakan kode undangan: {{code}} {{url}}"
     },
     "settings": {
       "title": "Pengaturan",

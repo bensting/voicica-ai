@@ -137,4 +137,22 @@ export const appConfig: AppConfig = {
     check_interval_minutes: 60, // 每小时检查一次
     install_prompt_delay_seconds: 3, // 下载完成后 3 秒提示安装
   },
+
+  /**
+   * 推荐裂变系统配置
+   */
+  referral: {
+    enabled: true,
+    code_length: 6,
+    max_team_depth: 10,
+    levels: {
+      miner:  { l1_rate: 0.08, l2_rate: 0,    team_rate: 0 },
+      bronze: { l1_rate: 0.08, l2_rate: 0.03, team_rate: 0 },
+      gold:   { l1_rate: 0.08, l2_rate: 0.03, team_rate: 0.02 },
+    },
+    upgrade_conditions: {
+      bronze: { direct_referrals: 10 },
+      gold:   { bronze_captains: 2 },
+    },
+  },
 };

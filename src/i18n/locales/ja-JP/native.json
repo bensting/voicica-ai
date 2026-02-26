@@ -35,7 +35,39 @@
     },
     "bottomNav": {
       "explore": "探索",
+      "team": "チーム",
       "me": "マイページ"
+    },
+    "referral": {
+      "title": "紹介チーム",
+      "subtitle": "友達を招待して一緒に稼ごう",
+      "myCode": "招待コード",
+      "copyCode": "コードをコピー",
+      "copied": "コピー完了！",
+      "share": "シェア",
+      "myLevel": "マイレベル",
+      "levelMiner": "マイナー",
+      "levelBronze": "ブロンズキャプテン",
+      "levelGold": "ゴールドキャプテン",
+      "upgradeProgress": "アップグレード進捗",
+      "directReferrals": "直接紹介",
+      "bronzeCaptains": "ブロンズキャプテン数",
+      "teamMembers": "チームメンバー",
+      "totalEarnings": "累計収益",
+      "todayEarnings": "本日の収益",
+      "loginRequired": "ログインして紹介チームを確認",
+      "rules": {
+        "title": "コミッション規則",
+        "l1": "直接紹介 (L1)：マイニング報酬の8%",
+        "l2": "間接紹介 (L2)：3%（ブロンズ以上）",
+        "team": "チームボーナス：2%（ゴールドキャプテン、全チーム対象）"
+      },
+      "team": {
+        "title": "マイチーム",
+        "empty": "まだチームメンバーがいません。招待コードをシェアしましょう！",
+        "loadMore": "もっと見る"
+      },
+      "inviteText": "VoicicaAIに参加して$VOICICAを一緒に稼ごう！招待コード：{{code}} {{url}}"
     },
     "settings": {
       "title": "設定",

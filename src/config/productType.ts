@@ -50,6 +50,8 @@ export const ProductType = {
   CONVERSION: 'conversion',
   /** USDT 提现 */
   WITHDRAWAL: 'withdrawal',
+  /** 推荐提成 */
+  REFERRAL_COMMISSION: 'referral_commission',
 } as const;
 
 export type ProductType = typeof ProductType[keyof typeof ProductType];

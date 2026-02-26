@@ -155,6 +155,41 @@ export interface AppUpdateConfig {
 }
 
 /**
+ * 推荐等级提成配置
+ */
+export interface ReferralLevelConfig {
+  /** L1 直推提成比例 */
+  l1_rate: number;
+  /** L2 间推提成比例 */
+  l2_rate: number;
+  /** 团队奖比例 */
+  team_rate: number;
+}
+
+/**
+ * 推荐裂变系统配置
+ */
+export interface ReferralConfig {
+  /** 是否启用 */
+  enabled: boolean;
+  /** 邀请码长度 */
+  code_length: number;
+  /** 团队奖最大遍历深度 */
+  max_team_depth: number;
+  /** 各等级提成配置 */
+  levels: {
+    miner: ReferralLevelConfig;
+    bronze: ReferralLevelConfig;
+    gold: ReferralLevelConfig;
+  };
+  /** 升级条件 */
+  upgrade_conditions: {
+    bronze: { direct_referrals: number };
+    gold: { bronze_captains: number };
+  };
+}
+
+/**
  * 应用配置
  */
 export interface AppConfig {
@@ -165,4 +200,5 @@ export interface AppConfig {
   daily_tasks: DailyTasksConfig;
   mining_economy: MiningEconomyConfig;
   app_update: AppUpdateConfig;
+  referral: ReferralConfig;
 }

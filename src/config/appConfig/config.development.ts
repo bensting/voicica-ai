@@ -120,4 +120,22 @@ export const appConfig: AppConfig = {
     check_interval_minutes: 1,
     install_prompt_delay_seconds: 3,
   },
+
+  /**
+   * 推荐裂变系统配置（开发环境降低门槛方便测试）
+   */
+  referral: {
+    enabled: true,
+    code_length: 6,
+    max_team_depth: 10,
+    levels: {
+      miner:  { l1_rate: 0.08, l2_rate: 0,    team_rate: 0 },
+      bronze: { l1_rate: 0.08, l2_rate: 0.03, team_rate: 0 },
+      gold:   { l1_rate: 0.08, l2_rate: 0.03, team_rate: 0.02 },
+    },
+    upgrade_conditions: {
+      bronze: { direct_referrals: 3 },  // 开发环境 3 人即可升级
+      gold:   { bronze_captains: 1 },   // 开发环境 1 个青铜即可升级
+    },
+  },
 };

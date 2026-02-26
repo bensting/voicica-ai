@@ -35,6 +35,22 @@ const UserIcon = ({ active }: { active: boolean }) => (
   </svg>
 );
 
+// 团队图标
+const TeamIcon = ({ active }: { active: boolean }) => (
+  <svg
+    className={`w-6 h-6 ${active ? 'text-white' : 'text-gray-500'}`}
+    viewBox="0 0 24 24"
+    fill={active ? 'currentColor' : 'none'}
+    stroke="currentColor"
+    strokeWidth="2"
+  >
+    <circle cx="9" cy="7" r="3" />
+    <circle cx="17" cy="9" r="2.5" />
+    <path d="M3 21v-2a4 4 0 014-4h4a4 4 0 014 4v2" />
+    <path d="M17 14a3 3 0 013 3v2" />
+  </svg>
+);
+
 // 加号图标
 const PlusIcon = () => (
   <svg className="w-6 h-6 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
@@ -60,6 +76,7 @@ export default function BottomNav() {
   const { t } = useLanguage();
 
   const isExploreActive = pathname === '/native' || pathname.startsWith('/native/explore');
+  const isTeamActive = pathname.startsWith('/native/referral-earnings');
   const isMeActive = pathname.startsWith('/native/me');
 
   // 通过 context 控制显示/隐藏
@@ -99,6 +116,20 @@ export default function BottomNav() {
               {isCreateOpen ? <CloseIcon /> : <PlusIcon />}
             </button>
           </div>
+
+          {/* Team */}
+          <Link
+            href="/native/referral-earnings"
+            className="flex flex-col items-center justify-center flex-1 h-full active:scale-95 transition-transform"
+          >
+            <TeamIcon active={isTeamActive} />
+            <span
+              className={`text-xs mt-1 ${isTeamActive ? 'text-white font-medium' : 'text-slate-500'
+                }`}
+            >
+              {t('native.bottomNav.team')}
+            </span>
+          </Link>
 
           {/* Me */}
           <Link

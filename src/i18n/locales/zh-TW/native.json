@@ -74,7 +74,39 @@
     },
     "bottomNav": {
       "explore": "探索",
+      "team": "團隊",
       "me": "我的"
+    },
+    "referral": {
+      "title": "推薦團隊",
+      "subtitle": "邀請好友，一起賺取",
+      "myCode": "我的邀請碼",
+      "copyCode": "複製邀請碼",
+      "copied": "已複製！",
+      "share": "分享",
+      "myLevel": "我的等級",
+      "levelMiner": "普通礦工",
+      "levelBronze": "青銅隊長",
+      "levelGold": "黃金船長",
+      "upgradeProgress": "升級進度",
+      "directReferrals": "直推人數",
+      "bronzeCaptains": "青銅隊長數",
+      "teamMembers": "團隊成員",
+      "totalEarnings": "累計收益",
+      "todayEarnings": "今日收益",
+      "loginRequired": "請登入查看推薦團隊",
+      "rules": {
+        "title": "提成規則",
+        "l1": "直推 (L1)：下線挖礦收益的 8%",
+        "l2": "間推 (L2)：3%（青銅隊長以上）",
+        "team": "團隊獎：2%（黃金船長，全團隊生效）"
+      },
+      "team": {
+        "title": "我的團隊",
+        "empty": "暫無團隊成員，快去分享邀請碼吧！",
+        "loadMore": "載入更多"
+      },
+      "inviteText": "加入 VoicicaAI，一起賺取 $VOICICA！使用我的邀請碼：{{code}} {{url}}"
     },
     "settings": {
       "title": "設定",

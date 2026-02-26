@@ -35,7 +35,39 @@
     },
     "bottomNav": {
       "explore": "Explorar",
+      "team": "Equipe",
       "me": "Eu"
+    },
+    "referral": {
+      "title": "Equipe de Indicação",
+      "subtitle": "Convide amigos, ganhem juntos",
+      "myCode": "Meu Código de Convite",
+      "copyCode": "Copiar Código",
+      "copied": "Copiado!",
+      "share": "Compartilhar",
+      "myLevel": "Meu Nível",
+      "levelMiner": "Minerador",
+      "levelBronze": "Capitão Bronze",
+      "levelGold": "Capitão Ouro",
+      "upgradeProgress": "Progresso de Upgrade",
+      "directReferrals": "Indicações Diretas",
+      "bronzeCaptains": "Capitães Bronze",
+      "teamMembers": "Membros da Equipe",
+      "totalEarnings": "Ganhos Totais",
+      "todayEarnings": "Ganhos de Hoje",
+      "loginRequired": "Faça login para ver sua equipe",
+      "rules": {
+        "title": "Regras de Comissão",
+        "l1": "Indicação direta (L1): 8% das recompensas de mineração",
+        "l2": "Indicação indireta (L2): 3% (Bronze acima)",
+        "team": "Bônus de equipe: 2% (Capitão Ouro, todos os níveis)"
+      },
+      "team": {
+        "title": "Minha Equipe",
+        "empty": "Nenhum membro ainda. Compartilhe seu código!",
+        "loadMore": "Carregar mais"
+      },
+      "inviteText": "Junte-se ao VoicicaAI e ganhe $VOICICA juntos! Use meu código: {{code}} {{url}}"
     },
     "settings": {
       "title": "Configurações",

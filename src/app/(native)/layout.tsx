@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import NativeNavbar from '@/components/native/NativeNavbar';
 import BottomNav, { type TabType } from '@/components/native/BottomNav';
@@ -104,6 +104,19 @@ export default function NativeLayout({
   const showNavbar = !hideNavbarPaths.some((path) => pathname.startsWith(path));
   const showBottomNav = !isInSubPage;
 
+  // Memoize tab content to prevent re-init when navigating to/from sub-pages
+  const exploreTab = useMemo(() => (
+    <div className="pt-2 pb-20">
+      <NativeBannerAd />
+      <TotalAssetsCard />
+      <FeatureGrid />
+      <ExploreSection />
+    </div>
+  ), []);
+
+  const teamTab = useMemo(() => <ReferralPage />, []);
+  const meTab = useMemo(() => <MePageContent />, []);
+
   return (
     <BottomNavProvider>
       {/* PC 端外层背景 */}
@@ -129,20 +142,15 @@ export default function NativeLayout({
               <>
                 {/* Explore Tab */}
                 <div style={{ display: activeTab === 'explore' ? 'block' : 'none' }}>
-                  <div className="pt-2 pb-20">
-                    <NativeBannerAd />
-                    <TotalAssetsCard />
-                    <FeatureGrid />
-                    <ExploreSection />
-                  </div>
+                  {exploreTab}
                 </div>
                 {/* Team Tab */}
                 <div style={{ display: activeTab === 'team' ? 'block' : 'none' }}>
-                  <ReferralPage />
+                  {teamTab}
                 </div>
                 {/* Me Tab */}
                 <div style={{ display: activeTab === 'me' ? 'block' : 'none' }}>
-                  <MePageContent />
+                  {meTab}
                 </div>
               </>
             ) : (

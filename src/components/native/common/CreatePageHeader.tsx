@@ -39,8 +39,7 @@ export default function CreatePageHeader({
   const router = useRouter();
   const [isCreateSheetOpen, setIsCreateSheetOpen] = useState(false);
 
-  // 所有 create 页面返回按钮都直接返回 native 首页
-  const goBack = () => router.push('/native');
+  const goBack = () => router.back();
 
   return (
     <>

@@ -23,7 +23,7 @@ export const creditsCostConfig: CreditsCostConfig = {
  * 语音成本配置 - 生产环境
  *
  * 计费规则：每 unit_chars 个字符消耗对应积分，不足也按一个单位计算
- * 100个字符 = 1积分
+ * 1个字符 = 1积分
  */
 export const voiceCostConfig: VoiceCostConfig = {
   unit_chars: 1,
@@ -37,7 +37,7 @@ export const voiceCostConfig: VoiceCostConfig = {
 /**
  * 对话成本配置 - 生产环境
  *
- * 计费规则：10个字符消耗1积分
+ * 计费规则：1个字符消耗1积分
  */
 export const dialogueCostConfig: DialogueCostConfig = {
   unit_chars: 1,

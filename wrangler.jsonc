@@ -16,6 +16,6 @@
   "d1_databases": [{
     "binding": "DB",
     "database_name": "voicica-db",
-    "database_id": "YOUR_D1_DATABASE_ID"
+    "database_id": "015c3020-808a-4453-addb-70f23290f2d4"
   }]
 }

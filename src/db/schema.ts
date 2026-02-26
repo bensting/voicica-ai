@@ -299,7 +299,7 @@ export const adRewardTransactions = sqliteTable("ad_reward_transactions", {
 	tier: integer(),
 	timestamp: text("timestamp").notNull(),
 	adUnit: text("ad_unit"),
-	rewardAmount: integer("reward_amount").default(0).notNull(),
+	rewardAmount: real("reward_amount").default(0).notNull(),
 	processed: integer("processed", { mode: 'boolean' }).default(false).notNull(),
 	createdAt: text("created_at").default(sql`(datetime('now'))`).notNull(),
 }, (table) => [

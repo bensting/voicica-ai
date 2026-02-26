@@ -25,12 +25,12 @@ export const appConfig: AppConfig = {
    */
   credits: {
     // Web 端
-    anonymous_user: 50,
-    registered_user: 100,
+    anonymous_user: 1000,
+    registered_user: 2000,
     // Native App 端
     native: {
-      anonymous_user: 0,    // Native 匿名用户不赠送积分
-      registered_user: 100, // Native 登录用户赠送 100 积分
+      anonymous_user: 1000,    // Native 匿名用户不赠送积分
+      registered_user: 2000, // Native 登录用户赠送 2000 积分
     },
   },
 

@@ -442,6 +442,9 @@ export default function ReferralPage() {
                     <p className="text-sm text-white">{member.name}</p>
                     <p className="text-[10px] text-slate-500">
                       {new Date(member.createdAt).toLocaleDateString()}
+                      {member.subTeamCount > 0 && (
+                        <span className="ml-1.5 text-slate-400">· {member.subTeamCount} referrals</span>
+                      )}
                     </p>
                   </div>
                 </div>

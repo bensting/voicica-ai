@@ -126,9 +126,18 @@ export async function getMyReferralInfo(): Promise<ReferralInfo | null> {
       .from(users)
       .where(eq(users.referredBy, userId));
 
-    // 团队总人数（递归查询直推及其下线，简化为直推数即可，实际团队数需要递归）
-    // 这里简化实现：teamMembers = directReferrals（后续可扩展递归查询）
     const directReferrals = directCount?.count ?? 0;
+
+    // 团队总人数（递归 CTE）
+    const teamResult = await db.execute<{ count: string }>(sql`
+      WITH RECURSIVE team AS (
+        SELECT user_id FROM users WHERE referred_by = ${userId}
+        UNION ALL
+        SELECT u.user_id FROM users u INNER JOIN team t ON u.referred_by = t.user_id
+      )
+      SELECT COUNT(*)::text AS count FROM team
+    `);
+    const teamMembers = Number(teamResult.rows[0]?.count ?? 0);
 
     // 累计提成
     const [totalEarningsResult] = await db
@@ -177,7 +186,7 @@ export async function getMyReferralInfo(): Promise<ReferralInfo | null> {
       referralCode,
       referralLevel: user.referralLevel,
       directReferrals,
-      teamMembers: directReferrals,
+      teamMembers,
       totalEarnings: Number(totalEarningsResult?.total ?? 0),
       todayEarnings: Number(todayEarningsResult?.total ?? 0),
       referredBy: user.referredBy,
@@ -207,6 +216,7 @@ export interface ReferralTeamMember {
   level: string;
   createdAt: string;
   totalContribution: number;
+  subTeamCount: number;
 }
 
 /**
@@ -244,18 +254,24 @@ export async function getReferralTeam(
       .limit(pageSize)
       .offset(offset);
 
-    // 获取每个下线的累计贡献提成
+    // 获取每个下线的累计贡献提成和子团队人数
     const items: ReferralTeamMember[] = [];
     for (const ref of referrals) {
-      const [contrib] = await db
-        .select({ total: sum(referralCommissions.commissionAmount) })
-        .from(referralCommissions)
-        .where(
-          and(
-            eq(referralCommissions.userId, userId),
-            eq(referralCommissions.fromUserId, ref.userId)
-          )
-        );
+      const [[contrib], [subCount]] = await Promise.all([
+        db
+          .select({ total: sum(referralCommissions.commissionAmount) })
+          .from(referralCommissions)
+          .where(
+            and(
+              eq(referralCommissions.userId, userId),
+              eq(referralCommissions.fromUserId, ref.userId)
+            )
+          ),
+        db
+          .select({ count: count() })
+          .from(users)
+          .where(eq(users.referredBy, ref.userId)),
+      ]);
 
       // 脱敏处理
       let displayName = ref.name || ref.email || 'User';
@@ -271,6 +287,7 @@ export async function getReferralTeam(
         level: ref.referralLevel,
         createdAt: ref.createdAt,
         totalContribution: Number(contrib?.total ?? 0),
+        subTeamCount: subCount?.count ?? 0,
       });
     }
 

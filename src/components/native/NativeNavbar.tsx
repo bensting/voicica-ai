@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { useRouter } from 'next/navigation';
 import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 import { useCredits } from '@/contexts/CreditsContext';
 import { useBottomNav } from '@/contexts/BottomNavContext';
@@ -18,7 +17,6 @@ import { useLanguage } from '@/contexts/LanguageContext';
  * 支持通过 Context 控制显示/隐藏
  */
 export default function NativeNavbar() {
-  const router = useRouter();
   const { user } = useFirebaseAuth();
   const { refreshCredits } = useCredits();
   const { isTopNavVisible } = useBottomNav();
@@ -72,7 +70,7 @@ export default function NativeNavbar() {
             {isLoggedIn ? (
               /* 已登录：Buy 按钮 */
               <button
-                onClick={() => router.push('/native/subscribe')}
+                onClick={() => { window.location.href = '/native/subscribe'; }}
                 className="flex items-center gap-1 px-4 py-1.5 rounded-full text-white text-sm font-bold tracking-wide transition-all active:scale-95 shadow-lg shadow-amber-500/20"
                 style={{ background: 'linear-gradient(90deg, #D97706, #F59E0B, #EAB308)' }}
               >
@@ -116,7 +114,7 @@ export default function NativeNavbar() {
           setIsLoginModalOpen(false);
           // 设置标记防止 Me 页面再次弹出登录框
           sessionStorage.setItem('me_page_login_modal_shown', 'true');
-          router.push('/native/me');
+          window.location.href = '/native/me';
         }}
       />
 

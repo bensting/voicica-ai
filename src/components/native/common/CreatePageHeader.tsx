@@ -4,8 +4,7 @@
  */
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useCallback } from 'react';
 import CreateSheet from '@/components/native/CreateSheet';
 
 interface CreatePageHeaderProps {
@@ -36,10 +35,11 @@ export default function CreatePageHeader({
   showCreateSheet = true,
   rightContent,
 }: CreatePageHeaderProps) {
-  const router = useRouter();
   const [isCreateSheetOpen, setIsCreateSheetOpen] = useState(false);
 
-  const goBack = () => router.push('/native');
+  const goBack = useCallback(() => {
+    window.location.href = '/native';
+  }, []);
 
   return (
     <>

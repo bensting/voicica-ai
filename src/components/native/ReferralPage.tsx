@@ -403,7 +403,7 @@ export default function ReferralPage() {
       </div>
 
       {/* Bind Inviter — only show when user has no inviter */}
-      {!info.referredBy && (
+      {info && !info.referredBy && (
         <div className="bg-slate-800/40 rounded-2xl p-4 mb-4 border border-slate-700/30">
           <p className="text-slate-300 text-xs mb-3">{t('native.referral.bind.hint')}</p>
           <div className="flex gap-2">
@@ -433,89 +433,117 @@ export default function ReferralPage() {
       <div className="mb-4">
         {/* Header: title + inviter badge */}
         <div className="flex items-center justify-between mb-3">
-          <h3 className="text-white text-sm font-semibold">{t('native.referral.team.title')} ({info.teamMembers})</h3>
-          {info.inviterCode && (
+          <h3 className="text-white text-sm font-semibold">
+            {t('native.referral.team.title')} {loading ? '' : `(${info?.teamMembers ?? 0})`}
+          </h3>
+          {info?.inviterCode && (
             <span className="inline-flex items-center px-2.5 py-1 rounded-lg border border-slate-600/60 bg-slate-800/60 text-xs">
               <span className="text-green-400 font-mono">{t('native.referral.bind.inviter')}: {info.inviterCode}</span>
             </span>
           )}
         </div>
 
-        {/* L1/L2/L3+ Breakdown */}
-        {info.teamMembers > 0 && (() => {
-          const { l1, l2, l3Plus } = info.teamBreakdown;
-          const total = l1 + l2 + l3Plus;
-          const pctL1 = total > 0 ? (l1 / total) * 100 : 0;
-          const pctL2 = total > 0 ? (l2 / total) * 100 : 0;
-          const pctL3 = total > 0 ? (l3Plus / total) * 100 : 0;
-          return (
-            <div className="bg-slate-800/50 rounded-xl p-4 mb-3">
-              <div className="grid grid-cols-3 gap-2 text-center">
-                <div>
-                  <p className="text-lg font-bold text-white">{l1}</p>
-                  <p className="text-[10px] text-slate-400 mb-1.5">{t('native.referral.team.l1')}</p>
-                  <p className="text-[11px] font-medium text-purple-400">{pctL1.toFixed(1)}%</p>
-                </div>
-                <div>
-                  <p className="text-lg font-bold text-white">{l2}</p>
-                  <p className="text-[10px] text-slate-400 mb-1.5">{t('native.referral.team.l2')}</p>
-                  <p className="text-[11px] font-medium text-blue-400">{pctL2.toFixed(1)}%</p>
-                </div>
-                <div>
-                  <p className="text-lg font-bold text-white">{l3Plus}</p>
-                  <p className="text-[10px] text-slate-400 mb-1.5">{t('native.referral.team.l3Plus')}</p>
-                  <p className="text-[11px] font-medium text-cyan-400">{pctL3.toFixed(1)}%</p>
-                </div>
-              </div>
-            </div>
-          );
-        })()}
-
-        {/* Member list */}
-        {team.length === 0 ? (
-          <div className="bg-slate-800/40 rounded-xl p-8 text-center">
-            <p className="text-slate-500 text-sm">{t('native.referral.team.empty')}</p>
-          </div>
-        ) : (
+        {loading ? (
+          /* Team skeleton */
           <div className="space-y-2">
-            {team.map((member, idx) => (
-              <div key={idx} className="bg-slate-800/50 rounded-xl p-3 flex items-center">
-                {/* Left: avatar + name + date */}
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="bg-slate-800/50 rounded-xl p-3 flex items-center">
                 <div className="flex items-center gap-2.5 min-w-0 w-2/5">
-                  <div className="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center text-xs text-slate-400 shrink-0">
-                    {member.name.charAt(0).toUpperCase()}
-                  </div>
-                  <div className="min-w-0">
-                    <p className="text-sm text-white truncate">{member.name}</p>
-                    <p className="text-[10px] text-slate-500">{new Date(member.createdAt).toLocaleDateString()}</p>
+                  <Skeleton className="w-8 h-8 rounded-full" />
+                  <div className="min-w-0 flex-1">
+                    <Skeleton className="h-4 w-20 mb-1" />
+                    <Skeleton className="h-3 w-14" />
                   </div>
                 </div>
-                {/* Center: sub-team count */}
-                <div className="w-1/5 text-center">
-                  <p className="text-sm font-bold text-white">{member.subTeamCount}</p>
-                  <p className="text-[10px] text-slate-400">{t('native.referral.teamMembers')}</p>
+                <div className="w-1/5 flex justify-center">
+                  <Skeleton className="h-4 w-6" />
                 </div>
-                {/* Right: level + contribution */}
-                <div className="w-2/5 text-right">
-                  <p className={`text-xs font-medium ${getLevelColor(member.level)}`}>
-                    {getLevelLabel(member.level)}
-                  </p>
-                  <p className="text-[10px] text-slate-500">
-                    +{formatCredits(member.totalContribution)} $V
-                  </p>
+                <div className="w-2/5 flex flex-col items-end">
+                  <Skeleton className="h-3 w-12 mb-1" />
+                  <Skeleton className="h-3 w-16" />
                 </div>
               </div>
             ))}
           </div>
-        )}
-        {hasMore && (
-          <button
-            onClick={loadMore}
-            disabled={loadingMore}
-            className="w-full mt-3 py-2 text-sm text-slate-400 hover:text-white transition-colors"
-          >
-            {loadingMore ? t('native.common.loading') : t('native.referral.team.loadMore')}
-          </button>
+        ) : (
+          <>
+            {/* L1/L2/L3+ Breakdown */}
+            {info && info.teamMembers > 0 && (() => {
+              const { l1, l2, l3Plus } = info.teamBreakdown;
+              const total = l1 + l2 + l3Plus;
+              const pctL1 = total > 0 ? (l1 / total) * 100 : 0;
+              const pctL2 = total > 0 ? (l2 / total) * 100 : 0;
+              const pctL3 = total > 0 ? (l3Plus / total) * 100 : 0;
+              return (
+                <div className="bg-slate-800/50 rounded-xl p-4 mb-3">
+                  <div className="grid grid-cols-3 gap-2 text-center">
+                    <div>
+                      <p className="text-lg font-bold text-white">{l1}</p>
+                      <p className="text-[10px] text-slate-400 mb-1.5">{t('native.referral.team.l1')}</p>
+                      <p className="text-[11px] font-medium text-purple-400">{pctL1.toFixed(1)}%</p>
+                    </div>
+                    <div>
+                      <p className="text-lg font-bold text-white">{l2}</p>
+                      <p className="text-[10px] text-slate-400 mb-1.5">{t('native.referral.team.l2')}</p>
+                      <p className="text-[11px] font-medium text-blue-400">{pctL2.toFixed(1)}%</p>
+                    </div>
+                    <div>
+                      <p className="text-lg font-bold text-white">{l3Plus}</p>
+                      <p className="text-[10px] text-slate-400 mb-1.5">{t('native.referral.team.l3Plus')}</p>
+                      <p className="text-[11px] font-medium text-cyan-400">{pctL3.toFixed(1)}%</p>
+                    </div>
+                  </div>
+                </div>
+              );
+            })()}
+
+            {/* Member list */}
+            {team.length === 0 ? (
+              <div className="bg-slate-800/40 rounded-xl p-8 text-center">
+                <p className="text-slate-500 text-sm">{t('native.referral.team.empty')}</p>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                {team.map((member, idx) => (
+                  <div key={idx} className="bg-slate-800/50 rounded-xl p-3 flex items-center">
+                    {/* Left: avatar + name + date */}
+                    <div className="flex items-center gap-2.5 min-w-0 w-2/5">
+                      <div className="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center text-xs text-slate-400 shrink-0">
+                        {member.name.charAt(0).toUpperCase()}
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-sm text-white truncate">{member.name}</p>
+                        <p className="text-[10px] text-slate-500">{new Date(member.createdAt).toLocaleDateString()}</p>
+                      </div>
+                    </div>
+                    {/* Center: sub-team count */}
+                    <div className="w-1/5 text-center">
+                      <p className="text-sm font-bold text-white">{member.subTeamCount}</p>
+                      <p className="text-[10px] text-slate-400">{t('native.referral.teamMembers')}</p>
+                    </div>
+                    {/* Right: level + contribution */}
+                    <div className="w-2/5 text-right">
+                      <p className={`text-xs font-medium ${getLevelColor(member.level)}`}>
+                        {getLevelLabel(member.level)}
+                      </p>
+                      <p className="text-[10px] text-slate-500">
+                        +{formatCredits(member.totalContribution)} $V
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+            {hasMore && (
+              <button
+                onClick={loadMore}
+                disabled={loadingMore}
+                className="w-full mt-3 py-2 text-sm text-slate-400 hover:text-white transition-colors"
+              >
+                {loadingMore ? t('native.common.loading') : t('native.referral.team.loadMore')}
+              </button>
+            )}
+          </>
         )}
       </div>
     </div>

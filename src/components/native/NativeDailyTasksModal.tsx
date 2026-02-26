@@ -259,17 +259,15 @@ export default function NativeDailyTasksModal({ isOpen, onClose, onCreditsUpdate
   const isConfigLoading = !config;
   const isDisabled = config && !config.enabled;
 
+  const isStatusLoading = !status;
+
+  // Skeleton placeholder
+  const Skeleton = ({ className = '' }: { className?: string }) => (
+    <div className={`animate-pulse bg-white/10 rounded ${className}`} />
+  );
+
   // 渲染任务内容
   const renderLoggedInContent = () => {
-    if (!status) {
-      return (
-        <div className="flex flex-col items-center justify-center py-12">
-          <LoaderIcon className="w-8 h-8 text-purple-500 mb-3" />
-          <p className="text-sm text-gray-400">{t('common.loading') || 'Loading...'}</p>
-        </div>
-      );
-    }
-
     return (
       <div>
         {/* Header: VOICICA logo + title */}
@@ -294,9 +292,9 @@ export default function NativeDailyTasksModal({ isOpen, onClose, onCreditsUpdate
         <div className="border border-white/10 rounded-xl p-3 mb-4">
           <div className="flex items-center gap-3 mb-3">
             <div className={`w-9 h-9 shrink-0 rounded-full flex items-center justify-center ${
-              status.checkinDone ? 'bg-green-500/20 text-green-400' : 'bg-amber-500/20 text-amber-400'
+              isStatusLoading ? 'bg-white/5' : status.checkinDone ? 'bg-green-500/20 text-green-400' : 'bg-amber-500/20 text-amber-400'
             }`}>
-              {status.checkinDone ? <CheckIcon /> : <PlayIcon />}
+              {isStatusLoading ? <Skeleton className="w-4 h-4 rounded" /> : status.checkinDone ? <CheckIcon /> : <PlayIcon />}
             </div>
             <div className="flex-1 min-w-0">
               <p className="font-medium text-white text-sm">{t('dailyTasks.checkin')}</p>
@@ -310,29 +308,33 @@ export default function NativeDailyTasksModal({ isOpen, onClose, onCreditsUpdate
             </div>
           )}
 
-          <button
-            onClick={() => requireLoginOrProceed('checkin', handleCheckin)}
-            disabled={status.checkinDone || claiming || checkinLoading}
-            className={`w-full py-3 font-medium rounded-xl flex items-center justify-center gap-2 text-sm ${
-              status.checkinDone
-                ? 'bg-white/5 text-gray-500 cursor-not-allowed'
-                : 'border border-amber-500/40 text-amber-400 hover:bg-amber-500/10 disabled:opacity-50'
-            }`}
-          >
-            {(claiming || checkinLoading) ? (
-              <>
-                <LoaderIcon className="w-5 h-5" />
-                <span>{t('dailyTasks.loadingAd') || 'Loading...'}</span>
-              </>
-            ) : status.checkinDone ? (
-              t('dailyTasks.claimed')
-            ) : (
-              <>
-                <PlayIcon />
-                {t('dailyTasks.watchCheckinGet', { credits: config?.checkin_credits || 0 })}
-              </>
-            )}
-          </button>
+          {isStatusLoading ? (
+            <Skeleton className="w-full h-11 rounded-xl" />
+          ) : (
+            <button
+              onClick={() => requireLoginOrProceed('checkin', handleCheckin)}
+              disabled={status.checkinDone || claiming || checkinLoading}
+              className={`w-full py-3 font-medium rounded-xl flex items-center justify-center gap-2 text-sm ${
+                status.checkinDone
+                  ? 'bg-white/5 text-gray-500 cursor-not-allowed'
+                  : 'border border-amber-500/40 text-amber-400 hover:bg-amber-500/10 disabled:opacity-50'
+              }`}
+            >
+              {(claiming || checkinLoading) ? (
+                <>
+                  <LoaderIcon className="w-5 h-5" />
+                  <span>{t('dailyTasks.loadingAd') || 'Loading...'}</span>
+                </>
+              ) : status.checkinDone ? (
+                t('dailyTasks.claimed')
+              ) : (
+                <>
+                  <PlayIcon />
+                  {t('dailyTasks.watchCheckinGet', { credits: config?.checkin_credits || 0 })}
+                </>
+              )}
+            </button>
+          )}
         </div>
 
         {/* Video Mining */}
@@ -356,14 +358,23 @@ export default function NativeDailyTasksModal({ isOpen, onClose, onCreditsUpdate
 
           {/* 进度 + 收益 */}
           <div className="flex items-center justify-between mb-1 px-1">
-            <span className="text-xs text-gray-400">
-              {status.adRewardsClaimed} / {status.maxDailyAdViews} {t('dailyTasks.viewsToday') || 'views today'}
-            </span>
-            <span className="text-xs text-amber-400 font-medium">
-              +{formatCredits(status.adRewardsCredits)} $VOICICA
-            </span>
+            {isStatusLoading ? (
+              <>
+                <Skeleton className="h-3 w-24" />
+                <Skeleton className="h-3 w-28" />
+              </>
+            ) : (
+              <>
+                <span className="text-xs text-gray-400">
+                  {status.adRewardsClaimed} / {status.maxDailyAdViews} {t('dailyTasks.viewsToday') || 'views today'}
+                </span>
+                <span className="text-xs text-amber-400 font-medium">
+                  +{formatCredits(status.adRewardsCredits)} $VOICICA
+                </span>
+              </>
+            )}
           </div>
-          {status.adRewardsCredits > 0 && (
+          {!isStatusLoading && status.adRewardsCredits > 0 && (
             <p className="text-[10px] text-gray-500 text-right px-1 mb-3">
               ≈ ${(status.adRewardsCredits * getMiningEconomyConfig().token_value_usd).toFixed(4)} USD
             </p>
@@ -375,7 +386,9 @@ export default function NativeDailyTasksModal({ isOpen, onClose, onCreditsUpdate
             </div>
           )}
 
-          {status.remainingAdViews > 0 ? (
+          {isStatusLoading ? (
+            <Skeleton className="w-full h-12 rounded-xl" />
+          ) : status.remainingAdViews > 0 ? (
             <button
               onClick={() => requireLoginOrProceed('ad', handleWatchAd)}
               disabled={claiming || adLoading}
@@ -470,12 +483,7 @@ export default function NativeDailyTasksModal({ isOpen, onClose, onCreditsUpdate
           </button>
 
           <div className="p-6">
-            {isConfigLoading ? (
-              <div className="flex flex-col items-center justify-center py-12">
-                <LoaderIcon className="w-8 h-8 text-purple-500 mb-3" />
-                <p className="text-sm text-gray-400">{t('common.loading') || 'Loading...'}</p>
-              </div>
-            ) : isDisabled ? (
+            {isDisabled ? (
               <div className="flex flex-col items-center justify-center py-12">
                 <p className="text-sm text-gray-400">{t('dailyTasks.disabled') || 'Daily tasks not available'}</p>
               </div>

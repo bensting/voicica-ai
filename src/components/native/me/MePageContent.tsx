@@ -3,7 +3,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 import { useCredits } from '@/contexts/CreditsContext';
-import { useSubscription } from '@/contexts/SubscriptionContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import ProfileHeader from '@/components/native/me/ProfileHeader';
 import UserStatsBar from '@/components/native/me/UserStatsBar';
@@ -22,8 +21,7 @@ const LOGIN_MODAL_INTERVAL_MS = 24 * 60 * 60 * 1000; // 24 hours
 export default function MePageContent() {
   const { user, loading } = useFirebaseAuth();
   const { credits, loading: creditsLoading, refreshCredits } = useCredits();
-  const { isSubscribed, activeSubscription } = useSubscription();
-  const { t, locale } = useLanguage();
+  const { t } = useLanguage();
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   // 使用 ref 跟踪是否已经显示过登录框，防止重复弹出
   const hasShownRef = useRef(false);
@@ -32,28 +30,6 @@ export default function MePageContent() {
   const guestName = t('native.me.guest');
   const userName = user?.displayName || user?.email?.split('@')[0] || guestName;
   const avatarUrl = user?.photoURL || undefined;
-
-  // 获取计划名称
-  const getPlanDisplayName = () => {
-    if (!isSubscribed || !activeSubscription) {
-      return t('native.me.freeVersion');
-    }
-    // 尝试从 display_name 获取（多语言支持）
-    if (activeSubscription.display_name) {
-      return activeSubscription.display_name[locale] || activeSubscription.display_name['en'] || 'Pro';
-    }
-    // 从 product_type 推断计划名称
-    if (activeSubscription.product_type) {
-      const typeMap: Record<string, string> = {
-        'starter': 'Starter',
-        'creator': 'Creator',
-        'pro': 'Pro',
-      };
-      return typeMap[activeSubscription.product_type] || 'Pro';
-    }
-    return 'Pro';
-  };
-  const planName = getPlanDisplayName();
 
   // 每次进入 Me 页面时刷新积分（确保显示最新值）
   useEffect(() => {
@@ -95,15 +71,14 @@ export default function MePageContent() {
           onAvatarClick={() => setIsLoginModalOpen(true)}
         />
 
-        {/* 用户信息栏 */}
+        {/* VOICICA 余额 */}
         <UserStatsBar
-          planName={planName}
           credits={credits}
           creditsLoading={creditsLoading}
         />
 
-        {/* 订阅推广卡片 - 仅未订阅时显示 */}
-        {!isSubscribed && <SubscribeCard />}
+        {/* 购买 VOICICA 推广卡片 */}
+        <SubscribeCard />
       </div>
 
       {/* 可滚动的作品区域 */}

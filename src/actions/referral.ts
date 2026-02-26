@@ -97,6 +97,19 @@ export async function getMyReferralInfo(): Promise<ReferralInfo | null> {
 
     if (!user) return null;
 
+    // 惰性检查升级（用户查看推荐页时触发）
+    await checkAndUpgradeLevel(userId);
+
+    // 重新读取（等级可能已变）
+    const [freshUser] = await db
+      .select({ referralLevel: users.referralLevel })
+      .from(users)
+      .where(eq(users.userId, userId))
+      .limit(1);
+    if (freshUser) {
+      user.referralLevel = freshUser.referralLevel;
+    }
+
     // 如果没有邀请码，生成一个
     let referralCode = user.referralCode;
     if (!referralCode) {
@@ -378,6 +391,16 @@ export async function checkAndUpgradeLevel(userId: string): Promise<void> {
           .set({ referralLevel: 'gold' })
           .where(eq(users.userId, userId));
         console.log(`🏆 [referral] User ${userId} upgraded to GOLD`);
+
+        // 升级为黄金后，检查其上级是否也可升级
+        const [self] = await db
+          .select({ referredBy: users.referredBy })
+          .from(users)
+          .where(eq(users.userId, userId))
+          .limit(1);
+        if (self?.referredBy) {
+          await checkAndUpgradeLevel(self.referredBy);
+        }
         return;
       }
     }

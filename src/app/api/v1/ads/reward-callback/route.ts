@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import db from '@/lib/db';
+import { getDb } from '@/lib/db';
 import { adRewardTransactions } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 /**
@@ -170,6 +170,7 @@ async function verifySignature(
  * - key_id: 签名密钥 ID
  */
 export async function GET(request: NextRequest) {
+  const db = await getDb();
   const startTime = Date.now();
 
   try {

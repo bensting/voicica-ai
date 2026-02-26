@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import db from '@/lib/db';
+import { getDb } from '@/lib/db';
 import { coverRecords } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 import { uploadAudio } from '@/lib/services/r2-storage';
@@ -52,6 +52,7 @@ async function downloadAndUploadToR2(
 }
 
 export async function POST(request: NextRequest) {
+  const db = await getDb();
   try {
     // 获取查询参数
     const { searchParams } = new URL(request.url);

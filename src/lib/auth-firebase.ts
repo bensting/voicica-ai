@@ -6,7 +6,7 @@
  */
 import { headers, cookies } from 'next/headers';
 import { verifyIdToken } from './firebase-verify';
-import db from './db';
+import { getDb } from './db';
 import { users, anonymousUsers, creditHistory } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 import { v4 as uuidv4 } from 'uuid';
@@ -125,6 +125,7 @@ async function createOrUpdateFirebaseUser(
   ipAddress?: string,
   vercelCountry?: string,
 ): Promise<void> {
+  const db = await getDb();
   const [existingUser] = await db.select()
     .from(users)
     .where(eq(users.userId, decodedToken.uid))
@@ -226,6 +227,7 @@ async function createOrGetAnonymousUser(
   platform?: string,
   vercelCountry?: string
 ): Promise<{ user_id: string; credits: number }> {
+  const db = await getDb();
   // 生成匿名用户 ID
   const hash = await sha256Hex(deviceFingerprint);
   const anonymousUserId = `anonymous_${hash.substring(0, 16)}`;

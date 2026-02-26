@@ -5,7 +5,7 @@
  * 获取单个公开视频详情并增加浏览量
  */
 import { NextRequest, NextResponse } from 'next/server';
-import db from '@/lib/db';
+import { getDb } from '@/lib/db';
 import { videoRecords, users } from '@/db/schema';
 import { and, eq, sql } from 'drizzle-orm';
 
@@ -31,6 +31,7 @@ export async function GET(
   req: NextRequest,
   { params }: { params: Promise<{ taskId: string }> }
 ) {
+  const db = await getDb();
   try {
     const { taskId } = await params;
 

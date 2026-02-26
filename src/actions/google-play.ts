@@ -10,7 +10,7 @@
  * - 不能信任客户端传来的任何数据
  */
 
-import db from '@/lib/db';
+import { getDb } from '@/lib/db';
 import { userSubscriptions, subscriptionHistory } from '@/db/schema';
 import { eq, and, sql } from 'drizzle-orm';
 import { getCurrentUser } from '@/lib/auth-firebase';
@@ -48,6 +48,7 @@ export async function verifyGooglePlayPurchase(params: {
   error?: string;
   subscriptionId?: number;
 }> {
+  const db = await getDb();
   const { purchaseToken, productId: clientProductId, orderId: clientOrderId } = params;
 
   try {
@@ -201,6 +202,7 @@ export async function handleGooglePlayRenewal(params: {
   productId: string;
   eventTime: number;
 }): Promise<{ success: boolean; error?: string }> {
+  const db = await getDb();
   const { purchaseToken, productId, eventTime } = params;
 
   try {
@@ -330,6 +332,7 @@ export async function handleGooglePlayRenewal(params: {
 export async function handleGooglePlayReactivation(params: {
   purchaseToken: string;
 }): Promise<{ success: boolean; error?: string }> {
+  const db = await getDb();
   const { purchaseToken } = params;
 
   try {
@@ -414,6 +417,7 @@ export async function handleGooglePlayCancellation(params: {
   purchaseToken: string;
   cancelReason?: number;
 }): Promise<{ success: boolean; error?: string }> {
+  const db = await getDb();
   const { purchaseToken, cancelReason } = params;
 
   try {

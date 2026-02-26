@@ -5,7 +5,7 @@
  *
  * 使用 unstable_cache 缓存语音列表，减少数据库查询
  */
-import db from '@/lib/db';
+import { getDb } from '@/lib/db';
 import { voices, ttsRecords } from '@/db/schema';
 import { eq, and, desc, asc, count, like } from 'drizzle-orm';
 import { unstable_cache } from 'next/cache';
@@ -54,6 +54,7 @@ const CACHE_REVALIDATE = 3600;
 // 缓存：国家列表
 const getCachedDistinctCountries = unstable_cache(
   async () => {
+    const db = await getDb();
     const rows = await db.selectDistinct({ country: voices.country })
       .from(voices)
       .where(eq(voices.isActive, true));
@@ -66,6 +67,7 @@ const getCachedDistinctCountries = unstable_cache(
 // 缓存：角色列表
 const getCachedDistinctRoles = unstable_cache(
   async () => {
+    const db = await getDb();
     const rows = await db.selectDistinct({ role: voices.role })
       .from(voices)
       .where(eq(voices.isActive, true));
@@ -78,6 +80,7 @@ const getCachedDistinctRoles = unstable_cache(
 // 缓存：语言列表
 const getCachedDistinctLocales = unstable_cache(
   async () => {
+    const db = await getDb();
     const rows = await db.selectDistinct({ locale: voices.locale })
       .from(voices)
       .where(eq(voices.isActive, true));
@@ -90,6 +93,7 @@ const getCachedDistinctLocales = unstable_cache(
 // 缓存：celebrity 语言列表
 const getCachedCelebrityLocales = unstable_cache(
   async () => {
+    const db = await getDb();
     const rows = await db.selectDistinct({ locale: voices.locale })
       .from(voices)
       .where(and(eq(voices.isActive, true), eq(voices.role, 'celebrity')));
@@ -104,6 +108,7 @@ const getCachedCelebrityLocales = unstable_cache(
 // 客户端按需过滤（gender/role）和分页
 const getCachedVoicesByLocale = unstable_cache(
   async (locale: string) => {
+    const db = await getDb();
     const rows = await db.select().from(voices)
       .where(and(eq(voices.isActive, true), eq(voices.locale, locale)))
       .orderBy(desc(voices.sortOrder), desc(voices.provider), desc(voices.createdAt));
@@ -116,6 +121,7 @@ const getCachedVoicesByLocale = unstable_cache(
 // 缓存：celebrity 语音列表
 const getCachedCelebrityVoices = unstable_cache(
   async (locale?: string) => {
+    const db = await getDb();
     const conditions = [eq(voices.isActive, true), eq(voices.role, 'celebrity')];
     if (locale) conditions.push(eq(voices.locale, locale));
 
@@ -132,6 +138,7 @@ const getCachedCelebrityVoices = unstable_cache(
 // 缓存：TTS 落地页语音列表（按 locale + role 缓存）
 const getCachedPromoVoices = unstable_cache(
   async (locale: string, role: string, pageSize: number) => {
+    const db = await getDb();
     const rows = await db.select().from(voices)
       .where(and(eq(voices.isActive, true), eq(voices.locale, locale), eq(voices.role, role)))
       .orderBy(desc(voices.sortOrder))
@@ -149,6 +156,7 @@ const getCachedPromoVoices = unstable_cache(
  * 优先使用 locale 缓存，在缓存数据上做客户端过滤和分页
  */
 export async function listVoices(filters: VoiceFilters = {}): Promise<VoiceListResponse> {
+  const db = await getDb();
   try {
     const {
       provider,
@@ -271,6 +279,7 @@ export async function listVoices(filters: VoiceFilters = {}): Promise<VoiceListR
  * 根据 ID 获取单个语音
  */
 export async function getVoiceById(id: number): Promise<Voice | null> {
+  const db = await getDb();
   const [voice] = await db.select().from(voices).where(eq(voices.id, id)).limit(1);
 
   if (!voice) return null;
@@ -282,6 +291,7 @@ export async function getVoiceById(id: number): Promise<Voice | null> {
  * 根据 name 获取单个语音
  */
 export async function getVoiceByName(name: string): Promise<Voice | null> {
+  const db = await getDb();
   const [voice] = await db.select().from(voices).where(eq(voices.name, name)).limit(1);
 
   if (!voice) return null;
@@ -317,6 +327,7 @@ export async function searchVoicesByTags(
   tags: string[],
   limit: number = 50
 ): Promise<Voice[]> {
+  const db = await getDb();
   // 查询所有活跃语音，然后手动过滤标签
   // PostgreSQL 的 @> 操作符（数组包含），用 OR 组合多个条件
   const allVoices = await db.select().from(voices)
@@ -363,6 +374,7 @@ export async function getCelebrityLocales(): Promise<string[]> {
  * 支持 Firebase 登录用户和匿名用户
  */
 export async function getUsedVoiceNames(): Promise<string[]> {
+  const db = await getDb();
   try {
     // 使用统一认证，支持登录用户和匿名用户
     const user = await getUserOrAnonymous();

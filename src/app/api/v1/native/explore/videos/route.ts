@@ -5,7 +5,7 @@
  * 获取公开视频列表（无需登录）
  */
 import { NextRequest, NextResponse } from 'next/server';
-import db from '@/lib/db';
+import { getDb } from '@/lib/db';
 import { videoRecords, users } from '@/db/schema';
 import { and, eq, desc, isNotNull, count, inArray } from 'drizzle-orm';
 
@@ -29,6 +29,7 @@ function maskEmail(email: string | null): string {
 }
 
 export async function GET(req: NextRequest) {
+  const db = await getDb();
   try {
     // 获取分页参数
     const { searchParams } = new URL(req.url);

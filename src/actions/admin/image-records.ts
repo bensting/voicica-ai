@@ -3,9 +3,9 @@
 /**
  * Image 记录管理 Server Actions
  */
-import db from '@/lib/db';
+import { getDb } from '@/lib/db';
 import { imageRecords } from '@/db/schema';
-import { eq, and, or, ilike, desc, count, sum, gte, lte, inArray } from 'drizzle-orm';
+import { eq, and, or, like, desc, count, sum, gte, lte, inArray } from 'drizzle-orm';
 import { verifyAdminWithoutDb } from '@/lib/auth-admin';
 
 /**
@@ -47,6 +47,7 @@ export interface ImageRecordItem {
  * 获取 Image 记录列表
  */
 export async function getImageRecords(query: ImageRecordsQuery = {}) {
+  const db = await getDb();
   await verifyAdminWithoutDb();
 
   const {
@@ -71,14 +72,14 @@ export async function getImageRecords(query: ImageRecordsQuery = {}) {
   }
 
   if (userId) {
-    conditions.push(ilike(imageRecords.userId, `%${userId}%`));
+    conditions.push(like(imageRecords.userId, `%${userId}%`));
   }
 
   if (search) {
     conditions.push(
       or(
-        ilike(imageRecords.prompt, `%${search}%`),
-        ilike(imageRecords.taskId, `%${search}%`),
+        like(imageRecords.prompt, `%${search}%`),
+        like(imageRecords.taskId, `%${search}%`),
       )
     );
   }
@@ -132,6 +133,7 @@ export async function getImageRecords(query: ImageRecordsQuery = {}) {
  * 获取 Image 记录统计
  */
 export async function getImageRecordsStats() {
+  const db = await getDb();
   await verifyAdminWithoutDb();
 
   const now = new Date();
@@ -174,6 +176,7 @@ export async function getImageRecordsStats() {
  * 删除 Image 记录
  */
 export async function deleteImageRecord(id: number) {
+  const db = await getDb();
   await verifyAdminWithoutDb();
 
   try {
@@ -189,6 +192,7 @@ export async function deleteImageRecord(id: number) {
  * 批量删除 Image 记录
  */
 export async function deleteImageRecords(ids: number[]) {
+  const db = await getDb();
   await verifyAdminWithoutDb();
 
   try {

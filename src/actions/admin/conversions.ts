@@ -3,9 +3,9 @@
 /**
  * 兑换记录管理 Server Actions（只读）
  */
-import db from '@/lib/db';
+import { getDb } from '@/lib/db';
 import { conversions } from '@/db/schema';
-import { ilike, desc, count, gte, lte, and, sql } from 'drizzle-orm';
+import { like, desc, count, gte, lte, and, sql } from 'drizzle-orm';
 import { verifyAdminWithoutDb } from '@/lib/auth-admin';
 
 interface ConversionsQuery {
@@ -30,6 +30,7 @@ export interface AdminConversionItem {
  * 获取兑换记录列表
  */
 export async function getAdminConversions(query: ConversionsQuery = {}) {
+  const db = await getDb();
   await verifyAdminWithoutDb();
 
   const {
@@ -43,7 +44,7 @@ export async function getAdminConversions(query: ConversionsQuery = {}) {
   const conditions = [];
 
   if (search) {
-    conditions.push(ilike(conversions.userId, `%${search}%`));
+    conditions.push(like(conversions.userId, `%${search}%`));
   }
 
   if (startDate) {
@@ -87,6 +88,7 @@ export async function getAdminConversions(query: ConversionsQuery = {}) {
  * 获取兑换统计
  */
 export async function getConversionStats() {
+  const db = await getDb();
   await verifyAdminWithoutDb();
 
   const [[{ total }], [{ totalVoicica }], [{ totalUsdt }]] = await Promise.all([

@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import db from '@/lib/db';
+import { getDb } from '@/lib/db';
 import { users, anonymousUsers, userSubscriptions, voices } from '@/db/schema';
 import { eq, and, gt, count, sql } from 'drizzle-orm';
 import { verifyAdminWithoutDb } from '@/lib/auth-admin';
@@ -8,6 +8,7 @@ import { verifyAdminWithoutDb } from '@/lib/auth-admin';
  * 获取管理后台统计数据
  */
 async function getAdminStats() {
+  const db = await getDb();
   await verifyAdminWithoutDb();
 
   const now = new Date().toISOString();

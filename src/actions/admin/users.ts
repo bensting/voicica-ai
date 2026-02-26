@@ -3,9 +3,9 @@
 /**
  * 用户管理 Server Actions
  */
-import db from '@/lib/db';
+import { getDb } from '@/lib/db';
 import { users, anonymousUsers, userSubscriptions, ttsRecords, creditHistory } from '@/db/schema';
-import { eq, and, or, ilike, desc, count, isNull, isNotNull, lt, gt } from 'drizzle-orm';
+import { eq, and, or, like, desc, count, isNull, isNotNull, lt, gt } from 'drizzle-orm';
 import { verifyAdminWithoutDb } from '@/lib/auth-admin';
 import { generateUniqueCode, checkAndUpgradeLevel, hasCircularReferral } from '@/actions/referral';
 
@@ -41,6 +41,7 @@ export async function getAdminUserList(params: {
   pageSize: number;
   totalPages: number;
 }> {
+  const db = await getDb();
   await verifyAdminWithoutDb();
 
   const { page = 1, pageSize = 20, search, hasSubscription, platform } = params;
@@ -52,9 +53,9 @@ export async function getAdminUserList(params: {
   if (search) {
     conditions.push(
       or(
-        ilike(users.email, `%${search}%`),
-        ilike(users.name, `%${search}%`),
-        ilike(users.userId, `%${search}%`),
+        like(users.email, `%${search}%`),
+        like(users.name, `%${search}%`),
+        like(users.userId, `%${search}%`),
       )
     );
   }
@@ -148,6 +149,7 @@ export async function getAdminAnonymousUserList(params: {
   pageSize: number;
   totalPages: number;
 }> {
+  const db = await getDb();
   await verifyAdminWithoutDb();
 
   const { page = 1, pageSize = 20, search, isConverted, platform } = params;
@@ -157,9 +159,9 @@ export async function getAdminAnonymousUserList(params: {
   if (search) {
     conditions.push(
       or(
-        ilike(anonymousUsers.userId, `%${search}%`),
-        ilike(anonymousUsers.deviceFingerprint, `%${search}%`),
-        ilike(anonymousUsers.ipAddress, `%${search}%`),
+        like(anonymousUsers.userId, `%${search}%`),
+        like(anonymousUsers.deviceFingerprint, `%${search}%`),
+        like(anonymousUsers.ipAddress, `%${search}%`),
       )
     );
   }
@@ -240,6 +242,7 @@ export async function getAdminUserById(userId: string): Promise<{
     created_at: Date;
   }>;
 }> {
+  const db = await getDb();
   await verifyAdminWithoutDb();
 
   const [user] = await db.select().from(users).where(eq(users.userId, userId)).limit(1);
@@ -299,6 +302,7 @@ export async function updateUserCredits(
   credits: number,
   reason: string
 ): Promise<{ success: boolean; message: string }> {
+  const db = await getDb();
   await verifyAdminWithoutDb();
 
   try {
@@ -333,6 +337,7 @@ export async function updateAnonymousUserCredits(
   credits: number,
   reason: string
 ): Promise<{ success: boolean; message: string }> {
+  const db = await getDb();
   await verifyAdminWithoutDb();
 
   try {
@@ -365,6 +370,7 @@ export async function updateAnonymousUserCredits(
 export async function deleteAnonymousUser(
   id: number
 ): Promise<{ success: boolean; message: string }> {
+  const db = await getDb();
   await verifyAdminWithoutDb();
 
   try {
@@ -381,6 +387,7 @@ export async function deleteAnonymousUser(
  * 清理过期的匿名用户
  */
 export async function cleanExpiredAnonymousUsers(): Promise<{ success: boolean; message: string; deleted: number }> {
+  const db = await getDb();
   await verifyAdminWithoutDb();
 
   try {
@@ -430,6 +437,7 @@ export async function getUserCreditHistory(params: {
   pageSize: number;
   totalPages: number;
 }> {
+  const db = await getDb();
   await verifyAdminWithoutDb();
 
   const { userId, page = 1, pageSize = 20 } = params;
@@ -467,6 +475,7 @@ export async function getUserCreditHistory(params: {
 export async function adminGenerateReferralCode(
   userId: string
 ): Promise<{ success: boolean; message: string; code?: string }> {
+  const db = await getDb();
   await verifyAdminWithoutDb();
 
   try {
@@ -504,6 +513,7 @@ export async function adminBindReferrer(
   userId: string,
   referrerCode: string
 ): Promise<{ success: boolean; message: string }> {
+  const db = await getDb();
   await verifyAdminWithoutDb();
 
   try {
@@ -559,6 +569,7 @@ export async function adminBindReferrer(
 export async function adminUnbindReferrer(
   userId: string
 ): Promise<{ success: boolean; message: string }> {
+  const db = await getDb();
   await verifyAdminWithoutDb();
 
   try {

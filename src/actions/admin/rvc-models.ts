@@ -4,7 +4,7 @@
  * RVC Voice Models 管理 Server Actions
  * 管理 AI Cover 功能的声音模型
  */
-import db from '@/lib/db';
+import { getDb } from '@/lib/db';
 import { rvcVoiceModels } from '@/db/schema';
 import { eq, and, asc, desc } from 'drizzle-orm';
 import { generateRvcModelUploadUrl, generateRvcModelZipUploadUrl, generateImageUploadUrl, deleteRvcModelFile } from '@/lib/services/r2-storage';
@@ -40,6 +40,7 @@ export async function getRvcVoiceModels(params?: {
   category?: string;
   isActive?: boolean;
 }): Promise<RvcVoiceModel[]> {
+  const db = await getDb();
   await verifyAdminWithoutDb();
 
   const conditions = [];
@@ -59,6 +60,7 @@ export async function getRvcVoiceModels(params?: {
  * 获取单个 RVC 声音模型
  */
 export async function getRvcVoiceModel(id: number): Promise<RvcVoiceModel | null> {
+  const db = await getDb();
   await verifyAdminWithoutDb();
 
   const [model] = await db.select().from(rvcVoiceModels).where(eq(rvcVoiceModels.id, id)).limit(1);
@@ -194,6 +196,7 @@ export async function createRvcVoiceModel(data: {
   builtin_name?: string;
   sort_order?: number;
 }): Promise<ActionResult & { model?: RvcVoiceModel }> {
+  const db = await getDb();
   await verifyAdminWithoutDb();
 
   try {
@@ -253,6 +256,7 @@ export async function updateRvcVoiceModel(
     sort_order?: number;
   }
 ): Promise<ActionResult> {
+  const db = await getDb();
   await verifyAdminWithoutDb();
 
   try {
@@ -283,6 +287,7 @@ export async function updateRvcVoiceModel(
  * 删除 RVC 声音模型
  */
 export async function deleteRvcVoiceModel(id: number): Promise<ActionResult> {
+  const db = await getDb();
   await verifyAdminWithoutDb();
 
   try {
@@ -327,6 +332,7 @@ export async function deleteRvcVoiceModel(id: number): Promise<ActionResult> {
  * 切换模型启用/禁用状态
  */
 export async function toggleRvcVoiceModelActive(id: number): Promise<ActionResult> {
+  const db = await getDb();
   await verifyAdminWithoutDb();
 
   try {
@@ -355,6 +361,7 @@ export async function toggleRvcVoiceModelActive(id: number): Promise<ActionResul
  * 批量创建内置模型
  */
 export async function createBuiltinModels(): Promise<ActionResult> {
+  const db = await getDb();
   await verifyAdminWithoutDb();
 
   try {

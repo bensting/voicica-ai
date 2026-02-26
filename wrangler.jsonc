@@ -12,5 +12,10 @@
   },
   "queues": {
     "producers": [{ "binding": "TTS_QUEUE", "queue": "tts-tasks" }]
-  }
+  },
+  "d1_databases": [{
+    "binding": "DB",
+    "database_name": "voicica-db",
+    "database_id": "YOUR_D1_DATABASE_ID"
+  }]
 }

@@ -1,6 +1,6 @@
 'use server';
 
-import db from '@/lib/db';
+import { getDb } from '@/lib/db';
 import { dailyTasks, users, anonymousUsers, creditHistory } from '@/db/schema';
 import { eq, and, sql } from 'drizzle-orm';
 import { headers } from 'next/headers';
@@ -13,6 +13,7 @@ import { distributeReferralCommissions } from '@/actions/referral';
  * 匿名用户只有 credits（永久积分），没有 monthlyCredits
  */
 async function addUserCredits(userId: string, isAnonymous: boolean, amount: number, addToPermanent: boolean) {
+  const db = await getDb();
   if (isAnonymous) {
     // 匿名用户只有 credits 字段
     await db
@@ -158,6 +159,7 @@ export async function getDailyTasksConfigAction(isNative: boolean = false) {
  * @param isNative 是否为原生应用
  */
 export async function getDailyTasksStatus(isNative: boolean = false): Promise<DailyTasksStatus | null> {
+  const db = await getDb();
   try {
     const { user_id } = await getUserOrAnonymous();
     if (!user_id) {
@@ -214,6 +216,7 @@ export async function getDailyTasksStatus(isNative: boolean = false): Promise<Da
  * @param isNative 是否为原生应用（用于获取对应的配置）
  */
 export async function checkin(addToPermanent: boolean = false, isNative: boolean = false): Promise<TaskResult> {
+  const db = await getDb();
   try {
     const { user_id, is_anonymous } = await getUserOrAnonymous();
     if (!user_id) {
@@ -291,6 +294,7 @@ export async function checkin(addToPermanent: boolean = false, isNative: boolean
  * @param isNative 是否为原生应用（用于获取对应的配置）
  */
 export async function claimAdReward(adWatched: boolean = true, addToPermanent: boolean = false, isNative: boolean = false, adRevenueMicros?: number, adRevenueCurrency?: string): Promise<TaskResult> {
+  const db = await getDb();
   try {
     if (!adWatched) {
       return { success: false, message: 'Please watch the ad first' };

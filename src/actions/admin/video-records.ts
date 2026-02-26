@@ -3,9 +3,9 @@
 /**
  * Video 记录管理 Server Actions
  */
-import db from '@/lib/db';
+import { getDb } from '@/lib/db';
 import { videoRecords } from '@/db/schema';
-import { eq, and, or, ilike, desc, count, sum, gte, lte, inArray } from 'drizzle-orm';
+import { eq, and, or, like, desc, count, sum, gte, lte, inArray } from 'drizzle-orm';
 import { verifyAdminWithoutDb } from '@/lib/auth-admin';
 
 /**
@@ -53,6 +53,7 @@ export interface VideoRecordItem {
  * 获取 Video 记录列表
  */
 export async function getVideoRecords(query: VideoRecordsQuery = {}) {
+  const db = await getDb();
   await verifyAdminWithoutDb();
 
   const {
@@ -77,14 +78,14 @@ export async function getVideoRecords(query: VideoRecordsQuery = {}) {
   }
 
   if (userId) {
-    conditions.push(ilike(videoRecords.userId, `%${userId}%`));
+    conditions.push(like(videoRecords.userId, `%${userId}%`));
   }
 
   if (search) {
     conditions.push(
       or(
-        ilike(videoRecords.prompt, `%${search}%`),
-        ilike(videoRecords.taskId, `%${search}%`),
+        like(videoRecords.prompt, `%${search}%`),
+        like(videoRecords.taskId, `%${search}%`),
       )
     );
   }
@@ -144,6 +145,7 @@ export async function getVideoRecords(query: VideoRecordsQuery = {}) {
  * 获取 Video 记录统计
  */
 export async function getVideoRecordsStats() {
+  const db = await getDb();
   await verifyAdminWithoutDb();
 
   const now = new Date();
@@ -186,6 +188,7 @@ export async function getVideoRecordsStats() {
  * 删除 Video 记录
  */
 export async function deleteVideoRecord(id: number) {
+  const db = await getDb();
   await verifyAdminWithoutDb();
 
   try {
@@ -201,6 +204,7 @@ export async function deleteVideoRecord(id: number) {
  * 批量删除 Video 记录
  */
 export async function deleteVideoRecords(ids: number[]) {
+  const db = await getDb();
   await verifyAdminWithoutDb();
 
   try {

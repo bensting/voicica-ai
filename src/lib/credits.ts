@@ -6,7 +6,7 @@
  * 所有积分的检查、扣除、增加操作都应该通过此服务
  */
 
-import db from '@/lib/db';
+import { getDb } from '@/lib/db';
 import { anonymousUsers, users, creditHistory } from '@/db/schema';
 import { eq, sql, and, gte } from 'drizzle-orm';
 import { ProductType } from '@/config/productType';
@@ -55,6 +55,7 @@ export async function checkCredits(
   required: number,
   isAnonymous: boolean
 ): Promise<CheckCreditsResult> {
+  const db = await getDb();
   if (isAnonymous) {
     const [user] = await db.select({ credits: anonymousUsers.credits })
       .from(anonymousUsers)
@@ -79,6 +80,7 @@ export async function getCredits(
   userId: string,
   isAnonymous: boolean
 ): Promise<number> {
+  const db = await getDb();
   if (isAnonymous) {
     const [user] = await db.select({ credits: anonymousUsers.credits })
       .from(anonymousUsers)
@@ -105,6 +107,7 @@ export async function deductCredits(
   description: string,
   taskId?: string
 ): Promise<void> {
+  const db = await getDb();
   const tableName = isAnonymous ? 'anonymous_users' : 'users';
 
   if (isAnonymous) {
@@ -160,6 +163,7 @@ export async function addCredits(
   taskId?: string,
   updateTotalUsed: boolean = false
 ): Promise<void> {
+  const db = await getDb();
   const tableName = isAnonymous ? 'anonymous_users' : 'users';
 
   if (isAnonymous) {
@@ -229,6 +233,7 @@ export async function deductCreditsAtomic(
   description: string,
   taskId?: string
 ): Promise<DeductionBreakdown> {
+  const db = await getDb();
   let breakdown: DeductionBreakdown = {
     fromCredits: 0,
     fromMonthlyCredits: 0,
@@ -247,7 +252,7 @@ export async function deductCreditsAtomic(
         gte(anonymousUsers.credits, amount)
       ));
 
-    if (result.rowCount === 0) {
+    if (result.changes === 0) {
       throw new Error('积分扣减失败，余额不足');
     }
 
@@ -311,6 +316,7 @@ export async function refundCredits(
   description: string,
   taskId?: string
 ): Promise<void> {
+  const db = await getDb();
   if (isAnonymous) {
     await db.update(anonymousUsers)
       .set({
@@ -349,6 +355,7 @@ export async function refundCreditsSimple(
   description: string,
   taskId?: string
 ): Promise<void> {
+  const db = await getDb();
   const [normalUser] = await db.select({ userId: users.userId })
     .from(users)
     .where(eq(users.userId, userId))

@@ -3,7 +3,7 @@
 /**
  * ElevenLabs Dialogue 语音同步 Server Actions
  */
-import db from '@/lib/db';
+import { getDb } from '@/lib/db';
 import { voices } from '@/db/schema';
 import { eq, and, count, asc } from 'drizzle-orm';
 import { verifyAdminWithoutDb } from '@/lib/auth-admin';
@@ -27,6 +27,7 @@ export async function getElevenlabsDialogueStats(): Promise<{
   dbCount: number;
   activeCount: number;
 }> {
+  const db = await getDb();
   await verifyAdminWithoutDb();
 
   const [[{ total: dbCount }], [{ total: activeCount }]] = await Promise.all([
@@ -46,6 +47,7 @@ export async function getElevenlabsDialogueStats(): Promise<{
  * 存在的更新，不存在的新增
  */
 export async function syncElevenlabsDialogueVoices(): Promise<SyncResult> {
+  const db = await getDb();
   await verifyAdminWithoutDb();
 
   try {
@@ -134,6 +136,7 @@ export async function getElevenlabsDialogueVoices(): Promise<
     voice_sample_url: Record<string, string>;
   }>
 > {
+  const db = await getDb();
   const result = await db.select({
     id: voices.id,
     name: voices.name,

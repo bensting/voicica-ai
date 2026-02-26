@@ -3,7 +3,7 @@
 /**
  * Video 模块 Server Actions
  */
-import db from '@/lib/db';
+import { getDb } from '@/lib/db';
 import { videoRecords, taskQueue } from '@/db/schema';
 import { eq, and, desc, count, gte, lte, inArray } from 'drizzle-orm';
 import { getUserOrAnonymous } from '@/lib/auth-firebase';
@@ -98,6 +98,7 @@ async function downloadAndUploadVideoToR2(
  * 对于 PROCESSING 任务，主动查询 Kie.ai API 获取最新状态（和 Music 相同的轮询兜底模式）
  */
 export async function getVideoTaskStatus(taskId: string): Promise<VideoTaskStatus> {
+  const db = await getDb();
   const [record] = await db.select().from(videoRecords).where(eq(videoRecords.taskId, taskId)).limit(1);
 
   if (!record) {
@@ -273,6 +274,7 @@ export async function getVideoTaskStatus(taskId: string): Promise<VideoTaskStatu
  * 获取用户视频历史记录
  */
 export async function getVideoRecords(limit: number = 50): Promise<VideoRecord[]> {
+  const db = await getDb();
   const unifiedUser = await getUserOrAnonymous();
   const userId = unifiedUser.user_id;
 
@@ -319,6 +321,7 @@ export async function queryVideoRecords(params: {
   page?: number;
   page_size?: number;
 }): Promise<VideoRecordsQueryResponse> {
+  const db = await getDb();
   const unifiedUser = await getUserOrAnonymous();
   const userId = unifiedUser.user_id;
 
@@ -395,6 +398,7 @@ export async function queryVideoRecords(params: {
  * 删除单个视频记录
  */
 export async function deleteVideoRecord(recordId: string): Promise<void> {
+  const db = await getDb();
   const unifiedUser = await getUserOrAnonymous();
   const userId = unifiedUser.user_id;
 
@@ -422,6 +426,7 @@ export async function deleteVideoRecord(recordId: string): Promise<void> {
  * 根据 taskId 获取单条视频记录
  */
 export async function getVideoRecordByTaskId(taskId: string): Promise<VideoRecord | null> {
+  const db = await getDb();
   try {
     const unifiedUser = await getUserOrAnonymous();
     const userId = unifiedUser.user_id;

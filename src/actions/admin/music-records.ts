@@ -3,9 +3,9 @@
 /**
  * Music 记录管理 Server Actions
  */
-import db from '@/lib/db';
+import { getDb } from '@/lib/db';
 import { musicRecords } from '@/db/schema';
-import { eq, and, or, ilike, desc, count, sum, gte, lte, inArray } from 'drizzle-orm';
+import { eq, and, or, like, desc, count, sum, gte, lte, inArray } from 'drizzle-orm';
 import { verifyAdminWithoutDb } from '@/lib/auth-admin';
 
 /**
@@ -57,6 +57,7 @@ export interface MusicRecordItem {
  * 获取 Music 记录列表
  */
 export async function getMusicRecords(query: MusicRecordsQuery = {}) {
+  const db = await getDb();
   await verifyAdminWithoutDb();
 
   const {
@@ -81,16 +82,16 @@ export async function getMusicRecords(query: MusicRecordsQuery = {}) {
   }
 
   if (userId) {
-    conditions.push(ilike(musicRecords.userId, `%${userId}%`));
+    conditions.push(like(musicRecords.userId, `%${userId}%`));
   }
 
   if (search) {
     conditions.push(
       or(
-        ilike(musicRecords.prompt, `%${search}%`),
-        ilike(musicRecords.title, `%${search}%`),
-        ilike(musicRecords.lyrics, `%${search}%`),
-        ilike(musicRecords.taskId, `%${search}%`),
+        like(musicRecords.prompt, `%${search}%`),
+        like(musicRecords.title, `%${search}%`),
+        like(musicRecords.lyrics, `%${search}%`),
+        like(musicRecords.taskId, `%${search}%`),
       )
     );
   }
@@ -154,6 +155,7 @@ export async function getMusicRecords(query: MusicRecordsQuery = {}) {
  * 获取 Music 记录统计
  */
 export async function getMusicRecordsStats() {
+  const db = await getDb();
   await verifyAdminWithoutDb();
 
   const now = new Date();
@@ -196,6 +198,7 @@ export async function getMusicRecordsStats() {
  * 删除 Music 记录
  */
 export async function deleteMusicRecord(id: number) {
+  const db = await getDb();
   await verifyAdminWithoutDb();
 
   try {
@@ -211,6 +214,7 @@ export async function deleteMusicRecord(id: number) {
  * 批量删除 Music 记录
  */
 export async function deleteMusicRecords(ids: number[]) {
+  const db = await getDb();
   await verifyAdminWithoutDb();
 
   try {
@@ -235,6 +239,7 @@ const KIE_API_KEY = process.env.KIE_API_KEY || '';
  * Admin 专用版本，无超时限制
  */
 export async function refreshMusicRecordStatus(id: number) {
+  const db = await getDb();
   await verifyAdminWithoutDb();
 
   try {
@@ -325,6 +330,7 @@ export async function refreshMusicRecordStatus(id: number) {
  * 获取 Music 记录详情
  */
 export async function getMusicRecordDetail(id: number) {
+  const db = await getDb();
   await verifyAdminWithoutDb();
 
   const [record] = await db.select().from(musicRecords).where(eq(musicRecords.id, id)).limit(1);

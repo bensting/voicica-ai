@@ -12,9 +12,9 @@
  */
 
 import { getCurrentUser } from '@/lib/auth-firebase';
-import db from '@/lib/db';
+import { getDb } from '@/lib/db';
 import { creditHistory } from '@/db/schema';
-import { eq, and, ilike } from 'drizzle-orm';
+import { eq, and, like } from 'drizzle-orm';
 import { addCredits } from '@/lib/credits';
 import { ProductType } from '@/config/productType';
 import { getCreditPackByGooglePlayProductId } from '@/config/native/subscription';
@@ -42,6 +42,7 @@ export async function verifyGooglePlayCreditPackPurchase(params: {
   error?: string;
   credits_added?: number;
 }> {
+  const db = await getDb();
   const { purchaseToken, productId: clientProductId, orderId: clientOrderId } = params;
 
   try {
@@ -83,7 +84,7 @@ export async function verifyGooglePlayCreditPackPurchase(params: {
     const [existingPurchase] = await db.select().from(creditHistory)
       .where(and(
         eq(creditHistory.userId, userId),
-        ilike(creditHistory.description, `%Token:${purchaseToken.substring(0, 100)}%`),
+        like(creditHistory.description, `%Token:${purchaseToken.substring(0, 100)}%`),
       ))
       .limit(1);
 

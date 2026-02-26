@@ -5,7 +5,7 @@
  * DELETE /api/admin/banners/[id] - 删除 Banner
  */
 import { NextRequest, NextResponse } from 'next/server';
-import db from '@/lib/db';
+import { getDb } from '@/lib/db';
 import { nativeBanners } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 import { verifyAdmin } from '@/lib/auth-admin';
@@ -16,6 +16,7 @@ interface RouteParams {
 
 // 更新 Banner
 export async function PUT(request: NextRequest, { params }: RouteParams) {
+  const db = await getDb();
   try {
     await verifyAdmin();
 
@@ -79,6 +80,7 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
 
 // 删除 Banner
 export async function DELETE(request: NextRequest, { params }: RouteParams) {
+  const db = await getDb();
   try {
     await verifyAdmin();
 

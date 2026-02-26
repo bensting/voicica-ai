@@ -5,7 +5,7 @@
  * 使用 Replicate API 实现 AI 翻唱功能
  * 使用 zsxkib/realistic-voice-cloning 模型一步完成
  */
-import db from '@/lib/db';
+import { getDb } from '@/lib/db';
 import { coverRecords, rvcVoiceModels, users, anonymousUsers, creditHistory } from '@/db/schema';
 import { eq, and, asc, desc, sql } from 'drizzle-orm';
 import { getUserOrAnonymous } from '@/lib/auth-firebase';
@@ -126,6 +126,7 @@ export interface CoverRecord {
  * 获取可用的 RVC 声音模型列表
  */
 export async function getRvcVoiceModels(category?: string): Promise<RvcVoiceModel[]> {
+  const db = await getDb();
   const conditions = [eq(rvcVoiceModels.isActive, true)];
   if (category && category !== 'all') {
     conditions.push(eq(rvcVoiceModels.category, category));
@@ -232,6 +233,7 @@ async function getReplicatePrediction(predictionId: string): Promise<{
  * 创建 AI Cover 任务
  */
 export async function createCoverTask(request: CoverGenerationRequest): Promise<CoverTaskStatus> {
+  const db = await getDb();
   console.log('🎤 [createCoverTask] 开始创建翻唱任务');
 
   try {
@@ -395,6 +397,7 @@ function getPitchChangeValue(pitchChange?: number): string {
  * 处理 Cover 任务状态查询
  */
 export async function processCoverTask(taskId: string): Promise<CoverTaskStatus> {
+  const db = await getDb();
   const [record] = await db.select()
     .from(coverRecords)
     .where(eq(coverRecords.taskId, taskId))
@@ -538,6 +541,7 @@ export async function getCoverTaskStatus(taskId: string): Promise<CoverTaskStatu
  * 获取用户 Cover 历史记录
  */
 export async function getCoverRecords(limit: number = 20, offset: number = 0): Promise<CoverRecord[]> {
+  const db = await getDb();
   const unifiedUser = await getUserOrAnonymous();
   const userId = unifiedUser.user_id;
 
@@ -571,6 +575,7 @@ export async function getCoverRecords(limit: number = 20, offset: number = 0): P
  * 删除 Cover 记录
  */
 export async function deleteCoverRecord(recordId: number): Promise<void> {
+  const db = await getDb();
   const unifiedUser = await getUserOrAnonymous();
   const userId = unifiedUser.user_id;
 

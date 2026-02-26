@@ -10,7 +10,7 @@
  * - Managing user's cloned voices
  */
 
-import db from '@/lib/db';
+import { getDb } from '@/lib/db';
 import { clonedVoices, ttsRecords } from '@/db/schema';
 import { eq, and, desc } from 'drizzle-orm';
 import { getUserOrAnonymous } from '@/lib/auth-firebase';
@@ -148,6 +148,7 @@ export async function createCloneTtsTask(params: {
   language?: string;
   platform?: string;
 }): Promise<CloneTtsResult> {
+  const db = await getDb();
   console.log('🐟 [createCloneTtsTask] Starting Fish Audio TTS generation');
 
   try {
@@ -246,6 +247,7 @@ export async function createRealtimeCloneTtsTask(params: {
   referenceText: string;
   platform?: string;
 }): Promise<CloneTtsResult> {
+  const db = await getDb();
   console.log('🐟 [createRealtimeCloneTtsTask] Starting real-time clone TTS');
 
   try {
@@ -341,6 +343,7 @@ export async function createVoiceClone(params: {
   audioFileName: string;
   referenceText?: string;
 }): Promise<CreateVoiceCloneResult> {
+  const db = await getDb();
   console.log('🐟 [createVoiceClone] Creating voice clone:', params.name);
 
   try {
@@ -413,6 +416,7 @@ export async function createVoiceClone(params: {
  * Get user's cloned voices
  */
 export async function getMyClonedVoices(): Promise<ClonedVoiceData[]> {
+  const db = await getDb();
   const unifiedUser = await getUserOrAnonymous();
   if (unifiedUser.is_anonymous) return [];
 
@@ -439,6 +443,7 @@ export async function getMyClonedVoices(): Promise<ClonedVoiceData[]> {
  * Delete a cloned voice
  */
 export async function deleteClonedVoice(id: number): Promise<{ success: boolean; error?: string }> {
+  const db = await getDb();
   try {
     const unifiedUser = await getUserOrAnonymous();
     if (unifiedUser.is_anonymous) {

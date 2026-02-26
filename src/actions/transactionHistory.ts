@@ -4,7 +4,7 @@
  * 交易历史 Server Actions
  * 获取兑换记录和提现记录
  */
-import db from '@/lib/db';
+import { getDb } from '@/lib/db';
 import { conversions, withdrawals } from '@/db/schema';
 import { eq, desc, count } from 'drizzle-orm';
 import { getCurrentUser } from '@/lib/auth-firebase';
@@ -49,6 +49,7 @@ export async function getConversionHistory(
   page: number = 1,
   pageSize: number = 20
 ): Promise<ConversionHistoryResponse> {
+  const db = await getDb();
   const authUser = await getCurrentUser();
 
   const whereClause = eq(conversions.userId, authUser.uid);
@@ -91,6 +92,7 @@ export async function getWithdrawalHistory(
   page: number = 1,
   pageSize: number = 20
 ): Promise<WithdrawalHistoryResponse> {
+  const db = await getDb();
   const authUser = await getCurrentUser();
 
   const whereClause = eq(withdrawals.userId, authUser.uid);

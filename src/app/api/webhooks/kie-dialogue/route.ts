@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import db from '@/lib/db';
+import { getDb } from '@/lib/db';
 import { dialogueRecords } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 import { uploadAudio } from '@/lib/services/r2-storage';
@@ -49,6 +49,7 @@ async function downloadAndUploadToR2(
 }
 
 export async function POST(request: NextRequest) {
+  const db = await getDb();
   try {
     const payload: KieDialogueCallbackPayload = await request.json();
 

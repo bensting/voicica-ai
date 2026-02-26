@@ -4,7 +4,7 @@
  * 支付模块 Server Actions
  */
 import { getCurrentUser } from '@/lib/auth-firebase';
-import db from '@/lib/db';
+import { getDb } from '@/lib/db';
 import { users, userSubscriptions } from '@/db/schema';
 import { eq, and } from 'drizzle-orm';
 import { getCreditTierByProductId } from '@/config/subscription';
@@ -27,6 +27,7 @@ export interface CheckoutResponse {
  * 创建 Stripe Checkout 会话
  */
 export async function createStripeCheckout(request: StripeCheckoutRequest): Promise<CheckoutResponse> {
+  const db = await getDb();
   // 验证用户已登录
   const user = await getCurrentUser();
   const userId = user.uid;
@@ -133,6 +134,7 @@ export async function verifyStripePayment(params: { request_id: string }): Promi
   subscription_id?: string;
   message: string;
 }> {
+  const db = await getDb();
   try {
     const session = await retrieveCheckoutSession(params.request_id);
 

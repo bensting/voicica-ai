@@ -3,7 +3,7 @@
 /**
  * Fish Audio TTS 语音同步 Server Actions
  */
-import db from '@/lib/db';
+import { getDb } from '@/lib/db';
 import { voices } from '@/db/schema';
 import { eq, and, count } from 'drizzle-orm';
 import { verifyAdminWithoutDb } from '@/lib/auth-admin';
@@ -422,6 +422,7 @@ async function downloadAndUploadVoiceSample(
  * 获取 Fish Audio 所有语言及统计信息
  */
 export async function getFishVoiceStatsByLanguage(): Promise<FishLanguageStats[]> {
+  const db = await getDb();
   await verifyAdminWithoutDb();
 
   try {
@@ -574,6 +575,7 @@ export async function syncFishVoice(
   modelId: string,
   targetLocale?: string
 ): Promise<SyncResult> {
+  const db = await getDb();
   await verifyAdminWithoutDb();
 
   try {
@@ -669,6 +671,7 @@ export async function syncFishPopularVoices(
   language?: string,
   targetLocale?: string
 ): Promise<SyncResult> {
+  const db = await getDb();
   await verifyAdminWithoutDb();
 
   try {
@@ -791,6 +794,7 @@ function extractModelId(name: string): string {
  * 更新 Fish 语音数据（刷新封面和样例）
  */
 export async function updateFishVoices(): Promise<SyncResult> {
+  const db = await getDb();
   await verifyAdminWithoutDb();
 
   try {
@@ -859,6 +863,7 @@ export async function updateFishVoices(): Promise<SyncResult> {
  * 同步 Fish 语音头像（使用封面图）
  */
 export async function syncFishVoiceAvatars(): Promise<SyncResult> {
+  const db = await getDb();
   await verifyAdminWithoutDb();
 
   try {
@@ -930,6 +935,7 @@ export async function syncFishVoiceAvatars(): Promise<SyncResult> {
  * 删除 Fish 语音
  */
 export async function deleteFishVoice(voiceId: number): Promise<SyncResult> {
+  const db = await getDb();
   await verifyAdminWithoutDb();
 
   try {

@@ -3,9 +3,9 @@
 /**
  * Video 下载记录管理 Server Actions
  */
-import db from '@/lib/db';
+import { getDb } from '@/lib/db';
 import { videoDownloadRecords } from '@/db/schema';
-import { eq, and, or, ilike, desc, count, sum, gte, lte, inArray } from 'drizzle-orm';
+import { eq, and, or, like, desc, count, sum, gte, lte, inArray } from 'drizzle-orm';
 import { verifyAdminWithoutDb } from '@/lib/auth-admin';
 
 /**
@@ -43,6 +43,7 @@ export interface VideoDownloadRecordItem {
  * 获取下载记录列表
  */
 export async function getVideoDownloadRecords(query: VideoDownloadRecordsQuery = {}) {
+  const db = await getDb();
   await verifyAdminWithoutDb();
 
   const {
@@ -67,15 +68,15 @@ export async function getVideoDownloadRecords(query: VideoDownloadRecordsQuery =
   }
 
   if (userId) {
-    conditions.push(ilike(videoDownloadRecords.userId, `%${userId}%`));
+    conditions.push(like(videoDownloadRecords.userId, `%${userId}%`));
   }
 
   if (search) {
     conditions.push(
       or(
-        ilike(videoDownloadRecords.url, `%${search}%`),
-        ilike(videoDownloadRecords.videoTitle, `%${search}%`),
-        ilike(videoDownloadRecords.videoAuthor, `%${search}%`),
+        like(videoDownloadRecords.url, `%${search}%`),
+        like(videoDownloadRecords.videoTitle, `%${search}%`),
+        like(videoDownloadRecords.videoAuthor, `%${search}%`),
       )
     );
   }
@@ -125,6 +126,7 @@ export async function getVideoDownloadRecords(query: VideoDownloadRecordsQuery =
  * 获取统计数据
  */
 export async function getVideoDownloadRecordsStats() {
+  const db = await getDb();
   await verifyAdminWithoutDb();
 
   const now = new Date();
@@ -161,6 +163,7 @@ export async function getVideoDownloadRecordsStats() {
  * 删除单条记录
  */
 export async function deleteVideoDownloadRecord(id: number) {
+  const db = await getDb();
   await verifyAdminWithoutDb();
 
   try {
@@ -176,6 +179,7 @@ export async function deleteVideoDownloadRecord(id: number) {
  * 批量删除记录
  */
 export async function deleteVideoDownloadRecords(ids: number[]) {
+  const db = await getDb();
   await verifyAdminWithoutDb();
 
   try {

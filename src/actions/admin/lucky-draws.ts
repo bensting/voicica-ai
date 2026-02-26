@@ -4,7 +4,7 @@
  * Admin Lucky Draw Server Actions
  * 管理抽奖实例的 CRUD 操作
  */
-import db from '@/lib/db';
+import { getDb } from '@/lib/db';
 import { luckyDrawInstances, luckyDrawEntries, luckyDrawResults, luckyDrawClaims } from '@/db/schema';
 import { eq, desc, asc, count } from 'drizzle-orm';
 import { verifyAdminWithoutDb } from '@/lib/auth-admin';
@@ -99,6 +99,7 @@ export interface AdminLuckyDrawDetail {
  * 列表查询，关联查询已售 slots 数量，按 createdAt DESC
  */
 export async function getAdminLuckyDraws(): Promise<AdminLuckyDraw[]> {
+  const db = await getDb();
   await verifyAdminWithoutDb();
 
   const draws = await db
@@ -142,6 +143,7 @@ export async function getAdminLuckyDraws(): Promise<AdminLuckyDraw[]> {
  * 创建抽奖实例，自动生成 drawId = `${productId}-${timestamp}`
  */
 export async function createLuckyDraw(data: CreateLuckyDrawInput): Promise<ActionResult> {
+  const db = await getDb();
   await verifyAdminWithoutDb();
 
   try {
@@ -185,6 +187,7 @@ export async function updateLuckyDraw(
   id: number,
   data: Partial<CreateLuckyDrawInput>,
 ): Promise<ActionResult> {
+  const db = await getDb();
   await verifyAdminWithoutDb();
 
   try {
@@ -217,6 +220,7 @@ export async function updateLuckyDraw(
  * 硬删除（仅允许删除无购买记录的实例）
  */
 export async function deleteLuckyDraw(id: number): Promise<ActionResult> {
+  const db = await getDb();
   await verifyAdminWithoutDb();
 
   try {
@@ -256,6 +260,7 @@ export async function deleteLuckyDraw(id: number): Promise<ActionResult> {
  * 快速切换 enabled 状态
  */
 export async function toggleLuckyDrawEnabled(id: number): Promise<ActionResult> {
+  const db = await getDb();
   await verifyAdminWithoutDb();
 
   try {
@@ -291,6 +296,7 @@ export async function toggleLuckyDrawEnabled(id: number): Promise<ActionResult> 
  * 查询抽奖详情：entries、开奖结果、领奖信息
  */
 export async function getAdminLuckyDrawDetail(drawId: string): Promise<AdminLuckyDrawDetail> {
+  const db = await getDb();
   await verifyAdminWithoutDb();
 
   const [entries, resultRows, claimRows] = await Promise.all([
@@ -368,6 +374,7 @@ export interface ShipClaimInput {
  * 标记发货：info_submitted → shipped
  */
 export async function updateClaimShipped(drawId: string, data: ShipClaimInput): Promise<ActionResult> {
+  const db = await getDb();
   await verifyAdminWithoutDb();
 
   try {
@@ -410,6 +417,7 @@ export async function updateClaimShipped(drawId: string, data: ShipClaimInput): 
  * 标记签收：shipped → delivered
  */
 export async function updateClaimDelivered(drawId: string): Promise<ActionResult> {
+  const db = await getDb();
   await verifyAdminWithoutDb();
 
   try {
@@ -449,6 +457,7 @@ export async function updateClaimDelivered(drawId: string): Promise<ActionResult
  * 手动开奖：仅允许对已满额但未开奖的实例操作
  */
 export async function adminTriggerDraw(drawId: string): Promise<ActionResult> {
+  const db = await getDb();
   await verifyAdminWithoutDb();
 
   try {

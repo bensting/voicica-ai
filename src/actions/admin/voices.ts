@@ -4,9 +4,9 @@
  * 语音管理 Server Actions
  * 从 Azure/Google TTS API 获取语音列表，同步到数据库
  */
-import db from '@/lib/db';
+import { getDb } from '@/lib/db';
 import { voices } from '@/db/schema';
-import { eq, and, or, ilike, ne, count, asc, sql, inArray } from 'drizzle-orm';
+import { eq, and, or, like, ne, count, asc, sql, inArray } from 'drizzle-orm';
 import { getLocaleInfo } from '@/utils/localeMapper';
 import { synthesizeSpeech as azureSynthesize } from '@/lib/services/azure-tts';
 import { synthesizeSpeech as googleSynthesize } from '@/lib/services/google-tts';
@@ -36,6 +36,7 @@ export async function startElevenlabsSampleGeneration(voiceId: number): Promise<
   voiceName?: string;
   error?: string;
 }> {
+  const db = await getDb();
   await verifyAdminWithoutDb();
 
   try {
@@ -116,6 +117,7 @@ export async function checkElevenlabsSampleStatus(
   voiceId: number,
   taskId: string
 ): Promise<SampleGenerationStatus> {
+  const db = await getDb();
   await verifyAdminWithoutDb();
 
   try {
@@ -313,6 +315,7 @@ function getCountryFromLocale(locale: string): string {
  * 获取所有语言区域及统计信息
  */
 export async function getVoiceStatsByLocale(): Promise<LocaleStats[]> {
+  const db = await getDb();
   await verifyAdminWithoutDb();
 
   try {
@@ -412,6 +415,7 @@ export async function getVoiceLocales(): Promise<string[]> {
  * 按 locale 同步语音（只插入，不更新）
  */
 export async function syncVoicesByLocale(locale: string): Promise<SyncResult> {
+  const db = await getDb();
   await verifyAdminWithoutDb();
 
   try {
@@ -514,6 +518,7 @@ function generateDiceBearUrl(voiceName: string, gender: string): string {
  * 只更新 avatar_url 为空的语音
  */
 export async function syncVoiceAvatars(): Promise<SyncResult> {
+  const db = await getDb();
   await verifyAdminWithoutDb();
 
   try {
@@ -564,6 +569,7 @@ export async function syncVoiceAvatars(): Promise<SyncResult> {
  * 强制重新生成所有语音的头像
  */
 export async function regenerateAllAvatars(): Promise<SyncResult> {
+  const db = await getDb();
   await verifyAdminWithoutDb();
 
   try {
@@ -616,6 +622,7 @@ export async function regenerateAllAvatars(): Promise<SyncResult> {
  * @param locale 可选，指定 locale 则只处理该 locale 的语音
  */
 async function generateVoiceSamplesCore(locale?: string): Promise<SyncResult> {
+  const db = await getDb();
   const label = locale || '全部';
   console.log(`🎤 开始生成 ${label} 的语音样本（支持多风格）...`);
 
@@ -773,6 +780,7 @@ export async function generateAllVoiceSamples(): Promise<SyncResult> {
  * @param voiceId 语音 ID
  */
 export async function generateVoiceSampleForVoice(voiceId: number): Promise<SyncResult> {
+  const db = await getDb();
   await verifyAdminWithoutDb();
 
   try {
@@ -902,6 +910,7 @@ export async function generateVoiceSampleForVoice(voiceId: number): Promise<Sync
  * 清空指定 locale 的语音样本
  */
 export async function clearVoiceSamples(locale: string): Promise<SyncResult> {
+  const db = await getDb();
   await verifyAdminWithoutDb();
 
   try {
@@ -973,6 +982,7 @@ export async function getAdminVoiceList(params: {
   pageSize: number;
   totalPages: number;
 }> {
+  const db = await getDb();
   await verifyAdminWithoutDb();
 
   const { page = 1, pageSize = 20, locale, gender, provider, isActive, search, styleCountMin, styleCountMax } = params;
@@ -985,8 +995,8 @@ export async function getAdminVoiceList(params: {
   if (search) {
     conditions.push(
       or(
-        ilike(voices.name, `%${search}%`),
-        ilike(voices.displayName, `%${search}%`),
+        like(voices.name, `%${search}%`),
+        like(voices.displayName, `%${search}%`),
       )
     );
   }
@@ -1076,6 +1086,7 @@ export async function updateVoiceStatus(
   voiceId: number,
   isActive: boolean
 ): Promise<{ success: boolean; message: string }> {
+  const db = await getDb();
   await verifyAdminWithoutDb();
 
   try {
@@ -1101,6 +1112,7 @@ export async function batchUpdateVoiceStatus(
   voiceIds: number[],
   isActive: boolean
 ): Promise<{ success: boolean; message: string; updated: number }> {
+  const db = await getDb();
   await verifyAdminWithoutDb();
 
   try {
@@ -1126,6 +1138,7 @@ export async function batchUpdateVoiceStatus(
  * 获取所有 locale 列表（用于筛选）
  */
 export async function getAdminVoiceLocales(): Promise<Array<{ code: string; name: string }>> {
+  const db = await getDb();
   await verifyAdminWithoutDb();
 
   const locales = await db.selectDistinct({ locale: voices.locale }).from(voices).orderBy(asc(voices.locale));
@@ -1160,6 +1173,7 @@ export async function getAdminVoiceById(voiceId: number): Promise<{
   sort_order: number;
   voice_sample_url: Record<string, string>;
 } | null> {
+  const db = await getDb();
   await verifyAdminWithoutDb();
 
   const [voice] = await db.select().from(voices).where(eq(voices.id, voiceId)).limit(1);
@@ -1199,6 +1213,7 @@ export async function updateVoice(
     avatar_url?: string;
   }
 ): Promise<{ success: boolean; message: string }> {
+  const db = await getDb();
   await verifyAdminWithoutDb();
 
   try {
@@ -1265,6 +1280,7 @@ export async function generateVoiceAvatarUploadUrl(
 }
 
 export async function updateAllVoices(): Promise<SyncResult> {
+  const db = await getDb();
   await verifyAdminWithoutDb();
 
   try {

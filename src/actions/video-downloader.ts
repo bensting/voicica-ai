@@ -15,7 +15,7 @@ import { detectVideoPlatform } from '@/lib/services/youtube-downloader';
 import { parseVideo, downloadVideoFormat } from '@/lib/services/youtube-parser';
 import { checkCredits, deductCredits } from '@/lib/credits';
 import { uploadVideo } from '@/lib/services/r2-storage';
-import db from '@/lib/db';
+import { getDb } from '@/lib/db';
 import { videoDownloadRecords } from '@/db/schema';
 
 // 视频格式信息
@@ -64,6 +64,7 @@ export interface ParseResult {
  * 解析视频 URL（支持 YouTube, TikTok, Instagram, Twitter/X, Facebook）
  */
 export async function parseVideoUrl(url: string): Promise<ParseResult> {
+  const db = await getDb();
   console.log('🎬 [parseVideoUrl] 开始解析视频');
 
   let userId = '';

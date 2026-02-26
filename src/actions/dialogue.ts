@@ -5,7 +5,7 @@
  * 使用 kie.ai 的 elevenlabs/text-to-dialogue-v3 API
  */
 import { getUserOrAnonymous } from '@/lib/auth-firebase';
-import db from '@/lib/db';
+import { getDb } from '@/lib/db';
 import { dialogueRecords } from '@/db/schema';
 import { eq, and, desc } from 'drizzle-orm';
 import { calculateDialogueCost } from '@/config/creditsCost';
@@ -94,6 +94,7 @@ function getCallbackUrl(): string {
 export async function createDialogueTask(
   request: DialogueRequest
 ): Promise<DialogueTaskStatus> {
+  const db = await getDb();
   const { user_id: userId, is_anonymous: isAnonymous } = await getUserOrAnonymous();
 
   // 计算总字符数
@@ -228,6 +229,7 @@ export async function createDialogueTask(
 export async function getDialogueTaskStatus(
   taskId: string
 ): Promise<DialogueTaskStatus> {
+  const db = await getDb();
   await getUserOrAnonymous();
 
   // 先从数据库获取记录
@@ -368,6 +370,7 @@ export interface DialogueRecord {
  * 根据 task_id 获取单条 Dialogue 记录
  */
 export async function getDialogueRecordByTaskId(taskId: string): Promise<DialogueRecord | null> {
+  const db = await getDb();
   const { user_id: userId } = await getUserOrAnonymous();
 
   const [record] = await db.select({
@@ -413,6 +416,7 @@ export async function getDialogueHistory(limit: number = 20): Promise<Array<{
   credits_cost: number;
   created_at: Date;
 }>> {
+  const db = await getDb();
   const { user_id: userId } = await getUserOrAnonymous();
 
   const records = await db.select({
@@ -442,6 +446,7 @@ export async function getDialogueHistory(limit: number = 20): Promise<Array<{
  * 获取用户的 Dialogue 记录列表（用于 My Creations）
  */
 export async function getDialogueRecords(limit: number = 20, offset: number = 0): Promise<DialogueRecord[]> {
+  const db = await getDb();
   const { user_id: userId } = await getUserOrAnonymous();
 
   const records = await db.select({
@@ -480,6 +485,7 @@ export async function getDialogueRecords(limit: number = 20, offset: number = 0)
  * 删除 Dialogue 记录
  */
 export async function deleteDialogueRecord(id: number): Promise<void> {
+  const db = await getDb();
   const { user_id: userId } = await getUserOrAnonymous();
 
   // 验证记录属于当前用户

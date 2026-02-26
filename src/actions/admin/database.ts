@@ -3,7 +3,7 @@
 /**
  * 数据库管理 Server Actions
  */
-import db from '@/lib/db';
+import { getDb } from '@/lib/db';
 import { users, voices, ttsRecords, userSubscriptions, creditHistory, anonymousUsers } from '@/db/schema';
 import { eq, count, sum, lt, sql } from 'drizzle-orm';
 import { verifyAdmin, verifyAdminWithoutDb } from '@/lib/auth-admin';
@@ -30,6 +30,7 @@ interface TableStats {
  * 获取数据库表统计信息
  */
 export async function getTableStats(): Promise<TableStats[]> {
+  const db = await getDb();
   await verifyAdmin();
 
   const [
@@ -59,6 +60,7 @@ export async function getTableStats(): Promise<TableStats[]> {
  * 从后端 API 同步语音数据
  */
 export async function syncVoicesFromApi(): Promise<SyncResult> {
+  const db = await getDb();
   await verifyAdmin();
 
   try {
@@ -176,6 +178,7 @@ export async function syncSubscriptionPlans(): Promise<SyncResult> {
  * 清理过期的匿名用户数据
  */
 export async function cleanupExpiredAnonymousUsers(): Promise<SyncResult> {
+  const db = await getDb();
   await verifyAdmin();
 
   try {
@@ -203,6 +206,7 @@ export async function cleanupExpiredAnonymousUsers(): Promise<SyncResult> {
  * 重新计算用户积分（基于积分历史）
  */
 export async function recalculateUserCredits(userId: string): Promise<SyncResult> {
+  const db = await getDb();
   await verifyAdmin();
 
   try {
@@ -341,12 +345,13 @@ export async function runDrizzleGenerate(): Promise<MigrationResult> {
  * 获取数据库连接状态
  */
 export async function checkDatabaseConnection(): Promise<MigrationResult> {
+  const db = await getDb();
   // 使用不依赖数据库的验证方式
   await verifyAdminWithoutDb();
 
   try {
     // 尝试执行一个简单查询来检查连接
-    await db.execute(sql`SELECT 1`);
+    await db.all(sql`SELECT 1`);
 
     return {
       success: true,

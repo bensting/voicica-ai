@@ -18,6 +18,7 @@ interface TtsQueueMessage {
 
 declare global {
   interface CloudflareEnv {
+    DB: D1Database;
     TTS_QUEUE: Queue<TtsQueueMessage>;
     QUEUE_CONSUMER_SECRET: string;
   }

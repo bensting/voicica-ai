@@ -7,7 +7,7 @@
  * 使用 WHERE 条件防止并发超扣。
  */
 
-import db from '@/lib/db';
+import { getDb } from '@/lib/db';
 import { users, creditHistory, conversions } from '@/db/schema';
 import { eq, sql, and, gte } from 'drizzle-orm';
 import { getCurrentUser } from '@/lib/auth-firebase';
@@ -28,6 +28,7 @@ export interface ConvertResult {
  * @param amount - 要兑换的 $VOICICA 数量
  */
 export async function convertVoicicaToUsdt(amount: number): Promise<ConvertResult> {
+  const db = await getDb();
   try {
     // 1. 必须登录
     const authUser = await getCurrentUser();
@@ -55,29 +56,26 @@ export async function convertVoicicaToUsdt(amount: number): Promise<ConvertResul
     const usdtReceived = amount * rate;
     const minRequired = amount + config.min_voicica_reserve;
 
-    const result = await db
+    const updateResult = await db
       .update(users)
       .set({
         credits: sql`${users.credits} - ${amount}`,
-        usdtBalance: sql`${users.usdtBalance}::numeric + ${usdtReceived}::numeric`,
+        usdtBalance: sql`CAST(CAST(${users.usdtBalance} AS REAL) + CAST(${usdtReceived} AS REAL) AS TEXT)`,
       })
       .where(
         and(
           eq(users.userId, authUser.uid),
           gte(users.credits, minRequired)
         )
-      )
-      .returning({
-        credits: users.credits,
-        usdtBalance: users.usdtBalance,
-      });
+      );
 
     // 5. affected rows = 0 → 余额不足
-    if (result.length === 0) {
+    if (updateResult.changes === 0) {
       return { success: false, error: 'insufficient_balance' };
     }
 
-    const updated = result[0];
+    const [updated] = await db.select({ credits: users.credits, usdtBalance: users.usdtBalance })
+      .from(users).where(eq(users.userId, authUser.uid)).limit(1);
 
     // 6. 写 credit_history（负值）
     await db.insert(creditHistory).values({

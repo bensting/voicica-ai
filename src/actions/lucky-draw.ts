@@ -16,7 +16,7 @@
  * - triggerDraw 使用 INSERT + catch unique violation 实现幂等
  */
 
-import db from '@/lib/db';
+import { getDb } from '@/lib/db';
 import { luckyDrawInstances, luckyDrawEntries, luckyDrawResults, luckyDrawClaims } from '@/db/schema';
 import { eq, and, sql, desc, count } from 'drizzle-orm';
 import { getCurrentUser } from '@/lib/auth-firebase';
@@ -141,6 +141,7 @@ export interface LuckyDrawHistoryRecord {
 
 /** 从 DB 获取 draw 实例 */
 async function getDrawInstance(drawId: string): Promise<DrawInstance | undefined> {
+  const db = await getDb();
   const [draw] = await db
     .select()
     .from(luckyDrawInstances)
@@ -164,6 +165,7 @@ function mergeProductInfo(draw: DrawInstance) {
 // ─── getActiveDraw — 获取当前活跃的抽奖 ───
 
 export async function getActiveDraw(): Promise<ActiveDrawInfo | null> {
+  const db = await getDb();
   // 1) 优先：selling + enabled
   const [selling] = await db
     .select()
@@ -219,6 +221,7 @@ export async function getActiveDraw(): Promise<ActiveDrawInfo | null> {
 // ─── getActiveDrawsForBanner — Banner 轮播用，每个 productId 最多一期（selling > completed）───
 
 export async function getActiveDrawsForBanner(): Promise<ActiveDrawInfo[]> {
+  const db = await getDb();
   const draws = await db
     .select()
     .from(luckyDrawInstances)
@@ -279,6 +282,7 @@ export async function getActiveDrawsForBanner(): Promise<ActiveDrawInfo[]> {
 // ─── getActiveDrawsByProduct — 获取各产品的活跃抽奖（FeatureGrid 用）───
 
 export async function getActiveDrawsByProduct(): Promise<ActiveDrawInfo[]> {
+  const db = await getDb();
   const draws = await db
     .select()
     .from(luckyDrawInstances)
@@ -332,6 +336,7 @@ export async function getActiveDrawsByProduct(): Promise<ActiveDrawInfo[]> {
 // ─── getLuckyDrawStatus ───
 
 export async function getLuckyDrawStatus(drawId: string): Promise<LuckyDrawStatusResult> {
+  const db = await getDb();
   const draw = await getDrawInstance(drawId);
   if (!draw) {
     throw new Error(`Lucky Draw not found: ${drawId}`);
@@ -483,6 +488,7 @@ export async function createLuckyDrawCheckout(
   successUrl: string,
   cancelUrl: string,
 ): Promise<{ checkout_url: string; session_id: string }> {
+  const db = await getDb();
   const user = await getCurrentUser();
   const userId = user.uid;
 
@@ -501,15 +507,18 @@ export async function createLuckyDrawCheckout(
   // ── Step 1: Atomic capacity reservation via row-level lock ──
   // UPDATE ... WHERE sold_count + packs <= total_slots
   // Two concurrent UPDATEs serialize on the row lock; the second sees the new sold_count.
-  const reserveResult = await db.execute(sql`
-    UPDATE lucky_draws
-    SET sold_count = sold_count + ${packs}
-    WHERE draw_id = ${drawId}
-      AND status = 'selling'
-      AND sold_count + ${packs} <= total_slots
-  `);
+  const reserveResult = await db
+    .update(luckyDrawInstances)
+    .set({ soldCount: sql`${luckyDrawInstances.soldCount} + ${packs}` })
+    .where(
+      and(
+        eq(luckyDrawInstances.drawId, drawId),
+        eq(luckyDrawInstances.status, 'selling'),
+        sql`${luckyDrawInstances.soldCount} + ${packs} <= ${luckyDrawInstances.totalSlots}`
+      )
+    );
 
-  if (reserveResult.rowCount === 0) {
+  if (reserveResult.changes === 0) {
     throw new Error('Not enough slots remaining');
   }
 
@@ -562,7 +571,7 @@ export async function createLuckyDrawCheckout(
     });
   } catch (stripeError) {
     // Rollback sold_count if Stripe session creation fails
-    await db.execute(sql`
+    await db.run(sql`
       UPDATE lucky_draws
       SET sold_count = sold_count - ${packs}
       WHERE draw_id = ${drawId}
@@ -572,7 +581,7 @@ export async function createLuckyDrawCheckout(
 
   if (!session.url) {
     // Rollback sold_count
-    await db.execute(sql`
+    await db.run(sql`
       UPDATE lucky_draws
       SET sold_count = sold_count - ${packs}
       WHERE draw_id = ${drawId}
@@ -587,20 +596,24 @@ export async function createLuckyDrawCheckout(
       const amountPerPack = draw.stripePriceCents;
       const currency = session.currency?.toUpperCase() ?? null;
 
-      await db.execute(sql`
+      await db.run(sql`
         INSERT INTO lucky_draw_entries
           (draw_id, user_id, slot_number, packs, credits_awarded, payment_platform, stripe_session_id, amount_paid, currency, status, created_at)
         SELECT
           ${drawId}, ${userId}, available_slot, 1, ${draw.creditsPerPurchase},
-          'stripe', ${session.id}, ${amountPerPack}, ${currency}, 'reserved', CURRENT_TIMESTAMP
+          'stripe', ${session.id}, ${amountPerPack}, ${currency}, 'reserved', datetime('now')
         FROM (
-          SELECT gs AS available_slot
-          FROM generate_series(0, ${draw.totalSlots - 1}) AS gs
+          WITH RECURSIVE slots(n) AS (
+            SELECT 0
+            UNION ALL
+            SELECT n + 1 FROM slots WHERE n < ${draw.totalSlots - 1}
+          )
+          SELECT n AS available_slot FROM slots
           WHERE NOT EXISTS (
             SELECT 1 FROM lucky_draw_entries
-            WHERE draw_id = ${drawId} AND slot_number = gs
+            WHERE draw_id = ${drawId} AND slot_number = n
           )
-          ORDER BY gs
+          ORDER BY n
           LIMIT ${packs}
         ) sub
       `);
@@ -609,7 +622,7 @@ export async function createLuckyDrawCheckout(
       const isUniqueViolation = e instanceof Error && e.message.includes('uq_lde_draw_slot');
       if (!isUniqueViolation || attempt === MAX_RETRIES - 1) {
         // Rollback: release sold_count and expire Stripe session
-        await db.execute(sql`
+        await db.run(sql`
           UPDATE lucky_draws
           SET sold_count = sold_count - ${packs}
           WHERE draw_id = ${drawId}
@@ -634,6 +647,7 @@ export async function createLuckyDrawCheckout(
 // ─── cancelLuckyDrawCheckout (user cancelled / navigated back from Stripe) ───
 
 export async function cancelLuckyDrawCheckout(sessionId: string): Promise<void> {
+  const db = await getDb();
   // 1) Retrieve the session to check its status
   let session: CheckoutSession;
   try {
@@ -671,14 +685,14 @@ export async function cancelLuckyDrawCheckout(sessionId: string): Promise<void> 
   const reservedCount = reservedResult?.count ?? 0;
   if (reservedCount === 0) return;
 
-  await db.execute(sql`
+  await db.run(sql`
     DELETE FROM lucky_draw_entries
     WHERE draw_id = ${drawId}
       AND stripe_session_id = ${sessionId}
       AND status = 'reserved'
   `);
 
-  await db.execute(sql`
+  await db.run(sql`
     UPDATE lucky_draws
     SET sold_count = sold_count - ${reservedCount}
     WHERE draw_id = ${drawId}
@@ -694,6 +708,7 @@ export async function handleLuckyDrawPurchase(
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   eventId: string,
 ): Promise<void> {
+  const db = await getDb();
   const metadata = session.metadata || {};
   const drawId = metadata.draw_id;
   const userId = metadata.user_id;
@@ -737,7 +752,7 @@ export async function handleLuckyDrawPurchase(
   }
 
   // Confirm reserved → paid
-  await db.execute(sql`
+  await db.run(sql`
     UPDATE lucky_draw_entries
     SET status = 'paid'
     WHERE draw_id = ${drawId}
@@ -795,6 +810,7 @@ export async function handleLuckyDrawPurchase(
 export async function handleLuckyDrawSessionExpired(
   session: CheckoutSession,
 ): Promise<void> {
+  const db = await getDb();
   const metadata = session.metadata || {};
   const drawId = metadata.draw_id;
 
@@ -821,7 +837,7 @@ export async function handleLuckyDrawSessionExpired(
   }
 
   // Delete reserved entries (frees slot numbers for future use)
-  await db.execute(sql`
+  await db.run(sql`
     DELETE FROM lucky_draw_entries
     WHERE draw_id = ${drawId}
       AND stripe_session_id = ${session.id}
@@ -829,7 +845,7 @@ export async function handleLuckyDrawSessionExpired(
   `);
 
   // Release capacity on the draw counter
-  await db.execute(sql`
+  await db.run(sql`
     UPDATE lucky_draws
     SET sold_count = sold_count - ${reservedCount}
     WHERE draw_id = ${drawId}
@@ -841,6 +857,7 @@ export async function handleLuckyDrawSessionExpired(
 // ─── triggerDraw (idempotent via unique constraint) ───
 
 export async function triggerDraw(drawId: string): Promise<void> {
+  const db = await getDb();
   const draw = await getDrawInstance(drawId);
   if (!draw) {
     throw new Error(`Lucky Draw not found: ${drawId}`);
@@ -936,6 +953,7 @@ export async function submitPrizeClaim(
   drawId: string,
   claimInfo: ClaimInfoInput,
 ): Promise<void> {
+  const db = await getDb();
   const user = await getCurrentUser();
   const userId = user.uid;
 
@@ -982,6 +1000,7 @@ export async function submitPrizeClaim(
 // ─── getUserLuckyDrawHistory ───
 
 export async function getUserLuckyDrawHistory(): Promise<LuckyDrawHistoryRecord[]> {
+  const db = await getDb();
   const user = await getCurrentUser();
   const userId = user.uid;
 

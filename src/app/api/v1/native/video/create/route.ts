@@ -6,7 +6,7 @@
  */
 import { NextRequest, NextResponse } from 'next/server';
 import { v4 as uuidv4 } from 'uuid';
-import db from '@/lib/db';
+import { getDb } from '@/lib/db';
 import { videoRecords, taskQueue, users, anonymousUsers, creditHistory } from '@/db/schema';
 import { eq, sql } from 'drizzle-orm';
 import { getUserOrAnonymous } from '@/lib/auth-firebase';
@@ -53,6 +53,7 @@ function parseDuration(duration: string): number {
 }
 
 export async function POST(req: NextRequest) {
+  const db = await getDb();
   try {
     // 1. 获取用户身份
     const { user_id, is_anonymous } = await getUserOrAnonymous();

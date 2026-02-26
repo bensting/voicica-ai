@@ -5,7 +5,7 @@
  *
  * 使用 React cache() 在同一请求内去重数据库查询
  */
-import db from '@/lib/db';
+import { getDb } from '@/lib/db';
 import { users, anonymousUsers, creditHistory, userEvents } from '@/db/schema';
 import { eq, and, desc, count } from 'drizzle-orm';
 import { cache } from 'react';
@@ -33,6 +33,7 @@ async function checkAndResetMonthlyCredits(userId: string): Promise<{
   wasReset: boolean;
   monthlyCredits: number;
 }> {
+  const db = await getDb();
   const firstDayOfMonth = getFirstDayOfMonth();
 
   const [user] = await db
@@ -78,6 +79,7 @@ async function checkAndResetMonthlyCredits(userId: string): Promise<{
 // 同一次请求内，相同 userId 只查一次数据库
 
 const getCachedAnonymousUser = cache(async (userId: string) => {
+  const db = await getDb();
   const [row] = await db
     .select()
     .from(anonymousUsers)
@@ -95,6 +97,7 @@ const getCachedAnonymousUser = cache(async (userId: string) => {
  * @param platform - 可选，用户注册时的平台 (web, mobile-web, android, android-apk, ios)
  */
 export async function getCurrentUserProfile(platform?: string): Promise<UserProfile> {
+  const db = await getDb();
   const authUser = await getCurrentUser();
 
   // 查找或创建用户
@@ -177,6 +180,7 @@ export async function updateUserProfile(data: {
   photo_url?: string;
   phone?: string;
 }): Promise<UserProfile> {
+  const db = await getDb();
   const authUser = await getCurrentUser();
 
   console.log(`🔄 [User] 更新用户资料: ${authUser.uid}`, data);
@@ -241,6 +245,7 @@ export async function uploadAvatar(formData: FormData): Promise<{
   message?: string;
   url?: string;
 }> {
+  const db = await getDb();
   try {
     const authUser = await getCurrentUser();
     const file = formData.get('file') as File;
@@ -306,6 +311,7 @@ export async function uploadAvatar(formData: FormData): Promise<{
  * 获取用户积分（仅积分信息）
  */
 export async function getUserCredits(): Promise<{ credits: number; total_used: number }> {
+  const db = await getDb();
   const authUser = await getCurrentUser();
 
   const [user] = await db
@@ -329,6 +335,7 @@ export async function getUserCredits(): Promise<{ credits: number; total_used: n
  * 使用 React cache() 在同一请求内去重
  */
 export async function getUnifiedUserProfile(): Promise<UserProfile> {
+  const db = await getDb();
   const unifiedUser = await getUserOrAnonymous();
 
   if (unifiedUser.is_anonymous) {
@@ -391,6 +398,7 @@ export async function getUnifiedUserProfile(): Promise<UserProfile> {
  * 包含懒加载当月积分重置逻辑
  */
 export async function getUnifiedCredits(): Promise<CreditsInfo> {
+  const db = await getDb();
   const unifiedUser = await getUserOrAnonymous();
 
   if (unifiedUser.is_anonymous) {
@@ -446,6 +454,7 @@ export async function getCreditHistory(
   pageSize: number = 20,
   productType?: string
 ): Promise<CreditHistoryResponse> {
+  const db = await getDb();
   const authUser = await getCurrentUser();
 
   const conditions = [eq(creditHistory.userId, authUser.uid)];
@@ -501,6 +510,7 @@ export async function trackUserEvent(
   event: string,
   data?: Record<string, unknown> | null
 ): Promise<{ success: boolean }> {
+  const db = await getDb();
   try {
     const authUser = await getCurrentUser();
 

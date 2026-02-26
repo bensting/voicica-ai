@@ -4,7 +4,7 @@
  * Music 模块 Server Actions
  * 使用 KIE API (Suno) 生成音乐
  */
-import db from '@/lib/db';
+import { getDb } from '@/lib/db';
 import { musicRecords, anonymousUsers, users, creditHistory } from '@/db/schema';
 import { eq, and, desc, isNotNull, sql } from 'drizzle-orm';
 import { getUserOrAnonymous } from '@/lib/auth-firebase';
@@ -113,6 +113,7 @@ function getCallbackUrl(): string {
  * 创建音乐生成任务
  */
 export async function createMusicTask(request: MusicGenerationRequest): Promise<MusicTaskStatus> {
+  const db = await getDb();
   console.log('🎵 [createMusicTask] 开始创建音乐任务');
 
   try {
@@ -425,6 +426,7 @@ async function queryKieTaskStatus(externalTaskId: string): Promise<{
  * 任务创建后 30 分钟内会直接查询 KIE API 获取最新状态（不完全依赖回调）
  */
 export async function getMusicTaskStatus(taskId: string): Promise<MusicTaskStatus> {
+  const db = await getDb();
   const [record] = await db.select().from(musicRecords).where(eq(musicRecords.taskId, taskId)).limit(1);
 
   if (!record) {
@@ -711,6 +713,7 @@ export async function getMusicTaskStatus(taskId: string): Promise<MusicTaskStatu
  * 获取用户音乐历史记录
  */
 export async function getMusicRecords(limit: number = 20, offset: number = 0): Promise<MusicRecord[]> {
+  const db = await getDb();
   const unifiedUser = await getUserOrAnonymous();
   const userId = unifiedUser.user_id;
 
@@ -752,6 +755,7 @@ export async function getMusicRecords(limit: number = 20, offset: number = 0): P
  * 删除音乐记录
  */
 export async function deleteMusicRecord(recordId: number): Promise<void> {
+  const db = await getDb();
   const unifiedUser = await getUserOrAnonymous();
   const userId = unifiedUser.user_id;
 
@@ -774,6 +778,7 @@ export async function deleteMusicRecord(recordId: number): Promise<void> {
  * 根据 taskId 获取单条音乐记录
  */
 export async function getMusicRecordByTaskId(taskId: string): Promise<MusicRecord | null> {
+  const db = await getDb();
   try {
     const unifiedUser = await getUserOrAnonymous();
     const userId = unifiedUser.user_id;
@@ -842,6 +847,7 @@ export interface PublicMusicRecord {
  * 获取公开的音乐记录（用于 Explore 页面）
  */
 export async function getPublicMusicRecords(limit: number = 20): Promise<PublicMusicRecord[]> {
+  const db = await getDb();
   const records = await db.select({
     id: musicRecords.id,
     taskId: musicRecords.taskId,

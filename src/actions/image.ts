@@ -4,7 +4,7 @@
  * Image 模块 Server Actions
  * 使用 KIE API 生成图片
  */
-import db from '@/lib/db';
+import { getDb } from '@/lib/db';
 import { imageRecords } from '@/db/schema';
 import { eq, and, desc } from 'drizzle-orm';
 import { getUserOrAnonymous } from '@/lib/auth-firebase';
@@ -44,6 +44,7 @@ export interface CreateImageTaskResult {
 export async function createImageTask(
   params: CreateImageTaskParams
 ): Promise<CreateImageTaskResult> {
+  const db = await getDb();
   try {
     // 验证用户身份
     const { user_id, is_anonymous } = await getUserOrAnonymous();
@@ -198,6 +199,7 @@ export interface ImageTaskStatus {
  * 获取图片任务状态
  */
 export async function getImageTaskStatus(taskId: string): Promise<ImageTaskStatus> {
+  const db = await getDb();
   try {
     // 使用 GET /jobs/recordInfo 端点查询任务状态
     const response = await fetch(`${KIE_API_BASE}/jobs/recordInfo?taskId=${taskId}`, {
@@ -309,6 +311,7 @@ export interface ImageRecord {
  * 获取用户的图片记录列表
  */
 export async function getImageRecords(limit: number = 20, offset: number = 0): Promise<ImageRecord[]> {
+  const db = await getDb();
   try {
     const { user_id } = await getUserOrAnonymous();
     if (!user_id) {
@@ -348,6 +351,7 @@ export async function getImageRecords(limit: number = 20, offset: number = 0): P
  * 删除图片记录
  */
 export async function deleteImageRecord(id: number): Promise<boolean> {
+  const db = await getDb();
   try {
     const { user_id } = await getUserOrAnonymous();
     if (!user_id) {
@@ -368,6 +372,7 @@ export async function deleteImageRecord(id: number): Promise<boolean> {
  * 根据 taskId 获取单条图片记录
  */
 export async function getImageRecordByTaskId(taskId: string): Promise<ImageRecord | null> {
+  const db = await getDb();
   try {
     const { user_id } = await getUserOrAnonymous();
     if (!user_id) {

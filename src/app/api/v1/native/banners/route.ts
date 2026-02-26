@@ -4,11 +4,12 @@
  * GET /api/v1/native/banners - 获取启用的 Banner 列表（公开）
  */
 import { NextResponse } from 'next/server';
-import db from '@/lib/db';
+import { getDb } from '@/lib/db';
 import { nativeBanners } from '@/db/schema';
 import { eq, asc } from 'drizzle-orm';
 
 export async function GET() {
+  const db = await getDb();
   try {
     const banners = await db.select()
       .from(nativeBanners)

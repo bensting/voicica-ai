@@ -7,7 +7,7 @@
  * 对于 KIE 后端的任务，会主动查询 KIE API 获取最新状态（和 Music 相同的模式）
  */
 import { NextRequest, NextResponse } from 'next/server';
-import db from '@/lib/db';
+import { getDb } from '@/lib/db';
 import { videoRecords, taskQueue } from '@/db/schema';
 import { eq, and } from 'drizzle-orm';
 import { getUserOrAnonymous } from '@/lib/auth-firebase';
@@ -48,6 +48,7 @@ export async function GET(
   req: NextRequest,
   { params }: { params: Promise<{ taskId: string }> }
 ) {
+  const db = await getDb();
   try {
     // 1. 获取用户身份
     const { user_id } = await getUserOrAnonymous();

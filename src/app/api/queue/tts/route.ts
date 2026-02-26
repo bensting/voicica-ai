@@ -5,7 +5,7 @@
  * 支持 Azure、Google 和 Fish Audio TTS 服务
  */
 import { NextRequest, NextResponse } from 'next/server';
-import db from '@/lib/db';
+import { getDb } from '@/lib/db';
 import { ttsRecords, taskQueue, voices } from '@/db/schema';
 import { eq, and } from 'drizzle-orm';
 import { synthesizeSpeech as azureSynthesize } from '@/lib/services/azure-tts';
@@ -21,6 +21,7 @@ export const maxDuration = 300;
 
 // 处理函数（不带签名验证，用于开发环境）
 async function handleTTSTask(req: NextRequest) {
+  const db = await getDb();
   const payload: TtsQueuePayload = await req.json();
   const { taskId, userId, text, voiceName, language, style, speed, pitch, volume, creditsCost, isAnonymous } = payload;
 

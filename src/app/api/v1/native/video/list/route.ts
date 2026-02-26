@@ -5,12 +5,13 @@
  * 获取用户的视频列表
  */
 import { NextRequest, NextResponse } from 'next/server';
-import db from '@/lib/db';
+import { getDb } from '@/lib/db';
 import { videoRecords } from '@/db/schema';
 import { eq, desc, count } from 'drizzle-orm';
 import { getUserOrAnonymous } from '@/lib/auth-firebase';
 
 export async function GET(req: NextRequest) {
+  const db = await getDb();
   try {
     // 1. 获取用户身份
     const { user_id } = await getUserOrAnonymous();

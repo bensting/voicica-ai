@@ -5,7 +5,7 @@
  * 更新视频的公开/私有状态
  */
 import { NextRequest, NextResponse } from 'next/server';
-import db from '@/lib/db';
+import { getDb } from '@/lib/db';
 import { videoRecords } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 import { getUserOrAnonymous } from '@/lib/auth-firebase';
@@ -18,6 +18,7 @@ export async function PATCH(
   req: NextRequest,
   { params }: { params: Promise<{ taskId: string }> }
 ) {
+  const db = await getDb();
   try {
     // 1. 获取用户身份
     const { user_id } = await getUserOrAnonymous();

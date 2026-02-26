@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import db from '@/lib/db';
+import { getDb } from '@/lib/db';
 import { userSubscriptions, subscriptionHistory } from '@/db/schema';
 import { eq, and, desc } from 'drizzle-orm';
 import { getCreditTierByProductId } from '@/config/subscription';
@@ -39,6 +39,7 @@ async function recordSubscriptionHistory(params: {
   creditsChange?: number;
   metadata?: object;
 }) {
+  const db = await getDb();
   try {
     await db.insert(subscriptionHistory).values({
       subscriptionId: params.subscriptionId,
@@ -69,6 +70,7 @@ async function recordSubscriptionHistory(params: {
  * 用户完成支付后触发
  */
 async function handleCheckoutCompleted(session: CheckoutSession, eventId: string) {
+  const db = await getDb();
   console.log('💳 处理 checkout.session.completed:', session.id);
 
   const metadata = session.metadata || {};
@@ -206,6 +208,7 @@ async function handleCheckoutCompleted(session: CheckoutSession, eventId: string
  * 订阅续费成功后触发
  */
 async function handleInvoicePaid(invoice: Invoice, eventId: string) {
+  const db = await getDb();
   console.log('💰 处理 invoice.paid:', invoice.id, 'billing_reason:', invoice.billing_reason);
 
   // 只处理续费发票，初次订阅由 checkout.session.completed 处理
@@ -299,6 +302,7 @@ async function handleInvoicePaid(invoice: Invoice, eventId: string) {
  * 处理 customer.subscription.updated 事件
  */
 async function handleSubscriptionUpdated(stripeSubscription: Subscription, eventId: string) {
+  const db = await getDb();
   console.log('🔄 处理 customer.subscription.updated:', stripeSubscription.id);
 
   const [subscription] = await db.select().from(userSubscriptions)
@@ -373,6 +377,7 @@ async function handleSubscriptionUpdated(stripeSubscription: Subscription, event
  * 处理 customer.subscription.deleted 事件
  */
 async function handleSubscriptionDeleted(stripeSubscription: Subscription, eventId: string) {
+  const db = await getDb();
   console.log('❌ 处理 customer.subscription.deleted:', stripeSubscription.id);
 
   // 先用 external_subscription_id 查找

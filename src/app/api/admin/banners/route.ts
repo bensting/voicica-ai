@@ -5,13 +5,14 @@
  * POST /api/admin/banners - 创建新 Banner
  */
 import { NextRequest, NextResponse } from 'next/server';
-import db from '@/lib/db';
+import { getDb } from '@/lib/db';
 import { nativeBanners } from '@/db/schema';
 import { asc, desc } from 'drizzle-orm';
 import { verifyAdmin } from '@/lib/auth-admin';
 
 // 获取所有 Banner
 export async function GET() {
+  const db = await getDb();
   try {
     await verifyAdmin();
 
@@ -45,6 +46,7 @@ export async function GET() {
 
 // 创建新 Banner
 export async function POST(request: NextRequest) {
+  const db = await getDb();
   try {
     await verifyAdmin();
 

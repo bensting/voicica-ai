@@ -3,9 +3,9 @@
 /**
  * 提现管理 Server Actions
  */
-import db from '@/lib/db';
+import { getDb } from '@/lib/db';
 import { withdrawals, users } from '@/db/schema';
-import { eq, and, or, ilike, desc, count, gte, lte, sql } from 'drizzle-orm';
+import { eq, and, or, like, desc, count, gte, lte, sql } from 'drizzle-orm';
 import { verifyAdminWithoutDb } from '@/lib/auth-admin';
 
 interface WithdrawalsQuery {
@@ -38,6 +38,7 @@ export interface AdminWithdrawalItem {
  * 获取提现列表
  */
 export async function getAdminWithdrawals(query: WithdrawalsQuery = {}) {
+  const db = await getDb();
   await verifyAdminWithoutDb();
 
   const {
@@ -58,9 +59,9 @@ export async function getAdminWithdrawals(query: WithdrawalsQuery = {}) {
   if (search) {
     conditions.push(
       or(
-        ilike(withdrawals.userId, `%${search}%`),
-        ilike(withdrawals.walletAddress, `%${search}%`),
-        ilike(withdrawals.email, `%${search}%`),
+        like(withdrawals.userId, `%${search}%`),
+        like(withdrawals.walletAddress, `%${search}%`),
+        like(withdrawals.email, `%${search}%`),
       )
     );
   }
@@ -113,6 +114,7 @@ export async function getAdminWithdrawals(query: WithdrawalsQuery = {}) {
  * 获取提现统计
  */
 export async function getWithdrawalStats() {
+  const db = await getDb();
   await verifyAdminWithoutDb();
 
   const [[{ total }], [{ pending }], [{ transferring }], [{ completed }], [{ rejected }], [{ totalAmount }]] = await Promise.all([
@@ -138,6 +140,7 @@ export async function getWithdrawalStats() {
  * 开始转账（pending → transferring）
  */
 export async function startTransfer(id: number) {
+  const db = await getDb();
   await verifyAdminWithoutDb();
 
   try {
@@ -160,6 +163,7 @@ export async function startTransfer(id: number) {
  * 完成转账（transferring → completed）
  */
 export async function completeTransfer(id: number, txHash: string) {
+  const db = await getDb();
   await verifyAdminWithoutDb();
 
   try {
@@ -184,6 +188,7 @@ export async function completeTransfer(id: number, txHash: string) {
  * 拒绝提现 + 退款到 USDT 余额（pending / transferring 均可拒绝）
  */
 export async function rejectWithdrawal(id: number, adminNote: string) {
+  const db = await getDb();
   await verifyAdminWithoutDb();
 
   try {

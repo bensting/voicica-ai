@@ -3,9 +3,9 @@
 /**
  * Dialogue 记录管理 Server Actions
  */
-import db from '@/lib/db';
+import { getDb } from '@/lib/db';
 import { dialogueRecords } from '@/db/schema';
-import { eq, and, or, ilike, desc, count, sum, gte, lte, inArray } from 'drizzle-orm';
+import { eq, and, or, like, desc, count, sum, gte, lte, inArray } from 'drizzle-orm';
 import { verifyAdminWithoutDb } from '@/lib/auth-admin';
 
 /**
@@ -47,6 +47,7 @@ export interface DialogueRecordItem {
  * 获取 Dialogue 记录列表
  */
 export async function getDialogueRecords(query: DialogueRecordsQuery = {}) {
+  const db = await getDb();
   await verifyAdminWithoutDb();
 
   const {
@@ -67,14 +68,14 @@ export async function getDialogueRecords(query: DialogueRecordsQuery = {}) {
   }
 
   if (userId) {
-    conditions.push(ilike(dialogueRecords.userId, `%${userId}%`));
+    conditions.push(like(dialogueRecords.userId, `%${userId}%`));
   }
 
   if (search) {
     conditions.push(
       or(
-        ilike(dialogueRecords.dialogueJson, `%${search}%`),
-        ilike(dialogueRecords.taskId, `%${search}%`),
+        like(dialogueRecords.dialogueJson, `%${search}%`),
+        like(dialogueRecords.taskId, `%${search}%`),
       )
     );
   }
@@ -132,6 +133,7 @@ export async function getDialogueRecords(query: DialogueRecordsQuery = {}) {
  * 获取 Dialogue 记录统计
  */
 export async function getDialogueRecordsStats() {
+  const db = await getDb();
   await verifyAdminWithoutDb();
 
   const now = new Date();
@@ -174,6 +176,7 @@ export async function getDialogueRecordsStats() {
  * 删除 Dialogue 记录
  */
 export async function deleteDialogueRecord(id: number) {
+  const db = await getDb();
   await verifyAdminWithoutDb();
 
   try {
@@ -189,6 +192,7 @@ export async function deleteDialogueRecord(id: number) {
  * 批量删除 Dialogue 记录
  */
 export async function deleteDialogueRecords(ids: number[]) {
+  const db = await getDb();
   await verifyAdminWithoutDb();
 
   try {
@@ -208,6 +212,7 @@ export async function deleteDialogueRecords(ids: number[]) {
  * 更新 Dialogue 记录公开状态
  */
 export async function updateDialogueRecordPublic(id: number, isPublic: boolean) {
+  const db = await getDb();
   await verifyAdminWithoutDb();
 
   try {
@@ -223,6 +228,7 @@ export async function updateDialogueRecordPublic(id: number, isPublic: boolean) 
  * 批量更新 Dialogue 记录公开状态
  */
 export async function updateDialogueRecordsPublic(ids: number[], isPublic: boolean) {
+  const db = await getDb();
   await verifyAdminWithoutDb();
 
   try {

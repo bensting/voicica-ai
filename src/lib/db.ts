@@ -1,8 +1,8 @@
-import { neon } from '@neondatabase/serverless';
-import { drizzle } from 'drizzle-orm/neon-http';
+import { drizzle } from 'drizzle-orm/d1';
+import { getCloudflareContext } from '@opennextjs/cloudflare';
 import * as schema from '@/db/schema';
 
-const sql = neon(process.env.DATABASE_URL!);
-const db = drizzle(sql, { schema });
-
-export default db;
+export async function getDb() {
+  const { env } = await getCloudflareContext();
+  return drizzle(env.DB, { schema });
+}

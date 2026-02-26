@@ -1,6 +1,6 @@
 'use server';
 
-import db from '@/lib/db';
+import { getDb } from '@/lib/db';
 import { userEvents } from '@/db/schema';
 import { eq, and, sql } from 'drizzle-orm';
 import { getUserOrAnonymous } from '@/lib/auth-firebase';
@@ -32,6 +32,7 @@ interface ReportResult {
  * - 同用户同内容只记录一次
  */
 export async function reportContent(params: ReportContentParams): Promise<ReportResult> {
+  const db = await getDb();
   try {
     const { contentType, contentId, reason } = params;
     const eventName = `report_${contentType}`;

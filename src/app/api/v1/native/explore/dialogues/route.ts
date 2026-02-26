@@ -5,7 +5,7 @@
  * 获取公开 Dialogue 对话列表（无需登录）
  */
 import { NextRequest, NextResponse } from 'next/server';
-import db from '@/lib/db';
+import { getDb } from '@/lib/db';
 import { dialogueRecords, users } from '@/db/schema';
 import { and, eq, desc, isNotNull, count, inArray } from 'drizzle-orm';
 
@@ -42,6 +42,7 @@ function parseDialogueSummary(dialogueJson: string): { speakerNames: string[]; p
 }
 
 export async function GET(req: NextRequest) {
+  const db = await getDb();
   try {
     const { searchParams } = new URL(req.url);
     const page = parseInt(searchParams.get('page') || '1', 10);

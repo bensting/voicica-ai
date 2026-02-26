@@ -4,7 +4,7 @@
  * Image Tools Server Actions
  * BG Remove & HD Upscale - 使用 KIE API (Recraft 模型)
  */
-import db from '@/lib/db';
+import { getDb } from '@/lib/db';
 import { imageToolRecords } from '@/db/schema';
 import { eq, and } from 'drizzle-orm';
 import { getUserOrAnonymous } from '@/lib/auth-firebase';
@@ -49,6 +49,7 @@ export async function createImageToolTask(
   toolType: ImageToolType,
   imageBase64: string
 ): Promise<{ success: boolean; taskId?: string; error?: string }> {
+  const db = await getDb();
   try {
     // 验证用户身份（匿名也可用）
     const { user_id, is_anonymous } = await getUserOrAnonymous();
@@ -146,6 +147,7 @@ export async function createImageToolTask(
  * 3. 使用乐观锁防止和 webhook 竞争
  */
 export async function getImageToolTaskStatus(taskId: string): Promise<ImageToolTaskStatus> {
+  const db = await getDb();
   try {
     // 先查 DB 记录
     const [record] = await db.select().from(imageToolRecords)

@@ -1,6 +1,6 @@
 'use server';
 
-import db from '@/lib/db';
+import { getDb } from '@/lib/db';
 import { users, referralCommissions, creditHistory } from '@/db/schema';
 import { eq, and, sql, count, sum } from 'drizzle-orm';
 import { getCurrentUser } from '@/lib/auth-firebase';
@@ -23,6 +23,7 @@ function generateCode(length: number): string {
  * 生成唯一邀请码（查库去重）
  */
 export async function generateUniqueCode(): Promise<string> {
+  const db = await getDb();
   const config = getReferralConfig();
   for (let i = 0; i < 10; i++) {
     const code = generateCode(config.code_length);
@@ -41,6 +42,7 @@ export async function generateUniqueCode(): Promise<string> {
  * 检测循环推荐：从 referrerId 沿推荐链向上查找，看是否会遇到 targetUserId
  */
 export async function hasCircularReferral(referrerId: string, targetUserId: string): Promise<boolean> {
+  const db = await getDb();
   let currentId: string | null = referrerId;
   const visited = new Set<string>();
 
@@ -89,6 +91,7 @@ export interface ReferralInfo {
  * 如果用户没有邀请码，惰性生成
  */
 export async function getMyReferralInfo(): Promise<ReferralInfo | null> {
+  const db = await getDb();
   try {
     const authUser = await getCurrentUser();
     const userId = authUser.uid;
@@ -126,7 +129,7 @@ export async function getMyReferralInfo(): Promise<ReferralInfo | null> {
     }
 
     // 团队分层统计（单个递归 CTE 同时获取 L1/L2/L3+ 人数）
-    const teamBreakdownResult = await db.execute<{ l1: string; l2: string; l3_plus: string }>(sql`
+    const teamBreakdownRows = await db.all<{ l1: string; l2: string; l3_plus: string }>(sql`
       WITH RECURSIVE team AS (
         SELECT user_id, 1 as depth FROM users WHERE referred_by = ${userId}
         UNION ALL
@@ -135,14 +138,14 @@ export async function getMyReferralInfo(): Promise<ReferralInfo | null> {
         WHERE t.depth < 10
       )
       SELECT
-        COUNT(*) FILTER (WHERE depth = 1)::text AS l1,
-        COUNT(*) FILTER (WHERE depth = 2)::text AS l2,
-        COUNT(*) FILTER (WHERE depth >= 3)::text AS l3_plus
+        CAST(SUM(CASE WHEN depth = 1 THEN 1 ELSE 0 END) AS TEXT) AS l1,
+        CAST(SUM(CASE WHEN depth = 2 THEN 1 ELSE 0 END) AS TEXT) AS l2,
+        CAST(SUM(CASE WHEN depth >= 3 THEN 1 ELSE 0 END) AS TEXT) AS l3_plus
       FROM team
     `);
-    const l1 = Number(teamBreakdownResult.rows[0]?.l1 ?? 0);
-    const l2 = Number(teamBreakdownResult.rows[0]?.l2 ?? 0);
-    const l3Plus = Number(teamBreakdownResult.rows[0]?.l3_plus ?? 0);
+    const l1 = Number(teamBreakdownRows[0]?.l1 ?? 0);
+    const l2 = Number(teamBreakdownRows[0]?.l2 ?? 0);
+    const l3Plus = Number(teamBreakdownRows[0]?.l3_plus ?? 0);
     const directReferrals = l1;
     const teamMembers = l1 + l2 + l3Plus;
 
@@ -234,6 +237,7 @@ export async function getReferralTeam(
   page: number = 1,
   pageSize: number = 20
 ): Promise<{ items: ReferralTeamMember[]; total: number; hasMore: boolean }> {
+  const db = await getDb();
   try {
     const authUser = await getCurrentUser();
     const userId = authUser.uid;
@@ -266,7 +270,7 @@ export async function getReferralTeam(
     const memberIds = referrals.map(r => r.userId);
     const subTeamCounts: Record<string, number> = {};
     if (memberIds.length > 0) {
-      const subTeamResult = await db.execute<{ root_id: string; cnt: string }>(sql`
+      const subTeamRows = await db.all<{ root_id: string; cnt: string }>(sql`
         WITH RECURSIVE sub_team AS (
           SELECT referred_by AS root_id, user_id
           FROM users
@@ -276,9 +280,9 @@ export async function getReferralTeam(
           FROM users u
           INNER JOIN sub_team st ON u.referred_by = st.user_id
         )
-        SELECT root_id, COUNT(*)::text AS cnt FROM sub_team GROUP BY root_id
+        SELECT root_id, CAST(COUNT(*) AS TEXT) AS cnt FROM sub_team GROUP BY root_id
       `);
-      for (const row of subTeamResult.rows) {
+      for (const row of subTeamRows) {
         subTeamCounts[row.root_id] = Number(row.cnt);
       }
     }
@@ -286,13 +290,13 @@ export async function getReferralTeam(
     // 批量获取累计贡献提成
     const contribMap: Record<string, number> = {};
     if (memberIds.length > 0) {
-      const contribResult = await db.execute<{ from_user_id: string; total: string }>(sql`
-        SELECT from_user_id, SUM(commission_amount)::text AS total
+      const contribRows = await db.all<{ from_user_id: string; total: string }>(sql`
+        SELECT from_user_id, CAST(SUM(commission_amount) AS TEXT) AS total
         FROM referral_commissions
         WHERE user_id = ${userId} AND from_user_id IN (${sql.join(memberIds.map(id => sql`${id}`), sql`, `)})
         GROUP BY from_user_id
       `);
-      for (const row of contribResult.rows) {
+      for (const row of contribRows) {
         contribMap[row.from_user_id] = Number(row.total);
       }
     }
@@ -331,6 +335,7 @@ export async function getReferralTeam(
  * 4c. 处理推荐码绑定
  */
 export async function processReferralCode(code: string): Promise<{ success: boolean; message?: string }> {
+  const db = await getDb();
   try {
     const config = getReferralConfig();
     if (!config.enabled) {
@@ -393,6 +398,7 @@ export async function processReferralCode(code: string): Promise<{ success: bool
  * 4d. 检查并升级用户等级
  */
 export async function checkAndUpgradeLevel(userId: string): Promise<void> {
+  const db = await getDb();
   try {
     const config = getReferralConfig();
 
@@ -480,6 +486,7 @@ export async function distributeReferralCommissions(
   userId: string,
   amount: number
 ): Promise<void> {
+  const db = await getDb();
   const config = getReferralConfig();
   if (!config.enabled || amount <= 0) return;
 

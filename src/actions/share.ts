@@ -5,7 +5,7 @@
  * 支持生成和访问带有效期的分享链接
  */
 import { nanoid } from 'nanoid';
-import db from '@/lib/db';
+import { getDb } from '@/lib/db';
 import { shareLinks, musicRecords, dialogueRecords } from '@/db/schema';
 import { eq, and, gt, desc, sql } from 'drizzle-orm';
 import { getUserOrAnonymous } from '@/lib/auth-firebase';
@@ -24,6 +24,7 @@ export async function createShareLink(
   resourceType: ShareResourceType,
   resourceId: string
 ): Promise<{ token: string; url: string; expiresAt: Date }> {
+  const db = await getDb();
   const { user_id: userId } = await getUserOrAnonymous();
 
   // 检查是否已有未过期的分享链接
@@ -113,6 +114,7 @@ export async function getSharedContent(token: string): Promise<{
   expired: boolean;
   notFound: boolean;
 }> {
+  const db = await getDb();
   // 查找分享链接
   const [shareLink] = await db
     .select()
@@ -198,6 +200,7 @@ export async function getUserShareLinks(limit: number = 50): Promise<Array<{
   expires_at: Date;
   created_at: Date;
 }>> {
+  const db = await getDb();
   const { user_id: userId } = await getUserOrAnonymous();
 
   const links = await db
@@ -225,6 +228,7 @@ export async function getUserShareLinks(limit: number = 50): Promise<Array<{
  * 删除分享链接
  */
 export async function deleteShareLink(token: string): Promise<boolean> {
+  const db = await getDb();
   const { user_id: userId } = await getUserOrAnonymous();
 
   const [link] = await db

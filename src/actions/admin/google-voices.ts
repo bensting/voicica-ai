@@ -3,7 +3,7 @@
 /**
  * Google TTS 语音同步 Server Actions
  */
-import db from '@/lib/db';
+import { getDb } from '@/lib/db';
 import { voices } from '@/db/schema';
 import { eq, and, or, count, sql } from 'drizzle-orm';
 import { verifyAdminWithoutDb } from '@/lib/auth-admin';
@@ -204,6 +204,7 @@ function buildTags(name: string, sampleRate: number): string[] {
  * 获取所有语言区域及统计信息（Google）
  */
 export async function getGoogleVoiceStatsByLocale(): Promise<LocaleStats[]> {
+  const db = await getDb();
   await verifyAdminWithoutDb();
 
   try {
@@ -307,6 +308,7 @@ function buildGoogleVoiceName(locale: string, voiceName: string): string {
  * 按 locale 同步 Google 语音（只插入，不更新）
  */
 export async function syncGoogleVoicesByLocale(locale: string): Promise<SyncResult> {
+  const db = await getDb();
   await verifyAdminWithoutDb();
 
   try {
@@ -451,6 +453,7 @@ function parseGoogleVoiceNameFromDb(dbName: string): string {
  * 更新所有 Google 语音数据
  */
 export async function updateAllGoogleVoices(): Promise<SyncResult> {
+  const db = await getDb();
   await verifyAdminWithoutDb();
 
   try {
@@ -569,6 +572,7 @@ export async function getGoogleVoicesByLocale(locale: string): Promise<{
  * 按 locale 生成语音样例（只为没有样例的语音生成）
  */
 export async function syncGoogleVoiceSamplesByLocale(locale: string): Promise<SyncResult> {
+  const db = await getDb();
   await verifyAdminWithoutDb();
 
   try {
@@ -586,8 +590,8 @@ export async function syncGoogleVoiceSamplesByLocale(locale: string): Promise<Sy
         eq(voices.locale, dbLocale),
         or(
           sql`voice_sample_url IS NULL`,
-          sql`voice_sample_url::text = 'null'`,
-          sql`voice_sample_url::text = '{}'`,
+          sql`CAST(voice_sample_url AS TEXT) = 'null'`,
+          sql`CAST(voice_sample_url AS TEXT) = '{}'`,
         ),
       )
     );
@@ -655,6 +659,7 @@ export async function syncGoogleVoiceSamplesByLocale(locale: string): Promise<Sy
  * 按 locale 生成头像（只更新空头像）
  */
 export async function syncGoogleVoiceAvatarsByLocale(locale: string): Promise<SyncResult> {
+  const db = await getDb();
   await verifyAdminWithoutDb();
 
   try {
@@ -710,6 +715,7 @@ export async function syncGoogleVoiceAvatarsByLocale(locale: string): Promise<Sy
  * 同步 Google 语音头像（使用 DiceBear）
  */
 export async function syncGoogleVoiceAvatars(): Promise<SyncResult> {
+  const db = await getDb();
   await verifyAdminWithoutDb();
 
   try {
@@ -766,6 +772,7 @@ export async function syncGoogleVoiceAvatars(): Promise<SyncResult> {
  * 重新生成所有 Google 语音头像
  */
 export async function regenerateAllGoogleAvatars(): Promise<SyncResult> {
+  const db = await getDb();
   await verifyAdminWithoutDb();
 
   try {

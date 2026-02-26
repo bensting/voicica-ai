@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import db from '@/lib/db';
+import { getDb } from '@/lib/db';
 import { videoRecords, taskQueue } from '@/db/schema';
 import { eq, and } from 'drizzle-orm';
 import { uploadVideo } from '@/lib/services/r2-storage';
@@ -56,6 +56,7 @@ async function downloadAndUploadVideoToR2(
 }
 
 export async function POST(request: NextRequest) {
+  const db = await getDb();
   try {
     const payload: KieVideoCallbackPayload = await request.json();
 

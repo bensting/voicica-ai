@@ -3,7 +3,7 @@
 /**
  * TTS 模块 Server Actions
  */
-import db from '@/lib/db';
+import { getDb } from '@/lib/db';
 import { ttsRecords, voices, taskQueue, anonymousUsers, users, storyParagraphs, stories } from '@/db/schema';
 import { eq, and, desc, count, gte, lte, inArray, sql } from 'drizzle-orm';
 import { getUserOrAnonymous } from '@/lib/auth-firebase';
@@ -140,6 +140,7 @@ function mapRoleToVoiceType(role: string): 'standard' | 'professional' | 'celebr
  * @param voiceName 语音名称
  */
 async function calculateCreditsCost(text: string, voiceName: string): Promise<number> {
+  const db = await getDb();
   // 查询语音的 role 来确定计费类型
   const [voice] = await db.select({ role: voices.role }).from(voices).where(eq(voices.name, voiceName)).limit(1);
 
@@ -158,6 +159,7 @@ async function calculateCreditsCost(text: string, voiceName: string): Promise<nu
  * 返回任务 ID，实际处理由后台 Worker 完成
  */
 export async function createTtsTask(request: TtsRequest): Promise<TtsTaskStatus> {
+  const db = await getDb();
   console.log('🎤 [createTtsTask] 开始创建 TTS 任务');
 
   try {
@@ -277,6 +279,7 @@ export async function createTtsTask(request: TtsRequest): Promise<TtsTaskStatus>
  * 查询 TTS 任务状态
  */
 export async function getTtsTaskStatus(taskId: string): Promise<TtsTaskStatus> {
+  const db = await getDb();
   const [record] = await db.select().from(ttsRecords).where(eq(ttsRecords.taskId, taskId)).limit(1);
 
   if (!record) {
@@ -337,6 +340,7 @@ export async function getTtsTaskStatus(taskId: string): Promise<TtsTaskStatus> {
  * 获取用户 TTS 历史记录
  */
 export async function getTtsRecords(limit: number = 20, offset: number = 0): Promise<TtsRecord[]> {
+  const db = await getDb();
   const unifiedUser = await getUserOrAnonymous();
   const userId = unifiedUser.user_id;
 
@@ -435,6 +439,7 @@ export async function queryTtsRecords(params: {
   page?: number;
   page_size?: number;
 }): Promise<TtsRecordsQueryResponse> {
+  const db = await getDb();
   const unifiedUser = await getUserOrAnonymous();
   const userId = unifiedUser.user_id;
 
@@ -537,6 +542,7 @@ export async function queryTtsRecords(params: {
  * 根据记录 ID 获取单条 TTS 记录
  */
 export async function getTtsRecordById(recordId: number): Promise<TtsRecord> {
+  const db = await getDb();
   const unifiedUser = await getUserOrAnonymous();
   const userId = unifiedUser.user_id;
 
@@ -594,6 +600,7 @@ export async function getTtsRecordById(recordId: number): Promise<TtsRecord> {
  * 删除单个 TTS 记录
  */
 export async function deleteTtsRecord(recordId: string): Promise<void> {
+  const db = await getDb();
   const unifiedUser = await getUserOrAnonymous();
   const userId = unifiedUser.user_id;
 
@@ -624,6 +631,7 @@ export async function deleteTtsRecord(recordId: string): Promise<void> {
  * 批量删除 TTS 记录
  */
 export async function batchDeleteTtsRecords(recordIds: string[]): Promise<{ deleted: number; failed: number }> {
+  const db = await getDb();
   const unifiedUser = await getUserOrAnonymous();
   const userId = unifiedUser.user_id;
 
@@ -660,6 +668,7 @@ export async function batchDeleteTtsRecords(recordIds: string[]): Promise<{ dele
  * 根据 task_id 获取 TTS 记录
  */
 export async function getTtsRecordByTaskId(taskId: string): Promise<TtsRecord> {
+  const db = await getDb();
   const unifiedUser = await getUserOrAnonymous();
   const userId = unifiedUser.user_id;
 
@@ -747,6 +756,7 @@ export async function checkAndHandleStuckTask(
   message: string;
   record: TtsRecord;
 }> {
+  const db = await getDb();
   const unifiedUser = await getUserOrAnonymous();
   const userId = unifiedUser.user_id;
 
@@ -917,6 +927,7 @@ export async function updateParagraphAudio(params: {
   audioDuration: number;
   voiceName: string;
 }): Promise<{ success: boolean; error?: string }> {
+  const db = await getDb();
   console.log('🎤 [updateParagraphAudio] 更新段落音频:', params.paragraphId);
 
   try {
@@ -966,6 +977,7 @@ export async function updateParagraphAudio(params: {
  * 只返回必要的公开信息，不包含用户 ID 等敏感数据
  */
 export async function getSharedTtsRecord(shareId: string): Promise<SharedTtsRecord | null> {
+  const db = await getDb();
   // 根据 share_id 查询记录
   const [record] = await db.select().from(ttsRecords).where(eq(ttsRecords.shareId, shareId)).limit(1);
 

@@ -3,9 +3,9 @@
 /**
  * TTS 记录管理 Server Actions
  */
-import db from '@/lib/db';
+import { getDb } from '@/lib/db';
 import { ttsRecords } from '@/db/schema';
-import { eq, and, or, ilike, desc, count, sum, gte, lte, inArray } from 'drizzle-orm';
+import { eq, and, or, like, desc, count, sum, gte, lte, inArray } from 'drizzle-orm';
 import { verifyAdminWithoutDb } from '@/lib/auth-admin';
 
 /**
@@ -56,6 +56,7 @@ export interface TtsRecordItem {
  * 获取 TTS 记录列表
  */
 export async function getTtsRecords(query: TtsRecordsQuery = {}) {
+  const db = await getDb();
   await verifyAdminWithoutDb();
 
   const {
@@ -78,15 +79,15 @@ export async function getTtsRecords(query: TtsRecordsQuery = {}) {
   }
 
   if (userId) {
-    conditions.push(ilike(ttsRecords.userId, `%${userId}%`));
+    conditions.push(like(ttsRecords.userId, `%${userId}%`));
   }
 
   if (search) {
     conditions.push(
       or(
-        ilike(ttsRecords.text, `%${search}%`),
-        ilike(ttsRecords.voiceName, `%${search}%`),
-        ilike(ttsRecords.taskId, `%${search}%`),
+        like(ttsRecords.text, `%${search}%`),
+        like(ttsRecords.voiceName, `%${search}%`),
+        like(ttsRecords.taskId, `%${search}%`),
       )
     );
   }
@@ -156,6 +157,7 @@ export async function getTtsRecords(query: TtsRecordsQuery = {}) {
  * 获取 TTS 记录统计
  */
 export async function getTtsRecordsStats() {
+  const db = await getDb();
   await verifyAdminWithoutDb();
 
   const now = new Date();
@@ -198,6 +200,7 @@ export async function getTtsRecordsStats() {
  * 删除 TTS 记录
  */
 export async function deleteTtsRecord(id: number) {
+  const db = await getDb();
   await verifyAdminWithoutDb();
 
   try {
@@ -217,6 +220,7 @@ export async function deleteTtsRecord(id: number) {
  * 批量删除 TTS 记录
  */
 export async function deleteTtsRecords(ids: number[]) {
+  const db = await getDb();
   await verifyAdminWithoutDb();
 
   try {
@@ -240,6 +244,7 @@ export async function deleteTtsRecords(ids: number[]) {
  * 获取 TTS 记录详情
  */
 export async function getTtsRecordDetail(id: number) {
+  const db = await getDb();
   await verifyAdminWithoutDb();
 
   const [record] = await db.select().from(ttsRecords).where(eq(ttsRecords.id, id)).limit(1);
@@ -278,6 +283,7 @@ export async function getTtsRecordDetail(id: number) {
  * 更新 TTS 记录的公开状态
  */
 export async function updateTtsRecordPublic(id: number, isPublic: boolean) {
+  const db = await getDb();
   await verifyAdminWithoutDb();
 
   try {
@@ -297,6 +303,7 @@ export async function updateTtsRecordPublic(id: number, isPublic: boolean) {
  * 批量更新 TTS 记录的公开状态
  */
 export async function updateTtsRecordsPublic(ids: number[], isPublic: boolean) {
+  const db = await getDb();
   await verifyAdminWithoutDb();
 
   try {

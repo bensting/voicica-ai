@@ -7,7 +7,7 @@
  * 使用 WHERE 条件防止并发超扣。
  */
 
-import db from '@/lib/db';
+import { getDb } from '@/lib/db';
 import { users, withdrawals } from '@/db/schema';
 import { eq, sql, and } from 'drizzle-orm';
 import { getCurrentUser } from '@/lib/auth-firebase';
@@ -31,6 +31,7 @@ export interface WithdrawalInput {
  * 提交 USDT 提现申请
  */
 export async function submitWithdrawal(input: WithdrawalInput): Promise<WithdrawalResult> {
+  const db = await getDb();
   try {
     // 1. 必须登录
     const authUser = await getCurrentUser();
@@ -81,24 +82,23 @@ export async function submitWithdrawal(input: WithdrawalInput): Promise<Withdraw
     const result = await db
       .update(users)
       .set({
-        usdtBalance: sql`${users.usdtBalance}::numeric - ${amount}::numeric`,
+        usdtBalance: sql`CAST(CAST(${users.usdtBalance} AS REAL) - CAST(${amount} AS REAL) AS TEXT)`,
       })
       .where(
         and(
           eq(users.userId, authUser.uid),
-          sql`${users.usdtBalance}::numeric >= ${amount}::numeric`
+          sql`CAST(${users.usdtBalance} AS REAL) >= CAST(${amount} AS REAL)`
         )
-      )
-      .returning({
-        usdtBalance: users.usdtBalance,
-      });
+      );
 
     // 8. affected rows = 0 → 余额不足
-    if (result.length === 0) {
+    if (result.changes === 0) {
       return { success: false, error: 'insufficient_balance' };
     }
 
-    const updated = result[0];
+    // Re-fetch updated balance
+    const [updated] = await db.select({ usdtBalance: users.usdtBalance })
+      .from(users).where(eq(users.userId, authUser.uid)).limit(1);
 
     // 9. 写 withdrawals 记录
     await db.insert(withdrawals).values({

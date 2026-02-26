@@ -3,7 +3,7 @@
 /**
  * 订阅模块 Server Actions
  */
-import db from '@/lib/db';
+import { getDb } from '@/lib/db';
 import { userSubscriptions } from '@/db/schema';
 import { eq, and, gte, desc } from 'drizzle-orm';
 import { getUserOrAnonymous } from '@/lib/auth-firebase';
@@ -75,6 +75,7 @@ export async function getMySubscriptions(params?: {
   product_type?: string;
   platform?: string;
 }): Promise<UserSubscriptionListResponse> {
+  const db = await getDb();
   const { user_id: userId } = await getUserOrAnonymous();
 
   const { status, product_type, platform } = params || {};
@@ -155,6 +156,7 @@ export async function getMySubscriptions(params?: {
  * 获取当前用户的活跃订阅
  */
 export async function getMyActiveSubscription(): Promise<UserSubscription | null> {
+  const db = await getDb();
   const { user_id: userId } = await getUserOrAnonymous();
 
   const now = new Date();
@@ -212,6 +214,7 @@ export async function cancelSubscription(
   subscription_id: string;
   canceled_at: string;
 }> {
+  const db = await getDb();
   const { user_id: userId } = await getUserOrAnonymous();
 
   // 查找订阅

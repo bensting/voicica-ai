@@ -3,7 +3,7 @@
 /**
  * 管理后台统计 Server Actions
  */
-import db from '@/lib/db';
+import { getDb } from '@/lib/db';
 import { users, anonymousUsers } from '@/db/schema';
 import { count, gte, sql } from 'drizzle-orm';
 import { verifyAdminWithoutDb } from '@/lib/auth-admin';
@@ -63,6 +63,7 @@ interface StatsResult {
  * 获取统计数据
  */
 export async function getAdminStats(timeRange: TimeRange): Promise<StatsResult> {
+  const db = await getDb();
   await verifyAdminWithoutDb();
 
   // 计算时间范围
@@ -87,21 +88,22 @@ export async function getAdminStats(timeRange: TimeRange): Promise<StatsResult> 
 
   // 通用任务统计查询函数 (using raw SQL for table name interpolation)
   const getTaskStats = async (tableName: string) => {
+    const db = await getDb();
     const [total, newCount, success, failure, processing, daily] = await Promise.all([
-      db.execute<{ count: string }>(sql.raw(`SELECT COUNT(*) as count FROM ${tableName}`)),
-      db.execute<{ count: string }>(sql`SELECT COUNT(*) as count FROM ${sql.raw(tableName)} WHERE created_at >= ${startDateStr}`),
-      db.execute<{ count: string }>(sql`SELECT COUNT(*) as count FROM ${sql.raw(tableName)} WHERE created_at >= ${startDateStr} AND status = 'SUCCESS'`),
-      db.execute<{ count: string }>(sql`SELECT COUNT(*) as count FROM ${sql.raw(tableName)} WHERE created_at >= ${startDateStr} AND status = 'FAILURE'`),
-      db.execute<{ count: string }>(sql`SELECT COUNT(*) as count FROM ${sql.raw(tableName)} WHERE created_at >= ${startDateStr} AND status = 'PROCESSING'`),
-      db.execute<{ date: string; count: string }>(sql`SELECT DATE(created_at) as date, COUNT(*) as count FROM ${sql.raw(tableName)} WHERE created_at >= ${startDateStr} GROUP BY DATE(created_at) ORDER BY date ASC`),
+      db.all<{ count: string }>(sql.raw(`SELECT COUNT(*) as count FROM ${tableName}`)),
+      db.all<{ count: string }>(sql`SELECT COUNT(*) as count FROM ${sql.raw(tableName)} WHERE created_at >= ${startDateStr}`),
+      db.all<{ count: string }>(sql`SELECT COUNT(*) as count FROM ${sql.raw(tableName)} WHERE created_at >= ${startDateStr} AND status = 'SUCCESS'`),
+      db.all<{ count: string }>(sql`SELECT COUNT(*) as count FROM ${sql.raw(tableName)} WHERE created_at >= ${startDateStr} AND status = 'FAILURE'`),
+      db.all<{ count: string }>(sql`SELECT COUNT(*) as count FROM ${sql.raw(tableName)} WHERE created_at >= ${startDateStr} AND status = 'PROCESSING'`),
+      db.all<{ date: string; count: string }>(sql`SELECT DATE(created_at) as date, COUNT(*) as count FROM ${sql.raw(tableName)} WHERE created_at >= ${startDateStr} GROUP BY DATE(created_at) ORDER BY date ASC`),
     ]);
     return {
-      total: Number(total.rows[0]?.count || 0),
-      newInRange: Number(newCount.rows[0]?.count || 0),
-      successCount: Number(success.rows[0]?.count || 0),
-      failureCount: Number(failure.rows[0]?.count || 0),
-      processingCount: Number(processing.rows[0]?.count || 0),
-      daily: daily.rows,
+      total: Number(total[0]?.count || 0),
+      newInRange: Number(newCount[0]?.count || 0),
+      successCount: Number(success[0]?.count || 0),
+      failureCount: Number(failure[0]?.count || 0),
+      processingCount: Number(processing[0]?.count || 0),
+      daily,
     };
   };
 
@@ -132,7 +134,7 @@ export async function getAdminStats(timeRange: TimeRange): Promise<StatsResult> 
     db.select({ total: count() }).from(users).where(gte(users.createdAt, startDateStr)),
     db.select({ total: count() }).from(anonymousUsers).where(gte(anonymousUsers.createdAt, startDateStr)),
     // 每日明细 - 注册用户
-    db.execute<{ date: string; count: string }>(sql`
+    db.all<{ date: string; count: string }>(sql`
       SELECT DATE(created_at) as date, COUNT(*) as count
       FROM users
       WHERE created_at >= ${startDateStr}
@@ -140,7 +142,7 @@ export async function getAdminStats(timeRange: TimeRange): Promise<StatsResult> 
       ORDER BY date ASC
     `),
     // 每日明细 - 匿名用户
-    db.execute<{ date: string; count: string }>(sql`
+    db.all<{ date: string; count: string }>(sql`
       SELECT DATE(created_at) as date, COUNT(*) as count
       FROM anonymous_users
       WHERE created_at >= ${startDateStr}
@@ -180,12 +182,12 @@ export async function getAdminStats(timeRange: TimeRange): Promise<StatsResult> 
       registered: {
         total: Number(registeredTotal),
         newInRange: Number(registeredNew),
-        daily: formatDailyData(registeredDailyResult.rows),
+        daily: formatDailyData(registeredDailyResult),
       },
       anonymous: {
         total: Number(anonymousTotal),
         newInRange: Number(anonymousNew),
-        daily: formatDailyData(anonymousDailyResult.rows),
+        daily: formatDailyData(anonymousDailyResult),
       },
     },
     tasks: {

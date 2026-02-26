@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import db from '@/lib/db';
+import { getDb } from '@/lib/db';
 import { imageRecords } from '@/db/schema';
 import { eq, and } from 'drizzle-orm';
 import { uploadImage } from '@/lib/services/r2-storage';
@@ -58,6 +58,7 @@ async function downloadAndUploadImageToR2(
 }
 
 export async function POST(request: NextRequest) {
+  const db = await getDb();
   try {
     const payload: KieImageCallbackPayload = await request.json();
 

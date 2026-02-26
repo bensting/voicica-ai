@@ -4,7 +4,7 @@
  * App Releases 管理 Server Actions
  * 管理 Android APK 和 iOS 应用版本发布
  */
-import db from '@/lib/db';
+import { getDb } from '@/lib/db';
 import { appReleases } from '@/db/schema';
 import { eq, and, asc, desc, sql } from 'drizzle-orm';
 import { uploadApk, deleteApk, generateApkUploadUrl } from '@/lib/services/r2-storage';
@@ -38,6 +38,7 @@ export async function getAppReleases(params?: {
   platform?: string;
   isActive?: boolean;
 }): Promise<AppRelease[]> {
+  const db = await getDb();
   await verifyAdminWithoutDb();
 
   const conditions = [];
@@ -63,6 +64,7 @@ export async function getLatestRelease(platform: string): Promise<{
   releaseNotes: string | null;
   isForceUpdate: boolean;
 } | null> {
+  const db = await getDb();
   const [release] = await db.select({
     version: appReleases.version,
     versionCode: appReleases.versionCode,
@@ -98,6 +100,7 @@ export async function checkAppUpdate(
   downloadUrl: string;
   releaseNotes: string | null;
 } | null> {
+  const db = await getDb();
   try {
     const [latest] = await db.select({
       version: appReleases.version,
@@ -137,6 +140,7 @@ export async function checkAppUpdate(
  * 上传新版本 APK
  */
 export async function uploadAppRelease(formData: FormData): Promise<ActionResult & { release?: AppRelease }> {
+  const db = await getDb();
   await verifyAdminWithoutDb();
 
   try {
@@ -214,6 +218,7 @@ export async function updateAppRelease(
     is_active?: boolean;
   }
 ): Promise<ActionResult> {
+  const db = await getDb();
   await verifyAdminWithoutDb();
 
   try {
@@ -237,6 +242,7 @@ export async function updateAppRelease(
  * 设置为最新版本
  */
 export async function setLatestRelease(id: number): Promise<ActionResult> {
+  const db = await getDb();
   await verifyAdminWithoutDb();
 
   try {
@@ -268,6 +274,7 @@ export async function setLatestRelease(id: number): Promise<ActionResult> {
  * 删除版本
  */
 export async function deleteAppRelease(id: number): Promise<ActionResult> {
+  const db = await getDb();
   await verifyAdminWithoutDb();
 
   try {
@@ -300,6 +307,7 @@ export async function deleteAppRelease(id: number): Promise<ActionResult> {
  * 增加下载计数（公开接口）
  */
 export async function incrementDownloadCount(id: number): Promise<void> {
+  const db = await getDb();
   try {
     await db.update(appReleases).set({
       downloadCount: sql`${appReleases.downloadCount} + 1`,
@@ -316,6 +324,7 @@ export async function incrementDownloadCountByVersion(
   platform: string,
   version: string
 ): Promise<void> {
+  const db = await getDb();
   try {
     await db.update(appReleases).set({
       downloadCount: sql`${appReleases.downloadCount} + 1`,
@@ -342,6 +351,7 @@ export async function getApkUploadUrl(params: {
     key?: string;
   }
 > {
+  const db = await getDb();
   await verifyAdminWithoutDb();
 
   try {
@@ -393,6 +403,7 @@ export async function saveAppReleaseMetadata(params: {
   isForceUpdate?: boolean;
   setAsLatest?: boolean;
 }): Promise<ActionResult & { release?: AppRelease }> {
+  const db = await getDb();
   await verifyAdminWithoutDb();
 
   try {

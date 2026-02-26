@@ -131,11 +131,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
 
     if (user) {
       console.log('👤 认证完成，获取用户数据...');
-      // 延迟一小段时间确保 cookie 已设置
-      const timer = setTimeout(() => {
-        fetchProfile();
-      }, 100);
-      return () => clearTimeout(timer);
+      fetchProfile();
     } else {
       console.log('👤 认证完成，用户未登录');
       setProfile(null);

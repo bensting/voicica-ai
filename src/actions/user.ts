@@ -15,66 +15,6 @@ import { v4 as uuidv4 } from 'uuid';
 import type { UserProfile, CreditsInfo, CreditHistoryResponse } from '@/types/user';
 import { generateUniqueCode } from '@/actions/referral';
 
-// ==================== 积分工具函数 ====================
-
-/**
- * 获取本月1号的日期（用于判断是否需要重置当月积分）
- */
-function getFirstDayOfMonth(): Date {
-  const now = new Date();
-  return new Date(now.getFullYear(), now.getMonth(), 1, 0, 0, 0, 0);
-}
-
-/**
- * 检查并重置当月积分（懒加载方式）
- * 如果上次重置时间早于本月1号，则重置 monthly_credits 为 0
- */
-async function checkAndResetMonthlyCredits(userId: string): Promise<{
-  wasReset: boolean;
-  monthlyCredits: number;
-}> {
-  const db = await getDb();
-  const firstDayOfMonth = getFirstDayOfMonth();
-
-  const [user] = await db
-    .select({ monthlyCredits: users.monthlyCredits, monthlyCreditsResetAt: users.monthlyCreditsResetAt })
-    .from(users)
-    .where(eq(users.userId, userId))
-    .limit(1);
-
-  if (!user) {
-    return { wasReset: false, monthlyCredits: 0 };
-  }
-
-  // 如果从未重置过，或上次重置在本月1号之前，需要重置
-  const needsReset = !user.monthlyCreditsResetAt ||
-    new Date(user.monthlyCreditsResetAt) < firstDayOfMonth;
-
-  if (needsReset && user.monthlyCredits > 0) {
-    // 重置当月积分（永久积分 credits 不受影响）
-    await db
-      .update(users)
-      .set({
-        monthlyCredits: 0,
-        monthlyCreditsResetAt: new Date().toISOString(),
-      })
-      .where(eq(users.userId, userId));
-
-    console.log(`🔄 [Credits] 用户 ${userId} 当月积分已重置: ${user.monthlyCredits} -> 0`);
-    return { wasReset: true, monthlyCredits: 0 };
-  }
-
-  // 如果没有积分需要重置，只更新重置时间
-  if (needsReset) {
-    await db
-      .update(users)
-      .set({ monthlyCreditsResetAt: new Date().toISOString() })
-      .where(eq(users.userId, userId));
-  }
-
-  return { wasReset: false, monthlyCredits: user.monthlyCredits };
-}
-
 // ==================== 请求级缓存 ====================
 // 同一次请求内，相同 userId 只查一次数据库
 
@@ -128,31 +68,29 @@ export async function getCurrentUserProfile(platform?: string): Promise<UserProf
     user = newUser;
     console.log(`新用户注册: ${authUser.uid}, 平台: ${platform || '未知'}, 邀请码: ${referralCode}`);
   } else {
+    // 收集需要更新的字段，合并为一次 UPDATE
+    const patchData: Record<string, unknown> = {};
+
     // 补填 platform（老用户可能为空）
     if (!user.platform && platform) {
-      await db.update(users).set({ platform }).where(eq(users.userId, authUser.uid));
-      user = { ...user, platform };
+      patchData.platform = platform;
     }
 
     // 补生成邀请码（历史用户可能没有）
     if (!user.referralCode) {
       const code = await generateUniqueCode();
-      await db.update(users).set({ referralCode: code }).where(eq(users.userId, authUser.uid));
-      user = { ...user, referralCode: code };
+      patchData.referralCode = code;
       console.log(`🔗 [Referral] 为历史用户生成邀请码: ${authUser.uid} -> ${code}`);
     }
 
-    // 检查并重置当月积分（懒加载）
-    const { wasReset } = await checkAndResetMonthlyCredits(authUser.uid);
-    if (wasReset) {
-      // 重新获取更新后的用户数据
-      const [refreshedUser] = await db
-        .select()
-        .from(users)
-        .where(eq(users.userId, authUser.uid))
-        .limit(1);
-      if (!refreshedUser) throw new Error('用户不存在');
-      user = refreshedUser;
+    // 只在有变化时才执行 UPDATE
+    if (Object.keys(patchData).length > 0) {
+      await db
+        .update(users)
+        .set(patchData)
+        .where(eq(users.userId, authUser.uid));
+      // 合并到本地对象，避免重新 SELECT
+      user = { ...user, ...patchData } as typeof user;
     }
   }
 
@@ -362,10 +300,7 @@ export async function getUnifiedUserProfile(): Promise<UserProfile> {
       expires_at: anonUser.expiresAt || null,
     };
   } else {
-    // 正式用户：先检查当月积分重置
-    await checkAndResetMonthlyCredits(unifiedUser.user_id);
-
-    // 重新获取用户数据（不使用缓存，确保拿到最新数据）
+    // 正式用户
     const [user] = await db
       .select()
       .from(users)
@@ -395,7 +330,6 @@ export async function getUnifiedUserProfile(): Promise<UserProfile> {
 
 /**
  * 获取积分余额（统一接口，支持正式用户和匿名用户）
- * 包含懒加载当月积分重置逻辑
  */
 export async function getUnifiedCredits(): Promise<CreditsInfo> {
   const db = await getDb();
@@ -409,7 +343,6 @@ export async function getUnifiedCredits(): Promise<CreditsInfo> {
       throw new Error('匿名用户不存在');
     }
 
-    // 匿名用户没有每日任务，全部算作永久积分
     return {
       credits: anonUser.credits,
       monthly_credits: 0,
@@ -418,10 +351,7 @@ export async function getUnifiedCredits(): Promise<CreditsInfo> {
       expires_at: anonUser.expiresAt || null,
     };
   } else {
-    // 正式用户：先检查当月积分重置
-    await checkAndResetMonthlyCredits(unifiedUser.user_id);
-
-    // 重新获取用户数据（不使用缓存，确保拿到最新数据）
+    // 正式用户
     const [user] = await db
       .select()
       .from(users)

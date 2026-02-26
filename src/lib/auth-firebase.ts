@@ -137,22 +137,30 @@ async function createOrUpdateFirebaseUser(
   const formattedIp = formatIpWithCountry(ipAddress, vercelCountry);
 
   if (existingUser) {
-    // 只更新 email（email 以 Firebase 为准），name 和 photo_url 保留用户自己设置的值
-    // 只有当数据库中为空时才用 Firebase 的值填充
-    // auth_provider 只在首次记录，后续不更新（用户可能关联多种登录方式）
-    await db.update(users)
-      .set({
-        email: decodedToken.email || existingUser.email,
-        // 保留用户自己设置的 name 和 photo_url，只有为空时才用 Firebase 填充
-        name: existingUser.name || decodedToken.name,
-        photoUrl: existingUser.photoUrl || decodedToken.picture,
-        // 如果原来没有记录 auth_provider，现在补上
-        authProvider: existingUser.authProvider || authProvider,
-        // 每次登录更新 IP 地址
-        ipAddress: formattedIp || existingUser.ipAddress,
-      })
-      .where(eq(users.userId, decodedToken.uid));
-    console.log(`🔄 [Firebase Auth] 用户信息已更新: ${decodedToken.uid}`);
+    // 只在有实际变化时才 UPDATE，避免每次请求都写库
+    const newEmail = decodedToken.email || existingUser.email;
+    const newName = existingUser.name || decodedToken.name;
+    const newPhotoUrl = existingUser.photoUrl || decodedToken.picture;
+    const newAuthProvider = existingUser.authProvider || authProvider;
+
+    const needsUpdate =
+      existingUser.email !== newEmail ||
+      existingUser.name !== newName ||
+      existingUser.photoUrl !== newPhotoUrl ||
+      existingUser.authProvider !== newAuthProvider;
+
+    if (needsUpdate) {
+      await db.update(users)
+        .set({
+          email: newEmail,
+          name: newName,
+          photoUrl: newPhotoUrl,
+          authProvider: newAuthProvider,
+          ipAddress: formattedIp || existingUser.ipAddress,
+        })
+        .where(eq(users.userId, decodedToken.uid));
+      console.log(`🔄 [Firebase Auth] 用户信息已更新: ${decodedToken.uid}`);
+    }
   } else {
     // 创建新用户 - 根据来源使用不同的积分配置
     const initialCredits = isNative

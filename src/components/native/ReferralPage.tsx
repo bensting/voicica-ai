@@ -6,6 +6,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { getMyReferralInfo, getReferralTeam, processReferralCode } from '@/actions/referral';
 import type { ReferralInfo, ReferralTeamMember } from '@/actions/referral';
 import { Share } from '@capacitor/share';
+import { getMiningEconomyConfig } from '@/config/appConfig';
 import LoginModal from './LoginModal';
 
 /**
@@ -343,11 +344,17 @@ export default function ReferralPage() {
           <p className="text-slate-400 text-xs mb-1">{t('native.referral.totalEarnings')}</p>
           <p className="text-xl font-bold text-white">{info.totalEarnings.toLocaleString()}</p>
           <p className="text-[10px] text-slate-500">$VOICICA</p>
+          <p className="text-[10px] text-emerald-400/80 mt-0.5">
+            ≈ {(info.totalEarnings * getMiningEconomyConfig().token_value_usd).toFixed(4)} USDT
+          </p>
         </div>
         <div className="bg-slate-800/60 rounded-xl p-4">
           <p className="text-slate-400 text-xs mb-1">{t('native.referral.todayEarnings')}</p>
           <p className="text-xl font-bold text-white">{info.todayEarnings.toLocaleString()}</p>
           <p className="text-[10px] text-slate-500">$VOICICA</p>
+          <p className="text-[10px] text-emerald-400/80 mt-0.5">
+            ≈ {(info.todayEarnings * getMiningEconomyConfig().token_value_usd).toFixed(4)} USDT
+          </p>
         </div>
       </div>
 

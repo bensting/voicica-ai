@@ -270,7 +270,7 @@ export async function getReferralTeam(
         WITH RECURSIVE sub_team AS (
           SELECT referred_by AS root_id, user_id
           FROM users
-          WHERE referred_by = ANY(${memberIds})
+          WHERE referred_by IN (${sql.join(memberIds.map(id => sql`${id}`), sql`, `)})
           UNION ALL
           SELECT st.root_id, u.user_id
           FROM users u
@@ -289,7 +289,7 @@ export async function getReferralTeam(
       const contribResult = await db.execute<{ from_user_id: string; total: string }>(sql`
         SELECT from_user_id, SUM(commission_amount)::text AS total
         FROM referral_commissions
-        WHERE user_id = ${userId} AND from_user_id = ANY(${memberIds})
+        WHERE user_id = ${userId} AND from_user_id IN (${sql.join(memberIds.map(id => sql`${id}`), sql`, `)})
         GROUP BY from_user_id
       `);
       for (const row of contribResult.rows) {

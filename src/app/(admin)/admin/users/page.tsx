@@ -85,6 +85,7 @@ export default function UsersManagementPage() {
   const [registeredTotalPages, setRegisteredTotalPages] = useState(1);
   const [registeredLoading, setRegisteredLoading] = useState(false);
   const [registeredSearch, setRegisteredSearch] = useState('');
+  const [registeredSearchInput, setRegisteredSearchInput] = useState('');
   const [subscriptionFilter, setSubscriptionFilter] = useState<'all' | 'active' | 'none'>('all');
   const [platformFilter, setPlatformFilter] = useState<string>('');
 
@@ -95,6 +96,7 @@ export default function UsersManagementPage() {
   const [anonymousTotalPages, setAnonymousTotalPages] = useState(1);
   const [anonymousLoading, setAnonymousLoading] = useState(false);
   const [anonymousSearch, setAnonymousSearch] = useState('');
+  const [anonymousSearchInput, setAnonymousSearchInput] = useState('');
   const [convertedFilter, setConvertedFilter] = useState<'all' | 'converted' | 'not_converted'>('all');
   const [anonymousPlatformFilter, setAnonymousPlatformFilter] = useState<string>('');
 
@@ -364,17 +366,30 @@ export default function UsersManagementPage() {
           {/* 筛选栏 */}
           <div className="bg-white rounded-xl border border-gray-200 p-4 mb-6">
             <div className="flex flex-wrap gap-4">
-              <div className="flex-1 min-w-[200px]">
+              <div className="flex-1 min-w-[200px] flex gap-2">
                 <input
                   type="text"
-                  placeholder="搜索邮箱、用户名..."
-                  value={registeredSearch}
-                  onChange={(e) => {
-                    setRegisteredSearch(e.target.value);
+                  placeholder="搜索邮箱、用户名、用户ID..."
+                  value={registeredSearchInput}
+                  onChange={(e) => setRegisteredSearchInput(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      setRegisteredSearch(registeredSearchInput);
+                      setRegisteredPage(1);
+                    }
+                  }}
+                  className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                />
+                <button
+                  onClick={() => {
+                    setRegisteredSearch(registeredSearchInput);
                     setRegisteredPage(1);
                   }}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                />
+                  disabled={registeredLoading}
+                  className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50 text-sm whitespace-nowrap"
+                >
+                  搜索
+                </button>
               </div>
               <select
                 value={subscriptionFilter}
@@ -651,17 +666,30 @@ export default function UsersManagementPage() {
           {/* 筛选栏 */}
           <div className="bg-white rounded-xl border border-gray-200 p-4 mb-6">
             <div className="flex flex-wrap gap-4">
-              <div className="flex-1 min-w-[200px]">
+              <div className="flex-1 min-w-[200px] flex gap-2">
                 <input
                   type="text"
                   placeholder="搜索用户ID、设备指纹、IP..."
-                  value={anonymousSearch}
-                  onChange={(e) => {
-                    setAnonymousSearch(e.target.value);
+                  value={anonymousSearchInput}
+                  onChange={(e) => setAnonymousSearchInput(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      setAnonymousSearch(anonymousSearchInput);
+                      setAnonymousPage(1);
+                    }
+                  }}
+                  className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                />
+                <button
+                  onClick={() => {
+                    setAnonymousSearch(anonymousSearchInput);
                     setAnonymousPage(1);
                   }}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                />
+                  disabled={anonymousLoading}
+                  className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50 text-sm whitespace-nowrap"
+                >
+                  搜索
+                </button>
               </div>
               <select
                 value={convertedFilter}

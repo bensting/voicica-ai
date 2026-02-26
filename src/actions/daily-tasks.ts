@@ -364,11 +364,13 @@ export async function claimAdReward(adWatched: boolean = true, addToPermanent: b
       randomMultiplier,
     });
 
-    // 分发推荐提成（异步，不阻塞主流程）
+    // 分发推荐提成（CF Workers 不支持 fire-and-forget，必须 await）
     if (!is_anonymous) {
-      distributeReferralCommissions(user_id, voicicaAmount).catch(err =>
-        console.error('❌ [referral] commission distribution failed:', err)
-      );
+      try {
+        await distributeReferralCommissions(user_id, voicicaAmount);
+      } catch (err) {
+        console.error('❌ [referral] commission distribution failed:', err);
+      }
     }
 
     return { success: true, credits: voicicaAmount };

@@ -552,3 +552,38 @@ export async function adminBindReferrer(
     return { success: false, message: error instanceof Error ? error.message : '绑定失败' };
   }
 }
+
+/**
+ * 解除用户的推荐人绑定
+ */
+export async function adminUnbindReferrer(
+  userId: string
+): Promise<{ success: boolean; message: string }> {
+  await verifyAdminWithoutDb();
+
+  try {
+    const [user] = await db
+      .select({ referredBy: users.referredBy })
+      .from(users)
+      .where(eq(users.userId, userId))
+      .limit(1);
+
+    if (!user) {
+      return { success: false, message: '用户不存在' };
+    }
+
+    if (!user.referredBy) {
+      return { success: false, message: '该用户没有推荐人' };
+    }
+
+    await db
+      .update(users)
+      .set({ referredBy: null })
+      .where(eq(users.userId, userId));
+
+    return { success: true, message: '已解除推荐人绑定' };
+  } catch (error) {
+    console.error('解除推荐人失败:', error);
+    return { success: false, message: error instanceof Error ? error.message : '解除失败' };
+  }
+}

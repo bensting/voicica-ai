@@ -12,6 +12,7 @@ import {
   getUserCreditHistory,
   adminGenerateReferralCode,
   adminBindReferrer,
+  adminUnbindReferrer,
 } from '@/actions/admin/users';
 import IpLocation from '@/components/admin/IpLocation';
 
@@ -260,6 +261,18 @@ export default function UsersManagementPage() {
     if (!confirm('确定要为该用户生成邀请码吗？')) return;
 
     const result = await adminGenerateReferralCode(userId);
+    if (result.success) {
+      loadRegisteredUsers();
+    } else {
+      alert(result.message);
+    }
+  };
+
+  // 解除推荐人
+  const handleUnbindReferrer = async (userId: string) => {
+    if (!confirm('确定要解除该用户的推荐人绑定吗？')) return;
+
+    const result = await adminUnbindReferrer(userId);
     if (result.success) {
       loadRegisteredUsers();
     } else {
@@ -572,7 +585,7 @@ export default function UsersManagementPage() {
                                 生成邀请码
                               </button>
                             )}
-                            {!user.referred_by && (
+                            {!user.referred_by ? (
                               <button
                                 onClick={() =>
                                   setBindingReferrer({
@@ -585,6 +598,13 @@ export default function UsersManagementPage() {
                                 className="text-sm text-orange-600 hover:text-orange-700"
                               >
                                 绑定推荐人
+                              </button>
+                            ) : (
+                              <button
+                                onClick={() => handleUnbindReferrer(user.user_id)}
+                                className="text-sm text-red-600 hover:text-red-700"
+                              >
+                                解除推荐
                               </button>
                             )}
                           </div>

@@ -454,21 +454,23 @@ export default function ReferralPage() {
           <div className="space-y-2">
             {team.map((member, idx) => (
               <div key={idx} className="bg-slate-800/50 rounded-xl p-3 flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center text-xs text-slate-400">
+                {/* Left: avatar + name + date */}
+                <div className="flex items-center gap-2.5 min-w-0 flex-1">
+                  <div className="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center text-xs text-slate-400 shrink-0">
                     {member.name.charAt(0).toUpperCase()}
                   </div>
-                  <div>
-                    <p className="text-sm text-white">{member.name}</p>
-                    <p className="text-[10px] text-slate-500">
-                      {new Date(member.createdAt).toLocaleDateString()}
-                      {member.subTeamCount > 0 && (
-                        <span className="ml-1.5 text-slate-400">· {member.subTeamCount} {t('native.referral.teamMembers')}</span>
-                      )}
-                    </p>
+                  <div className="min-w-0">
+                    <p className="text-sm text-white truncate">{member.name}</p>
+                    <p className="text-[10px] text-slate-500">{new Date(member.createdAt).toLocaleDateString()}</p>
                   </div>
                 </div>
-                <div className="text-right">
+                {/* Center: sub-team count */}
+                <div className="text-center px-2">
+                  <p className="text-sm font-bold text-white">{member.subTeamCount}</p>
+                  <p className="text-[10px] text-slate-400">{t('native.referral.teamMembers')}</p>
+                </div>
+                {/* Right: level + contribution */}
+                <div className="text-right shrink-0">
                   <p className={`text-xs font-medium ${getLevelColor(member.level)}`}>
                     {getLevelLabel(member.level)}
                   </p>

@@ -871,25 +871,26 @@ export default function UsersManagementPage() {
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">当前积分</label>
                 <div className="text-2xl font-bold text-gray-900">
-                  {editingCredits.currentCredits.toLocaleString()}
+                  {formatCredits(editingCredits.currentCredits)}
                 </div>
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">新积分</label>
                 <input
                   type="number"
+                  step="0.0001"
                   value={editingCredits.newCredits}
                   onChange={(e) =>
                     setEditingCredits({
                       ...editingCredits,
-                      newCredits: parseInt(e.target.value) || 0,
+                      newCredits: parseFloat(e.target.value) || 0,
                     })
                   }
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                 />
                 <div className="mt-1 text-sm text-gray-500">
                   变化: {editingCredits.newCredits - editingCredits.currentCredits >= 0 ? '+' : ''}
-                  {editingCredits.newCredits - editingCredits.currentCredits}
+                  {formatCredits(editingCredits.newCredits - editingCredits.currentCredits)}
                 </div>
               </div>
               <div>

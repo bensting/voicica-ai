@@ -277,7 +277,7 @@ export default function ReferralPage() {
             {([
               { key: 'l1' as const, label: t('native.referral.level.l1'), rate: '8%' },
               { key: 'l2' as const, label: t('native.referral.level.l2'), rate: '3%' },
-              { key: 'team' as const, label: t('native.referral.level.team'), rate: '2%' },
+              { key: 'team' as const, label: 'Pool', rate: '2%' },
             ]).map((item, idx) => {
               const active = isCommissionActive(info.referralLevel, item.key);
               return (

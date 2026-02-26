@@ -47,6 +47,8 @@ export interface ReferralInfo {
   teamMembers: number;
   totalEarnings: number;
   todayEarnings: number;
+  referredBy: string | null;
+  inviterCode: string | null;
   upgradeProgress: {
     bronze: { current: number; required: number };
     gold: { current: number; required: number };
@@ -123,6 +125,17 @@ export async function getMyReferralInfo(): Promise<ReferralInfo | null> {
         )
       );
 
+    // 获取邀请人的邀请码（用于显示）
+    let inviterCode: string | null = null;
+    if (user.referredBy) {
+      const [inviter] = await db
+        .select({ referralCode: users.referralCode })
+        .from(users)
+        .where(eq(users.userId, user.referredBy))
+        .limit(1);
+      inviterCode = inviter?.referralCode ?? null;
+    }
+
     return {
       referralCode,
       referralLevel: user.referralLevel,
@@ -130,6 +143,8 @@ export async function getMyReferralInfo(): Promise<ReferralInfo | null> {
       teamMembers: directReferrals,
       totalEarnings: Number(totalEarningsResult?.total ?? 0),
       todayEarnings: Number(todayEarningsResult?.total ?? 0),
+      referredBy: user.referredBy,
+      inviterCode,
       upgradeProgress: {
         bronze: {
           current: directReferrals,

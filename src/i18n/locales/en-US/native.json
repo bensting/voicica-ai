@@ -106,7 +106,14 @@
         "empty": "No team members yet. Share your invite code!",
         "loadMore": "Load more"
       },
-      "inviteText": "Join VoicicaAI and earn $VOICICA together! Use my invite code: {{code}} {{url}}"
+      "inviteText": "Join VoicicaAI and earn $VOICICA together! Use my invite code: {{code}} {{url}}",
+      "bind": {
+        "hint": "Missing Inviter? Enter code to unlock +10% Mining Speed!",
+        "placeholder": "Enter Inviter Code (Optional)",
+        "button": "Bind",
+        "inviter": "Inviter",
+        "failed": "Invalid code, please try again"
+      }
     },
     "settings": {
       "title": "Settings",

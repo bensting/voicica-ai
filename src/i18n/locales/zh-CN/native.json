@@ -106,7 +106,14 @@
         "empty": "暂无团队成员，快去分享邀请码吧！",
         "loadMore": "加载更多"
       },
-      "inviteText": "加入 VoicicaAI，一起赚取 $VOICICA！使用我的邀请码：{{code}} {{url}}"
+      "inviteText": "加入 VoicicaAI，一起赚取 $VOICICA！使用我的邀请码：{{code}} {{url}}",
+      "bind": {
+        "hint": "还没有邀请人？输入邀请码解锁 +10% 挖矿加速！",
+        "placeholder": "输入邀请码（选填）",
+        "button": "绑定",
+        "inviter": "邀请人",
+        "failed": "邀请码无效，请重试"
+      }
     },
     "settings": {
       "title": "设置",

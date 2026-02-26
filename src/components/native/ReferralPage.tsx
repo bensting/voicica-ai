@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { getMyReferralInfo, getReferralTeam } from '@/actions/referral';
+import { getMyReferralInfo, getReferralTeam, processReferralCode } from '@/actions/referral';
 import type { ReferralInfo, ReferralTeamMember } from '@/actions/referral';
 import { Share } from '@capacitor/share';
 import LoginModal from './LoginModal';
@@ -23,6 +23,9 @@ export default function ReferralPage() {
   const [loadingMore, setLoadingMore] = useState(false);
   const [copied, setCopied] = useState(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const [inviterCode, setInviterCode] = useState('');
+  const [binding, setBinding] = useState(false);
+  const [bindError, setBindError] = useState('');
 
   const loadData = useCallback(async () => {
     if (!user) {
@@ -105,6 +108,27 @@ export default function ReferralPage() {
         setCopied(true);
         setTimeout(() => setCopied(false), 2000);
       } catch { /* ignore */ }
+    }
+  };
+
+  const handleBind = async () => {
+    const code = inviterCode.trim().toUpperCase();
+    if (!code) return;
+    setBindError('');
+    setBinding(true);
+    try {
+      const result = await processReferralCode(code);
+      if (result.success) {
+        // Reload data to reflect the binding
+        await loadData();
+        setInviterCode('');
+      } else {
+        setBindError(result.message || t('native.referral.bind.failed'));
+      }
+    } catch {
+      setBindError(t('native.referral.bind.failed'));
+    } finally {
+      setBinding(false);
     }
   };
 
@@ -283,9 +307,43 @@ export default function ReferralPage() {
         </div>
       </div>
 
+      {/* Bind Inviter — only show when user has no inviter */}
+      {!info.referredBy && (
+        <div className="bg-slate-800/40 rounded-2xl p-4 mb-4 border border-slate-700/30">
+          <p className="text-slate-300 text-xs mb-3">{t('native.referral.bind.hint')}</p>
+          <div className="flex gap-2">
+            <input
+              type="text"
+              value={inviterCode}
+              onChange={(e) => { setInviterCode(e.target.value.toUpperCase()); setBindError(''); }}
+              placeholder={t('native.referral.bind.placeholder')}
+              maxLength={10}
+              className="flex-1 bg-slate-700/60 border border-slate-600/50 rounded-xl px-3 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-purple-500/50 font-mono tracking-wider"
+            />
+            <button
+              onClick={handleBind}
+              disabled={binding || !inviterCode.trim()}
+              className="px-5 py-2.5 bg-gradient-to-r from-cyan-500 to-purple-500 text-white rounded-xl text-sm font-medium disabled:opacity-40 shrink-0"
+            >
+              {binding ? '...' : t('native.referral.bind.button')}
+            </button>
+          </div>
+          {bindError && (
+            <p className="text-red-400 text-xs mt-2">{bindError}</p>
+          )}
+        </div>
+      )}
+
       {/* Team List */}
       <div className="mb-4">
-        <h3 className="text-white text-sm font-semibold mb-3">{t('native.referral.team.title')} ({teamTotal})</h3>
+        <div className="flex items-center justify-between mb-3">
+          <h3 className="text-white text-sm font-semibold">{t('native.referral.team.title')} ({teamTotal})</h3>
+          {info.inviterCode && (
+            <span className="text-xs text-slate-400">
+              {t('native.referral.bind.inviter')}: <span className="text-purple-400 font-mono">{info.inviterCode}</span>
+            </span>
+          )}
+        </div>
         {team.length === 0 ? (
           <div className="bg-slate-800/40 rounded-xl p-8 text-center">
             <p className="text-slate-500 text-sm">{t('native.referral.team.empty')}</p>

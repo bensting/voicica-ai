@@ -87,7 +87,7 @@ export default function CoverTab({ isActive, refreshTrigger, onDetailOpen }: Tab
     <>
       <DateGroupedList
         records={filtered}
-        getDateStr={(c) => c.created_at ?? ''}
+        getDateStr={(c) => c.created_at?.toString() ?? ''}
         getKey={(c) => c.task_id}
         renderCard={(cover) => (
           <CoverCard cover={cover} onClick={() => handleClick(cover)} />

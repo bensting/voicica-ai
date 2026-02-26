@@ -256,7 +256,6 @@ export default function NativeDailyTasksModal({ isOpen, onClose, onCreditsUpdate
 
   if (!isOpen) return null;
 
-  const isConfigLoading = !config;
   const isDisabled = config && !config.enabled;
 
   const isStatusLoading = !status;

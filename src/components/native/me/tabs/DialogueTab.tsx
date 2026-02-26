@@ -117,7 +117,7 @@ export default function DialogueTab({ isActive, refreshTrigger, onDetailOpen }: 
     <>
       <DateGroupedList
         records={filtered}
-        getDateStr={(d) => d.created_at ?? ''}
+        getDateStr={(d) => d.created_at?.toString() ?? ''}
         getKey={(d) => d.task_id}
         renderCard={(dialogue) => (
           <DialogueCard dialogue={dialogue} onClick={() => handleClick(dialogue)} />

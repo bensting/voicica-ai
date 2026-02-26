@@ -111,7 +111,7 @@ export default function ImageTab({ isActive, refreshTrigger, onDetailOpen }: Tab
     <>
       <DateGroupedList
         records={filtered}
-        getDateStr={(i) => i.created_at ?? ''}
+        getDateStr={(i) => i.created_at?.toString() ?? ''}
         getKey={(i) => i.task_id}
         renderCard={(image) => (
           <ImageCard image={image} onClick={() => handleClick(image)} />

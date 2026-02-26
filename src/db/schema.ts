@@ -296,7 +296,7 @@ export const dailyTasks = pgTable("daily_tasks", {
 	checkinDone: boolean("checkin_done").default(false).notNull(),
 	checkinCredits: integer("checkin_credits").default(0).notNull(),
 	adRewardsClaimed: integer("ad_rewards_claimed").default(0).notNull(),
-	adRewardsCredits: integer("ad_rewards_credits").default(0).notNull(),
+	adRewardsCredits: creditsNumeric("ad_rewards_credits").default(sql`0`).notNull(),
 	createdAt: timestamp("created_at", { precision: 6, withTimezone: true, mode: 'string' }).default(sql`CURRENT_TIMESTAMP`).notNull(),
 	updatedAt: timestamp("updated_at", { precision: 6, withTimezone: true, mode: 'string' }).$onUpdate(() => new Date().toISOString()),
 }, (table) => [

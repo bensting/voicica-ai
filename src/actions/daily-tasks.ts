@@ -330,7 +330,7 @@ export async function claimAdReward(adWatched: boolean = true, addToPermanent: b
       .update(dailyTasks)
       .set({
         adRewardsClaimed: sql`${dailyTasks.adRewardsClaimed} + 1`,
-        adRewardsCredits: sql`${dailyTasks.adRewardsCredits} + ${Math.round(voicicaAmount)}`,
+        adRewardsCredits: sql`${dailyTasks.adRewardsCredits} + ${voicicaAmount}`,
       })
       .where(
         and(

@@ -192,9 +192,8 @@
         "credits": "الرصيد"
       },
       "subscribe": {
-        "title": "الترقية إلى Pro",
-        "subtitle": "احصل على وصول غير محدود لجميع الميزات",
-        "button": "اشترك الآن"
+        "title": "شراء $VOICICA",
+        "subtitle": "$1 = 10,000 $VOICICA"
       }
     },
     "explore": {
@@ -236,35 +235,49 @@
       "loading": "جارٍ التحميل...",
       "error": "خطأ",
       "success": "نجاح",
-      "learnMore": "اعرف المزيد"
+      "learnMore": "اعرف المزيد",
+      "buy": "شراء"
     },
     "subscribe": {
-      "tabs": {
-        "subscription": "الاشتراك",
-        "credits": "حزم الرصيد"
-      },
-      "vipBonus": "كن VIP: +20% رصيد على كل حزمة",
-      "notSubscribed": "غير مشترك",
-      "mostPopular": "الأكثر شعبية",
-      "creditsPerPeriod": "{{credits}} رصيد / {{period}}",
-      "membershipBenefits": "مزايا العضوية",
-      "benefits": {
-        "creditsRefresh": "تجديد {{credits}} رصيد شهرياً",
-        "fastChannel": "قناة إنشاء سريعة",
-        "simultaneous": "إنشاء متزامن",
-        "higherQuality": "جودة أعلى"
-      },
-      "creditPackInfo": {
-        "validity": "فترة صلاحية حزمة الرصيد: مدى الحياة",
-        "terms": "شروط الاشتراك: يتم خصم المبلغ من حسابك عند التأكيد. يتجدد الاشتراك تلقائياً بالسعر الأصلي، ما لم يتم الإلغاء قبل 24 ساعة على الأقل من نهاية الفترة الحالية. إدارة اشتراكك والتجديد التلقائي في إعدادات الحساب."
-      },
-      "termsOfUse": "شروط الاستخدام",
-      "privacyPolicy": "سياسة الخصوصية",
-      "subscribeNow": "اشترك الآن",
-      "buyNow": "اشترِ الآن",
+      "title": "شراء $VOICICA",
+      "yourBalance": "رصيدك",
+      "estimatedValue": "≈ ${{value}}",
+      "youPay": "أنت تدفع",
+      "youGet": "ستحصل على",
+      "fee": "+ $0.30 رسوم",
+      "usdLabel": "USD",
+      "tokenLabel": "$VOICICA",
+      "rateLabel": "السعر",
+      "rateValue": "1 USD = 10,000 $VOICICA",
+      "feeLabel": "رسوم المعالجة",
+      "feeValue": "$0.30",
+      "totalLabel": "الإجمالي",
+      "buyButton": "شراء $VOICICA",
+      "minAmount": "الحد الأدنى $1.00",
       "processing": "جارٍ المعالجة...",
-      "currentPlan": "الخطة الحالية",
-      "manageSubscription": "إدارة الاشتراك"
+      "notSubscribed": "غير مشترك",
+      "loginRequired": "يرجى تسجيل الدخول للشراء"
+    },
+    "payment": {
+      "verifying": "جارٍ التحقق من الدفع",
+      "verifyingDesc": "يرجى الانتظار بينما نؤكد دفعتك...",
+      "successTitle": "تم الدفع بنجاح!",
+      "successDesc": "اكتملت عملية الشراء. استمتع برصيدك!",
+      "orderSummary": "ملخص الطلب",
+      "orderId": "رقم الطلب",
+      "subscription": "الاشتراك",
+      "redirecting": "إعادة التوجيه خلال {{seconds}} ثوانٍ...",
+      "goHome": "الذهاب للرئيسية",
+      "continue": "متابعة",
+      "pendingTitle": "الدفع قيد الانتظار",
+      "pendingDesc": "جارٍ معالجة دفعتك. يرجى الانتظار.",
+      "checkAgain": "تحقق مرة أخرى",
+      "goBack": "رجوع",
+      "failedTitle": "فشل الدفع",
+      "failedDesc": "حدث خطأ في دفعتك.",
+      "failedHint": "إذا تم خصم مبلغ، يرجى التواصل مع الدعم.",
+      "tryAgain": "حاول مرة أخرى",
+      "loading": "جارٍ التحميل..."
     },
     "insufficientCredits": {
       "title": "رصيد غير كافٍ",

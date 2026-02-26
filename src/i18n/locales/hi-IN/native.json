@@ -192,9 +192,8 @@
         "credits": "क्रेडिट"
       },
       "subscribe": {
-        "title": "Pro में अपग्रेड करें",
-        "subtitle": "सभी सुविधाओं तक असीमित पहुंच पाएं",
-        "button": "अभी सब्सक्राइब करें"
+        "title": "$VOICICA खरीदें",
+        "subtitle": "$1 = 10,000 $VOICICA"
       }
     },
     "explore": {
@@ -236,35 +235,49 @@
       "loading": "लोड हो रहा है...",
       "error": "त्रुटि",
       "success": "सफलता",
-      "learnMore": "और जानें"
+      "learnMore": "और जानें",
+      "buy": "खरीदें"
     },
     "subscribe": {
-      "tabs": {
-        "subscription": "सब्सक्रिप्शन",
-        "credits": "क्रेडिट पैक"
-      },
-      "vipBonus": "VIP बनें: हर पैक पर +20% क्रेडिट",
-      "notSubscribed": "सब्सक्राइब नहीं किया",
-      "mostPopular": "सबसे लोकप्रिय",
-      "creditsPerPeriod": "{{credits}} क्रेडिट / {{period}}",
-      "membershipBenefits": "सदस्यता लाभ",
-      "benefits": {
-        "creditsRefresh": "{{credits}} क्रेडिट मासिक रिफ्रेश",
-        "fastChannel": "तेज़ जनरेशन चैनल",
-        "simultaneous": "एक साथ जनरेशन",
-        "higherQuality": "उच्च गुणवत्ता"
-      },
-      "creditPackInfo": {
-        "validity": "क्रेडिट पैक की वैधता अवधि: आजीवन",
-        "terms": "सब्सक्रिप्शन शर्तें: पुष्टि पर आपके खाते से भुगतान लिया जाता है। वर्तमान अवधि समाप्त होने से कम से कम 24 घंटे पहले रद्द न करने पर सब्सक्रिप्शन मूल कीमत पर स्वतः नवीनीकृत हो जाता है। खाता सेटिंग्स में अपनी सब्सक्रिप्शन और ऑटो-नवीनीकरण प्रबंधित करें।"
-      },
-      "termsOfUse": "उपयोग की शर्तें",
-      "privacyPolicy": "गोपनीयता नीति",
-      "subscribeNow": "अभी सब्सक्राइब करें",
-      "buyNow": "अभी खरीदें",
+      "title": "$VOICICA खरीदें",
+      "yourBalance": "आपका शेष",
+      "estimatedValue": "≈ ${{value}}",
+      "youPay": "आप भुगतान करें",
+      "youGet": "आपको मिलेगा",
+      "fee": "+ $0.30 शुल्क",
+      "usdLabel": "USD",
+      "tokenLabel": "$VOICICA",
+      "rateLabel": "दर",
+      "rateValue": "1 USD = 10,000 $VOICICA",
+      "feeLabel": "प्रोसेसिंग शुल्क",
+      "feeValue": "$0.30",
+      "totalLabel": "कुल",
+      "buyButton": "$VOICICA खरीदें",
+      "minAmount": "न्यूनतम $1.00",
       "processing": "प्रोसेसिंग...",
-      "currentPlan": "वर्तमान योजना",
-      "manageSubscription": "सदस्यता प्रबंधित करें"
+      "notSubscribed": "सब्सक्राइब नहीं किया",
+      "loginRequired": "खरीदने के लिए कृपया लॉगिन करें"
+    },
+    "payment": {
+      "verifying": "भुगतान सत्यापित हो रहा है",
+      "verifyingDesc": "कृपया प्रतीक्षा करें, हम आपका भुगतान पुष्टि कर रहे हैं...",
+      "successTitle": "भुगतान सफल!",
+      "successDesc": "आपकी खरीदारी पूरी हो गई है। अपने क्रेडिट का आनंद लें!",
+      "orderSummary": "ऑर्डर सारांश",
+      "orderId": "ऑर्डर ID",
+      "subscription": "सब्सक्रिप्शन",
+      "redirecting": "{{seconds}} सेकंड में रीडायरेक्ट हो रहा है...",
+      "goHome": "होम पर जाएं",
+      "continue": "जारी रखें",
+      "pendingTitle": "भुगतान लंबित",
+      "pendingDesc": "आपका भुगतान प्रोसेस हो रहा है। कृपया प्रतीक्षा करें।",
+      "checkAgain": "फिर से जांचें",
+      "goBack": "वापस जाएं",
+      "failedTitle": "भुगतान विफल",
+      "failedDesc": "आपके भुगतान में कुछ गड़बड़ हो गई।",
+      "failedHint": "यदि आपसे शुल्क लिया गया है, तो कृपया सहायता से संपर्क करें।",
+      "tryAgain": "पुनः प्रयास करें",
+      "loading": "लोड हो रहा है..."
     },
     "insufficientCredits": {
       "title": "अपर्याप्त क्रेडिट",

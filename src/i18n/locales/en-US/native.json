@@ -239,7 +239,7 @@
       },
       "subscribe": {
         "title": "Buy $VOICICA",
-        "subtitle": "Top up credits to unlock all features"
+        "subtitle": "$1 = 10,000 $VOICICA"
       }
     },
     "explore": {
@@ -281,23 +281,49 @@
       "loading": "Loading...",
       "error": "Error",
       "success": "Success",
-      "learnMore": "Learn More"
+      "learnMore": "Learn More",
+      "buy": "BUY"
     },
     "subscribe": {
-      "title": "Buy VOICICA",
+      "title": "Buy $VOICICA",
       "yourBalance": "Your Balance",
       "estimatedValue": "≈ ${{value}}",
       "youPay": "You Pay",
       "youGet": "You Get",
       "fee": "+ $0.30 fee",
+      "usdLabel": "USD",
+      "tokenLabel": "$VOICICA",
       "rateLabel": "Rate",
+      "rateValue": "1 USD = 10,000 $VOICICA",
       "feeLabel": "Processing Fee",
+      "feeValue": "$0.30",
       "totalLabel": "Total",
-      "buyButton": "BUY VOICICA",
+      "buyButton": "BUY $VOICICA",
       "minAmount": "Minimum $1.00",
       "processing": "Processing...",
       "notSubscribed": "Not Subscribed",
       "loginRequired": "Please log in to purchase"
+    },
+    "payment": {
+      "verifying": "Verifying Payment",
+      "verifyingDesc": "Please wait while we confirm your payment...",
+      "successTitle": "Payment Successful!",
+      "successDesc": "Your purchase is complete. Enjoy your credits!",
+      "orderSummary": "Order Summary",
+      "orderId": "Order ID",
+      "subscription": "Subscription",
+      "redirecting": "Redirecting in {{seconds}} seconds...",
+      "goHome": "Go to Home",
+      "continue": "Continue",
+      "pendingTitle": "Payment Pending",
+      "pendingDesc": "Your payment is being processed. This may take a moment.",
+      "checkAgain": "Check Again",
+      "goBack": "Go Back",
+      "failedTitle": "Payment Failed",
+      "failedDesc": "Something went wrong with your payment.",
+      "failedHint": "If you were charged, please contact support.",
+      "tryAgain": "Try Again",
+      "loading": "Loading..."
     },
     "insufficientCredits": {
       "title": "Insufficient Credits",

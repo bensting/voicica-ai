@@ -192,9 +192,8 @@
         "credits": "Credits"
       },
       "subscribe": {
-        "title": "Nâng cấp lên Pro",
-        "subtitle": "Truy cập không giới hạn tất cả tính năng",
-        "button": "Đăng ký ngay"
+        "title": "Mua $VOICICA",
+        "subtitle": "$1 = 10,000 $VOICICA"
       }
     },
     "explore": {
@@ -236,35 +235,49 @@
       "loading": "Đang tải...",
       "error": "Lỗi",
       "success": "Thành công",
-      "learnMore": "Tìm hiểu thêm"
+      "learnMore": "Tìm hiểu thêm",
+      "buy": "MUA"
     },
     "subscribe": {
-      "tabs": {
-        "subscription": "Đăng ký",
-        "credits": "Gói Credit"
-      },
-      "vipBonus": "Trở thành VIP: +20% credit mỗi gói",
-      "notSubscribed": "Chưa đăng ký",
-      "mostPopular": "Phổ biến nhất",
-      "creditsPerPeriod": "{{credits}} credit / {{period}}",
-      "membershipBenefits": "Quyền lợi thành viên",
-      "benefits": {
-        "creditsRefresh": "Làm mới {{credits}} credit mỗi tháng",
-        "fastChannel": "Kênh tạo nhanh",
-        "simultaneous": "Tạo đồng thời",
-        "higherQuality": "Chất lượng cao hơn"
-      },
-      "creditPackInfo": {
-        "validity": "Thời hạn gói Credit: Vĩnh viễn",
-        "terms": "Điều khoản đăng ký: Thanh toán được tính vào tài khoản khi xác nhận. Đăng ký tự động gia hạn với giá gốc, trừ khi hủy trước ít nhất 24 giờ khi kết thúc chu kỳ hiện tại. Quản lý đăng ký và tự động gia hạn trong Cài đặt tài khoản."
-      },
-      "termsOfUse": "Điều khoản sử dụng",
-      "privacyPolicy": "Chính sách bảo mật",
-      "subscribeNow": "Đăng ký ngay",
-      "buyNow": "Mua ngay",
+      "title": "Mua $VOICICA",
+      "yourBalance": "Số dư",
+      "estimatedValue": "≈ ${{value}}",
+      "youPay": "Bạn trả",
+      "youGet": "Bạn nhận",
+      "fee": "+ $0.30 phí",
+      "usdLabel": "USD",
+      "tokenLabel": "$VOICICA",
+      "rateLabel": "Tỷ giá",
+      "rateValue": "1 USD = 10,000 $VOICICA",
+      "feeLabel": "Phí xử lý",
+      "feeValue": "$0.30",
+      "totalLabel": "Tổng",
+      "buyButton": "MUA $VOICICA",
+      "minAmount": "Tối thiểu $1.00",
       "processing": "Đang xử lý...",
-      "currentPlan": "Gói hiện tại",
-      "manageSubscription": "Quản lý đăng ký"
+      "notSubscribed": "Chưa đăng ký",
+      "loginRequired": "Vui lòng đăng nhập để mua"
+    },
+    "payment": {
+      "verifying": "Đang xác minh thanh toán",
+      "verifyingDesc": "Vui lòng đợi trong khi chúng tôi xác nhận thanh toán...",
+      "successTitle": "Thanh toán thành công!",
+      "successDesc": "Giao dịch hoàn tất. Tận hưởng credit của bạn!",
+      "orderSummary": "Tóm tắt đơn hàng",
+      "orderId": "Mã đơn hàng",
+      "subscription": "Đăng ký",
+      "redirecting": "Chuyển hướng sau {{seconds}} giây...",
+      "goHome": "Về trang chủ",
+      "continue": "Tiếp tục",
+      "pendingTitle": "Đang chờ thanh toán",
+      "pendingDesc": "Thanh toán đang được xử lý. Vui lòng đợi.",
+      "checkAgain": "Kiểm tra lại",
+      "goBack": "Quay lại",
+      "failedTitle": "Thanh toán thất bại",
+      "failedDesc": "Đã xảy ra lỗi với thanh toán của bạn.",
+      "failedHint": "Nếu bạn đã bị trừ tiền, vui lòng liên hệ hỗ trợ.",
+      "tryAgain": "Thử lại",
+      "loading": "Đang tải..."
     },
     "insufficientCredits": {
       "title": "Không đủ credit",

@@ -192,9 +192,8 @@
         "credits": "クレジット"
       },
       "subscribe": {
-        "title": "Proにアップグレード",
-        "subtitle": "すべての機能に無制限アクセス",
-        "button": "今すぐ登録"
+        "title": "$VOICICA を購入",
+        "subtitle": "$1 = 10,000 $VOICICA"
       }
     },
     "explore": {
@@ -236,35 +235,49 @@
       "loading": "読み込み中...",
       "error": "エラー",
       "success": "成功",
-      "learnMore": "もっと見る"
+      "learnMore": "もっと見る",
+      "buy": "購入"
     },
     "subscribe": {
-      "tabs": {
-        "subscription": "サブスクリプション",
-        "credits": "クレジットパック"
-      },
-      "vipBonus": "VIPになる：全パック +20% クレジット",
-      "notSubscribed": "未登録",
-      "mostPopular": "最も人気",
-      "creditsPerPeriod": "{{credits}} クレジット / {{period}}",
-      "membershipBenefits": "メンバー特典",
-      "benefits": {
-        "creditsRefresh": "毎月 {{credits}} クレジット更新",
-        "fastChannel": "高速生成チャンネル",
-        "simultaneous": "同時生成",
-        "higherQuality": "より高品質"
-      },
-      "creditPackInfo": {
-        "validity": "クレジットパック有効期限：永久",
-        "terms": "サブスクリプション規約：確認時にアカウントに課金されます。現在の期間終了の24時間前までにキャンセルしない限り、元の価格で自動更新されます。アカウント設定でサブスクリプションと自動更新を管理できます。"
-      },
-      "termsOfUse": "利用規約",
-      "privacyPolicy": "プライバシーポリシー",
-      "subscribeNow": "今すぐ登録",
-      "buyNow": "今すぐ購入",
+      "title": "$VOICICA を購入",
+      "yourBalance": "残高",
+      "estimatedValue": "≈ ${{value}}",
+      "youPay": "支払い金額",
+      "youGet": "獲得金額",
+      "fee": "+ $0.30 手数料",
+      "usdLabel": "USD",
+      "tokenLabel": "$VOICICA",
+      "rateLabel": "レート",
+      "rateValue": "1 USD = 10,000 $VOICICA",
+      "feeLabel": "手数料",
+      "feeValue": "$0.30",
+      "totalLabel": "合計",
+      "buyButton": "$VOICICA を購入",
+      "minAmount": "最低 $1.00",
       "processing": "処理中...",
-      "currentPlan": "現在のプラン",
-      "manageSubscription": "サブスクリプション管理"
+      "notSubscribed": "未登録",
+      "loginRequired": "購入するにはログインしてください"
+    },
+    "payment": {
+      "verifying": "支払い確認中",
+      "verifyingDesc": "支払いを確認中です。しばらくお待ちください...",
+      "successTitle": "支払い成功！",
+      "successDesc": "購入完了。クレジットをお楽しみください！",
+      "orderSummary": "注文概要",
+      "orderId": "注文ID",
+      "subscription": "サブスクリプション",
+      "redirecting": "{{seconds}} 秒後にリダイレクトします...",
+      "goHome": "ホームへ",
+      "continue": "続ける",
+      "pendingTitle": "支払い保留中",
+      "pendingDesc": "支払い処理中です。しばらくお待ちください。",
+      "checkAgain": "再確認",
+      "goBack": "戻る",
+      "failedTitle": "支払い失敗",
+      "failedDesc": "支払いに問題が発生しました。",
+      "failedHint": "請求された場合は、サポートにお問い合わせください。",
+      "tryAgain": "再試行",
+      "loading": "読み込み中..."
     },
     "insufficientCredits": {
       "title": "クレジット不足",

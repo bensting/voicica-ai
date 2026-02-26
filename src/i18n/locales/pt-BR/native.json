@@ -192,9 +192,8 @@
         "credits": "Créditos"
       },
       "subscribe": {
-        "title": "Atualizar para Pro",
-        "subtitle": "Tenha acesso ilimitado a todos os recursos",
-        "button": "Assinar Agora"
+        "title": "Comprar $VOICICA",
+        "subtitle": "$1 = 10,000 $VOICICA"
       }
     },
     "explore": {
@@ -236,35 +235,49 @@
       "loading": "Carregando...",
       "error": "Erro",
       "success": "Sucesso",
-      "learnMore": "Saiba mais"
+      "learnMore": "Saiba mais",
+      "buy": "COMPRAR"
     },
     "subscribe": {
-      "tabs": {
-        "subscription": "Assinatura",
-        "credits": "Pacotes de Créditos"
-      },
-      "vipBonus": "Torne-se VIP: +20% créditos em cada pacote",
-      "notSubscribed": "Não Inscrito",
-      "mostPopular": "Mais Popular",
-      "creditsPerPeriod": "{{credits}} créditos / {{period}}",
-      "membershipBenefits": "Benefícios da Assinatura",
-      "benefits": {
-        "creditsRefresh": "{{credits}} créditos renovados mensalmente",
-        "fastChannel": "Canal de Geração Rápida",
-        "simultaneous": "Gerações Simultâneas",
-        "higherQuality": "Maior Qualidade"
-      },
-      "creditPackInfo": {
-        "validity": "Período de Validade do Pacote de Créditos: Vitalício",
-        "terms": "Termos de Assinatura: O pagamento é cobrado na sua conta ao confirmar. A assinatura é renovada automaticamente pelo preço original, a menos que seja cancelada pelo menos 24 horas antes do término do período atual. Gerencie sua assinatura e renovação automática nas Configurações da Conta."
-      },
-      "termsOfUse": "Termos de Uso",
-      "privacyPolicy": "Política de Privacidade",
-      "subscribeNow": "Assinar Agora",
-      "buyNow": "Comprar Agora",
+      "title": "Comprar $VOICICA",
+      "yourBalance": "Seu Saldo",
+      "estimatedValue": "≈ ${{value}}",
+      "youPay": "Você Paga",
+      "youGet": "Você Recebe",
+      "fee": "+ $0.30 taxa",
+      "usdLabel": "USD",
+      "tokenLabel": "$VOICICA",
+      "rateLabel": "Taxa",
+      "rateValue": "1 USD = 10,000 $VOICICA",
+      "feeLabel": "Taxa de Processamento",
+      "feeValue": "$0.30",
+      "totalLabel": "Total",
+      "buyButton": "COMPRAR $VOICICA",
+      "minAmount": "Mínimo $1.00",
       "processing": "Processando...",
-      "currentPlan": "Plano atual",
-      "manageSubscription": "Gerenciar assinatura"
+      "notSubscribed": "Não Inscrito",
+      "loginRequired": "Faça login para comprar"
+    },
+    "payment": {
+      "verifying": "Verificando Pagamento",
+      "verifyingDesc": "Aguarde enquanto confirmamos seu pagamento...",
+      "successTitle": "Pagamento Bem-sucedido!",
+      "successDesc": "Sua compra está completa. Aproveite seus créditos!",
+      "orderSummary": "Resumo do Pedido",
+      "orderId": "ID do Pedido",
+      "subscription": "Assinatura",
+      "redirecting": "Redirecionando em {{seconds}} segundos...",
+      "goHome": "Ir para Início",
+      "continue": "Continuar",
+      "pendingTitle": "Pagamento Pendente",
+      "pendingDesc": "Seu pagamento está sendo processado. Aguarde um momento.",
+      "checkAgain": "Verificar Novamente",
+      "goBack": "Voltar",
+      "failedTitle": "Pagamento Falhou",
+      "failedDesc": "Algo deu errado com seu pagamento.",
+      "failedHint": "Se você foi cobrado, entre em contato com o suporte.",
+      "tryAgain": "Tentar Novamente",
+      "loading": "Carregando..."
     },
     "insufficientCredits": {
       "title": "Créditos Insuficientes",

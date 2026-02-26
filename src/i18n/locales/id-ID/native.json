@@ -192,9 +192,8 @@
         "credits": "Kredit"
       },
       "subscribe": {
-        "title": "Upgrade ke Pro",
-        "subtitle": "Dapatkan akses tak terbatas ke semua fitur",
-        "button": "Berlangganan Sekarang"
+        "title": "Beli $VOICICA",
+        "subtitle": "$1 = 10,000 $VOICICA"
       }
     },
     "explore": {
@@ -236,35 +235,49 @@
       "loading": "Memuat...",
       "error": "Error",
       "success": "Berhasil",
-      "learnMore": "Pelajari lebih lanjut"
+      "learnMore": "Pelajari lebih lanjut",
+      "buy": "BELI"
     },
     "subscribe": {
-      "tabs": {
-        "subscription": "Langganan",
-        "credits": "Paket Kredit"
-      },
-      "vipBonus": "Jadi VIP: +20% kredit setiap paket",
-      "notSubscribed": "Belum Berlangganan",
-      "mostPopular": "Paling Populer",
-      "creditsPerPeriod": "{{credits}} kredit / {{period}}",
-      "membershipBenefits": "Keuntungan Anggota",
-      "benefits": {
-        "creditsRefresh": "{{credits}} kredit diperbarui setiap bulan",
-        "fastChannel": "Saluran Pembuatan Cepat",
-        "simultaneous": "Pembuatan Bersamaan",
-        "higherQuality": "Kualitas Lebih Tinggi"
-      },
-      "creditPackInfo": {
-        "validity": "Masa Berlaku Paket Kredit: Seumur Hidup",
-        "terms": "Ketentuan Langganan: Pembayaran dibebankan ke akun Anda saat konfirmasi. Langganan diperpanjang otomatis dengan harga asli, kecuali dibatalkan setidaknya 24 jam sebelum periode saat ini berakhir. Kelola langganan dan perpanjangan otomatis di Pengaturan Akun."
-      },
-      "termsOfUse": "Ketentuan Penggunaan",
-      "privacyPolicy": "Kebijakan Privasi",
-      "subscribeNow": "Berlangganan Sekarang",
-      "buyNow": "Beli Sekarang",
+      "title": "Beli $VOICICA",
+      "yourBalance": "Saldo Anda",
+      "estimatedValue": "≈ ${{value}}",
+      "youPay": "Anda Bayar",
+      "youGet": "Anda Dapat",
+      "fee": "+ $0.30 biaya",
+      "usdLabel": "USD",
+      "tokenLabel": "$VOICICA",
+      "rateLabel": "Kurs",
+      "rateValue": "1 USD = 10,000 $VOICICA",
+      "feeLabel": "Biaya Pemrosesan",
+      "feeValue": "$0.30",
+      "totalLabel": "Total",
+      "buyButton": "BELI $VOICICA",
+      "minAmount": "Minimum $1.00",
       "processing": "Memproses...",
-      "currentPlan": "Paket saat ini",
-      "manageSubscription": "Kelola langganan"
+      "notSubscribed": "Belum Berlangganan",
+      "loginRequired": "Silakan masuk untuk membeli"
+    },
+    "payment": {
+      "verifying": "Memverifikasi Pembayaran",
+      "verifyingDesc": "Mohon tunggu sementara kami mengonfirmasi pembayaran Anda...",
+      "successTitle": "Pembayaran Berhasil!",
+      "successDesc": "Pembelian Anda selesai. Nikmati kredit Anda!",
+      "orderSummary": "Ringkasan Pesanan",
+      "orderId": "ID Pesanan",
+      "subscription": "Langganan",
+      "redirecting": "Mengalihkan dalam {{seconds}} detik...",
+      "goHome": "Ke Beranda",
+      "continue": "Lanjutkan",
+      "pendingTitle": "Pembayaran Tertunda",
+      "pendingDesc": "Pembayaran Anda sedang diproses. Mohon tunggu.",
+      "checkAgain": "Periksa Lagi",
+      "goBack": "Kembali",
+      "failedTitle": "Pembayaran Gagal",
+      "failedDesc": "Terjadi kesalahan pada pembayaran Anda.",
+      "failedHint": "Jika Anda sudah dikenakan biaya, silakan hubungi dukungan.",
+      "tryAgain": "Coba Lagi",
+      "loading": "Memuat..."
     },
     "insufficientCredits": {
       "title": "Kredit Tidak Cukup",

@@ -192,9 +192,8 @@
         "credits": "Créditos"
       },
       "subscribe": {
-        "title": "Actualizar a Pro",
-        "subtitle": "Obtén acceso ilimitado a todas las funciones",
-        "button": "Suscribirse Ahora"
+        "title": "Comprar $VOICICA",
+        "subtitle": "$1 = 10,000 $VOICICA"
       }
     },
     "explore": {
@@ -236,35 +235,49 @@
       "loading": "Cargando...",
       "error": "Error",
       "success": "Éxito",
-      "learnMore": "Más información"
+      "learnMore": "Más información",
+      "buy": "COMPRAR"
     },
     "subscribe": {
-      "tabs": {
-        "subscription": "Suscripción",
-        "credits": "Paquetes de Créditos"
-      },
-      "vipBonus": "Hazte VIP: +20% créditos en cada paquete",
-      "notSubscribed": "No Suscrito",
-      "mostPopular": "Más Popular",
-      "creditsPerPeriod": "{{credits}} créditos / {{period}}",
-      "membershipBenefits": "Beneficios de Membresía",
-      "benefits": {
-        "creditsRefresh": "{{credits}} créditos se renuevan mensualmente",
-        "fastChannel": "Canal de Generación Rápida",
-        "simultaneous": "Generaciones Simultáneas",
-        "higherQuality": "Mayor Calidad"
-      },
-      "creditPackInfo": {
-        "validity": "Período de Validez del Paquete de Créditos: De por vida",
-        "terms": "Términos de Suscripción: El pago se carga a tu cuenta al confirmar. La suscripción se renueva automáticamente al precio original, a menos que se cancele al menos 24 horas antes del final del período actual. Gestiona tu suscripción y renovación automática en Configuración de Cuenta."
-      },
-      "termsOfUse": "Términos de Uso",
-      "privacyPolicy": "Política de Privacidad",
-      "subscribeNow": "Suscribirse Ahora",
-      "buyNow": "Comprar Ahora",
+      "title": "Comprar $VOICICA",
+      "yourBalance": "Tu Saldo",
+      "estimatedValue": "≈ ${{value}}",
+      "youPay": "Tú Pagas",
+      "youGet": "Tú Recibes",
+      "fee": "+ $0.30 comisión",
+      "usdLabel": "USD",
+      "tokenLabel": "$VOICICA",
+      "rateLabel": "Tasa",
+      "rateValue": "1 USD = 10,000 $VOICICA",
+      "feeLabel": "Comisión de Procesamiento",
+      "feeValue": "$0.30",
+      "totalLabel": "Total",
+      "buyButton": "COMPRAR $VOICICA",
+      "minAmount": "Mínimo $1.00",
       "processing": "Procesando...",
-      "currentPlan": "Plan actual",
-      "manageSubscription": "Gestionar suscripción"
+      "notSubscribed": "No Suscrito",
+      "loginRequired": "Inicia sesión para comprar"
+    },
+    "payment": {
+      "verifying": "Verificando Pago",
+      "verifyingDesc": "Espera mientras confirmamos tu pago...",
+      "successTitle": "¡Pago Exitoso!",
+      "successDesc": "Tu compra está completa. ¡Disfruta tus créditos!",
+      "orderSummary": "Resumen del Pedido",
+      "orderId": "ID del Pedido",
+      "subscription": "Suscripción",
+      "redirecting": "Redirigiendo en {{seconds}} segundos...",
+      "goHome": "Ir al Inicio",
+      "continue": "Continuar",
+      "pendingTitle": "Pago Pendiente",
+      "pendingDesc": "Tu pago está siendo procesado. Espera un momento.",
+      "checkAgain": "Verificar de Nuevo",
+      "goBack": "Volver",
+      "failedTitle": "Pago Fallido",
+      "failedDesc": "Algo salió mal con tu pago.",
+      "failedHint": "Si se te cobró, contacta al soporte.",
+      "tryAgain": "Reintentar",
+      "loading": "Cargando..."
     },
     "insufficientCredits": {
       "title": "Créditos Insuficientes",

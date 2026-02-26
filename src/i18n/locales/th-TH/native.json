@@ -192,9 +192,8 @@
         "credits": "เครดิต"
       },
       "subscribe": {
-        "title": "อัปเกรดเป็น Pro",
-        "subtitle": "เข้าถึงทุกฟีเจอร์ไม่จำกัด",
-        "button": "สมัครสมาชิกเลย"
+        "title": "ซื้อ $VOICICA",
+        "subtitle": "$1 = 10,000 $VOICICA"
       }
     },
     "explore": {
@@ -236,35 +235,49 @@
       "loading": "กำลังโหลด...",
       "error": "ข้อผิดพลาด",
       "success": "สำเร็จ",
-      "learnMore": "เรียนรู้เพิ่มเติม"
+      "learnMore": "เรียนรู้เพิ่มเติม",
+      "buy": "ซื้อ"
     },
     "subscribe": {
-      "tabs": {
-        "subscription": "สมัครสมาชิก",
-        "credits": "แพ็คเครดิต"
-      },
-      "vipBonus": "เป็น VIP: รับเครดิตเพิ่ม +20% ทุกแพ็ค",
-      "notSubscribed": "ยังไม่ได้สมัคร",
-      "mostPopular": "ยอดนิยม",
-      "creditsPerPeriod": "{{credits}} เครดิต / {{period}}",
-      "membershipBenefits": "สิทธิประโยชน์สมาชิก",
-      "benefits": {
-        "creditsRefresh": "รีเฟรช {{credits}} เครดิตทุกเดือน",
-        "fastChannel": "ช่องทางสร้างเร็ว",
-        "simultaneous": "สร้างพร้อมกันได้",
-        "higherQuality": "คุณภาพสูงกว่า"
-      },
-      "creditPackInfo": {
-        "validity": "ระยะเวลาใช้งานแพ็คเครดิต: ตลอดชีพ",
-        "terms": "เงื่อนไขการสมัคร: ชำระเงินเมื่อยืนยัน สมัครสมาชิกจะต่ออายุอัตโนมัติในราคาเดิม เว้นแต่ยกเลิกก่อนสิ้นสุดรอบอย่างน้อย 24 ชั่วโมง จัดการการสมัครและการต่ออายุอัตโนมัติในการตั้งค่าบัญชี"
-      },
-      "termsOfUse": "ข้อกำหนดการใช้งาน",
-      "privacyPolicy": "นโยบายความเป็นส่วนตัว",
-      "subscribeNow": "สมัครสมาชิกเลย",
-      "buyNow": "ซื้อเลย",
+      "title": "ซื้อ $VOICICA",
+      "yourBalance": "ยอดคงเหลือ",
+      "estimatedValue": "≈ ${{value}}",
+      "youPay": "คุณจ่าย",
+      "youGet": "คุณได้รับ",
+      "fee": "+ $0.30 ค่าธรรมเนียม",
+      "usdLabel": "USD",
+      "tokenLabel": "$VOICICA",
+      "rateLabel": "อัตรา",
+      "rateValue": "1 USD = 10,000 $VOICICA",
+      "feeLabel": "ค่าดำเนินการ",
+      "feeValue": "$0.30",
+      "totalLabel": "รวม",
+      "buyButton": "ซื้อ $VOICICA",
+      "minAmount": "ขั้นต่ำ $1.00",
       "processing": "กำลังดำเนินการ...",
-      "currentPlan": "แพ็กเกจปัจจุบัน",
-      "manageSubscription": "จัดการการสมัครสมาชิก"
+      "notSubscribed": "ยังไม่ได้สมัคร",
+      "loginRequired": "กรุณาเข้าสู่ระบบเพื่อซื้อ"
+    },
+    "payment": {
+      "verifying": "กำลังตรวจสอบการชำระเงิน",
+      "verifyingDesc": "กรุณารอสักครู่ขณะยืนยันการชำระเงิน...",
+      "successTitle": "ชำระเงินสำเร็จ！",
+      "successDesc": "การซื้อเสร็จสมบูรณ์ เพลิดเพลินกับเครดิตของคุณ！",
+      "orderSummary": "สรุปคำสั่งซื้อ",
+      "orderId": "หมายเลขคำสั่งซื้อ",
+      "subscription": "การสมัครสมาชิก",
+      "redirecting": "เปลี่ยนเส้นทางใน {{seconds}} วินาที...",
+      "goHome": "กลับหน้าหลัก",
+      "continue": "ดำเนินการต่อ",
+      "pendingTitle": "รอการชำระเงิน",
+      "pendingDesc": "การชำระเงินกำลังดำเนินการ กรุณารอสักครู่",
+      "checkAgain": "ตรวจสอบอีกครั้ง",
+      "goBack": "กลับ",
+      "failedTitle": "การชำระเงินล้มเหลว",
+      "failedDesc": "เกิดข้อผิดพลาดกับการชำระเงินของคุณ",
+      "failedHint": "หากถูกเรียกเก็บเงินแล้ว กรุณาติดต่อฝ่ายสนับสนุน",
+      "tryAgain": "ลองใหม่",
+      "loading": "กำลังโหลด..."
     },
     "insufficientCredits": {
       "title": "เครดิตไม่เพียงพอ",

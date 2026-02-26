@@ -232,7 +232,7 @@
       },
       "subscribe": {
         "title": "購買 $VOICICA",
-        "subtitle": "充值積分解鎖全部功能"
+        "subtitle": "$1 = 10,000 $VOICICA"
       }
     },
     "explore": {
@@ -274,23 +274,49 @@
       "loading": "載入中...",
       "error": "錯誤",
       "success": "成功",
-      "learnMore": "了解更多"
+      "learnMore": "了解更多",
+      "buy": "購買"
     },
     "subscribe": {
-      "title": "購買 VOICICA",
+      "title": "購買 $VOICICA",
       "yourBalance": "當前餘額",
       "estimatedValue": "≈ ${{value}}",
       "youPay": "支付金額",
       "youGet": "獲得數量",
       "fee": "+ $0.30 手續費",
+      "usdLabel": "USD",
+      "tokenLabel": "$VOICICA",
       "rateLabel": "匯率",
+      "rateValue": "1 USD = 10,000 $VOICICA",
       "feeLabel": "手續費",
+      "feeValue": "$0.30",
       "totalLabel": "合計",
-      "buyButton": "購買 VOICICA",
+      "buyButton": "購買 $VOICICA",
       "minAmount": "最低 $1.00",
       "processing": "處理中...",
       "notSubscribed": "未訂閱",
       "loginRequired": "請先登入後購買"
+    },
+    "payment": {
+      "verifying": "驗證付款中",
+      "verifyingDesc": "請稍候，正在確認您的付款...",
+      "successTitle": "付款成功！",
+      "successDesc": "購買完成，積分已到帳！",
+      "orderSummary": "訂單摘要",
+      "orderId": "訂單號",
+      "subscription": "訂閱",
+      "redirecting": "{{seconds}} 秒後自動跳轉...",
+      "goHome": "返回首頁",
+      "continue": "繼續",
+      "pendingTitle": "付款處理中",
+      "pendingDesc": "您的付款正在處理，請稍候。",
+      "checkAgain": "再次檢查",
+      "goBack": "返回",
+      "failedTitle": "付款失敗",
+      "failedDesc": "付款出現問題。",
+      "failedHint": "如果已扣款，請聯繫客服。",
+      "tryAgain": "重試",
+      "loading": "載入中..."
     },
     "insufficientCredits": {
       "title": "積分不足",

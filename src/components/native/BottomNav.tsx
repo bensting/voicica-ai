@@ -1,9 +1,7 @@
 'use client';
 
-import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import CreateSheet from './CreateSheet';
 import { useBottomNav } from '@/contexts/BottomNavContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 
@@ -51,27 +49,12 @@ const TeamIcon = ({ active }: { active: boolean }) => (
   </svg>
 );
 
-// 加号图标
-const PlusIcon = () => (
-  <svg className="w-6 h-6 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-    <path d="M12 5v14M5 12h14" />
-  </svg>
-);
-
-// 关闭图标
-const CloseIcon = () => (
-  <svg className="w-6 h-6 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-    <path d="M18 6L6 18M6 6l12 12" />
-  </svg>
-);
-
 /**
  * 底部导航栏
- * Explore / + / Me
+ * Explore / Team / Me
  */
 export default function BottomNav() {
   const pathname = usePathname();
-  const [isCreateOpen, setIsCreateOpen] = useState(false);
   const { isVisible } = useBottomNav();
   const { t } = useLanguage();
 
@@ -104,19 +87,6 @@ export default function BottomNav() {
             </span>
           </Link>
 
-          {/* 中间创建按钮 */}
-          <div className="flex items-center justify-center flex-1">
-            <button
-              onClick={() => setIsCreateOpen(!isCreateOpen)}
-              className={`w-12 h-12 rounded-full flex items-center justify-center transition-all active:scale-95 ${isCreateOpen
-                  ? 'bg-slate-800 text-white'
-                  : 'bg-gradient-to-r from-cyan-500 via-purple-500 to-pink-500 shadow-lg shadow-purple-500/40 hover:shadow-purple-500/60 hover:-translate-y-0.5'
-                }`}
-            >
-              {isCreateOpen ? <CloseIcon /> : <PlusIcon />}
-            </button>
-          </div>
-
           {/* Team */}
           <Link
             href="/native/referral-earnings"
@@ -146,9 +116,6 @@ export default function BottomNav() {
           </Link>
         </div>
       </nav>
-
-      {/* 创建菜单 Sheet */}
-      <CreateSheet isOpen={isCreateOpen} onClose={() => setIsCreateOpen(false)} />
     </>
   );
 }

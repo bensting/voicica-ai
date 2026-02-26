@@ -264,7 +264,7 @@ export async function getReferralTeam(
 
     // 批量获取子团队人数（递归 CTE，避免 N+1）
     const memberIds = referrals.map(r => r.userId);
-    let subTeamCounts: Record<string, number> = {};
+    const subTeamCounts: Record<string, number> = {};
     if (memberIds.length > 0) {
       const subTeamResult = await db.execute<{ root_id: string; cnt: string }>(sql`
         WITH RECURSIVE sub_team AS (
@@ -284,7 +284,7 @@ export async function getReferralTeam(
     }
 
     // 批量获取累计贡献提成
-    let contribMap: Record<string, number> = {};
+    const contribMap: Record<string, number> = {};
     if (memberIds.length > 0) {
       const contribResult = await db.execute<{ from_user_id: string; total: string }>(sql`
         SELECT from_user_id, SUM(commission_amount)::text AS total

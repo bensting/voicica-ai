@@ -38,6 +38,30 @@ export async function generateUniqueCode(): Promise<string> {
 }
 
 /**
+ * 检测循环推荐：从 referrerId 沿推荐链向上查找，看是否会遇到 targetUserId
+ */
+export async function hasCircularReferral(referrerId: string, targetUserId: string): Promise<boolean> {
+  let currentId: string | null = referrerId;
+  const visited = new Set<string>();
+
+  while (currentId) {
+    if (currentId === targetUserId) return true;
+    if (visited.has(currentId)) break;
+    visited.add(currentId);
+
+    const [row] = await db
+      .select({ referredBy: users.referredBy })
+      .from(users)
+      .where(eq(users.userId, currentId))
+      .limit(1);
+
+    currentId = row?.referredBy ?? null;
+  }
+
+  return false;
+}
+
+/**
  * 推荐信息返回类型
  */
 export interface ReferralInfo {
@@ -286,6 +310,11 @@ export async function processReferralCode(code: string): Promise<{ success: bool
     // 不能推荐自己
     if (referrer.userId === userId) {
       return { success: false, message: 'Cannot refer yourself' };
+    }
+
+    // 检测循环推荐
+    if (await hasCircularReferral(referrer.userId, userId)) {
+      return { success: false, message: 'Circular referral detected' };
     }
 
     // 绑定推荐人

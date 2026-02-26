@@ -7,7 +7,7 @@ import db from '@/lib/db';
 import { users, anonymousUsers, userSubscriptions, ttsRecords, creditHistory } from '@/db/schema';
 import { eq, and, or, ilike, desc, count, isNull, isNotNull, lt, gt } from 'drizzle-orm';
 import { verifyAdminWithoutDb } from '@/lib/auth-admin';
-import { generateUniqueCode, checkAndUpgradeLevel } from '@/actions/referral';
+import { generateUniqueCode, checkAndUpgradeLevel, hasCircularReferral } from '@/actions/referral';
 
 /**
  * 获取注册用户列表
@@ -533,6 +533,10 @@ export async function adminBindReferrer(
 
     if (referrer.userId === userId) {
       return { success: false, message: '不能绑定自己为推荐人' };
+    }
+
+    if (await hasCircularReferral(referrer.userId, userId)) {
+      return { success: false, message: '存在循环推荐关系，无法绑定' };
     }
 
     await db

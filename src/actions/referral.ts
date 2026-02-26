@@ -556,7 +556,7 @@ export async function distributeReferralCommissions(
     await db.insert(creditHistory).values({
       userId: referrerId,
       amount: commissionAmount,
-      description: `Referral commission (${levelLabel}) from mining | ${rate * 100}% of ${amount}`,
+      description: `Referral commission (${levelLabel}) from mining | ${rate * 100}% of ${amount} | from:${userId}`,
       productType: ProductType.REFERRAL_COMMISSION,
     });
 

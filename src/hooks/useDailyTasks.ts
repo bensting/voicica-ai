@@ -69,7 +69,7 @@ interface UseDailyTasksReturn {
  * 每日任务 Hook
  */
 export function useDailyTasks(): UseDailyTasksReturn {
-  const { loading: authLoading, ensureFreshToken } = useFirebaseAuth();
+  const { user, loading: authLoading, ensureFreshToken } = useFirebaseAuth();
   // 签到和观看视频都使用同一个激励视频广告，共享缓存，加载更快
   const { showRewardedAd, isReady: isAdReady } = useRewardedAd();
   // 获取最近一次广告收益数据（来自 AdMob OnPaidEvent）
@@ -100,17 +100,23 @@ export function useDailyTasks(): UseDailyTasksReturn {
     try {
       setLoading(true);
       setError(null);
-      // 确保 token 新鲜，防止已登录用户被降级为匿名
-      await ensureFreshToken();
       const data = await getDailyTasksStatus(isNative);
-      setStatus(data);
+      // 如果已登录但返回 null（可能 token 过期被降级为匿名），刷一次 token 重试
+      if (!data && user) {
+        console.log('[useDailyTasks] 已登录但返回 null，尝试刷新 token 重试');
+        await ensureFreshToken();
+        const retryData = await getDailyTasksStatus(isNative);
+        setStatus(retryData);
+      } else {
+        setStatus(data);
+      }
     } catch (err) {
       console.error('❌ [useDailyTasks] 加载状态失败:', err);
       setError('加载失败');
     } finally {
       setLoading(false);
     }
-  }, [authLoading, isNative, ensureFreshToken]);
+  }, [authLoading, isNative, user, ensureFreshToken]);
 
   // 初始化加载
   useEffect(() => {
@@ -149,9 +155,6 @@ export function useDailyTasks(): UseDailyTasksReturn {
       cancelledRef.current = false;
       setClaiming(true);
       setError(null);
-
-      // 确保 token 新鲜
-      await ensureFreshToken();
 
       // 签到前需要先观看激励视频广告（Web 端使用 ExoClick VAST，原生端使用 AdMob/Appodeal）
       console.log('[useDailyTasks] 开始显示签到激励视频广告...');
@@ -208,7 +211,7 @@ export function useDailyTasks(): UseDailyTasksReturn {
       }
       checkinInProgressRef.current = false;
     }
-  }, [refresh, showRewardedAd, ensureFreshToken]);
+  }, [refresh, showRewardedAd]);
 
   // 领取广告奖励
   const doClaimAdReward = useCallback(async (): Promise<TaskResult> => {
@@ -216,9 +219,6 @@ export function useDailyTasks(): UseDailyTasksReturn {
       cancelledRef.current = false;
       setClaiming(true);
       setError(null);
-
-      // 确保 token 新鲜
-      await ensureFreshToken();
 
       // 清空旧的广告收益数据，等待新广告的 OnPaidEvent
       clearLastAdRevenue();
@@ -279,7 +279,7 @@ export function useDailyTasks(): UseDailyTasksReturn {
         setClaiming(false);
       }
     }
-  }, [refresh, showRewardedAd, clearLastAdRevenue, ensureFreshToken]);
+  }, [refresh, showRewardedAd, clearLastAdRevenue]);
 
   return {
     status,

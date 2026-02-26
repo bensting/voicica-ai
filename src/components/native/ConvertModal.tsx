@@ -50,7 +50,9 @@ export default function ConvertModal({ isOpen, onClose, onSuccess }: ConvertModa
 
   const handleMax = useCallback(() => {
     if (maxConvertible > 0) {
-      setAmount(String(maxConvertible));
+      // 最多4位小数，去掉末尾0
+      const rounded = Math.round(maxConvertible * 10000) / 10000;
+      setAmount(String(rounded));
     }
   }, [maxConvertible]);
 
@@ -61,12 +63,13 @@ export default function ConvertModal({ isOpen, onClose, onSuccess }: ConvertModa
     setError(null);
     setSuccessMsg(null);
 
-    const result = await convertVoicicaToUsdt(Math.floor(inputAmount));
+    const convertAmount = Math.round(inputAmount * 10000) / 10000;
+    const result = await convertVoicicaToUsdt(convertAmount);
 
     if (result.success) {
       setSuccessMsg(
         t('native.totalAssets.convertModal.convertSuccess', {
-          amount: Math.floor(inputAmount),
+          amount: convertAmount,
           usdt: (result.usdt_received ?? 0).toFixed(4),
         })
       );

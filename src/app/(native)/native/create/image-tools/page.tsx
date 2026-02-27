@@ -271,7 +271,6 @@ export default function NativeImageToolsPage() {
   }, [isGeneratingModalOpen, generatingStatus, isSubscribed, adWatched, showRewardedAd]);
 
   const canProcess = !!uploadedImage && !isGenerating;
-  const tabLabel = activeTab === 'bg-remove' ? 'BG Remove' : 'HD Upscale';
   const maxSizeMB = activeTab === 'bg-remove' ? 5 : 10;
 
   return (

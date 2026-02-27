@@ -1,7 +1,6 @@
 'use client';
 
 import Image from 'next/image';
-import Link from 'next/link';
 import LoadingDots from '@/components/native/common/LoadingDots';
 import { useLanguage } from '@/contexts/LanguageContext';
 
@@ -21,8 +20,8 @@ export default function UserStatsBar({
   const { t } = useLanguage();
 
   return (
-    <Link
-      href="/native/subscribe"
+    <button
+      onClick={() => { window.location.href = '/native/subscribe'; }}
       className="mx-4 flex items-center justify-center gap-2 py-2 active:opacity-70 transition-opacity"
     >
       <Image src="/logo/voicica-token.png" alt="" width={20} height={20} className="w-5 h-5" />
@@ -30,6 +29,6 @@ export default function UserStatsBar({
         {creditsLoading ? <LoadingDots /> : Math.floor(credits).toLocaleString()}
       </span>
       <span className="text-slate-500 text-xs font-medium">{t('native.subscribe.tokenLabel')}</span>
-    </Link>
+    </button>
   );
 }

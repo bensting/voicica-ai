@@ -1,7 +1,6 @@
 'use client';
 
 import Image from 'next/image';
-import Link from 'next/link';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 /**
@@ -13,9 +12,9 @@ export default function SubscribeCard() {
 
   return (
     <div className="mx-4 mt-1">
-      <Link
-        href="/native/subscribe"
-        className="block relative overflow-hidden rounded-2xl p-4"
+      <button
+        onClick={() => { window.location.href = '/native/subscribe'; }}
+        className="block relative overflow-hidden rounded-2xl p-4 w-full text-left"
         style={{ background: 'linear-gradient(135deg, rgba(180,83,9,0.3), rgba(217,119,6,0.2), rgba(245,158,11,0.15))' }}
       >
         {/* Decorative glow */}
@@ -37,7 +36,7 @@ export default function SubscribeCard() {
             {t('native.common.buy')}
           </div>
         </div>
-      </Link>
+      </button>
     </div>
   );
 }

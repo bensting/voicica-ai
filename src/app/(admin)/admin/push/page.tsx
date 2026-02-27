@@ -330,7 +330,7 @@ function StatCard({ label, value, color }: { label: string; value: number | stri
 
 function formatTime(iso: string) {
   try {
-    const d = new Date(iso + 'Z');
+    const d = new Date(iso);
     return d.toLocaleString('zh-CN', {
       month: '2-digit',
       day: '2-digit',

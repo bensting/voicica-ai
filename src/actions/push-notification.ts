@@ -15,47 +15,52 @@ export async function adminSendPush(params: {
   userId?: string;
   title: string;
   body: string;
-}) {
-  await verifyAdmin();
-  const admin = await getCurrentUser();
+}): Promise<{ success: boolean; message: string; sent?: number; failed?: number; cleaned?: number; total?: number }> {
+  try {
+    await verifyAdmin();
+    const admin = await getCurrentUser();
 
-  const { target, userId, title, body } = params;
+    const { target, userId, title, body } = params;
 
-  if (!title.trim() || !body.trim()) {
-    throw new Error('标题和内容不能为空');
-  }
-
-  let result: { sent: number; failed: number; cleaned: number; total?: number };
-
-  if (target === 'user') {
-    if (!userId?.trim()) {
-      throw new Error('请输入用户 ID');
+    if (!title.trim() || !body.trim()) {
+      return { success: false, message: '标题和内容不能为空' };
     }
-    result = await sendPushToUser(userId.trim(), title, body);
-  } else {
-    result = await sendPushToAll(title, body);
+
+    let result: { sent: number; failed: number; cleaned: number; total?: number };
+
+    if (target === 'user') {
+      if (!userId?.trim()) {
+        return { success: false, message: '请输入用户 ID' };
+      }
+      result = await sendPushToUser(userId.trim(), title, body);
+    } else {
+      result = await sendPushToAll(title, body);
+    }
+
+    // 写入历史记录
+    const db = await getDb();
+    await db.insert(pushNotificationLogs).values({
+      target,
+      targetUserId: target === 'user' ? userId?.trim() : null,
+      title,
+      body,
+      sentBy: admin.email || admin.uid,
+      totalDevices: result.total ?? result.sent + result.failed,
+      sentCount: result.sent,
+      failedCount: result.failed,
+    });
+
+    const message = target === 'user'
+      ? (result.sent > 0
+          ? `已推送给用户 ${userId} 的 ${result.sent} 台设备`
+          : `用户 ${userId} 没有注册设备`)
+      : `广播完成：${result.sent}/${result.total} 台设备成功`;
+
+    return { success: true, message, ...result };
+  } catch (e) {
+    console.error('[Push] adminSendPush error:', e);
+    return { success: false, message: e instanceof Error ? e.message : '推送失败' };
   }
-
-  // 写入历史记录
-  const db = await getDb();
-  await db.insert(pushNotificationLogs).values({
-    target,
-    targetUserId: target === 'user' ? userId?.trim() : null,
-    title,
-    body,
-    sentBy: admin.email || admin.uid,
-    totalDevices: result.total ?? result.sent + result.failed,
-    sentCount: result.sent,
-    failedCount: result.failed,
-  });
-
-  const message = target === 'user'
-    ? (result.sent > 0
-        ? `已推送给用户 ${userId} 的 ${result.sent} 台设备`
-        : `用户 ${userId} 没有注册设备`)
-    : `广播完成：${result.sent}/${result.total} 台设备成功`;
-
-  return { success: true, message, ...result };
 }
 
 /**

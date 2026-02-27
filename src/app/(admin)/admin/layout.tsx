@@ -48,6 +48,7 @@ const MENU_GROUPS = [
     items: [
       { href: '/admin/native-banners', label: 'Native Banner', icon: '🖼️' },
       { href: '/admin/lucky-draws', label: '抽奖管理', icon: '🎰' },
+      { href: '/admin/push', label: '推送通知', icon: '🔔' },
     ],
   },
   {

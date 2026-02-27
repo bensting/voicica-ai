@@ -3,21 +3,22 @@
 import { getDb } from '@/lib/db';
 import { deviceTokens } from '@/db/schema';
 import { eq } from 'drizzle-orm';
-import { getCurrentUser } from '@/lib/auth-firebase';
+import { getUserOrAnonymous } from '@/lib/auth-firebase';
 
 /**
  * 注册/更新设备 FCM token
- * 相同 token 更新 userId（支持用户切换账号场景）
+ * 支持已登录用户和匿名用户
+ * 相同 token 更新 userId（用户登录/切换账号时自动关联）
  */
 export async function registerDeviceToken(token: string, platform: string) {
-  const authUser = await getCurrentUser();
+  const user = await getUserOrAnonymous();
   const db = await getDb();
 
   const now = new Date().toISOString();
 
   await db.insert(deviceTokens)
     .values({
-      userId: authUser.uid,
+      userId: user.user_id,
       token,
       platform,
       createdAt: now,
@@ -25,7 +26,7 @@ export async function registerDeviceToken(token: string, platform: string) {
     })
     .onConflictDoUpdate({
       target: deviceTokens.token,
-      set: { userId: authUser.uid, updatedAt: now },
+      set: { userId: user.user_id, updatedAt: now },
     });
 }
 

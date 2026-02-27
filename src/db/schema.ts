@@ -816,6 +816,21 @@ export const deviceTokens = sqliteTable("device_tokens", {
 	uniqueIndex("uq_device_tokens_token").on(table.token),
 ]);
 
+export const pushNotificationLogs = sqliteTable("push_notification_logs", {
+	id: integer().primaryKey({ autoIncrement: true }),
+	target: text("target").notNull(), // 'all' | 'user'
+	targetUserId: text("target_user_id"), // 指定用户时的 userId
+	title: text("title").notNull(),
+	body: text("body").notNull(),
+	sentBy: text("sent_by").notNull(), // 发送者（admin email）
+	totalDevices: integer("total_devices").default(0).notNull(),
+	sentCount: integer("sent_count").default(0).notNull(),
+	failedCount: integer("failed_count").default(0).notNull(),
+	createdAt: text("created_at").default(sql`(datetime('now'))`).notNull(),
+}, (table) => [
+	index("idx_push_logs_created_at").on(table.createdAt),
+]);
+
 // ============================================================
 // Referral Commission Tables
 // ============================================================

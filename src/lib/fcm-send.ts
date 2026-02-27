@@ -73,28 +73,22 @@ async function getAccessToken(): Promise<string> {
 }
 
 /**
- * 向指定用户的所有设备发送推送通知
+ * 向一批 token 发送推送，返回成功/失败计数
  */
-export async function sendPushToUser(
-  userId: string,
+async function sendToTokens(
+  tokens: { token: string }[],
   title: string,
   body: string,
   data?: Record<string, string>
-) {
-  const db = await getDb();
-  const tokens = await db.select().from(deviceTokens).where(eq(deviceTokens.userId, userId));
-
-  if (tokens.length === 0) {
-    console.log(`[FCM] No device tokens for user ${userId}`);
-    return;
-  }
-
+): Promise<{ sent: number; failed: number; cleaned: number }> {
   const projectId = process.env.FIREBASE_ADMIN_PROJECT_ID || process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
   if (!projectId) {
     throw new Error('Firebase project ID not configured');
   }
 
   const accessToken = await getAccessToken();
+  const db = await getDb();
+  let sent = 0, failed = 0, cleaned = 0;
 
   for (const { token } of tokens) {
     try {
@@ -120,17 +114,63 @@ export async function sendPushToUser(
       if (!resp.ok) {
         const text = await resp.text();
         console.error(`[FCM] Failed to send to token ${token.substring(0, 20)}...: ${resp.status} ${text}`);
+        failed++;
 
         // token 失效时清理
         if (resp.status === 404 || resp.status === 400) {
           await db.delete(deviceTokens).where(eq(deviceTokens.token, token));
-          console.log(`[FCM] Removed invalid token`);
+          cleaned++;
         }
       } else {
-        console.log(`[FCM] Sent to token ${token.substring(0, 20)}...`);
+        sent++;
       }
     } catch (e) {
       console.error(`[FCM] Error sending to token:`, e);
+      failed++;
     }
   }
+
+  console.log(`[FCM] Result: ${sent} sent, ${failed} failed, ${cleaned} cleaned`);
+  return { sent, failed, cleaned };
+}
+
+/**
+ * 向指定用户的所有设备发送推送通知
+ */
+export async function sendPushToUser(
+  userId: string,
+  title: string,
+  body: string,
+  data?: Record<string, string>
+) {
+  const db = await getDb();
+  const tokens = await db.select().from(deviceTokens).where(eq(deviceTokens.userId, userId));
+
+  if (tokens.length === 0) {
+    console.log(`[FCM] No device tokens for user ${userId}`);
+    return { sent: 0, failed: 0, cleaned: 0 };
+  }
+
+  return sendToTokens(tokens, title, body, data);
+}
+
+/**
+ * 向所有注册设备广播推送通知
+ */
+export async function sendPushToAll(
+  title: string,
+  body: string,
+  data?: Record<string, string>
+) {
+  const db = await getDb();
+  const tokens = await db.select().from(deviceTokens);
+
+  if (tokens.length === 0) {
+    console.log('[FCM] No device tokens registered');
+    return { sent: 0, failed: 0, cleaned: 0, total: 0 };
+  }
+
+  console.log(`[FCM] Broadcasting to ${tokens.length} devices...`);
+  const result = await sendToTokens(tokens, title, body, data);
+  return { ...result, total: tokens.length };
 }

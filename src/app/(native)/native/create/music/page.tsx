@@ -783,7 +783,6 @@ export default function NativeMusicPage() {
         {/* Credits Info Bar */}
         <CreditsInfoBar
           credits={credits}
-          creditRules={[{ name: 'Music generation', credits: 25 }]}
           className="mb-3"
         />
 

@@ -510,7 +510,6 @@ export default function NativeDialoguePage() {
       >
         <CreditsInfoBar
           credits={credits}
-          creditRules={[{ name: t('native.createDialogue.dialogue'), description: t('native.createDialogue.creditsRule') }]}
           className="mb-3"
         />
 

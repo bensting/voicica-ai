@@ -697,7 +697,6 @@ export default function NativeCoverPage() {
         {/* Credits Info Bar */}
         <CreditsInfoBar
           credits={credits}
-          creditRules={[{ name: 'Cover generation', credits: 50 }]}
           className="mb-3"
         />
 

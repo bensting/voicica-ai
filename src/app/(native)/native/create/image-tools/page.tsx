@@ -390,7 +390,6 @@ export default function NativeImageToolsPage() {
       >
         <CreditsInfoBar
           credits={credits}
-          creditRules={[{ name: tabLabel, credits: CREDITS_PER_TASK }]}
           className="mb-3"
         />
 

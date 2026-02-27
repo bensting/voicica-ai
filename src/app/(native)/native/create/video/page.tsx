@@ -476,7 +476,6 @@ export default function CreateVideoPage() {
         {/* Credits Info Bar */}
         <CreditsInfoBar
           credits={userCredits}
-          creditRules={[{ name: 'Video generation', credits: requiredCredits }]}
           className="mb-3"
         />
 

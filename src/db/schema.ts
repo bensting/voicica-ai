@@ -17,7 +17,7 @@ export const anonymousUsers = sqliteTable("anonymous_users", {
 	isAnonymous: integer("is_anonymous", { mode: 'boolean' }).notNull(),
 	convertedToUserId: text("converted_to_user_id"),
 	id: integer().primaryKey({ autoIncrement: true }),
-	createdAt: text("created_at").default(sql`(datetime('now'))`).notNull(),
+	createdAt: text("created_at").default(sql`(strftime('%Y-%m-%dT%H:%M:%fZ','now'))`).notNull(),
 	updatedAt: text("updated_at").$onUpdate(() => new Date().toISOString()),
 	platform: text("platform"),
 }, (table) => [
@@ -46,7 +46,7 @@ export const taskQueue = sqliteTable("task_queue", {
 	completedAt: text("completed_at"),
 	timeoutSeconds: integer("timeout_seconds").notNull(),
 	id: integer().primaryKey({ autoIncrement: true }),
-	createdAt: text("created_at").default(sql`(datetime('now'))`).notNull(),
+	createdAt: text("created_at").default(sql`(strftime('%Y-%m-%dT%H:%M:%fZ','now'))`).notNull(),
 	updatedAt: text("updated_at").$onUpdate(() => new Date().toISOString()),
 });
 
@@ -63,7 +63,7 @@ export const subscriptionHistory = sqliteTable("subscription_history", {
 	currency: text("currency"),
 	creditsChange: integer("credits_change"),
 	metadata: text("metadata", { mode: 'json' }),
-	createdAt: text("created_at").default(sql`(datetime('now'))`).notNull(),
+	createdAt: text("created_at").default(sql`(strftime('%Y-%m-%dT%H:%M:%fZ','now'))`).notNull(),
 }, (table) => [
 	index("ix_subscription_history_created_at").on(table.createdAt),
 	index("ix_subscription_history_event_type").on(table.eventType),
@@ -85,7 +85,7 @@ export const users = sqliteTable("users", {
 	credits: real("credits").notNull(),
 	totalCreditsUsed: real("total_credits_used").notNull(),
 	id: integer().primaryKey({ autoIncrement: true }),
-	createdAt: text("created_at").default(sql`(datetime('now'))`).notNull(),
+	createdAt: text("created_at").default(sql`(strftime('%Y-%m-%dT%H:%M:%fZ','now'))`).notNull(),
 	updatedAt: text("updated_at").$onUpdate(() => new Date().toISOString()),
 	phone: text("phone"),
 	monthlyCredits: real("monthly_credits").default(0).notNull(),
@@ -125,7 +125,7 @@ export const ttsRecords = sqliteTable("tts_records", {
 	errorMessage: text("error_message"),
 	completedAt: text("completed_at"),
 	id: integer().primaryKey({ autoIncrement: true }),
-	createdAt: text("created_at").default(sql`(datetime('now'))`).notNull(),
+	createdAt: text("created_at").default(sql`(strftime('%Y-%m-%dT%H:%M:%fZ','now'))`).notNull(),
 	updatedAt: text("updated_at").$onUpdate(() => new Date().toISOString()),
 	style: text("style"),
 	shareId: text("share_id"),
@@ -156,7 +156,7 @@ export const creditHistory = sqliteTable("credit_history", {
 	taskId: text("task_id"),
 	description: text().notNull(),
 	id: integer().primaryKey({ autoIncrement: true }),
-	createdAt: text("created_at").default(sql`(datetime('now'))`).notNull(),
+	createdAt: text("created_at").default(sql`(strftime('%Y-%m-%dT%H:%M:%fZ','now'))`).notNull(),
 	updatedAt: text("updated_at").$onUpdate(() => new Date().toISOString()),
 	productType: text("product_type"),
 	adRevenueMicros: integer("ad_revenue_micros"),
@@ -186,7 +186,7 @@ export const voices = sqliteTable("voices", {
 	isActive: integer("is_active", { mode: 'boolean' }).notNull(),
 	sortOrder: integer("sort_order").notNull(),
 	id: integer().primaryKey({ autoIncrement: true }),
-	createdAt: text("created_at").default(sql`(datetime('now'))`).notNull(),
+	createdAt: text("created_at").default(sql`(strftime('%Y-%m-%dT%H:%M:%fZ','now'))`).notNull(),
 	updatedAt: text("updated_at").$onUpdate(() => new Date().toISOString()),
 	displayName: text("display_name"),
 }, (table) => [
@@ -217,7 +217,7 @@ export const userSubscriptions = sqliteTable("user_subscriptions", {
 	creditsAllocated: integer("credits_allocated").notNull(),
 	amount: integer(),
 	currency: text("currency"),
-	createdAt: text("created_at").default(sql`(datetime('now'))`).notNull(),
+	createdAt: text("created_at").default(sql`(strftime('%Y-%m-%dT%H:%M:%fZ','now'))`).notNull(),
 	updatedAt: text("updated_at").$onUpdate(() => new Date().toISOString()).notNull(),
 	activatedAt: text("activated_at"),
 	cancelledAt: text("cancelled_at"),
@@ -254,7 +254,7 @@ export const appReleases = sqliteTable("app_releases", {
 	isForceUpdate: integer("is_force_update", { mode: 'boolean' }).default(false).notNull(),
 	isActive: integer("is_active", { mode: 'boolean' }).default(true).notNull(),
 	downloadCount: integer("download_count").default(0).notNull(),
-	createdAt: text("created_at").default(sql`(datetime('now'))`).notNull(),
+	createdAt: text("created_at").default(sql`(strftime('%Y-%m-%dT%H:%M:%fZ','now'))`).notNull(),
 	updatedAt: text("updated_at").$onUpdate(() => new Date().toISOString()),
 }, (table) => [
 	uniqueIndex("app_releases_platform_version_key").on(table.platform, table.version),
@@ -268,7 +268,7 @@ export const userEvents = sqliteTable("user_events", {
 	userId: text("user_id").notNull(),
 	event: text("event").notNull(),
 	data: text("data", { mode: 'json' }),
-	createdAt: text("created_at").default(sql`(datetime('now'))`).notNull(),
+	createdAt: text("created_at").default(sql`(strftime('%Y-%m-%dT%H:%M:%fZ','now'))`).notNull(),
 }, (table) => [
 	index("ix_user_events_created_at").on(table.createdAt),
 	index("ix_user_events_event").on(table.event),
@@ -284,7 +284,7 @@ export const dailyTasks = sqliteTable("daily_tasks", {
 	checkinCredits: integer("checkin_credits").default(0).notNull(),
 	adRewardsClaimed: integer("ad_rewards_claimed").default(0).notNull(),
 	adRewardsCredits: real("ad_rewards_credits").default(0).notNull(),
-	createdAt: text("created_at").default(sql`(datetime('now'))`).notNull(),
+	createdAt: text("created_at").default(sql`(strftime('%Y-%m-%dT%H:%M:%fZ','now'))`).notNull(),
 	updatedAt: text("updated_at").$onUpdate(() => new Date().toISOString()),
 }, (table) => [
 	index("ix_daily_tasks_date").on(table.date),
@@ -301,7 +301,7 @@ export const adRewardTransactions = sqliteTable("ad_reward_transactions", {
 	adUnit: text("ad_unit"),
 	rewardAmount: real("reward_amount").default(0).notNull(),
 	processed: integer("processed", { mode: 'boolean' }).default(false).notNull(),
-	createdAt: text("created_at").default(sql`(datetime('now'))`).notNull(),
+	createdAt: text("created_at").default(sql`(strftime('%Y-%m-%dT%H:%M:%fZ','now'))`).notNull(),
 }, (table) => [
 	uniqueIndex("ad_reward_transactions_transaction_id_key").on(table.transactionId),
 	index("ix_ad_reward_transactions_processed").on(table.processed),
@@ -324,7 +324,7 @@ export const stories = sqliteTable("stories", {
 	videoStatus: text("video_status").default('none').notNull(),
 	videoDuration: integer("video_duration"),
 	videoThumbnail: text("video_thumbnail"),
-	createdAt: text("created_at").default(sql`(datetime('now'))`).notNull(),
+	createdAt: text("created_at").default(sql`(strftime('%Y-%m-%dT%H:%M:%fZ','now'))`).notNull(),
 	updatedAt: text("updated_at").$onUpdate(() => new Date().toISOString()),
 	characterDescriptions: text("character_descriptions"),
 }, (table) => [
@@ -349,7 +349,7 @@ export const rvcVoiceModels = sqliteTable("rvc_voice_models", {
 	builtinName: text("builtin_name"),
 	isActive: integer("is_active", { mode: 'boolean' }).default(true).notNull(),
 	sortOrder: integer("sort_order").default(0).notNull(),
-	createdAt: text("created_at").default(sql`(datetime('now'))`).notNull(),
+	createdAt: text("created_at").default(sql`(strftime('%Y-%m-%dT%H:%M:%fZ','now'))`).notNull(),
 	updatedAt: text("updated_at").$onUpdate(() => new Date().toISOString()),
 }, (table) => [
 	index("ix_rvc_voice_models_category").on(table.category),
@@ -367,7 +367,7 @@ export const storyIllustrations = sqliteTable("story_illustrations", {
 	position: integer().default(0).notNull(),
 	paragraph: integer(),
 	status: text("status").default('pending').notNull(),
-	createdAt: text("created_at").default(sql`(datetime('now'))`).notNull(),
+	createdAt: text("created_at").default(sql`(strftime('%Y-%m-%dT%H:%M:%fZ','now'))`).notNull(),
 	updatedAt: text("updated_at").$onUpdate(() => new Date().toISOString()),
 	creditsCost: integer("credits_cost").default(0).notNull(),
 	errorMessage: text("error_message"),
@@ -398,7 +398,7 @@ export const storyParagraphs = sqliteTable("story_paragraphs", {
 	audioDuration: real("audio_duration"),
 	audioVoice: text("audio_voice"),
 	audioStatus: text("audio_status").default('none').notNull(),
-	createdAt: text("created_at").default(sql`(datetime('now'))`).notNull(),
+	createdAt: text("created_at").default(sql`(strftime('%Y-%m-%dT%H:%M:%fZ','now'))`).notNull(),
 	updatedAt: text("updated_at").$onUpdate(() => new Date().toISOString()),
 	illustrationPrompt: text("illustration_prompt"),
 	illustrationStatus: text("illustration_status").default('none').notNull(),
@@ -439,7 +439,7 @@ export const coverRecords = sqliteTable("cover_records", {
 	errorMessage: text("error_message"),
 	shareId: text("share_id"),
 	completedAt: text("completed_at"),
-	createdAt: text("created_at").default(sql`(datetime('now'))`).notNull(),
+	createdAt: text("created_at").default(sql`(strftime('%Y-%m-%dT%H:%M:%fZ','now'))`).notNull(),
 	updatedAt: text("updated_at").$onUpdate(() => new Date().toISOString()),
 }, (table) => [
 	uniqueIndex("cover_records_share_id_key").on(table.shareId),
@@ -459,7 +459,7 @@ export const shareLinks = sqliteTable("share_links", {
 	userId: text("user_id").notNull(),
 	expiresAt: text("expires_at").notNull(),
 	viewCount: integer("view_count").default(0).notNull(),
-	createdAt: text("created_at").default(sql`(datetime('now'))`).notNull(),
+	createdAt: text("created_at").default(sql`(strftime('%Y-%m-%dT%H:%M:%fZ','now'))`).notNull(),
 }, (table) => [
 	index("ix_share_links_expires_at").on(table.expiresAt),
 	index("ix_share_links_resource").on(table.resourceType, table.resourceId),
@@ -492,7 +492,7 @@ export const videoRecords = sqliteTable("video_records", {
 	completedAt: text("completed_at"),
 	shareId: text("share_id"),
 	id: integer().primaryKey({ autoIncrement: true }),
-	createdAt: text("created_at").default(sql`(datetime('now'))`).notNull(),
+	createdAt: text("created_at").default(sql`(strftime('%Y-%m-%dT%H:%M:%fZ','now'))`).notNull(),
 	updatedAt: text("updated_at").$onUpdate(() => new Date().toISOString()),
 	apiCost: real("api_cost"),
 	viewCount: integer("view_count").default(0).notNull(),
@@ -524,7 +524,7 @@ export const imageRecords = sqliteTable("image_records", {
 	creditsUsed: integer("credits_used").notNull(),
 	error: text(),
 	completedAt: text("completed_at"),
-	createdAt: text("created_at").default(sql`(datetime('now'))`).notNull(),
+	createdAt: text("created_at").default(sql`(strftime('%Y-%m-%dT%H:%M:%fZ','now'))`).notNull(),
 	updatedAt: text("updated_at").$onUpdate(() => new Date().toISOString()),
 }, (table) => [
 	uniqueIndex("image_records_task_id_key").on(table.taskId),
@@ -563,7 +563,7 @@ export const musicRecords = sqliteTable("music_records", {
 	completedAt: text("completed_at"),
 	shareId: text("share_id"),
 	id: integer().primaryKey({ autoIncrement: true }),
-	createdAt: text("created_at").default(sql`(datetime('now'))`).notNull(),
+	createdAt: text("created_at").default(sql`(strftime('%Y-%m-%dT%H:%M:%fZ','now'))`).notNull(),
 	updatedAt: text("updated_at").$onUpdate(() => new Date().toISOString()),
 	externalTrackId: text("external_track_id"),
 	externalTrackId2: text("external_track_id_2"),
@@ -592,7 +592,7 @@ export const dialogueRecords = sqliteTable("dialogue_records", {
 	duration: real("duration"),
 	errorMessage: text("error_message"),
 	completedAt: text("completed_at"),
-	createdAt: text("created_at").default(sql`(datetime('now'))`).notNull(),
+	createdAt: text("created_at").default(sql`(strftime('%Y-%m-%dT%H:%M:%fZ','now'))`).notNull(),
 	updatedAt: text("updated_at").$onUpdate(() => new Date().toISOString()),
 	isPublic: integer("is_public", { mode: 'boolean' }).default(false).notNull(),
 }, (table) => [
@@ -613,7 +613,7 @@ export const nativeBanners = sqliteTable("native_banners", {
 	buttonTexts: text("button_texts", { mode: 'json' }),
 	sortOrder: integer("sort_order").default(0).notNull(),
 	isActive: integer("is_active", { mode: 'boolean' }).default(true).notNull(),
-	createdAt: text("created_at").default(sql`(datetime('now'))`).notNull(),
+	createdAt: text("created_at").default(sql`(strftime('%Y-%m-%dT%H:%M:%fZ','now'))`).notNull(),
 	updatedAt: text("updated_at").$onUpdate(() => new Date().toISOString()),
 }, (table) => [
 	index("ix_native_banners_active_sort").on(table.isActive, table.sortOrder),
@@ -630,7 +630,7 @@ export const videoDownloadRecords = sqliteTable("video_download_records", {
 	errorCode: text("error_code"),
 	creditsCost: integer("credits_cost").default(0).notNull(),
 	isAnonymous: integer("is_anonymous", { mode: 'boolean' }).default(false).notNull(),
-	createdAt: text("created_at").default(sql`(datetime('now'))`).notNull(),
+	createdAt: text("created_at").default(sql`(strftime('%Y-%m-%dT%H:%M:%fZ','now'))`).notNull(),
 }, (table) => [
 	index("ix_video_download_records_created_at").on(table.createdAt),
 	index("ix_video_download_records_platform").on(table.platform),
@@ -650,7 +650,7 @@ export const imageToolRecords = sqliteTable("image_tool_records", {
 	creditsUsed: integer("credits_used").notNull(),
 	error: text(),
 	completedAt: text("completed_at"),
-	createdAt: text("created_at").default(sql`(datetime('now'))`).notNull(),
+	createdAt: text("created_at").default(sql`(strftime('%Y-%m-%dT%H:%M:%fZ','now'))`).notNull(),
 }, (table) => [
 	uniqueIndex("image_tool_records_task_id_key").on(table.taskId),
 	index("ix_image_tool_records_user_id").on(table.userId),
@@ -666,7 +666,7 @@ export const clonedVoices = sqliteTable("cloned_voices", {
 	sampleAudioUrl: text("sample_audio_url"),
 	referenceText: text("reference_text"),
 	status: text("status").default('TRAINING').notNull(),
-	createdAt: text("created_at").default(sql`(datetime('now'))`).notNull(),
+	createdAt: text("created_at").default(sql`(strftime('%Y-%m-%dT%H:%M:%fZ','now'))`).notNull(),
 	updatedAt: text("updated_at").$onUpdate(() => new Date().toISOString()),
 }, (table) => [
 	index("ix_cloned_voices_user_id").on(table.userId),
@@ -681,7 +681,7 @@ export const conversions = sqliteTable("conversions", {
 	voicicaAmount: integer("voicica_amount").notNull(),
 	usdtAmount: text("usdt_amount").notNull(),
 	rate: text("rate").notNull(),
-	createdAt: text("created_at").default(sql`(datetime('now'))`).notNull(),
+	createdAt: text("created_at").default(sql`(strftime('%Y-%m-%dT%H:%M:%fZ','now'))`).notNull(),
 }, (table) => [
 	index("idx_conversions_user_id").on(table.userId),
 ]);
@@ -704,7 +704,7 @@ export const withdrawals = sqliteTable("withdrawals", {
 	txHash: text("tx_hash"),
 	adminNote: text("admin_note"),
 	completedAt: text("completed_at"),
-	createdAt: text("created_at").default(sql`(datetime('now'))`).notNull(),
+	createdAt: text("created_at").default(sql`(strftime('%Y-%m-%dT%H:%M:%fZ','now'))`).notNull(),
 }, (table) => [
 	index("idx_withdrawals_user_id").on(table.userId),
 	index("idx_withdrawals_status").on(table.status),
@@ -731,7 +731,7 @@ export const luckyDrawInstances = sqliteTable("lucky_draws", {
 	contractAddress: text("contract_address"),
 	chainName: text("chain_name"),
 	blockExplorerUrl: text("block_explorer_url"),
-	createdAt: text("created_at").default(sql`(datetime('now'))`).notNull(),
+	createdAt: text("created_at").default(sql`(strftime('%Y-%m-%dT%H:%M:%fZ','now'))`).notNull(),
 	startedAt: text("started_at"),
 	completedAt: text("completed_at"),
 }, (table) => [
@@ -752,7 +752,7 @@ export const luckyDrawEntries = sqliteTable("lucky_draw_entries", {
 	stripeSessionId: text("stripe_session_id"),
 	amountPaid: integer("amount_paid"),
 	currency: text("currency"),
-	createdAt: text("created_at").default(sql`(datetime('now'))`).notNull(),
+	createdAt: text("created_at").default(sql`(strftime('%Y-%m-%dT%H:%M:%fZ','now'))`).notNull(),
 }, (table) => [
 	index("idx_lde_draw_id").on(table.drawId),
 	index("idx_lde_user_id").on(table.userId),
@@ -769,7 +769,7 @@ export const luckyDrawResults = sqliteTable("lucky_draw_results", {
 	blockHash: text("block_hash"),
 	txHash: text("tx_hash"),
 	totalSlots: integer("total_slots").notNull(),
-	createdAt: text("created_at").default(sql`(datetime('now'))`).notNull(),
+	createdAt: text("created_at").default(sql`(strftime('%Y-%m-%dT%H:%M:%fZ','now'))`).notNull(),
 }, (table) => [
 	uniqueIndex("uq_ldr_draw_id").on(table.drawId),
 ]);
@@ -793,7 +793,7 @@ export const luckyDrawClaims = sqliteTable("lucky_draw_claims", {
 	trackingUrl: text("tracking_url"),
 	shippedAt: text("shipped_at"),
 	deliveredAt: text("delivered_at"),
-	createdAt: text("created_at").default(sql`(datetime('now'))`).notNull(),
+	createdAt: text("created_at").default(sql`(strftime('%Y-%m-%dT%H:%M:%fZ','now'))`).notNull(),
 	updatedAt: text("updated_at").$onUpdate(() => new Date().toISOString()),
 }, (table) => [
 	uniqueIndex("uq_ldc_draw_id").on(table.drawId),
@@ -809,8 +809,8 @@ export const deviceTokens = sqliteTable("device_tokens", {
 	userId: text("user_id").notNull(),
 	token: text("token").notNull(),
 	platform: text("platform").notNull(), // 'android' | 'ios' | 'web'
-	createdAt: text("created_at").default(sql`(datetime('now'))`).notNull(),
-	updatedAt: text("updated_at").default(sql`(datetime('now'))`).notNull(),
+	createdAt: text("created_at").default(sql`(strftime('%Y-%m-%dT%H:%M:%fZ','now'))`).notNull(),
+	updatedAt: text("updated_at").default(sql`(strftime('%Y-%m-%dT%H:%M:%fZ','now'))`).notNull(),
 }, (table) => [
 	index("idx_device_tokens_user_id").on(table.userId),
 	uniqueIndex("uq_device_tokens_token").on(table.token),
@@ -826,7 +826,7 @@ export const pushNotificationLogs = sqliteTable("push_notification_logs", {
 	totalDevices: integer("total_devices").default(0).notNull(),
 	sentCount: integer("sent_count").default(0).notNull(),
 	failedCount: integer("failed_count").default(0).notNull(),
-	createdAt: text("created_at").default(sql`(datetime('now'))`).notNull(),
+	createdAt: text("created_at").default(sql`(strftime('%Y-%m-%dT%H:%M:%fZ','now'))`).notNull(),
 }, (table) => [
 	index("idx_push_logs_created_at").on(table.createdAt),
 ]);
@@ -843,7 +843,7 @@ export const referralCommissions = sqliteTable("referral_commissions", {
 	sourceAmount: real("source_amount").notNull(),
 	commissionRate: real("commission_rate").notNull(),
 	commissionAmount: real("commission_amount").notNull(),
-	createdAt: text("created_at").default(sql`(datetime('now'))`).notNull(),
+	createdAt: text("created_at").default(sql`(strftime('%Y-%m-%dT%H:%M:%fZ','now'))`).notNull(),
 }, (table) => [
 	index("idx_referral_commissions_user_id").on(table.userId),
 	index("idx_referral_commissions_from_user_id").on(table.fromUserId),

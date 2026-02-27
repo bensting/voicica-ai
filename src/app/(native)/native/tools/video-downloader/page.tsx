@@ -298,7 +298,6 @@ export default function VideoDownloaderPage() {
       >
         <CreditsInfoBar
           credits={credits}
-          creditRules={[{ name: t('videoDownloader.parseVideoButton'), credits: creditCost }]}
           className="mb-3"
         />
 

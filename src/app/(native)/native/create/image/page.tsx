@@ -596,7 +596,6 @@ export default function NativeImagePage() {
       >
         <CreditsInfoBar
           credits={credits}
-          creditRules={[{ name: t('native.createImage.imageGeneration'), credits: selectedModel.credits }]}
           className="mb-3"
         />
 

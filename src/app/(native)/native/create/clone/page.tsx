@@ -498,7 +498,6 @@ export default function VoiceClonePage() {
           <>
             <CreditsInfoBar
               credits={credits}
-              creditRules={[{ name: t('native.createClone.generate.voiceGeneration'), description: t('native.createClone.generate.creditsRule') }]}
               className="mb-3"
             />
             <GradientButton

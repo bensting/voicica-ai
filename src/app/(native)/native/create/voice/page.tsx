@@ -527,7 +527,6 @@ export default function NativeTTSPage() {
         {/* Credits Info Bar */}
         <CreditsInfoBar
           credits={credits}
-          creditRules={[{ name: t('native.createVoice.voiceGeneration'), description: t('native.createVoice.charsPerCredit') }]}
           className="mb-3"
         />
 

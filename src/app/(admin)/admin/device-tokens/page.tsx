@@ -313,9 +313,10 @@ function StatCard({ label, value, color }: { label: string; value: number | stri
   );
 }
 
-function formatTime(iso: string) {
+function formatTime(raw: string) {
   try {
-    const d = new Date(iso + 'Z');
+    const d = new Date(raw);
+    if (isNaN(d.getTime())) return raw;
     return d.toLocaleString('zh-CN', {
       year: 'numeric',
       month: '2-digit',
@@ -325,6 +326,6 @@ function formatTime(iso: string) {
       timeZone: 'Asia/Shanghai',
     });
   } catch {
-    return iso;
+    return raw;
   }
 }

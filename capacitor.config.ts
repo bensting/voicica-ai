@@ -3,46 +3,32 @@ import type { CapacitorConfig } from '@capacitor/cli';
 // 服务器 URL 配置
 const serverUrl = process.env.CAPACITOR_SERVER_URL || 'https://www.voicica.ai/native';
 
-// 根据 URL 确定允许导航的域名
-const getAllowedDomains = (url: string): string[] => {
-  // 基础域名（支付、认证等）
-  const baseDomains = [
-    // Stripe 支付
-    'stripe.com',
-    '*.stripe.com',
-    // Google 登录
-    'google.com',
-    '*.google.com',
-    'accounts.google.com',
-    '*.googleapis.com',
-    // Firebase 认证
-    '*.firebaseapp.com',
-    '*.firebase.com',
-    '*.firebaseio.com',
-    // Apple 登录
-    'apple.com',
-    '*.apple.com',
-    'appleid.apple.com',
-    // Twitter/X 登录
-    'twitter.com',
-    '*.twitter.com',
-    'x.com',
-    '*.x.com',
-  ];
-
-  if (url.includes('ai-voice-labs.com')) {
-    return [
-      'ai-voice-labs.com',      // 主域名
-      '*.ai-voice-labs.com',    // 子域名
-      ...baseDomains
-    ];
-  }
-  return [
-    'voicica.ai',               // 主域名
-    '*.voicica.ai',             // 子域名
-    ...baseDomains
-  ];
-};
+// 允许导航的域名
+const allowedDomains = [
+  'voicica.ai',
+  '*.voicica.ai',
+  // Stripe 支付
+  'stripe.com',
+  '*.stripe.com',
+  // Google 登录
+  'google.com',
+  '*.google.com',
+  'accounts.google.com',
+  '*.googleapis.com',
+  // Firebase 认证
+  '*.firebaseapp.com',
+  '*.firebase.com',
+  '*.firebaseio.com',
+  // Apple 登录
+  'apple.com',
+  '*.apple.com',
+  'appleid.apple.com',
+  // Twitter/X 登录
+  'twitter.com',
+  '*.twitter.com',
+  'x.com',
+  '*.x.com',
+];
 
 const config: CapacitorConfig = {
   appId: 'ai.voicica.app',
@@ -53,8 +39,7 @@ const config: CapacitorConfig = {
   server: {
     url: serverUrl,
     cleartext: true,
-    // 允许导航到外部链接（根据 URL 自动配置）
-    allowNavigation: getAllowedDomains(serverUrl),
+    allowNavigation: allowedDomains,
     // 添加自定义 User-Agent 标识，用于远程网页检测原生环境
     androidScheme: 'https',
   },

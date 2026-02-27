@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
-import { useRouter } from 'next/navigation';
 import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 import { useCredits } from '@/contexts/CreditsContext';
 import { createVoicicaPurchaseCheckout } from '@/actions/voicica-purchase';
@@ -22,7 +21,6 @@ import {
  * 类似 Uniswap 的自由兑换界面，深色金融风格
  */
 export default function NativeSubscribePage() {
-  const router = useRouter();
   const { user } = useFirebaseAuth();
   const { credits, loading: creditsLoading } = useCredits();
   const { t } = useLanguage();

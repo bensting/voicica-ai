@@ -34,9 +34,6 @@ if "%DEPLOY_ONLY%"=="1" (
     goto :deploy
 )
 
-REM --- 覆盖 .env.local 中的开发环境变量，确保构建使用生产值 ---
-set NEXT_PUBLIC_APP_URL=https://voicica.ai
-
 REM --- Step 1: 安装依赖 ---
 echo [1/2] Installing dependencies...
 call npm install --prefer-offline
@@ -46,6 +43,7 @@ if %errorlevel% neq 0 (
 )
 
 REM --- Step 2: OpenNext 构建（内含 next build + worker 打包）---
+REM 开发变量在 .env.development 中，next build 不会加载，自动使用 .env.production
 echo [2/2] Building Cloudflare Worker (OpenNext)...
 call npx opennextjs-cloudflare build
 if %errorlevel% neq 0 (

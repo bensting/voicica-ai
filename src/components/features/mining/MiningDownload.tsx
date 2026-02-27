@@ -44,7 +44,6 @@ export default function MiningDownload({
   const [apkUrl, setApkUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [refCode, setRefCode] = useState<string | null>(null);
-  const [codeCopied, setCodeCopied] = useState(false);
 
   useEffect(() => {
     getLatestRelease('android')
@@ -67,20 +66,6 @@ export default function MiningDownload({
     }
   }, []);
 
-  // 复制邀请码到剪贴板
-  const copyRefCode = () => {
-    if (!refCode) return;
-    navigator.clipboard.writeText(refCode).catch(() => {
-      const ta = document.createElement('textarea');
-      ta.value = refCode;
-      document.body.appendChild(ta);
-      ta.select();
-      document.execCommand('copy');
-      document.body.removeChild(ta);
-    });
-    setCodeCopied(true);
-    setTimeout(() => setCodeCopied(false), 2000);
-  };
 
   // Google Play 链接带 referrer
   const playHref = refCode
@@ -101,24 +86,14 @@ export default function MiningDownload({
               </div>
               <div className="flex items-center gap-2 mb-1.5">
                 <span className="text-xs text-gray-400">{referralContent.codeLabel}:</span>
-                <button
-                  onClick={copyRefCode}
-                  className="inline-flex items-center gap-1.5 rounded-md bg-purple-500/20 px-2.5 py-0.5 transition-colors hover:bg-purple-500/30 active:bg-purple-500/40"
+                <span
+                  className="inline-flex items-center rounded-md bg-purple-500/20 px-2.5 py-0.5"
                 >
                   <span className="font-mono text-sm font-bold tracking-widest text-purple-300">
                     {refCode}
                   </span>
-                  {codeCopied ? (
-                    <svg className="h-3.5 w-3.5 text-green-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                      <polyline points="20 6 9 17 4 12" />
-                    </svg>
-                  ) : (
-                    <svg className="h-3.5 w-3.5 text-purple-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
-                      <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" />
-                    </svg>
+                </span>
                   )}
-                </button>
               </div>
               <p className="text-xs text-gray-400">{referralContent.bonusTip}</p>
             </div>
@@ -141,7 +116,7 @@ export default function MiningDownload({
                 href={apkUrl || '#'}
                 onClick={(e) => {
                   if (!apkUrl || loading) { e.preventDefault(); return; }
-                  if (refCode) copyRefCode();
+                  if (refCode) navigator.clipboard.writeText(`VOICICA-REF:${refCode}`).catch(() => {});
                 }}
                 className={`group relative flex-1 overflow-hidden rounded-xl p-[1.5px] transition-all ${
                   apkUrl && !loading ? 'hover:shadow-xl hover:shadow-purple-500/30' : 'opacity-50'
@@ -172,7 +147,7 @@ export default function MiningDownload({
                 href={playHref}
                 target="_blank"
                 rel="noopener noreferrer"
-                onClick={() => { if (refCode) copyRefCode(); }}
+                onClick={() => { if (refCode) navigator.clipboard.writeText(`VOICICA-REF:${refCode}`).catch(() => {}); }}
                 className="group flex w-[120px] flex-shrink-0 flex-col items-center justify-center rounded-xl border border-white/[0.08] bg-white/[0.03] px-3 py-4 transition-all hover:border-white/15 hover:bg-white/[0.06]"
               >
                 <GooglePlayIcon />

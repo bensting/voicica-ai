@@ -98,7 +98,7 @@ export const appConfig: AppConfig = {
     show_wallet_card: true, // 是否显示首页 钱包
     conversion: {
       min_voicica_reserve: 2000, // 最低保留 2000 $VOICICA
-      min_convert_amount: 100,   // 单次最低兑换 100
+      min_convert_amount: 1,   // 单次最低兑换 1
       enabled: true,             // 汇率复用上面的 token_value_usd
     },
     withdrawal: {

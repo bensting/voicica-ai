@@ -34,6 +34,9 @@ if "%DEPLOY_ONLY%"=="1" (
     goto :deploy
 )
 
+REM --- 覆盖 .env.local 中的开发环境变量，确保构建使用生产值 ---
+set NEXT_PUBLIC_APP_URL=https://voicica.ai
+
 REM --- Step 1: 安装依赖 ---
 echo [1/2] Installing dependencies...
 call npm install --prefer-offline

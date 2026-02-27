@@ -39,11 +39,11 @@ export default function MePageContent() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loading]);
 
-  // 登录成功时清除标记，下次退出登录后访问会重新弹出
+  // 登录成功时清除 localStorage 标记（下次退出后 24h 逻辑重新生效）
+  // 注意：不重置 hasShownRef，防止 auth 状态闪烁导致重复弹窗
   useEffect(() => {
     if (isLoggedIn) {
       localStorage.removeItem(LOGIN_MODAL_LAST_SHOWN_KEY);
-      hasShownRef.current = false;
     }
   }, [isLoggedIn]);
 

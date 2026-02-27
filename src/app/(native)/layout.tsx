@@ -10,6 +10,8 @@ import { initNotifications, registerNotificationClickListener } from '@/lib/noti
 import { initPushNotifications } from '@/lib/push-notifications';
 import ReferralDetectModal from '@/components/native/ReferralDetectModal';
 import { detectReferralCode, confirmReferralCode, dismissReferralDetect } from '@/utils/native/referral-detect';
+import { processReferralCode } from '@/actions/referral';
+import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 // Explore tab 子组件
 import NativeBannerAd from '@/components/native/NativeBannerAd';
 import TotalAssetsCard from '@/components/native/TotalAssetsCard';
@@ -49,6 +51,7 @@ export default function NativeLayout({
 }) {
   const pathname = usePathname();
   const router = useRouter();
+  const { user } = useFirebaseAuth();
 
   // 根据初始 pathname 设定默认 activeTab
   const [activeTab, setActiveTab] = useState<TabType>(() => {
@@ -193,9 +196,23 @@ export default function NativeLayout({
           <ReferralDetectModal
             isOpen={referralDetect.show}
             code={referralDetect.code}
-            onConfirm={() => {
-              confirmReferralCode(referralDetect.code);
+            onConfirm={async () => {
+              const code = referralDetect.code;
               setReferralDetect({ show: false, code: '' });
+              if (user) {
+                // 已登录，直接绑定
+                try {
+                  const result = await processReferralCode(code);
+                  console.log('[Referral] bind result:', result);
+                } catch (e) {
+                  console.error('[Referral] bind error:', e);
+                }
+                // 清剪贴板
+                confirmReferralCode(code);
+              } else {
+                // 未登录，存 localStorage 等登录后自动绑定
+                confirmReferralCode(code);
+              }
             }}
             onDismiss={() => {
               dismissReferralDetect();

@@ -77,7 +77,13 @@
         "l2": "L2 अप्रत्यक्ष",
         "l3Plus": "L3+ टीम"
       },
-      "inviteText": "VoicicaAI से जुड़ें और $VOICICA कमाएं! मेरा इनवाइट कोड: {{code}} {{url}}"
+      "inviteText": "VoicicaAI से जुड़ें और $VOICICA कमाएं! मेरा इनवाइट कोड: {{code}} {{url}}",
+      "detect": {
+        "title": "निमंत्रण मिला",
+        "message": "एक दोस्त ने आपको इस कोड से आमंत्रित किया:",
+        "accept": "स्वीकार करें",
+        "skip": "छोड़ें"
+      }
     },
     "settings": {
       "title": "सेटिंग्स",

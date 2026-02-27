@@ -77,7 +77,13 @@
         "l2": "L2 間接紹介",
         "l3Plus": "L3+ チーム"
       },
-      "inviteText": "VoicicaAIに参加して$VOICICAを一緒に稼ごう！招待コード：{{code}} {{url}}"
+      "inviteText": "VoicicaAIに参加して$VOICICAを一緒に稼ごう！招待コード：{{code}} {{url}}",
+      "detect": {
+        "title": "招待を検出しました",
+        "message": "友人が招待コードであなたを招待しました：",
+        "accept": "承認",
+        "skip": "スキップ"
+      }
     },
     "settings": {
       "title": "設定",

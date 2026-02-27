@@ -77,7 +77,13 @@
         "l2": "L2 Indireto",
         "l3Plus": "L3+ Equipe"
       },
-      "inviteText": "Junte-se ao VoicicaAI e ganhe $VOICICA juntos! Use meu código: {{code}} {{url}}"
+      "inviteText": "Junte-se ao VoicicaAI e ganhe $VOICICA juntos! Use meu código: {{code}} {{url}}",
+      "detect": {
+        "title": "Convite detectado",
+        "message": "Um amigo convidou você com o código:",
+        "accept": "Aceitar",
+        "skip": "Pular"
+      }
     },
     "settings": {
       "title": "Configurações",

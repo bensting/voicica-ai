@@ -116,7 +116,13 @@
         "l2": "L2 間推",
         "l3Plus": "L3+ 團隊"
       },
-      "inviteText": "加入 VoicicaAI，一起賺取 $VOICICA！使用我的邀請碼：{{code}} {{url}}"
+      "inviteText": "加入 VoicicaAI，一起賺取 $VOICICA！使用我的邀請碼：{{code}} {{url}}",
+      "detect": {
+        "title": "偵測到邀請",
+        "message": "一位好友透過以下邀請碼邀請了你：",
+        "accept": "接受",
+        "skip": "跳過"
+      }
     },
     "settings": {
       "title": "設定",

@@ -77,7 +77,13 @@
         "l2": "L2 غير مباشر",
         "l3Plus": "L3+ الفريق"
       },
-      "inviteText": "انضم إلى VoicicaAI واكسب $VOICICA معًا! استخدم رمز الدعوة: {{code}} {{url}}"
+      "inviteText": "انضم إلى VoicicaAI واكسب $VOICICA معًا! استخدم رمز الدعوة: {{code}} {{url}}",
+      "detect": {
+        "title": "تم اكتشاف دعوة",
+        "message": "دعاك صديق باستخدام الرمز:",
+        "accept": "قبول",
+        "skip": "تخطي"
+      }
     },
     "settings": {
       "title": "الإعدادات",

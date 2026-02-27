@@ -8,6 +8,8 @@ import WebUpdatePrompt from '@/components/native/WebUpdatePrompt';
 import { BottomNavProvider } from '@/contexts/BottomNavContext';
 import { initNotifications, registerNotificationClickListener } from '@/lib/notifications';
 import { initPushNotifications } from '@/lib/push-notifications';
+import ReferralDetectModal from '@/components/native/ReferralDetectModal';
+import { detectReferralCode, confirmReferralCode, dismissReferralDetect } from '@/utils/native/referral-detect';
 // Explore tab 子组件
 import NativeBannerAd from '@/components/native/NativeBannerAd';
 import TotalAssetsCard from '@/components/native/TotalAssetsCard';
@@ -107,6 +109,21 @@ export default function NativeLayout({
     initPushNotifications().catch(console.error);
   }, []);
 
+  // 推荐码剪贴板检测
+  const [referralDetect, setReferralDetect] = useState<{ show: boolean; code: string }>({ show: false, code: '' });
+
+  useEffect(() => {
+    const timer = setTimeout(async () => {
+      try {
+        const code = await detectReferralCode();
+        if (code) {
+          setReferralDetect({ show: true, code });
+        }
+      } catch { /* ignore */ }
+    }, 1500);
+    return () => clearTimeout(timer);
+  }, []);
+
   const showNavbar = !hideNavbarPaths.some((path) => pathname.startsWith(path));
   const showBottomNav = !isInSubPage;
 
@@ -171,6 +188,20 @@ export default function NativeLayout({
 
           {/* Web 内容更新提示 */}
           <WebUpdatePrompt />
+
+          {/* 推荐码检测弹窗 */}
+          <ReferralDetectModal
+            isOpen={referralDetect.show}
+            code={referralDetect.code}
+            onConfirm={() => {
+              confirmReferralCode(referralDetect.code);
+              setReferralDetect({ show: false, code: '' });
+            }}
+            onDismiss={() => {
+              dismissReferralDetect();
+              setReferralDetect({ show: false, code: '' });
+            }}
+          />
         </div>
       </div>
     </BottomNavProvider>

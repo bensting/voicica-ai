@@ -77,7 +77,13 @@
         "l2": "L2 Tidak langsung",
         "l3Plus": "L3+ Tim"
       },
-      "inviteText": "Bergabung VoicicaAI dan dapatkan $VOICICA bersama! Gunakan kode undangan: {{code}} {{url}}"
+      "inviteText": "Bergabung VoicicaAI dan dapatkan $VOICICA bersama! Gunakan kode undangan: {{code}} {{url}}",
+      "detect": {
+        "title": "Undangan terdeteksi",
+        "message": "Teman mengundang Anda dengan kode:",
+        "accept": "Terima",
+        "skip": "Lewati"
+      }
     },
     "settings": {
       "title": "Pengaturan",

@@ -123,6 +123,12 @@
         "button": "绑定",
         "inviter": "邀请人",
         "failed": "邀请码无效，请重试"
+      },
+      "detect": {
+        "title": "检测到邀请",
+        "message": "一位好友通过以下邀请码邀请了你：",
+        "accept": "接受",
+        "skip": "跳过"
       }
     },
     "settings": {

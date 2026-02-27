@@ -77,7 +77,13 @@
         "l2": "L2 แนะนำรอง",
         "l3Plus": "L3+ ทีม"
       },
-      "inviteText": "เข้าร่วม VoicicaAI และรับ $VOICICA ด้วยกัน! ใช้รหัสเชิญ: {{code}} {{url}}"
+      "inviteText": "เข้าร่วม VoicicaAI และรับ $VOICICA ด้วยกัน! ใช้รหัสเชิญ: {{code}} {{url}}",
+      "detect": {
+        "title": "ตรวจพบคำเชิญ",
+        "message": "เพื่อนเชิญคุณด้วยรหัส:",
+        "accept": "ยอมรับ",
+        "skip": "ข้าม"
+      }
     },
     "settings": {
       "title": "การตั้งค่า",

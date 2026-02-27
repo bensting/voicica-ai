@@ -55,13 +55,15 @@ export default function MiningDownload({
       .finally(() => setLoading(false));
   }, []);
 
-  // 读取 URL 中的 ref 参数并存入 localStorage
+  // 读取 URL 中的 ref 参数并存入 localStorage + 自动复制到剪贴板（方便 App 检测）
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const ref = params.get('ref');
     if (ref) {
       setRefCode(ref);
       localStorage.setItem('pending_referral_code', ref);
+      // 自动复制到剪贴板，使用前缀避免误判
+      navigator.clipboard.writeText(`VOICICA-REF:${ref}`).catch(() => {});
     }
   }, []);
 

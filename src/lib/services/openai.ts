@@ -5,9 +5,14 @@
  */
 import OpenAI from 'openai';
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+let _openai: OpenAI | null = null;
+
+function getOpenAI(): OpenAI {
+  if (!_openai) {
+    _openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+  }
+  return _openai;
+}
 
 export interface StoryIdea {
   title: string;
@@ -76,7 +81,7 @@ Respond in JSON format:
   ...
 ]`;
 
-  const response = await openai.chat.completions.create({
+  const response = await getOpenAI().chat.completions.create({
     model: 'gpt-4o-mini',
     messages: [
       {
@@ -134,7 +139,7 @@ Respond in JSON format:
   "content": "The complete story text..."
 }`;
 
-  const response = await openai.chat.completions.create({
+  const response = await getOpenAI().chat.completions.create({
     model: 'gpt-4o-mini',
     messages: [
       {
@@ -212,7 +217,7 @@ Respond in JSON format:
   ]
 }`;
 
-  const response = await openai.chat.completions.create({
+  const response = await getOpenAI().chat.completions.create({
     model: 'gpt-4o-mini',
     messages: [
       {
@@ -274,7 +279,7 @@ Respond in JSON format:
   "prompt": "Your detailed image generation prompt here..."
 }`;
 
-  const response = await openai.chat.completions.create({
+  const response = await getOpenAI().chat.completions.create({
     model: 'gpt-4o-mini',
     messages: [
       {
@@ -358,7 +363,7 @@ Respond in JSON format:
   ]
 }`;
 
-  const response = await openai.chat.completions.create({
+  const response = await getOpenAI().chat.completions.create({
     model: 'gpt-4o-mini',
     messages: [
       {
@@ -431,7 +436,7 @@ ${prompt}
 
 Create a complete song with verses, chorus, and optional bridge. Make it emotionally engaging and musically singable. Also provide a creative and fitting song title.`;
 
-  const response = await openai.chat.completions.create({
+  const response = await getOpenAI().chat.completions.create({
     model: 'gpt-4o-mini',
     messages: [
       { role: 'system', content: systemPrompt },
@@ -487,7 +492,7 @@ ${prompt}
 
 Create style tags that would help an AI music generator understand the desired musical style.`;
 
-  const response = await openai.chat.completions.create({
+  const response = await getOpenAI().chat.completions.create({
     model: 'gpt-4o-mini',
     messages: [
       { role: 'system', content: systemPrompt },
@@ -542,7 +547,7 @@ ${prompt}
 
 Expand this into a comprehensive prompt that an AI music generator can use to create a great song.`;
 
-  const response = await openai.chat.completions.create({
+  const response = await getOpenAI().chat.completions.create({
     model: 'gpt-4o-mini',
     messages: [
       { role: 'system', content: systemPrompt },
@@ -594,7 +599,7 @@ ${prompt}
 
 Create text that would sound natural and engaging when read aloud by a text-to-speech system.`;
 
-  const response = await openai.chat.completions.create({
+  const response = await getOpenAI().chat.completions.create({
     model: 'gpt-4o-mini',
     messages: [
       { role: 'system', content: systemPrompt },
@@ -650,7 +655,7 @@ ${prompt}
 
 Expand this into a comprehensive prompt that an AI video generator can use to create a visually stunning video.`;
 
-  const response = await openai.chat.completions.create({
+  const response = await getOpenAI().chat.completions.create({
     model: 'gpt-4o-mini',
     messages: [
       { role: 'system', content: systemPrompt },
@@ -709,7 +714,7 @@ ${prompt}
 
 Expand this into a comprehensive prompt that an AI image generator can use to create a stunning, high-quality image. Remember: the prompt MUST be under ${maxLength} characters.`;
 
-  const response = await openai.chat.completions.create({
+  const response = await getOpenAI().chat.completions.create({
     model: 'gpt-4o-mini',
     messages: [
       { role: 'system', content: systemPrompt },
@@ -796,7 +801,7 @@ Respond in JSON format:
   "prompt": "Your detailed image generation prompt here, using exact character descriptions..."
 }`;
 
-  const response = await openai.chat.completions.create({
+  const response = await getOpenAI().chat.completions.create({
     model: 'gpt-4o-mini',
     messages: [
       {

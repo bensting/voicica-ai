@@ -77,7 +77,13 @@
         "l2": "L2 Gián tiếp",
         "l3Plus": "L3+ Đội nhóm"
       },
-      "inviteText": "Tham gia VoicicaAI và cùng kiếm $VOICICA! Dùng mã mời: {{code}} {{url}}"
+      "inviteText": "Tham gia VoicicaAI và cùng kiếm $VOICICA! Dùng mã mời: {{code}} {{url}}",
+      "detect": {
+        "title": "Phát hiện lời mời",
+        "message": "Bạn bè đã mời bạn bằng mã:",
+        "accept": "Chấp nhận",
+        "skip": "Bỏ qua"
+      }
     },
     "settings": {
       "title": "Cài đặt",

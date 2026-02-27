@@ -123,6 +123,12 @@
         "button": "Bind",
         "inviter": "Inviter",
         "failed": "Invalid code, please try again"
+      },
+      "detect": {
+        "title": "Invitation Detected",
+        "message": "A friend invited you with code:",
+        "accept": "Accept",
+        "skip": "Skip"
       }
     },
     "settings": {

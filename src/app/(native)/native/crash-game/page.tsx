@@ -35,8 +35,8 @@ export default function CrashGamePage() {
   // Game state
   const [gameState, setGameState] = useState<GameState>('idle');
   const [roundData, setRoundData] = useState<CrashRoundData | null>(null);
-  const [currentMultiplier, setCurrentMultiplier] = useState(1.00);
   const [loading, setLoading] = useState(false);
+  const multiplierRef = useRef(1.00);
 
   // History
   const [history, setHistory] = useState<CrashHistoryItem[]>([]);
@@ -151,7 +151,7 @@ export default function CrashGamePage() {
   // Play again
   const handlePlayAgain = useCallback(() => {
     setRoundData(null);
-    setCurrentMultiplier(1.00);
+    multiplierRef.current = 1.00;
     setGameState('idle');
   }, []);
 
@@ -215,7 +215,7 @@ export default function CrashGamePage() {
         crashPoint={roundData?.crashPoint}
         onCrash={handleCrash}
         onExpire={handleCrash}
-        onMultiplierUpdate={setCurrentMultiplier}
+        onMultiplierUpdate={(m: number) => { multiplierRef.current = m; }}
         displayState={displayState}
         finalMultiplier={roundData?.cashOutMultiplier ?? roundData?.crashPoint}
       />
@@ -243,7 +243,6 @@ export default function CrashGamePage() {
         <>
           <CashOutButton
             betAmount={roundData?.betAmount ?? 0}
-            currentMultiplier={currentMultiplier}
             loading={loading}
             onCashOut={handleCashOut}
           />

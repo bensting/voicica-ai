@@ -4,17 +4,15 @@ import { useLanguage } from '@/contexts/LanguageContext';
 
 interface CashOutButtonProps {
   betAmount: number;
-  currentMultiplier: number;
   loading: boolean;
   onCashOut: () => void;
 }
 
 /**
- * Cash Out 大按钮 - 游戏进行中显示
+ * Cash Out 大按钮 - 游戏进行中显示（静态，无动画）
  */
-export default function CashOutButton({ betAmount, currentMultiplier, loading, onCashOut }: CashOutButtonProps) {
+export default function CashOutButton({ betAmount, loading, onCashOut }: CashOutButtonProps) {
   const { t } = useLanguage();
-  const potentialWin = Math.floor(betAmount * currentMultiplier * 100) / 100;
 
   return (
     <div className="px-4 pb-4">
@@ -32,7 +30,7 @@ export default function CashOutButton({ betAmount, currentMultiplier, loading, o
           <div className="flex flex-col items-center">
             <span>{t('native.crashGame.cashOut')}</span>
             <span className="text-sm font-normal text-white/80">
-              {potentialWin.toFixed(2)} $VOICICA
+              {betAmount} $VOICICA
             </span>
           </div>
         )}

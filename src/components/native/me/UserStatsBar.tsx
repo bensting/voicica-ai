@@ -37,35 +37,34 @@ export default function UserStatsBar({
 
   return (
     <>
-      <div className="mx-4 mt-2 rounded-2xl overflow-hidden"
-        style={{ background: 'linear-gradient(135deg, rgba(180,83,9,0.25), rgba(217,119,6,0.15), rgba(245,158,11,0.10))' }}
+      <div className="mx-4 mt-2 rounded-2xl overflow-hidden border border-amber-500/10"
+        style={{ background: 'linear-gradient(135deg, rgba(180,83,9,0.20), rgba(30,20,10,0.60))' }}
       >
-        <div className="flex items-center justify-between px-4 py-3.5">
-          {/* Left: balance */}
-          <div className="flex items-center gap-2.5">
-            <Image src="/logo/voicica-token.png" alt="" width={28} height={28} className="w-7 h-7" />
-            <div>
-              <div className="flex items-baseline gap-1.5">
-                <span className="text-white font-bold text-xl leading-tight">
-                  {creditsLoading ? <LoadingDots /> : formatCredits(credits)}
-                </span>
-                <span className="text-amber-400/60 text-[11px] font-medium">$VOICICA</span>
-              </div>
-              <p className="text-white/25 text-[10px] mt-0.5">
-                {creditsLoading ? '' : `≈ ${usdtDisplay} USDT`}
-              </p>
+        <div className="px-4 py-3">
+          {/* Row 1: icon + $VOICICA (left), balance (right) */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2.5">
+              <Image src="/logo/voicica-token.png" alt="" width={28} height={28} className="w-7 h-7" />
+              <span className="text-amber-400 text-sm font-semibold">$VOICICA</span>
             </div>
+            <span className="text-white font-bold text-base tabular-nums">
+              {creditsLoading ? <LoadingDots /> : formatCredits(credits)}
+            </span>
           </div>
-
-          {/* Right: BUY button */}
-          <button
-            onClick={handleBuy}
-            className="flex items-center gap-1.5 px-4 py-2 rounded-full font-bold text-sm text-white active:scale-95 transition-all shadow-lg shadow-amber-500/20"
-            style={{ background: 'linear-gradient(135deg, #b45309, #d97706, #f59e0b)' }}
-          >
-            <Image src="/logo/voicica-token.png" alt="" width={16} height={16} className="w-4 h-4" />
-            {t('native.common.buy')}
-          </button>
+          {/* Row 2: ≈ USDT (left), BUY button (right) */}
+          <div className="flex items-center justify-between mt-1.5">
+            <span className="text-gray-500 text-[11px] pl-[38px]">
+              {creditsLoading ? '' : `≈ ${usdtDisplay} USDT`}
+            </span>
+            <button
+              onClick={handleBuy}
+              className="flex items-center gap-1.5 px-4 py-1.5 rounded-full font-bold text-xs text-white active:scale-95 transition-all shadow-lg shadow-amber-500/25"
+              style={{ background: 'linear-gradient(135deg, #b45309, #d97706, #f59e0b)' }}
+            >
+              <Image src="/logo/voicica-token.png" alt="" width={14} height={14} className="w-3.5 h-3.5" />
+              {t('native.common.buy')}
+            </button>
+          </div>
         </div>
       </div>
 

@@ -125,7 +125,7 @@ export default function TotalAssetsCard() {
                 <span className="text-gray-300 text-sm font-medium">USDT</span>
               </div>
               <span className="text-white text-sm font-semibold">
-                {usdtBalance.toFixed(4)}
+                {usdtBalance === 0 ? '0' : usdtBalance.toFixed(4)}
               </span>
             </div>
             <div className="flex justify-end">

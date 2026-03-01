@@ -370,13 +370,11 @@ export default function CrashGamePage() {
         requiredCredits={insufficientInfo?.required}
         currentCredits={insufficientInfo?.current}
       />
-      {showDailyTasks && (
-        <NativeDailyTasksModal
-          isOpen
-          onClose={() => setShowDailyTasks(false)}
-          onCreditsUpdated={refreshCredits}
-        />
-      )}
+      <NativeDailyTasksModal
+        isOpen={showDailyTasks}
+        onClose={() => setShowDailyTasks(false)}
+        onCreditsUpdated={refreshCredits}
+      />
     </>
   );
 }

@@ -134,14 +134,12 @@ export default function NativeNavbar() {
         }}
       />
 
-      {/* 每日任务弹窗 - 延迟渲染，打开时才 mount */}
-      {isDailyTasksOpen && (
-        <NativeDailyTasksModal
-          isOpen
-          onClose={() => setIsDailyTasksOpen(false)}
-          onCreditsUpdated={refreshCredits}
-        />
-      )}
+      {/* 每日任务弹窗 - 始终挂载，数据预取，点击即开 */}
+      <NativeDailyTasksModal
+        isOpen={isDailyTasksOpen}
+        onClose={() => setIsDailyTasksOpen(false)}
+        onCreditsUpdated={refreshCredits}
+      />
 
       {/* 语言选择器弹窗 */}
       <LanguageSelectorSheet

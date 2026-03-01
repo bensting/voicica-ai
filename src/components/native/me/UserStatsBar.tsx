@@ -37,34 +37,24 @@ export default function UserStatsBar({
 
   return (
     <>
-      <div className="mx-4 mt-2 rounded-2xl overflow-hidden border border-amber-500/10"
-        style={{ background: 'linear-gradient(135deg, rgba(180,83,9,0.20), rgba(30,20,10,0.60))' }}
-      >
-        <div className="px-4 py-3">
-          {/* Row 1: icon + $VOICICA + ≈USDT (left), balance (right) */}
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2.5">
-              <Image src="/logo/voicica-token.png" alt="" width={28} height={28} className="w-7 h-7" />
-              <span className="text-amber-400 text-sm font-semibold">$VOICICA</span>
-              <span className="text-gray-500 text-[11px]">
-                {creditsLoading ? '' : `≈ ${usdtDisplay} USDT`}
-              </span>
-            </div>
-            <span className="text-white font-bold text-base tabular-nums">
+      <div className="mx-4 mt-2 rounded-full overflow-hidden border border-purple-500/15 bg-purple-950/40">
+        <div className="flex items-center justify-between px-3 py-2.5">
+          {/* Left: icon + $VOICICA + balance */}
+          <div className="flex items-center gap-2.5">
+            <Image src="/logo/voicica-token.png" alt="" width={32} height={32} className="w-8 h-8" />
+            <span className="text-amber-400 text-sm font-bold">$VOICICA</span>
+            <span className="text-white font-bold text-sm tabular-nums tracking-tight">
               {creditsLoading ? <LoadingDots /> : formatCredits(credits)}
             </span>
           </div>
-          {/* Row 2: BUY button (right) */}
-          <div className="flex items-center justify-end mt-1.5">
-            <button
-              onClick={handleBuy}
-              className="flex items-center gap-1.5 px-4 py-1.5 rounded-full font-bold text-xs text-white active:scale-95 transition-all shadow-lg shadow-amber-500/25"
-              style={{ background: 'linear-gradient(135deg, #b45309, #d97706, #f59e0b)' }}
-            >
-              <Image src="/logo/voicica-token.png" alt="" width={14} height={14} className="w-3.5 h-3.5" />
-              {t('native.common.buy')}
-            </button>
-          </div>
+          {/* Right: BUY button */}
+          <button
+            onClick={handleBuy}
+            className="flex items-center gap-1.5 px-4 py-2 rounded-full font-bold text-xs text-white active:scale-95 transition-all shadow-lg shadow-amber-500/20"
+            style={{ background: 'linear-gradient(135deg, #b45309, #d97706, #f59e0b)' }}
+          >
+            {t('native.common.buy')}
+          </button>
         </div>
       </div>
 

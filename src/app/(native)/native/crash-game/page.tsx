@@ -21,6 +21,7 @@ import CashOutButton from '@/components/native/crash-game/CashOutButton';
 import GameResult from '@/components/native/crash-game/GameResult';
 import GameHistory from '@/components/native/crash-game/GameHistory';
 import LiveFeed from '@/components/native/crash-game/LiveFeed';
+import GameBalanceBar from '@/components/native/GameBalanceBar';
 
 type GameState = 'idle' | 'betting' | 'playing' | 'result';
 
@@ -222,12 +223,15 @@ export default function CrashGamePage() {
 
       {/* Bottom section based on state */}
       {gameState === 'idle' && (
+        <>
+        <GameBalanceBar />
         <BettingPanel
           minBet={config.minBet}
           maxBet={config.maxBet}
           loading={loading}
           onStart={handleStart}
         />
+        </>
       )}
 
       {gameState === 'betting' && (
@@ -241,6 +245,7 @@ export default function CrashGamePage() {
 
       {gameState === 'playing' && (
         <>
+          <GameBalanceBar />
           <CashOutButton
             betAmount={roundData?.betAmount ?? 0}
             loading={loading}

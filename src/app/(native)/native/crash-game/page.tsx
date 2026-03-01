@@ -24,6 +24,7 @@ import GameRulesSheet from '@/components/native/crash-game/GameRulesSheet';
 import ProvablyFairSheet from '@/components/native/crash-game/ProvablyFairSheet';
 import GameBalanceBar from '@/components/native/GameBalanceBar';
 import { DEFAULT_CRASH_SPEED, MAX_GAME_DURATION_SECONDS } from '@/config/native/crashGameConfig';
+import { Copy } from 'lucide-react';
 
 type GameState = 'idle' | 'betting' | 'playing' | 'result';
 
@@ -286,7 +287,16 @@ export default function CrashGamePage() {
               />
               {roundData?.seedHash && (
                 <div className="mx-4 mb-3 rounded-lg bg-white/5 border border-white/10 px-3 py-2">
-                  <p className="text-[10px] text-white/30 mb-0.5">SHA-256 Hash (pre-committed)</p>
+                  <div className="flex items-center justify-between mb-0.5">
+                    <p className="text-[10px] text-white/30">SHA-256 Hash (pre-committed)</p>
+                    <button
+                      onClick={() => { navigator.clipboard.writeText(roundData.seedHash); }}
+                      className="text-white/30 hover:text-white/60 transition-colors p-0.5"
+                      aria-label="Copy hash"
+                    >
+                      <Copy className="w-3 h-3" />
+                    </button>
+                  </div>
                   <p className="text-[11px] text-white/50 font-mono break-all leading-tight">{roundData.seedHash}</p>
                 </div>
               )}

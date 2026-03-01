@@ -486,6 +486,11 @@ export default function NativeDailyTasksModal({ isOpen, onClose, onCreditsUpdate
               <div className="flex flex-col items-center justify-center py-12">
                 <p className="text-sm text-gray-400">{t('dailyTasks.disabled') || 'Daily tasks not available'}</p>
               </div>
+            ) : isStatusLoading ? (
+              <div className="flex flex-col items-center justify-center py-16">
+                <div className="w-10 h-10 border-2 border-purple-400/30 border-t-purple-400 rounded-full animate-spin mb-4" />
+                <p className="text-sm text-gray-400">{t('common.loading') || 'Loading...'}</p>
+              </div>
             ) : renderLoggedInContent()}
           </div>
 

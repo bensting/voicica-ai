@@ -107,6 +107,13 @@ export function isDailyTasksEnabled(isNative: boolean = false): boolean {
 }
 
 /**
+ * 获取 Crash Game 首页卡片配置
+ */
+export function getCrashGameHomeConfig() {
+  return appConfig.mining_economy.crash_game;
+}
+
+/**
  * 获取推荐裂变配置
  */
 export function getReferralConfig(): ReferralConfig {

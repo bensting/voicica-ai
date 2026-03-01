@@ -23,6 +23,7 @@ import ReferralPage from '@/components/native/ReferralPage';
 import MePageContent from '@/components/native/me/MePageContent';
 // Crash Game
 import CrashGameCard from '@/components/native/crash-game/CrashGameCard';
+import { getCrashGameHomeConfig } from '@/config/appConfig';
 
 // 不显示顶部导航的路径
 const hideNavbarPaths = ['/native/me', '/native/settings', '/native/create', '/native/tools', '/native/video', '/native/voice/task', '/native/subscribe', '/native/payment', '/native/lucky-draw', '/native/crash-game'];
@@ -133,15 +134,26 @@ export default function NativeLayout({
   const showBottomNav = !isInSubPage;
 
   // Memoize tab content to prevent re-init when navigating to/from sub-pages
+  const showCrashGame = getCrashGameHomeConfig().show_home_card;
   const exploreTab = useMemo(() => (
     <div className="pt-2 pb-20">
       <NativeBannerAd />
       <TotalAssetsCard />
-      <CrashGameCard />
+      {showCrashGame && (
+        <>
+          <div className="px-5 mt-5 mb-1">
+            <h2 className="text-xs font-semibold text-white/40 uppercase tracking-wider">Play &amp; Earn</h2>
+          </div>
+          <CrashGameCard />
+        </>
+      )}
+      <div className="px-5 mt-5 mb-1">
+        <h2 className="text-xs font-semibold text-white/40 uppercase tracking-wider">AI Creative Tools</h2>
+      </div>
       <FeatureGrid />
       <ExploreSection />
     </div>
-  ), []);
+  ), [showCrashGame]);
 
   const teamTab = useMemo(() => <ReferralPage />, []);
   const meTab = useMemo(() => <MePageContent />, []);

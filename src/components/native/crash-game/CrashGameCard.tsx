@@ -2,12 +2,17 @@
 
 import Link from 'next/link';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { getCrashGameHomeConfig } from '@/config/appConfig';
 
 /**
  * Crash Game 入口卡片 - 显示在 Explore 首页
+ * 可见性和副标题由 appConfig.mining_economy.crash_game 控制
  */
 export default function CrashGameCard() {
   const { t } = useLanguage();
+  const config = getCrashGameHomeConfig();
+
+  if (!config.show_home_card) return null;
 
   return (
     <Link href="/native/crash-game" className="block mx-4 mt-4">
@@ -22,7 +27,7 @@ export default function CrashGameCard() {
               {t('native.crashGame.title')}
             </h3>
             <p className="mt-1 text-sm text-white/80">
-              {t('native.crashGame.subtitle')}
+              {config.subtitle}
             </p>
           </div>
           <div className="flex flex-col items-center">

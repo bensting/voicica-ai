@@ -80,22 +80,24 @@ export default function NativeSubscribePage() {
         <div className="absolute bottom-40 left-1/2 -translate-x-1/2 w-96 h-96 rounded-full bg-amber-600/[0.04] blur-[120px]" />
       </div>
 
-      {/* Close button */}
-      <button
-        onClick={() => router.back()}
-        className="absolute left-4 z-20 w-10 h-10 flex items-center justify-center bg-white/5 backdrop-blur-sm rounded-full text-slate-400 hover:text-white hover:bg-white/10 transition-all"
-        style={{ top: 'calc(var(--safe-area-inset-top, 0px) + 8px)' }}
+      {/* Header */}
+      <div
+        className="shrink-0 relative z-20 flex items-center px-4 py-3 bg-slate-950/80 border-b border-white/5"
+        style={{ paddingTop: 'calc(var(--safe-area-inset-top, 0px) + 12px)' }}
       >
-        <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-          <path d="M18 6L6 18M6 6l12 12" />
-        </svg>
-      </button>
+        <button
+          onClick={() => router.replace('/native')}
+          className="text-white/60 hover:text-white transition"
+        >
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+          </svg>
+        </button>
+        <h1 className="ml-3 text-lg font-bold text-white">BUY $VOICICA</h1>
+      </div>
 
       {/* ── Balance Section ── */}
-      <div
-        className="relative z-10 text-center pt-5 pb-4"
-        style={{ marginTop: 'calc(var(--safe-area-inset-top, 0px) + 52px)' }}
-      >
+      <div className="relative z-10 text-center pt-5 pb-4">
         <p className="text-slate-500 text-xs font-medium uppercase tracking-widest mb-3">
           {t('native.subscribe.yourBalance')}
         </p>

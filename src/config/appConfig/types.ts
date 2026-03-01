@@ -99,6 +99,13 @@ export interface MiningEconomyConfig {
   conversion: ConversionConfig;
   /** USDT 提现配置 */
   withdrawal: WithdrawalConfig;
+  /** Crash Game 首页卡片配置 */
+  crash_game: {
+    /** 是否在首页显示 Crash Game 卡片 */
+    show_home_card: boolean;
+    /** 卡片副标题文案 */
+    subtitle: string;
+  };
 }
 
 /**

@@ -165,15 +165,7 @@ export default function CrashGamePage() {
     ? (roundData?.status === 'cashed_out' ? 'win' : 'lose')
     : 'idle';
 
-  if (!config) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-8 w-8 border-2 border-purple-400 border-t-transparent" />
-      </div>
-    );
-  }
-
-  if (!config.enabled) {
+  if (config && !config.enabled) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen px-4 text-center">
         <div className="text-4xl mb-4">🚀</div>
@@ -209,70 +201,90 @@ export default function CrashGamePage() {
       {/* Balance Bar - always visible at top */}
       <GameBalanceBar />
 
-      {/* Multiplier Display - always visible */}
-      <MultiplierDisplay
-        active={gameState === 'playing'}
-        speed={roundData?.speed ?? config.speed}
-        startedAt={roundData?.startedAt ?? ''}
-        maxDurationSeconds={config.maxDurationSeconds}
-        crashPoint={roundData?.crashPoint}
-        onCrash={handleCrash}
-        onExpire={handleCrash}
-        onMultiplierUpdate={(m: number) => { multiplierRef.current = m; }}
-        displayState={displayState}
-        finalMultiplier={roundData?.cashOutMultiplier ?? roundData?.crashPoint}
-      />
-
-      {/* Bottom section based on state */}
-      {gameState === 'idle' && (
-        <BettingPanel
-          minBet={config.minBet}
-          maxBet={config.maxBet}
-          loading={loading}
-          onStart={handleStart}
-        />
-      )}
-
-      {gameState === 'betting' && (
-        <div className="px-4 pb-4">
-          <div className="w-full rounded-xl bg-white/10 py-4 text-center">
-            <div className="animate-spin rounded-full h-6 w-6 border-2 border-purple-400 border-t-transparent mx-auto mb-2" />
-            <span className="text-white/60 text-sm">{t('native.crashGame.placing')}</span>
-          </div>
-        </div>
-      )}
-
-      {gameState === 'playing' && (
+      {!config ? (
+        /* Inline skeleton while config loads — seamless with loading.tsx */
         <>
-          <CashOutButton
-            betAmount={roundData?.betAmount ?? 0}
-            loading={loading}
-            onCashOut={handleCashOut}
-          />
-          {/* Seed hash shown DURING game for provably fair commitment */}
-          {roundData?.seedHash && (
-            <div className="mx-4 mb-3 rounded-lg bg-white/5 border border-white/10 px-3 py-2">
-              <p className="text-[10px] text-white/30 mb-0.5">SHA-256 Hash (pre-committed)</p>
-              <p className="text-[11px] text-white/50 font-mono break-all leading-tight">{roundData.seedHash}</p>
+          <div className="flex items-center justify-center py-16">
+            <div className="w-48 h-48 rounded-full border-2 border-purple-500/20 flex items-center justify-center">
+              <div className="h-10 w-24 rounded bg-white/10 animate-pulse" />
             </div>
+          </div>
+          <div className="px-4 space-y-3">
+            <div className="h-14 rounded-xl bg-white/5 animate-pulse" />
+            <div className="flex gap-2">
+              {[1, 2, 3, 4].map(i => (
+                <div key={i} className="flex-1 h-10 rounded-lg bg-white/5 animate-pulse" />
+              ))}
+            </div>
+          </div>
+        </>
+      ) : (
+        <>
+          {/* Multiplier Display */}
+          <MultiplierDisplay
+            active={gameState === 'playing'}
+            speed={roundData?.speed ?? config.speed}
+            startedAt={roundData?.startedAt ?? ''}
+            maxDurationSeconds={config.maxDurationSeconds}
+            crashPoint={roundData?.crashPoint}
+            onCrash={handleCrash}
+            onExpire={handleCrash}
+            onMultiplierUpdate={(m: number) => { multiplierRef.current = m; }}
+            displayState={displayState}
+            finalMultiplier={roundData?.cashOutMultiplier ?? roundData?.crashPoint}
+          />
+
+          {/* Bottom section based on state */}
+          {gameState === 'idle' && (
+            <BettingPanel
+              minBet={config.minBet}
+              maxBet={config.maxBet}
+              loading={loading}
+              onStart={handleStart}
+            />
+          )}
+
+          {gameState === 'betting' && (
+            <div className="px-4 pb-4">
+              <div className="w-full rounded-xl bg-white/10 py-4 text-center">
+                <div className="animate-spin rounded-full h-6 w-6 border-2 border-purple-400 border-t-transparent mx-auto mb-2" />
+                <span className="text-white/60 text-sm">{t('native.crashGame.placing')}</span>
+              </div>
+            </div>
+          )}
+
+          {gameState === 'playing' && (
+            <>
+              <CashOutButton
+                betAmount={roundData?.betAmount ?? 0}
+                loading={loading}
+                onCashOut={handleCashOut}
+              />
+              {roundData?.seedHash && (
+                <div className="mx-4 mb-3 rounded-lg bg-white/5 border border-white/10 px-3 py-2">
+                  <p className="text-[10px] text-white/30 mb-0.5">SHA-256 Hash (pre-committed)</p>
+                  <p className="text-[11px] text-white/50 font-mono break-all leading-tight">{roundData.seedHash}</p>
+                </div>
+              )}
+            </>
+          )}
+
+          {gameState === 'result' && roundData && (
+            <GameResult
+              status={roundData.status as 'cashed_out' | 'crashed' | 'expired'}
+              betAmount={roundData.betAmount}
+              crashPoint={roundData.crashPoint!}
+              cashOutMultiplier={roundData.cashOutMultiplier ?? undefined}
+              profit={roundData.profit ?? -roundData.betAmount}
+              seed={roundData.seed!}
+              seedHash={roundData.seedHash}
+              onPlayAgain={handlePlayAgain}
+            />
           )}
         </>
       )}
 
-      {gameState === 'result' && roundData && (
-        <GameResult
-          status={roundData.status as 'cashed_out' | 'crashed' | 'expired'}
-          betAmount={roundData.betAmount}
-          crashPoint={roundData.crashPoint!}
-          cashOutMultiplier={roundData.cashOutMultiplier ?? undefined}
-          profit={roundData.profit ?? -roundData.betAmount}
-          seed={roundData.seed!}
-          seedHash={roundData.seedHash}
-          onPlayAgain={handlePlayAgain}
-        />
-      )}
-
-      {/* History */}
+      {/* History — loads independently */}
       <GameHistory history={history} loading={historyLoading} />
     </div>
   );

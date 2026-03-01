@@ -211,6 +211,7 @@ export default function CrashGamePage() {
         active={gameState === 'playing'}
         speed={roundData?.speed ?? config.speed}
         startedAt={roundData?.startedAt ?? ''}
+        maxDurationSeconds={config.maxDurationSeconds}
         crashPoint={roundData?.crashPoint}
         onCrash={handleCrash}
         onMultiplierUpdate={setCurrentMultiplier}

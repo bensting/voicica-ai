@@ -41,10 +41,25 @@ export default function GameResult({
         <div className={`text-3xl font-black mt-1 ${isWin ? 'text-green-300' : 'text-red-300'}`}>
           {profit >= 0 ? '+' : ''}{profit.toFixed(2)}
         </div>
-        <div className="mt-2 flex items-center justify-center gap-4 text-sm text-white/60">
-          <span>{t('native.crashGame.bet')}: {betAmount} $VOICICA</span>
-          <span>Crash: {crashPoint.toFixed(2)}x</span>
-          {cashOutMultiplier && <span>Out: {cashOutMultiplier.toFixed(2)}x</span>}
+        <div className={`mt-3 grid ${cashOutMultiplier ? 'grid-cols-[1fr_auto_1fr_auto_1fr]' : 'grid-cols-[1fr_auto_1fr]'} items-center text-white/60`}>
+          <div className="text-center">
+            <div className="text-xs">{t('native.crashGame.bet')}</div>
+            <div className="text-sm font-medium">{betAmount}</div>
+          </div>
+          <span className="text-white/30 px-1">·</span>
+          <div className="text-center">
+            <div className="text-xs">Crash</div>
+            <div className="text-sm font-medium">{crashPoint.toFixed(2)}x</div>
+          </div>
+          {cashOutMultiplier && (
+            <>
+              <span className="text-white/30 px-1">·</span>
+              <div className="text-center">
+                <div className="text-xs">Out</div>
+                <div className="text-sm font-medium">{cashOutMultiplier.toFixed(2)}x</div>
+              </div>
+            </>
+          )}
         </div>
       </div>
 

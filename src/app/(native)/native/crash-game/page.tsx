@@ -208,7 +208,12 @@ export default function CrashGamePage() {
     ? (roundData?.status === 'cashed_out' ? 'win' : 'lose')
     : 'idle';
 
-  if (config && !config.enabled) {
+  // Config 未加载完成时不渲染页面内容，让公共 loading overlay 无缝衔接
+  if (!config) {
+    return <div className="h-dvh bg-slate-950" />;
+  }
+
+  if (!config.enabled) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen px-4 text-center">
         <div className="text-4xl mb-4">🚀</div>
@@ -295,7 +300,6 @@ export default function CrashGamePage() {
               maxBet={config?.maxBet ?? 1000}
               usableBalance={usableBalance}
               loading={loading}
-              disabled={!config}
               onStart={handleStart}
             />
           )}

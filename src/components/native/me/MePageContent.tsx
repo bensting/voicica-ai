@@ -6,7 +6,6 @@ import { useCredits } from '@/contexts/CreditsContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import ProfileHeader from '@/components/native/me/ProfileHeader';
 import UserStatsBar from '@/components/native/me/UserStatsBar';
-import SubscribeCard from '@/components/native/me/SubscribeCard';
 import MyCreations from '@/components/native/me/MyCreations';
 import LoginModal from '@/components/native/LoginModal';
 
@@ -71,14 +70,11 @@ export default function MePageContent() {
           onAvatarClick={() => setIsLoginModalOpen(true)}
         />
 
-        {/* VOICICA 余额 */}
+        {/* VOICICA 余额 + BUY */}
         <UserStatsBar
           credits={credits}
           creditsLoading={creditsLoading}
         />
-
-        {/* 购买 VOICICA 推广卡片 */}
-        <SubscribeCard />
       </div>
 
       {/* 可滚动的作品区域 */}

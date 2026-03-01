@@ -37,8 +37,8 @@ export default function GameBalanceBar() {
 
   return (
     <>
-      <div className="mx-4 mt-3 mb-3">
-        <div className="flex items-center justify-between rounded-xl bg-white/5 border border-white/10 px-4 py-2.5">
+      <div className="mx-4 mt-3 mb-3 rounded-xl bg-white/5 border border-white/10 px-4 py-2.5">
+        <div className="flex items-center justify-between">
           {/* Usable Balance */}
           <div className="flex items-center gap-2 min-w-0">
             <span className="text-base">💰</span>
@@ -76,7 +76,7 @@ export default function GameBalanceBar() {
           </div>
         </div>
         {/* Reserve hint */}
-        <p className="text-white/25 text-[10px] text-center mt-1.5">
+        <p className="text-white/25 text-[10px] mt-1.5">
           {formatCredits(min_voicica_reserve)} $VOICICA reserved and not available for games
         </p>
       </div>

@@ -176,9 +176,9 @@ export default async function RootLayout({
       >
         <LanguageProvider initialLocale={initialLocale}>
           <FirebaseAuthProvider>
-            <AppSplashWrapper>
-              <UserProvider>
-                <CreditsProvider>
+            <UserProvider>
+              <CreditsProvider>
+                <AppSplashWrapper>
                   <SubscriptionProvider>
                     <AudioSettingsProvider>
                       <DeviceFingerprintProvider>
@@ -194,9 +194,9 @@ export default async function RootLayout({
                       </DeviceFingerprintProvider>
                     </AudioSettingsProvider>
                   </SubscriptionProvider>
-                </CreditsProvider>
-              </UserProvider>
-            </AppSplashWrapper>
+                </AppSplashWrapper>
+              </CreditsProvider>
+            </UserProvider>
           </FirebaseAuthProvider>
         </LanguageProvider>
         {process.env.NEXT_PUBLIC_GA_ID && (

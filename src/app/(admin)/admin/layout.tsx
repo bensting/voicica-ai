@@ -1,6 +1,6 @@
 'use client';
 
-import { ReactNode, useEffect, useState } from 'react';
+import { ReactNode, useEffect, useState, useCallback, useMemo } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
@@ -75,6 +75,34 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   const { user, loading } = useFirebaseAuth();
   const [isAuthorized, setIsAuthorized] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  // 根据当前路径自动展开对应分组
+  const activeGroupIndex = useMemo(() =>
+    MENU_GROUPS.findIndex(g => g.items.some(item => pathname.startsWith(item.href))),
+    [pathname]
+  );
+  const [expandedGroups, setExpandedGroups] = useState<Set<number>>(() =>
+    new Set(activeGroupIndex >= 0 ? [activeGroupIndex] : [0])
+  );
+
+  // pathname 变化时自动展开当前分组
+  useEffect(() => {
+    if (activeGroupIndex >= 0) {
+      setExpandedGroups(prev => {
+        if (prev.has(activeGroupIndex)) return prev;
+        return new Set(prev).add(activeGroupIndex);
+      });
+    }
+  }, [activeGroupIndex]);
+
+  const toggleGroup = useCallback((index: number) => {
+    setExpandedGroups(prev => {
+      const next = new Set(prev);
+      if (next.has(index)) next.delete(index);
+      else next.add(index);
+      return next;
+    });
+  }, []);
 
   useEffect(() => {
     if (!loading) {
@@ -152,20 +180,46 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
         {isMobileMenuOpen && (
           <div className="lg:hidden border-t border-gray-200 bg-white max-h-[calc(100vh-56px)] overflow-y-auto">
             <nav className="px-4 py-3 space-y-1">
-              {NAV_ITEMS.map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-colors ${
-                    pathname === item.href
-                      ? 'bg-purple-50 text-purple-600 font-medium'
-                      : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-                  }`}
-                >
-                  <span>{item.icon}</span>
-                  <span>{item.label}</span>
-                </Link>
-              ))}
+              {MENU_GROUPS.map((group, idx) => {
+                const isExpanded = expandedGroups.has(idx);
+                const hasActive = group.items.some(item => pathname.startsWith(item.href));
+                return (
+                  <div key={group.title}>
+                    <button
+                      onClick={() => toggleGroup(idx)}
+                      className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs font-semibold uppercase tracking-wider transition-colors ${
+                        hasActive ? 'text-purple-600' : 'text-gray-400 hover:text-gray-600 hover:bg-gray-50'
+                      }`}
+                    >
+                      {group.title}
+                      <svg
+                        className={`w-3.5 h-3.5 transition-transform ${isExpanded ? 'rotate-180' : ''}`}
+                        fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}
+                      >
+                        <path d="M6 9l6 6 6-6" />
+                      </svg>
+                    </button>
+                    {isExpanded && (
+                      <div className="mt-1 mb-1 space-y-0.5">
+                        {group.items.map((item) => (
+                          <Link
+                            key={item.href}
+                            href={item.href}
+                            className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-colors ${
+                              pathname.startsWith(item.href)
+                                ? 'bg-purple-50 text-purple-600 font-medium'
+                                : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                            }`}
+                          >
+                            <span>{item.icon}</span>
+                            <span>{item.label}</span>
+                          </Link>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
               <div className="border-t border-gray-200 mt-2 pt-2">
                 <div className="px-3 py-2 text-sm text-gray-500">{user?.email}</div>
               </div>
@@ -185,30 +239,47 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
       <div className="flex">
         {/* 桌面端左侧边栏 */}
         <aside className="hidden lg:block w-56 flex-shrink-0 bg-white border-r border-gray-200 h-[calc(100vh-56px)] sticky top-14 overflow-y-auto">
-          <nav className="p-4 space-y-6">
-            {MENU_GROUPS.map((group) => (
-              <div key={group.title}>
-                <h3 className="px-3 mb-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">
-                  {group.title}
-                </h3>
-                <div className="space-y-1">
-                  {group.items.map((item) => (
-                    <Link
-                      key={item.href}
-                      href={item.href}
-                      className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-colors ${
-                        pathname === item.href
-                          ? 'bg-purple-50 text-purple-600 font-medium'
-                          : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-                      }`}
+          <nav className="p-3 space-y-1">
+            {MENU_GROUPS.map((group, idx) => {
+              const isExpanded = expandedGroups.has(idx);
+              const hasActive = group.items.some(item => pathname.startsWith(item.href));
+              return (
+                <div key={group.title}>
+                  <button
+                    onClick={() => toggleGroup(idx)}
+                    className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs font-semibold uppercase tracking-wider transition-colors ${
+                      hasActive ? 'text-purple-600' : 'text-gray-400 hover:text-gray-600 hover:bg-gray-50'
+                    }`}
+                  >
+                    {group.title}
+                    <svg
+                      className={`w-3.5 h-3.5 transition-transform ${isExpanded ? 'rotate-180' : ''}`}
+                      fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}
                     >
-                      <span className="text-base">{item.icon}</span>
-                      <span>{item.label}</span>
-                    </Link>
-                  ))}
+                      <path d="M6 9l6 6 6-6" />
+                    </svg>
+                  </button>
+                  {isExpanded && (
+                    <div className="mt-1 mb-2 space-y-0.5">
+                      {group.items.map((item) => (
+                        <Link
+                          key={item.href}
+                          href={item.href}
+                          className={`flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors ${
+                            pathname.startsWith(item.href)
+                              ? 'bg-purple-50 text-purple-600 font-medium'
+                              : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                          }`}
+                        >
+                          <span className="text-base">{item.icon}</span>
+                          <span>{item.label}</span>
+                        </Link>
+                      ))}
+                    </div>
+                  )}
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </nav>
         </aside>
 

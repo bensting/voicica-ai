@@ -232,12 +232,12 @@ export default function MyCreations({ isActive }: { isActive?: boolean }) {
           <LuckyDrawTab filter={drawFilter} />
         ) : (
           <>
-            {activeTab === 'voices' && <VoicesTab isActive {...tabProps} />}
-            {activeTab === 'music' && <MusicTab isActive {...tabProps} />}
-            {activeTab === 'dialogues' && <DialogueTab isActive {...tabProps} />}
-            {activeTab === 'image' && <ImageTab isActive {...tabProps} />}
-            {activeTab === 'video' && <VideoTab isActive {...tabProps} />}
-            {activeTab === 'cover' && <CoverTab isActive {...tabProps} />}
+            {activeTab === 'voices' && <VoicesTab isActive={!!isActive} {...tabProps} />}
+            {activeTab === 'music' && <MusicTab isActive={!!isActive} {...tabProps} />}
+            {activeTab === 'dialogues' && <DialogueTab isActive={!!isActive} {...tabProps} />}
+            {activeTab === 'image' && <ImageTab isActive={!!isActive} {...tabProps} />}
+            {activeTab === 'video' && <VideoTab isActive={!!isActive} {...tabProps} />}
+            {activeTab === 'cover' && <CoverTab isActive={!!isActive} {...tabProps} />}
           </>
         )}
       </div>

@@ -192,11 +192,11 @@ export default function CrashGamePage() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col">
-      {/* ── Game Area: flex to fill one screen ── */}
-      <div className="flex flex-col h-dvh shrink-0">
+    <div className="h-dvh flex flex-col overflow-hidden">
+      {/* ── Top: Game Area (fills remaining space) ── */}
+      <div className="flex-1 flex flex-col min-h-0">
         {/* Header */}
-        <div className="flex items-center justify-between px-4 py-3 bg-slate-950/80 border-b border-white/5">
+        <div className="shrink-0 flex items-center justify-between px-4 py-3 bg-slate-950/80 border-b border-white/5">
           <div className="flex items-center gap-3">
             <button
               onClick={() => router.back()}
@@ -211,9 +211,11 @@ export default function CrashGamePage() {
         </div>
 
         {/* Balance Bar */}
-        <GameBalanceBar />
+        <div className="shrink-0">
+          <GameBalanceBar />
+        </div>
 
-        {/* Multiplier Display — flex-1 to fill remaining space */}
+        {/* Multiplier Display — fills remaining game area */}
         <div className="flex-1 flex items-center justify-center min-h-0">
           <MultiplierDisplay
             active={gameState === 'playing'}
@@ -229,7 +231,7 @@ export default function CrashGamePage() {
           />
         </div>
 
-        {/* Bottom section based on state */}
+        {/* Game controls */}
         <div className="shrink-0">
           {gameState === 'idle' && (
             <BettingPanel
@@ -280,8 +282,10 @@ export default function CrashGamePage() {
         </div>
       </div>
 
-      {/* ── History: below the fold, auto-refresh on scroll into view ── */}
-      <GameHistory history={history} loading={historyLoading} onRefresh={refreshHistory} />
+      {/* ── Bottom: History (fixed 28dvh, header sticky + list scrollable) ── */}
+      <div className="shrink-0 h-[28dvh] flex flex-col border-t border-white/10">
+        <GameHistory history={history} loading={historyLoading} onRefresh={refreshHistory} />
+      </div>
     </div>
   );
 }

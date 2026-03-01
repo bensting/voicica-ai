@@ -486,7 +486,7 @@ export async function getActiveRound(): Promise<CrashGameResult> {
 /**
  * 获取用户历史记录
  */
-export async function getUserCrashHistory(limit: number = 20): Promise<CrashHistoryItem[]> {
+export async function getUserCrashHistory(limit: number = 20, offset: number = 0): Promise<CrashHistoryItem[]> {
   try {
     const user = await getCurrentUser();
     const db = await getDb();
@@ -505,7 +505,8 @@ export async function getUserCrashHistory(limit: number = 20): Promise<CrashHist
       .from(crashGameRounds)
       .where(eq(crashGameRounds.userId, user.uid))
       .orderBy(desc(crashGameRounds.createdAt))
-      .limit(limit);
+      .limit(limit)
+      .offset(offset);
 
     return rounds;
   } catch (error) {

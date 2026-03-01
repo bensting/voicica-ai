@@ -1,8 +1,10 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
-import type { CrashHistoryItem } from '@/actions/crash-game';
+import { getUserCrashHistory, type CrashHistoryItem } from '@/actions/crash-game';
+
+const PAGE_SIZE = 10;
 
 interface GameHistoryProps {
   history: CrashHistoryItem[];
@@ -11,63 +13,88 @@ interface GameHistoryProps {
 }
 
 /**
- * 最近游戏记录列表 + Rules 底部弹窗
- * 滚动进入视口时自动触发 onRefresh
+ * 最近游戏记录：sticky header + 独立滚动列表 + 滚到底加载更多
  */
-export default function GameHistory({ history, loading, onRefresh }: GameHistoryProps) {
+export default function GameHistory({ history: initialHistory, loading: initialLoading, onRefresh }: GameHistoryProps) {
   const { t } = useLanguage();
   const [showRules, setShowRules] = useState(false);
+  const [items, setItems] = useState<CrashHistoryItem[]>(initialHistory);
+  const [hasMore, setHasMore] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const listRef = useRef<HTMLDivElement>(null);
   const sentinelRef = useRef<HTMLDivElement>(null);
 
-  // Auto-refresh when scrolled into view
+  // Sync when parent refreshes
+  useEffect(() => {
+    setItems(initialHistory);
+    setHasMore(initialHistory.length >= PAGE_SIZE);
+  }, [initialHistory]);
+
+  // Auto-refresh when section becomes visible
   useEffect(() => {
     if (!onRefresh || !sentinelRef.current) return;
     const el = sentinelRef.current;
     const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          onRefresh();
-        }
-      },
+      ([entry]) => { if (entry.isIntersecting) onRefresh(); },
       { threshold: 0.1 }
     );
     observer.observe(el);
     return () => observer.disconnect();
   }, [onRefresh]);
 
-  return (
-    <div className="px-4 pb-6" ref={sentinelRef}>
-      {loading && history.length === 0 ? (
-        <>
-          <div className="h-4 w-32 bg-white/10 rounded animate-pulse mb-3" />
-          {[1, 2, 3].map(i => (
-            <div key={i} className="h-12 bg-white/5 rounded-lg mb-2 animate-pulse" />
-          ))}
-        </>
-      ) : (
-        <>
-          {/* Header row */}
-          <div className="flex items-center justify-between mb-2">
-            <h3 className="text-sm font-semibold text-white/60">
-              {t('native.crashGame.recentGames')}
-            </h3>
-            <button
-              onClick={() => setShowRules(true)}
-              className="flex items-center gap-1 text-xs text-white/40 hover:text-white/60 transition-colors"
-            >
-              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              Rules
-            </button>
-          </div>
+  // Load more on scroll to bottom
+  const handleScroll = useCallback(() => {
+    const el = listRef.current;
+    if (!el || loadingMore || !hasMore) return;
+    // Near bottom: 40px threshold
+    if (el.scrollTop + el.clientHeight >= el.scrollHeight - 40) {
+      setLoadingMore(true);
+      getUserCrashHistory(PAGE_SIZE, items.length)
+        .then((more) => {
+          if (more.length < PAGE_SIZE) setHasMore(false);
+          setItems(prev => [...prev, ...more]);
+        })
+        .catch(() => setHasMore(false))
+        .finally(() => setLoadingMore(false));
+    }
+  }, [items.length, loadingMore, hasMore]);
 
-          {/* History list */}
-          {history.length === 0 ? (
+  return (
+    <>
+      <div className="flex flex-col h-full" ref={sentinelRef}>
+        {/* Sticky header */}
+        <div className="shrink-0 flex items-center justify-between px-4 pt-3 pb-2">
+          <h3 className="text-sm font-semibold text-white/60">
+            {t('native.crashGame.recentGames')}
+          </h3>
+          <button
+            onClick={() => setShowRules(true)}
+            className="flex items-center gap-1 text-xs text-white/40 hover:text-white/60 transition-colors"
+          >
+            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            Rules
+          </button>
+        </div>
+
+        {/* Scrollable list */}
+        <div
+          ref={listRef}
+          className="flex-1 overflow-y-auto px-4 pb-4 min-h-0"
+          onScroll={handleScroll}
+        >
+          {initialLoading && items.length === 0 ? (
+            <div className="space-y-2">
+              {[1, 2, 3].map(i => (
+                <div key={i} className="h-12 bg-white/5 rounded-lg animate-pulse" />
+              ))}
+            </div>
+          ) : items.length === 0 ? (
             <div className="text-center text-white/20 text-sm py-6">No games yet</div>
           ) : (
             <div className="space-y-1.5">
-              {history.map((item) => {
+              {items.map((item) => {
                 const isWin = item.status === 'cashed_out';
                 return (
                   <div
@@ -98,10 +125,15 @@ export default function GameHistory({ history, loading, onRefresh }: GameHistory
                   </div>
                 );
               })}
+              {loadingMore && (
+                <div className="flex justify-center py-2">
+                  <div className="animate-spin rounded-full h-4 w-4 border-2 border-purple-400 border-t-transparent" />
+                </div>
+              )}
             </div>
           )}
-        </>
-      )}
+        </div>
+      </div>
 
       {/* Rules Bottom Sheet */}
       {showRules && (
@@ -161,6 +193,6 @@ export default function GameHistory({ history, loading, onRefresh }: GameHistory
           </div>
         </>
       )}
-    </div>
+    </>
   );
 }

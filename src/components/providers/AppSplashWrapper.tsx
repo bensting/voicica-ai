@@ -4,7 +4,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 import { useCredits } from '@/contexts/CreditsContext';
 import { usePathname } from 'next/navigation';
-import { ReactNode } from 'react';
+import { ReactNode, useState, useEffect, useRef } from 'react';
 
 /**
  * App Loading Wrapper
@@ -29,8 +29,29 @@ export default function AppSplashWrapper({ children }: { children: ReactNode }) 
   // Web: 等语言 + 认证；Native: 额外等余额加载完
   const isAppReady = isLanguageReady && !isAuthLoading && (isNativeRoute ? !isCreditsLoading : true);
 
-  // Native 真实进度：语言 30% + 认证 35% + 余额 35%
-  const nativeProgress = (isLanguageReady ? 30 : 5) + (!isAuthLoading ? 35 : 0) + (!isCreditsLoading ? 35 : 0);
+  // Native 进度：里程碑 + 持续缓慢爬行
+  const milestoneProgress = (isLanguageReady ? 30 : 0) + (!isAuthLoading ? 35 : 0) + (!isCreditsLoading ? 35 : 0);
+  const [displayProgress, setDisplayProgress] = useState(0);
+  const milestoneRef = useRef(milestoneProgress);
+  milestoneRef.current = milestoneProgress;
+
+  useEffect(() => {
+    if (!isNativeRoute) return;
+    const interval = setInterval(() => {
+      setDisplayProgress(prev => {
+        const milestone = milestoneRef.current;
+        if (prev < milestone) {
+          // 追赶里程碑：快速推进，越近越慢
+          return Math.min(prev + Math.max(0.8, (milestone - prev) * 0.12), milestone);
+        }
+        // 缓慢爬行，不超过下一个里程碑的预期位置
+        const ceiling = Math.min(milestone + 28, 99);
+        if (prev >= ceiling) return prev;
+        return prev + 0.2;
+      });
+    }, 50);
+    return () => clearInterval(interval);
+  }, [isNativeRoute]);
 
   return (
     <>
@@ -73,11 +94,11 @@ export default function AppSplashWrapper({ children }: { children: ReactNode }) 
               <h1 className="text-white/90 text-xl font-bold tracking-wider mb-2">VoicicaAI</h1>
               <p className="text-white/30 text-xs font-medium tracking-widest uppercase mb-10">AI Creative Studio</p>
 
-              {/* 真实进度条 */}
+              {/* 进度条 */}
               <div className="w-40 h-0.5 bg-white/10 rounded-full overflow-hidden">
                 <div
-                  className="h-full bg-gradient-to-r from-purple-500 to-amber-400 rounded-full transition-all duration-500 ease-out"
-                  style={{ width: `${nativeProgress}%` }}
+                  className="h-full bg-gradient-to-r from-purple-500 to-amber-400 rounded-full"
+                  style={{ width: `${displayProgress}%` }}
                 />
               </div>
             </div>

@@ -149,7 +149,7 @@ export default function MultiplierDisplay({
       {/* Outer ambient glow */}
       <div
         ref={glowRef}
-        className="absolute rounded-full transition-all duration-500"
+        className={`absolute rounded-full transition-all duration-500 ${displayState === 'idle' ? 'idle-glow' : ''}`}
         style={{
           width: 200, height: 200,
           background: displayState === 'lose'
@@ -162,7 +162,7 @@ export default function MultiplierDisplay({
       />
 
       {/* SVG orb */}
-      <svg width={SIZE} height={SIZE} viewBox={`0 0 ${SIZE} ${SIZE}`} className="relative z-10">
+      <svg width={SIZE} height={SIZE} viewBox={`0 0 ${SIZE} ${SIZE}`} className={`relative z-10 ${displayState === 'idle' ? 'idle-breathe' : ''}`}>
         <defs>
           <linearGradient id="countdown-grad" x1="0%" y1="0%" x2="100%" y2="100%">
             <stop offset="0%" stopColor="#a855f7" />
@@ -264,6 +264,22 @@ export default function MultiplierDisplay({
           className="absolute z-0 rounded-full border border-purple-500/20 animate-ping pointer-events-none"
           style={{ width: 210, height: 210, animationDuration: '2s' }}
         />
+      )}
+
+      {/* Idle breathing animation */}
+      {displayState === 'idle' && (
+        <style>{`
+          @keyframes idle-breathe {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.04); opacity: 0.85; }
+          }
+          @keyframes idle-glow {
+            0%, 100% { opacity: 0.5; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.1); }
+          }
+          .idle-breathe { animation: idle-breathe 3s ease-in-out infinite; }
+          .idle-glow { animation: idle-glow 3s ease-in-out infinite; }
+        `}</style>
       )}
     </div>
   );

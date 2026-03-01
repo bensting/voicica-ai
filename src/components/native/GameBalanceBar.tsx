@@ -61,13 +61,13 @@ export default function GameBalanceBar() {
           <div className="flex items-center gap-2">
           <button
             onClick={() => setShowMining(true)}
-            className="px-3 py-1.5 rounded-lg bg-amber-500/20 text-amber-400 text-xs font-semibold hover:bg-amber-500/30 active:scale-95 transition-all"
+            className="w-14 py-1.5 rounded-lg bg-amber-500/20 text-amber-400 text-xs font-semibold text-center hover:bg-amber-500/30 active:scale-95 transition-all"
           >
             Mine
           </button>
           <button
             onClick={() => requireLogin(() => { startLoading(); router.push('/native/subscribe'); })}
-            className="px-3 py-1.5 rounded-lg bg-purple-500/20 text-purple-400 text-xs font-semibold hover:bg-purple-500/30 active:scale-95 transition-all"
+            className="w-14 py-1.5 rounded-lg bg-purple-500/20 text-purple-400 text-xs font-semibold text-center hover:bg-purple-500/30 active:scale-95 transition-all"
           >
             Buy
           </button>

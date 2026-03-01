@@ -20,7 +20,6 @@ import BettingPanel from '@/components/native/crash-game/BettingPanel';
 import CashOutButton from '@/components/native/crash-game/CashOutButton';
 import GameResult from '@/components/native/crash-game/GameResult';
 import GameHistory from '@/components/native/crash-game/GameHistory';
-import LiveFeed from '@/components/native/crash-game/LiveFeed';
 import GameBalanceBar from '@/components/native/GameBalanceBar';
 
 type GameState = 'idle' | 'betting' | 'playing' | 'result';
@@ -201,9 +200,6 @@ export default function CrashGamePage() {
             </svg>
           </button>
           <h1 className="text-lg font-bold text-white">{t('native.crashGame.title')}</h1>
-        </div>
-        <div className="relative">
-          <LiveFeed />
         </div>
       </div>
 

@@ -28,7 +28,7 @@ export default function UserStatsBar({
   const [navigating, setNavigating] = useState(false);
 
   const usdtValue = credits * token_value_usd;
-  const usdtDisplay = usdtValue === 0 ? '0' : usdtValue.toFixed(4);
+  const usdtDisplay = usdtValue === 0 ? '0' : parseFloat(usdtValue.toFixed(4)).toString();
 
   useEffect(() => {
     if (navigating) setNavigating(false);

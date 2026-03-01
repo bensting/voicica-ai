@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useNavigationLoading } from '@/hooks/useNavigationLoading';
 import NativeLoadingOverlay from '@/components/native/common/NativeLoadingOverlay';
+import { prefetchCrashGame } from '@/lib/crashGamePrefetch';
 import { getCrashGameHomeConfig } from '@/config/appConfig';
 
 /**
@@ -19,6 +20,7 @@ export default function CrashGameCard() {
   const { navigating, startLoading } = useNavigationLoading();
 
   const handleNavigate = useCallback(() => {
+    prefetchCrashGame();
     startLoading();
     router.push('/native/crash-game');
   }, [router, startLoading]);

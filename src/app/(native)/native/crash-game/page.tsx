@@ -27,6 +27,7 @@ import InsufficientCreditsModal from '@/components/native/common/InsufficientCre
 import NativeDailyTasksModal from '@/components/native/NativeDailyTasksModal';
 import { DEFAULT_CRASH_SPEED, MAX_GAME_DURATION_SECONDS } from '@/config/native/crashGameConfig';
 import { getConversionConfig } from '@/config/appConfig';
+import { consumeCrashGamePrefetch } from '@/lib/crashGamePrefetch';
 import { Copy } from 'lucide-react';
 
 type GameState = 'idle' | 'betting' | 'playing' | 'result';
@@ -66,12 +67,14 @@ export default function CrashGamePage() {
   gameStateRef.current = gameState;
 
   // Load config and active round (critical path — renders game UI)
+  // 优先消费 CrashGameCard 的预加载缓存，无缓存时回退到新请求
   useEffect(() => {
     const init = async () => {
       try {
+        const prefetched = consumeCrashGamePrefetch();
         const [configData, activeResult] = await Promise.all([
-          getCrashGameConfig(),
-          getActiveRound(),
+          prefetched.configPromise ?? getCrashGameConfig(),
+          prefetched.activeRoundPromise ?? getActiveRound(),
         ]);
 
         setConfig(configData);

@@ -21,6 +21,7 @@ import CashOutButton from '@/components/native/crash-game/CashOutButton';
 import GameResult from '@/components/native/crash-game/GameResult';
 import GameHistorySheet from '@/components/native/crash-game/GameHistorySheet';
 import GameRulesSheet from '@/components/native/crash-game/GameRulesSheet';
+import ProvablyFairSheet from '@/components/native/crash-game/ProvablyFairSheet';
 import GameBalanceBar from '@/components/native/GameBalanceBar';
 import { DEFAULT_CRASH_SPEED, MAX_GAME_DURATION_SECONDS } from '@/config/native/crashGameConfig';
 
@@ -43,6 +44,7 @@ export default function CrashGamePage() {
   // History & Rules sheets
   const [showHistory, setShowHistory] = useState(false);
   const [showRules, setShowRules] = useState(false);
+  const [showFairness, setShowFairness] = useState(false);
   const [history, setHistory] = useState<CrashHistoryItem[]>([]);
   const [historyLoading, setHistoryLoading] = useState(true);
 
@@ -298,9 +300,8 @@ export default function CrashGamePage() {
               crashPoint={roundData.crashPoint!}
               cashOutMultiplier={roundData.cashOutMultiplier ?? undefined}
               profit={roundData.profit ?? -roundData.betAmount}
-              seed={roundData.seed!}
-              seedHash={roundData.seedHash}
               onPlayAgain={handlePlayAgain}
+              onShowFairness={() => setShowFairness(true)}
             />
           )}
         </div>
@@ -317,6 +318,15 @@ export default function CrashGamePage() {
         isOpen={showRules}
         onClose={() => setShowRules(false)}
       />
+      {roundData && (
+        <ProvablyFairSheet
+          isOpen={showFairness}
+          onClose={() => setShowFairness(false)}
+          seed={roundData.seed!}
+          seedHash={roundData.seedHash}
+          crashPoint={roundData.crashPoint!}
+        />
+      )}
     </>
   );
 }

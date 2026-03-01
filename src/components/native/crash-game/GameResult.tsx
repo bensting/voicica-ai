@@ -1,6 +1,5 @@
 'use client';
 
-import { useState } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 interface GameResultProps {
@@ -9,13 +8,12 @@ interface GameResultProps {
   crashPoint: number;
   cashOutMultiplier?: number;
   profit: number;
-  seed: string;
-  seedHash: string;
   onPlayAgain: () => void;
+  onShowFairness: () => void;
 }
 
 /**
- * 游戏结果展示 + Provably Fair 验证
+ * 游戏结果展示 — Provably Fair 改为底部弹出面板
  */
 export default function GameResult({
   status,
@@ -23,12 +21,10 @@ export default function GameResult({
   crashPoint,
   cashOutMultiplier,
   profit,
-  seed,
-  seedHash,
   onPlayAgain,
+  onShowFairness,
 }: GameResultProps) {
   const { t } = useLanguage();
-  const [showFairness, setShowFairness] = useState(false);
   const isWin = status === 'cashed_out';
 
   return (
@@ -60,33 +56,13 @@ export default function GameResult({
         {t('native.crashGame.playAgain')}
       </button>
 
-      {/* Provably Fair */}
+      {/* Provably Fair — opens bottom sheet */}
       <button
-        onClick={() => setShowFairness(!showFairness)}
+        onClick={onShowFairness}
         className="w-full text-center text-xs text-white/40 hover:text-white/60 transition-colors"
       >
-        {t('native.crashGame.provablyFair')} {showFairness ? '▲' : '▼'}
+        {t('native.crashGame.provablyFair')} ▶
       </button>
-
-      {showFairness && (
-        <div className="rounded-xl bg-white/5 p-4 text-xs space-y-2 border border-white/10">
-          <div>
-            <span className="text-white/40">Seed:</span>
-            <p className="text-white/70 font-mono break-all mt-0.5">{seed}</p>
-          </div>
-          <div>
-            <span className="text-white/40">SHA-256 Hash:</span>
-            <p className="text-white/70 font-mono break-all mt-0.5">{seedHash}</p>
-          </div>
-          <div>
-            <span className="text-white/40">Crash Point:</span>
-            <p className="text-white/70 font-mono mt-0.5">{crashPoint.toFixed(2)}x</p>
-          </div>
-          <p className="text-white/30 text-[10px]">
-            {t('native.crashGame.fairnessNote')}
-          </p>
-        </div>
-      )}
     </div>
   );
 }

@@ -23,7 +23,10 @@ import GameHistorySheet from '@/components/native/crash-game/GameHistorySheet';
 import GameRulesSheet from '@/components/native/crash-game/GameRulesSheet';
 import ProvablyFairSheet from '@/components/native/crash-game/ProvablyFairSheet';
 import GameBalanceBar from '@/components/native/GameBalanceBar';
+import InsufficientCreditsModal from '@/components/native/common/InsufficientCreditsModal';
+import NativeDailyTasksModal from '@/components/native/NativeDailyTasksModal';
 import { DEFAULT_CRASH_SPEED, MAX_GAME_DURATION_SECONDS } from '@/config/native/crashGameConfig';
+import { getConversionConfig } from '@/config/appConfig';
 import { Copy } from 'lucide-react';
 
 type GameState = 'idle' | 'betting' | 'playing' | 'result';
@@ -31,7 +34,11 @@ type GameState = 'idle' | 'betting' | 'playing' | 'result';
 export default function CrashGamePage() {
   const router = useRouter();
   const { t } = useLanguage();
-  const { refreshCredits } = useCredits();
+  const { credits, refreshCredits } = useCredits();
+
+  // Available balance (total minus reserved)
+  const { min_voicica_reserve } = getConversionConfig();
+  const usableBalance = Math.max(0, Math.floor(credits - min_voicica_reserve));
 
   // Config
   const [config, setConfig] = useState<CrashGameConfigData | null>(null);
@@ -48,6 +55,11 @@ export default function CrashGamePage() {
   const [showFairness, setShowFairness] = useState(false);
   const [history, setHistory] = useState<CrashHistoryItem[]>([]);
   const [historyLoading, setHistoryLoading] = useState(true);
+
+  // Insufficient credits modal
+  const [showInsufficientCredits, setShowInsufficientCredits] = useState(false);
+  const [insufficientInfo, setInsufficientInfo] = useState<{ required: number; current: number } | null>(null);
+  const [showDailyTasks, setShowDailyTasks] = useState(false);
 
   // Refs for avoiding stale closures
   const gameStateRef = useRef(gameState);
@@ -102,6 +114,14 @@ export default function CrashGamePage() {
 
   // Start a new game
   const handleStart = useCallback(async (betAmount: number) => {
+    // Check usable balance before starting
+    const available = Math.max(0, Math.floor(credits - min_voicica_reserve));
+    if (betAmount > available) {
+      setInsufficientInfo({ required: betAmount, current: available });
+      setShowInsufficientCredits(true);
+      return;
+    }
+
     setLoading(true);
     setGameState('betting');
 
@@ -122,7 +142,7 @@ export default function CrashGamePage() {
     } finally {
       setLoading(false);
     }
-  }, [refreshCredits]);
+  }, [credits, min_voicica_reserve, refreshCredits]);
 
   // Cash out
   const handleCashOut = useCallback(async () => {
@@ -263,7 +283,7 @@ export default function CrashGamePage() {
           {gameState === 'idle' && (
             <BettingPanel
               minBet={config?.minBet ?? 1}
-              maxBet={config?.maxBet ?? 1000}
+              maxBet={Math.min(config?.maxBet ?? 1000, usableBalance)}
               loading={loading || !config}
               onStart={handleStart}
             />
@@ -335,6 +355,25 @@ export default function CrashGamePage() {
           seed={roundData.seed!}
           seedHash={roundData.seedHash}
           crashPoint={roundData.crashPoint!}
+        />
+      )}
+
+      {/* Insufficient credits modal */}
+      <InsufficientCreditsModal
+        isOpen={showInsufficientCredits}
+        onClose={() => setShowInsufficientCredits(false)}
+        onGetFreeCredits={() => {
+          setShowInsufficientCredits(false);
+          setShowDailyTasks(true);
+        }}
+        requiredCredits={insufficientInfo?.required}
+        currentCredits={insufficientInfo?.current}
+      />
+      {showDailyTasks && (
+        <NativeDailyTasksModal
+          isOpen
+          onClose={() => setShowDailyTasks(false)}
+          onCreditsUpdated={refreshCredits}
         />
       )}
     </>

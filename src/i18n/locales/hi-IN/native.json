@@ -286,13 +286,13 @@
       "loading": "लोड हो रहा है..."
     },
     "insufficientCredits": {
-      "title": "अपर्याप्त क्रेडिट",
-      "subtitle": "जारी रखने के लिए आपको अधिक क्रेडिट की आवश्यकता है",
-      "subtitleWithAmount": "आवश्यक: {{required}} क्रेडिट, वर्तमान: {{current}} क्रेडिट",
-      "getFreeCredits": "मुफ्त क्रेडिट प्राप्त करें",
-      "getFreeCreditsDesc": "विज्ञापन देखकर मुफ्त क्रेडिट पाएं",
-      "subscribe": "Pro में अपग्रेड करें",
-      "subscribeDesc": "असीमित क्रेडिट और सुविधाएं प्राप्त करें"
+      "title": "अपर्याप्त $VOICICA",
+      "subtitle": "जारी रखने के लिए आपको अधिक $VOICICA की आवश्यकता है",
+      "subtitleWithAmount": "आवश्यक: {{required}} $VOICICA, वर्तमान: {{current}} $VOICICA",
+      "getFreeCredits": "$VOICICA माइन करें",
+      "getFreeCreditsDesc": "मुफ्त $VOICICA पाने के लिए कार्य पूरे करें",
+      "subscribe": "$VOICICA खरीदें",
+      "subscribeDesc": "सुरक्षित भुगतान से तुरंत टॉप-अप करें"
     },
     "createVoice": {
       "enterText": "अपना टेक्स्ट दर्ज करें",

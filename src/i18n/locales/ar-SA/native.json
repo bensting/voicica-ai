@@ -286,13 +286,13 @@
       "loading": "جارٍ التحميل..."
     },
     "insufficientCredits": {
-      "title": "رصيد غير كافٍ",
-      "subtitle": "تحتاج إلى المزيد من الرصيد للمتابعة",
-      "subtitleWithAmount": "المطلوب: {{required}} رصيد، الحالي: {{current}} رصيد",
-      "getFreeCredits": "احصل على رصيد مجاني",
-      "getFreeCreditsDesc": "شاهد الإعلانات للحصول على رصيد مجاني",
-      "subscribe": "الترقية إلى Pro",
-      "subscribeDesc": "احصل على رصيد وميزات غير محدودة"
+      "title": "$VOICICA غير كافٍ",
+      "subtitle": "تحتاج إلى المزيد من $VOICICA للمتابعة",
+      "subtitleWithAmount": "المطلوب: {{required}} $VOICICA، الحالي: {{current}} $VOICICA",
+      "getFreeCredits": "تعدين $VOICICA",
+      "getFreeCreditsDesc": "أكمل المهام للحصول على $VOICICA مجانًا",
+      "subscribe": "شراء $VOICICA",
+      "subscribeDesc": "شحن فوري عبر دفع آمن"
     },
     "createVoice": {
       "enterText": "أدخل النص",

@@ -332,13 +332,13 @@
       "loading": "Loading..."
     },
     "insufficientCredits": {
-      "title": "Insufficient Credits",
-      "subtitle": "You need more credits to continue",
-      "subtitleWithAmount": "Required: {{required}} credits, Current: {{current}} credits",
-      "getFreeCredits": "Get Free Credits",
-      "getFreeCreditsDesc": "Watch ads to earn free credits",
-      "subscribe": "Upgrade to Pro",
-      "subscribeDesc": "Get unlimited credits & features"
+      "title": "Insufficient $VOICICA",
+      "subtitle": "You need more $VOICICA to continue",
+      "subtitleWithAmount": "Required: {{required}} $VOICICA, Current: {{current}} $VOICICA",
+      "getFreeCredits": "Mine $VOICICA",
+      "getFreeCreditsDesc": "Complete tasks to earn free $VOICICA",
+      "subscribe": "Buy $VOICICA",
+      "subscribeDesc": "Instant top-up via secure payment"
     },
     "createVoice": {
       "enterText": "Enter your text",

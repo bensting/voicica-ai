@@ -1,7 +1,7 @@
 /**
- * Insufficient Credits Modal
- * 积分不足提示弹窗
- * - 提供两个选项：获取免费积分 和 订阅
+ * Insufficient $VOICICA Modal
+ * $VOICICA 不足提示弹窗
+ * - 提供两个选项：挖矿赚 $VOICICA 和 购买 $VOICICA
  */
 'use client';
 
@@ -32,16 +32,20 @@ const CoinIcon = () => (
   </svg>
 );
 
-const GiftIcon = () => (
-  <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-    <rect x="3" y="8" width="18" height="13" rx="2" />
-    <path d="M12 8v13M3 12h18M7.5 8a2.5 2.5 0 010-5C9 3 12 6 12 8M16.5 8a2.5 2.5 0 000-5C15 3 12 6 12 8" />
+const MiningIcon = () => (
+  <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M14.5 3.5l6 6M4 20l6.5-6.5" />
+    <path d="M18 2l4 4-7.5 7.5-4-4L18 2z" />
+    <path d="M2 22l5.5-5.5" />
+    <path d="M7.5 13.5L10 16" />
   </svg>
 );
 
-const CrownIcon = () => (
-  <svg className="w-6 h-6" viewBox="0 0 24 24" fill="currentColor">
-    <path d="M2 19h20v2H2v-2zm2-4l-2-9 6 4 4-7 4 7 6-4-2 9H4z" />
+const CartIcon = () => (
+  <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="9" cy="21" r="1" />
+    <circle cx="20" cy="21" r="1" />
+    <path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6" />
   </svg>
 );
 
@@ -146,7 +150,7 @@ export default function InsufficientCreditsModal({
               className="w-full p-4 rounded-2xl bg-gradient-to-r from-green-500/20 to-emerald-500/20 border border-green-500/30 hover:from-green-500/30 hover:to-emerald-500/30 transition-all active:scale-[0.98] flex items-center gap-4"
             >
               <div className="w-12 h-12 rounded-full bg-gradient-to-br from-green-400 to-emerald-500 flex items-center justify-center text-white shrink-0">
-                <GiftIcon />
+                <MiningIcon />
               </div>
               <div className="flex-1 text-left">
                 <p className="text-white font-semibold">
@@ -165,7 +169,7 @@ export default function InsufficientCreditsModal({
               className="w-full p-4 rounded-2xl bg-gradient-to-r from-amber-500/20 via-orange-500/20 to-pink-500/20 border border-amber-500/30 hover:from-amber-500/30 hover:via-orange-500/30 hover:to-pink-500/30 transition-all active:scale-[0.98] flex items-center gap-4"
             >
               <div className="w-12 h-12 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-white shrink-0">
-                <CrownIcon />
+                <CartIcon />
               </div>
               <div className="flex-1 text-left">
                 <p className="text-white font-semibold">

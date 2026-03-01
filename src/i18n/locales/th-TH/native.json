@@ -286,13 +286,13 @@
       "loading": "กำลังโหลด..."
     },
     "insufficientCredits": {
-      "title": "เครดิตไม่เพียงพอ",
-      "subtitle": "คุณต้องการเครดิตเพิ่มเติมเพื่อดำเนินการต่อ",
-      "subtitleWithAmount": "ต้องการ: {{required}} เครดิต, คงเหลือ: {{current}} เครดิต",
-      "getFreeCredits": "รับเครดิตฟรี",
-      "getFreeCreditsDesc": "ดูโฆษณาเพื่อรับเครดิตฟรี",
-      "subscribe": "อัปเกรดเป็น Pro",
-      "subscribeDesc": "รับเครดิตและฟีเจอร์ไม่จำกัด"
+      "title": "$VOICICA ไม่เพียงพอ",
+      "subtitle": "คุณต้องการ $VOICICA เพิ่มเติมเพื่อดำเนินการต่อ",
+      "subtitleWithAmount": "ต้องการ: {{required}} $VOICICA, คงเหลือ: {{current}} $VOICICA",
+      "getFreeCredits": "ขุด $VOICICA",
+      "getFreeCreditsDesc": "ทำภารกิจเพื่อรับ $VOICICA ฟรี",
+      "subscribe": "ซื้อ $VOICICA",
+      "subscribeDesc": "เติมเงินทันทีผ่านการชำระเงินที่ปลอดภัย"
     },
     "createVoice": {
       "enterText": "ป้อนข้อความ",

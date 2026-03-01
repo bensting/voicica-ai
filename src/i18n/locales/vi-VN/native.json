@@ -286,13 +286,13 @@
       "loading": "Đang tải..."
     },
     "insufficientCredits": {
-      "title": "Không đủ credit",
-      "subtitle": "Bạn cần thêm credit để tiếp tục",
-      "subtitleWithAmount": "Cần: {{required}} credit, Hiện có: {{current}} credit",
-      "getFreeCredits": "Nhận credit miễn phí",
-      "getFreeCreditsDesc": "Xem quảng cáo để nhận credit miễn phí",
-      "subscribe": "Nâng cấp lên Pro",
-      "subscribeDesc": "Nhận credit và tính năng không giới hạn"
+      "title": "Không đủ $VOICICA",
+      "subtitle": "Bạn cần thêm $VOICICA để tiếp tục",
+      "subtitleWithAmount": "Cần: {{required}} $VOICICA, Hiện có: {{current}} $VOICICA",
+      "getFreeCredits": "Đào $VOICICA",
+      "getFreeCreditsDesc": "Hoàn thành nhiệm vụ để nhận $VOICICA miễn phí",
+      "subscribe": "Mua $VOICICA",
+      "subscribeDesc": "Nạp tức thì qua thanh toán an toàn"
     },
     "createVoice": {
       "enterText": "Nhập văn bản",

@@ -286,13 +286,13 @@
       "loading": "Memuat..."
     },
     "insufficientCredits": {
-      "title": "Kredit Tidak Cukup",
-      "subtitle": "Anda memerlukan lebih banyak kredit untuk melanjutkan",
-      "subtitleWithAmount": "Diperlukan: {{required}} kredit, Saat ini: {{current}} kredit",
-      "getFreeCredits": "Dapatkan Kredit Gratis",
-      "getFreeCreditsDesc": "Tonton iklan untuk mendapatkan kredit gratis",
-      "subscribe": "Upgrade ke Pro",
-      "subscribeDesc": "Dapatkan kredit dan fitur tak terbatas"
+      "title": "$VOICICA Tidak Cukup",
+      "subtitle": "Anda memerlukan lebih banyak $VOICICA untuk melanjutkan",
+      "subtitleWithAmount": "Diperlukan: {{required}} $VOICICA, Saat ini: {{current}} $VOICICA",
+      "getFreeCredits": "Tambang $VOICICA",
+      "getFreeCreditsDesc": "Selesaikan tugas untuk mendapatkan $VOICICA gratis",
+      "subscribe": "Beli $VOICICA",
+      "subscribeDesc": "Top-up instan melalui pembayaran aman"
     },
     "createVoice": {
       "enterText": "Masukkan teks",

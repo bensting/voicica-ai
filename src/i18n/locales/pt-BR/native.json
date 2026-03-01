@@ -286,13 +286,13 @@
       "loading": "Carregando..."
     },
     "insufficientCredits": {
-      "title": "Créditos Insuficientes",
-      "subtitle": "Você precisa de mais créditos para continuar",
-      "subtitleWithAmount": "Necessário: {{required}} créditos, Atual: {{current}} créditos",
-      "getFreeCredits": "Obter Créditos Grátis",
-      "getFreeCreditsDesc": "Assista anúncios para ganhar créditos grátis",
-      "subscribe": "Atualizar para Pro",
-      "subscribeDesc": "Obtenha créditos e recursos ilimitados"
+      "title": "$VOICICA Insuficientes",
+      "subtitle": "Você precisa de mais $VOICICA para continuar",
+      "subtitleWithAmount": "Necessário: {{required}} $VOICICA, Atual: {{current}} $VOICICA",
+      "getFreeCredits": "Minerar $VOICICA",
+      "getFreeCreditsDesc": "Complete tarefas para ganhar $VOICICA grátis",
+      "subscribe": "Comprar $VOICICA",
+      "subscribeDesc": "Recarga instantânea via pagamento seguro"
     },
     "createVoice": {
       "enterText": "Digite seu texto",

@@ -325,13 +325,13 @@
       "loading": "載入中..."
     },
     "insufficientCredits": {
-      "title": "積分不足",
-      "subtitle": "您需要更多積分才能繼續",
-      "subtitleWithAmount": "需要：{{required}} 積分，當前：{{current}} 積分",
-      "getFreeCredits": "領取免費積分",
-      "getFreeCreditsDesc": "觀看廣告賺取免費積分",
-      "subscribe": "升級訂閱",
-      "subscribeDesc": "獲得無限積分和更多功能"
+      "title": "$VOICICA 不足",
+      "subtitle": "您需要更多 $VOICICA 才能繼續",
+      "subtitleWithAmount": "需要：{{required}} $VOICICA，當前：{{current}} $VOICICA",
+      "getFreeCredits": "挖礦賺 $VOICICA",
+      "getFreeCreditsDesc": "完成任務免費獲取 $VOICICA",
+      "subscribe": "購買 $VOICICA",
+      "subscribeDesc": "安全支付，即時到帳"
     },
     "createVoice": {
       "enterText": "輸入文字",

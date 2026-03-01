@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -28,6 +28,12 @@ export default function NativeNavbar() {
   const [isLanguageSelectorOpen, setIsLanguageSelectorOpen] = useState(false);
 
   const isLoggedIn = !!user;
+
+  // Prefetch high-traffic routes on app startup
+  useEffect(() => {
+    router.prefetch('/native/subscribe');
+    router.prefetch('/native/crash-game');
+  }, [router]);
 
   // 通过 Context 控制隐藏
   if (!isTopNavVisible) return null;

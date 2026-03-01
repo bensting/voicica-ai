@@ -70,10 +70,10 @@ export default function BettingPanel({ minBet, maxBet, usableBalance, loading, o
           <button
             key={amount}
             onClick={() => handleQuickBet(amount)}
-            className={`flex-1 rounded-lg py-2 text-sm font-medium transition-all ${
+            className={`flex-1 rounded-lg py-2 text-sm transition-all ${
               currentAmount === amount
-                ? 'bg-purple-600 text-white'
-                : 'bg-white/10 text-white/70 hover:bg-white/20'
+                ? 'bg-white/20 text-white font-semibold'
+                : 'bg-white/5 text-white/40 hover:bg-white/10'
             }`}
           >
             {amount}

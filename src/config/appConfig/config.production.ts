@@ -128,7 +128,7 @@ export const appConfig: AppConfig = {
       enabled: true,
     },
     crash_game: {
-      show_home_card: false,
+      show_home_card: true,
       subtitle: 'Turn $1 into $100 in seconds.',
     },
   },

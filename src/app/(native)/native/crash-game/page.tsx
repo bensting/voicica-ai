@@ -197,7 +197,8 @@ export default function CrashGamePage() {
     setRoundData(null);
     multiplierRef.current = 1.00;
     setGameState('idle');
-  }, []);
+    refreshCredits();
+  }, [refreshCredits]);
 
   // Determine display state
   const displayState = gameState === 'playing'

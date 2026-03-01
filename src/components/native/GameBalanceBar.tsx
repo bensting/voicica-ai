@@ -58,7 +58,7 @@ export default function GameBalanceBar() {
         {/* Row 3: Actions */}
         <div className="flex items-center justify-end gap-2 mt-2">
           <button
-            onClick={() => requireLogin(() => setShowMining(true))}
+            onClick={() => setShowMining(true)}
             className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-amber-500/20 text-amber-400 text-xs font-semibold hover:bg-amber-500/30 active:scale-95 transition-all"
           >
             <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

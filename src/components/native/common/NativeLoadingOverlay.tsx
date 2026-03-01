@@ -20,7 +20,6 @@ export default function NativeLoadingOverlay({ visible }: { visible: boolean }) 
           />
           <picture>
             <source srcSet="/logo/logo-transparent-256.webp" type="image/webp" />
-            {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="/logo/logo-transparent.png" alt="" width={48} height={48} className="w-12 h-12" />
           </picture>
         </div>

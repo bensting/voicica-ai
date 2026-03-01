@@ -18,6 +18,8 @@ interface CreditsContextState {
   loading: boolean;
   error: string | null;
   refreshCredits: () => Promise<void>;
+  /** 静默刷新（不触发 loading 状态，不触发 revalidation 闪屏） */
+  refreshCreditsSilent: () => Promise<void>;
   deductCredits: (amount: number) => void;
   updateCredits: (newCredits: number) => void;
 }
@@ -39,7 +41,7 @@ interface CreditsProviderProps {
  */
 export function CreditsProvider({ children }: CreditsProviderProps) {
   const { user, loading: authLoading } = useFirebaseAuth();
-  const { profile, loading: profileLoading, refreshProfile } = useUser();
+  const { profile, loading: profileLoading, refreshProfile, refreshProfileSilent } = useUser();
   const [credits, setCredits] = useState(0);
   const [permanentCredits, setPermanentCredits] = useState(0);
   const [monthlyCredits, setMonthlyCredits] = useState(0);
@@ -124,6 +126,16 @@ export function CreditsProvider({ children }: CreditsProviderProps) {
     }
   }, [user, refreshProfile, fetchAnonymousCredits]);
 
+  // 静默刷新积分（不触发 loading，不闪屏）
+  const refreshCreditsSilent = useCallback(async () => {
+    setLocalOverride(null);
+    if (user) {
+      await refreshProfileSilent();
+    } else {
+      await fetchAnonymousCredits();
+    }
+  }, [user, refreshProfileSilent, fetchAnonymousCredits]);
+
   // 本地扣减积分（乐观更新）
   const deductCredits = useCallback((amount: number) => {
     setCredits((prev) => {
@@ -146,6 +158,7 @@ export function CreditsProvider({ children }: CreditsProviderProps) {
     loading,
     error,
     refreshCredits,
+    refreshCreditsSilent,
     deductCredits,
     updateCredits,
   };

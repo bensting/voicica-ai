@@ -35,7 +35,7 @@ type GameState = 'idle' | 'betting' | 'playing' | 'result';
 export default function CrashGamePage() {
   const router = useRouter();
   const { t } = useLanguage();
-  const { credits, refreshCredits, deductCredits, updateCredits } = useCredits();
+  const { credits, refreshCredits, refreshCreditsSilent, deductCredits, updateCredits } = useCredits();
 
   // Available balance (total minus reserved)
   const { min_voicica_reserve } = getConversionConfig();
@@ -197,8 +197,9 @@ export default function CrashGamePage() {
     setRoundData(null);
     multiplierRef.current = 1.00;
     setGameState('idle');
-    refreshCredits();
-  }, [refreshCredits]);
+    // 静默刷新余额（从服务器同步真实值，不触发 loading）
+    refreshCreditsSilent();
+  }, [refreshCreditsSilent]);
 
   // Determine display state
   const displayState = gameState === 'playing'
@@ -273,7 +274,7 @@ export default function CrashGamePage() {
         {/* Multiplier Display — fills remaining game area */}
         <div className="flex-1 flex items-center justify-center min-h-0">
           <MultiplierDisplay
-            active={gameState === 'playing'}
+            active={gameState === 'playing' && !loading}
             speed={roundData?.speed ?? config?.speed ?? DEFAULT_CRASH_SPEED}
             startedAt={roundData?.startedAt ?? ''}
             maxDurationSeconds={config?.maxDurationSeconds ?? MAX_GAME_DURATION_SECONDS}

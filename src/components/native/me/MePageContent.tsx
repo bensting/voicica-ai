@@ -17,9 +17,9 @@ const LOGIN_MODAL_INTERVAL_MS = 24 * 60 * 60 * 1000; // 24 hours
  * Me 页面内容组件
  * 从 MePage 提取，供 NativeLayout 直接渲染以保持 Tab 切换状态
  */
-export default function MePageContent() {
+export default function MePageContent({ isActive }: { isActive?: boolean }) {
   const { user, loading } = useFirebaseAuth();
-  const { credits, loading: creditsLoading, refreshCredits } = useCredits();
+  const { credits, loading: creditsLoading } = useCredits();
   const { t } = useLanguage();
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   // 使用 ref 跟踪是否已经显示过登录框，防止重复弹出
@@ -29,14 +29,6 @@ export default function MePageContent() {
   const guestName = t('native.me.guest');
   const userName = user?.displayName || user?.email?.split('@')[0] || guestName;
   const avatarUrl = user?.photoURL || undefined;
-
-  // 每次进入 Me 页面时刷新积分（确保显示最新值）
-  useEffect(() => {
-    if (!loading) {
-      refreshCredits();
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [loading]);
 
   // 登录成功时清除 localStorage 标记（下次退出后 24h 逻辑重新生效）
   // 注意：不重置 hasShownRef，防止 auth 状态闪烁导致重复弹窗
@@ -79,7 +71,7 @@ export default function MePageContent() {
 
       {/* 可滚动的作品区域 */}
       <div className="flex-1 overflow-hidden">
-        <MyCreations />
+        <MyCreations isActive={isActive} />
       </div>
 
       {/* 登录弹窗 - 未登录时自动弹出 */}

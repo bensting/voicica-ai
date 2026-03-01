@@ -20,7 +20,7 @@ import { VoicesTab, MusicTab, DialogueTab, ImageTab, VideoTab, CoverTab } from '
  * My Creations 区域
  * 显示用户创建的内容，支持 Tab 切换和下拉刷新
  */
-export default function MyCreations() {
+export default function MyCreations({ isActive }: { isActive?: boolean }) {
   const searchParams = useSearchParams();
   const { t } = useLanguage();
 
@@ -43,8 +43,11 @@ export default function MyCreations() {
   const [wonDrawCount, setWonDrawCount] = useState(0);
   const [drawFilter, setDrawFilter] = useState<'all' | 'won'>('all');
 
-  // 获取活跃抽奖数量 & 中奖数量
+  // 延迟加载：仅在首次 active 时获取抽奖数据
+  const hasLoadedRef = useRef(false);
   useEffect(() => {
+    if (!isActive || hasLoadedRef.current) return;
+    hasLoadedRef.current = true;
     getUserLuckyDrawHistory()
       .then((records) => {
         const active = records.filter((r) => r.status === 'selling' || r.status === 'drawing');
@@ -53,7 +56,7 @@ export default function MyCreations() {
         setWonDrawCount(won.length);
       })
       .catch(() => {});
-  }, []);
+  }, [isActive]);
 
   const [activeTab, setActiveTab] = useState<MyCreationsTabId>(initialTab);
 

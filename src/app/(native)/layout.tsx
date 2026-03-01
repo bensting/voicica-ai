@@ -156,8 +156,8 @@ export default function NativeLayout({
     </div>
   ), [showCrashGame]);
 
-  const teamTab = useMemo(() => <ReferralPage />, []);
-  const meTab = useMemo(() => <MePageContent />, []);
+  const teamTab = useMemo(() => <ReferralPage isActive={activeTab === 'team'} />, [activeTab]);
+  const meTab = useMemo(() => <MePageContent isActive={activeTab === 'me'} />, [activeTab]);
 
   return (
     <BottomNavProvider>

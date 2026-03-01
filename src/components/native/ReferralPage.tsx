@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { getMyReferralInfo, getReferralTeam, processReferralCode } from '@/actions/referral';
@@ -13,7 +13,7 @@ import { formatCredits } from '@/utils/formatCredits';
 /**
  * Referral Team 页面
  */
-export default function ReferralPage() {
+export default function ReferralPage({ isActive }: { isActive?: boolean }) {
   const { user, loading: authLoading } = useFirebaseAuth();
   const { t } = useLanguage();
   const [info, setInfo] = useState<ReferralInfo | null>(null);
@@ -27,6 +27,7 @@ export default function ReferralPage() {
   const [inviterCode, setInviterCode] = useState('');
   const [binding, setBinding] = useState(false);
   const [bindError, setBindError] = useState('');
+  const hasLoadedRef = useRef(false);
 
   const loadData = useCallback(async () => {
     if (!user) {
@@ -51,10 +52,11 @@ export default function ReferralPage() {
   }, [user]);
 
   useEffect(() => {
-    if (!authLoading) {
+    if (!authLoading && isActive && !hasLoadedRef.current) {
+      hasLoadedRef.current = true;
       loadData();
     }
-  }, [authLoading, loadData]);
+  }, [authLoading, isActive, loadData]);
 
   const loadMore = async () => {
     if (loadingMore || !hasMore) return;

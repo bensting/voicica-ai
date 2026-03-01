@@ -13,7 +13,7 @@ import { AudioSettingsProvider } from "@/contexts/AudioSettingsContext";
 import PWAUpdatePrompt from "@/components/layout/PWAUpdatePrompt";
 import AppUpdatePrompt from "@/components/native/AppUpdatePrompt";
 import GooglePlayUpdatePrompt from "@/components/native/GooglePlayUpdatePrompt";
-import LanguageLoadingWrapper from "@/components/providers/LanguageLoadingWrapper";
+import AppSplashWrapper from "@/components/providers/AppSplashWrapper";
 import DeviceFingerprintProvider from "@/components/providers/DeviceFingerprintProvider";
 import CapacitorProvider from "@/components/providers/CapacitorProvider";
 import ServerActionErrorHandler from "@/components/providers/ServerActionErrorHandler";
@@ -176,7 +176,7 @@ export default async function RootLayout({
       >
         <LanguageProvider initialLocale={initialLocale}>
           <FirebaseAuthProvider>
-            <LanguageLoadingWrapper>
+            <AppSplashWrapper>
               <UserProvider>
                 <CreditsProvider>
                   <SubscriptionProvider>
@@ -196,7 +196,7 @@ export default async function RootLayout({
                   </SubscriptionProvider>
                 </CreditsProvider>
               </UserProvider>
-            </LanguageLoadingWrapper>
+            </AppSplashWrapper>
           </FirebaseAuthProvider>
         </LanguageProvider>
         {process.env.NEXT_PUBLIC_GA_ID && (

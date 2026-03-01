@@ -207,6 +207,9 @@ export default function CrashGamePage() {
         </div>
       </div>
 
+      {/* Balance Bar - always visible at top */}
+      <GameBalanceBar />
+
       {/* Multiplier Display - always visible */}
       <MultiplierDisplay
         active={gameState === 'playing'}
@@ -223,15 +226,12 @@ export default function CrashGamePage() {
 
       {/* Bottom section based on state */}
       {gameState === 'idle' && (
-        <>
-        <GameBalanceBar />
         <BettingPanel
           minBet={config.minBet}
           maxBet={config.maxBet}
           loading={loading}
           onStart={handleStart}
         />
-        </>
       )}
 
       {gameState === 'betting' && (
@@ -245,7 +245,6 @@ export default function CrashGamePage() {
 
       {gameState === 'playing' && (
         <>
-          <GameBalanceBar />
           <CashOutButton
             betAmount={roundData?.betAmount ?? 0}
             loading={loading}

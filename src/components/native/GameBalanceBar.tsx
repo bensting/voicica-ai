@@ -43,12 +43,14 @@ export default function GameBalanceBar() {
     <>
       <div className="mx-4 mt-3 mb-3 rounded-xl bg-white/5 border border-white/10 px-4 py-3">
         {/* Row 1: Balance */}
-        <div className="flex items-center gap-2">
-          <Image src="/logo/voicica-token.png" alt="$VOICICA" width={24} height={24} className="w-6 h-6" />
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Image src="/logo/voicica-token.png" alt="$VOICICA" width={24} height={24} className="w-6 h-6" />
+            <span className="text-white/40 text-xs font-medium">$VOICICA</span>
+          </div>
           <span className="text-white font-bold text-lg">
             {loading ? '...' : formatCredits(usableBalance)}
           </span>
-          <span className="text-white/40 text-xs font-medium">$VOICICA</span>
         </div>
 
         {/* Row 2: Reserve hint + Actions */}

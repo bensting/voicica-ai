@@ -41,21 +41,21 @@ export default function UserStatsBar({
         style={{ background: 'linear-gradient(135deg, rgba(180,83,9,0.20), rgba(30,20,10,0.60))' }}
       >
         <div className="px-4 py-3">
-          {/* Row 1: icon + $VOICICA (left), balance (right) */}
+          {/* Row 1: icon + $VOICICA + ≈USDT (left), balance (right) */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2.5">
               <Image src="/logo/voicica-token.png" alt="" width={28} height={28} className="w-7 h-7" />
               <span className="text-amber-400 text-sm font-semibold">$VOICICA</span>
+              <span className="text-gray-500 text-[11px]">
+                {creditsLoading ? '' : `≈ ${usdtDisplay} USDT`}
+              </span>
             </div>
             <span className="text-white font-bold text-base tabular-nums">
               {creditsLoading ? <LoadingDots /> : formatCredits(credits)}
             </span>
           </div>
-          {/* Row 2: ≈ USDT (left), BUY button (right) */}
-          <div className="flex items-center justify-between mt-1.5">
-            <span className="text-gray-500 text-[11px] pl-[38px]">
-              {creditsLoading ? '' : `≈ ${usdtDisplay} USDT`}
-            </span>
+          {/* Row 2: BUY button (right) */}
+          <div className="flex items-center justify-end mt-1.5">
             <button
               onClick={handleBuy}
               className="flex items-center gap-1.5 px-4 py-1.5 rounded-full font-bold text-xs text-white active:scale-95 transition-all shadow-lg shadow-amber-500/25"

@@ -179,24 +179,18 @@ export default function NativeLayout({
 
           {/* 主内容区域 */}
           <main className="relative lg:flex-1 lg:overflow-y-auto lg:min-h-0">
-            {isMainTab ? (
-              <>
-                {/* Explore Tab */}
-                <div style={{ display: activeTab === 'explore' ? 'block' : 'none' }}>
-                  {exploreTab}
-                </div>
-                {/* Team Tab */}
-                <div style={{ display: activeTab === 'team' ? 'block' : 'none' }}>
-                  {teamTab}
-                </div>
-                {/* Me Tab */}
-                <div style={{ display: activeTab === 'me' ? 'block' : 'none' }}>
-                  {meTab}
-                </div>
-              </>
-            ) : (
-              children
-            )}
+            {/* 三个主 Tab 始终挂载，CSS display 切换，进子页面不卸载 */}
+            <div style={{ display: isMainTab && activeTab === 'explore' ? 'block' : 'none' }}>
+              {exploreTab}
+            </div>
+            <div style={{ display: isMainTab && activeTab === 'team' ? 'block' : 'none' }}>
+              {teamTab}
+            </div>
+            <div style={{ display: isMainTab && activeTab === 'me' ? 'block' : 'none' }}>
+              {meTab}
+            </div>
+            {/* 子页面 */}
+            {!isMainTab && children}
           </main>
 
           {/* 底部导航 - 子页面不显示 */}

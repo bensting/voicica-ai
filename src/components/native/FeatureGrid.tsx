@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import {
   getAvailableMenuItems,
@@ -183,8 +184,22 @@ const luckyDrawIconMap: Record<LuckyDrawIcon, React.ReactNode> = {
  */
 export default function FeatureGrid() {
   const { t } = useLanguage();
+  const router = useRouter();
+  const pathname = usePathname();
   const items = getAvailableMenuItems();
+  const [navigating, setNavigating] = useState<string | null>(null);
   const [activeLuckyDraws, setActiveLuckyDraws] = useState<ActiveDrawInfo[]>([]);
+
+  // 点击后显示 loading，pathname 变化后清除
+  useEffect(() => {
+    if (navigating) setNavigating(null);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pathname]);
+
+  const handleNavigate = useCallback((href: string) => {
+    setNavigating(href);
+    router.push(href);
+  }, [router]);
 
   useEffect(() => {
     getActiveDrawsByProduct()
@@ -217,60 +232,72 @@ export default function FeatureGrid() {
   };
 
   return (
-    <div className="py-4 px-4 space-y-3">
-      {/* AI 工具网格 */}
-      <div className="grid grid-cols-4 gap-3">
-        {items.map((feature) => {
-          const IconComponent = iconMap[feature.icon];
-          const categoryConfig = getCategoryConfig(feature.category);
-          const colors = colorMap[categoryConfig?.color || 'purple'];
-          return (
-            <Link
-              key={feature.id}
-              href={feature.href}
-              className={`flex flex-col items-center justify-center aspect-square rounded-2xl ${colors.bg} hover:opacity-80 transition-opacity`}
-            >
-              <div className={`${colors.icon} mb-1.5`}>
-                <IconComponent />
-              </div>
-              <span className="text-[10px] text-gray-300 font-medium text-center leading-tight px-1 line-clamp-2">
-                {getItemName(feature.id, feature.shortName)}
-              </span>
-            </Link>
-          );
-        })}
-      </div>
-
-      {/* Lucky Draw 入口 */}
-      {activeLuckyDraws.length > 0 && (
-        <div className="flex gap-3">
-          {activeLuckyDraws.map((draw) => {
-            const [line1, line2] = draw.shortLabel.split('\n');
+    <>
+      <div className="py-4 px-4 space-y-3">
+        {/* AI 工具网格 */}
+        <div className="grid grid-cols-4 gap-3">
+          {items.map((feature) => {
+            const IconComponent = iconMap[feature.icon];
+            const categoryConfig = getCategoryConfig(feature.category);
+            const colors = colorMap[categoryConfig?.color || 'purple'];
             return (
-              <Link
-                key={draw.drawId}
-                href={draw.href}
-                className="relative overflow-hidden flex flex-col items-center justify-center w-1/3 py-3 px-2 rounded-2xl bg-gradient-to-br from-amber-500/15 to-orange-500/10 border border-amber-500/10 hover:opacity-80 transition-opacity"
+              <button
+                key={feature.id}
+                onClick={() => handleNavigate(feature.href)}
+                className={`flex flex-col items-center justify-center aspect-square rounded-2xl ${colors.bg} hover:opacity-80 active:scale-95 transition-all`}
               >
-                {/* 微光 */}
-                <div className="absolute top-0 right-0 w-16 h-16 rounded-full bg-amber-400/8 blur-[25px]" />
-                {/* FREE 标签 */}
-                <span className="absolute top-1.5 right-1.5 text-[7px] font-bold px-1 py-0.5 rounded-full bg-emerald-500/80 text-white leading-none">
-                  FREE
-                </span>
-                {/* 图标 + 动画 */}
-                <div className="relative text-amber-400 mb-1.5 animate-bounce-slow">
-                  <div className="absolute inset-0 bg-amber-400/20 rounded-full blur-md animate-pulse" />
-                  {luckyDrawIconMap[draw.icon as LuckyDrawIcon]}
+                <div className={`${colors.icon} mb-1.5`}>
+                  <IconComponent />
                 </div>
-                {/* 文案 */}
-                <span className="relative text-[10px] text-amber-300/90 font-semibold leading-tight text-center">{line1}</span>
-                {line2 && <span className="relative text-[9px] text-amber-200/50 leading-tight text-center truncate w-full">{line2}</span>}
-              </Link>
+                <span className="text-[10px] text-gray-300 font-medium text-center leading-tight px-1 line-clamp-2">
+                  {getItemName(feature.id, feature.shortName)}
+                </span>
+              </button>
             );
           })}
         </div>
+
+        {/* Lucky Draw 入口 */}
+        {activeLuckyDraws.length > 0 && (
+          <div className="flex gap-3">
+            {activeLuckyDraws.map((draw) => {
+              const [line1, line2] = draw.shortLabel.split('\n');
+              return (
+                <Link
+                  key={draw.drawId}
+                  href={draw.href}
+                  className="relative overflow-hidden flex flex-col items-center justify-center w-1/3 py-3 px-2 rounded-2xl bg-gradient-to-br from-amber-500/15 to-orange-500/10 border border-amber-500/10 hover:opacity-80 transition-opacity"
+                >
+                  {/* 微光 */}
+                  <div className="absolute top-0 right-0 w-16 h-16 rounded-full bg-amber-400/8 blur-[25px]" />
+                  {/* FREE 标签 */}
+                  <span className="absolute top-1.5 right-1.5 text-[7px] font-bold px-1 py-0.5 rounded-full bg-emerald-500/80 text-white leading-none">
+                    FREE
+                  </span>
+                  {/* 图标 + 动画 */}
+                  <div className="relative text-amber-400 mb-1.5 animate-bounce-slow">
+                    <div className="absolute inset-0 bg-amber-400/20 rounded-full blur-md animate-pulse" />
+                    {luckyDrawIconMap[draw.icon as LuckyDrawIcon]}
+                  </div>
+                  {/* 文案 */}
+                  <span className="relative text-[10px] text-amber-300/90 font-semibold leading-tight text-center">{line1}</span>
+                  {line2 && <span className="relative text-[9px] text-amber-200/50 leading-tight text-center truncate w-full">{line2}</span>}
+                </Link>
+              );
+            })}
+          </div>
+        )}
+      </div>
+
+      {/* 全屏 loading 遮罩 */}
+      {navigating && (
+        <div className="fixed inset-0 z-[9999] bg-[#060613]/90 backdrop-blur-sm flex items-center justify-center">
+          <div className="flex flex-col items-center gap-3">
+            <div className="w-8 h-8 border-2 border-purple-400/30 border-t-purple-400 rounded-full animate-spin" />
+            <span className="text-white/50 text-sm">Loading...</span>
+          </div>
+        </div>
       )}
-    </div>
+    </>
   );
 }

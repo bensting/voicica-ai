@@ -204,16 +204,7 @@ export default function CrashGamePage() {
     ? (roundData?.status === 'cashed_out' ? 'win' : 'lose')
     : 'idle';
 
-  // 初始加载（替代 loading.tsx，避免 server action revalidation 闪骨架屏）
-  if (!config) {
-    return (
-      <div className="h-dvh flex items-center justify-center">
-        <div className="w-8 h-8 border-2 border-purple-400/30 border-t-purple-400 rounded-full animate-spin" />
-      </div>
-    );
-  }
-
-  if (!config.enabled) {
+  if (config && !config.enabled) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen px-4 text-center">
         <div className="text-4xl mb-4">🚀</div>

@@ -50,7 +50,6 @@ export default function AppSplashWrapper({ children }: { children: ReactNode }) 
                 <div className="absolute inset-0 -m-1.5 rounded-full border border-purple-400/10 animate-pulse" />
                 <picture>
                   <source srcSet="/logo/logo-transparent-256.webp" type="image/webp" />
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src="/logo/logo-transparent.png"
                     alt="VoicicaAI"

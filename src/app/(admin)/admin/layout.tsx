@@ -62,8 +62,6 @@ const MENU_GROUPS = [
   },
 ];
 
-// 扁平化菜单用于移动端
-const NAV_ITEMS = MENU_GROUPS.flatMap(group => group.items);
 
 interface AdminLayoutProps {
   children: ReactNode;

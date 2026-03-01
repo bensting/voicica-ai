@@ -61,25 +61,14 @@ export default function GameBalanceBar() {
           <div className="flex items-center gap-2">
           <button
             onClick={() => setShowMining(true)}
-            className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-amber-500/20 text-amber-400 text-xs font-semibold hover:bg-amber-500/30 active:scale-95 transition-all"
+            className="px-3 py-1.5 rounded-lg bg-amber-500/20 text-amber-400 text-xs font-semibold hover:bg-amber-500/30 active:scale-95 transition-all"
           >
-            <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M14.5 3.5l6 6M4 20l6.5-6.5" />
-              <path d="M18 2l4 4-7.5 7.5-4-4L18 2z" />
-              <path d="M2 22l5.5-5.5" />
-              <path d="M7.5 13.5L10 16" />
-            </svg>
             Mine
           </button>
           <button
             onClick={() => requireLogin(() => { startLoading(); router.push('/native/subscribe'); })}
-            className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-purple-500/20 text-purple-400 text-xs font-semibold hover:bg-purple-500/30 active:scale-95 transition-all"
+            className="px-3 py-1.5 rounded-lg bg-purple-500/20 text-purple-400 text-xs font-semibold hover:bg-purple-500/30 active:scale-95 transition-all"
           >
-            <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <circle cx="12" cy="12" r="10" />
-              <path d="M16 8h-6a2 2 0 100 4h4a2 2 0 110 4H8" />
-              <path d="M12 18V6" />
-            </svg>
             Buy
           </button>
           </div>

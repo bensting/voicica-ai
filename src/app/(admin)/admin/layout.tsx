@@ -150,7 +150,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
 
         {/* 移动端下拉菜单 */}
         {isMobileMenuOpen && (
-          <div className="lg:hidden border-t border-gray-200 bg-white">
+          <div className="lg:hidden border-t border-gray-200 bg-white max-h-[calc(100vh-56px)] overflow-y-auto">
             <nav className="px-4 py-3 space-y-1">
               {NAV_ITEMS.map((item) => (
                 <Link
@@ -184,7 +184,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
 
       <div className="flex">
         {/* 桌面端左侧边栏 */}
-        <aside className="hidden lg:block w-56 flex-shrink-0 bg-white border-r border-gray-200 min-h-[calc(100vh-56px)] sticky top-14 self-start">
+        <aside className="hidden lg:block w-56 flex-shrink-0 bg-white border-r border-gray-200 h-[calc(100vh-56px)] sticky top-14 overflow-y-auto">
           <nav className="p-4 space-y-6">
             {MENU_GROUPS.map((group) => (
               <div key={group.title}>

@@ -53,7 +53,7 @@ export default function CrashGameAdminPage() {
       } else {
         alert('Failed to save: ' + result.error);
       }
-    } catch (error) {
+    } catch {
       alert('Failed to save configuration');
     } finally {
       setSaving(false);

@@ -4,9 +4,10 @@
  */
 'use client';
 
-import { useState, useCallback, useEffect } from 'react';
-import { useRouter, usePathname } from 'next/navigation';
-import { createPortal } from 'react-dom';
+import { useState, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
+import { useNavigationLoading } from '@/hooks/useNavigationLoading';
+import NativeLoadingOverlay from '@/components/native/common/NativeLoadingOverlay';
 import CreateSheet from '@/components/native/CreateSheet';
 
 interface CreatePageHeaderProps {
@@ -38,19 +39,13 @@ export default function CreatePageHeader({
   rightContent,
 }: CreatePageHeaderProps) {
   const router = useRouter();
-  const pathname = usePathname();
   const [isCreateSheetOpen, setIsCreateSheetOpen] = useState(false);
-  const [goingBack, setGoingBack] = useState(false);
-
-  // pathname 变化后清除 loading
-  useEffect(() => {
-    if (goingBack) setGoingBack(false);
-  }, [pathname]); // eslint-disable-line react-hooks/exhaustive-deps
+  const { navigating: goingBack, startLoading } = useNavigationLoading();
 
   const goBack = useCallback(() => {
-    setGoingBack(true);
+    startLoading();
     router.replace('/native');
-  }, [router]);
+  }, [router, startLoading]);
 
   return (
     <>
@@ -93,13 +88,7 @@ export default function CreatePageHeader({
         />
       )}
 
-      {/* 返回 loading 遮罩 */}
-      {goingBack && typeof window !== 'undefined' && createPortal(
-        <div className="fixed inset-0 z-[9999] bg-[#060613]/90 backdrop-blur-sm flex items-center justify-center">
-          <div className="w-8 h-8 border-2 border-purple-400/30 border-t-purple-400 rounded-full animate-spin" />
-        </div>,
-        document.body,
-      )}
+      <NativeLoadingOverlay visible={goingBack} />
     </>
   );
 }

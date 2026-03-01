@@ -11,6 +11,7 @@ import {
 import { type LuckyDrawIcon } from '@/config/native/luckyDrawConfig';
 import { getActiveDrawsByProduct, type ActiveDrawInfo } from '@/actions/lucky-draw';
 import { useLanguage } from '@/contexts/LanguageContext';
+import NativeLoadingOverlay from '@/components/native/common/NativeLoadingOverlay';
 
 // 图标组件 (w-6 h-6 for FeatureGrid)
 const MusicIcon = () => (
@@ -289,15 +290,7 @@ export default function FeatureGrid() {
         )}
       </div>
 
-      {/* 全屏 loading 遮罩 */}
-      {navigating && (
-        <div className="fixed inset-0 z-[9999] bg-[#060613]/90 backdrop-blur-sm flex items-center justify-center">
-          <div className="flex flex-col items-center gap-3">
-            <div className="w-8 h-8 border-2 border-purple-400/30 border-t-purple-400 rounded-full animate-spin" />
-            <span className="text-white/50 text-sm">Loading...</span>
-          </div>
-        </div>
-      )}
+      <NativeLoadingOverlay visible={!!navigating} />
     </>
   );
 }

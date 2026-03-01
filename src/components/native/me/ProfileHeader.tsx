@@ -1,8 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useRouter, usePathname } from 'next/navigation';
-import { createPortal } from 'react-dom';
+import { useRouter } from 'next/navigation';
+import { useNavigationLoading } from '@/hooks/useNavigationLoading';
+import NativeLoadingOverlay from '@/components/native/common/NativeLoadingOverlay';
 
 // 设置图标
 const SettingsIcon = () => (
@@ -40,13 +40,7 @@ export default function ProfileHeader({
   onAvatarClick,
 }: ProfileHeaderProps) {
   const router = useRouter();
-  const pathname = usePathname();
-  const [navigating, setNavigating] = useState(false);
-
-  // pathname 变化后清除 loading
-  useEffect(() => {
-    if (navigating) setNavigating(false);
-  }, [pathname]); // eslint-disable-line react-hooks/exhaustive-deps
+  const { navigating, startLoading } = useNavigationLoading();
 
   const handleAvatarClick = () => {
     if (!isLoggedIn && onAvatarClick) {
@@ -55,7 +49,7 @@ export default function ProfileHeader({
   };
 
   const handleSettingsClick = () => {
-    setNavigating(true);
+    startLoading();
     router.push('/native/settings');
   };
 
@@ -97,13 +91,7 @@ export default function ProfileHeader({
         <h1 className="mt-3 text-xl font-semibold text-white">{userName}</h1>
       </div>
 
-      {/* 导航 loading 遮罩 */}
-      {navigating && typeof window !== 'undefined' && createPortal(
-        <div className="fixed inset-0 z-[9999] bg-[#060613]/90 backdrop-blur-sm flex items-center justify-center">
-          <div className="w-8 h-8 border-2 border-purple-400/30 border-t-purple-400 rounded-full animate-spin" />
-        </div>,
-        document.body,
-      )}
+      <NativeLoadingOverlay visible={navigating} />
     </div>
   );
 }

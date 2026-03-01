@@ -1,13 +1,14 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter, usePathname } from 'next/navigation';
-import { createPortal } from 'react-dom';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 import { useCredits } from '@/contexts/CreditsContext';
 import { useBottomNav } from '@/contexts/BottomNavContext';
+import { useNavigationLoading } from '@/hooks/useNavigationLoading';
+import NativeLoadingOverlay from './common/NativeLoadingOverlay';
 import LoginModal from './LoginModal';
 import NativeDailyTasksModal from './NativeDailyTasksModal';
 import LanguageSelectorSheet from './LanguageSelectorSheet';
@@ -24,11 +25,10 @@ export default function NativeNavbar() {
   const { refreshCredits } = useCredits();
   const { isTopNavVisible } = useBottomNav();
   const { t } = useLanguage();
-  const pathname = usePathname();
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isDailyTasksOpen, setIsDailyTasksOpen] = useState(false);
   const [isLanguageSelectorOpen, setIsLanguageSelectorOpen] = useState(false);
-  const [navigating, setNavigating] = useState(false);
+  const { navigating, startLoading } = useNavigationLoading();
 
   const isLoggedIn = !!user;
 
@@ -37,11 +37,6 @@ export default function NativeNavbar() {
     router.prefetch('/native/subscribe');
     router.prefetch('/native/crash-game');
   }, [router]);
-
-  // pathname 变化后清除 loading
-  useEffect(() => {
-    if (navigating) setNavigating(false);
-  }, [pathname]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // 通过 Context 控制隐藏
   if (!isTopNavVisible) return null;
@@ -86,7 +81,7 @@ export default function NativeNavbar() {
             {isLoggedIn ? (
               /* 已登录：Buy 按钮 */
               <button
-                onClick={() => { setNavigating(true); router.push('/native/subscribe'); }}
+                onClick={() => { startLoading(); router.push('/native/subscribe'); }}
                 className="flex items-center gap-1 px-4 py-1.5 rounded-full text-white text-sm font-bold tracking-wide transition-all active:scale-95 shadow-lg shadow-amber-500/20"
                 style={{ background: 'linear-gradient(90deg, #D97706, #F59E0B, #EAB308)' }}
               >
@@ -149,13 +144,7 @@ export default function NativeNavbar() {
         onClose={() => setIsLanguageSelectorOpen(false)}
       />
 
-      {/* BUY 导航 loading 遮罩 */}
-      {navigating && typeof window !== 'undefined' && createPortal(
-        <div className="fixed inset-0 z-[9999] bg-[#060613]/90 backdrop-blur-sm flex items-center justify-center">
-          <div className="w-8 h-8 border-2 border-purple-400/30 border-t-purple-400 rounded-full animate-spin" />
-        </div>,
-        document.body,
-      )}
+      <NativeLoadingOverlay visible={navigating} />
     </>
   );
 }

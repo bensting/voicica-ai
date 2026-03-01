@@ -428,6 +428,13 @@ body {
   animation: border-glow 6s linear infinite;
 }
 
+/* 导航 loading 进度条动画 */
+@keyframes nav-loading {
+  0% { width: 0%; margin-left: 0%; }
+  50% { width: 60%; margin-left: 20%; }
+  100% { width: 0%; margin-left: 100%; }
+}
+
 /* ========== Adsterra Social Bar 强制底部显示 ========== */
 /* 覆盖 Adsterra 的默认顶部定位 */
 [id*="social-bar"],

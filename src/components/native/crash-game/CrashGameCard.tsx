@@ -1,9 +1,10 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
-import { useRouter, usePathname } from 'next/navigation';
-import { createPortal } from 'react-dom';
+import { useCallback } from 'react';
+import { useRouter } from 'next/navigation';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useNavigationLoading } from '@/hooks/useNavigationLoading';
+import NativeLoadingOverlay from '@/components/native/common/NativeLoadingOverlay';
 import { getCrashGameHomeConfig } from '@/config/appConfig';
 
 /**
@@ -13,20 +14,14 @@ import { getCrashGameHomeConfig } from '@/config/appConfig';
  */
 export default function CrashGameCard() {
   const router = useRouter();
-  const pathname = usePathname();
   const { t } = useLanguage();
   const config = getCrashGameHomeConfig();
-  const [navigating, setNavigating] = useState(false);
-
-  // pathname 变化后清除 loading
-  useEffect(() => {
-    if (navigating) setNavigating(false);
-  }, [pathname]); // eslint-disable-line react-hooks/exhaustive-deps
+  const { navigating, startLoading } = useNavigationLoading();
 
   const handleNavigate = useCallback(() => {
-    setNavigating(true);
+    startLoading();
     router.push('/native/crash-game');
-  }, [router]);
+  }, [router, startLoading]);
 
   if (!config.show_home_card) return null;
 
@@ -73,13 +68,7 @@ export default function CrashGameCard() {
         </div>
       </button>
 
-      {/* 导航 loading 遮罩 */}
-      {navigating && typeof window !== 'undefined' && createPortal(
-        <div className="fixed inset-0 z-[9999] bg-[#060613]/90 backdrop-blur-sm flex items-center justify-center">
-          <div className="w-8 h-8 border-2 border-purple-400/30 border-t-purple-400 rounded-full animate-spin" />
-        </div>,
-        document.body,
-      )}
+      <NativeLoadingOverlay visible={navigating} />
     </>
   );
 }

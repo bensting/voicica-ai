@@ -1,11 +1,11 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useRouter, usePathname } from 'next/navigation';
-import { createPortal } from 'react-dom';
+import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import LoadingDots from '@/components/native/common/LoadingDots';
+import NativeLoadingOverlay from '@/components/native/common/NativeLoadingOverlay';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useNavigationLoading } from '@/hooks/useNavigationLoading';
 import { formatCredits } from '@/utils/formatCredits';
 import { getMiningEconomyConfig } from '@/config/appConfig';
 
@@ -23,20 +23,15 @@ export default function UserStatsBar({
   creditsLoading = false,
 }: UserStatsBarProps) {
   const router = useRouter();
-  const pathname = usePathname();
   const { t } = useLanguage();
   const { token_value_usd } = getMiningEconomyConfig();
-  const [navigating, setNavigating] = useState(false);
+  const { navigating, startLoading } = useNavigationLoading();
 
   const usdtValue = credits * token_value_usd;
   const usdtDisplay = usdtValue === 0 ? '0' : parseFloat(usdtValue.toFixed(4)).toString();
 
-  useEffect(() => {
-    if (navigating) setNavigating(false);
-  }, [pathname]); // eslint-disable-line react-hooks/exhaustive-deps
-
   const handleBuy = () => {
-    setNavigating(true);
+    startLoading();
     router.push('/native/subscribe');
   };
 
@@ -74,13 +69,7 @@ export default function UserStatsBar({
         </div>
       </div>
 
-      {/* 导航 loading 遮罩 */}
-      {navigating && typeof window !== 'undefined' && createPortal(
-        <div className="fixed inset-0 z-[9999] bg-[#060613]/90 backdrop-blur-sm flex items-center justify-center">
-          <div className="w-8 h-8 border-2 border-purple-400/30 border-t-purple-400 rounded-full animate-spin" />
-        </div>,
-        document.body,
-      )}
+      <NativeLoadingOverlay visible={navigating} />
     </>
   );
 }

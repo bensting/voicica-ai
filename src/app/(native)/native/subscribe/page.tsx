@@ -1,12 +1,13 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useRouter, usePathname } from 'next/navigation';
-import { createPortal } from 'react-dom';
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 import { useCredits } from '@/contexts/CreditsContext';
 import { createVoicicaPurchaseCheckout } from '@/actions/voicica-purchase';
+import { useNavigationLoading } from '@/hooks/useNavigationLoading';
+import NativeLoadingOverlay from '@/components/native/common/NativeLoadingOverlay';
 import LoginModal from '@/components/native/LoginModal';
 import LoadingDots from '@/components/native/common/LoadingDots';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -24,20 +25,14 @@ import {
  */
 export default function NativeSubscribePage() {
   const router = useRouter();
-  const pathname = usePathname();
   const { user } = useFirebaseAuth();
   const { credits, loading: creditsLoading } = useCredits();
   const { t } = useLanguage();
+  const { navigating: goingBack, startLoading } = useNavigationLoading();
 
   const [amountStr, setAmountStr] = useState('10');
   const [processing, setProcessing] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
-  const [goingBack, setGoingBack] = useState(false);
-
-  // pathname 变化后清除 loading
-  useEffect(() => {
-    if (goingBack) setGoingBack(false);
-  }, [pathname]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const amountUsd = parseFloat(amountStr) || 0;
   const voicicaAmount = calculateVoicica(amountUsd);
@@ -94,7 +89,7 @@ export default function NativeSubscribePage() {
         style={{ paddingTop: 'calc(var(--safe-area-inset-top, 0px) + 12px)' }}
       >
         <button
-          onClick={() => { setGoingBack(true); router.replace('/native'); }}
+          onClick={() => { startLoading(); router.replace('/native'); }}
           className="text-white/60 hover:text-white transition"
         >
           <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -277,13 +272,7 @@ export default function NativeSubscribePage() {
         onLoginSuccess={() => setShowLoginModal(false)}
       />
 
-      {/* 返回 loading 遮罩 */}
-      {goingBack && typeof window !== 'undefined' && createPortal(
-        <div className="fixed inset-0 z-[9999] bg-[#060613]/90 backdrop-blur-sm flex items-center justify-center">
-          <div className="w-8 h-8 border-2 border-purple-400/30 border-t-purple-400 rounded-full animate-spin" />
-        </div>,
-        document.body,
-      )}
+      <NativeLoadingOverlay visible={goingBack} />
     </div>
   );
 }

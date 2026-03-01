@@ -29,6 +29,9 @@ export default function AppSplashWrapper({ children }: { children: ReactNode }) 
   // Web: 等语言 + 认证；Native: 额外等余额加载完
   const isAppReady = isLanguageReady && !isAuthLoading && (isNativeRoute ? !isCreditsLoading : true);
 
+  // Native 真实进度：语言 30% + 认证 35% + 余额 35%
+  const nativeProgress = (isLanguageReady ? 30 : 5) + (!isAuthLoading ? 35 : 0) + (!isCreditsLoading ? 35 : 0);
+
   return (
     <>
       {/* 加载指示器 - 只在未就绪时显示 */}
@@ -70,23 +73,13 @@ export default function AppSplashWrapper({ children }: { children: ReactNode }) 
               <h1 className="text-white/90 text-xl font-bold tracking-wider mb-2">VoicicaAI</h1>
               <p className="text-white/30 text-xs font-medium tracking-widest uppercase mb-10">AI Creative Studio</p>
 
-              {/* 进度条动画 */}
+              {/* 真实进度条 */}
               <div className="w-40 h-0.5 bg-white/10 rounded-full overflow-hidden">
                 <div
-                  className="h-full bg-gradient-to-r from-purple-500 to-amber-400 rounded-full"
-                  style={{
-                    animation: 'loading-bar 2s ease-in-out infinite',
-                  }}
+                  className="h-full bg-gradient-to-r from-purple-500 to-amber-400 rounded-full transition-all duration-500 ease-out"
+                  style={{ width: `${nativeProgress}%` }}
                 />
               </div>
-
-              <style>{`
-                @keyframes loading-bar {
-                  0% { width: 0%; margin-left: 0%; }
-                  50% { width: 60%; margin-left: 20%; }
-                  100% { width: 0%; margin-left: 100%; }
-                }
-              `}</style>
             </div>
           ) : (
             /* Web: 简洁 spinner */

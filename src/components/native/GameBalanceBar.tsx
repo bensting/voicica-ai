@@ -7,6 +7,7 @@
 
 import { useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import { useCredits } from '@/contexts/CreditsContext';
 import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 import { formatCredits } from '@/utils/formatCredits';
@@ -41,7 +42,7 @@ export default function GameBalanceBar() {
         {/* Row 1: Balance + $VOICICA */}
         <div className="flex items-baseline justify-between">
           <div className="flex items-center gap-2">
-            <span className="text-base">💰</span>
+            <Image src="/logo/voicica-token.png" alt="$VOICICA" width={24} height={24} className="w-6 h-6" />
             <span className="text-white font-bold text-lg">
               {loading ? '...' : formatCredits(usableBalance)}
             </span>

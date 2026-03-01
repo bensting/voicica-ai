@@ -221,7 +221,10 @@ export default function CrashGamePage() {
     <>
       <div className="h-dvh flex flex-col overflow-hidden">
         {/* Header */}
-        <div className="shrink-0 flex items-center justify-between px-4 py-3 bg-slate-950/80 border-b border-white/5">
+        <div
+          className="shrink-0 flex items-center justify-between px-4 py-3 bg-slate-950/80 border-b border-white/5"
+          style={{ paddingTop: 'calc(var(--safe-area-inset-top, 0px) + 12px)' }}
+        >
           <div className="flex items-center gap-3">
             <button
               onClick={() => router.back()}
@@ -279,7 +282,7 @@ export default function CrashGamePage() {
         </div>
 
         {/* Game controls */}
-        <div className="shrink-0">
+        <div className="shrink-0" style={{ paddingBottom: 'var(--safe-area-inset-bottom, 0px)' }}>
           {gameState === 'idle' && (
             <BettingPanel
               minBet={config?.minBet ?? 1}

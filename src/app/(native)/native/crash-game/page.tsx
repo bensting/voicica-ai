@@ -25,7 +25,7 @@ import ProvablyFairSheet from '@/components/native/crash-game/ProvablyFairSheet'
 import GameBalanceBar from '@/components/native/GameBalanceBar';
 import InsufficientCreditsModal from '@/components/native/common/InsufficientCreditsModal';
 import NativeDailyTasksModal from '@/components/native/NativeDailyTasksModal';
-import { DEFAULT_CRASH_SPEED, MAX_GAME_DURATION_SECONDS } from '@/config/native/crashGameConfig';
+import { DEFAULT_CRASH_SPEED, MAX_GAME_DURATION_SECONDS, DEFAULT_MIN_BET, DEFAULT_MAX_BET } from '@/config/native/crashGameConfig';
 import { getConversionConfig } from '@/config/appConfig';
 import { consumeCrashGamePrefetch } from '@/lib/crashGamePrefetch';
 import { Copy } from 'lucide-react';
@@ -208,12 +208,7 @@ export default function CrashGamePage() {
     ? (roundData?.status === 'cashed_out' ? 'win' : 'lose')
     : 'idle';
 
-  // Config 未加载完成时不渲染页面内容，让公共 loading overlay 无缝衔接
-  if (!config) {
-    return <div className="h-dvh bg-slate-950" />;
-  }
-
-  if (!config.enabled) {
+  if (config && !config.enabled) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen px-4 text-center">
         <div className="text-4xl mb-4">🚀</div>
@@ -296,8 +291,8 @@ export default function CrashGamePage() {
         <div className="shrink-0" style={{ paddingBottom: 'var(--safe-area-inset-bottom, 0px)' }}>
           {gameState === 'idle' && (
             <BettingPanel
-              minBet={config?.minBet ?? 1}
-              maxBet={config?.maxBet ?? 1000}
+              minBet={config?.minBet ?? DEFAULT_MIN_BET}
+              maxBet={config?.maxBet ?? DEFAULT_MAX_BET}
               usableBalance={usableBalance}
               loading={loading}
               onStart={handleStart}

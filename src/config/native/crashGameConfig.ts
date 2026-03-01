@@ -13,6 +13,12 @@ export const MAX_GAME_DURATION_SECONDS = 120;
 /** 网络延迟宽限期（毫秒） */
 export const GRACE_PERIOD_MS = 300;
 
+/** 默认最小投注 */
+export const DEFAULT_MIN_BET = 1;
+
+/** 默认最大投注 */
+export const DEFAULT_MAX_BET = 10000;
+
 /** LiveFeed 假玩家名字池 */
 export const FAKE_PLAYER_NAMES = [
   'Alex', 'Jordan', 'Sam', 'Taylor', 'Morgan',

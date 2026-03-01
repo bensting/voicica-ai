@@ -92,7 +92,7 @@ export default function TotalAssetsCard() {
                 <div>
                   <span className="text-gray-300 text-sm font-medium">$VOICICA</span>
                   <span className="text-gray-500 text-[11px] ml-1.5">
-                    {loading ? '' : `≈ $${(credits * rate).toFixed(4)}`}
+                    {loading ? '' : `≈ ${credits * rate === 0 ? '0' : parseFloat((credits * rate).toFixed(4))} USDT`}
                   </span>
                 </div>
               </div>

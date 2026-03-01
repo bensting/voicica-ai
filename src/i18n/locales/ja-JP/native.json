@@ -435,6 +435,24 @@
         "male": "男性",
         "female": "女性"
       }
+    },
+    "crashGame": {
+      "title": "クラッシュゲーム",
+      "subtitle": "クラッシュする前にキャッシュアウト！",
+      "playNow": "プレイ",
+      "start": "スタート",
+      "cashOut": "キャッシュアウト",
+      "cashingOut": "キャッシュアウト中...",
+      "placing": "ベット中...",
+      "bet": "ベット",
+      "betRange": "最小: {{min}} - 最大: {{max}}",
+      "youWon": "勝ちました！",
+      "crashed": "クラッシュ！",
+      "playAgain": "もう一度",
+      "provablyFair": "公平性証明",
+      "fairnessNote": "検証：seedのSHA-256ハッシュがゲーム開始前に表示されたハッシュと一致することを確認できます。",
+      "recentGames": "最近のゲーム",
+      "disabled": "クラッシュゲームは現在利用できません。後でもう一度お試しください。"
     }
   }
 }

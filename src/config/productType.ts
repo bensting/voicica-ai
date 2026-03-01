@@ -54,6 +54,10 @@ export const ProductType = {
   CREDIT_PURCHASE: 'credit_purchase',
   /** 推荐提成 */
   REFERRAL_COMMISSION: 'referral_commission',
+  /** Crash Game 下注 */
+  CRASH_GAME_BET: 'crash_game_bet',
+  /** Crash Game 赢奖 */
+  CRASH_GAME_WIN: 'crash_game_win',
 } as const;
 
 export type ProductType = typeof ProductType[keyof typeof ProductType];

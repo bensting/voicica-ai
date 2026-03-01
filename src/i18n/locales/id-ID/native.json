@@ -435,6 +435,24 @@
         "male": "Pria",
         "female": "Wanita"
       }
+    },
+    "crashGame": {
+      "title": "Crash Game",
+      "subtitle": "Tarik sebelum crash!",
+      "playNow": "MAIN",
+      "start": "Mulai",
+      "cashOut": "TARIK",
+      "cashingOut": "Menarik...",
+      "placing": "Memasang taruhan...",
+      "bet": "Taruhan",
+      "betRange": "Min: {{min}} - Maks: {{max}}",
+      "youWon": "ANDA MENANG!",
+      "crashed": "CRASH!",
+      "playAgain": "Main lagi",
+      "provablyFair": "Dapat diverifikasi",
+      "fairnessNote": "Verifikasi: SHA-256 dari seed harus sesuai dengan hash yang ditampilkan sebelum permainan.",
+      "recentGames": "Permainan terbaru",
+      "disabled": "Crash Game saat ini tidak tersedia."
     }
   }
 }

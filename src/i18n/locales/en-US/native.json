@@ -484,6 +484,24 @@
         "male": "Male",
         "female": "Female"
       }
+    },
+    "crashGame": {
+      "title": "Crash Game",
+      "subtitle": "Bet & cash out before the crash!",
+      "playNow": "PLAY NOW",
+      "start": "Start",
+      "cashOut": "CASH OUT",
+      "cashingOut": "Cashing out...",
+      "placing": "Placing bet...",
+      "bet": "Bet",
+      "betRange": "Min: {{min}} - Max: {{max}}",
+      "youWon": "YOU WON!",
+      "crashed": "CRASHED!",
+      "playAgain": "Play Again",
+      "provablyFair": "Provably Fair",
+      "fairnessNote": "Verify: SHA-256(seed) should match the hash shown before the game. The crash point is derived from this hash.",
+      "recentGames": "Recent Games",
+      "disabled": "Crash Game is currently unavailable. Please try again later."
     }
   }
 }

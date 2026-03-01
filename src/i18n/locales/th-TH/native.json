@@ -435,6 +435,24 @@
         "male": "ชาย",
         "female": "หญิง"
       }
+    },
+    "crashGame": {
+      "title": "เกม Crash",
+      "subtitle": "ถอนก่อนร่วง รับรางวัล!",
+      "playNow": "เล่นเลย",
+      "start": "เริ่ม",
+      "cashOut": "ถอนเงิน",
+      "cashingOut": "กำลังถอน...",
+      "placing": "กำลังวางเดิมพัน...",
+      "bet": "เดิมพัน",
+      "betRange": "ต่ำสุด: {{min}} - สูงสุด: {{max}}",
+      "youWon": "คุณชนะ!",
+      "crashed": "ร่วงแล้ว!",
+      "playAgain": "เล่นอีกครั้ง",
+      "provablyFair": "ตรวจสอบได้",
+      "fairnessNote": "ตรวจสอบ: SHA-256 ของ seed ต้องตรงกับแฮชที่แสดงก่อนเกม",
+      "recentGames": "เกมล่าสุด",
+      "disabled": "เกม Crash ไม่สามารถใช้งานได้ในขณะนี้"
     }
   }
 }

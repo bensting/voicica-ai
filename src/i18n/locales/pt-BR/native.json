@@ -435,6 +435,24 @@
         "male": "Masculino",
         "female": "Feminino"
       }
+    },
+    "crashGame": {
+      "title": "Crash Game",
+      "subtitle": "Retire antes do crash!",
+      "playNow": "JOGAR",
+      "start": "Iniciar",
+      "cashOut": "RETIRAR",
+      "cashingOut": "Retirando...",
+      "placing": "Apostando...",
+      "bet": "Aposta",
+      "betRange": "Mín: {{min}} - Máx: {{max}}",
+      "youWon": "VOCÊ GANHOU!",
+      "crashed": "CRASH!",
+      "playAgain": "Jogar novamente",
+      "provablyFair": "Verificável",
+      "fairnessNote": "Verificação: o SHA-256 da semente deve corresponder ao hash mostrado antes do jogo.",
+      "recentGames": "Jogos recentes",
+      "disabled": "O Crash Game não está disponível no momento."
     }
   }
 }

@@ -832,6 +832,46 @@ export const pushNotificationLogs = sqliteTable("push_notification_logs", {
 ]);
 
 // ============================================================
+// Crash Game Tables
+// ============================================================
+
+export const crashGameRounds = sqliteTable("crash_game_rounds", {
+	id: integer().primaryKey({ autoIncrement: true }),
+	roundId: text("round_id").notNull(),
+	userId: text("user_id").notNull(),
+	betAmount: real("bet_amount").notNull(),
+	seed: text("seed").notNull(),
+	seedHash: text("seed_hash").notNull(),
+	crashPoint: real("crash_point").notNull(),
+	cashOutMultiplier: real("cash_out_multiplier"),
+	profit: real("profit"),
+	status: text("status").notNull(), // 'active' | 'cashed_out' | 'crashed' | 'expired'
+	speed: real("speed").notNull(),
+	startedAt: text("started_at").notNull(),
+	cashedOutAt: text("cashed_out_at"),
+	createdAt: text("created_at").default(sql`(strftime('%Y-%m-%dT%H:%M:%fZ','now'))`).notNull(),
+	updatedAt: text("updated_at").$onUpdate(() => new Date().toISOString()),
+}, (table) => [
+	uniqueIndex("uq_crash_game_rounds_round_id").on(table.roundId),
+	index("idx_crash_game_rounds_user_id").on(table.userId),
+	index("idx_crash_game_rounds_user_created").on(table.userId, table.createdAt),
+	index("idx_crash_game_rounds_status").on(table.status),
+	index("idx_crash_game_rounds_created_at").on(table.createdAt),
+]);
+
+export const crashGameConfig = sqliteTable("crash_game_config", {
+	id: integer().primaryKey({ autoIncrement: true }),
+	enabled: integer("enabled", { mode: 'boolean' }).default(false).notNull(),
+	minBet: real("min_bet").default(1).notNull(),
+	maxBet: real("max_bet").default(1000).notNull(),
+	houseEdgePercent: real("house_edge_percent").default(3).notNull(),
+	speed: real("speed").default(0.00006).notNull(),
+	maxDurationSeconds: integer("max_duration_seconds").default(120).notNull(),
+	gracePeriodMs: integer("grace_period_ms").default(300).notNull(),
+	updatedAt: text("updated_at").$onUpdate(() => new Date().toISOString()),
+});
+
+// ============================================================
 // Referral Commission Tables
 // ============================================================
 

@@ -474,6 +474,24 @@
         "male": "男性",
         "female": "女性"
       }
+    },
+    "crashGame": {
+      "title": "Crash 遊戲",
+      "subtitle": "在墜毀前兌現贏取獎勵！",
+      "playNow": "開始遊戲",
+      "start": "開始",
+      "cashOut": "兌現",
+      "cashingOut": "兌現中...",
+      "placing": "下注中...",
+      "bet": "投注",
+      "betRange": "最小: {{min}} - 最大: {{max}}",
+      "youWon": "你贏了！",
+      "crashed": "墜毀了！",
+      "playAgain": "再玩一次",
+      "provablyFair": "可驗證公平",
+      "fairnessNote": "驗證方法：對 seed 計算 SHA-256 應與遊戲開始前顯示的雜湊值一致。崩潰點由此雜湊值計算得出。",
+      "recentGames": "最近記錄",
+      "disabled": "Crash 遊戲暫時不可用，請稍後再試。"
     }
   }
 }

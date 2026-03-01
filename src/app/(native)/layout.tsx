@@ -21,12 +21,14 @@ import ExploreSection from '@/components/native/ExploreSection';
 import ReferralPage from '@/components/native/ReferralPage';
 // Me tab
 import MePageContent from '@/components/native/me/MePageContent';
+// Crash Game
+import CrashGameCard from '@/components/native/crash-game/CrashGameCard';
 
 // 不显示顶部导航的路径
-const hideNavbarPaths = ['/native/me', '/native/settings', '/native/create', '/native/tools', '/native/video', '/native/voice/task', '/native/subscribe', '/native/payment', '/native/lucky-draw'];
+const hideNavbarPaths = ['/native/me', '/native/settings', '/native/create', '/native/tools', '/native/video', '/native/voice/task', '/native/subscribe', '/native/payment', '/native/lucky-draw', '/native/crash-game'];
 
 // 不显示底部导航的路径
-const hideBottomNavPaths = ['/native/settings', '/native/create', '/native/tools', '/native/video', '/native/voice/task', '/native/subscribe', '/native/payment', '/native/lucky-draw'];
+const hideBottomNavPaths = ['/native/settings', '/native/create', '/native/tools', '/native/video', '/native/voice/task', '/native/subscribe', '/native/payment', '/native/lucky-draw', '/native/crash-game'];
 
 // 三个主 Tab 的 pathname 前缀映射
 const pathnameToTab = (pathname: string): TabType | null => {
@@ -135,6 +137,7 @@ export default function NativeLayout({
     <div className="pt-2 pb-20">
       <NativeBannerAd />
       <TotalAssetsCard />
+      <CrashGameCard />
       <FeatureGrid />
       <ExploreSection />
     </div>

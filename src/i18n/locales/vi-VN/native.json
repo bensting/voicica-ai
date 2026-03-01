@@ -435,6 +435,24 @@
         "male": "Nam",
         "female": "Nữ"
       }
+    },
+    "crashGame": {
+      "title": "Crash Game",
+      "subtitle": "Rút tiền trước khi sập!",
+      "playNow": "CHƠI NGAY",
+      "start": "Bắt đầu",
+      "cashOut": "RÚT TIỀN",
+      "cashingOut": "Đang rút...",
+      "placing": "Đang đặt cược...",
+      "bet": "Cược",
+      "betRange": "Tối thiểu: {{min}} - Tối đa: {{max}}",
+      "youWon": "BẠN THẮNG!",
+      "crashed": "SẬP RỒI!",
+      "playAgain": "Chơi lại",
+      "provablyFair": "Công bằng có thể xác minh",
+      "fairnessNote": "Xác minh: SHA-256 của seed phải khớp với hash hiển thị trước trò chơi.",
+      "recentGames": "Trò chơi gần đây",
+      "disabled": "Crash Game hiện không khả dụng."
     }
   }
 }

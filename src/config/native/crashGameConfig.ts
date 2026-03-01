@@ -38,4 +38,4 @@ export const LIVE_FEED_CONFIG = {
 };
 
 /** 快捷投注金额按钮 */
-export const QUICK_BET_AMOUNTS = [10, 50, 100, 500];
+export const QUICK_BET_AMOUNTS = [10, 100, 500, 1000];

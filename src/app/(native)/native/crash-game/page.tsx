@@ -283,7 +283,8 @@ export default function CrashGamePage() {
           {gameState === 'idle' && (
             <BettingPanel
               minBet={config?.minBet ?? 1}
-              maxBet={Math.min(config?.maxBet ?? 1000, usableBalance)}
+              maxBet={config?.maxBet ?? 1000}
+              usableBalance={usableBalance}
               loading={loading || !config}
               onStart={handleStart}
             />

@@ -7,14 +7,16 @@ import { QUICK_BET_AMOUNTS } from '@/config/native/crashGameConfig';
 interface BettingPanelProps {
   minBet: number;
   maxBet: number;
+  usableBalance: number;
   loading: boolean;
   onStart: (amount: number) => void;
 }
 
 /**
  * 投注面板 - 金额输入 + 快捷按钮 + Start
+ * 余额不足时 Start 按钮变灰不可点击
  */
-export default function BettingPanel({ minBet, maxBet, loading, onStart }: BettingPanelProps) {
+export default function BettingPanel({ minBet, maxBet, usableBalance, loading, onStart }: BettingPanelProps) {
   const { t } = useLanguage();
   const [betAmount, setBetAmount] = useState<string>(String(minBet));
 
@@ -30,6 +32,7 @@ export default function BettingPanel({ minBet, maxBet, loading, onStart }: Betti
 
   const currentAmount = Number(betAmount);
   const isValid = !isNaN(currentAmount) && currentAmount >= minBet && currentAmount <= maxBet;
+  const isInsufficient = isValid && currentAmount > usableBalance;
 
   return (
     <div className="px-4 pb-4 space-y-3">
@@ -50,7 +53,7 @@ export default function BettingPanel({ minBet, maxBet, loading, onStart }: Betti
         </div>
         <button
           onClick={handleStart}
-          disabled={loading || !isValid}
+          disabled={loading || !isValid || isInsufficient}
           className="rounded-xl bg-gradient-to-r from-green-500 to-emerald-600 px-6 py-3 text-white font-bold text-lg shadow-lg shadow-green-500/30 hover:shadow-green-500/50 active:scale-95 transition-all disabled:opacity-50 disabled:active:scale-100"
         >
           {loading ? (

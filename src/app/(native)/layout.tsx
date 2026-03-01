@@ -6,6 +6,7 @@ import NativeNavbar from '@/components/native/NativeNavbar';
 import BottomNav, { type TabType } from '@/components/native/BottomNav';
 import WebUpdatePrompt from '@/components/native/WebUpdatePrompt';
 import { BottomNavProvider } from '@/contexts/BottomNavContext';
+import { DailyTasksProvider } from '@/contexts/DailyTasksContext';
 import { initNotifications, registerNotificationClickListener } from '@/lib/notifications';
 import { initPushNotifications } from '@/lib/push-notifications';
 import ReferralDetectModal from '@/components/native/ReferralDetectModal';
@@ -160,6 +161,7 @@ export default function NativeLayout({
 
   return (
     <BottomNavProvider>
+    <DailyTasksProvider>
       {/* PC 端外层背景 */}
       <div className="min-h-screen bg-black lg:flex lg:items-start lg:justify-center">
         {/* 手机比例容器：移动端全屏，PC 端限制为手机宽度并居中 */}
@@ -230,6 +232,7 @@ export default function NativeLayout({
           />
         </div>
       </div>
+    </DailyTasksProvider>
     </BottomNavProvider>
   );
 }

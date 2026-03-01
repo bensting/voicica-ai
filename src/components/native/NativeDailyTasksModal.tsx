@@ -10,7 +10,7 @@ import { useEffect, useState, useCallback, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
-import { useDailyTasks } from '@/hooks/useDailyTasks';
+import { useSharedDailyTasks } from '@/contexts/DailyTasksContext';
 import { formatCredits } from '@/utils/formatCredits';
 import Image from 'next/image';
 import EnergyOrb from '@/components/common/EnergyOrb';
@@ -71,7 +71,7 @@ export default function NativeDailyTasksModal({ isOpen, onClose, onCreditsUpdate
     markPopupShown,
     refresh,
     cancelClaiming,
-  } = useDailyTasks();
+  } = useSharedDailyTasks();
 
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [loginPromptAction, setLoginPromptAction] = useState<'checkin' | 'ad' | null>(null);

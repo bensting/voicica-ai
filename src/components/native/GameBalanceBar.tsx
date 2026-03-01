@@ -92,11 +92,13 @@ export default function GameBalanceBar() {
 
       </div>
 
-      <NativeDailyTasksModal
-        isOpen={showMining}
-        onClose={() => setShowMining(false)}
-        onCreditsUpdated={refreshCredits}
-      />
+      {showMining && (
+        <NativeDailyTasksModal
+          isOpen
+          onClose={() => setShowMining(false)}
+          onCreditsUpdated={refreshCredits}
+        />
+      )}
 
       <LoginModal
         isOpen={showLogin}

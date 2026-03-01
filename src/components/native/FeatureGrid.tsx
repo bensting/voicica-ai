@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
 import {
   getAvailableMenuItems,
   getCategoryConfig,
@@ -224,7 +225,7 @@ export default function FeatureGrid() {
           const categoryConfig = getCategoryConfig(feature.category);
           const colors = colorMap[categoryConfig?.color || 'purple'];
           return (
-            <a
+            <Link
               key={feature.id}
               href={feature.href}
               className={`flex flex-col items-center justify-center aspect-square rounded-2xl ${colors.bg} hover:opacity-80 transition-opacity`}
@@ -235,7 +236,7 @@ export default function FeatureGrid() {
               <span className="text-[10px] text-gray-300 font-medium text-center leading-tight px-1 line-clamp-2">
                 {getItemName(feature.id, feature.shortName)}
               </span>
-            </a>
+            </Link>
           );
         })}
       </div>
@@ -246,7 +247,7 @@ export default function FeatureGrid() {
           {activeLuckyDraws.map((draw) => {
             const [line1, line2] = draw.shortLabel.split('\n');
             return (
-              <a
+              <Link
                 key={draw.drawId}
                 href={draw.href}
                 className="relative overflow-hidden flex flex-col items-center justify-center w-1/3 py-3 px-2 rounded-2xl bg-gradient-to-br from-amber-500/15 to-orange-500/10 border border-amber-500/10 hover:opacity-80 transition-opacity"
@@ -265,7 +266,7 @@ export default function FeatureGrid() {
                 {/* 文案 */}
                 <span className="relative text-[10px] text-amber-300/90 font-semibold leading-tight text-center">{line1}</span>
                 {line2 && <span className="relative text-[9px] text-amber-200/50 leading-tight text-center truncate w-full">{line2}</span>}
-              </a>
+              </Link>
             );
           })}
         </div>

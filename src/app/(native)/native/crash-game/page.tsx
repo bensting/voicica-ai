@@ -214,6 +214,7 @@ export default function CrashGamePage() {
         maxDurationSeconds={config.maxDurationSeconds}
         crashPoint={roundData?.crashPoint}
         onCrash={handleCrash}
+        onExpire={handleCrash}
         onMultiplierUpdate={setCurrentMultiplier}
         displayState={displayState}
         finalMultiplier={roundData?.cashOutMultiplier ?? roundData?.crashPoint}

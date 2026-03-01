@@ -29,7 +29,7 @@ export default function NativeNavbar() {
 
   const isLoggedIn = !!user;
 
-  // Prefetch high-traffic routes on app startup
+  // Prefetch high-traffic routes + data on app startup
   useEffect(() => {
     router.prefetch('/native/subscribe');
     router.prefetch('/native/crash-game');

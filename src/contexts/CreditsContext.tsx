@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { useUser } from '@/contexts/UserContext';
 import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 import { getUnifiedCredits } from '@/actions/user';
@@ -42,9 +42,6 @@ interface CreditsProviderProps {
 export function CreditsProvider({ children }: CreditsProviderProps) {
   const { user, loading: authLoading } = useFirebaseAuth();
   const { profile, loading: profileLoading, refreshProfile, refreshProfileSilent } = useUser();
-  // 追踪 auth 是否曾 resolve 出 user，防止首次加载竞态误触匿名 fetch
-  const hasEverHadUser = useRef(false);
-  if (user) hasEverHadUser.current = true;
   const [credits, setCredits] = useState(0);
   const [permanentCredits, setPermanentCredits] = useState(0);
   const [monthlyCredits, setMonthlyCredits] = useState(0);
@@ -106,8 +103,7 @@ export function CreditsProvider({ children }: CreditsProviderProps) {
     }
 
     // 未登录用户：需要单独获取匿名用户积分
-    // 如果曾经有过 user（登录中竞态），跳过，等 user 状态稳定后再由上面的分支处理
-    if (!user && !authLoading && !hasEverHadUser.current) {
+    if (!user && !authLoading) {
       const timer = setTimeout(() => {
         fetchAnonymousCredits();
       }, 100);

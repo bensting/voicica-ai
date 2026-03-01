@@ -14,7 +14,6 @@ import { detectReferralCode, confirmReferralCode, dismissReferralDetect } from '
 import { processReferralCode } from '@/actions/referral';
 import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 // Explore tab 子组件
-import NativeBannerAd from '@/components/native/NativeBannerAd';
 import TotalAssetsCard from '@/components/native/TotalAssetsCard';
 import FeatureGrid from '@/components/native/FeatureGrid';
 import ExploreSection from '@/components/native/ExploreSection';
@@ -138,7 +137,6 @@ export default function NativeLayout({
   const showCrashGame = getCrashGameHomeConfig().show_home_card;
   const exploreTab = useMemo(() => (
     <div className="pt-2 pb-20">
-      <NativeBannerAd />
       <TotalAssetsCard />
       {showCrashGame && (
         <>

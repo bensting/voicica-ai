@@ -66,21 +66,15 @@ export function SubscriptionProvider({ children }: { children: ReactNode }) {
     }
   }, [user]);
 
-  // 用户登录状态变化时获取订阅
+  // 不再在初始化时自动获取订阅，按需调用 refreshSubscription
   useEffect(() => {
     if (authLoading) return;
 
-    if (user) {
-      // 延迟一小段时间确保 cookie 已设置
-      const timer = setTimeout(() => {
-        fetchSubscription();
-      }, 200);
-      return () => clearTimeout(timer);
-    } else {
+    if (!user) {
       setActiveSubscription(null);
       setError(null);
     }
-  }, [user, authLoading, fetchSubscription]);
+  }, [user, authLoading]);
 
   return (
     <SubscriptionContext.Provider

@@ -2,15 +2,11 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
-import Link from 'next/link';
 import {
   getAvailableMenuItems,
   getCategoryConfig,
   CreateMenuIcon,
 } from '@/config/native/createMenuConfig';
-import { type LuckyDrawIcon } from '@/config/native/luckyDrawConfig';
-import { getActiveDrawsByProduct, type ActiveDrawInfo } from '@/actions/lucky-draw';
-import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import NativeLoadingOverlay from '@/components/native/common/NativeLoadingOverlay';
 
@@ -164,34 +160,16 @@ const colorMap: Record<string, { icon: string; bg: string }> = {
   emerald: { icon: 'text-orange-400', bg: 'bg-orange-500/20' },
 };
 
-// Lucky Draw 图标映射
-const luckyDrawIconMap: Record<LuckyDrawIcon, React.ReactNode> = {
-  trophy: (
-    <svg className="relative w-6 h-6 drop-shadow-[0_0_6px_rgba(251,191,36,0.4)]" viewBox="0 0 24 24" fill="currentColor">
-      <path d="M19 5h-2V3H7v2H5c-1.1 0-2 .9-2 2v1c0 2.55 1.92 4.63 4.39 4.94.63 1.5 1.98 2.63 3.61 2.96V19H7v2h10v-2h-4v-3.1c1.63-.33 2.98-1.46 3.61-2.96C19.08 12.63 21 10.55 21 8V7c0-1.1-.9-2-2-2zM5 8V7h2v3.82C5.84 10.4 5 9.3 5 8zm14 0c0 1.3-.84 2.4-2 2.82V7h2v1z" />
-    </svg>
-  ),
-  coin: (
-    <svg className="relative w-6 h-6 drop-shadow-[0_0_6px_rgba(52,211,153,0.4)]" viewBox="0 0 24 24" fill="none">
-      <circle cx="12" cy="12" r="10" fill="#10B981" />
-      <circle cx="12" cy="12" r="8" fill="none" stroke="#34D399" strokeWidth="0.5" />
-      <path d="M12 6v1.5m0 9V18m-2.5-8.5c0-.83.67-1.5 1.5-1.5h2c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5h-2c-.83 0-1.5.67-1.5 1.5s.67 1.5 1.5 1.5h2c.83 0 1.5-.67 1.5-1.5" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  ),
-};
-
 /**
  * 功能入口网格
  * 4 列统一网格 + 按类别彩色图标
  */
 export default function FeatureGrid() {
   const { t } = useLanguage();
-  const { loading: authLoading } = useFirebaseAuth();
   const router = useRouter();
   const pathname = usePathname();
   const items = getAvailableMenuItems();
   const [navigating, setNavigating] = useState<string | null>(null);
-  const [activeLuckyDraws, setActiveLuckyDraws] = useState<ActiveDrawInfo[]>([]);
 
   // 点击后显示 loading，pathname 变化后清除
   useEffect(() => {
@@ -203,13 +181,6 @@ export default function FeatureGrid() {
     setNavigating(href);
     router.push(href);
   }, [router]);
-
-  useEffect(() => {
-    if (authLoading) return;
-    getActiveDrawsByProduct()
-      .then(setActiveLuckyDraws)
-      .catch(() => setActiveLuckyDraws([]));
-  }, [authLoading]);
 
   // 获取菜单项的翻译名称
   const getItemName = (id: string, fallback: string): string => {
@@ -255,36 +226,6 @@ export default function FeatureGrid() {
           })}
         </div>
 
-        {/* Lucky Draw 入口 */}
-        {activeLuckyDraws.length > 0 && (
-          <div className="flex gap-3">
-            {activeLuckyDraws.map((draw) => {
-              const [line1, line2] = draw.shortLabel.split('\n');
-              return (
-                <Link
-                  key={draw.drawId}
-                  href={draw.href}
-                  className="relative overflow-hidden flex flex-col items-center justify-center w-1/3 py-3 px-2 rounded-2xl bg-gradient-to-br from-amber-500/15 to-orange-500/10 border border-amber-500/10 hover:opacity-80 transition-opacity"
-                >
-                  {/* 微光 */}
-                  <div className="absolute top-0 right-0 w-16 h-16 rounded-full bg-amber-400/8 blur-[25px]" />
-                  {/* FREE 标签 */}
-                  <span className="absolute top-1.5 right-1.5 text-[7px] font-bold px-1 py-0.5 rounded-full bg-emerald-500/80 text-white leading-none">
-                    FREE
-                  </span>
-                  {/* 图标 + 动画 */}
-                  <div className="relative text-amber-400 mb-1.5 animate-bounce-slow">
-                    <div className="absolute inset-0 bg-amber-400/20 rounded-full blur-md animate-pulse" />
-                    {luckyDrawIconMap[draw.icon as LuckyDrawIcon]}
-                  </div>
-                  {/* 文案 */}
-                  <span className="relative text-[10px] text-amber-300/90 font-semibold leading-tight text-center">{line1}</span>
-                  {line2 && <span className="relative text-[9px] text-amber-200/50 leading-tight text-center truncate w-full">{line2}</span>}
-                </Link>
-              );
-            })}
-          </div>
-        )}
       </div>
 
       <NativeLoadingOverlay visible={!!navigating} />

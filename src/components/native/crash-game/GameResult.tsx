@@ -46,7 +46,7 @@ export default function GameResult({
           {profit >= 0 ? '+' : ''}{profit.toFixed(2)}
         </div>
         <div className="mt-2 flex items-center justify-center gap-4 text-sm text-white/60">
-          <span>{t('native.crashGame.bet')}: {betAmount} $V</span>
+          <span>{t('native.crashGame.bet')}: {betAmount} $VOICICA</span>
           <span>Crash: {crashPoint.toFixed(2)}x</span>
           {cashOutMultiplier && <span>Out: {cashOutMultiplier.toFixed(2)}x</span>}
         </div>

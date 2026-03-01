@@ -58,7 +58,7 @@ export default function GameHistory({ history, loading }: GameHistoryProps) {
                   {(item.profit ?? 0) >= 0 ? '+' : ''}{(item.profit ?? 0).toFixed(2)}
                 </span>
                 <span className="ml-2 text-xs text-white/30">
-                  {item.betAmount} $V
+                  {item.betAmount} $VOICICA
                 </span>
               </div>
             </div>

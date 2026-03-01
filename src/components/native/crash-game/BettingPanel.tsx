@@ -36,7 +36,7 @@ export default function BettingPanel({ minBet, maxBet, loading, onStart }: Betti
       {/* Input + Start button */}
       <div className="flex gap-2">
         <div className="relative flex-1">
-          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-purple-400 font-medium">$V</span>
+          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-purple-400 font-medium">$VOICICA</span>
           <input
             type="number"
             value={betAmount}
@@ -44,7 +44,7 @@ export default function BettingPanel({ minBet, maxBet, loading, onStart }: Betti
             min={minBet}
             max={maxBet}
             step="1"
-            className="w-full rounded-xl bg-white/10 border border-white/20 pl-9 pr-3 py-3 text-white text-lg font-semibold placeholder:text-white/30 focus:outline-none focus:border-purple-400 focus:ring-1 focus:ring-purple-400"
+            className="w-full rounded-xl bg-white/10 border border-white/20 pl-[5.5rem] pr-3 py-3 text-white text-lg font-semibold placeholder:text-white/30 focus:outline-none focus:border-purple-400 focus:ring-1 focus:ring-purple-400"
             placeholder={String(minBet)}
           />
         </div>

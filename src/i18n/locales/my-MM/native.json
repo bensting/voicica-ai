@@ -452,7 +452,13 @@
       "provablyFair": "စိစစ်နိုင်သော",
       "fairnessNote": "စိစစ်ခြင်း: seed ၏ SHA-256 သည် ဂိမ်းမစခင် ပြသထားသော hash နှင့် ကိုက်ညီရမည်။",
       "recentGames": "မကြာသေးမီ ဂိမ်းများ",
-      "disabled": "Crash Game လောလောဆယ် မရနိုင်ပါ။"
+      "disabled": "Crash Game လောလောဆယ် မရနိုင်ပါ။",
+      "live": "တိုက်ရိုက်",
+      "homeSubtitle": "$1 ကို စက္ကန့်ပိုင်းအတွင်း $100 ပြောင်းလဲပါ"
+    },
+    "home": {
+      "sectionPlayEarn": "ကစားပြီး ရှာပါ",
+      "sectionCreativeTools": "AI ဖန်တီးမှု ကိရိယာများ"
     }
   }
 }

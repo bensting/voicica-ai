@@ -501,7 +501,13 @@
       "provablyFair": "Provably Fair",
       "fairnessNote": "Verify: SHA-256(seed) should match the hash shown before the game. The crash point is derived from this hash.",
       "recentGames": "Recent Games",
-      "disabled": "Crash Game is currently unavailable. Please try again later."
+      "disabled": "Crash Game is currently unavailable. Please try again later.",
+      "live": "Live",
+      "homeSubtitle": "Turn $1 into $100 in seconds."
+    },
+    "home": {
+      "sectionPlayEarn": "Play & Earn",
+      "sectionCreativeTools": "AI Creative Tools"
     }
   }
 }

@@ -452,7 +452,13 @@
       "provablyFair": "Dapat diverifikasi",
       "fairnessNote": "Verifikasi: SHA-256 dari seed harus sesuai dengan hash yang ditampilkan sebelum permainan.",
       "recentGames": "Permainan terbaru",
-      "disabled": "Crash Game saat ini tidak tersedia."
+      "disabled": "Crash Game saat ini tidak tersedia.",
+      "live": "Langsung",
+      "homeSubtitle": "Ubah $1 jadi $100 dalam hitungan detik"
+    },
+    "home": {
+      "sectionPlayEarn": "Main & Hasilkan",
+      "sectionCreativeTools": "Alat Kreatif AI"
     }
   }
 }

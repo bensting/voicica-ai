@@ -7,6 +7,7 @@ import BottomNav, { type TabType } from '@/components/native/BottomNav';
 import WebUpdatePrompt from '@/components/native/WebUpdatePrompt';
 import { BottomNavProvider } from '@/contexts/BottomNavContext';
 import { DailyTasksProvider } from '@/contexts/DailyTasksContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { initNotifications, registerNotificationClickListener } from '@/lib/notifications';
 import { initPushNotifications } from '@/lib/push-notifications';
 import ReferralDetectModal from '@/components/native/ReferralDetectModal';
@@ -55,6 +56,7 @@ export default function NativeLayout({
   const pathname = usePathname();
   const router = useRouter();
   const { user } = useFirebaseAuth();
+  const { t } = useLanguage();
 
   // 根据初始 pathname 设定默认 activeTab
   const [activeTab, setActiveTab] = useState<TabType>(() => {
@@ -141,13 +143,13 @@ export default function NativeLayout({
       {showCrashGame && (
         <>
           <div className="px-5 mt-5 mb-1">
-            <h2 className="text-xs font-semibold text-white/40 uppercase tracking-wider">Play &amp; Earn</h2>
+            <h2 className="text-xs font-semibold text-white/40 uppercase tracking-wider">{t('native.home.sectionPlayEarn')}</h2>
           </div>
           <CrashGameCard />
         </>
       )}
       <div className="px-5 mt-5 mb-1">
-        <h2 className="text-xs font-semibold text-white/40 uppercase tracking-wider">AI Creative Tools</h2>
+        <h2 className="text-xs font-semibold text-white/40 uppercase tracking-wider">{t('native.home.sectionCreativeTools')}</h2>
       </div>
       <FeatureGrid />
       <ExploreSection />

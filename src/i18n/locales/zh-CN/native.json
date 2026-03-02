@@ -498,7 +498,13 @@
       "provablyFair": "可验证公平",
       "fairnessNote": "验证方法：对 seed 计算 SHA-256 应与游戏开始前显示的哈希值一致。崩溃点由此哈希值计算得出。",
       "recentGames": "最近记录",
-      "disabled": "Crash 游戏暂时不可用，请稍后再试。"
+      "disabled": "Crash 游戏暂时不可用，请稍后再试。",
+      "live": "直播",
+      "homeSubtitle": "1秒翻100倍，你敢挑战吗？"
+    },
+    "home": {
+      "sectionPlayEarn": "边玩边赚",
+      "sectionCreativeTools": "AI 创作工具"
     }
   }
 }

@@ -491,7 +491,13 @@
       "provablyFair": "可驗證公平",
       "fairnessNote": "驗證方法：對 seed 計算 SHA-256 應與遊戲開始前顯示的雜湊值一致。崩潰點由此雜湊值計算得出。",
       "recentGames": "最近記錄",
-      "disabled": "Crash 遊戲暫時不可用，請稍後再試。"
+      "disabled": "Crash 遊戲暫時不可用，請稍後再試。",
+      "live": "直播",
+      "homeSubtitle": "1秒翻100倍，你敢挑戰嗎？"
+    },
+    "home": {
+      "sectionPlayEarn": "邊玩邊賺",
+      "sectionCreativeTools": "AI 創作工具"
     }
   }
 }

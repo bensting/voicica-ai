@@ -452,7 +452,13 @@
       "provablyFair": "ตรวจสอบได้",
       "fairnessNote": "ตรวจสอบ: SHA-256 ของ seed ต้องตรงกับแฮชที่แสดงก่อนเกม",
       "recentGames": "เกมล่าสุด",
-      "disabled": "เกม Crash ไม่สามารถใช้งานได้ในขณะนี้"
+      "disabled": "เกม Crash ไม่สามารถใช้งานได้ในขณะนี้",
+      "live": "สด",
+      "homeSubtitle": "เปลี่ยน $1 เป็น $100 ในไม่กี่วินาที"
+    },
+    "home": {
+      "sectionPlayEarn": "เล่นแล้วได้เงิน",
+      "sectionCreativeTools": "เครื่องมือ AI สร้างสรรค์"
     }
   }
 }

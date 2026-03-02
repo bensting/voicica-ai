@@ -452,7 +452,13 @@
       "provablyFair": "Verificável",
       "fairnessNote": "Verificação: o SHA-256 da semente deve corresponder ao hash mostrado antes do jogo.",
       "recentGames": "Jogos recentes",
-      "disabled": "O Crash Game não está disponível no momento."
+      "disabled": "O Crash Game não está disponível no momento.",
+      "live": "Ao vivo",
+      "homeSubtitle": "Transforme $1 em $100 em segundos"
+    },
+    "home": {
+      "sectionPlayEarn": "Jogue e Ganhe",
+      "sectionCreativeTools": "Ferramentas criativas IA"
     }
   }
 }

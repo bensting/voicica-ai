@@ -52,11 +52,11 @@ export default function CrashGameCard() {
                 </h3>
                 <span className="relative flex items-center gap-1 px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400 text-[10px] font-bold uppercase leading-none">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                  Live
+                  {t('native.crashGame.live')}
                 </span>
               </div>
               <p className="mt-0.5 text-xs text-white/40 truncate">
-                {config.subtitle}
+                {t('native.crashGame.homeSubtitle')}
               </p>
             </div>
 

@@ -452,7 +452,13 @@
       "provablyFair": "公平性証明",
       "fairnessNote": "検証：seedのSHA-256ハッシュがゲーム開始前に表示されたハッシュと一致することを確認できます。",
       "recentGames": "最近のゲーム",
-      "disabled": "クラッシュゲームは現在利用できません。後でもう一度お試しください。"
+      "disabled": "クラッシュゲームは現在利用できません。後でもう一度お試しください。",
+      "live": "ライブ",
+      "homeSubtitle": "$1を数秒で$100に変えよう"
+    },
+    "home": {
+      "sectionPlayEarn": "遊んで稼ぐ",
+      "sectionCreativeTools": "AIクリエイティブツール"
     }
   }
 }

@@ -452,7 +452,13 @@
       "provablyFair": "Công bằng có thể xác minh",
       "fairnessNote": "Xác minh: SHA-256 của seed phải khớp với hash hiển thị trước trò chơi.",
       "recentGames": "Trò chơi gần đây",
-      "disabled": "Crash Game hiện không khả dụng."
+      "disabled": "Crash Game hiện không khả dụng.",
+      "live": "Trực tiếp",
+      "homeSubtitle": "Biến $1 thành $100 trong vài giây"
+    },
+    "home": {
+      "sectionPlayEarn": "Chơi & Kiếm tiền",
+      "sectionCreativeTools": "Công cụ AI sáng tạo"
     }
   }
 }

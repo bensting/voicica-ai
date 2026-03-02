@@ -7,7 +7,6 @@ import NativeLoadingOverlay from '@/components/native/common/NativeLoadingOverla
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useNavigationLoading } from '@/hooks/useNavigationLoading';
 import { formatCredits } from '@/utils/formatCredits';
-import { getMiningEconomyConfig } from '@/config/appConfig';
 
 interface UserStatsBarProps {
   credits?: number;
@@ -24,11 +23,7 @@ export default function UserStatsBar({
 }: UserStatsBarProps) {
   const router = useRouter();
   const { t } = useLanguage();
-  const { token_value_usd } = getMiningEconomyConfig();
   const { navigating, startLoading } = useNavigationLoading();
-
-  const usdtValue = credits * token_value_usd;
-  const usdtDisplay = usdtValue === 0 ? '0' : parseFloat(usdtValue.toFixed(4)).toString();
 
   const handleBuy = () => {
     startLoading();

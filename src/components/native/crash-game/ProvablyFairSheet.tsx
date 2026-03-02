@@ -31,15 +31,15 @@ export default function ProvablyFairSheet({ isOpen, onClose, seed, seedHash, cra
 
           <div className="rounded-xl bg-white/5 p-4 text-xs space-y-3 border border-white/10">
             <div>
-              <span className="text-white/40">Seed:</span>
+              <span className="text-white/40">{t('native.crashGame.seedLabel')}</span>
               <p className="text-white/70 font-mono break-all mt-0.5">{seed}</p>
             </div>
             <div>
-              <span className="text-white/40">SHA-256 Hash:</span>
+              <span className="text-white/40">{t('native.crashGame.hashLabel')}</span>
               <p className="text-white/70 font-mono break-all mt-0.5">{seedHash}</p>
             </div>
             <div>
-              <span className="text-white/40">Crash Point:</span>
+              <span className="text-white/40">{t('native.crashGame.crashPointLabel')}</span>
               <p className="text-white/70 font-mono mt-0.5">{crashPoint.toFixed(2)}x</p>
             </div>
           </div>
@@ -52,7 +52,7 @@ export default function ProvablyFairSheet({ isOpen, onClose, seed, seedHash, cra
             onClick={onClose}
             className="mt-4 w-full rounded-xl bg-white/10 py-3 text-white font-medium text-sm hover:bg-white/15 transition"
           >
-            Got it
+            {t('native.crashGame.gotIt')}
           </button>
         </div>
       </div>

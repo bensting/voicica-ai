@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { FAKE_PLAYER_NAMES, LIVE_FEED_CONFIG } from '@/config/native/crashGameConfig';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface FeedEntry {
   id: number;
@@ -15,6 +16,7 @@ interface FeedEntry {
  * 滚动假数据 LiveFeed - 纯客户端生成
  */
 export default function LiveFeed() {
+  const { t } = useLanguage();
   const [entries, setEntries] = useState<FeedEntry[]>([]);
   const [isOpen, setIsOpen] = useState(false);
   const counterRef = useRef(0);
@@ -65,7 +67,7 @@ export default function LiveFeed() {
           <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
           <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500" />
         </span>
-        Live
+        {t('native.crashGame.live')}
       </button>
 
       {/* Feed panel */}

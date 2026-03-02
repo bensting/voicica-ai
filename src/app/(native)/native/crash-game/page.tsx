@@ -260,7 +260,7 @@ export default function CrashGamePage() {
               <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
-              Rules
+              {t('native.crashGame.rules')}
             </button>
             <button
               onClick={() => { refreshHistory(); setShowHistory(true); }}
@@ -269,7 +269,7 @@ export default function CrashGamePage() {
               <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
-              History
+              {t('native.crashGame.history')}
             </button>
           </div>
         </div>
@@ -326,7 +326,7 @@ export default function CrashGamePage() {
               {roundData?.seedHash && (
                 <div className="mx-4 mb-3 rounded-lg bg-white/5 border border-white/10 px-3 py-2">
                   <div className="flex items-center justify-between mb-0.5">
-                    <p className="text-[10px] text-white/30">SHA-256 Hash (pre-committed)</p>
+                    <p className="text-[10px] text-white/30">{t('native.crashGame.seedHash')}</p>
                     <button
                       onClick={() => { navigator.clipboard.writeText(roundData.seedHash); }}
                       className="text-white/30 hover:text-white/60 transition-colors p-0.5"

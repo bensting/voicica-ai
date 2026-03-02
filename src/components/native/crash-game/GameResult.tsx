@@ -43,9 +43,9 @@ export default function GameResult({
         </div>
         <div className={`mt-2 grid ${cashOutMultiplier ? 'grid-cols-3' : 'grid-cols-2'} text-sm text-white/50`}>
           <span className="text-center">{t('native.crashGame.bet')}: {betAmount} $V</span>
-          <span className="text-center">Crash: {crashPoint.toFixed(2)}x</span>
+          <span className="text-center">{t('native.crashGame.crashLabel')} {crashPoint.toFixed(2)}x</span>
           {cashOutMultiplier && (
-            <span className="text-center">Out: {cashOutMultiplier.toFixed(2)}x</span>
+            <span className="text-center">{t('native.crashGame.outLabel')} {cashOutMultiplier.toFixed(2)}x</span>
           )}
         </div>
       </div>

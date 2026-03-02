@@ -1,11 +1,14 @@
 'use client';
 
+import { useLanguage } from '@/contexts/LanguageContext';
+
 interface GameRulesSheetProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
 export default function GameRulesSheet({ isOpen, onClose }: GameRulesSheetProps) {
+  const { t } = useLanguage();
   if (!isOpen) return null;
 
   return (
@@ -22,39 +25,39 @@ export default function GameRulesSheet({ isOpen, onClose }: GameRulesSheetProps)
           </div>
 
           {/* Fixed title */}
-          <h2 className="text-lg font-bold text-white px-5 pb-3">Crash Game Rules</h2>
+          <h2 className="text-lg font-bold text-white px-5 pb-3">{t('native.crashGame.rulesTitle')}</h2>
 
           {/* Scrollable content */}
           <div className="flex-1 overflow-y-auto px-5">
             <div className="space-y-4 text-sm text-white/70 leading-relaxed">
               <div>
-                <h3 className="text-white font-semibold mb-1">How to Play</h3>
+                <h3 className="text-white font-semibold mb-1">{t('native.crashGame.rulesHowToPlay')}</h3>
                 <ol className="list-decimal list-inside space-y-1">
-                  <li>Enter your bet amount in $VOICICA and tap Start</li>
-                  <li>Watch the multiplier rise from 1.00x</li>
-                  <li>Tap Cash Out before the crash to lock in your winnings</li>
-                  <li>If you don&apos;t cash out in time, you lose your bet</li>
+                  <li>{t('native.crashGame.rulesStep1')}</li>
+                  <li>{t('native.crashGame.rulesStep2')}</li>
+                  <li>{t('native.crashGame.rulesStep3')}</li>
+                  <li>{t('native.crashGame.rulesStep4')}</li>
                 </ol>
               </div>
 
               <div>
-                <h3 className="text-white font-semibold mb-1">Winnings</h3>
-                <p>Your payout = Bet Amount × Cash Out Multiplier</p>
-                <p className="text-white/40 text-xs mt-1">Example: Bet 100, cash out at 2.50x → receive 250 $VOICICA</p>
+                <h3 className="text-white font-semibold mb-1">{t('native.crashGame.rulesWinnings')}</h3>
+                <p>{t('native.crashGame.rulesPayoutFormula')}</p>
+                <p className="text-white/40 text-xs mt-1">{t('native.crashGame.rulesPayoutExample')}</p>
               </div>
 
               <div>
-                <h3 className="text-white font-semibold mb-1">Provably Fair</h3>
-                <p>Each round&apos;s crash point is determined before the game starts. A SHA-256 hash is shown during the game. After the round, the seed is revealed so you can verify:</p>
-                <p className="font-mono text-xs text-purple-400 mt-1">SHA-256(seed) = displayed hash</p>
+                <h3 className="text-white font-semibold mb-1">{t('native.crashGame.provablyFair')}</h3>
+                <p>{t('native.crashGame.rulesFairnessNote')}</p>
+                <p className="font-mono text-xs text-purple-400 mt-1">{t('native.crashGame.rulesFairnessFormula')}</p>
               </div>
 
               <div>
-                <h3 className="text-white font-semibold mb-1">Limits</h3>
+                <h3 className="text-white font-semibold mb-1">{t('native.crashGame.rulesLimits')}</h3>
                 <ul className="list-disc list-inside space-y-1">
-                  <li>One active game at a time</li>
-                  <li>Game auto-expires after the max duration</li>
-                  <li>The crash point can be as low as 1.00x (instant crash)</li>
+                  <li>{t('native.crashGame.rulesLimit1')}</li>
+                  <li>{t('native.crashGame.rulesLimit2')}</li>
+                  <li>{t('native.crashGame.rulesLimit3')}</li>
                 </ul>
               </div>
             </div>
@@ -66,7 +69,7 @@ export default function GameRulesSheet({ isOpen, onClose }: GameRulesSheetProps)
               onClick={onClose}
               className="w-full rounded-xl bg-white/10 py-3 text-white font-medium text-sm hover:bg-white/15 transition"
             >
-              Got it
+              {t('native.crashGame.gotIt')}
             </button>
           </div>
         </div>

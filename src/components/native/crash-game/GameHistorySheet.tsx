@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { getUserCrashHistory, type CrashHistoryItem } from '@/actions/crash-game';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 const PAGE_SIZE = 10;
 
@@ -13,6 +14,7 @@ interface GameHistorySheetProps {
 }
 
 export default function GameHistorySheet({ isOpen, onClose, history: initialHistory, loading: initialLoading }: GameHistorySheetProps) {
+  const { t } = useLanguage();
   const [items, setItems] = useState<CrashHistoryItem[]>(initialHistory);
   const [hasMore, setHasMore] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
@@ -62,7 +64,7 @@ export default function GameHistorySheet({ isOpen, onClose, history: initialHist
             <div className="w-10 h-1 rounded-full bg-white/20" />
           </div>
 
-          <h2 className="text-lg font-bold text-white mb-3">Game History</h2>
+          <h2 className="text-lg font-bold text-white mb-3">{t('native.crashGame.gameHistory')}</h2>
 
           {/* Scrollable list */}
           <div
@@ -77,7 +79,7 @@ export default function GameHistorySheet({ isOpen, onClose, history: initialHist
                 ))}
               </div>
             ) : items.length === 0 ? (
-              <div className="text-center text-white/20 text-sm py-8">No games yet</div>
+              <div className="text-center text-white/20 text-sm py-8">{t('native.crashGame.noGamesYet')}</div>
             ) : (
               <div className="space-y-1.5">
                 {items.map((item) => {
@@ -117,7 +119,7 @@ export default function GameHistorySheet({ isOpen, onClose, history: initialHist
                   </div>
                 )}
                 {!hasMore && items.length > 0 && (
-                  <p className="text-center text-white/20 text-xs py-2">No more records</p>
+                  <p className="text-center text-white/20 text-xs py-2">{t('native.crashGame.noMoreRecords')}</p>
                 )}
               </div>
             )}
@@ -127,7 +129,7 @@ export default function GameHistorySheet({ isOpen, onClose, history: initialHist
             onClick={onClose}
             className="mt-4 w-full rounded-xl bg-white/10 py-3 text-white font-medium text-sm hover:bg-white/15 transition shrink-0"
           >
-            Close
+            {t('native.crashGame.close')}
           </button>
         </div>
       </div>

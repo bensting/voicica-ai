@@ -96,9 +96,8 @@ dependencies {
     // Google Mobile Ads SDK (App Open 广告)
     implementation 'com.google.android.gms:play-services-ads:23.6.0'
     // Unity Ads SDK（直接调用，用于每日任务场景）
-    implementation 'com.unity3d.ads:unity-ads:4.12.5'
-    // Unity Ads mediation adapter (AdMob 中介)
-    implementation 'com.google.ads.mediation:unity:4.12.5.0'
+    // 注意：不能同时使用 mediation adapter，会导致 header bidding 冲突
+    implementation 'com.unity3d.ads:unity-ads:4.9.2'
     // Pangle mediation adapter (AdMob 中介)
     implementation 'com.google.ads.mediation:pangle:6.5.0.3.0'
 }

@@ -25,8 +25,8 @@ export interface UnityAdsConfig {
  */
 const devConfig: UnityAdsConfig = {
   enabled: true,
-  androidGameId: '6052371',
-  iosGameId: '6052370',
+  androidGameId: '6058964',
+  iosGameId: '6058965',
   testMode: true,
   androidRewardedPlacementId: 'Rewarded_Android',
   iosRewardedPlacementId: 'Rewarded_iOS',
@@ -43,8 +43,8 @@ const devConfig: UnityAdsConfig = {
  */
 const prodConfig: UnityAdsConfig = {
   enabled: true,
-  androidGameId: '6052371',
-  iosGameId: '6052370',
+  androidGameId: '6058964',
+  iosGameId: '6058965',
   testMode: false,
   androidRewardedPlacementId: 'Rewarded_Android',
   iosRewardedPlacementId: 'Rewarded_iOS',

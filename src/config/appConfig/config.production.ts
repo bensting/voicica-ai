@@ -129,7 +129,7 @@ export const appConfig: AppConfig = {
     web_default_ecpm_usd: 0.03,
     show_home_banner: false, // 是否显示首页 Banner
     show_navbar_mining: true, // 是否显示导航栏 Mining 入口
-    show_wallet_card: true, // 是否显示首页 钱包
+    show_wallet_card: false, // 是否显示首页 钱包
     conversion: {
       min_voicica_reserve: 2000, // 最低保留 2000 $VOICICA
       min_convert_amount: 1,   // 单次最低兑换 1
@@ -145,11 +145,11 @@ export const appConfig: AppConfig = {
       enabled: true,
     },
     crash_game: {
-      show_home_card: true,
+      show_home_card: false,
       subtitle: 'Turn $1 into $100 in seconds.',
     },
     bull_bear: {
-      show_home_card: true,
+      show_home_card: false,
       subtitle: 'Predict BTC. Win big.',
     },
   },

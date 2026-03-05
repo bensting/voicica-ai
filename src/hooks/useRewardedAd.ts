@@ -211,12 +211,26 @@ export function useRewardedAd(scene?: AdScene): UseRewardedAdReturn {
         unityInitializedRef.current = true;
         console.log('[RewardedAd] Unity Ads initialized, gameId:', gameId, 'testMode:', unityConfig.testMode);
 
-        // 预加载激励视频
+        // 预加载激励视频（失败后等 3 秒重试一次）
         const placementId = getUnityRewardedPlacementId(platform);
-        await UnityRewardedAd.loadAd({ placementId });
-        unityReadyRef.current = true;
-        setStatus('ready');
-        console.log('[RewardedAd] Unity rewarded video loaded, placementId:', placementId);
+        try {
+          await UnityRewardedAd.loadAd({ placementId });
+          unityReadyRef.current = true;
+          setStatus('ready');
+          console.log('[RewardedAd] Unity rewarded video loaded, placementId:', placementId);
+        } catch (loadErr) {
+          console.warn('[RewardedAd] Unity first load failed, retrying in 3s...', loadErr);
+          await new Promise((r) => setTimeout(r, 3000));
+          try {
+            await UnityRewardedAd.loadAd({ placementId });
+            unityReadyRef.current = true;
+            setStatus('ready');
+            console.log('[RewardedAd] Unity rewarded video loaded on retry');
+          } catch (retryErr) {
+            console.warn('[RewardedAd] Unity retry also failed:', retryErr);
+            // 不设 error，showAd 时会再尝试加载
+          }
+        }
       } catch (err) {
         console.error('[RewardedAd] Unity Ads init failed:', err);
         setError('Unity Ads initialization failed');
@@ -410,11 +424,17 @@ export function useRewardedAd(scene?: AdScene): UseRewardedAdReturn {
           console.log('[RewardedAd] Unity Ads initialized on-demand');
         }
 
-        // 检查广告是否已加载
+        // 检查广告是否已加载，失败则重试一次（等 3 秒）
         const { loaded } = await UnityRewardedAd.isLoaded();
         if (!loaded) {
           console.log('[RewardedAd] Unity ad not loaded, loading...');
-          await UnityRewardedAd.loadAd({ placementId });
+          try {
+            await UnityRewardedAd.loadAd({ placementId });
+          } catch (loadErr) {
+            console.warn('[RewardedAd] Unity load failed, retrying in 3s...', loadErr);
+            await new Promise((r) => setTimeout(r, 3000));
+            await UnityRewardedAd.loadAd({ placementId });
+          }
 
           // 等待加载完成（最多 15 秒）
           let waited = 0;

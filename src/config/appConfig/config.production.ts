@@ -86,10 +86,10 @@ export const appConfig: AppConfig = {
       // T2 中等收益
       TW: 12, HK: 14, SG: 12, IL: 12,
       BR: 8, MX: 7, AR: 6, CL: 7, CO: 6,
-      TH: 6, MY: 5, PH: 4, ID: 3,
-      SA: 10, AE: 12, TR: 5, PL: 7, CZ: 7, RO: 5,
+      TH: 3, MY: 5, PH: 0.7, ID: 3,
+      SA: 10, AE: 12, AZ: 6, TR: 5, PL: 7, CZ: 7, RO: 5,
       // T3 低收益国家
-      IN: 2, PK: 1.5, BD: 1, LK: 2,
+      IN: 0.8, PK: 1.5, BD: 1, LK: 2,
       VN: 3, MM: 1.5, KH: 2, LA: 1.5,
       NG: 2, KE: 2, EG: 3, ZA: 5,
     },
@@ -102,10 +102,10 @@ export const appConfig: AppConfig = {
       // T2 中等收益
       TW: 7, HK: 8, SG: 7, IL: 7,
       BR: 5, MX: 4, AR: 4, CL: 4, CO: 4,
-      TH: 4, MY: 3, PH: 2.5, ID: 2,
-      SA: 6, AE: 7, TR: 3, PL: 4, CZ: 4, RO: 3,
+      TH: 1.8, MY: 3, PH: 0.4, ID: 2,
+      SA: 6, AE: 7, AZ: 3.6, TR: 3, PL: 4, CZ: 4, RO: 3,
       // T3 低收益国家
-      IN: 1.2, PK: 1, BD: 0.6, LK: 1.2,
+      IN: 0.5, PK: 1, BD: 0.6, LK: 1.2,
       VN: 2, MM: 1, KH: 1.2, LA: 1,
       NG: 1.2, KE: 1.2, EG: 2, ZA: 3,
     },

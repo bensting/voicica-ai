@@ -71,7 +71,7 @@ interface UseDailyTasksReturn {
 export function useDailyTasks(): UseDailyTasksReturn {
   const { user, loading: authLoading, ensureFreshToken } = useFirebaseAuth();
   // 签到和观看视频都使用同一个激励视频广告，共享缓存，加载更快
-  const { showRewardedAd, isReady: isAdReady } = useRewardedAd('daily_tasks');
+  const { showRewardedAd, isReady: isAdReady, provider: adProvider } = useRewardedAd('daily_tasks');
   // 获取最近一次广告收益数据（来自 AdMob OnPaidEvent）
   const { lastAdRevenue, clearLastAdRevenue } = useAdMob();
   // 用 ref 跟踪最新值，避免 useCallback 闭包捕获旧值
@@ -254,7 +254,7 @@ export function useDailyTasks(): UseDailyTasksReturn {
       const revenue = lastAdRevenueRef.current;
       console.log('[DailyTasks] 广告观看成功，领取奖励...', revenue ? `revenue: ${revenue.valueMicros} ${revenue.currencyCode}` : 'no revenue data');
       const result = await claimAdReward(true, true, isRealNativePlatform,
-        revenue?.valueMicros, revenue?.currencyCode);
+        revenue?.valueMicros, revenue?.currencyCode, adProvider);
       if (result.success && !cancelledRef.current) {
         // 乐观更新：立即递增观看次数，防止 UI 闪烁
         setStatus(prev => prev ? {

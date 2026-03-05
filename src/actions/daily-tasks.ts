@@ -52,9 +52,10 @@ async function getCountryFromHeaders(): Promise<string | null> {
  * 公式: revenueUsd × revenue_share_ratio × randomFactor ÷ token_value_usd
  *
  * 原生端（AdMob）：新 APK 传真实 adRevenueMicros → 精准；旧 APK → 按 AdMob eCPM 估算
+ * 原生端（Unity）：无客户端 ILRD，按 Unity eCPM 估算（约 AdMob 60%）
  * Web 端（ExoClick）：无精准数据，按 ExoClick eCPM 估算（远低于 AdMob）
  */
-async function calculateVoicicaReward(isNative: boolean, adRevenueMicros?: number, adRevenueCurrency?: string): Promise<{
+async function calculateVoicicaReward(isNative: boolean, adRevenueMicros?: number, adRevenueCurrency?: string, adProvider?: string): Promise<{
   voicicaAmount: number;
   randomMultiplier: number;
   revenueMicros: number;
@@ -81,8 +82,13 @@ async function calculateVoicicaReward(isNative: boolean, adRevenueMicros?: numbe
     // 估算：根据平台选择对应的 eCPM 表
     const country = await getCountryFromHeaders();
 
-    if (isNative) {
-      // 原生端：AdMob 激励视频 eCPM（$2~$25）
+    if (isNative && adProvider === 'unity') {
+      // 原生端 Unity Ads：eCPM 约为 AdMob 的 60%（$1~$15）
+      const ecpm = (country && miningConfig.unity_estimated_ecpm_by_country[country])
+        || miningConfig.unity_default_ecpm_usd;
+      revenueUsd = ecpm / 1000;
+    } else if (isNative) {
+      // 原生端 AdMob：激励视频 eCPM（$2~$25）
       const ecpm = (country && miningConfig.estimated_ecpm_by_country[country])
         || miningConfig.default_ecpm_usd;
       revenueUsd = ecpm / 1000;
@@ -293,7 +299,7 @@ export async function checkin(addToPermanent: boolean = false, isNative: boolean
  * @param addToPermanent 是否添加到永久积分（默认添加到当月积分）
  * @param isNative 是否为原生应用（用于获取对应的配置）
  */
-export async function claimAdReward(adWatched: boolean = true, addToPermanent: boolean = false, isNative: boolean = false, adRevenueMicros?: number, adRevenueCurrency?: string): Promise<TaskResult> {
+export async function claimAdReward(adWatched: boolean = true, addToPermanent: boolean = false, isNative: boolean = false, adRevenueMicros?: number, adRevenueCurrency?: string, adProvider?: string): Promise<TaskResult> {
   const db = await getDb();
   try {
     if (!adWatched) {
@@ -314,7 +320,7 @@ export async function claimAdReward(adWatched: boolean = true, addToPermanent: b
     const maxViews = config.max_daily_ad_views;
 
     // 动态计算奖励（基于广告收益）
-    const { voicicaAmount, randomMultiplier, revenueMicros, revenueSource } = await calculateVoicicaReward(isNative, adRevenueMicros, adRevenueCurrency);
+    const { voicicaAmount, randomMultiplier, revenueMicros, revenueSource } = await calculateVoicicaReward(isNative, adRevenueMicros, adRevenueCurrency, adProvider);
 
     // 先尝试创建记录（如果不存在）
     await db

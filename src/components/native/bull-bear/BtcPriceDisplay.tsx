@@ -157,7 +157,7 @@ export default function BtcPriceDisplay({
     const topColor = chartUp ? 'rgba(74, 222, 128, 0.2)' : 'rgba(248, 113, 113, 0.2)';
     const bottomColor = chartUp ? 'rgba(74, 222, 128, 0)' : 'rgba(248, 113, 113, 0)';
     series.applyOptions({ lineColor, topColor, bottomColor });
-  }, [priceHistory, chartUp]);
+  }, [priceHistory, chartUp, tzOffsetSec]);
 
   // Entry price line
   useEffect(() => {

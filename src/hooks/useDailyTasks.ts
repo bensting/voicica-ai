@@ -279,7 +279,7 @@ export function useDailyTasks(): UseDailyTasksReturn {
         setClaiming(false);
       }
     }
-  }, [refresh, showRewardedAd, clearLastAdRevenue]);
+  }, [refresh, showRewardedAd, clearLastAdRevenue, adProvider]);
 
   return {
     status,

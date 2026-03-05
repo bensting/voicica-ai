@@ -1,8 +1,18 @@
 {
-  "version": "1.2.25",
-  "buildNumber": 46,
+  "version": "1.2.26",
+  "buildNumber": 47,
   "description": "原生应用版本（Android/iOS 应用壳）",
   "changelog": [
+    {
+      "version": "1.2.26",
+      "buildNumber": 47,
+      "date": "2026-03-05",
+      "changes": [
+        "Unity Ads 切换到 Waterfall 项目，修复 header bidding 加载失败",
+        "新增 Unity eCPM 估算表（按国家，约 AdMob 60%）",
+        "更新 AdMob eCPM 数据（IN/PH/TH/AZ）"
+      ]
+    },
     {
       "version": "1.2.25",
       "buildNumber": 46,

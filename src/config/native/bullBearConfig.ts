@@ -30,7 +30,10 @@ export const DEFAULT_MAX_BET = 10000;
 export const QUICK_BET_AMOUNTS = [10, 100, 500, 1000];
 
 /** 价格图表历史秒数 */
-export const PRICE_CHART_HISTORY_SECONDS = 120;
+export const PRICE_CHART_HISTORY_SECONDS = 300;
+
+/** Binance REST klines (用于预加载历史 K 线) */
+export const BINANCE_KLINES_URL = 'https://api.binance.com/api/v3/klines';
 
 /** WebSocket 重连延迟（毫秒） */
 export const WS_RECONNECT_DELAY_MS = 2000;

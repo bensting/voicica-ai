@@ -50,7 +50,7 @@ export default function BtcPriceDisplay({
 
     const chart = createChart(chartContainerRef.current, {
       width: chartContainerRef.current.clientWidth,
-      height: 160,
+      height: 200,
       layout: {
         background: { type: ColorType.Solid, color: 'transparent' },
         textColor: 'rgba(255,255,255,0.3)',
@@ -158,8 +158,8 @@ export default function BtcPriceDisplay({
   }, [isPlaying, entryPrice]);
 
   return (
-    <div className="flex flex-col items-center justify-center w-full px-2 gap-2">
-      {/* Connection indicator */}
+    <div className="flex flex-col items-center justify-center w-full px-2 gap-1">
+      {/* Connection indicator + Price */}
       <div className="flex items-center gap-1.5">
         <span className={`w-1.5 h-1.5 rounded-full ${isConnected ? 'bg-green-400' : 'bg-red-400'} ${isConnected ? 'animate-pulse' : ''}`} />
         <span className="text-[10px] text-white/30 uppercase tracking-wider font-medium">BTC/USDT</span>
@@ -167,7 +167,7 @@ export default function BtcPriceDisplay({
 
       {/* Price */}
       <div className="text-center">
-        <div className={`text-[42px] leading-none font-black tabular-nums tracking-tight ${
+        <div className={`text-[28px] leading-none font-black tabular-nums tracking-tight ${
           !isPlaying ? 'text-white' :
           priceChange?.isUp ? 'text-green-400' :
           priceChange?.isDown ? 'text-red-400' :
@@ -176,7 +176,7 @@ export default function BtcPriceDisplay({
           {price ? `$${price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : '—'}
         </div>
         {isPlaying && priceChange && (
-          <div className={`text-sm font-semibold mt-1.5 ${priceChange.isUp ? 'text-green-400' : priceChange.isDown ? 'text-red-400' : 'text-white/40'}`}>
+          <div className={`text-xs font-semibold mt-1 ${priceChange.isUp ? 'text-green-400' : priceChange.isDown ? 'text-red-400' : 'text-white/40'}`}>
             {priceChange.diff >= 0 ? '+' : ''}{priceChange.diff.toFixed(2)} ({priceChange.pct >= 0 ? '+' : ''}{priceChange.pct.toFixed(4)}%)
           </div>
         )}
@@ -187,13 +187,13 @@ export default function BtcPriceDisplay({
 
       {/* Countdown + Direction indicator during play */}
       {isPlaying && countdown != null && (
-        <div className="flex items-center gap-3">
-          <span className={`text-xs font-bold uppercase px-2.5 py-1 rounded-md ${
+        <div className="flex items-center gap-2">
+          <span className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded ${
             direction === 'bull' ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'
           }`}>
             {direction === 'bull' ? '↑ BULL' : '↓ BEAR'}
           </span>
-          <span className="text-2xl font-black text-white tabular-nums">
+          <span className="text-lg font-black text-white tabular-nums">
             {countdown}s
           </span>
         </div>

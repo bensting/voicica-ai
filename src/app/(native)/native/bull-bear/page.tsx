@@ -279,7 +279,7 @@ export default function BullBearPage() {
         </div>
 
         {/* BTC Price Display — fills remaining game area */}
-        <div className="flex-1 flex items-center justify-center min-h-0">
+        <div className="flex-1 flex items-start justify-center min-h-0 pt-4">
           <BtcPriceDisplay
             price={price}
             priceHistory={priceHistory}

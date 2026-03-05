@@ -24,6 +24,7 @@ import GameBalanceBar from '@/components/native/GameBalanceBar';
 import InsufficientCreditsModal from '@/components/native/common/InsufficientCreditsModal';
 import NativeDailyTasksModal from '@/components/native/NativeDailyTasksModal';
 import { DEFAULT_MIN_BET, DEFAULT_MAX_BET, DEFAULT_MULTIPLIERS } from '@/config/native/bullBearConfig';
+import { playTick, playUrgentTick, playRoundEnd } from '@/lib/countdownSound';
 import { getConversionConfig } from '@/config/appConfig';
 import { consumeBullBearPrefetch } from '@/lib/bullBearPrefetch';
 import { useNavigationLoading } from '@/hooks/useNavigationLoading';
@@ -115,13 +116,25 @@ export default function BullBearPage() {
       const startedAt = new Date(roundData.startedAt).getTime();
       const endAt = startedAt + roundData.durationSeconds * 1000;
 
+      let prevRemaining = -1;
       const tick = () => {
         const remaining = Math.max(0, Math.ceil((endAt - Date.now()) / 1000));
         setCountdown(remaining);
 
+        // Play sound on each new second
+        if (remaining !== prevRemaining && remaining > 0) {
+          if (remaining <= 5) {
+            playUrgentTick();
+          } else if (remaining <= 10) {
+            playTick();
+          }
+        }
+        prevRemaining = remaining;
+
         if (remaining <= 0 && gameStateRef.current === 'playing') {
           // Time's up — settle
           clearInterval(countdownTimerRef.current);
+          playRoundEnd();
           handleSettle();
         }
       };

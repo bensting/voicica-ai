@@ -36,9 +36,9 @@ const hideBottomNavPaths = ['/native/settings', '/native/create', '/native/tools
 
 // 三个主 Tab 的 pathname 前缀映射
 const pathnameToTab = (pathname: string): TabType | null => {
-  if (pathname === '/native' || pathname.startsWith('/native/explore')) return 'explore';
+  if (pathname === '/native' || pathname === '/native/' || pathname.startsWith('/native/explore')) return 'explore';
   if (pathname.startsWith('/native/referral-earnings')) return 'team';
-  if (pathname === '/native/me') return 'me';
+  if (pathname === '/native/me' || pathname === '/native/me/') return 'me';
   return null;
 };
 

@@ -68,8 +68,8 @@ export default function BtcPriceDisplay({
         borderVisible: false,
         timeVisible: true,
         secondsVisible: true,
-        rightOffset: 3,
-        fixLeftEdge: false,
+        rightOffset: 2,
+        fixLeftEdge: true,
         fixRightEdge: true,
       },
       crosshair: {
@@ -114,17 +114,30 @@ export default function BtcPriceDisplay({
     };
   }, []);
 
+  // Timezone offset in seconds (lightweight-charts displays UTC, so we shift data to local)
+  const tzOffsetSec = useMemo(() => -(new Date().getTimezoneOffset() * 60), []);
+
   // Update series data + colors when priceHistory changes
   useEffect(() => {
     const series = seriesRef.current;
     if (!series || priceHistory.length < 1) return;
 
     const data: LineData<Time>[] = priceHistory.map(t => ({
-      time: t.time as Time,
+      time: (t.time + tzOffsetSec) as Time,
       value: t.price,
     }));
 
     series.setData(data);
+
+    // Set visible range to show last 5 minutes
+    const chart = chartRef.current;
+    if (chart && data.length > 0) {
+      const now = Math.floor(Date.now() / 1000) + tzOffsetSec;
+      chart.timeScale().setVisibleRange({
+        from: (now - 300) as Time,
+        to: (now + 5) as Time,
+      });
+    }
 
     // Update colors based on trend
     const lineColor = chartUp ? '#4ade80' : '#f87171';

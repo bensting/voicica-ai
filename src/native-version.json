@@ -1,8 +1,18 @@
 {
-  "version": "1.2.24",
-  "buildNumber": 45,
+  "version": "1.2.25",
+  "buildNumber": 46,
   "description": "原生应用版本（Android/iOS 应用壳）",
   "changelog": [
+    {
+      "version": "1.2.25",
+      "buildNumber": 46,
+      "date": "2026-03-05",
+      "changes": [
+        "每日任务/挖矿中心激励广告切换到 Unity Ads（capacitor-unity-ads）",
+        "AI Creative Tools 等其他场景保持 AdMob 不变",
+        "新增按场景区分广告提供商机制（AdScene）"
+      ]
+    },
     {
       "version": "1.2.24",
       "buildNumber": 45,

@@ -13,6 +13,7 @@ import LoginModal from './LoginModal';
 import NativeDailyTasksModal from './NativeDailyTasksModal';
 import LanguageSelectorSheet from './LanguageSelectorSheet';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { getMiningEconomyConfig } from '@/config/appConfig';
 
 /**
  * Native App 顶部导航栏
@@ -31,6 +32,7 @@ export default function NativeNavbar() {
   const { navigating, startLoading } = useNavigationLoading();
 
   const isLoggedIn = !!user;
+  const { show_navbar_mining } = getMiningEconomyConfig();
 
   // Prefetch high-traffic routes + data on app startup
   useEffect(() => {
@@ -65,15 +67,17 @@ export default function NativeNavbar() {
             </Link>
 
             {/* Mining Center 入口 */}
-            <button
-              onClick={() => setIsDailyTasksOpen(true)}
-              className="relative flex items-center gap-1 px-2 py-1 rounded-lg bg-gradient-to-r from-amber-500/20 to-orange-500/20 border border-amber-500/30 animate-pulse hover:from-amber-500/30 hover:to-orange-500/30 transition-all active:scale-95"
-            >
-              <Image src="/logo/voicica-token.png" alt="" width={20} height={20} className="w-5 h-5" />
-              <span className="text-xs font-bold text-amber-400">Mine</span>
-              {/* 小红点提示 */}
-              <span className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full animate-pulse" />
-            </button>
+            {show_navbar_mining && (
+              <button
+                onClick={() => setIsDailyTasksOpen(true)}
+                className="relative flex items-center gap-1 px-2 py-1 rounded-lg bg-gradient-to-r from-amber-500/20 to-orange-500/20 border border-amber-500/30 animate-pulse hover:from-amber-500/30 hover:to-orange-500/30 transition-all active:scale-95"
+              >
+                <Image src="/logo/voicica-token.png" alt="" width={20} height={20} className="w-5 h-5" />
+                <span className="text-xs font-bold text-amber-400">Mine</span>
+                {/* 小红点提示 */}
+                <span className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full animate-pulse" />
+              </button>
+            )}
           </div>
 
           {/* 右侧区域 */}

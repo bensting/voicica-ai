@@ -95,6 +95,7 @@ export const appConfig: AppConfig = {
     },
     web_default_ecpm_usd: 0.03,
     show_home_banner: false, // 是否显示首页 Banner
+    show_navbar_mining: true, // 是否显示导航栏 Mining 入口
     show_wallet_card: true, // 是否显示首页 钱包
     conversion: {
       min_voicica_reserve: 2000, // 最低保留 2000 $VOICICA

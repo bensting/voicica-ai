@@ -11,6 +11,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { initNotifications, registerNotificationClickListener } from '@/lib/notifications';
 import { initPushNotifications } from '@/lib/push-notifications';
 // Explore tab 子组件
+import NativeBannerAd from '@/components/native/NativeBannerAd';
 import TotalAssetsCard from '@/components/native/TotalAssetsCard';
 import FeatureGrid from '@/components/native/FeatureGrid';
 import ExploreSection from '@/components/native/ExploreSection';
@@ -68,6 +69,7 @@ export default function NativeLayout({ children }: { children: React.ReactNode }
 
   const exploreTab = useMemo(() => (
     <div className="pt-2 pb-20">
+      <NativeBannerAd />
       <TotalAssetsCard />
       <div className="px-5 mt-5 mb-1">
         <h2 className="text-xs font-semibold text-white/40 uppercase tracking-wider">{t('native.home.sectionCreativeTools')}</h2>

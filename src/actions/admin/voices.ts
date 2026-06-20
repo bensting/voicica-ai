@@ -1397,12 +1397,12 @@ export async function updateAllVoices(): Promise<SyncResult> {
       azureVoiceMap.set(voice.ShortName, voice);
     }
 
-    // 获取数据库中所有语音
+    // 获取数据库中所有 Azure 语音
     const dbVoices = await db.select({
       id: voices.id,
       name: voices.name,
       locale: voices.locale,
-    }).from(voices);
+    }).from(voices).where(eq(voices.provider, 'microsoft'));
 
     if (dbVoices.length === 0) {
       return {
@@ -1419,23 +1419,25 @@ export async function updateAllVoices(): Promise<SyncResult> {
       const azureVoice = azureVoiceMap.get(dbVoice.name);
 
       if (!azureVoice) {
-        // Azure 中没有这个语音，跳过
+        // Azure 中已下线，标记为不活跃
+        await db.update(voices).set({ isActive: false }).where(eq(voices.id, dbVoice.id));
         skipped++;
-        console.log(`⏭️ 跳过（Azure 中不存在）: ${dbVoice.name}`);
+        console.log(`⏭️ 已下线（Azure 中不存在），标记为不活跃: ${dbVoice.name}`);
         continue;
       }
 
-      // 更新字段
+      // 更新字段，包括 isActive（以 Azure 的 Status 为准）
       await db.update(voices).set({
         gender: azureVoice.Gender.toLowerCase(),
-        role: 'Professional', // 默认为 Professional
+        role: 'Professional',
         country: getCountryFromLocale(azureVoice.Locale),
         styleList: azureVoice.StyleList && azureVoice.StyleList.length > 0
           ? (azureVoice.StyleList.includes('default') ? azureVoice.StyleList : ['default', ...azureVoice.StyleList])
           : ['default'],
-        displayName: azureVoice.LocalName, // 使用 LocalName 作为 display_name
-        locale: azureVoice.Locale, // 同步更新 locale
+        displayName: azureVoice.LocalName,
+        locale: azureVoice.Locale,
         provider: 'microsoft',
+        isActive: azureVoice.Status === 'GA',
       }).where(eq(voices.id, dbVoice.id));
 
       updated++;

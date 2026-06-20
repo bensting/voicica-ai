@@ -35,19 +35,10 @@ const MENU_GROUPS = [
     ],
   },
   {
-    title: '财务',
-    items: [
-      { href: '/admin/withdrawals', label: '提现管理', icon: '💰' },
-      { href: '/admin/conversions', label: '兑换记录', icon: '🔄' },
-    ],
-  },
-  {
     title: '配置',
     items: [
       { href: '/admin/native-banners', label: 'Native Banner', icon: '🖼️' },
       { href: '/admin/lucky-draws', label: '抽奖管理', icon: '🎰' },
-      { href: '/admin/crash-game', label: 'Crash Game', icon: '🚀' },
-      { href: '/admin/bull-bear', label: 'Bull or Bear', icon: '📈' },
       { href: '/admin/push', label: '推送通知', icon: '🔔' },
       { href: '/admin/device-tokens', label: '设备令牌', icon: '📲' },
     ],

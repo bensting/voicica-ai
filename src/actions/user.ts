@@ -13,7 +13,6 @@ import { getCurrentUser, getUserOrAnonymous } from '@/lib/auth-firebase';
 import { uploadImage } from '@/lib/services/r2-storage';
 import { v4 as uuidv4 } from 'uuid';
 import type { UserProfile, CreditsInfo, CreditHistoryResponse } from '@/types/user';
-import { generateUniqueCode } from '@/actions/referral';
 
 // ==================== 请求级缓存 ====================
 // 同一次请求内，相同 userId 只查一次数据库
@@ -48,8 +47,6 @@ export async function getCurrentUserProfile(platform?: string): Promise<UserProf
     .limit(1);
 
   if (!user) {
-    // 首次登录，自动创建用户（同时生成邀请码）
-    const referralCode = await generateUniqueCode();
     const [newUser] = await db
       .insert(users)
       .values({
@@ -62,35 +59,17 @@ export async function getCurrentUserProfile(platform?: string): Promise<UserProf
         monthlyCredits: 0,
         monthlyCreditsResetAt: new Date().toISOString(),
         totalCreditsUsed: 0,
-        referralCode,
       })
       .returning();
     user = newUser;
-    console.log(`新用户注册: ${authUser.uid}, 平台: ${platform || '未知'}, 邀请码: ${referralCode}`);
+    console.log(`新用户注册: ${authUser.uid}, 平台: ${platform || '未知'}`);
   } else {
-    // 收集需要更新的字段，合并为一次 UPDATE
-    const patchData: Record<string, unknown> = {};
-
-    // 补填 platform（老用户可能为空）
     if (!user.platform && platform) {
-      patchData.platform = platform;
-    }
-
-    // 补生成邀请码（历史用户可能没有）
-    if (!user.referralCode) {
-      const code = await generateUniqueCode();
-      patchData.referralCode = code;
-      console.log(`🔗 [Referral] 为历史用户生成邀请码: ${authUser.uid} -> ${code}`);
-    }
-
-    // 只在有变化时才执行 UPDATE
-    if (Object.keys(patchData).length > 0) {
       await db
         .update(users)
-        .set(patchData)
+        .set({ platform })
         .where(eq(users.userId, authUser.uid));
-      // 合并到本地对象，避免重新 SELECT
-      user = { ...user, ...patchData } as typeof user;
+      user = { ...user, platform } as typeof user;
     }
   }
 

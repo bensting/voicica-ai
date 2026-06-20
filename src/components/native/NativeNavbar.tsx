@@ -34,10 +34,8 @@ export default function NativeNavbar() {
   const isLoggedIn = !!user;
   const { show_navbar_mining } = getMiningEconomyConfig();
 
-  // Prefetch high-traffic routes + data on app startup
   useEffect(() => {
     router.prefetch('/native/subscribe');
-    router.prefetch('/native/crash-game');
   }, [router]);
 
   // 通过 Context 控制隐藏

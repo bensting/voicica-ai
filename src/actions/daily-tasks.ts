@@ -6,7 +6,6 @@ import { eq, and, sql } from 'drizzle-orm';
 import { headers } from 'next/headers';
 import { getUserOrAnonymous } from '@/lib/auth-firebase';
 import { getDailyTasksConfig, getMiningEconomyConfig } from '@/config/appConfig';
-import { distributeReferralCommissions } from '@/actions/referral';
 
 /**
  * 增加用户积分（根据是否匿名用户选择正确的表）
@@ -373,15 +372,6 @@ export async function claimAdReward(adWatched: boolean = true, addToPermanent: b
       adRevenueSource: revenueSource,
       randomMultiplier,
     });
-
-    // 分发推荐提成（CF Workers 不支持 fire-and-forget，必须 await）
-    if (!is_anonymous) {
-      try {
-        await distributeReferralCommissions(user_id, voicicaAmount);
-      } catch (err) {
-        console.error('❌ [referral] commission distribution failed:', err);
-      }
-    }
 
     return { success: true, credits: voicicaAmount };
   } catch (error) {

@@ -93,17 +93,12 @@ export const users = sqliteTable("users", {
 	authProvider: text("auth_provider"),
 	platform: text("platform"),
 	usdtBalance: text("usdt_balance").default('0').notNull(),
-	referralCode: text("referral_code"),
-	referredBy: text("referred_by"),
-	referralLevel: text("referral_level").default('miner').notNull(),
 	ipAddress: text("ip_address"),
 }, (table) => [
 	index("idx_user_email").on(table.email),
 	index("idx_user_id").on(table.userId),
 	index("idx_user_platform").on(table.platform),
 	uniqueIndex("uq_users_user_id").on(table.userId),
-	uniqueIndex("uq_users_referral_code").on(table.referralCode),
-	index("idx_user_referred_by").on(table.referredBy),
 ]);
 
 export const ttsRecords = sqliteTable("tts_records", {
@@ -686,29 +681,6 @@ export const conversions = sqliteTable("conversions", {
 	index("idx_conversions_user_id").on(table.userId),
 ]);
 
-// ============================================================
-// Withdrawal Tables
-// ============================================================
-
-export const withdrawals = sqliteTable("withdrawals", {
-	id: integer().primaryKey({ autoIncrement: true }),
-	userId: text("user_id").notNull(),
-	amount: text("amount").notNull(),
-	fee: text("fee").notNull(),
-	netAmount: text("net_amount").notNull(),
-	network: text("network").notNull(),
-	walletAddress: text("wallet_address").notNull(),
-	email: text("email").notNull(),
-	telegram: text("telegram"),
-	status: text("status").default('pending').notNull(),
-	txHash: text("tx_hash"),
-	adminNote: text("admin_note"),
-	completedAt: text("completed_at"),
-	createdAt: text("created_at").default(sql`(strftime('%Y-%m-%dT%H:%M:%fZ','now'))`).notNull(),
-}, (table) => [
-	index("idx_withdrawals_user_id").on(table.userId),
-	index("idx_withdrawals_status").on(table.status),
-]);
 
 // ============================================================
 // Lucky Draw Tables
@@ -831,105 +803,7 @@ export const pushNotificationLogs = sqliteTable("push_notification_logs", {
 	index("idx_push_logs_created_at").on(table.createdAt),
 ]);
 
-// ============================================================
-// Crash Game Tables
-// ============================================================
 
-export const crashGameRounds = sqliteTable("crash_game_rounds", {
-	id: integer().primaryKey({ autoIncrement: true }),
-	roundId: text("round_id").notNull(),
-	userId: text("user_id").notNull(),
-	betAmount: real("bet_amount").notNull(),
-	seed: text("seed").notNull(),
-	seedHash: text("seed_hash").notNull(),
-	crashPoint: real("crash_point").notNull(),
-	cashOutMultiplier: real("cash_out_multiplier"),
-	profit: real("profit"),
-	status: text("status").notNull(), // 'active' | 'cashed_out' | 'crashed' | 'expired'
-	speed: real("speed").notNull(),
-	startedAt: text("started_at").notNull(),
-	cashedOutAt: text("cashed_out_at"),
-	createdAt: text("created_at").default(sql`(strftime('%Y-%m-%dT%H:%M:%fZ','now'))`).notNull(),
-	updatedAt: text("updated_at").$onUpdate(() => new Date().toISOString()),
-}, (table) => [
-	uniqueIndex("uq_crash_game_rounds_round_id").on(table.roundId),
-	index("idx_crash_game_rounds_user_id").on(table.userId),
-	index("idx_crash_game_rounds_user_created").on(table.userId, table.createdAt),
-	index("idx_crash_game_rounds_status").on(table.status),
-	index("idx_crash_game_rounds_created_at").on(table.createdAt),
-]);
-
-export const crashGameConfig = sqliteTable("crash_game_config", {
-	id: integer().primaryKey({ autoIncrement: true }),
-	enabled: integer("enabled", { mode: 'boolean' }).default(false).notNull(),
-	minBet: real("min_bet").default(1).notNull(),
-	maxBet: real("max_bet").default(1000).notNull(),
-	houseEdgePercent: real("house_edge_percent").default(3).notNull(),
-	speed: real("speed").default(0.00006).notNull(),
-	maxDurationSeconds: integer("max_duration_seconds").default(120).notNull(),
-	gracePeriodMs: integer("grace_period_ms").default(300).notNull(),
-	updatedAt: text("updated_at").$onUpdate(() => new Date().toISOString()),
-});
-
-// ============================================================
-// Bull or Bear Game Tables
-// ============================================================
-
-export const bullBearRounds = sqliteTable("bull_bear_rounds", {
-	id: integer().primaryKey({ autoIncrement: true }),
-	roundId: text("round_id").notNull(),
-	userId: text("user_id").notNull(),
-	betAmount: real("bet_amount").notNull(),
-	direction: text("direction").notNull(), // 'bull' | 'bear'
-	durationSeconds: integer("duration_seconds").notNull(),
-	multiplier: real("multiplier").notNull(),
-	entryPrice: real("entry_price").notNull(),
-	settlePrice: real("settle_price"),
-	outcome: text("outcome"), // 'bull' | 'bear' | 'draw'
-	profit: real("profit"),
-	status: text("status").notNull(), // 'active' | 'won' | 'lost' | 'draw' | 'expired'
-	startedAt: text("started_at").notNull(),
-	settledAt: text("settled_at"),
-	createdAt: text("created_at").default(sql`(strftime('%Y-%m-%dT%H:%M:%fZ','now'))`).notNull(),
-	updatedAt: text("updated_at").$onUpdate(() => new Date().toISOString()),
-}, (table) => [
-	uniqueIndex("uq_bull_bear_rounds_round_id").on(table.roundId),
-	index("idx_bull_bear_rounds_user_id").on(table.userId),
-	index("idx_bull_bear_rounds_user_created").on(table.userId, table.createdAt),
-	index("idx_bull_bear_rounds_status").on(table.status),
-	index("idx_bull_bear_rounds_created_at").on(table.createdAt),
-]);
-
-export const bullBearConfig = sqliteTable("bull_bear_config", {
-	id: integer().primaryKey({ autoIncrement: true }),
-	enabled: integer("enabled", { mode: 'boolean' }).default(false).notNull(),
-	minBet: real("min_bet").default(1).notNull(),
-	maxBet: real("max_bet").default(1000).notNull(),
-	multiplier30s: real("multiplier_30s").default(1.85).notNull(),
-	multiplier60s: real("multiplier_60s").default(1.90).notNull(),
-	multiplier120s: real("multiplier_120s").default(1.95).notNull(),
-	availableDurations: text("available_durations").default('[30,60,120]').notNull(),
-	updatedAt: text("updated_at").$onUpdate(() => new Date().toISOString()),
-});
-
-// ============================================================
-// Referral Commission Tables
-// ============================================================
-
-export const referralCommissions = sqliteTable("referral_commissions", {
-	id: integer().primaryKey({ autoIncrement: true }),
-	userId: text("user_id").notNull(),
-	fromUserId: text("from_user_id").notNull(),
-	level: text("level").notNull(),
-	sourceAmount: real("source_amount").notNull(),
-	commissionRate: real("commission_rate").notNull(),
-	commissionAmount: real("commission_amount").notNull(),
-	createdAt: text("created_at").default(sql`(strftime('%Y-%m-%dT%H:%M:%fZ','now'))`).notNull(),
-}, (table) => [
-	index("idx_referral_commissions_user_id").on(table.userId),
-	index("idx_referral_commissions_from_user_id").on(table.fromUserId),
-	index("idx_referral_commissions_created_at").on(table.createdAt),
-]);
 
 // ============================================================
 // Relations

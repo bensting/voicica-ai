@@ -60,7 +60,7 @@ export default function FishVoiceGrid({
 }: FishVoiceGridProps) {
   const { t } = useLanguage();
   const [query, setQuery] = useState('');
-  const [filter, setFilter] = useState<string>(MY_CLONES);
+  const filter = MY_CLONES;
   const [voices, setVoices] = useState<FishVoiceItem[]>([]);
   const [loading, setLoading] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);

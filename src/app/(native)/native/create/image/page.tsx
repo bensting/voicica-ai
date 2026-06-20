@@ -170,7 +170,7 @@ export default function NativeImagePage() {
     const savedModelId = localStorage.getItem(IMAGE_MODEL_STORAGE_KEY);
     if (savedModelId) {
       const savedModel = imageModels.find(m => m.id === savedModelId);
-      if (savedModel && savedModel.id !== selectedModel.id) {
+      if (savedModel) {
         skipPromptClear.current = true;
         setSelectedModel(savedModel);
       }

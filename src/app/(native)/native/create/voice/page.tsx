@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 import { useCredits } from '@/contexts/CreditsContext';
 import { useSubscription } from '@/contexts/SubscriptionContext';
 import { useRewardedAd } from '@/hooks/useRewardedAd';

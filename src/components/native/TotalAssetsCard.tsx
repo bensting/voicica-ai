@@ -1,14 +1,12 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState } from 'react';
 import Image from 'next/image';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { formatCredits } from '@/utils/formatCredits';
 import { useCredits } from '@/contexts/CreditsContext';
-import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 import { getMiningEconomyConfig } from '@/config/appConfig';
 import NativeDailyTasksModal from './NativeDailyTasksModal';
-import LoginModal from './LoginModal';
 
 const MiningIcon = () => (
   <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -22,11 +20,9 @@ const MiningIcon = () => (
 export default function TotalAssetsCard() {
   const { t } = useLanguage();
   const { credits, loading, refreshCredits } = useCredits();
-  const { user } = useFirebaseAuth();
   const miningConfig = getMiningEconomyConfig();
 
   const [showDailyTasks, setShowDailyTasks] = useState(false);
-  const [showLoginModal, setShowLoginModal] = useState(false);
 
 
   if (!miningConfig.show_wallet_card) return null;
@@ -85,11 +81,6 @@ export default function TotalAssetsCard() {
         />
       )}
 
-      <LoginModal
-        isOpen={showLoginModal}
-        onClose={() => setShowLoginModal(false)}
-        onLoginSuccess={() => setShowLoginModal(false)}
-      />
     </>
   );
 }

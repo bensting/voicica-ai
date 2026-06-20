@@ -9,7 +9,7 @@
     "start": "next start",
     "cf:build": "opennextjs-cloudflare build",
     "cf:preview": "npm run cf:build && wrangler dev",
-    "deploy": "npm run cf:build && opennextjs-cloudflare deploy",
+    "deploy": "node -e \"['.next','.open-next'].forEach(d=>{try{require('fs').rmSync(d,{recursive:true,force:true})}catch{}})\" && npm run cf:build && opennextjs-cloudflare deploy",
     "lint": "eslint",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",

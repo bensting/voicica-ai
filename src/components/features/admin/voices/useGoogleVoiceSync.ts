@@ -11,6 +11,8 @@ import {
   regenerateAllGoogleAvatars,
   syncAllGoogleVoices,
   updateAllGoogleVoices,
+  syncAllGoogleVoiceSamples,
+  detectAndClearBrokenGoogleSamples,
 } from '@/actions/admin/google-voices';
 import { SyncResult, ConfirmDialogState } from './types';
 
@@ -283,6 +285,38 @@ export function useGoogleVoiceSync() {
     }
   }, []);
 
+  const handleGenerateAllSamples = useCallback(async () => {
+    setSyncing('samples-all');
+    try {
+      const result = await syncAllGoogleVoiceSamples();
+      setSyncResults((prev) => ({ ...prev, 'samples-all': result }));
+      if (result.success) await loadLocales();
+    } catch (error) {
+      setSyncResults((prev) => ({
+        ...prev,
+        'samples-all': { success: false, message: error instanceof Error ? error.message : '生成失败' },
+      }));
+    } finally {
+      setSyncing(null);
+    }
+  }, [loadLocales]);
+
+  const handleDetectBrokenSamples = useCallback(async () => {
+    setSyncing('detect-broken');
+    try {
+      const result = await detectAndClearBrokenGoogleSamples();
+      setSyncResults((prev) => ({ ...prev, 'detect-broken': result }));
+      if (result.success) await loadLocales();
+    } catch (error) {
+      setSyncResults((prev) => ({
+        ...prev,
+        'detect-broken': { success: false, message: error instanceof Error ? error.message : '检测失败' },
+      }));
+    } finally {
+      setSyncing(null);
+    }
+  }, [loadLocales]);
+
   return {
     // 状态
     locales,
@@ -305,6 +339,8 @@ export function useGoogleVoiceSync() {
     handleViewVoices,
     closeVoiceDetailDialog,
     handleSyncSamplesByLocale,
+    handleGenerateAllSamples,
+    handleDetectBrokenSamples,
     handleSyncAvatarsByLocale,
   };
 }

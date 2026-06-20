@@ -37,6 +37,8 @@ export default function GoogleVoiceSyncPage() {
     closeVoiceDetailDialog,
     handleSyncSamplesByLocale,
     handleSyncAvatarsByLocale,
+    handleGenerateAllSamples,
+    handleDetectBrokenSamples,
   } = useGoogleVoiceSync();
 
   return (
@@ -94,6 +96,29 @@ export default function GoogleVoiceSyncPage() {
           },
         ]}
         resultKeys={['avatars', 'regenerate']}
+      />
+
+      {/* 语音样本生成 */}
+      <SyncCard
+        title="语音样本"
+        description="使用 Google TTS 为语音生成试听样本（上传到 R2）"
+        syncing={syncing}
+        syncResults={syncResults}
+        actions={[
+          {
+            label: '检测并清理失效样本',
+            syncKey: 'detect-broken',
+            onClick: handleDetectBrokenSamples,
+            color: 'orange',
+          },
+          {
+            label: '批量生成样本',
+            syncKey: 'samples-all',
+            onClick: handleGenerateAllSamples,
+            color: 'teal',
+          },
+        ]}
+        resultKeys={['detect-broken', 'samples-all']}
       />
 
       {/* 语言列表 */}

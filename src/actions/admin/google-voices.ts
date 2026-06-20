@@ -813,3 +813,100 @@ export async function regenerateAllGoogleAvatars(): Promise<SyncResult> {
     };
   }
 }
+
+/**
+ * 批量生成所有 Google 语音样本（按 locale 逐个处理）
+ */
+export async function syncAllGoogleVoiceSamples(): Promise<SyncResult> {
+  await verifyAdminWithoutDb();
+  const db = await getDb();
+
+  const localeRows = await db
+    .selectDistinct({ locale: voices.locale })
+    .from(voices)
+    .where(eq(voices.provider, 'google'));
+
+  let totalGenerated = 0;
+  let totalSkipped = 0;
+  const failed: string[] = [];
+
+  for (const { locale } of localeRows) {
+    try {
+      const result = await syncGoogleVoiceSamplesByLocale(locale);
+      if (result.success) {
+        totalGenerated += result.updated ?? 0;
+        totalSkipped += result.skipped ?? 0;
+      } else {
+        failed.push(locale);
+      }
+    } catch {
+      failed.push(locale);
+    }
+  }
+
+  return {
+    success: failed.length === 0,
+    message: failed.length === 0
+      ? `全部样本生成完成`
+      : `部分失败: ${failed.join(', ')}`,
+    updated: totalGenerated,
+    skipped: totalSkipped,
+  };
+}
+
+/**
+ * 检测并清理失效的 Google 语音样本（HEAD 请求验证 R2 URL）
+ */
+export async function detectAndClearBrokenGoogleSamples(): Promise<SyncResult> {
+  await verifyAdminWithoutDb();
+  const db = await getDb();
+
+  const voicesList = await db.select({
+    id: voices.id,
+    name: voices.name,
+    voiceSampleUrl: voices.voiceSampleUrl,
+  }).from(voices).where(
+    and(eq(voices.provider, 'google'), sql`voice_sample_url != '{}'`)
+  );
+
+  if (voicesList.length === 0) {
+    return { success: true, message: 'Google 语音没有找到有样本的记录', updated: 0 };
+  }
+
+  let brokenCount = 0;
+  let updatedCount = 0;
+
+  for (let i = 0; i < voicesList.length; i += 10) {
+    const batch = voicesList.slice(i, i + 10);
+    await Promise.all(batch.map(async (voice) => {
+      const urlMap = voice.voiceSampleUrl as Record<string, string>;
+      const brokenStyles: string[] = [];
+
+      await Promise.all(
+        Object.entries(urlMap).map(async ([style, url]) => {
+          if (!url) return;
+          try {
+            const res = await fetch(url, { method: 'HEAD' });
+            if (!res.ok) brokenStyles.push(style);
+          } catch {
+            brokenStyles.push(style);
+          }
+        })
+      );
+
+      if (brokenStyles.length > 0) {
+        brokenCount += brokenStyles.length;
+        const newMap = { ...urlMap };
+        brokenStyles.forEach((s) => delete newMap[s]);
+        await db.update(voices).set({ voiceSampleUrl: newMap }).where(eq(voices.id, voice.id));
+        updatedCount++;
+      }
+    }));
+  }
+
+  return {
+    success: true,
+    message: `检测完成：清理了 ${brokenCount} 个失效样本，涉及 ${updatedCount} 条语音`,
+    updated: updatedCount,
+  };
+}

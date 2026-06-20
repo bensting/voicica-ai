@@ -367,8 +367,8 @@ export async function syncGoogleVoicesByLocale(locale: string): Promise<SyncResu
       sortOrder: 0,
     }));
 
-    // D1 限制 999 个 SQL 变量，每行 17 列，每批最多 50 行
-    const BATCH_SIZE = 50;
+    // D1 限制每条语句最多 100 个绑定参数，每行 15 个参数，每批最多 6 行
+    const BATCH_SIZE = 5;
     for (let i = 0; i < insertData.length; i += BATCH_SIZE) {
       await db.insert(voices).values(insertData.slice(i, i + BATCH_SIZE)).onConflictDoNothing();
     }

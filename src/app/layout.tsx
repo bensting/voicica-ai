@@ -10,7 +10,6 @@ import { UserProvider } from "@/contexts/UserContext";
 import { CreditsProvider } from "@/contexts/CreditsContext";
 import { SubscriptionProvider } from "@/contexts/SubscriptionContext";
 import { AudioSettingsProvider } from "@/contexts/AudioSettingsContext";
-import PWAUpdatePrompt from "@/components/layout/PWAUpdatePrompt";
 import AppUpdatePrompt from "@/components/native/AppUpdatePrompt";
 import GooglePlayUpdatePrompt from "@/components/native/GooglePlayUpdatePrompt";
 import AppSplashWrapper from "@/components/providers/AppSplashWrapper";
@@ -185,7 +184,6 @@ export default async function RootLayout({
                         <AdMobProvider>
                           <CapacitorProvider />
                           {children}
-                          <PWAUpdatePrompt />
                           <AppUpdatePrompt />
                           <GooglePlayUpdatePrompt />
                           <ServerActionErrorHandler />

@@ -28,13 +28,6 @@ export default function TotalAssetsCard() {
   const [showDailyTasks, setShowDailyTasks] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
 
-  const requireLogin = useCallback((action: () => void) => {
-    if (!user) {
-      setShowLoginModal(true);
-      return;
-    }
-    action();
-  }, [user]);
 
   if (!miningConfig.show_wallet_card) return null;
 

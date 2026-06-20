@@ -328,35 +328,34 @@ export async function getVoiceStatsByLocale(): Promise<LocaleStats[]> {
       azureCountByLocale[voice.Locale] = (azureCountByLocale[voice.Locale] || 0) + 1;
     }
 
-    // 从数据库统计每个 locale 的数量
+    // 从数据库统计每个 locale 的 Azure 语音数量（只统计 microsoft provider）
     const dbStats = await db.select({
       locale: voices.locale,
       count: count(),
-    }).from(voices).groupBy(voices.locale);
+    }).from(voices).where(eq(voices.provider, 'microsoft')).groupBy(voices.locale);
 
     const dbCountByLocale: Record<string, number> = {};
     for (const stat of dbStats) {
       dbCountByLocale[stat.locale] = Number(stat.count);
     }
 
-    // 统计每个 locale 有头像的语音数量
+    // 统计每个 locale 有头像的 Azure 语音数量
     const avatarStats = await db.select({
       locale: voices.locale,
       count: count(),
-    }).from(voices).where(ne(voices.avatarUrl, '')).groupBy(voices.locale);
+    }).from(voices).where(and(eq(voices.provider, 'microsoft'), ne(voices.avatarUrl, ''))).groupBy(voices.locale);
 
     const avatarCountByLocale: Record<string, number> = {};
     for (const stat of avatarStats) {
       avatarCountByLocale[stat.locale] = Number(stat.count);
     }
 
-    // 统计每个 locale 有样本的语音数量
-    // 检查 voice_sample_url JSON 中是否有 default 键
+    // 统计每个 locale 有样本的 Azure 语音数量
     const sampleStats = await db.select({
       locale: voices.locale,
       count: count(),
     }).from(voices)
-      .where(sql`voice_sample_url->>'default' IS NOT NULL`)
+      .where(and(eq(voices.provider, 'microsoft'), sql`voice_sample_url->>'default' IS NOT NULL`))
       .groupBy(voices.locale);
 
     const sampleCountByLocale: Record<string, number> = {};
@@ -364,11 +363,11 @@ export async function getVoiceStatsByLocale(): Promise<LocaleStats[]> {
       sampleCountByLocale[stat.locale] = Number(stat.count);
     }
 
-    // 合并所有 locale
+    // 只展示 Azure 有的 locale（DB 里多出的 Google 语音不在此页面管理）
     const allLocales = new Set([
       ...Object.keys(azureCountByLocale),
       ...Object.keys(dbCountByLocale),
-    ]);
+    ].filter(l => azureCountByLocale[l] !== undefined || dbCountByLocale[l] !== undefined));
 
     // 构建结果
     const result: LocaleStats[] = [];

@@ -157,15 +157,7 @@ export default function CreateSheet({ isOpen, onClose }: CreateSheetProps) {
           })}
         </div>
 
-        {/* Close Button */}
-        <div className="flex justify-center pb-3">
-          <button
-            onClick={onClose}
-            className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 hover:text-white hover:bg-gray-700 transition-colors"
-          >
-            <CloseIcon />
-          </button>
-        </div>
+        <div className="pb-3" />
       </div>
     </>
   );

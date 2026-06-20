@@ -36,9 +36,10 @@ interface BottomNavProps {
   activeTab?: TabType;
   onTabChange?: (tab: TabType) => void;
   onCreatePress?: () => void;
+  isCreateOpen?: boolean;
 }
 
-export default function BottomNav({ activeTab, onTabChange, onCreatePress }: BottomNavProps) {
+export default function BottomNav({ activeTab, onTabChange, onCreatePress, isCreateOpen }: BottomNavProps) {
   const router = useRouter();
   const { isVisible } = useBottomNav();
   const { t } = useLanguage();
@@ -82,12 +83,19 @@ export default function BottomNav({ activeTab, onTabChange, onCreatePress }: Bot
           <button
             type="button"
             onClick={onCreatePress}
-            className="w-12 h-12 rounded-full bg-purple-600 flex items-center justify-center shadow-lg shadow-purple-900/40 active:scale-95 transition-transform hover:bg-purple-500"
+            className="w-11 h-11 rounded-full bg-gray-800 flex items-center justify-center active:scale-95 transition-colors hover:bg-gray-700"
           >
-            <svg className="w-6 h-6 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-              <line x1="12" y1="5" x2="12" y2="19" />
-              <line x1="5" y1="12" x2="19" y2="12" />
-            </svg>
+            {isCreateOpen ? (
+              <svg className="w-5 h-5 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
+              </svg>
+            ) : (
+              <svg className="w-5 h-5 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <line x1="12" y1="5" x2="12" y2="19" />
+                <line x1="5" y1="12" x2="19" y2="12" />
+              </svg>
+            )}
           </button>
         </div>
 

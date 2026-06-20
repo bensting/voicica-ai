@@ -17,7 +17,7 @@ export default function NativeBannerAd() {
         {/* FOREVER FREE */}
         <div
           className="mt-8"
-          style={{ filter: 'drop-shadow(0 0 18px rgba(167,139,250,0.7)) drop-shadow(0 0 40px rgba(139,92,246,0.35))' }}
+          style={{ filter: 'drop-shadow(0 0 12px rgba(167,139,250,0.8))' }}
         >
           <h1
             className="text-4xl font-black leading-none tracking-tight whitespace-nowrap text-center w-full"
@@ -30,7 +30,7 @@ export default function NativeBannerAd() {
             FOREVER FREE
           </h1>
         </div>
-        <p className="text-white/75 font-semibold text-base mt-1.5 text-center">AI Creator Tools</p>
+        <p className="text-white font-semibold text-base mt-1.5 text-center">AI Creator Tools</p>
 
         {/* Feature cards */}
         <div className="grid grid-cols-2 gap-2.5 mt-4">

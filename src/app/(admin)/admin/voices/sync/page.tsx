@@ -33,6 +33,7 @@ export default function VoiceSyncPage() {
     handleRegenerateAllAvatars,
     handleGenerateSamples,
     handleGenerateAllSamples,
+    handleDetectBrokenSamples,
     handleClearSamples,
     closeConfirmDialog,
   } = useVoiceSync();
@@ -102,13 +103,19 @@ export default function VoiceSyncPage() {
         syncResults={syncResults}
         actions={[
           {
+            label: syncing === 'detect-broken' ? '检测中...' : '检测并清理失效样本',
+            syncKey: 'detect-broken',
+            onClick: handleDetectBrokenSamples,
+            color: 'orange',
+          },
+          {
             label: syncing === 'samples-all' ? '生成中...' : '批量生成样本',
             syncKey: 'samples-all',
             onClick: handleGenerateAllSamples,
             color: 'teal',
           },
         ]}
-        resultKeys={['samples-all']}
+        resultKeys={['detect-broken', 'samples-all']}
       />
 
       {/* 语言列表 */}

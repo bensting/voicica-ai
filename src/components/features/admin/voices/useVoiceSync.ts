@@ -10,6 +10,7 @@ import {
   generateAllVoiceSamples,
   clearVoiceSamples,
   updateAllVoices,
+  detectAndClearBrokenSamples,
 } from '@/actions/admin/voices';
 import { LocaleStats, SyncResult, ConfirmDialogState } from './types';
 
@@ -229,6 +230,26 @@ export function useVoiceSync() {
     }
   }, [loadLocales]);
 
+  // 检测并清理全部失效样本
+  const handleDetectBrokenSamples = useCallback(async () => {
+    setSyncing('detect-broken');
+    try {
+      const result = await detectAndClearBrokenSamples();
+      setSyncResults((prev) => ({ ...prev, 'detect-broken': result }));
+      if (result.success) await loadLocales();
+    } catch (error) {
+      setSyncResults((prev) => ({
+        ...prev,
+        'detect-broken': {
+          success: false,
+          message: error instanceof Error ? error.message : '检测失败',
+        },
+      }));
+    } finally {
+      setSyncing(null);
+    }
+  }, [loadLocales]);
+
   // 清空指定 locale 的语音样本
   const handleClearSamples = useCallback((locale: string) => {
     setConfirmDialog({
@@ -282,6 +303,7 @@ export function useVoiceSync() {
     handleRegenerateAllAvatars,
     handleGenerateSamples,
     handleGenerateAllSamples,
+    handleDetectBrokenSamples,
     handleClearSamples,
     closeConfirmDialog,
   };

@@ -907,6 +907,87 @@ export async function generateVoiceSampleForVoice(voiceId: number): Promise<Sync
 }
 
 /**
+ * 检测并清理失效的样本 URL（R2 文件已被删除但 DB 还有记录）
+ * 对每个 URL 发 HEAD 请求，404 的从 DB 里移除
+ */
+export async function detectAndClearBrokenSamples(locale?: string): Promise<SyncResult> {
+  const db = await getDb();
+  await verifyAdminWithoutDb();
+
+  const label = locale || '全部';
+  console.log(`🔍 开始检测 ${label} 的失效样本...`);
+
+  const conditions = [sql`voice_sample_url != '{}'`];
+  if (locale) conditions.push(eq(voices.locale, locale));
+
+  const voicesList = await db.select({
+    id: voices.id,
+    name: voices.name,
+    voiceSampleUrl: voices.voiceSampleUrl,
+  }).from(voices).where(and(...conditions));
+
+  if (voicesList.length === 0) {
+    return { success: true, message: `${label} 没有找到有样本的语音`, updated: 0 };
+  }
+
+  let checkedCount = 0;
+  let brokenCount = 0;
+  let clearedVoices = 0;
+
+  // 分批并发检测，每批 10 个 voice
+  const BATCH_SIZE = 10;
+  for (let i = 0; i < voicesList.length; i += BATCH_SIZE) {
+    const batch = voicesList.slice(i, i + BATCH_SIZE);
+
+    await Promise.all(batch.map(async (voice) => {
+      const samples = (voice.voiceSampleUrl as Record<string, string>) || {};
+      const styles = Object.keys(samples);
+      if (styles.length === 0) return;
+
+      const newSamples: Record<string, string> = {};
+      let hasBroken = false;
+
+      await Promise.all(styles.map(async (style) => {
+        const url = samples[style];
+        checkedCount++;
+        try {
+          const res = await fetch(url, { method: 'HEAD' });
+          if (res.ok) {
+            newSamples[style] = url;
+          } else {
+            hasBroken = true;
+            brokenCount++;
+            console.log(`  ❌ 失效 [${res.status}]: ${voice.name} - ${style}`);
+          }
+        } catch {
+          hasBroken = true;
+          brokenCount++;
+          console.log(`  ❌ 请求失败: ${voice.name} - ${style}`);
+        }
+      }));
+
+      if (hasBroken) {
+        await db.update(voices).set({
+          voiceSampleUrl: newSamples,
+          ...(Object.keys(newSamples).length === 0 ? { voiceSampleText: '' } : {}),
+        }).where(eq(voices.id, voice.id));
+        clearedVoices++;
+      }
+    }));
+  }
+
+  console.log(`✅ 检测完成: 检查 ${checkedCount} 个 URL，失效 ${brokenCount} 个，清理 ${clearedVoices} 个语音`);
+
+  return {
+    success: true,
+    message: brokenCount === 0
+      ? `检测完成，全部 ${checkedCount} 个样本正常`
+      : `清理完成：${brokenCount} 个失效 URL 已从 ${clearedVoices} 个语音中移除`,
+    updated: clearedVoices,
+  };
+}
+
+/**
  * 清空指定 locale 的语音样本
  */
 export async function clearVoiceSamples(locale: string): Promise<SyncResult> {

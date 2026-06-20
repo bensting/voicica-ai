@@ -18,6 +18,7 @@ interface ImageRecordsQuery {
   userId?: string;
   search?: string;
   model?: string;
+  isPublic?: boolean;
   startDate?: string;
   endDate?: string;
 }
@@ -57,6 +58,7 @@ export async function getImageRecords(query: ImageRecordsQuery = {}) {
     userId,
     search,
     model,
+    isPublic,
     startDate,
     endDate,
   } = query;
@@ -69,6 +71,10 @@ export async function getImageRecords(query: ImageRecordsQuery = {}) {
 
   if (model) {
     conditions.push(eq(imageRecords.model, model));
+  }
+
+  if (isPublic !== undefined) {
+    conditions.push(eq(imageRecords.isPublic, isPublic));
   }
 
   if (userId) {
@@ -185,6 +191,38 @@ export async function deleteImageRecord(id: number) {
   } catch (error) {
     console.error('删除 Image 记录失败:', error);
     return { success: false, message: error instanceof Error ? error.message : '删除失败' };
+  }
+}
+
+/**
+ * 切换单条记录公开状态
+ */
+export async function updateImageRecordPublic(id: number, isPublic: boolean) {
+  const db = await getDb();
+  await verifyAdminWithoutDb();
+
+  try {
+    await db.update(imageRecords).set({ isPublic }).where(eq(imageRecords.id, id));
+    return { success: true, message: isPublic ? '已设为公开' : '已设为私有' };
+  } catch (error) {
+    console.error('更新公开状态失败:', error);
+    return { success: false, message: error instanceof Error ? error.message : '更新失败' };
+  }
+}
+
+/**
+ * 批量设置公开状态
+ */
+export async function updateImageRecordsPublic(ids: number[], isPublic: boolean) {
+  const db = await getDb();
+  await verifyAdminWithoutDb();
+
+  try {
+    await db.update(imageRecords).set({ isPublic }).where(inArray(imageRecords.id, ids));
+    return { success: true, message: `已更新 ${ids.length} 条记录` };
+  } catch (error) {
+    console.error('批量更新公开状态失败:', error);
+    return { success: false, message: error instanceof Error ? error.message : '更新失败' };
   }
 }
 

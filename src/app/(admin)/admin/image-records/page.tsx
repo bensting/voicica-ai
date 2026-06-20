@@ -6,6 +6,8 @@ import {
   getImageRecordsStats,
   deleteImageRecord,
   deleteImageRecords,
+  updateImageRecordPublic,
+  updateImageRecordsPublic,
   ImageRecordItem,
 } from '@/actions/admin/image-records';
 
@@ -52,6 +54,7 @@ export default function ImageRecordsPage() {
   // 筛选条件
   const [statusFilter, setStatusFilter] = useState('');
   const [modelFilter, setModelFilter] = useState('');
+  const [publicFilter, setPublicFilter] = useState('');
   const [userIdFilter, setUserIdFilter] = useState('');
   const [searchFilter, setSearchFilter] = useState('');
   const [startDate, setStartDate] = useState('');
@@ -73,6 +76,7 @@ export default function ImageRecordsPage() {
           pageSize: 20,
           status: statusFilter || undefined,
           model: modelFilter || undefined,
+          isPublic: publicFilter === '' ? undefined : publicFilter === 'true',
           userId: userIdFilter || undefined,
           search: searchFilter || undefined,
           startDate: startDate || undefined,
@@ -90,7 +94,7 @@ export default function ImageRecordsPage() {
     } finally {
       setLoading(false);
     }
-  }, [page, statusFilter, modelFilter, userIdFilter, searchFilter, startDate, endDate]);
+  }, [page, statusFilter, modelFilter, publicFilter, userIdFilter, searchFilter, startDate, endDate]);
 
   useEffect(() => {
     loadData();
@@ -126,6 +130,33 @@ export default function ImageRecordsPage() {
     }
   };
 
+  // 切换公开状态
+  const handleTogglePublic = async (id: number, currentValue: boolean) => {
+    const result = await updateImageRecordPublic(id, !currentValue);
+    if (result.success) {
+      setRecords((prev) =>
+        prev.map((r) => (r.id === id ? { ...r, isPublic: !currentValue } : r))
+      );
+    } else {
+      alert(result.message);
+    }
+  };
+
+  // 批量设为公开/私有
+  const handleBatchSetPublic = async (isPublic: boolean) => {
+    if (selectedIds.length === 0) {
+      alert('请先选择记录');
+      return;
+    }
+    const result = await updateImageRecordsPublic(selectedIds, isPublic);
+    if (result.success) {
+      setSelectedIds([]);
+      loadData();
+    } else {
+      alert(result.message);
+    }
+  };
+
   // 全选/取消全选
   const handleSelectAll = () => {
     if (selectedIds.length === records.length) {
@@ -146,6 +177,7 @@ export default function ImageRecordsPage() {
   const handleResetFilters = () => {
     setStatusFilter('');
     setModelFilter('');
+    setPublicFilter('');
     setUserIdFilter('');
     setSearchFilter('');
     setStartDate('');
@@ -272,6 +304,21 @@ export default function ImageRecordsPage() {
             </select>
           </div>
           <div>
+            <label className="block text-sm text-gray-600 mb-1">公开状态</label>
+            <select
+              value={publicFilter}
+              onChange={(e) => {
+                setPublicFilter(e.target.value);
+                setPage(1);
+              }}
+              className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
+            >
+              <option value="">全部</option>
+              <option value="true">公开</option>
+              <option value="false">私有</option>
+            </select>
+          </div>
+          <div>
             <label className="block text-sm text-gray-600 mb-1">用户ID</label>
             <input
               type="text"
@@ -339,12 +386,26 @@ export default function ImageRecordsPage() {
             共 {total.toLocaleString()} 条记录
           </span>
           {selectedIds.length > 0 && (
-            <button
-              onClick={handleBatchDelete}
-              className="px-3 py-1.5 bg-red-600 text-white rounded-lg text-sm hover:bg-red-700 transition-colors"
-            >
-              删除选中 ({selectedIds.length})
-            </button>
+            <>
+              <button
+                onClick={() => handleBatchSetPublic(true)}
+                className="px-3 py-1.5 bg-green-600 text-white rounded-lg text-sm hover:bg-green-700 transition-colors"
+              >
+                设为公开 ({selectedIds.length})
+              </button>
+              <button
+                onClick={() => handleBatchSetPublic(false)}
+                className="px-3 py-1.5 bg-gray-600 text-white rounded-lg text-sm hover:bg-gray-700 transition-colors"
+              >
+                设为私有 ({selectedIds.length})
+              </button>
+              <button
+                onClick={handleBatchDelete}
+                className="px-3 py-1.5 bg-red-600 text-white rounded-lg text-sm hover:bg-red-700 transition-colors"
+              >
+                删除选中 ({selectedIds.length})
+              </button>
+            </>
           )}
         </div>
         <button
@@ -389,6 +450,9 @@ export default function ImageRecordsPage() {
                   </th>
                   <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                     状态
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                    公开
                   </th>
                   <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                     积分
@@ -461,6 +525,20 @@ export default function ImageRecordsPage() {
                           {record.progress}%
                         </div>
                       )}
+                    </td>
+                    <td className="px-4 py-3">
+                      <button
+                        onClick={() => handleTogglePublic(record.id, record.isPublic)}
+                        className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${
+                          record.isPublic ? 'bg-green-500' : 'bg-gray-300'
+                        }`}
+                      >
+                        <span
+                          className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white transition-transform ${
+                            record.isPublic ? 'translate-x-[18px]' : 'translate-x-1'
+                          }`}
+                        />
+                      </button>
                     </td>
                     <td className="px-4 py-3 text-sm text-gray-900">
                       {record.creditsUsed}

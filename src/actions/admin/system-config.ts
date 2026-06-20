@@ -75,6 +75,25 @@ export async function updateFeatureFlags(flags: FeatureFlags, scope: 'prod' | 'd
   return { success: true };
 }
 
+const DEFAULT_TTS_MAX_CHARACTERS = 500;
+
+/** 读取 TTS 最大输入字符数 */
+export async function getTtsMaxCharacters(): Promise<number> {
+  try {
+    const db = await getDb();
+    const row = await db.select().from(systemConfigs).where(eq(systemConfigs.key, 'tts_max_characters')).get();
+    if (!row) return DEFAULT_TTS_MAX_CHARACTERS;
+    return Number(JSON.parse(row.value)) || DEFAULT_TTS_MAX_CHARACTERS;
+  } catch {
+    return DEFAULT_TTS_MAX_CHARACTERS;
+  }
+}
+
+/** 更新 TTS 最大输入字符数 */
+export async function updateTtsMaxCharacters(value: number) {
+  return updateSystemConfig('tts_max_characters', value, 'TTS 最大输入字符数');
+}
+
 export async function getAllSystemConfigs() {
   const db = await getDb();
   return db.select().from(systemConfigs).all();

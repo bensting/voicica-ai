@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { getAllFeatureFlags, updateFeatureFlags, type FeatureFlags } from '@/actions/admin/system-config';
+import { getAllFeatureFlags, updateFeatureFlags, getTtsMaxCharacters, updateTtsMaxCharacters, type FeatureFlags } from '@/actions/admin/system-config';
 import { createMenuItems } from '@/config/native/createMenuConfig';
 
 const FEATURE_LABELS: Record<string, string> = {
@@ -97,12 +97,25 @@ export default function SystemConfigPage() {
   const [savedProd, setSavedProd] = useState(false);
   const [savedDev, setSavedDev] = useState(false);
 
+  const [ttsMaxChars, setTtsMaxChars] = useState<number>(500);
+  const [savingTts, setSavingTts] = useState(false);
+  const [savedTts, setSavedTts] = useState(false);
+
   useEffect(() => {
     getAllFeatureFlags().then(({ prod, dev }) => {
       setProdFlags(prod);
       setDevFlags(dev);
     });
+    getTtsMaxCharacters().then(setTtsMaxChars);
   }, []);
+
+  const handleSaveTtsMaxChars = async () => {
+    setSavingTts(true);
+    await updateTtsMaxCharacters(ttsMaxChars);
+    setSavingTts(false);
+    setSavedTts(true);
+    setTimeout(() => setSavedTts(false), 2000);
+  };
 
   const handleSave = async (scope: 'prod' | 'dev') => {
     const flags = scope === 'prod' ? prodFlags : devFlags;
@@ -138,6 +151,40 @@ export default function SystemConfigPage() {
         saving={savingProd}
         saved={savedProd}
       />
+
+      {/* 参数设置 */}
+      <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+        <div className="px-6 py-4 border-b border-gray-100">
+          <h2 className="text-base font-semibold text-gray-900">参数设置</h2>
+          <p className="text-sm text-gray-500 mt-0.5">控制各功能的数值限制</p>
+        </div>
+        <div className="px-6 py-4 flex items-center justify-between gap-4">
+          <div>
+            <p className="text-sm font-medium text-gray-900">TTS 最大输入字符数</p>
+            <p className="text-xs text-gray-400 mt-0.5">Text to Voice / Dialogue 页面的字符上限</p>
+          </div>
+          <input
+            type="number"
+            min={100}
+            max={10000}
+            value={ttsMaxChars}
+            onChange={(e) => setTtsMaxChars(Number(e.target.value))}
+            className="w-24 px-3 py-1.5 border border-gray-300 rounded-lg text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-purple-500"
+          />
+        </div>
+        <div className="px-6 py-4 border-t border-gray-100 flex items-center justify-between">
+          <span className={`text-sm transition-opacity ${savedTts ? 'text-green-600 opacity-100' : 'opacity-0'}`}>
+            ✓ 保存成功
+          </span>
+          <button
+            onClick={handleSaveTtsMaxChars}
+            disabled={savingTts}
+            className="px-4 py-2 bg-purple-600 text-white text-sm font-medium rounded-lg hover:bg-purple-700 disabled:opacity-50 transition-colors"
+          >
+            {savingTts ? '保存中...' : '保存'}
+          </button>
+        </div>
+      </div>
 
       <FlagCard
         title="功能入口与标签显示（开发环境）"

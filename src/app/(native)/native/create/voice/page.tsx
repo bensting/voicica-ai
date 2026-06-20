@@ -16,6 +16,7 @@ import { checkCreditsBeforeGenerate } from '@/lib/credits-check';
 import { adConfig } from '@/config/native/adConfig';
 import type { Voice } from '@/types/voice';
 import { calculateVoiceCost, type VoiceType } from '@/config/creditsCost';
+import { getTtsMaxCharacters } from '@/actions/admin/system-config';
 import CreatePageHeader from '@/components/native/common/CreatePageHeader';
 import GradientButton from '@/components/native/common/GradientButton';
 import CreditsIcon from '@/components/native/common/CreditsIcon';
@@ -185,8 +186,10 @@ export default function NativeTTSPage() {
     }
   }, [settings, isSettingsOpen]);
 
-  // 字符限制：匿名用户 500，登录用户 2000
-  const maxCharacters = user ? 2000 : 500;
+  const [maxCharacters, setMaxCharacters] = useState(500);
+  useEffect(() => {
+    getTtsMaxCharacters().then(setMaxCharacters);
+  }, []);
 
   // 处理文本变化
   const handleTextChange = (newText: string) => {

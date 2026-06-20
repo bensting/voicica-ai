@@ -20,6 +20,7 @@ import { getTtsRecordByTaskId, deleteTtsRecord } from '@/actions/tts';
 import type { TtsRecord } from '@/actions/tts';
 import type { FishVoiceItem, ClonedVoiceData } from '@/actions/clone';
 
+import { getTtsMaxCharacters } from '@/actions/admin/system-config';
 import CreatePageHeader from '@/components/native/common/CreatePageHeader';
 import GradientButton from '@/components/native/common/GradientButton';
 import CreditsIcon from '@/components/native/common/CreditsIcon';
@@ -91,8 +92,10 @@ export default function VoiceClonePage() {
   // ==================== Shared State ====================
   const [clonedVoices, setClonedVoices] = useState<ClonedVoiceData[]>([]);
 
-  // Character limit
-  const maxCharacters = user ? 2000 : 500;
+  const [maxCharacters, setMaxCharacters] = useState(500);
+  useEffect(() => {
+    getTtsMaxCharacters().then(setMaxCharacters);
+  }, []);
 
   // Load cloned voices
   useEffect(() => {
@@ -352,7 +355,7 @@ export default function VoiceClonePage() {
                 onChange={handleTextChange}
                 maxLength={maxCharacters}
                 multiline
-                rows={5}
+                rows={9}
                 assistantButtonText={t('native.createVoice.generateText')}
                 onAssistantClick={() => setIsTextAssistantOpen(true)}
                 disabled={isGenerating}

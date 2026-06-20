@@ -99,8 +99,6 @@ export interface MiningEconomyConfig {
   show_home_banner: boolean;
   /** 是否显示导航栏 Mining 入口按钮 */
   show_navbar_mining: boolean;
-  /** 是否显示资产钱包卡片（Total Assets） */
-  show_wallet_card: boolean;
   /** $VOICICA → USDT 兑换配置 */
   conversion: ConversionConfig;
   /** USDT 提现配置 */

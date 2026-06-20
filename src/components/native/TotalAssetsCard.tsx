@@ -4,14 +4,9 @@ import Image from 'next/image';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { formatCredits } from '@/utils/formatCredits';
 import { useCredits } from '@/contexts/CreditsContext';
-import { getMiningEconomyConfig } from '@/config/appConfig';
-
 export default function TotalAssetsCard() {
   const { t } = useLanguage();
   const { credits, loading } = useCredits();
-  const { show_wallet_card } = getMiningEconomyConfig();
-
-  if (!show_wallet_card) return null;
 
   return (
     <div className="mx-4 mt-2 rounded-2xl bg-gradient-to-br from-purple-900/40 via-[#1e1e3a]/80 to-[#1a1a35]/80 border border-purple-500/15 backdrop-blur-sm overflow-hidden">

@@ -2,7 +2,6 @@
 
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
-import { useCredits } from '@/contexts/CreditsContext';
 import { usePathname } from 'next/navigation';
 import { ReactNode, useState, useEffect, useRef } from 'react';
 
@@ -22,15 +21,14 @@ import { ReactNode, useState, useEffect, useRef } from 'react';
 export default function AppSplashWrapper({ children }: { children: ReactNode }) {
   const { isReady: isLanguageReady } = useLanguage();
   const { loading: isAuthLoading } = useFirebaseAuth();
-  const { loading: isCreditsLoading } = useCredits();
   const pathname = usePathname();
 
   const isNativeRoute = pathname?.startsWith('/native');
-  // Web: 等语言 + 认证；Native: 额外等余额加载完
-  const isAppReady = isLanguageReady && !isAuthLoading && (isNativeRoute ? !isCreditsLoading : true);
+  // 等语言 + 认证完成即可，Credits 由各组件自行处理 loading 状态
+  const isAppReady = isLanguageReady && !isAuthLoading;
 
   // Native 进度：里程碑 + 持续缓慢爬行
-  const milestoneProgress = (isLanguageReady ? 30 : 0) + (!isAuthLoading ? 35 : 0) + (!isCreditsLoading ? 35 : 0);
+  const milestoneProgress = (isLanguageReady ? 50 : 0) + (!isAuthLoading ? 50 : 0);
   const [displayProgress, setDisplayProgress] = useState(5);
   const milestoneRef = useRef(milestoneProgress);
   milestoneRef.current = milestoneProgress;

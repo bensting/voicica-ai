@@ -1,138 +1,36 @@
 'use client';
 
-/**
- * 首页横幅广告组件
- *
- * 有活跃 Lucky Draw 时优先显示 Lucky Draw Banner（多个时轮播）
- * 订阅用户回退到 BannerCarousel，非订阅回退到 AdsterraBanner
- */
-
-import { useState, useEffect, useCallback, useRef } from 'react';
-import { useSubscription } from '@/contexts/SubscriptionContext';
-import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
-import { getActiveDrawsForBanner, type ActiveDrawInfo } from '@/actions/lucky-draw';
 import { getMiningEconomyConfig } from '@/config/appConfig';
-import AdsterraBanner from './AdsterraBanner';
-import BannerCarousel from './BannerCarousel';
-import LuckyDrawBanner from './LuckyDrawBanner';
 
 export default function NativeBannerAd() {
   const { show_home_banner } = getMiningEconomyConfig();
-  const { isSubscribed } = useSubscription();
-  const { loading: authLoading } = useFirebaseAuth();
-  const [activeDraws, setActiveDraws] = useState<ActiveDrawInfo[] | undefined>(undefined);
-  const [currentIndex, setCurrentIndex] = useState(0);
-
-  // Touch swipe refs
-  const touchStartX = useRef(0);
-  const touchEndX = useRef(0);
-  const isDragging = useRef(false);
-
-  useEffect(() => {
-    if (authLoading) return;
-    getActiveDrawsForBanner()
-      .then((draws) => setActiveDraws(draws))
-      .catch(() => setActiveDraws([]));
-  }, [authLoading]);
-
-  // Auto-rotate every 5s when multiple draws
-  useEffect(() => {
-    if (!activeDraws || activeDraws.length <= 1) return;
-    const timer = setInterval(() => {
-      setCurrentIndex((prev) => (prev + 1) % activeDraws.length);
-    }, 5000);
-    return () => clearInterval(timer);
-  }, [activeDraws]);
-
-  const goToNext = useCallback(() => {
-    if (!activeDraws || activeDraws.length <= 1) return;
-    setCurrentIndex((prev) => (prev + 1) % activeDraws.length);
-  }, [activeDraws]);
-
-  const goToPrev = useCallback(() => {
-    if (!activeDraws || activeDraws.length <= 1) return;
-    setCurrentIndex((prev) => (prev - 1 + activeDraws.length) % activeDraws.length);
-  }, [activeDraws]);
-
-  const handleTouchStart = useCallback((e: React.TouchEvent) => {
-    touchStartX.current = e.touches[0].clientX;
-    isDragging.current = true;
-  }, []);
-
-  const handleTouchMove = useCallback((e: React.TouchEvent) => {
-    if (!isDragging.current) return;
-    touchEndX.current = e.touches[0].clientX;
-  }, []);
-
-  const handleTouchEnd = useCallback(() => {
-    if (!isDragging.current) return;
-    isDragging.current = false;
-    const diff = touchStartX.current - touchEndX.current;
-    if (Math.abs(diff) > 50) {
-      if (diff > 0) goToNext();
-      else goToPrev();
-    }
-  }, [goToNext, goToPrev]);
 
   if (!show_home_banner) return null;
 
-  // Loading
-  if (activeDraws === undefined) return (
-    <div className="mx-4 rounded-2xl bg-white/5 animate-pulse" style={{ height: 220 }} />
-  );
-
-  // No active draws — fallback
-  if (activeDraws.length === 0) {
-    if (isSubscribed) return <BannerCarousel />;
-    return <AdsterraBanner />;
-  }
-
-  // Single draw — no carousel needed
-  if (activeDraws.length === 1) {
-    return (
-      <div className="px-4">
-        <LuckyDrawBanner draw={activeDraws[0]} />
-      </div>
-    );
-  }
-
-  // Multiple draws — carousel with swipe + auto-rotate + dots
   return (
-    <div className="px-4">
-      <div
-        className="relative touch-pan-y"
-        onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={handleTouchEnd}
-      >
-        {/* Slides */}
-        <div className="overflow-hidden rounded-2xl">
-          <div
-            className="flex transition-transform duration-300 ease-in-out"
-            style={{ transform: `translateX(-${currentIndex * 100}%)` }}
-          >
-            {activeDraws.map((draw) => (
-              <div key={draw.drawId} className="w-full flex-shrink-0">
-                <LuckyDrawBanner draw={draw} />
-              </div>
-            ))}
-          </div>
+    <div className="mx-4">
+      <div className="relative rounded-2xl overflow-hidden bg-gradient-to-br from-purple-900/60 via-indigo-900/60 to-blue-900/60 border border-purple-500/20 px-5 py-4 flex items-center gap-4">
+        {/* 装饰光晕 */}
+        <div className="absolute -top-6 -right-6 w-32 h-32 bg-purple-500/20 rounded-full blur-2xl pointer-events-none" />
+
+        {/* 图标 */}
+        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-indigo-500 flex items-center justify-center flex-shrink-0 shadow-lg shadow-purple-500/30">
+          <svg className="w-6 h-6 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z" />
+            <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
+            <line x1="12" x2="12" y1="19" y2="22" />
+          </svg>
         </div>
 
-        {/* Dot indicators */}
-        <div className="flex justify-center gap-1.5 mt-2">
-          {activeDraws.map((draw, index) => (
-            <button
-              key={draw.drawId}
-              onClick={() => setCurrentIndex(index)}
-              className={`h-1.5 rounded-full transition-all ${
-                index === currentIndex
-                  ? 'w-4 bg-white'
-                  : 'w-1.5 bg-white/40'
-              }`}
-              aria-label={`Go to draw ${index + 1}`}
-            />
-          ))}
+        {/* 文字 */}
+        <div className="flex-1 min-w-0">
+          <p className="text-white font-bold text-base leading-tight">Forever Free AI Voice Tools</p>
+          <p className="text-purple-300 text-xs mt-0.5">Text to speech · Voice clone · No subscription needed</p>
+        </div>
+
+        {/* Free 角标 */}
+        <div className="flex-shrink-0 px-2.5 py-1 rounded-full bg-emerald-500/20 border border-emerald-500/30">
+          <span className="text-emerald-400 text-xs font-bold">FREE</span>
         </div>
       </div>
     </div>

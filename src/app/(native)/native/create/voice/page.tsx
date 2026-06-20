@@ -28,7 +28,6 @@ import NativeVoiceSelectorSheet from '@/components/native/create/voice/VoiceSele
 import VoiceDetailModal from '@/components/native/me/VoiceDetailModal';
 import LoginModal from '@/components/native/LoginModal';
 import InsufficientCreditsModal from '@/components/native/common/InsufficientCreditsModal';
-import NativeDailyTasksModal from '@/components/native/NativeDailyTasksModal';
 import ProviderIcon from '@/components/ui/icons/ProviderIcon';
 import { User, UserRound, Users } from 'lucide-react';
 
@@ -128,7 +127,6 @@ export default function NativeTTSPage() {
   const [tempSettings, setTempSettings] = useState(settings);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isInsufficientCreditsModalOpen, setIsInsufficientCreditsModalOpen] = useState(false);
-  const [isDailyTasksModalOpen, setIsDailyTasksModalOpen] = useState(false);
   const [insufficientCreditsInfo, setInsufficientCreditsInfo] = useState<{ required: number; current: number } | null>(null);
   const [text, setText] = useState('');
   const [selectedVoice, setSelectedVoice] = useState<Voice | null>(null);
@@ -578,18 +576,9 @@ export default function NativeTTSPage() {
       <InsufficientCreditsModal
         isOpen={isInsufficientCreditsModalOpen}
         onClose={() => setIsInsufficientCreditsModalOpen(false)}
-        onGetFreeCredits={() => {
-          setIsInsufficientCreditsModalOpen(false);
-          setIsDailyTasksModalOpen(true);
-        }}
+        onGetFreeCredits={() => setIsInsufficientCreditsModalOpen(false)}
         requiredCredits={insufficientCreditsInfo?.required}
         currentCredits={insufficientCreditsInfo?.current}
-      />
-
-      {/* Daily Tasks Modal */}
-      <NativeDailyTasksModal
-        isOpen={isDailyTasksModalOpen}
-        onClose={() => setIsDailyTasksModalOpen(false)}
       />
 
       {/* Text Assistant Modal */}

@@ -20,7 +20,6 @@ import GeneratingModal, { type GeneratingStatus } from '@/components/native/comm
 import VideoDownloaderDetailModal from '@/components/native/me/VideoDownloaderDetailModal';
 import LoginModal from '@/components/native/LoginModal';
 import InsufficientCreditsModal from '@/components/native/common/InsufficientCreditsModal';
-import NativeDailyTasksModal from '@/components/native/NativeDailyTasksModal';
 import CreditsInfoBar from '@/components/native/common/CreditsInfoBar';
 import GradientButton from '@/components/native/common/GradientButton';
 import CreditsIcon from '@/components/native/common/CreditsIcon';
@@ -52,7 +51,6 @@ export default function VideoDownloaderPage() {
   // Login / Credits 弹窗
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isInsufficientCreditsModalOpen, setIsInsufficientCreditsModalOpen] = useState(false);
-  const [isDailyTasksModalOpen, setIsDailyTasksModalOpen] = useState(false);
   const [insufficientCreditsInfo, setInsufficientCreditsInfo] = useState<{ required: number; current: number } | null>(null);
 
   // 积分成本
@@ -355,19 +353,11 @@ export default function VideoDownloaderPage() {
       <InsufficientCreditsModal
         isOpen={isInsufficientCreditsModalOpen}
         onClose={() => setIsInsufficientCreditsModalOpen(false)}
-        onGetFreeCredits={() => {
-          setIsInsufficientCreditsModalOpen(false);
-          setIsDailyTasksModalOpen(true);
-        }}
+        onGetFreeCredits={() => setIsInsufficientCreditsModalOpen(false)}
         requiredCredits={insufficientCreditsInfo?.required}
         currentCredits={insufficientCreditsInfo?.current}
       />
 
-      {/* Daily Tasks Modal */}
-      <NativeDailyTasksModal
-        isOpen={isDailyTasksModalOpen}
-        onClose={() => setIsDailyTasksModalOpen(false)}
-      />
     </div>
   );
 }

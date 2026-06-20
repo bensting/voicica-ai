@@ -5,7 +5,6 @@ import { usePathname, useRouter } from 'next/navigation';
 import NativeNavbar from '@/components/native/NativeNavbar';
 import BottomNav, { type TabType } from '@/components/native/BottomNav';
 import { BottomNavProvider } from '@/contexts/BottomNavContext';
-import { DailyTasksProvider } from '@/contexts/DailyTasksContext';
 import { initNotifications, registerNotificationClickListener } from '@/lib/notifications';
 import { initPushNotifications } from '@/lib/push-notifications';
 // Explore tab 子组件
@@ -69,7 +68,6 @@ export default function NativeLayout({ children }: { children: React.ReactNode }
 
   return (
     <BottomNavProvider>
-    <DailyTasksProvider>
       <div className="min-h-screen bg-black lg:flex lg:items-start lg:justify-center">
         <div className="native-phone-frame min-h-screen w-full lg:max-w-[430px] lg:h-screen lg:overflow-hidden lg:flex lg:flex-col lg:relative lg:shadow-2xl lg:shadow-purple-900/20 bg-gradient-to-br from-slate-950 via-[#0a0a1a] to-slate-950 text-white selection:bg-purple-500/30">
           <div
@@ -101,7 +99,6 @@ export default function NativeLayout({ children }: { children: React.ReactNode }
 
         </div>
       </div>
-    </DailyTasksProvider>
     </BottomNavProvider>
   );
 }

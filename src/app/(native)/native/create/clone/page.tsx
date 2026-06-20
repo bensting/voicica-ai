@@ -29,7 +29,6 @@ import AssistantInput from '@/components/native/common/AssistantInput';
 import AssistantModal from '@/components/native/common/AssistantModal';
 import LoginModal from '@/components/native/LoginModal';
 import InsufficientCreditsModal from '@/components/native/common/InsufficientCreditsModal';
-import NativeDailyTasksModal from '@/components/native/NativeDailyTasksModal';
 import GeneratingModal from '@/components/native/common/GeneratingModal';
 import type { GeneratingStatus } from '@/components/native/common/GeneratingModal';
 import VoiceDetailModal from '@/components/native/me/VoiceDetailModal';
@@ -59,7 +58,6 @@ export default function VoiceClonePage() {
   // Login & Credits modals
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isInsufficientCreditsModalOpen, setIsInsufficientCreditsModalOpen] = useState(false);
-  const [isDailyTasksModalOpen, setIsDailyTasksModalOpen] = useState(false);
   const [insufficientCreditsInfo, setInsufficientCreditsInfo] = useState<{ required: number; current: number } | null>(null);
 
   // ==================== Generate Tab State ====================
@@ -538,18 +536,11 @@ export default function VoiceClonePage() {
       <InsufficientCreditsModal
         isOpen={isInsufficientCreditsModalOpen}
         onClose={() => setIsInsufficientCreditsModalOpen(false)}
-        onGetFreeCredits={() => {
-          setIsInsufficientCreditsModalOpen(false);
-          setIsDailyTasksModalOpen(true);
-        }}
+        onGetFreeCredits={() => setIsInsufficientCreditsModalOpen(false)}
         requiredCredits={insufficientCreditsInfo?.required}
         currentCredits={insufficientCreditsInfo?.current}
       />
 
-      <NativeDailyTasksModal
-        isOpen={isDailyTasksModalOpen}
-        onClose={() => setIsDailyTasksModalOpen(false)}
-      />
 
       <AssistantModal
         isOpen={isTextAssistantOpen}

@@ -9,7 +9,6 @@ import GradientButton from '@/components/native/common/GradientButton';
 import CreditsIcon from '@/components/native/common/CreditsIcon';
 import CreditsInfoBar from '@/components/native/common/CreditsInfoBar';
 import InsufficientCreditsModal from '@/components/native/common/InsufficientCreditsModal';
-import NativeDailyTasksModal from '@/components/native/NativeDailyTasksModal';
 import GeneratingModal, { type GeneratingStatus } from '@/components/native/common/GeneratingModal';
 import ImageToolDetailModal from '@/components/native/me/ImageToolDetailModal';
 import { createImageToolTask, getImageToolTaskStatus, type ImageToolType } from '@/actions/image-tools';
@@ -81,7 +80,6 @@ export default function NativeImageToolsPage() {
 
   // UI 弹窗状态
   const [isInsufficientCreditsModalOpen, setIsInsufficientCreditsModalOpen] = useState(false);
-  const [isDailyTasksModalOpen, setIsDailyTasksModalOpen] = useState(false);
   const [insufficientCreditsInfo, setInsufficientCreditsInfo] = useState<{ required: number; current: number } | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -415,18 +413,9 @@ export default function NativeImageToolsPage() {
       <InsufficientCreditsModal
         isOpen={isInsufficientCreditsModalOpen}
         onClose={() => setIsInsufficientCreditsModalOpen(false)}
-        onGetFreeCredits={() => {
-          setIsInsufficientCreditsModalOpen(false);
-          setIsDailyTasksModalOpen(true);
-        }}
+        onGetFreeCredits={() => setIsInsufficientCreditsModalOpen(false)}
         requiredCredits={insufficientCreditsInfo?.required}
         currentCredits={insufficientCreditsInfo?.current}
-      />
-
-      {/* Daily Tasks Modal */}
-      <NativeDailyTasksModal
-        isOpen={isDailyTasksModalOpen}
-        onClose={() => setIsDailyTasksModalOpen(false)}
       />
 
       {/* Generating Modal */}

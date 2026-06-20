@@ -15,7 +15,6 @@ import CreditsInfoBar from '@/components/native/common/CreditsInfoBar';
 import CrownIcon from '@/components/native/common/CrownIcon';
 import LoginModal from '@/components/native/LoginModal';
 import InsufficientCreditsModal from '@/components/native/common/InsufficientCreditsModal';
-import NativeDailyTasksModal from '@/components/native/NativeDailyTasksModal';
 import DialogueLanguageSheet from '@/components/native/create/dialogue/DialogueLanguageSheet';
 import DialogueVoiceSheet from '@/components/native/create/dialogue/DialogueVoiceSheet';
 import { calculateDialogueCost } from '@/config/creditsCost';
@@ -94,7 +93,6 @@ export default function NativeDialoguePage() {
 
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isInsufficientCreditsModalOpen, setIsInsufficientCreditsModalOpen] = useState(false);
-  const [isDailyTasksModalOpen, setIsDailyTasksModalOpen] = useState(false);
   const [insufficientCreditsInfo, setInsufficientCreditsInfo] = useState<{ required: number; current: number } | null>(null);
   const [dialogues, setDialogues] = useState<DialogueSegment[]>([
     { id: '1', text: '', voice: 'Liam' },
@@ -676,18 +674,9 @@ export default function NativeDialoguePage() {
       <InsufficientCreditsModal
         isOpen={isInsufficientCreditsModalOpen}
         onClose={() => setIsInsufficientCreditsModalOpen(false)}
-        onGetFreeCredits={() => {
-          setIsInsufficientCreditsModalOpen(false);
-          setIsDailyTasksModalOpen(true);
-        }}
+        onGetFreeCredits={() => setIsInsufficientCreditsModalOpen(false)}
         requiredCredits={insufficientCreditsInfo?.required}
         currentCredits={insufficientCreditsInfo?.current}
-      />
-
-      {/* Daily Tasks Modal */}
-      <NativeDailyTasksModal
-        isOpen={isDailyTasksModalOpen}
-        onClose={() => setIsDailyTasksModalOpen(false)}
       />
 
       {/* Language Selector Sheet */}

@@ -16,6 +16,7 @@ import FeatureGrid from '@/components/native/FeatureGrid';
 import ExploreSection from '@/components/native/ExploreSection';
 // Me tab
 import MePageContent from '@/components/native/me/MePageContent';
+import CreateSheet from '@/components/native/CreateSheet';
 
 const hideNavbarPaths = ['/native/me', '/native/settings', '/native/create', '/native/tools', '/native/video', '/native/voice/task', '/native/subscribe', '/native/payment'];
 const hideBottomNavPaths = ['/native/settings', '/native/create', '/native/tools', '/native/video', '/native/voice/task', '/native/subscribe', '/native/payment'];
@@ -33,6 +34,7 @@ export default function NativeLayout({ children }: { children: React.ReactNode }
   const { t } = useLanguage();
 
   const [activeTab, setActiveTab] = useState<TabType>(() => pathnameToTab(pathname) || 'explore');
+  const [createSheetOpen, setCreateSheetOpen] = useState(false);
 
   const isInSubPage = hideBottomNavPaths.some((p) => pathname.startsWith(p));
   const isMainTab = !isInSubPage && pathnameToTab(pathname) !== null;
@@ -107,8 +109,10 @@ export default function NativeLayout({ children }: { children: React.ReactNode }
           </main>
 
           {showBottomNav && (
-            <BottomNav activeTab={activeTab} onTabChange={handleTabChange} />
+            <BottomNav activeTab={activeTab} onTabChange={handleTabChange} onCreatePress={() => setCreateSheetOpen(true)} />
           )}
+
+          <CreateSheet isOpen={createSheetOpen} onClose={() => setCreateSheetOpen(false)} />
 
         </div>
       </div>

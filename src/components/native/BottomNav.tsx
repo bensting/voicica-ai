@@ -35,9 +35,10 @@ const UserIcon = ({ active }: { active: boolean }) => (
 interface BottomNavProps {
   activeTab?: TabType;
   onTabChange?: (tab: TabType) => void;
+  onCreatePress?: () => void;
 }
 
-export default function BottomNav({ activeTab, onTabChange }: BottomNavProps) {
+export default function BottomNav({ activeTab, onTabChange, onCreatePress }: BottomNavProps) {
   const router = useRouter();
   const { isVisible } = useBottomNav();
   const { t } = useLanguage();
@@ -63,7 +64,7 @@ export default function BottomNav({ activeTab, onTabChange }: BottomNavProps) {
       className="fixed bottom-0 left-0 right-0 z-50 bg-slate-950/80 backdrop-blur-xl border-t border-white/5 lg:static lg:shrink-0"
       style={{ paddingBottom: 'var(--safe-area-inset-bottom, 0px)' }}
     >
-      <div className="flex items-center justify-around h-16">
+      <div className="flex items-center h-16">
         {/* Explore */}
         <button
           type="button"
@@ -75,6 +76,20 @@ export default function BottomNav({ activeTab, onTabChange }: BottomNavProps) {
             {t('native.bottomNav.explore')}
           </span>
         </button>
+
+        {/* Create (+) */}
+        <div className="flex items-center justify-center flex-1 h-full">
+          <button
+            type="button"
+            onClick={onCreatePress}
+            className="w-12 h-12 rounded-full bg-purple-600 flex items-center justify-center shadow-lg shadow-purple-900/40 active:scale-95 transition-transform hover:bg-purple-500"
+          >
+            <svg className="w-6 h-6 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+              <line x1="12" y1="5" x2="12" y2="19" />
+              <line x1="5" y1="12" x2="19" y2="12" />
+            </svg>
+          </button>
+        </div>
 
         {/* Me */}
         <button

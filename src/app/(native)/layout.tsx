@@ -6,14 +6,10 @@ import NativeNavbar from '@/components/native/NativeNavbar';
 import BottomNav, { type TabType } from '@/components/native/BottomNav';
 import { BottomNavProvider } from '@/contexts/BottomNavContext';
 import { DailyTasksProvider } from '@/contexts/DailyTasksContext';
-import { useLanguage } from '@/contexts/LanguageContext';
 import { initNotifications, registerNotificationClickListener } from '@/lib/notifications';
 import { initPushNotifications } from '@/lib/push-notifications';
 // Explore tab 子组件
-import NativeBannerAd from '@/components/native/NativeBannerAd';
-import TotalAssetsCard from '@/components/native/TotalAssetsCard';
-import FeatureGrid from '@/components/native/FeatureGrid';
-import ExploreSection from '@/components/native/ExploreSection';
+import HomeTab from '@/components/native/HomeTab';
 // Me tab
 import MePageContent from '@/components/native/me/MePageContent';
 import CreateSheet from '@/components/native/CreateSheet';
@@ -31,7 +27,6 @@ const pathnameToTab = (pathname: string): TabType | null => {
 export default function NativeLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
-  const { t } = useLanguage();
 
   const [activeTab, setActiveTab] = useState<TabType>(() => pathnameToTab(pathname) || 'explore');
   const [createSheetOpen, setCreateSheetOpen] = useState(false);
@@ -68,17 +63,7 @@ export default function NativeLayout({ children }: { children: React.ReactNode }
   const showNavbar = !hideNavbarPaths.some((path) => pathname.startsWith(path));
   const showBottomNav = !isInSubPage;
 
-  const exploreTab = useMemo(() => (
-    <div className="pt-2 pb-20">
-      <NativeBannerAd />
-      <TotalAssetsCard />
-      <div className="px-5 mt-5 mb-1">
-        <h2 className="text-xs font-semibold text-white/40 uppercase tracking-wider">{t('native.home.sectionCreativeTools')}</h2>
-      </div>
-      <FeatureGrid />
-      <ExploreSection />
-    </div>
-  ), [t]);
+  const exploreTab = useMemo(() => <HomeTab />, []);
 
   const meTab = useMemo(() => <MePageContent isActive={activeTab === 'me'} />, [activeTab]);
 

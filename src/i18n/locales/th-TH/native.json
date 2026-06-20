@@ -31,7 +31,9 @@
         "voicicaDesc": "ถอนไปยังกระเป๋า Phantom",
         "usdtTitle": "ถอน USDT",
         "usdtDesc": "ถอนไปยังกระดานเทรด (ขั้นต่ำ 2 USDT)"
-      }
+      },
+      "lowCredits": "เครดิตไม่เพียงพอ",
+      "claimNow": "รับเลย"
     },
     "bottomNav": {
       "explore": "สำรวจ",
@@ -352,7 +354,10 @@
     },
     "createClone": {
       "title": "โคลนเสียง",
-      "tabs": { "generate": "สร้าง", "clone": "โคลน" },
+      "tabs": {
+        "generate": "สร้าง",
+        "clone": "โคลน"
+      },
       "generate": {
         "enterText": "ป้อนข้อความ",
         "placeholder": "พิมพ์หรือวางข้อความที่ต้องการพูด...",
@@ -532,6 +537,17 @@
     "home": {
       "sectionPlayEarn": "เล่นแล้วได้เงิน",
       "sectionCreativeTools": "เครื่องมือ AI สร้างสรรค์"
+    },
+    "creditsGift": {
+      "title": "คุณมีของขวัญ!",
+      "subtitle": "รับ {{amount}} เครดิตฟรี ตอนนี้เลย!",
+      "claim": "รับ",
+      "loadingAd": "กำลังโหลดโฆษณา...",
+      "claiming": "กำลังรับ...",
+      "successTitle": "ได้รับเครดิตแล้ว!",
+      "successDesc": "+{{amount}} เครดิตถูกเพิ่มแล้ว",
+      "adFailed": "โหลดโฆษณาไม่สำเร็จ กรุณาลองใหม่",
+      "maybeLater": "ไว้ทีหลัง"
     }
   }
 }

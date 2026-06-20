@@ -31,7 +31,9 @@
         "voicicaDesc": "Phantom ウォレットに出金",
         "usdtTitle": "USDT を出金",
         "usdtDesc": "取引所に出金（最低 2 USDT）"
-      }
+      },
+      "lowCredits": "クレジット不足",
+      "claimNow": "今すぐ受け取る"
     },
     "bottomNav": {
       "explore": "探索",
@@ -352,7 +354,10 @@
     },
     "createClone": {
       "title": "ボイスクローン",
-      "tabs": { "generate": "生成", "clone": "クローン" },
+      "tabs": {
+        "generate": "生成",
+        "clone": "クローン"
+      },
       "generate": {
         "enterText": "テキストを入力",
         "placeholder": "読み上げたいテキストを入力または貼り付け...",
@@ -532,6 +537,17 @@
     "home": {
       "sectionPlayEarn": "遊んで稼ぐ",
       "sectionCreativeTools": "AIクリエイティブツール"
+    },
+    "creditsGift": {
+      "title": "ギフトがあります！",
+      "subtitle": "今すぐ {{amount}} FREE クレジットをゲット！",
+      "claim": "受け取る",
+      "loadingAd": "広告を読み込み中...",
+      "claiming": "受け取り中...",
+      "successTitle": "クレジット受け取り完了！",
+      "successDesc": "+{{amount}} クレジットが追加されました",
+      "adFailed": "広告の読み込みに失敗しました。再試行してください。",
+      "maybeLater": "後で"
     }
   }
 }

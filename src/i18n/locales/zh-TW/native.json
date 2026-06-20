@@ -31,7 +31,9 @@
         "voicicaDesc": "提取到 Phantom 錢包",
         "usdtTitle": "提取 USDT",
         "usdtDesc": "提取到交易所（最低 2 USDT）"
-      }
+      },
+      "lowCredits": "積分不足",
+      "claimNow": "立即領取"
     },
     "withdraw": {
       "title": "提現 USDT",
@@ -391,7 +393,10 @@
     },
     "createClone": {
       "title": "語音克隆",
-      "tabs": { "generate": "生成", "clone": "克隆" },
+      "tabs": {
+        "generate": "生成",
+        "clone": "克隆"
+      },
       "generate": {
         "enterText": "輸入文字",
         "placeholder": "輸入或貼上要朗讀的文字...",
@@ -571,6 +576,17 @@
     "home": {
       "sectionPlayEarn": "邊玩邊賺",
       "sectionCreativeTools": "AI 創作工具"
+    },
+    "creditsGift": {
+      "title": "您有一份禮物！",
+      "subtitle": "立即領取 {{amount}} 免費積分！",
+      "claim": "領取",
+      "loadingAd": "廣告載入中...",
+      "claiming": "領取中...",
+      "successTitle": "積分已到帳！",
+      "successDesc": "+{{amount}} 積分已添加",
+      "adFailed": "廣告載入失敗，請重試。",
+      "maybeLater": "稍後再說"
     }
   }
 }

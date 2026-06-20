@@ -31,7 +31,9 @@
         "voicicaDesc": "سحب إلى محفظة Phantom",
         "usdtTitle": "سحب USDT",
         "usdtDesc": "سحب إلى منصة التداول (الحد الأدنى 2 USDT)"
-      }
+      },
+      "lowCredits": "رصيد منخفض",
+      "claimNow": "استلام الآن"
     },
     "bottomNav": {
       "explore": "استكشف",
@@ -352,7 +354,10 @@
     },
     "createClone": {
       "title": "استنساخ الصوت",
-      "tabs": { "generate": "توليد", "clone": "استنساخ" },
+      "tabs": {
+        "generate": "توليد",
+        "clone": "استنساخ"
+      },
       "generate": {
         "enterText": "أدخل النص",
         "placeholder": "اكتب أو الصق النص الذي تريد نطقه...",
@@ -532,6 +537,17 @@
     "home": {
       "sectionPlayEarn": "العب واكسب",
       "sectionCreativeTools": "أدوات الذكاء الاصطناعي الإبداعية"
+    },
+    "creditsGift": {
+      "title": "لديك هدية!",
+      "subtitle": "احصل على {{amount}} رصيد مجاني الآن!",
+      "claim": "استلام",
+      "loadingAd": "جارٍ تحميل الإعلان...",
+      "claiming": "جارٍ الاستلام...",
+      "successTitle": "تم استلام الرصيد!",
+      "successDesc": "تمت إضافة +{{amount}} رصيد",
+      "adFailed": "فشل تحميل الإعلان. حاول مرة أخرى.",
+      "maybeLater": "ربما لاحقًا"
     }
   }
 }

@@ -31,7 +31,9 @@
         "voicicaDesc": "Phantom वॉलेट में निकालें",
         "usdtTitle": "USDT निकालें",
         "usdtDesc": "एक्सचेंज में निकालें (न्यूनतम 2 USDT)"
-      }
+      },
+      "lowCredits": "क्रेडिट कम है",
+      "claimNow": "अभी प्राप्त करें"
     },
     "bottomNav": {
       "explore": "एक्सप्लोर",
@@ -352,7 +354,10 @@
     },
     "createClone": {
       "title": "वॉइस क्लोन",
-      "tabs": { "generate": "जनरेट", "clone": "क्लोन" },
+      "tabs": {
+        "generate": "जनरेट",
+        "clone": "क्लोन"
+      },
       "generate": {
         "enterText": "टेक्स्ट दर्ज करें",
         "placeholder": "बोलने के लिए टेक्स्ट टाइप या पेस्ट करें...",
@@ -532,6 +537,17 @@
     "home": {
       "sectionPlayEarn": "खेलें और कमाएं",
       "sectionCreativeTools": "AI क्रिएटिव टूल्स"
+    },
+    "creditsGift": {
+      "title": "आपके पास एक उपहार है!",
+      "subtitle": "{{amount}} मुफ्त क्रेडिट अभी प्राप्त करें!",
+      "claim": "प्राप्त करें",
+      "loadingAd": "विज्ञापन लोड हो रहा है...",
+      "claiming": "प्राप्त हो रहा है...",
+      "successTitle": "क्रेडिट प्राप्त हुए!",
+      "successDesc": "+{{amount}} क्रेडिट जोड़े गए",
+      "adFailed": "विज्ञापन लोड नहीं हुआ। फिर कोशिश करें।",
+      "maybeLater": "बाद में"
     }
   }
 }

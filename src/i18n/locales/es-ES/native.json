@@ -31,7 +31,9 @@
         "voicicaDesc": "Retirar a billetera Phantom",
         "usdtTitle": "Retirar USDT",
         "usdtDesc": "Retirar a exchange (mín. 2 USDT)"
-      }
+      },
+      "lowCredits": "Créditos bajos",
+      "claimNow": "Reclamar"
     },
     "bottomNav": {
       "explore": "Explorar",
@@ -352,7 +354,10 @@
     },
     "createClone": {
       "title": "Clonar Voz",
-      "tabs": { "generate": "Generar", "clone": "Clonar" },
+      "tabs": {
+        "generate": "Generar",
+        "clone": "Clonar"
+      },
       "generate": {
         "enterText": "Ingresa tu texto",
         "placeholder": "Escribe o pega el texto que quieres hablar...",
@@ -532,6 +537,17 @@
     "home": {
       "sectionPlayEarn": "Juega y Gana",
       "sectionCreativeTools": "Herramientas creativas IA"
+    },
+    "creditsGift": {
+      "title": "¡Tienes un regalo!",
+      "subtitle": "¡Reclama {{amount}} Créditos GRATIS Ahora!",
+      "claim": "Reclamar",
+      "loadingAd": "Cargando anuncio...",
+      "claiming": "Reclamando...",
+      "successTitle": "¡Créditos recibidos!",
+      "successDesc": "+{{amount}} créditos añadidos",
+      "adFailed": "Error al cargar el anuncio. Por favor, inténtalo de nuevo.",
+      "maybeLater": "Quizás luego"
     }
   }
 }

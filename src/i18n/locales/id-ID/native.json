@@ -31,7 +31,9 @@
         "voicicaDesc": "Tarik ke dompet Phantom",
         "usdtTitle": "Tarik USDT",
         "usdtDesc": "Tarik ke bursa (minimum 2 USDT)"
-      }
+      },
+      "lowCredits": "Kredit rendah",
+      "claimNow": "Klaim Sekarang"
     },
     "bottomNav": {
       "explore": "Jelajahi",
@@ -352,7 +354,10 @@
     },
     "createClone": {
       "title": "Kloning Suara",
-      "tabs": { "generate": "Buat", "clone": "Klon" },
+      "tabs": {
+        "generate": "Buat",
+        "clone": "Klon"
+      },
       "generate": {
         "enterText": "Masukkan teks",
         "placeholder": "Ketik atau tempel teks yang ingin diucapkan...",
@@ -532,6 +537,17 @@
     "home": {
       "sectionPlayEarn": "Main & Hasilkan",
       "sectionCreativeTools": "Alat Kreatif AI"
+    },
+    "creditsGift": {
+      "title": "Kamu punya hadiah!",
+      "subtitle": "Klaim {{amount}} Kredit GRATIS Sekarang!",
+      "claim": "Klaim",
+      "loadingAd": "Memuat Iklan...",
+      "claiming": "Mengklaim...",
+      "successTitle": "Kredit Diterima!",
+      "successDesc": "+{{amount}} kredit ditambahkan",
+      "adFailed": "Gagal memuat iklan. Coba lagi.",
+      "maybeLater": "Nanti saja"
     }
   }
 }

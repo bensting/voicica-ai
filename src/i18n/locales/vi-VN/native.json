@@ -31,7 +31,9 @@
         "voicicaDesc": "Rút về ví Phantom",
         "usdtTitle": "Rút USDT",
         "usdtDesc": "Rút về sàn giao dịch (tối thiểu 2 USDT)"
-      }
+      },
+      "lowCredits": "Tín dụng thấp",
+      "claimNow": "Nhận Ngay"
     },
     "bottomNav": {
       "explore": "Khám phá",
@@ -352,7 +354,10 @@
     },
     "createClone": {
       "title": "Nhân bản giọng nói",
-      "tabs": { "generate": "Tạo", "clone": "Nhân bản" },
+      "tabs": {
+        "generate": "Tạo",
+        "clone": "Nhân bản"
+      },
       "generate": {
         "enterText": "Nhập văn bản",
         "placeholder": "Nhập hoặc dán văn bản bạn muốn nói...",
@@ -532,6 +537,17 @@
     "home": {
       "sectionPlayEarn": "Chơi & Kiếm tiền",
       "sectionCreativeTools": "Công cụ AI sáng tạo"
+    },
+    "creditsGift": {
+      "title": "Bạn có một món quà!",
+      "subtitle": "Nhận {{amount}} Tín Dụng MIỄN PHÍ Ngay!",
+      "claim": "Nhận",
+      "loadingAd": "Đang tải quảng cáo...",
+      "claiming": "Đang nhận...",
+      "successTitle": "Đã nhận tín dụng!",
+      "successDesc": "+{{amount}} tín dụng đã được thêm",
+      "adFailed": "Tải quảng cáo thất bại. Vui lòng thử lại.",
+      "maybeLater": "Để sau"
     }
   }
 }

@@ -31,7 +31,9 @@
         "voicicaDesc": "Sacar para carteira Phantom",
         "usdtTitle": "Sacar USDT",
         "usdtDesc": "Sacar para corretora (mín. 2 USDT)"
-      }
+      },
+      "lowCredits": "Créditos baixos",
+      "claimNow": "Resgatar Agora"
     },
     "bottomNav": {
       "explore": "Explorar",
@@ -352,7 +354,10 @@
     },
     "createClone": {
       "title": "Clonar Voz",
-      "tabs": { "generate": "Gerar", "clone": "Clonar" },
+      "tabs": {
+        "generate": "Gerar",
+        "clone": "Clonar"
+      },
       "generate": {
         "enterText": "Digite seu texto",
         "placeholder": "Digite ou cole o texto que deseja falar...",
@@ -532,6 +537,17 @@
     "home": {
       "sectionPlayEarn": "Jogue e Ganhe",
       "sectionCreativeTools": "Ferramentas criativas IA"
+    },
+    "creditsGift": {
+      "title": "Você tem um presente!",
+      "subtitle": "Resgate {{amount}} Créditos GRÁTIS Agora!",
+      "claim": "Resgatar",
+      "loadingAd": "Carregando anúncio...",
+      "claiming": "Resgatando...",
+      "successTitle": "Créditos recebidos!",
+      "successDesc": "+{{amount}} créditos adicionados",
+      "adFailed": "Falha ao carregar anúncio. Tente novamente.",
+      "maybeLater": "Talvez mais tarde"
     }
   }
 }

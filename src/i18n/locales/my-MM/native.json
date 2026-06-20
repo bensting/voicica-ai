@@ -31,7 +31,9 @@
         "voicicaDesc": "Phantom ပိုက်ဆံအိတ်သို့ ထုတ်ယူရန်",
         "usdtTitle": "USDT ထုတ်ယူရန်",
         "usdtDesc": "ငွေလဲလှယ်ရေးသို့ ထုတ်ယူရန် (အနည်းဆုံး 2 USDT)"
-      }
+      },
+      "lowCredits": "ခရက်ဒစ် နည်းနေသည်",
+      "claimNow": "ယခုရယူပါ"
     },
     "bottomNav": {
       "explore": "ရှာဖွေရန်",
@@ -352,7 +354,10 @@
     },
     "createClone": {
       "title": "အသံ ကူးယူခြင်း",
-      "tabs": { "generate": "ဖန်တီးရန်", "clone": "ကူးယူရန်" },
+      "tabs": {
+        "generate": "ဖန်တီးရန်",
+        "clone": "ကူးယူရန်"
+      },
       "generate": {
         "enterText": "စာသားထည့်ပါ",
         "placeholder": "ပြောလိုသော စာသားကို ရိုက်ထည့် သို့မဟုတ် ကူးထည့်ပါ...",
@@ -532,6 +537,17 @@
     "home": {
       "sectionPlayEarn": "ကစားပြီး ရှာပါ",
       "sectionCreativeTools": "AI ဖန်တီးမှု ကိရိယာများ"
+    },
+    "creditsGift": {
+      "title": "သင့်တွင် လက်ဆောင်တစ်ခု ရှိသည်!",
+      "subtitle": "{{amount}} ခရက်ဒစ် အခမဲ့ ယခုရယူပါ!",
+      "claim": "ရယူပါ",
+      "loadingAd": "ကြော်ငြာ တင်နေသည်...",
+      "claiming": "ရယူနေသည်...",
+      "successTitle": "ခရက်ဒစ် ရရှိပြီ!",
+      "successDesc": "+{{amount}} ခရက်ဒစ် ထည့်သွင်းပြီး",
+      "adFailed": "ကြော်ငြာ တင်မရပါ။ ထပ်ကြိုးစားပါ။",
+      "maybeLater": "နောက်မှ"
     }
   }
 }

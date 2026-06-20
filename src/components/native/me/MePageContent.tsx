@@ -2,10 +2,11 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
-import { useCredits } from '@/contexts/CreditsContext';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { getCreditsGiftConfig } from '@/actions/admin/system-config';
 import ProfileHeader from '@/components/native/me/ProfileHeader';
-import UserStatsBar from '@/components/native/me/UserStatsBar';
+import TotalAssetsCard from '@/components/native/TotalAssetsCard';
+import ClaimCreditsModal from '@/components/native/ClaimCreditsModal';
 import MyCreations from '@/components/native/me/MyCreations';
 import LoginModal from '@/components/native/LoginModal';
 
@@ -19,9 +20,14 @@ const LOGIN_MODAL_INTERVAL_MS = 24 * 60 * 60 * 1000; // 24 hours
  */
 export default function MePageContent({ isActive }: { isActive?: boolean }) {
   const { user, loading } = useFirebaseAuth();
-  const { credits, loading: creditsLoading } = useCredits();
   const { t } = useLanguage();
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const [showClaimModal, setShowClaimModal] = useState(false);
+  const [giftConfig, setGiftConfig] = useState({ threshold: 5000, giftAmount: 10000 });
+
+  useEffect(() => {
+    getCreditsGiftConfig().then(setGiftConfig);
+  }, []);
   // 使用 ref 跟踪是否已经显示过登录框，防止重复弹出
   const hasShownRef = useRef(false);
 
@@ -62,11 +68,7 @@ export default function MePageContent({ isActive }: { isActive?: boolean }) {
           onAvatarClick={() => setIsLoginModalOpen(true)}
         />
 
-        {/* VOICICA 余额 + BUY */}
-        <UserStatsBar
-          credits={credits}
-          creditsLoading={creditsLoading}
-        />
+        <TotalAssetsCard claimThreshold={giftConfig.giftAmount} onClaim={() => setShowClaimModal(true)} />
       </div>
 
       {/* 可滚动的作品区域 */}
@@ -74,12 +76,19 @@ export default function MePageContent({ isActive }: { isActive?: boolean }) {
         <MyCreations isActive={isActive} />
       </div>
 
-      {/* 登录弹窗 - 未登录时自动弹出 */}
       <LoginModal
         isOpen={isLoginModalOpen}
         onClose={() => setIsLoginModalOpen(false)}
         onLoginSuccess={() => setIsLoginModalOpen(false)}
       />
+
+      {showClaimModal && (
+        <ClaimCreditsModal
+          giftAmount={giftConfig.giftAmount}
+          onClaimed={() => setShowClaimModal(false)}
+          onClose={() => setShowClaimModal(false)}
+        />
+      )}
     </div>
   );
 }

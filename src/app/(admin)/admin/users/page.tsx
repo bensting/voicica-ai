@@ -11,9 +11,6 @@ import {
   deleteAnonymousUser,
   cleanExpiredAnonymousUsers,
   getUserCreditHistory,
-  adminGenerateReferralCode,
-  adminBindReferrer,
-  adminUnbindReferrer,
 } from '@/actions/admin/users';
 import IpLocation from '@/components/admin/IpLocation';
 
@@ -29,10 +26,7 @@ interface RegisteredUser {
   total_credits_used: number;
   created_at: Date;
   has_active_subscription: boolean;
-  referral_code: string | null;
-  referred_by: string | null;
   ip_address: string | null;
-  referral_level: string;
 }
 
 /**
@@ -117,14 +111,6 @@ export default function UsersManagementPage() {
     total: number;
     page: number;
     totalPages: number;
-    loading: boolean;
-  } | null>(null);
-
-  // 绑定推荐人模态框
-  const [bindingReferrer, setBindingReferrer] = useState<{
-    userId: string;
-    userName: string;
-    code: string;
     loading: boolean;
   } | null>(null);
 
@@ -256,46 +242,6 @@ export default function UsersManagementPage() {
     alert(result.message);
     if (result.success) {
       loadAnonymousUsers();
-    }
-  };
-
-  // 生成邀请码
-  const handleGenerateReferralCode = async (userId: string) => {
-    if (!confirm('确定要为该用户生成邀请码吗？')) return;
-
-    const result = await adminGenerateReferralCode(userId);
-    if (result.success) {
-      loadRegisteredUsers();
-    } else {
-      alert(result.message);
-    }
-  };
-
-  // 解除推荐人
-  const handleUnbindReferrer = async (userId: string) => {
-    if (!confirm('确定要解除该用户的推荐人绑定吗？')) return;
-
-    const result = await adminUnbindReferrer(userId);
-    if (result.success) {
-      loadRegisteredUsers();
-    } else {
-      alert(result.message);
-    }
-  };
-
-  // 绑定推荐人
-  const handleBindReferrer = async () => {
-    if (!bindingReferrer || !bindingReferrer.code.trim()) return;
-
-    setBindingReferrer({ ...bindingReferrer, loading: true });
-
-    const result = await adminBindReferrer(bindingReferrer.userId, bindingReferrer.code.trim());
-    if (result.success) {
-      setBindingReferrer(null);
-      loadRegisteredUsers();
-    } else {
-      alert(result.message);
-      setBindingReferrer({ ...bindingReferrer, loading: false });
     }
   };
 
@@ -437,9 +383,6 @@ export default function UsersManagementPage() {
                     <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">积分</th>
                     <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">已用积分</th>
                     <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">订阅</th>
-                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">邀请码</th>
-                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">推荐人</th>
-                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">推荐等级</th>
                     <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">注册时间</th>
                     <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">操作</th>
                   </tr>
@@ -540,35 +483,6 @@ export default function UsersManagementPage() {
                             <span className="text-xs text-gray-400">无</span>
                           )}
                         </td>
-                        <td className="px-4 py-3">
-                          {user.referral_code ? (
-                            <span className="text-sm font-mono text-purple-600">{user.referral_code}</span>
-                          ) : (
-                            <span className="text-xs text-gray-400">-</span>
-                          )}
-                        </td>
-                        <td className="px-4 py-3">
-                          {user.referred_by ? (
-                            <span className="text-xs font-mono text-gray-600">{user.referred_by.substring(0, 12)}...</span>
-                          ) : (
-                            <span className="text-xs text-gray-400">-</span>
-                          )}
-                        </td>
-                        <td className="px-4 py-3">
-                          {(() => {
-                            const levelConfig: Record<string, { label: string; bg: string; text: string }> = {
-                              miner: { label: '矿工', bg: 'bg-gray-100', text: 'text-gray-600' },
-                              bronze: { label: '青铜队长', bg: 'bg-orange-100', text: 'text-orange-700' },
-                              gold: { label: '黄金船长', bg: 'bg-yellow-100', text: 'text-yellow-700' },
-                            };
-                            const config = levelConfig[user.referral_level] || levelConfig.miner;
-                            return (
-                              <span className={`inline-flex items-center px-2 py-0.5 text-xs font-medium rounded ${config.bg} ${config.text}`}>
-                                {config.label}
-                              </span>
-                            );
-                          })()}
-                        </td>
                         <td className="px-4 py-3 text-sm text-gray-600">
                           {formatDate(user.created_at)}
                         </td>
@@ -593,36 +507,6 @@ export default function UsersManagementPage() {
                             >
                               调整积分
                             </button>
-                            {!user.referral_code && (
-                              <button
-                                onClick={() => handleGenerateReferralCode(user.user_id)}
-                                className="text-sm text-green-600 hover:text-green-700"
-                              >
-                                生成邀请码
-                              </button>
-                            )}
-                            {!user.referred_by ? (
-                              <button
-                                onClick={() =>
-                                  setBindingReferrer({
-                                    userId: user.user_id,
-                                    userName: user.email || user.name || user.user_id,
-                                    code: '',
-                                    loading: false,
-                                  })
-                                }
-                                className="text-sm text-orange-600 hover:text-orange-700"
-                              >
-                                绑定推荐人
-                              </button>
-                            ) : (
-                              <button
-                                onClick={() => handleUnbindReferrer(user.user_id)}
-                                className="text-sm text-red-600 hover:text-red-700"
-                              >
-                                解除推荐
-                              </button>
-                            )}
                           </div>
                         </td>
                       </tr>
@@ -950,61 +834,6 @@ export default function UsersManagementPage() {
                 className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors disabled:opacity-50"
               >
                 保存
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* 绑定推荐人模态框 */}
-      {bindingReferrer && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-xl shadow-xl w-full max-w-md m-4">
-            <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
-              <h2 className="text-lg font-semibold text-gray-900">绑定推荐人</h2>
-              <button
-                onClick={() => setBindingReferrer(null)}
-                className="text-gray-400 hover:text-gray-600"
-              >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-            </div>
-            <div className="p-6 space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">用户</label>
-                <div className="text-sm text-gray-900">{bindingReferrer.userName}</div>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">推荐码</label>
-                <input
-                  type="text"
-                  value={bindingReferrer.code}
-                  onChange={(e) =>
-                    setBindingReferrer({
-                      ...bindingReferrer,
-                      code: e.target.value.toUpperCase(),
-                    })
-                  }
-                  placeholder="请输入推荐码..."
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent font-mono uppercase"
-                />
-              </div>
-            </div>
-            <div className="px-6 py-4 border-t border-gray-200 flex justify-end gap-3">
-              <button
-                onClick={() => setBindingReferrer(null)}
-                className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
-              >
-                取消
-              </button>
-              <button
-                onClick={handleBindReferrer}
-                disabled={!bindingReferrer.code.trim() || bindingReferrer.loading}
-                className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors disabled:opacity-50"
-              >
-                {bindingReferrer.loading ? '绑定中...' : '确认绑定'}
               </button>
             </div>
           </div>

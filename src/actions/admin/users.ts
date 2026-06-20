@@ -30,9 +30,6 @@ export async function getAdminUserList(params: {
     total_credits_used: number;
     created_at: Date;
     has_active_subscription: boolean;
-    referral_code: string | null;
-    referred_by: string | null;
-    referral_level: string;
     ip_address: string | null;
   }>;
   total: number;

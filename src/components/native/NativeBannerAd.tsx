@@ -1,12 +1,6 @@
 'use client';
 
-import { getMiningEconomyConfig } from '@/config/appConfig';
-
 export default function NativeBannerAd() {
-  const { show_home_banner } = getMiningEconomyConfig();
-
-  if (!show_home_banner) return null;
-
   return (
     <div className="mx-4">
       <div className="relative rounded-2xl overflow-hidden bg-gradient-to-br from-purple-900/60 via-indigo-900/60 to-blue-900/60 border border-purple-500/20 px-5 py-4 flex items-center gap-4">

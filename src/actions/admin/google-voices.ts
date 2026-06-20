@@ -367,7 +367,11 @@ export async function syncGoogleVoicesByLocale(locale: string): Promise<SyncResu
       sortOrder: 0,
     }));
 
-    await db.insert(voices).values(insertData).onConflictDoNothing();
+    // D1 限制 999 个 SQL 变量，每行 17 列，每批最多 50 行
+    const BATCH_SIZE = 50;
+    for (let i = 0; i < insertData.length; i += BATCH_SIZE) {
+      await db.insert(voices).values(insertData.slice(i, i + BATCH_SIZE)).onConflictDoNothing();
+    }
 
     console.log(`✅ 成功同步 ${locale} -> ${dbLocale}: 插入 ${voicesToInsert.length} 条`);
 

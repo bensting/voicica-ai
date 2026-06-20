@@ -164,7 +164,7 @@ export default function VideoDownloaderPage() {
 
   return (
     <div className="flex flex-col min-h-screen">
-      <CreatePageHeader title={t('videoDownloader.title')} showCreateSheet={true} />
+      <CreatePageHeader title={t('videoDownloader.title')} />
 
       <div
         className="flex-1 overflow-y-auto px-4 pt-4"

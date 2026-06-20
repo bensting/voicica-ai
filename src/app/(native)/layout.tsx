@@ -19,7 +19,7 @@ import MePageContent from '@/components/native/me/MePageContent';
 import CreateSheet from '@/components/native/CreateSheet';
 
 const hideNavbarPaths = ['/native/me', '/native/settings', '/native/create', '/native/tools', '/native/video', '/native/voice/task', '/native/subscribe', '/native/payment'];
-const hideBottomNavPaths = ['/native/settings', '/native/create', '/native/tools', '/native/video', '/native/voice/task', '/native/subscribe', '/native/payment'];
+const hideBottomNavPaths = ['/native/settings', '/native/video', '/native/voice/task', '/native/subscribe', '/native/payment'];
 
 const pathnameToTab = (pathname: string): TabType | null => {
   const p = pathname.endsWith('/') ? pathname.slice(0, -1) : pathname;
@@ -109,7 +109,7 @@ export default function NativeLayout({ children }: { children: React.ReactNode }
           </main>
 
           {showBottomNav && (
-            <BottomNav activeTab={activeTab} onTabChange={handleTabChange} onCreatePress={() => setCreateSheetOpen(true)} />
+            <BottomNav activeTab={activeTab} onTabChange={handleTabChange} onCreatePress={() => setCreateSheetOpen(v => !v)} isCreateOpen={createSheetOpen} />
           )}
 
           <CreateSheet isOpen={createSheetOpen} onClose={() => setCreateSheetOpen(false)} />

@@ -53,9 +53,12 @@ export default function SyncCard({
               key={action.syncKey}
               onClick={action.onClick}
               disabled={syncing !== null || action.disabled}
-              className={`px-6 py-2 text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${colorClasses[action.color]}`}
+              className={`px-6 py-2 text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 ${colorClasses[action.color]}`}
             >
-              {syncing === action.syncKey ? `${action.label.replace(/[^中文]/g, '')}中...` : action.label}
+              {syncing === action.syncKey && (
+                <span className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin inline-block" />
+              )}
+              {action.label}
             </button>
           ))}
         </div>

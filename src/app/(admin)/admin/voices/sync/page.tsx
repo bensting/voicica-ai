@@ -56,14 +56,14 @@ export default function VoiceSyncPage() {
         syncResults={syncResults}
         actions={[
           {
-            label: syncing === 'all' ? '同步中...' : '同步全部',
+            label: '同步全部',
             syncKey: 'all',
             onClick: handleSyncAll,
             color: 'purple',
             disabled: locales.filter((l) => l.canSync).length === 0,
           },
           {
-            label: syncing === 'update-all' ? '更新中...' : '更新全部',
+            label: '更新全部',
             syncKey: 'update-all',
             onClick: handleUpdateAll,
             color: 'blue',
@@ -80,13 +80,13 @@ export default function VoiceSyncPage() {
         syncResults={syncResults}
         actions={[
           {
-            label: syncing === 'avatars' ? '同步中...' : '同步空头像',
+            label: '同步空头像',
             syncKey: 'avatars',
             onClick: handleSyncAvatars,
             color: 'indigo',
           },
           {
-            label: syncing === 'regenerate' ? '生成中...' : '重新生成全部',
+            label: '重新生成全部',
             syncKey: 'regenerate',
             onClick: handleRegenerateAllAvatars,
             color: 'orange',
@@ -103,13 +103,13 @@ export default function VoiceSyncPage() {
         syncResults={syncResults}
         actions={[
           {
-            label: syncing === 'detect-broken' ? '检测中...' : '检测并清理失效样本',
+            label: '检测并清理失效样本',
             syncKey: 'detect-broken',
             onClick: handleDetectBrokenSamples,
             color: 'orange',
           },
           {
-            label: syncing === 'samples-all' ? '生成中...' : '批量生成样本',
+            label: '批量生成样本',
             syncKey: 'samples-all',
             onClick: handleGenerateAllSamples,
             color: 'teal',

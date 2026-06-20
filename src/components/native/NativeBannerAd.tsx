@@ -27,7 +27,7 @@ export default function NativeBannerAd() {
           background: conic-gradient(from 0deg, transparent 0deg, rgba(167, 139, 250, 0.95) 50deg, transparent 100deg);
         }
         .banner-card-image .banner-card-spin {
-          background: conic-gradient(from 0deg, transparent 0deg, rgba(96, 165, 250, 0.95) 50deg, transparent 100deg);
+          background: conic-gradient(from 0deg, transparent 0deg, rgba(52, 211, 153, 0.95) 50deg, transparent 100deg);
           animation-delay: -2s;
         }
         .banner-card-inner {
@@ -39,6 +39,7 @@ export default function NativeBannerAd() {
           gap: 10px;
           padding: 10px 12px;
           transition: opacity 0.15s;
+          white-space: nowrap;
         }
         .banner-card-wrap:active .banner-card-inner {
           opacity: 0.75;
@@ -98,8 +99,8 @@ export default function NativeBannerAd() {
             {/* AI Images */}
             <Link href="/native/create/image" className="banner-card-wrap banner-card-image">
               <div className="banner-card-spin" />
-              <div className="banner-card-inner bg-blue-900/40">
-                <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center flex-shrink-0 shadow-lg shadow-blue-500/30">
+              <div className="banner-card-inner bg-emerald-900/30">
+                <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center flex-shrink-0 shadow-lg shadow-emerald-500/30">
                   <svg className="w-[18px] h-[18px] text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <rect x="3" y="3" width="18" height="18" rx="2" />
                     <circle cx="8.5" cy="8.5" r="1.5" fill="currentColor" stroke="none" />

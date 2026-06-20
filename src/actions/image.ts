@@ -6,7 +6,7 @@
  */
 import { getDb } from '@/lib/db';
 import { imageRecords } from '@/db/schema';
-import { eq, and, desc } from 'drizzle-orm';
+import { eq, and, desc, isNotNull } from 'drizzle-orm';
 import { getUserOrAnonymous } from '@/lib/auth-firebase';
 import { checkCredits, deductCredits } from '@/lib/credits';
 import { ProductType } from '@/config/productType';
@@ -366,6 +366,53 @@ export async function deleteImageRecord(id: number): Promise<boolean> {
     console.error('❌ [deleteImageRecord] Error:', error);
     return false;
   }
+}
+
+/**
+ * 公开图片记录类型
+ */
+export interface PublicImageRecord {
+  id: number;
+  task_id: string;
+  prompt: string;
+  image_url: string;
+  aspect_ratio: string;
+  model: string;
+  created_at: string;
+}
+
+/**
+ * 获取公开的图片记录列表（用于 Explore 页面）
+ */
+export async function getPublicImageRecords(limit: number = 20): Promise<PublicImageRecord[]> {
+  const db = await getDb();
+  const records = await db.select({
+    id: imageRecords.id,
+    taskId: imageRecords.taskId,
+    prompt: imageRecords.prompt,
+    imageUrl: imageRecords.imageUrl,
+    aspectRatio: imageRecords.aspectRatio,
+    model: imageRecords.model,
+    createdAt: imageRecords.createdAt,
+  })
+    .from(imageRecords)
+    .where(and(
+      eq(imageRecords.isPublic, true),
+      eq(imageRecords.status, 'SUCCESS'),
+      isNotNull(imageRecords.imageUrl),
+    ))
+    .orderBy(desc(imageRecords.createdAt))
+    .limit(limit);
+
+  return records.map(r => ({
+    id: r.id,
+    task_id: r.taskId,
+    prompt: r.prompt,
+    image_url: r.imageUrl!,
+    aspect_ratio: r.aspectRatio,
+    model: r.model,
+    created_at: r.createdAt,
+  }));
 }
 
 /**

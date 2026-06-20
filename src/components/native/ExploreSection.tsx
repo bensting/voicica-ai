@@ -3,6 +3,8 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { getPublicMusicRecords, type PublicMusicRecord } from '@/actions/music';
+import { getPublicImageRecords, type PublicImageRecord } from '@/actions/image';
+import { getFeatureFlags, type FeatureFlags } from '@/actions/admin/system-config';
 import MusicPlayerModal from './MusicPlayerModal';
 import VideoPlayerModal, { type PublicVideoData } from './VideoPlayerModal';
 import VoicePlayerModal, { type PublicVoiceData } from './VoicePlayerModal';
@@ -254,34 +256,70 @@ function DialogueCard({ dialogue, index, onClick }: { dialogue: PublicDialogueDa
 }
 
 /**
+ * 图片卡片组件
+ */
+function ImageCard({ image, onClick }: { image: PublicImageRecord; onClick: () => void }) {
+  return (
+    <div
+      onClick={onClick}
+      className="relative aspect-square rounded-2xl overflow-hidden cursor-pointer active:scale-[0.98] transition-transform bg-gray-800/50"
+    >
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src={image.image_url} alt={image.prompt} className="w-full h-full object-cover" />
+      <div className="absolute bottom-0 left-0 right-0 p-2 bg-gradient-to-t from-black/70 to-transparent">
+        <p className="text-white text-xs truncate">{image.prompt}</p>
+      </div>
+    </div>
+  );
+}
+
+/**
  * Explore 区域
- * 包含 Voices / Dialogue / Music / Video 四个 Tab
+ * 包含 Voices / Dialogue / Image / Music / Video 五个 Tab
  */
 export default function ExploreSection() {
   const router = useRouter();
-  const availableTabs = useMemo(() => getAvailableExploreTabs(), []);
+  const availableTabsBase = useMemo(() => getAvailableExploreTabs(), []);
   const defaultTab = useMemo(() => getDefaultExploreTab(), []);
+  const [tabs, setTabs] = useState(availableTabsBase);
   const [activeTab, setActiveTab] = useState<ExploreTabId>(defaultTab);
   const [voiceList, setVoiceList] = useState<PublicVoiceData[]>([]);
   const [dialogueList, setDialogueList] = useState<PublicDialogueData[]>([]);
   const [musicList, setMusicList] = useState<PublicMusicRecord[]>([]);
   const [videoList, setVideoList] = useState<PublicVideoData[]>([]);
+  const [imageList, setImageList] = useState<PublicImageRecord[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [selectedVoice, setSelectedVoice] = useState<PublicVoiceData | null>(null);
   const [selectedDialogue, setSelectedDialogue] = useState<PublicDialogueData | null>(null);
   const [selectedMusic, setSelectedMusic] = useState<PublicMusicRecord | null>(null);
   const [selectedVideo, setSelectedVideo] = useState<PublicVideoData | null>(null);
 
-  // Music / Video 分页：初始显示 6 个，每次加载 6 个
+  // Music / Video / Image 分页：初始显示 6 个，每次加载 6 个
   const PAGE_SIZE = 6;
   const [musicVisibleCount, setMusicVisibleCount] = useState(PAGE_SIZE);
   const [videoVisibleCount, setVideoVisibleCount] = useState(PAGE_SIZE);
+  const [imageVisibleCount, setImageVisibleCount] = useState(PAGE_SIZE);
 
   // 切换 Tab 时重置可见数量
   useEffect(() => {
     if (activeTab === 'music') setMusicVisibleCount(PAGE_SIZE);
     if (activeTab === 'video') setVideoVisibleCount(PAGE_SIZE);
+    if (activeTab === 'image') setImageVisibleCount(PAGE_SIZE);
   }, [activeTab]);
+
+  // 从 DB feature flags 过滤可用标签
+  useEffect(() => {
+    getFeatureFlags().then((flags: FeatureFlags) => {
+      const tabFlagMap: Record<string, keyof FeatureFlags> = {
+        voices: 'voice',
+        dialogue: 'dialogue',
+        image: 'image',
+        music: 'music',
+        video: 'video',
+      };
+      setTabs(availableTabsBase.filter(tab => flags[tabFlagMap[tab.id]] !== false));
+    });
+  }, [availableTabsBase]);
 
   // 订阅状态（订阅用户不显示广告）
   const { isSubscribed } = useSubscription();
@@ -361,6 +399,13 @@ export default function ExploreSection() {
         .finally(() => {
           setIsLoading(false);
         });
+    } else if (activeTab === 'image') {
+      if (imageList.length > 0) return;
+      setIsLoading(true);
+      getPublicImageRecords(20)
+        .then((records) => { setImageList(records); })
+        .catch((err) => { console.error('Failed to load public images:', err); })
+        .finally(() => { setIsLoading(false); });
     } else if (activeTab === 'music') {
       // 如果已有数据，不重复加载
       if (musicList.length > 0) return;
@@ -397,7 +442,7 @@ export default function ExploreSection() {
   }, [activeTab]);
 
   // 如果没有可用的标签，不渲染
-  if (availableTabs.length === 0) {
+  if (tabs.length === 0) {
     return null;
   }
 
@@ -407,9 +452,9 @@ export default function ExploreSection() {
       <h2 className="text-xl font-bold text-white mb-4">Explore</h2>
 
       {/* Tabs - 只在有多个标签时显示 */}
-      {availableTabs.length > 1 && (
+      {tabs.length > 1 && (
         <div className="flex gap-6 mb-4 border-b border-gray-800">
-          {availableTabs.map((tab) => (
+          {tabs.map((tab) => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
@@ -544,6 +589,39 @@ export default function ExploreSection() {
           <div className="text-center py-12 text-gray-500">
             No public dialogues yet
           </div>
+        )
+      ) : activeTab === 'image' ? (
+        isLoading ? (
+          <div className="grid grid-cols-2 gap-3">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <div key={i} className={`relative aspect-square rounded-2xl overflow-hidden bg-gradient-to-br ${gradients[i % gradients.length]}`}>
+                <div className="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black/70 to-transparent">
+                  <div className="h-3 w-24 bg-white/20 rounded animate-pulse" />
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : imageList.length > 0 ? (
+          <>
+            <div className="grid grid-cols-2 gap-3">
+              {imageList.slice(0, imageVisibleCount).map((image) => (
+                <ImageCard key={image.id} image={image} onClick={() => router.push('/native/create/image')} />
+              ))}
+            </div>
+            {imageVisibleCount < imageList.length && (
+              <div className="mt-3 flex justify-center">
+                <button
+                  onClick={() => setImageVisibleCount(prev => prev + PAGE_SIZE)}
+                  className="flex items-center gap-1 text-sm text-gray-400 transition-colors hover:text-white active:text-white"
+                >
+                  Explore More
+                  <ChevronRight className="h-4 w-4" />
+                </button>
+              </div>
+            )}
+          </>
+        ) : (
+          <div className="text-center py-12 text-gray-500">No public images yet</div>
         )
       ) : activeTab === 'music' ? (
         isLoading ? (

@@ -772,7 +772,8 @@ export const storyParagraphsRelations = relations(storyParagraphs, ({one}) => ({
 
 export const systemConfigs = sqliteTable("system_configs", {
 	key: text("key").primaryKey(),
-	value: text("value").notNull(), // JSON string
+	value: text("value").notNull(), // prod JSON string
+	devValue: text("dev_value"),    // dev JSON string (null = same as prod)
 	description: text("description"),
 	updatedAt: text("updated_at").$onUpdate(() => new Date().toISOString()),
 });

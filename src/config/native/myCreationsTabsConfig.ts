@@ -47,6 +47,16 @@ export const myCreationsTabsConfig: MyCreationsTabConfig[] = [
     enabled: { development: true, production: true },
   },
   {
+    id: 'image',
+    label: 'Image',
+    emptyState: {
+      title: 'No content yet.',
+      subtitle: 'Create your first AI image.',
+      createLink: '/native/create/image',
+    },
+    enabled: { development: true, production: true },
+  },
+  {
     id: 'music',
     label: 'Music',
     emptyState: {
@@ -63,16 +73,6 @@ export const myCreationsTabsConfig: MyCreationsTabConfig[] = [
       title: 'No content yet.',
       subtitle: 'Create your first AI video.',
       createLink: '/native/create/video',
-    },
-    enabled: { development: true, production: true },
-  },
-  {
-    id: 'image',
-    label: 'Image',
-    emptyState: {
-      title: 'No content yet.',
-      subtitle: 'Create your first AI image.',
-      createLink: '/native/create/image',
     },
     enabled: { development: true, production: true },
   },

@@ -8,6 +8,7 @@ import {
   isValidMyCreationsTab,
   type MyCreationsTabId,
 } from '@/config/native/myCreationsTabsConfig';
+import { getFeatureFlags, type FeatureFlags } from '@/actions/admin/system-config';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useSubscription } from '@/contexts/SubscriptionContext';
 import { useInterstitialAd } from '@/hooks/useInterstitialAd';
@@ -22,9 +23,22 @@ export default function MyCreations({ isActive }: { isActive?: boolean }) {
   const searchParams = useSearchParams();
   const { t } = useLanguage();
 
-  // 获取可用的标签配置
-  const availableTabs = useMemo(() => getAvailableMyCreationsTabs(), []);
+  // 获取可用的标签配置（由 DB feature flags 动态过滤）
+  const [availableTabs, setAvailableTabs] = useState(() => getAvailableMyCreationsTabs());
   const defaultTab = useMemo(() => getDefaultMyCreationsTab(), []);
+
+  useEffect(() => {
+    getFeatureFlags().then((flags: FeatureFlags) => {
+      const tabFlagMap: Record<string, keyof FeatureFlags> = {
+        voices: 'voice',
+        dialogues: 'dialogue',
+        image: 'image',
+        music: 'music',
+        video: 'video',
+      };
+      setAvailableTabs(getAvailableMyCreationsTabs().filter(tab => flags[tabFlagMap[tab.id]] !== false));
+    });
+  }, []);
 
   // 从 URL 参数获取初始 tab
   const tabFromUrl = searchParams.get('tab');

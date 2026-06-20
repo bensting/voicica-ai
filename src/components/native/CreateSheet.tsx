@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { createMenuItems, getAvailableMenuItems, CreateMenuIcon, type CreateMenuItem } from '@/config/native/createMenuConfig';
+import { createMenuItems, CreateMenuIcon, type CreateMenuItem } from '@/config/native/createMenuConfig';
 import { getFeatureFlags, type FeatureFlags } from '@/actions/admin/system-config';
 
 interface CreateSheetProps {
@@ -77,13 +77,6 @@ const ImageToolsIcon = () => (
 const ArrowIcon = () => (
   <svg className="w-4 h-4 text-gray-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
     <path d="M9 18l6-6-6-6" />
-  </svg>
-);
-
-const CloseIcon = () => (
-  <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-    <line x1="18" y1="6" x2="6" y2="18" />
-    <line x1="6" y1="6" x2="18" y2="18" />
   </svg>
 );
 

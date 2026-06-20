@@ -11,19 +11,6 @@ const DEFAULT_LANGUAGE = 'en';
 const PAGE_SIZE = 10;
 const MY_CLONES = 'my_clones';
 
-// Fish Audio supported languages
-const FISH_LANGUAGES = [
-  { code: 'en', label: 'English' },
-  { code: 'zh', label: '中文' },
-  { code: 'ja', label: '日本語' },
-  { code: 'ko', label: '한국어' },
-  { code: 'es', label: 'Español' },
-  { code: 'fr', label: 'Français' },
-  { code: 'de', label: 'Deutsch' },
-  { code: 'ar', label: 'العربية' },
-  { code: 'pt', label: 'Português' },
-  { code: 'ru', label: 'Русский' },
-] as const;
 
 function getSavedLanguage(): string {
   if (typeof window === 'undefined') return DEFAULT_LANGUAGE;
@@ -149,19 +136,6 @@ export default function FishVoiceGrid({
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') handleSearch();
-  };
-
-  const handleFilterChange = (value: string) => {
-    setFilter(value);
-    pageRef.current = 1;
-    if (value === MY_CLONES) {
-      requestIdRef.current++;
-      setLoading(false);
-      setLoadingMore(false);
-    } else {
-      localStorage.setItem(STORAGE_KEY, value);
-      loadVoices(query, value, 1, false);
-    }
   };
 
   const handleLoadMore = () => {

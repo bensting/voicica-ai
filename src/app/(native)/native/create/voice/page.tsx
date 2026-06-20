@@ -114,7 +114,6 @@ const CloseIcon = () => (
  */
 export default function NativeTTSPage() {
   const { t } = useLanguage();
-  const { user } = useFirebaseAuth();
   const { credits, refreshCredits } = useCredits();
   const { isSubscribed } = useSubscription();
   const { showRewardedAd } = useRewardedAd();

@@ -330,30 +330,6 @@ export const stories = sqliteTable("stories", {
 	index("ix_stories_user_status").on(table.userId, table.status),
 ]);
 
-export const rvcVoiceModels = sqliteTable("rvc_voice_models", {
-	id: integer().primaryKey({ autoIncrement: true }),
-	name: text("name").notNull(),
-	slug: text("slug").notNull(),
-	category: text("category").notNull(),
-	avatarUrl: text("avatar_url"),
-	sampleUrl: text("sample_url"),
-	modelUrl: text("model_url").notNull(),
-	indexUrl: text("index_url"),
-	usesCount: integer("uses_count").default(0).notNull(),
-	isBuiltin: integer("is_builtin", { mode: 'boolean' }).default(false).notNull(),
-	builtinName: text("builtin_name"),
-	isActive: integer("is_active", { mode: 'boolean' }).default(true).notNull(),
-	sortOrder: integer("sort_order").default(0).notNull(),
-	createdAt: text("created_at").default(sql`(strftime('%Y-%m-%dT%H:%M:%fZ','now'))`).notNull(),
-	updatedAt: text("updated_at").$onUpdate(() => new Date().toISOString()),
-}, (table) => [
-	index("ix_rvc_voice_models_category").on(table.category),
-	index("ix_rvc_voice_models_is_active").on(table.isActive),
-	index("ix_rvc_voice_models_is_builtin").on(table.isBuiltin),
-	index("ix_rvc_voice_models_sort_order").on(table.sortOrder),
-	uniqueIndex("rvc_voice_models_slug_key").on(table.slug),
-]);
-
 export const storyIllustrations = sqliteTable("story_illustrations", {
 	id: text().primaryKey().notNull(),
 	storyId: text("story_id").notNull(),

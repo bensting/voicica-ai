@@ -157,13 +157,13 @@ function LocaleTableRow({
         )}
       </td>
       <td className="px-6 py-4 whitespace-nowrap text-sm">
-        {item.dbCount === 0 ? (
+        {item.activeCount === 0 ? (
           <span className="text-gray-400">-</span>
-        ) : item.sampleCount === item.dbCount ? (
+        ) : item.sampleCount === item.activeCount ? (
           <span className="text-green-600">{item.sampleCount}</span>
         ) : (
           <span className="text-yellow-600">
-            {item.sampleCount}/{item.dbCount}
+            {item.sampleCount}/{item.activeCount}
           </span>
         )}
       </td>

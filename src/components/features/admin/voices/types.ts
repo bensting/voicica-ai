@@ -9,6 +9,7 @@ export interface LocaleStats {
   dbCount: number;
   avatarCount: number;
   sampleCount: number;
+  activeCount: number;
   canSync: boolean;
 }
 

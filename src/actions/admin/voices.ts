@@ -229,6 +229,7 @@ interface LocaleStats {
   dbCount: number;
   avatarCount: number;
   sampleCount: number;
+  activeCount: number;
   canSync: boolean;
 }
 
@@ -350,12 +351,29 @@ export async function getVoiceStatsByLocale(): Promise<LocaleStats[]> {
       avatarCountByLocale[stat.locale] = Number(stat.count);
     }
 
-    // 统计每个 locale 有样本的 Azure 语音数量
+    // 统计每个 locale 活跃 Azure 语音的数量（用于样本分母）
+    const activeStats = await db.select({
+      locale: voices.locale,
+      count: count(),
+    }).from(voices)
+      .where(and(eq(voices.provider, 'microsoft'), eq(voices.isActive, true)))
+      .groupBy(voices.locale);
+
+    const activeCountByLocale: Record<string, number> = {};
+    for (const stat of activeStats) {
+      activeCountByLocale[stat.locale] = Number(stat.count);
+    }
+
+    // 统计每个 locale 有样本的活跃 Azure 语音数量
     const sampleStats = await db.select({
       locale: voices.locale,
       count: count(),
     }).from(voices)
-      .where(and(eq(voices.provider, 'microsoft'), sql`voice_sample_url->>'default' IS NOT NULL`))
+      .where(and(
+        eq(voices.provider, 'microsoft'),
+        eq(voices.isActive, true),
+        sql`voice_sample_url->>'default' IS NOT NULL`
+      ))
       .groupBy(voices.locale);
 
     const sampleCountByLocale: Record<string, number> = {};
@@ -375,6 +393,7 @@ export async function getVoiceStatsByLocale(): Promise<LocaleStats[]> {
       const azureCount = azureCountByLocale[locale] || 0;
       const dbCount = dbCountByLocale[locale] || 0;
       const avatarCount = avatarCountByLocale[locale] || 0;
+      const activeCount = activeCountByLocale[locale] || 0;
       const sampleCount = sampleCountByLocale[locale] || 0;
       const localeOption = getLocaleInfo(locale);
 
@@ -385,6 +404,7 @@ export async function getVoiceStatsByLocale(): Promise<LocaleStats[]> {
         dbCount,
         avatarCount,
         sampleCount,
+        activeCount,
         canSync: azureCount > dbCount,
       });
     }

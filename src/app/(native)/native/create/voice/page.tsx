@@ -405,9 +405,12 @@ export default function NativeTTSPage() {
       }
 
       if (data.text) {
+        // 填入文字并关闭弹窗
         setText(data.text);
         setIsTextAssistantOpen(false);
         setTextPrompt('');
+        // 成功后播放激励广告（不影响结果）
+        showRewardedAd().catch(() => {});
       }
     } catch (err) {
       console.error('Generate text failed:', err);

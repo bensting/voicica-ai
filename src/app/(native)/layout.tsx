@@ -4,7 +4,6 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import NativeNavbar from '@/components/native/NativeNavbar';
 import BottomNav, { type TabType } from '@/components/native/BottomNav';
-import WebUpdatePrompt from '@/components/native/WebUpdatePrompt';
 import { BottomNavProvider } from '@/contexts/BottomNavContext';
 import { DailyTasksProvider } from '@/contexts/DailyTasksContext';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -111,7 +110,6 @@ export default function NativeLayout({ children }: { children: React.ReactNode }
             <BottomNav activeTab={activeTab} onTabChange={handleTabChange} />
           )}
 
-          <WebUpdatePrompt />
         </div>
       </div>
     </DailyTasksProvider>

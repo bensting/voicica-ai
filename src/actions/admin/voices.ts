@@ -625,8 +625,8 @@ async function generateVoiceSamplesCore(locale?: string): Promise<SyncResult> {
   const label = locale || '全部';
   console.log(`🎤 开始生成 ${label} 的语音样本（支持多风格）...`);
 
-  // 获取活跃语音，包含 style_list、voice_sample_url 和 provider
-  const conditions = [eq(voices.isActive, true)];
+  // 只处理 Azure (microsoft) 语音，Google/ElevenLabs 由各自页面管理
+  const conditions = [eq(voices.isActive, true), eq(voices.provider, 'microsoft')];
   if (locale) conditions.push(eq(voices.locale, locale));
 
   const voicesList = await db.select({

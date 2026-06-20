@@ -86,10 +86,10 @@ export default function AssistantModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/60">
+    <div className="fixed inset-0 z-[60] flex items-end justify-center bg-black/60">
       <div
         className="w-full max-w-lg bg-[#1a1a2e] rounded-t-3xl"
-        style={{ animation: 'slideUp 0.3s ease-out' }}
+        style={{ animation: 'slideUp 0.3s ease-out', paddingBottom: 'calc(64px + var(--safe-area-inset-bottom, 0px))' }}
       >
         {/* Header */}
         <div className="flex items-center justify-between px-4 py-3 border-b border-gray-800">

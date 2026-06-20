@@ -246,7 +246,7 @@ export default function PromptSection({
 
       {/* Generate Prompt Sheet */}
       {isGenerateSheetOpen && (
-        <div className="fixed inset-0 z-50 flex items-end justify-center">
+        <div className="fixed inset-0 z-[60] flex items-end justify-center">
           {/* Backdrop */}
           <div
             className="absolute inset-0 bg-black/60"
@@ -256,7 +256,7 @@ export default function PromptSection({
           {/* Sheet */}
           <div
             className="relative w-full max-w-lg bg-[#1a1a2e] rounded-t-3xl animate-slide-up"
-            style={{ paddingBottom: 'var(--safe-area-inset-bottom, 16px)' }}
+            style={{ paddingBottom: 'calc(64px + var(--safe-area-inset-bottom, 0px))' }}
           >
             {/* Handle */}
             <div className="flex justify-center pt-3 pb-2">

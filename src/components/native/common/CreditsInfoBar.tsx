@@ -1,6 +1,7 @@
 'use client';
 
 import CreditsIcon from './CreditsIcon';
+import { formatCredits } from '@/utils/formatCredits';
 
 interface CreditsInfoBarProps {
   credits: number;
@@ -18,7 +19,7 @@ export default function CreditsInfoBar({
   return (
     <div className={`flex items-center text-gray-400 text-xs ${className}`}>
       <CreditsIcon className="w-3.5 h-3.5 mr-1.5" />
-      <span>$VOICICA: {parseFloat(credits.toFixed(4))}</span>
+      <span>$VOICICA: {formatCredits(credits)}</span>
     </div>
   );
 }

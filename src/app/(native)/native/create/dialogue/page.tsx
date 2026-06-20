@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
+import { formatCredits } from '@/utils/formatCredits';
 import { useRouter } from 'next/navigation';
 import { useCredits } from '@/contexts/CreditsContext';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -546,7 +547,7 @@ export default function NativeDialoguePage() {
             </button>
             <div className="flex items-center gap-1 text-white">
               <CreditsIcon className="w-4 h-4" />
-              <span className="text-sm font-medium">{credits}</span>
+              <span className="text-sm font-medium">{formatCredits(credits)}</span>
             </div>
           </div>
 

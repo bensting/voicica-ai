@@ -1,6 +1,7 @@
 'use client';
 
 import CreditsIcon from './CreditsIcon';
+import { formatCredits } from '@/utils/formatCredits';
 
 export type GeneratingStatus = 'generating' | 'loading' | 'success' | 'error';
 export type GeneratingType = 'music' | 'image' | 'video' | 'voice' | 'download' | 'image-tool';
@@ -135,7 +136,7 @@ export default function GeneratingModal({
         </button>
         <div className="flex items-center gap-1 text-white">
           <CreditsIcon className="w-4 h-4" />
-          <span className="text-sm font-medium">{credits}</span>
+          <span className="text-sm font-medium">{formatCredits(credits)}</span>
         </div>
       </div>
 

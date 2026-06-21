@@ -11,7 +11,7 @@ import CreditsInfoBar from '@/components/native/common/CreditsInfoBar';
 import InsufficientCreditsModal from '@/components/native/common/InsufficientCreditsModal';
 import GeneratingModal, { type GeneratingStatus } from '@/components/native/common/GeneratingModal';
 import ImageToolDetailModal from '@/components/native/me/ImageToolDetailModal';
-import { createImageToolTask, getImageToolTaskStatus, type ImageToolType } from '@/actions/image-tools';
+import { getImageToolUploadUrl, createImageToolTask, getImageToolTaskStatus, type ImageToolType } from '@/actions/image-tools';
 import { checkCreditsBeforeGenerate } from '@/lib/credits-check';
 import { creditsCostConfig } from '@/config/creditsCost';
 import { ProductType } from '@/config/productType';
@@ -59,7 +59,7 @@ export default function NativeImageToolsPage() {
   const [activeTab, setActiveTab] = useState<TabType>('bg-remove');
 
   // 上传状态
-  const [uploadedImage, setUploadedImage] = useState<string | null>(null); // base64
+  const [uploadedFile, setUploadedFile] = useState<File | null>(null); // File 对象（用于直传 R2）
   const [uploadedImagePreview, setUploadedImagePreview] = useState<string | null>(null); // object URL for preview
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -94,7 +94,7 @@ export default function NativeImageToolsPage() {
     if (uploadedImagePreview) {
       URL.revokeObjectURL(uploadedImagePreview);
     }
-    setUploadedImage(null);
+    setUploadedFile(null);
     setUploadedImagePreview(null);
     setError(null);
     setTaskId(null);
@@ -118,15 +118,9 @@ export default function NativeImageToolsPage() {
       return;
     }
 
-    // 读取为 base64
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const base64 = e.target?.result as string;
-      setUploadedImage(base64);
-      setUploadedImagePreview(URL.createObjectURL(file));
-      setError(null);
-    };
-    reader.readAsDataURL(file);
+    setUploadedFile(file);
+    setUploadedImagePreview(URL.createObjectURL(file));
+    setError(null);
 
     // 重置 input 以允许重新选择相同文件
     event.target.value = '';
@@ -134,10 +128,10 @@ export default function NativeImageToolsPage() {
 
   // 删除已上传图片
   const handleClearImage = () => {
+    setUploadedFile(null);
     if (uploadedImagePreview) {
       URL.revokeObjectURL(uploadedImagePreview);
     }
-    setUploadedImage(null);
     setUploadedImagePreview(null);
     setError(null);
   };
@@ -186,7 +180,7 @@ export default function NativeImageToolsPage() {
 
   // 处理按钮点击
   const handleProcess = async () => {
-    if (!uploadedImage || isGenerating) return;
+    if (!uploadedFile || isGenerating) return;
 
     // 检查积分
     const hasEnoughCredits = checkCreditsBeforeGenerate({
@@ -212,7 +206,36 @@ export default function NativeImageToolsPage() {
     setAdWatched(false);
 
     try {
-      const result = await createImageToolTask(activeTab as ImageToolType, uploadedImage);
+      // Step 1: 获取预签名上传 URL
+      const urlResult = await getImageToolUploadUrl(
+        activeTab as ImageToolType,
+        uploadedFile.type,
+        uploadedFile.size
+      );
+      if (!urlResult.success) {
+        setGeneratingStatus('error');
+        setGeneratingError(urlResult.error || 'Failed to get upload URL');
+        setIsGenerating(false);
+        return;
+      }
+      setGeneratingProgress(15);
+
+      // Step 2: 客户端直接 PUT 上传到 R2
+      const uploadResp = await fetch(urlResult.uploadUrl!, {
+        method: 'PUT',
+        body: uploadedFile,
+        headers: { 'Content-Type': uploadedFile.type },
+      });
+      if (!uploadResp.ok) {
+        setGeneratingStatus('error');
+        setGeneratingError(`Upload failed: ${uploadResp.status}`);
+        setIsGenerating(false);
+        return;
+      }
+      setGeneratingProgress(20);
+
+      // Step 3: 用 R2 图片 URL 创建任务
+      const result = await createImageToolTask(activeTab as ImageToolType, urlResult.publicUrl!);
 
       if (!result.success) {
         setGeneratingStatus('error');
@@ -223,7 +246,7 @@ export default function NativeImageToolsPage() {
 
       // 开始轮询
       setTaskId(result.taskId!);
-      setGeneratingProgress(20);
+      setGeneratingProgress(30);
       refreshCredits();
     } catch (err) {
       console.error('🔧 [handleProcess] Error:', err);
@@ -268,7 +291,7 @@ export default function NativeImageToolsPage() {
     return () => clearTimeout(timer);
   }, [isGeneratingModalOpen, generatingStatus, isSubscribed, adWatched, showRewardedAd]);
 
-  const canProcess = !!uploadedImage && !isGenerating;
+  const canProcess = !!uploadedFile && !isGenerating;
   const maxSizeMB = activeTab === 'bg-remove' ? 5 : 10;
 
   return (

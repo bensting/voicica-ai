@@ -11,7 +11,7 @@ import { getUserOrAnonymous } from '@/lib/auth-firebase';
 import { checkCredits, deductCredits, refundCreditsSimple } from '@/lib/credits';
 import { ProductType } from '@/config/productType';
 import { creditsCostConfig } from '@/config/creditsCost';
-import { uploadImage } from '@/lib/services/r2-storage';
+import { generateImageUploadUrl, uploadImage } from '@/lib/services/r2-storage';
 import { v4 as uuidv4 } from 'uuid';
 
 // KIE API 配置
@@ -45,12 +45,48 @@ export interface ImageToolTaskStatus {
  * 5. 立即扣除积分
  * 6. 插入 DB 记录
  */
+/**
+ * Step 1: 获取 R2 预签名上传 URL（客户端直传，绕过 Workers 大 payload 限制）
+ */
+export async function getImageToolUploadUrl(
+  toolType: ImageToolType,
+  mimeType: string,
+  fileSizeBytes: number
+): Promise<{ success: boolean; uploadUrl?: string; publicUrl?: string; error?: string }> {
+  try {
+    const { user_id } = await getUserOrAnonymous();
+    if (!user_id) {
+      return { success: false, error: 'Unable to identify user' };
+    }
+
+    const maxSize = toolType === 'bg-remove' ? 5 * 1024 * 1024 : 10 * 1024 * 1024;
+    if (fileSizeBytes > maxSize) {
+      const maxMB = toolType === 'bg-remove' ? 5 : 10;
+      return { success: false, error: `Image size exceeds ${maxMB}MB limit` };
+    }
+
+    const ext = mimeType === 'image/jpeg' || mimeType === 'image/jpg' ? 'jpg'
+      : mimeType === 'image/png' ? 'png' : 'webp';
+    const fileName = `${uuidv4()}.${ext}`;
+    const folder = `image-tools/${user_id}`;
+
+    const { uploadUrl, publicUrl } = await generateImageUploadUrl(fileName, mimeType, folder, 300);
+    return { success: true, uploadUrl, publicUrl };
+  } catch (error) {
+    console.error('❌ [getImageToolUploadUrl] Error:', error);
+    return { success: false, error: error instanceof Error ? error.message : 'Failed to get upload URL' };
+  }
+}
+
+/**
+ * Step 2: 创建图片工具任务（接收已上传到 R2 的图片 URL）
+ */
 export async function createImageToolTask(
   toolType: ImageToolType,
-  imageBase64: string
+  originalImageUrl: string
 ): Promise<{ success: boolean; taskId?: string; error?: string }> {
-  const db = await getDb();
   try {
+    const db = await getDb();
     // 验证用户身份（匿名也可用）
     const { user_id, is_anonymous } = await getUserOrAnonymous();
     if (!user_id) {
@@ -63,30 +99,7 @@ export async function createImageToolTask(
       return { success: false, error: 'Insufficient credits' };
     }
 
-    // 解析 base64 图片并上传到 R2
-    const base64Match = imageBase64.match(/^data:image\/([\w+]+);base64,(.+)$/);
-    if (!base64Match) {
-      return { success: false, error: 'Invalid image format' };
-    }
-
-    const mimeType = base64Match[1];
-    const base64Data = base64Match[2];
-    const buffer = Buffer.from(base64Data, 'base64');
-
-    // 文件大小校验
-    const maxSize = toolType === 'bg-remove' ? 5 * 1024 * 1024 : 10 * 1024 * 1024;
-    if (buffer.length > maxSize) {
-      const maxMB = toolType === 'bg-remove' ? 5 : 10;
-      return { success: false, error: `Image size exceeds ${maxMB}MB limit` };
-    }
-
-    const ext = mimeType === 'jpeg' || mimeType === 'jpg' ? 'jpg' : mimeType === 'png' ? 'png' : 'webp';
-    const contentType = `image/${mimeType}`;
-    const fileName = `${uuidv4()}.${ext}`;
-    const folder = `image-tools/${user_id}`;
-
-    const originalImageUrl = await uploadImage(buffer, fileName, contentType, folder);
-    console.log(`📤 [createImageToolTask] 原图已上传到 R2: ${originalImageUrl}`);
+    console.log(`📤 [createImageToolTask] 使用已上传图片: ${originalImageUrl}`);
 
     // 调用 KIE API
     const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://voicica.ai';
@@ -147,8 +160,8 @@ export async function createImageToolTask(
  * 3. 使用乐观锁防止和 webhook 竞争
  */
 export async function getImageToolTaskStatus(taskId: string): Promise<ImageToolTaskStatus> {
-  const db = await getDb();
   try {
+    const db = await getDb();
     // 先查 DB 记录
     const [record] = await db.select().from(imageToolRecords)
       .where(eq(imageToolRecords.taskId, taskId))

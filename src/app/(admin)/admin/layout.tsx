@@ -30,7 +30,6 @@ const MENU_GROUPS = [
     items: [
       { href: '/admin/voices/sync', label: 'Azure 同步', icon: '☁️' },
       { href: '/admin/voices/sync-google', label: 'Google 同步', icon: '🔍' },
-      { href: '/admin/voices/sync-fish', label: 'Fish 同步', icon: '🐟' },
     ],
   },
   {

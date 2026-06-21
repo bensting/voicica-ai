@@ -3,11 +3,8 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { useFirebaseAuth } from '@/contexts/FirebaseAuthContext';
 import { useBottomNav } from '@/contexts/BottomNavContext';
-import LoginModal from './LoginModal';
 import LanguageSelectorSheet from './LanguageSelectorSheet';
-import { useLanguage } from '@/contexts/LanguageContext';
 
 /**
  * Native App 顶部导航栏
@@ -15,12 +12,8 @@ import { useLanguage } from '@/contexts/LanguageContext';
  * 支持通过 Context 控制显示/隐藏
  */
 export default function NativeNavbar() {
-  const { user } = useFirebaseAuth();
   const { isTopNavVisible } = useBottomNav();
-  const { t } = useLanguage();
-  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isLanguageSelectorOpen, setIsLanguageSelectorOpen] = useState(false);
-  const isLoggedIn = !!user;
 
   // 通过 Context 控制隐藏
   if (!isTopNavVisible) return null;
@@ -52,17 +45,6 @@ export default function NativeNavbar() {
 
           {/* 右侧区域 */}
           <div className="flex items-center gap-2">
-            {!isLoggedIn && (
-              <button
-                onClick={() => setIsLoginModalOpen(true)}
-                className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-white rounded-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 transition-all active:scale-95"
-              >
-                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3-3l3-3m0 0l-3-3m3 3H9" />
-                </svg>
-                {t('native.navbar.login')}
-              </button>
-            )}
 
             {/* 语言选择器按钮 */}
             <button
@@ -77,15 +59,6 @@ export default function NativeNavbar() {
           </div>
         </div>
       </header>
-
-      {/* 登录弹窗 */}
-      <LoginModal
-        isOpen={isLoginModalOpen}
-        onClose={() => setIsLoginModalOpen(false)}
-        onLoginSuccess={() => {
-          setIsLoginModalOpen(false);
-        }}
-      />
 
       {/* 语言选择器弹窗 */}
       <LanguageSelectorSheet

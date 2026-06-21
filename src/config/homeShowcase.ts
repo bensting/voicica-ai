@@ -27,11 +27,11 @@ export const HOME_SHOWCASE_CONFIG = {
     },
   ],
 
-  // 头像列表 (Trust 指示器) - 使用 AI Art 图片
+  // 头像列表 (Trust 指示器)
   avatars: [
-    'https://cdn.voicica.ai/images/vtEyZ69jh3YfkGlyweAnJR6fhR13/d3de289da692ecfdacecef173b3dd450.png',
-    'https://cdn.voicica.ai/images/vtEyZ69jh3YfkGlyweAnJR6fhR13/fd77c2dcd67818f002a294a8bcb3c17a.png',
-    'https://cdn.voicica.ai/images/vtEyZ69jh3YfkGlyweAnJR6fhR13/4ea7ad16645cb164712329bdda9b6e64.jpg',
+    'https://api.dicebear.com/7.x/avataaars/svg?seed=Mia&backgroundColor=b6e3f4',
+    'https://api.dicebear.com/7.x/avataaars/svg?seed=Leo&backgroundColor=ffdfbf',
+    'https://api.dicebear.com/7.x/avataaars/svg?seed=Zoe&backgroundColor=c0aede',
   ],
 
   // AI Voice 试听

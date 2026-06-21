@@ -193,7 +193,8 @@
         "createFirstCover": "अपना पहला AI कवर बनाएं।",
         "createFirstVideo": "अपना पहला AI वीडियो बनाएं।",
         "createFirstImage": "अपनी पहली AI छवि बनाएं।",
-        "tryLuckyDraw": "अपनी किस्मत आज़माएं और पुरस्कार जीतें!"
+        "tryLuckyDraw": "अपनी किस्मत आज़माएं और पुरस्कार जीतें!",
+        "createFirstImageTool": "BG Remove या HD Upscale से इमेज प्रोसेस करें।"
       },
       "stats": {
         "plan": "प्लान",
@@ -202,6 +203,10 @@
       "subscribe": {
         "title": "$VOICICA खरीदें",
         "subtitle": "$1 = 10,000 $VOICICA"
+      },
+      "imageTabs": {
+        "ai": "AI जनरेशन",
+        "tools": "इमेज टूल्स"
       }
     },
     "explore": {

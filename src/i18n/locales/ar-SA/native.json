@@ -193,7 +193,8 @@
         "createFirstCover": "أنشئ كوفرك الأول بالذكاء الاصطناعي.",
         "createFirstVideo": "أنشئ فيديوك الأول بالذكاء الاصطناعي.",
         "createFirstImage": "أنشئ صورتك الأولى بالذكاء الاصطناعي.",
-        "tryLuckyDraw": "جرّب حظك واربح جوائز!"
+        "tryLuckyDraw": "جرّب حظك واربح جوائز!",
+        "createFirstImageTool": "استخدم BG Remove أو HD Upscale لمعالجة الصور."
       },
       "stats": {
         "plan": "الخطة",
@@ -202,6 +203,10 @@
       "subscribe": {
         "title": "شراء $VOICICA",
         "subtitle": "$1 = 10,000 $VOICICA"
+      },
+      "imageTabs": {
+        "ai": "توليد AI",
+        "tools": "أدوات الصور"
       }
     },
     "explore": {

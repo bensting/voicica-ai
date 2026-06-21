@@ -193,7 +193,8 @@
         "createFirstCover": "Tạo bản cover AI đầu tiên của bạn.",
         "createFirstVideo": "Tạo video AI đầu tiên của bạn.",
         "createFirstImage": "Tạo hình ảnh AI đầu tiên của bạn.",
-        "tryLuckyDraw": "Thử vận may và giành giải thưởng!"
+        "tryLuckyDraw": "Thử vận may và giành giải thưởng!",
+        "createFirstImageTool": "Dùng BG Remove hoặc HD Upscale để xử lý ảnh."
       },
       "stats": {
         "plan": "Gói",
@@ -202,6 +203,10 @@
       "subscribe": {
         "title": "Mua $VOICICA",
         "subtitle": "$1 = 10,000 $VOICICA"
+      },
+      "imageTabs": {
+        "ai": "Tạo AI",
+        "tools": "Công cụ ảnh"
       }
     },
     "explore": {

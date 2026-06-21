@@ -193,7 +193,8 @@
         "createFirstCover": "最初のAIカバーを作成してください。",
         "createFirstVideo": "最初のAI動画を作成してください。",
         "createFirstImage": "最初のAI画像を作成してください。",
-        "tryLuckyDraw": "運試しで豪華賞品をゲット！"
+        "tryLuckyDraw": "運試しで豪華賞品をゲット！",
+        "createFirstImageTool": "BG RemoveまたはHD Upscaleで画像を処理してください。"
       },
       "stats": {
         "plan": "プラン",
@@ -202,6 +203,10 @@
       "subscribe": {
         "title": "$VOICICA を購入",
         "subtitle": "$1 = 10,000 $VOICICA"
+      },
+      "imageTabs": {
+        "ai": "AI生成",
+        "tools": "画像ツール"
       }
     },
     "explore": {

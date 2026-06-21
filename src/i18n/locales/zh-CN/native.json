@@ -239,7 +239,8 @@
         "createFirstCover": "创建您的第一个翻唱作品",
         "createFirstVideo": "创建您的第一个视频作品",
         "createFirstImage": "创建您的第一个图像作品",
-        "tryLuckyDraw": "试试手气，赢取大奖！"
+        "tryLuckyDraw": "试试手气，赢取大奖！",
+        "createFirstImageTool": "使用 BG Remove 或 HD Upscale 处理图片。"
       },
       "stats": {
         "plan": "计划",
@@ -248,6 +249,10 @@
       "subscribe": {
         "title": "购买 $VOICICA",
         "subtitle": "$1 = 10,000 $VOICICA"
+      },
+      "imageTabs": {
+        "ai": "AI 生成",
+        "tools": "图像处理"
       }
     },
     "explore": {

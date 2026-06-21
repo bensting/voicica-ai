@@ -193,7 +193,8 @@
         "createFirstCover": "Buat cover AI pertama Anda.",
         "createFirstVideo": "Buat video AI pertama Anda.",
         "createFirstImage": "Buat gambar AI pertama Anda.",
-        "tryLuckyDraw": "Coba keberuntunganmu dan menangkan hadiah!"
+        "tryLuckyDraw": "Coba keberuntunganmu dan menangkan hadiah!",
+        "createFirstImageTool": "Gunakan BG Remove atau HD Upscale untuk memproses gambar."
       },
       "stats": {
         "plan": "Paket",
@@ -202,6 +203,10 @@
       "subscribe": {
         "title": "Beli $VOICICA",
         "subtitle": "$1 = 10,000 $VOICICA"
+      },
+      "imageTabs": {
+        "ai": "Generasi AI",
+        "tools": "Alat Gambar"
       }
     },
     "explore": {

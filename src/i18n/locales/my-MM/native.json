@@ -193,7 +193,8 @@
         "createFirstCover": "သင့်ပထမဆုံး AI cover ကို ဖန်တီးပါ။",
         "createFirstVideo": "သင့်ပထမဆုံး AI ဗီဒီယိုကို ဖန်တီးပါ။",
         "createFirstImage": "သင့်ပထမဆုံး AI ပုံကို ဖန်တီးပါ။",
-        "tryLuckyDraw": "ကံစမ်းကြည့်ပြီး ဆုများရယူပါ!"
+        "tryLuckyDraw": "ကံစမ်းကြည့်ပြီး ဆုများရယူပါ!",
+        "createFirstImageTool": "ပုံများကို BG Remove သို့မဟုတ် HD Upscale ဖြင့် စီမံပါ။"
       },
       "stats": {
         "plan": "အစီအစဉ်",
@@ -202,6 +203,10 @@
       "subscribe": {
         "title": "$VOICICA ဝယ်ရန်",
         "subtitle": "$1 = 10,000 $VOICICA"
+      },
+      "imageTabs": {
+        "ai": "AI ဖန်တီးမှု",
+        "tools": "ပုံကိရိယာ"
       }
     },
     "explore": {

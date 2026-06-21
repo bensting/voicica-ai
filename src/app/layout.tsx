@@ -161,7 +161,7 @@ export default async function RootLayout({
   ) as Locale;
 
   return (
-    <html lang="en" className="scroll-smooth" suppressHydrationWarning>
+    <html lang="en" className="scroll-smooth" data-scroll-behavior="smooth" suppressHydrationWarning>
       <head>
         {/* ExoClick Client Hints Delegate-CH (广告定向优化) */}
         <meta

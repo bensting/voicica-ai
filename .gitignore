@@ -64,6 +64,7 @@ next-env.d.ts
 # Firebase Admin credentials
 **/firebase-admin-key.json
 **/*-firebase-adminsdk-*.json
+android/app/google-services.json
 
 .idea/encodings.xml
 merge_to_main.bat

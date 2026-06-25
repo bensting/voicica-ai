@@ -1,11 +1,15 @@
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD ?? 'admin123';
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
 const COOKIE_NAME = 'admin_session';
 const COOKIE_VALUE = 'authenticated';
 
 export async function POST(request: Request) {
+  if (!ADMIN_PASSWORD) {
+    return NextResponse.json({ error: 'Admin not configured' }, { status: 403 });
+  }
+
   const { password } = await request.json();
 
   if (password !== ADMIN_PASSWORD) {

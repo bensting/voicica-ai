@@ -1,6 +1,6 @@
 # Voicica — AI Voice & Creative Platform
 
-[中文版](./README.zh-CN.md) · [Live Demo](https://voicica.ai)
+[中文版](./README.zh-CN.md) · [Live Demo](https://voicica.ai) · [Google Play](https://play.google.com/store/apps/details?id=ai.voicica.app)
 
 > A production-grade, full-stack AI creative platform — text-to-speech, voice cloning, AI image / music / video generation — deployed on Cloudflare Workers' global edge network and shipped as a cross-platform native app (Android & iOS).
 

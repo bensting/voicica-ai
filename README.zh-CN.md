@@ -1,6 +1,6 @@
 # Voicica — AI 语音与创作平台
 
-[English](./README.md) · [在线体验](https://voicica.ai)
+[English](./README.md) · [在线体验](https://voicica.ai) · [Google Play 下载](https://play.google.com/store/apps/details?id=ai.voicica.app)
 
 > 一个生产级全栈 AI 创作平台，支持文字转语音、声音克隆、AI 图像 / 音乐 / 视频生成，部署在 Cloudflare Workers 全球边缘网络，同时以 Android & iOS 原生 App 形式发布。
 
